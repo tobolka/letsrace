@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { Button, Input, Label } from "@/components/ui/primitives";
+import { AuthForm } from "@/components/account/auth-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -16,10 +17,12 @@ type Member = {
 
 export function AccountPanel({ locale }: { locale: string }) {
   const router = useRouter();
+  const [ready, setReady] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [name, setName] = useState("");
-  const [relationship, setRelationship] = useState("child");
+  const [relationship, setRelationship] = useState("other");
   const [birthYear, setBirthYear] = useState("");
   const [message, setMessage] = useState("");
 
@@ -27,9 +30,11 @@ export function AccountPanel({ locale }: { locale: string }) {
     const supabase = createBrowserSupabase();
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) {
-      router.push(`/${locale}/auth`);
+      setAuthed(false);
+      setReady(true);
       return;
     }
+    setAuthed(true);
     setEmail(auth.user.email ?? null);
     const { data } = await supabase
       .from("family_members")
@@ -37,6 +42,7 @@ export function AccountPanel({ locale }: { locale: string }) {
       .eq("user_id", auth.user.id)
       .order("created_at");
     setMembers(data ?? []);
+    setReady(true);
   }
 
   useEffect(() => {
@@ -58,7 +64,7 @@ export function AccountPanel({ locale }: { locale: string }) {
     });
     setName("");
     setBirthYear("");
-    setMessage("Member added");
+    setMessage("Profile added");
     await load();
   }
 
@@ -74,11 +80,23 @@ export function AccountPanel({ locale }: { locale: string }) {
     router.push(`/${locale}`);
   }
 
+  if (!ready) {
+    return <p className="mx-auto max-w-md p-6 text-sm text-stone-500">…</p>;
+  }
+
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-md rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
+        <AuthForm locale={locale} onSuccess={() => void load()} />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-sans tracking-tight text-3xl font-semibold">Account</h1>
+          <h1 className="font-sans text-3xl font-semibold tracking-tight">Account</h1>
           <p className="text-sm text-stone-500">{email}</p>
         </div>
         <div className="flex gap-2">
@@ -92,9 +110,9 @@ export function AccountPanel({ locale }: { locale: string }) {
       </div>
 
       <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-stone-200">
-        <h2 className="font-medium">Family profiles</h2>
+        <h2 className="font-medium">Profiles</h2>
         <p className="mt-1 text-sm text-stone-500">
-          Dad + kids: pick races for each person, mark registered / paid separately.
+          People you track races for — favorites, calendar, registration status.
         </p>
         <ul className="mt-4 space-y-2">
           {members.map((m) => (
@@ -123,7 +141,7 @@ export function AccountPanel({ locale }: { locale: string }) {
         <form onSubmit={addMember} className="mt-4 grid gap-3 sm:grid-cols-3">
           <div className="space-y-1 sm:col-span-1">
             <Label>Name</Label>
-            <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Son" />
+            <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Name…" />
           </div>
           <div className="space-y-1">
             <Label>Relationship</Label>
@@ -132,8 +150,9 @@ export function AccountPanel({ locale }: { locale: string }) {
               value={relationship}
               onChange={(e) => setRelationship(e.target.value)}
             >
+              <option value="self">Self</option>
+              <option value="partner">Partner</option>
               <option value="child">Child</option>
-              <option value="spouse">Spouse</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -147,7 +166,7 @@ export function AccountPanel({ locale }: { locale: string }) {
             />
           </div>
           <div className="sm:col-span-3">
-            <Button type="submit">Add family member</Button>
+            <Button type="submit">Add profile</Button>
             {message && <span className="ml-3 text-sm text-stone-900">{message}</span>}
           </div>
         </form>
@@ -156,11 +175,11 @@ export function AccountPanel({ locale }: { locale: string }) {
       <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-stone-200">
         <h2 className="font-medium">Shortcuts</h2>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
-          <Link href={`/${locale}/account/calendar`} className="text-stone-900 underline">
+          <Link href={`/${locale}/calendar`} className="text-stone-900 underline">
             My race calendar
           </Link>
-          <Link href={`/${locale}/account/favorites`} className="text-stone-900 underline">
-            Favorites
+          <Link href={`/${locale}`} className="text-stone-900 underline">
+            Map
           </Link>
         </div>
       </section>

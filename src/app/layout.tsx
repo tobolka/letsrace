@@ -17,8 +17,7 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "Startline — cycling race finder",
-  description:
-    "Map-first calendar of cycling races for kids and adults across Central Europe.",
+  description: "Map-first calendar of cycling races across Central Europe.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

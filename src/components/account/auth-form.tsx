@@ -86,13 +86,11 @@ export function AuthForm({
   }
 
   return (
-    <div className={onSuccess ? "" : "mx-auto max-w-md rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200"}>
-      <h1 className="font-sans tracking-tight text-2xl font-semibold">
+    <div>
+      <h1 className="font-sans text-2xl font-semibold tracking-tight">
         {mode === "register" ? "Create account" : "Sign in"}
       </h1>
-      <p className="mt-1 text-sm text-stone-500">
-        {reason || "Track races for you and your kids — favorites, calendar, paid / registered."}
-      </p>
+      {reason ? <p className="mt-1 text-sm text-stone-500">{reason}</p> : null}
       <div className="mt-4 flex gap-2 text-sm">
         <button
           type="button"
@@ -113,8 +111,13 @@ export function AuthForm({
       <form onSubmit={onSubmit} className="mt-4 space-y-3">
         {mode === "register" && (
           <div className="space-y-1">
-            <Label>Your name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dad / name" />
+            <Label>Name</Label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name…"
+              autoComplete="name"
+            />
           </div>
         )}
         <div className="space-y-1">

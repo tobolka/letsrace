@@ -53,7 +53,7 @@ export function EventDetailPanel({
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [busy, setBusy] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [authReason, setAuthReason] = useState("Sign in to save races and add them to your calendar.");
+  const [authReason, setAuthReason] = useState("Sign in to save races and use your calendar.");
   const [pendingAction, setPendingAction] = useState<"save" | "calendar" | null>(null);
 
   async function loadUserState(uid: string) {
@@ -95,7 +95,7 @@ export function EventDetailPanel({
     setAuthReason(
       action === "save"
         ? "Sign in to save this race to your favorites."
-        : "Sign in to add this race to your family calendar.",
+        : "Sign in to add this race to your calendar.",
     );
     setAuthOpen(true);
   }

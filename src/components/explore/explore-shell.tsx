@@ -6,6 +6,7 @@ import { RaceMap } from "@/components/map/race-map";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
 import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
 import { FeedbackModal } from "@/components/explore/feedback-modal";
+import { AuthDialog } from "@/components/account/auth-dialog";
 import { Button, Input } from "@/components/ui/primitives";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
@@ -64,6 +65,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const [seriesList, setSeriesList] = useState<{ slug: string; name: string; eventCount: number }[]>([]);
   const [pending, startTransition] = useTransition();
   const [bounds, setBounds] = useState<{
@@ -192,12 +194,37 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     const listW = 400 + 12 + 12;
     const detailW = selected ? 380 + 12 : 0;
     return {
-      top: 72,
+      top: 16,
       right: 56,
       bottom: 56,
       left: listW + detailW + 64,
     };
   }, [selected, isDesktop, mobileOpen]);
+
+  function renderFilterBar() {
+    return (
+      <MapFilterBar
+        messages={messages}
+        dateFrom={filters.dateFrom}
+        dateTo={filters.dateTo}
+        audience={filters.audience}
+        disciplines={filters.disciplines}
+        levels={filters.levels}
+        series={filters.series}
+        seriesList={seriesList}
+        onPreset={setDateRange}
+        onFrom={(dateFrom) => setDateRange(dateFrom, filters.dateTo)}
+        onTo={(dateTo) => setDateRange(filters.dateFrom, dateTo)}
+        onAudience={toggleAudience}
+        onDiscipline={toggleDiscipline}
+        onLevel={toggleLevel}
+        onClearDisciplines={clearDisciplines}
+        onClearLevels={clearLevels}
+        onSeries={setSeries}
+        stacked
+      />
+    );
+  }
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
@@ -235,37 +262,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         />
       </div>
 
-      {/* Google Maps–style filters floating over the map */}
-      <div
-        className="pointer-events-none absolute top-3 z-30 hidden md:block"
-        style={{
-          left: selected ? 400 + 12 + 380 + 24 : 400 + 24,
-          right: 16,
-        }}
-      >
-        <MapFilterBar
-          messages={messages}
-          dateFrom={filters.dateFrom}
-          dateTo={filters.dateTo}
-          audience={filters.audience}
-          disciplines={filters.disciplines}
-          levels={filters.levels}
-          series={filters.series}
-          seriesList={seriesList}
-          onPreset={setDateRange}
-          onFrom={(dateFrom) => setDateRange(dateFrom, filters.dateTo)}
-          onTo={(dateTo) => setDateRange(filters.dateFrom, dateTo)}
-          onAudience={toggleAudience}
-          onDiscipline={toggleDiscipline}
-          onLevel={toggleLevel}
-          onClearDisciplines={clearDisciplines}
-          onClearLevels={clearLevels}
-          onSeries={setSeries}
-        />
-      </div>
-
       <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden p-3 md:flex md:gap-3">
-        <aside className="pointer-events-auto flex h-full w-[400px] flex-col overflow-hidden rounded-2xl bg-white/95 shadow-xl ring-1 ring-stone-200 backdrop-blur">
+        <aside className="pointer-events-auto flex h-full w-[400px] flex-col rounded-2xl bg-white/95 shadow-xl ring-1 ring-stone-200 backdrop-blur">
           <Header
             messages={messages}
             locale={locale}
@@ -274,18 +272,22 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onMenuOpen={setMenuOpen}
             onSubmitRace={() => setSubmitOpen(true)}
             onFeedback={() => setFeedbackOpen(true)}
+            onSignIn={() => setAuthOpen(true)}
             onQ={(q) => {
               void setFilters({ q });
               refetch({ q });
             }}
           />
+          <div className="relative z-30 shrink-0 border-b border-stone-100 px-3 py-2.5">
+            {renderFilterBar()}
+          </div>
           <div className="flex items-center justify-between gap-2 border-b border-stone-100 px-4 py-2 text-xs text-stone-500">
             <span>
               {events.length} {messages.racesCount}
             </span>
             {pending ? <span>…</span> : null}
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="min-h-0 flex-1 overflow-y-auto">
             {events.length === 0 ? (
               <p className="p-4 text-sm text-stone-500">{messages.noResults}</p>
             ) : (
@@ -351,6 +353,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   onMenuOpen={setMenuOpen}
                   onSubmitRace={() => setSubmitOpen(true)}
                   onFeedback={() => setFeedbackOpen(true)}
+                  onSignIn={() => setAuthOpen(true)}
                   onQ={(q) => {
                     void setFilters({ q });
                     refetch({ q });
@@ -360,27 +363,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </div>
               {mobileOpen && (
                 <div className="max-h-[60vh] overflow-y-auto">
-                  <div className="border-b border-stone-100 px-3 py-2">
-                    <MapFilterBar
-                      messages={messages}
-                      dateFrom={filters.dateFrom}
-                      dateTo={filters.dateTo}
-                      audience={filters.audience}
-                      disciplines={filters.disciplines}
-                      levels={filters.levels}
-                      series={filters.series}
-                      seriesList={seriesList}
-                      onPreset={setDateRange}
-                      onFrom={(dateFrom) => setDateRange(dateFrom, filters.dateTo)}
-                      onTo={(dateTo) => setDateRange(filters.dateFrom, dateTo)}
-                      onAudience={toggleAudience}
-                      onDiscipline={toggleDiscipline}
-                      onLevel={toggleLevel}
-                      onClearDisciplines={clearDisciplines}
-                      onClearLevels={clearLevels}
-                      onSeries={setSeries}
-                      stacked
-                    />
+                  <div className="relative z-30 border-b border-stone-100 px-3 py-2">
+                    {renderFilterBar()}
                   </div>
                   <div className="flex gap-2 px-4 pb-2 pt-2">
                     <button
@@ -410,6 +394,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
       <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <AuthDialog
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onSuccess={() => setAuthOpen(false)}
+        locale={locale}
+      />
     </div>
   );
 }
@@ -583,7 +573,7 @@ function MapFilterBar({
     <div
       className={`pointer-events-auto ${
         stacked
-          ? "flex flex-col gap-2"
+          ? "flex flex-wrap gap-1.5"
           : "flex items-start gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       }`}
     >
@@ -832,6 +822,7 @@ function Header({
   onMenuOpen,
   onSubmitRace,
   onFeedback,
+  onSignIn,
   compact,
 }: {
   messages: Messages;
@@ -842,6 +833,7 @@ function Header({
   onMenuOpen: (v: boolean) => void;
   onSubmitRace: () => void;
   onFeedback: () => void;
+  onSignIn: () => void;
   compact?: boolean;
 }) {
   return (
@@ -886,19 +878,22 @@ function Header({
                 </Link>
               ))}
               <div className="my-1 border-t border-stone-100" />
-              <Link
-                href={`/${locale}/auth`}
-                className="block px-3 py-2 text-sm text-stone-600 hover:bg-stone-50"
-                onClick={() => onMenuOpen(false)}
+              <button
+                type="button"
+                className="block w-full px-3 py-2 text-left text-sm text-stone-600 hover:bg-stone-50"
+                onClick={() => {
+                  onMenuOpen(false);
+                  onSignIn();
+                }}
               >
                 Sign in
-              </Link>
+              </button>
               <Link
                 href={`/${locale}/account`}
                 className="block px-3 py-2 text-sm text-stone-600 hover:bg-stone-50"
                 onClick={() => onMenuOpen(false)}
               >
-                Account / family
+                Account
               </Link>
               <Link
                 href={`/${locale}/calendar`}
