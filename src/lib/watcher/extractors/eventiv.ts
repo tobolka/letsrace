@@ -26,11 +26,11 @@ const BIKE_SPORTS = new Set(["road", "mtb", "gravel", "cyclocross", "bmx", "trac
 
 const SPORT_TO_DISC: Record<string, Discipline> = {
   road: "road",
-  mtb: "xc",
+  mtb: "mtb",
   gravel: "gravel",
   cyclocross: "cx",
-  bmx: "other",
-  track: "other",
+  bmx: "bmx",
+  track: "track",
 };
 
 const COUNTRY_TO_CC: Record<string, string> = {

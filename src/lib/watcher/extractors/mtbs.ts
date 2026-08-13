@@ -4,14 +4,15 @@ import { normalizeName } from "@/lib/domain";
 import { inferRaceLevel } from "@/lib/race-level";
 
 const DISC_MAP: Record<string, Discipline> = {
-  xc: "xc",
+  xc: "xco",
+  xco: "xco",
   xcm: "xcm",
   silnice: "road",
   dh: "dh",
   enduro: "enduro",
   gravel: "gravel",
   gravelk: "gravel",
-  mtbo: "mtbo",
+  mtbo: "other",
   cyklokros: "cx",
   akce: "other",
   freestyle: "other",

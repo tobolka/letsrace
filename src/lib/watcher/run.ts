@@ -281,10 +281,27 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     lat: ev.lat,
     lng: ev.lng,
   });
-  const { inferRaceLevel } = await import("@/lib/race-level");
+  const { inferClassification } = await import("@/lib/taxonomy");
   const { isLikelyDuplicate } = await import("@/lib/dedup");
   const { publicRaceUrl } = await import("@/lib/watcher/public-url");
-  const levelInfo = inferRaceLevel(`${ev.name} ${ev.placeText} ${(ev.discipline ?? []).join(" ")}`);
+  const classified = inferClassification({
+    name: ev.name,
+    placeText: ev.placeText,
+    disciplines: ev.discipline,
+    categoryNames: (ev.categories ?? []).map((c) => c.name),
+  });
+  const levelInfo = {
+    level: classified.level,
+    classLabel: classified.classLabel,
+    uciClass: classified.uciClass,
+  };
+  const disciplines = classified.disciplines.length
+    ? classified.disciplines
+    : ev.discipline ?? [];
+  const audience = classified.ageCategories.length
+    ? classified.audience
+    : ev.audience ?? "mixed";
+  const ageCategories = classified.ageCategories;
 
   // 1) exact fingerprint
   let existingId: string | undefined;
@@ -399,12 +416,14 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     name_normalized: normalizeName(ev.name),
     start_date: ev.startDate,
     end_date: ev.endDate ?? ev.startDate,
-    disciplines: ev.discipline ?? [],
-    audience: ev.audience ?? "mixed",
+    disciplines,
+    audience,
+    age_categories: ageCategories,
     fingerprint: fp,
     source_kind: "scraped",
     level: levelInfo.level,
     class_label: levelInfo.classLabel ?? null,
+    uci_class: levelInfo.uciClass ?? null,
     last_seen_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

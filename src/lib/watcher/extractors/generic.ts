@@ -60,10 +60,12 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
   if (/gravel/i.test(title + text)) disciplines?.push("gravel");
   if (/silnic|road|kritérium/i.test(title + text)) disciplines?.push("road");
   if (/\bxcm\b|maraton/i.test(title + text)) disciplines?.push("xcm");
-  if (/\bxc\b|cross.?country/i.test(title + text)) disciplines?.push("xc");
+  if (/\bxc\b|cross.?country|xco/i.test(title + text)) disciplines?.push("xco");
   if (/časovka|time.?trial|\btt\b/i.test(title + text)) disciplines?.push("tt");
   if (/enduro/i.test(title + text)) disciplines?.push("enduro");
-  if (/biatlon/i.test(title + text)) disciplines?.push("biathlon");
+  if (/biatlon/i.test(title + text)) disciplines?.push("other");
+  if (/dráha|track/i.test(title + text)) disciplines?.push("track");
+  if (/\bbmx\b/i.test(title + text)) disciplines?.push("bmx");
 
   return [
     {

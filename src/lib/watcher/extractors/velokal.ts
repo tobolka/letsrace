@@ -41,7 +41,7 @@ function parseGermanDate(raw: string): string | null {
 
 function mapVelokalDiscipline(badges: string[]): Discipline[] {
   const t = badges.join(" ").toLowerCase();
-  if (/\bmtb\b|mountain/.test(t)) return ["xc"];
+  if (/\bmtb\b|mountain/.test(t)) return ["xco"];
   if (/\bgravel\b/.test(t)) return ["gravel"];
   if (/\bcyclo|quer/.test(t)) return ["cx"];
   if (/\bzeitfahren\b|\btt\b/.test(t)) return ["tt"];

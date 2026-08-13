@@ -50,9 +50,11 @@ function mapSeriesDisc(series: string, name: string): Discipline[] | undefined {
   if (/gravel/.test(t)) return ["gravel"];
   if (/silnice|road/.test(t)) return ["road"];
   if (/cyclo|cx|cyklo.?kros/.test(t)) return ["cx"];
-  if (/\bdh\b|enduro/.test(t)) return ["dh"];
-  if (/biatlon/.test(t)) return ["biathlon"];
-  if (/mtb|xco|xcc|xc\b|talent|čp mtb|cp mtb/.test(t)) return ["xc"];
+  if (/\bdh\b|downhill/.test(t)) return ["dh"];
+  if (/enduro/.test(t)) return ["enduro"];
+  if (/biatlon/.test(t)) return ["other"];
+  if (/xcc/.test(t)) return ["xcc"];
+  if (/mtb|xco|xc\b|talent|čp mtb|cp mtb/.test(t)) return ["xco"];
   return undefined;
 }
 
@@ -262,7 +264,7 @@ export function parseHynekMusil(url: string, html: string): ParsedEvent[] {
       sourceUrl: provenanceUrl,
       confidence: pageSeries ? 0.86 : 0.74,
     });
-    if (level.level === "c1" || level.level === "uci") {
+    if (level.uciClass || level.level === "international" || level.level === "world_cup") {
       events[events.length - 1].confidence = 0.82;
     }
   });

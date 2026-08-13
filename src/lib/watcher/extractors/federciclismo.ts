@@ -30,7 +30,7 @@ function parseItalianDate(raw: string): string | null {
 
 function mapFciDiscipline(text: string): Discipline[] {
   const t = text.toLowerCase();
-  if (/fuoristrada|mtb|mountain/.test(t)) return ["xc"];
+  if (/fuoristrada|mtb|mountain/.test(t)) return ["xco"];
   if (/pista|track/.test(t)) return ["other"];
   if (/ciclocross|cyclo/.test(t)) return ["cx"];
   if (/gravel/.test(t)) return ["gravel"];

@@ -19,7 +19,15 @@ import type { EventListItem } from "@/lib/events";
 import { publicRaceUrl } from "@/lib/watcher/public-url";
 import { formatAudienceList } from "@/lib/audience";
 import { messages, type Locale } from "@/lib/i18n/messages";
-import { LEVEL_LABELS, type RaceLevel } from "@/lib/race-level";
+import {
+  AGE_CATEGORY_LABELS,
+  DISCIPLINE_LABELS,
+  RACE_LEVEL_LABELS,
+  UCI_CLASS_LABELS,
+  type Discipline,
+  type RaceLevel,
+  type UciClass,
+} from "@/lib/taxonomy";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
 import Link from "next/link";
@@ -186,15 +194,23 @@ export function EventDetailPanel({
   }
 
   const levelKey = (event.level || "local") as RaceLevel;
-  const levelLabel = event.classLabel || LEVEL_LABELS[levelKey] || event.level;
+  const levelLabel = RACE_LEVEL_LABELS[levelKey] || event.level;
+  const uciLabel = event.uciClass
+    ? UCI_CLASS_LABELS[event.uciClass as UciClass] || event.uciClass.toUpperCase()
+    : null;
   const websiteUrl = publicRaceUrl(event.websiteUrl);
   const registrationUrl = publicRaceUrl(event.registrationUrl);
   const t = messages[(locale as Locale) in messages ? (locale as Locale) : "en"];
-  const audienceLabel = formatAudienceList(
-    event.audience,
-    { kids: t.kids, youth: t.youth, adults: t.adults },
-    event.categories,
-  );
+  const audienceLabel =
+    event.ageCategories?.length
+      ? event.ageCategories
+          .map((c) => AGE_CATEGORY_LABELS[c as keyof typeof AGE_CATEGORY_LABELS] || c)
+          .join(" · ")
+      : formatAudienceList(
+          event.audience,
+          { kids: t.kids, youth: t.youth, adults: t.adults },
+          event.categories,
+        );
 
   return (
     <aside className="pointer-events-auto flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-stone-200 md:w-[380px]">
@@ -210,10 +226,11 @@ export function EventDetailPanel({
         <h2 className="pr-8 text-2xl font-semibold leading-tight tracking-tight">{event.name}</h2>
         <div className="mt-3 flex flex-wrap gap-1.5">
           <Badge className="bg-white/20 text-white">{levelLabel}</Badge>
+          {uciLabel ? <Badge className="bg-amber-400/90 text-stone-900">{uciLabel}</Badge> : null}
           <Badge className="bg-white/20 text-white">{audienceLabel}</Badge>
           {event.disciplines.map((d) => (
             <Badge key={d} className="bg-white/15 text-white">
-              {d}
+              {DISCIPLINE_LABELS[d as Discipline] || d}
             </Badge>
           ))}
         </div>

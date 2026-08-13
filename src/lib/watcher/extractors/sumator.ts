@@ -5,17 +5,20 @@ import { inferRaceLevel } from "@/lib/race-level";
 import { isAggregatorUrl } from "@/lib/watcher/public-url";
 
 const DISC_MAP: Record<string, Discipline> = {
-  xc: "xc",
-  xco: "xc",
+  xc: "xco",
+  xco: "xco",
+  xcc: "xcc",
   xcm: "xcm",
   silnice: "road",
   road: "road",
   dh: "dh",
   enduro: "enduro",
   gravel: "gravel",
-  mtbo: "mtbo",
+  mtbo: "other",
   cyklokros: "cx",
   cx: "cx",
+  bmx: "bmx",
+  track: "track",
   "4x": "other",
   event: "other",
   akce: "other",

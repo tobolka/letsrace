@@ -11,8 +11,25 @@ import { Button, Input } from "@/components/ui/primitives";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
 import { formatAudienceList } from "@/lib/audience";
-import { LEVEL_LABELS, type RaceLevel } from "@/lib/race-level";
-import { addDays, format, nextSaturday, nextSunday, parseISO } from "date-fns";
+import {
+  AGE_CATEGORIES,
+  AGE_CATEGORY_LABELS,
+  DISCIPLINE_LABELS,
+  DISCIPLINE_TREE,
+  RACE_LEVEL_LABELS,
+  RACE_LEVELS,
+  type Discipline,
+  type RaceLevel,
+} from "@/lib/taxonomy";
+import {
+  addDays,
+  endOfMonth,
+  format,
+  nextSaturday,
+  nextSunday,
+  parseISO,
+  startOfMonth,
+} from "date-fns";
 import {
   Search,
   MoreHorizontal,
@@ -57,6 +74,22 @@ function nextWeekendRange() {
   };
 }
 
+function thisMonthRange() {
+  const now = new Date();
+  return {
+    from: format(startOfMonth(now), "yyyy-MM-dd"),
+    to: format(endOfMonth(now), "yyyy-MM-dd"),
+  };
+}
+
+function nextMonthRange() {
+  const next = addDays(endOfMonth(new Date()), 1);
+  return {
+    from: format(startOfMonth(next), "yyyy-MM-dd"),
+    to: format(endOfMonth(next), "yyyy-MM-dd"),
+  };
+}
+
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -77,7 +110,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const [filters, setFilters] = useQueryStates({
     q: parseAsString.withDefault(""),
-    audience: parseAsArrayOf(parseAsString).withDefault([]),
+    categories: parseAsArrayOf(parseAsString).withDefault([]),
     disciplines: parseAsArrayOf(parseAsString).withDefault([]),
     levels: parseAsArrayOf(parseAsString).withDefault([]),
     series: parseAsString.withDefault(""),
@@ -102,18 +135,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     [events, selectedId],
   );
 
-  function toggleAudience(value: string) {
-    const next = filters.audience.includes(value)
-      ? filters.audience.filter((a) => a !== value)
-      : [...filters.audience, value];
-    void setFilters({ audience: next });
-    refetch({ audience: next });
+  function toggleCategory(value: string) {
+    const next = filters.categories.includes(value)
+      ? filters.categories.filter((a) => a !== value)
+      : [...filters.categories, value];
+    void setFilters({ categories: next });
+    refetch({ categories: next });
   }
 
-  function toggleDiscipline(value: string) {
-    const next = filters.disciplines.includes(value)
-      ? filters.disciplines.filter((d) => d !== value)
-      : [...filters.disciplines, value];
+  function setDiscipline(value: string) {
+    const next = filters.disciplines[0] === value ? [] : [value];
     void setFilters({ disciplines: next });
     refetch({ disciplines: next });
   }
@@ -136,6 +167,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     refetch({ levels: [] });
   }
 
+  function clearCategories() {
+    void setFilters({ categories: [] });
+    refetch({ categories: [] });
+  }
+
   function setSeries(slug: string) {
     const next = filters.series === slug ? "" : slug;
     void setFilters({ series: next });
@@ -151,7 +187,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     startTransition(async () => {
       const params = new URLSearchParams();
       const q = (overrides.q as string) ?? filters.q;
-      const audience = (overrides.audience as string[]) ?? filters.audience;
+      const categories = (overrides.categories as string[]) ?? filters.categories;
       const disciplines = (overrides.disciplines as string[]) ?? filters.disciplines;
       const levels = (overrides.levels as string[]) ?? filters.levels;
       const series = (overrides.series as string) ?? filters.series;
@@ -162,7 +198,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (series) params.set("series", series);
       if (dateFrom) params.set("dateFrom", dateFrom);
       if (dateTo) params.set("dateTo", dateTo);
-      audience.forEach((a) => params.append("audience", a));
+      categories.forEach((a) => params.append("categories", a));
       disciplines.forEach((d) => params.append("disciplines", d));
       levels.forEach((l) => params.append("levels", l));
       if (b && ((overrides.forceBounds as boolean) || filters.updateOnMove)) {
@@ -207,7 +243,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         messages={messages}
         dateFrom={filters.dateFrom}
         dateTo={filters.dateTo}
-        audience={filters.audience}
+        categories={filters.categories}
         disciplines={filters.disciplines}
         levels={filters.levels}
         series={filters.series}
@@ -215,11 +251,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onPreset={setDateRange}
         onFrom={(dateFrom) => setDateRange(dateFrom, filters.dateTo)}
         onTo={(dateTo) => setDateRange(filters.dateFrom, dateTo)}
-        onAudience={toggleAudience}
-        onDiscipline={toggleDiscipline}
+        onCategory={toggleCategory}
+        onDiscipline={setDiscipline}
         onLevel={toggleLevel}
         onClearDisciplines={clearDisciplines}
         onClearLevels={clearLevels}
+        onClearCategories={clearCategories}
         onSeries={setSeries}
         stacked
       />
@@ -412,37 +449,15 @@ function mapChip(active: boolean) {
   }`;
 }
 
-const TYPE_OPTIONS: { id: string; label: string }[] = [
-  { id: "xc", label: "XC / MTB" },
-  { id: "xcm", label: "XCM" },
-  { id: "road", label: "Road" },
-  { id: "gravel", label: "Gravel" },
-  { id: "cx", label: "Cyclocross" },
-  { id: "tt", label: "Time trial" },
-  { id: "dh", label: "Downhill" },
-  { id: "enduro", label: "Enduro" },
-  { id: "biathlon", label: "Biathlon" },
-  { id: "mtbo", label: "MTBO" },
-  { id: "other", label: "Other" },
-];
-
-const CATEGORY_OPTIONS: { id: RaceLevel; label: string }[] = [
-  { id: "local", label: LEVEL_LABELS.local },
-  { id: "district", label: LEVEL_LABELS.district },
-  { id: "regional", label: LEVEL_LABELS.regional },
-  { id: "national", label: LEVEL_LABELS.national },
-  { id: "kids_series", label: LEVEL_LABELS.kids_series },
-  { id: "c3", label: LEVEL_LABELS.c3 },
-  { id: "c2", label: LEVEL_LABELS.c2 },
-  { id: "c1", label: LEVEL_LABELS.c1 },
-  { id: "uci", label: LEVEL_LABELS.uci },
-];
+function disciplineLabel(id: string): string {
+  return DISCIPLINE_LABELS[id as Discipline] || id;
+}
 
 function MapFilterBar({
   messages,
   dateFrom,
   dateTo,
-  audience,
+  categories,
   disciplines,
   levels,
   series,
@@ -450,18 +465,19 @@ function MapFilterBar({
   onPreset,
   onFrom,
   onTo,
-  onAudience,
+  onCategory,
   onDiscipline,
   onLevel,
   onClearDisciplines,
   onClearLevels,
+  onClearCategories,
   onSeries,
   stacked,
 }: {
   messages: Messages;
   dateFrom: string;
   dateTo: string;
-  audience: string[];
+  categories: string[];
   disciplines: string[];
   levels: string[];
   series: string;
@@ -469,21 +485,24 @@ function MapFilterBar({
   onPreset: (from: string, to: string) => void;
   onFrom: (v: string) => void;
   onTo: (v: string) => void;
-  onAudience: (v: string) => void;
+  onCategory: (v: string) => void;
   onDiscipline: (v: string) => void;
   onLevel: (v: string) => void;
   onClearDisciplines: () => void;
   onClearLevels: () => void;
+  onClearCategories: () => void;
   onSeries: (slug: string) => void;
   stacked?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [levelOpen, setLevelOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
   const typeRef = useRef<HTMLDivElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
+  const levelRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -492,63 +511,66 @@ function MapFilterBar({
       if (dateRef.current && !dateRef.current.contains(t)) setDateOpen(false);
       if (typeRef.current && !typeRef.current.contains(t)) setTypeOpen(false);
       if (categoryRef.current && !categoryRef.current.contains(t)) setCategoryOpen(false);
+      if (levelRef.current && !levelRef.current.contains(t)) setLevelOpen(false);
       if (moreRef.current && !moreRef.current.contains(t)) setMoreOpen(false);
     }
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  function closeOthers(except: "date" | "type" | "category" | "series") {
+  function closeOthers(except: "date" | "type" | "category" | "level" | "series") {
     if (except !== "date") setDateOpen(false);
     if (except !== "type") setTypeOpen(false);
     if (except !== "category") setCategoryOpen(false);
+    if (except !== "level") setLevelOpen(false);
     if (except !== "series") setMoreOpen(false);
   }
 
-  const upcoming = dateFrom === todayIso() && !dateTo;
   const thisW = thisWeekendRange();
   const nextW = nextWeekendRange();
+  const thisM = thisMonthRange();
+  const nextM = nextMonthRange();
   const isThisWeekend = dateFrom === thisW.from && dateTo === thisW.to;
   const isNextWeekend = dateFrom === nextW.from && dateTo === nextW.to;
+  const isThisMonth = dateFrom === thisM.from && dateTo === thisM.to;
+  const isNextMonth = dateFrom === nextM.from && dateTo === nextM.to;
   const anyDate = !dateFrom && !dateTo;
   const dateActive = Boolean(dateFrom || dateTo);
-  const isCustom =
-    dateActive && !upcoming && !isThisWeekend && !isNextWeekend && !anyDate;
+  const isPreset = isThisWeekend || isNextWeekend || isThisMonth || isNextMonth || anyDate;
+  const isCustom = dateActive && !isPreset;
   const dateLabel = isThisWeekend
     ? messages.thisWeekend
     : isNextWeekend
       ? messages.nextWeekend
-      : upcoming
-        ? messages.upcoming
-        : anyDate
-          ? messages.anyDate
-          : isCustom && dateFrom && dateTo
-            ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
-            : isCustom && dateFrom
-              ? `${messages.from} ${format(parseISO(dateFrom), "d MMM")}`
-              : messages.date;
+      : isThisMonth
+        ? messages.thisMonth
+        : isNextMonth
+          ? messages.nextMonth
+          : anyDate
+            ? messages.anyDate
+            : isCustom && dateFrom && dateTo
+              ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
+              : isCustom && dateFrom
+                ? `${messages.from} ${format(parseISO(dateFrom), "d MMM")}`
+                : messages.date;
 
   const seriesName = seriesList.find((s) => s.slug === series)?.name;
-  const typeLabel =
-    disciplines.length === 0
-      ? messages.typeFilter
-      : disciplines.length === 1
-        ? TYPE_OPTIONS.find((t) => t.id === disciplines[0])?.label || disciplines[0]
-        : `${messages.typeFilter} · ${disciplines.length}`;
+  const selectedDisc = disciplines[0];
+  const typeLabel = selectedDisc ? disciplineLabel(selectedDisc) : messages.typeFilter;
   const categoryLabel =
-    levels.length === 0
+    categories.length === 0
       ? messages.categoryFilter
+      : categories.length === 1
+        ? AGE_CATEGORY_LABELS[categories[0] as keyof typeof AGE_CATEGORY_LABELS] || categories[0]
+        : `${messages.categoryFilter} · ${categories.length}`;
+  const levelLabel =
+    levels.length === 0
+      ? messages.levelFilter
       : levels.length === 1
-        ? CATEGORY_OPTIONS.find((c) => c.id === levels[0])?.label || levels[0]
-        : `${messages.categoryFilter} · ${levels.length}`;
+        ? RACE_LEVEL_LABELS[levels[0] as RaceLevel] || levels[0]
+        : `${messages.levelFilter} · ${levels.length}`;
 
   const datePresets: { id: string; label: string; active: boolean; apply: () => void }[] = [
-    {
-      id: "upcoming",
-      label: messages.upcoming,
-      active: upcoming,
-      apply: () => onPreset(todayIso(), ""),
-    },
     {
       id: "thisWeekend",
       label: messages.thisWeekend,
@@ -560,6 +582,18 @@ function MapFilterBar({
       label: messages.nextWeekend,
       active: isNextWeekend,
       apply: () => onPreset(nextW.from, nextW.to),
+    },
+    {
+      id: "thisMonth",
+      label: messages.thisMonth,
+      active: isThisMonth,
+      apply: () => onPreset(thisM.from, thisM.to),
+    },
+    {
+      id: "nextMonth",
+      label: messages.nextMonth,
+      active: isNextMonth,
+      apply: () => onPreset(nextM.from, nextM.to),
     },
     {
       id: "any",
@@ -642,7 +676,7 @@ function MapFilterBar({
       <div className="relative" ref={typeRef}>
         <button
           type="button"
-          className={mapChip(disciplines.length > 0)}
+          className={mapChip(Boolean(selectedDisc))}
           onClick={() => {
             closeOthers("type");
             setTypeOpen((v) => !v);
@@ -652,27 +686,50 @@ function MapFilterBar({
           <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
         </button>
         {typeOpen && (
-          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-56 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
+          <div className="absolute left-0 top-[calc(100%+8px)] z-40 max-h-80 w-60 overflow-y-auto rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
             <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
               {messages.typeFilter}
             </p>
-            {TYPE_OPTIONS.map((opt) => {
-              const on = disciplines.includes(opt.id);
+            {DISCIPLINE_TREE.map((opt) => {
+              const on = selectedDisc === opt.id;
               return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm ${
-                    on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
-                  }`}
-                  onClick={() => onDiscipline(opt.id)}
-                >
-                  <span>{opt.label}</span>
-                  <span className="font-mono text-[10px] uppercase opacity-60">{opt.id}</span>
-                </button>
+                <div key={opt.id}>
+                  <button
+                    type="button"
+                    className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+                      on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+                    }`}
+                    onClick={() => {
+                      onDiscipline(opt.id);
+                      if (!opt.children?.length) setTypeOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                  {opt.children?.map((child) => {
+                    const childOn = selectedDisc === child.id;
+                    return (
+                      <button
+                        key={child.id}
+                        type="button"
+                        className={`flex w-full items-center rounded-xl py-1.5 pl-6 pr-3 text-left text-sm ${
+                          childOn
+                            ? "bg-stone-900 text-white"
+                            : "text-stone-600 hover:bg-stone-50"
+                        }`}
+                        onClick={() => {
+                          onDiscipline(child.id);
+                          setTypeOpen(false);
+                        }}
+                      >
+                        {child.label}
+                      </button>
+                    );
+                  })}
+                </div>
               );
             })}
-            {disciplines.length > 0 ? (
+            {selectedDisc ? (
               <button
                 type="button"
                 className="mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm text-stone-500 hover:bg-stone-50"
@@ -691,7 +748,7 @@ function MapFilterBar({
       <div className="relative" ref={categoryRef}>
         <button
           type="button"
-          className={mapChip(levels.length > 0)}
+          className={mapChip(categories.length > 0)}
           onClick={() => {
             closeOthers("category");
             setCategoryOpen((v) => !v);
@@ -701,32 +758,31 @@ function MapFilterBar({
           <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
         </button>
         {categoryOpen && (
-          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-56 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
+          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-52 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
             <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
               {messages.categoryFilter}
             </p>
-            {CATEGORY_OPTIONS.map((opt) => {
-              const on = levels.includes(opt.id);
+            {AGE_CATEGORIES.map((id) => {
+              const on = categories.includes(id);
               return (
                 <button
-                  key={opt.id}
+                  key={id}
                   type="button"
-                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm ${
+                  className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
                     on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
                   }`}
-                  onClick={() => onLevel(opt.id)}
+                  onClick={() => onCategory(id)}
                 >
-                  <span>{opt.label}</span>
-                  <span className="font-mono text-[10px] uppercase opacity-60">{opt.id}</span>
+                  {AGE_CATEGORY_LABELS[id]}
                 </button>
               );
             })}
-            {levels.length > 0 ? (
+            {categories.length > 0 ? (
               <button
                 type="button"
                 className="mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm text-stone-500 hover:bg-stone-50"
                 onClick={() => {
-                  onClearLevels();
+                  onClearCategories();
                   setCategoryOpen(false);
                 }}
               >
@@ -737,27 +793,53 @@ function MapFilterBar({
         )}
       </div>
 
-      <button
-        type="button"
-        className={mapChip(audience.includes("kids"))}
-        onClick={() => onAudience("kids")}
-      >
-        {messages.kids}
-      </button>
-      <button
-        type="button"
-        className={mapChip(audience.includes("youth"))}
-        onClick={() => onAudience("youth")}
-      >
-        {messages.youth}
-      </button>
-      <button
-        type="button"
-        className={mapChip(audience.includes("adults"))}
-        onClick={() => onAudience("adults")}
-      >
-        {messages.adults}
-      </button>
+      <div className="relative" ref={levelRef}>
+        <button
+          type="button"
+          className={mapChip(levels.length > 0)}
+          onClick={() => {
+            closeOthers("level");
+            setLevelOpen((v) => !v);
+          }}
+        >
+          {levelLabel}
+          <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
+        </button>
+        {levelOpen && (
+          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-60 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
+            <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+              {messages.levelFilter}
+            </p>
+            {RACE_LEVELS.map((id) => {
+              const on = levels.includes(id);
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+                    on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+                  }`}
+                  onClick={() => onLevel(id)}
+                >
+                  {RACE_LEVEL_LABELS[id]}
+                </button>
+              );
+            })}
+            {levels.length > 0 ? (
+              <button
+                type="button"
+                className="mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm text-stone-500 hover:bg-stone-50"
+                onClick={() => {
+                  onClearLevels();
+                  setLevelOpen(false);
+                }}
+              >
+                {messages.clearFilter}
+              </button>
+            ) : null}
+          </div>
+        )}
+      </div>
 
       {seriesList.length > 0 && (
         <div className="relative" ref={moreRef}>
@@ -959,14 +1041,21 @@ function EventCard({
   onClick: () => void;
 }) {
   const level =
+    event.uciClass?.toUpperCase() ||
     event.classLabel ||
-    LEVEL_LABELS[(event.level || "local") as RaceLevel] ||
+    RACE_LEVEL_LABELS[(event.level || "local") as RaceLevel] ||
     event.level;
-  const audienceLabel = formatAudienceList(
-    event.audience,
-    { kids: messages.kids, youth: messages.youth, adults: messages.adults },
-    event.categories,
-  );
+  const audienceLabel =
+    event.ageCategories?.length
+      ? event.ageCategories
+          .map((c) => AGE_CATEGORY_LABELS[c as keyof typeof AGE_CATEGORY_LABELS] || c)
+          .join(" · ")
+      : formatAudienceList(
+          event.audience,
+          { kids: messages.kids, youth: messages.youth, adults: messages.adults },
+          event.categories,
+        );
+  const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
   return (
     <button
       type="button"
@@ -984,7 +1073,7 @@ function EventCard({
       <p className="mt-0.5 text-xs text-stone-500">
         {event.location?.municipality || event.location?.name || "—"}
         {event.location?.countryCode ? ` · ${event.location.countryCode}` : ""}
-        {event.disciplines.length ? ` · ${event.disciplines.join(", ")}` : ""}
+        {discLabel ? ` · ${discLabel}` : ""}
         {` · ${audienceLabel}`}
       </p>
     </button>

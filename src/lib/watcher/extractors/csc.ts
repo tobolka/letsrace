@@ -72,10 +72,12 @@ function guessDisc(text: string): ParsedEvent["discipline"] {
   const out: NonNullable<ParsedEvent["discipline"]> = [];
   if (/silnic|road/i.test(text)) out.push("road");
   if (/\bxcm\b|maraton/i.test(text)) out.push("xcm");
-  if (/\bxco\b|\bxc\b|horské/i.test(text)) out.push("xc");
+  if (/\bxcc\b/i.test(text)) out.push("xcc");
+  if (/\bxco\b|\bxc\b|horské/i.test(text)) out.push("xco");
   if (/cyklokros|\bcx\b/i.test(text)) out.push("cx");
   if (/gravel/i.test(text)) out.push("gravel");
-  if (/dráha|track/i.test(text)) out.push("other");
+  if (/dráha|track/i.test(text)) out.push("track");
+  if (/\bbmx\b/i.test(text)) out.push("bmx");
   return out.length ? out : undefined;
 }
 

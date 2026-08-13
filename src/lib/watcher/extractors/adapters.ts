@@ -96,7 +96,7 @@ function parseJuniorCup(url: string, html: string): ParsedEvent[] {
       startDate,
       placeText: placeMatch?.[0] ?? "Hradec Králové",
       countryHint: "CZ",
-      discipline: ["kids", "xc"],
+      discipline: ["xco"],
       audience: "kids",
       categories: [
         { name: "200 m", distanceKm: 0.2, ageMin: 4, ageMax: 6 },

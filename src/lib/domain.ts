@@ -1,19 +1,13 @@
 import ngeohash from "ngeohash";
+import {
+  DISCIPLINES as TAXONOMY_DISCIPLINES,
+  type Discipline,
+  type AgeCategory,
+} from "@/lib/taxonomy";
 
 export type Audience = "kids" | "youth" | "adults" | "mixed";
-export type Discipline =
-  | "xc"
-  | "xcm"
-  | "road"
-  | "tt"
-  | "cx"
-  | "dh"
-  | "enduro"
-  | "gravel"
-  | "mtbo"
-  | "kids"
-  | "biathlon"
-  | "other";
+export type { Discipline, AgeCategory };
+export { TAXONOMY_DISCIPLINES as DISCIPLINES };
 
 export type ParsedCategory = {
   name: string;
@@ -78,20 +72,5 @@ export function slugifyEvent(name: string, startDate: string): string {
   const base = normalizeName(name).replace(/\s+/g, "-").slice(0, 60);
   return `${base}-${startDate}`.replace(/-+/g, "-");
 }
-
-export const DISCIPLINES: Discipline[] = [
-  "xc",
-  "xcm",
-  "road",
-  "tt",
-  "cx",
-  "dh",
-  "enduro",
-  "gravel",
-  "mtbo",
-  "kids",
-  "biathlon",
-  "other",
-];
 
 export const AUDIENCES: Audience[] = ["kids", "youth", "adults", "mixed"];

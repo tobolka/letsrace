@@ -16,12 +16,14 @@ export type EventListItem = {
   endDate: string | null;
   disciplines: string[];
   audience: string;
+  ageCategories: string[];
   status: string;
   websiteUrl: string | null;
   registrationUrl: string | null;
   sourceKind: string;
   level: string;
   classLabel: string | null;
+  uciClass: string | null;
   location: {
     id: string;
     name: string;
@@ -46,6 +48,7 @@ export type EventFilters = {
   audience?: string[];
   disciplines?: string[];
   levels?: string[];
+  ageCategories?: string[];
   seriesSlug?: string;
   dateFrom?: string;
   dateTo?: string;
@@ -59,10 +62,11 @@ export type EventFilters = {
 
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
   const supabase = createServerSupabase();
+  const { expandDisciplineFilter } = await import("@/lib/taxonomy");
   let query = supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, audience, status, website_url, registration_url, source_kind, level, class_label,
+      `id, slug, name, start_date, end_date, disciplines, audience, age_categories, status, website_url, registration_url, source_kind, level, class_label, uci_class,
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug),
        categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
@@ -78,10 +82,13 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     query = query.in("audience", filters.audience);
   }
   if (filters.disciplines?.length) {
-    query = query.overlaps("disciplines", filters.disciplines);
+    query = query.overlaps("disciplines", expandDisciplineFilter(filters.disciplines));
   }
   if (filters.levels?.length) {
     query = query.in("level", filters.levels);
+  }
+  if (filters.ageCategories?.length) {
+    query = query.overlaps("age_categories", filters.ageCategories);
   }
   if (filters.seriesSlug) {
     const { data: series } = await supabase
@@ -203,12 +210,14 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     endDate: row.end_date ? String(row.end_date) : null,
     disciplines: (row.disciplines as string[]) ?? [],
     audience: String(row.audience),
+    ageCategories: (row.age_categories as string[]) ?? [],
     status: String(row.status),
     websiteUrl: publicRaceUrl(row.website_url as string | null),
     registrationUrl: publicRaceUrl(row.registration_url as string | null),
     sourceKind: String(row.source_kind ?? "scraped"),
     level: String(row.level ?? "local"),
     classLabel: (row.class_label as string) ?? null,
+    uciClass: (row.uci_class as string) ?? null,
     location: location
       ? {
           id: String(location.id),

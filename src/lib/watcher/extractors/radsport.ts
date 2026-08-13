@@ -32,7 +32,7 @@ type ApiPage = {
 function mapCategory(cat?: string | null, secondary?: string[] | null, eventType?: string | null): Discipline[] {
   const blob = [cat, ...(secondary ?? []), eventType].filter(Boolean).join(" ").toUpperCase();
   const out = new Set<Discipline>();
-  if (/MTB|XCO|XCM|MOUNTAIN/.test(blob)) out.add(/XCM|MARATHON/.test(blob) ? "xcm" : "xc");
+  if (/MTB|XCO|XCM|MOUNTAIN/.test(blob)) out.add(/XCM|MARATHON/.test(blob) ? "xcm" : "xco");
   if (/GRAVEL/.test(blob)) out.add("gravel");
   if (/CX|CYCLO|QUER/.test(blob)) out.add("cx");
   if (/TT|ZEITFAHREN/.test(blob)) out.add("tt");

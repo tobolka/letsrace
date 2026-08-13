@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   const audience = sp.getAll("audience").filter(Boolean);
   const disciplines = sp.getAll("disciplines").filter(Boolean);
   const levels = sp.getAll("levels").filter(Boolean);
+  const ageCategories = sp.getAll("categories").filter(Boolean);
   let polygon: [number, number][] | undefined;
   const polygonRaw = sp.get("polygon");
   if (polygonRaw) {
@@ -20,6 +21,7 @@ export async function GET(req: NextRequest) {
     audience: audience.length ? audience : undefined,
     disciplines: disciplines.length ? disciplines : undefined,
     levels: levels.length ? levels : undefined,
+    ageCategories: ageCategories.length ? ageCategories : undefined,
     seriesSlug: sp.get("series") || undefined,
     dateFrom: sp.get("dateFrom") || undefined,
     dateTo: sp.get("dateTo") || undefined,
