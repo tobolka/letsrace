@@ -1,0 +1,2 @@
+-- Documented schema (already applied on Supabase project `startline`)
+-- See README for connection details.

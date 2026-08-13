@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/watch",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/geocode",
+      "schedule": "15 * * * *"
+    }
+  ]
+}
