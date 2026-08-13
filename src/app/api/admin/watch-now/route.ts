@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(new URL("/admin/login", req.url));
   }
   try {
-    await runDueWatches(5);
+    await runDueWatches(10, { concurrency: 3, budgetMs: 55_000 });
   } catch (e) {
     console.error(e);
   }

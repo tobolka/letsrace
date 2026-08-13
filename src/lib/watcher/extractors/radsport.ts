@@ -68,6 +68,9 @@ function toParsed(ev: ApiEvent): ParsedEvent | null {
       elevationM: d.elevationMeters != null ? Number(d.elevationMeters) : undefined,
     }));
 
+  const detailUrl = `https://radsport-events.de/events/${ev.id}`;
+  const organizer = (ev.organizerUrl || "").trim() || undefined;
+
   return {
     externalId: `radsport-${ev.id}-${startDate}`,
     name: ev.title.trim(),
@@ -80,8 +83,10 @@ function toParsed(ev: ApiEvent): ParsedEvent | null {
       ? "youth"
       : "mixed",
     categories: cats.length ? cats : undefined,
-    sourceUrl: `https://radsport-events.de/event/${ev.id}`,
-    registrationUrl: ev.organizerUrl || undefined,
+    sourceUrl: detailUrl,
+    // Prefer organizer site as the public website; fall back to Radsport detail page
+    websiteUrl: organizer || detailUrl,
+    registrationUrl: organizer,
     lat: ev.latitude ?? undefined,
     lng: ev.longitude ?? undefined,
     confidence: 0.9,

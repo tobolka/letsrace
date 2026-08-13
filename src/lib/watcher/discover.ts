@@ -12,6 +12,7 @@ function isJunkSumatorUrl(url: string): boolean {
     if (path === "/") return false;
     if (path.startsWith("/race/")) return false;
     if (path.startsWith("/races/")) return false;
+    if (path.startsWith("/cup/")) return false;
     // filter toggle URLs: /xc,dh,event,...
     if (/^\/[a-z0-9,]+$/i.test(path) && path.includes(",")) return true;
     if (/race_type_filter=/.test(u.search) && !path.startsWith("/race/")) return true;
@@ -40,8 +41,16 @@ export function discoverChildLinks(baseUrl: string, html: string): string[] {
     absolute = absolute.split("#")[0].replace(/\/$/, "") || absolute;
     if (isJunkSumatorUrl(absolute)) return;
 
-    // Sumator list pages already yield full event rows — don't flood with /race detail watches
+    // Sumator: follow cup/series calendars, not every /race detail
     if (host.includes("sumator.cz")) {
+      try {
+        const path = new URL(absolute).pathname;
+        if (path.startsWith("/cup/")) {
+          found.add(absolute.split("?")[0]);
+        }
+      } catch {
+        /* ignore */
+      }
       return;
     }
 

@@ -48,6 +48,10 @@ export async function extractWithAdapter(
     return { events, strategy: "adapter:hynek" };
   }
   if (host.includes("federciclismo.it")) {
+    // List calendar only — detail/ical pages are single-race and covered by the list crawl
+    if (/\/race\/detail\//i.test(url) || /\/race\/icald\//i.test(url)) {
+      return { events: [], strategy: "adapter:fci-skip-detail" };
+    }
     return { events: await parseFederciclismo(url, html), strategy: "adapter:fci" };
   }
   if (host.includes("velokal.de")) {
@@ -115,7 +119,9 @@ function parseKolopro(url: string, html: string): ParsedEvent[] {
   $("h2, h3, a").each((_, el) => {
     const name = $(el).text().replace(/\s+/g, " ").trim();
     if (!name || name.length < 8 || name.length > 100) return;
-    if (!/tour|maraton|trophy|mlýnice|ralsko|železné|znojmo/i.test(name)) return;
+    if (!/tour|maraton|trophy|mlýnice|ralsko|železné|znojmo|beroun|drásal|malevil|fanatik/i.test(name))
+      return;
+    if (/partneři|partneri|registruj|více informací|kategorie prestige/i.test(name)) return;
     events.push({
       externalId: `kolopro-${normalizeName(name)}`,
       name,
@@ -124,6 +130,8 @@ function parseKolopro(url: string, html: string): ParsedEvent[] {
       countryHint: "CZ",
       discipline: ["xcm"],
       audience: "mixed",
+      seriesName: "Kolo pro život",
+      seriesSlug: "kolo-pro-zivot",
       sourceUrl: url,
       confidence: 0.45,
     });

@@ -218,6 +218,21 @@ export function inferAgeCategories(
   return AGE_CATEGORIES.filter((c) => found.has(c));
 }
 
+/** Series that always include a kids / family programme (even if the race title omits it). */
+const FAMILY_OR_KIDS_SERIES =
+  /\bkolo\s*pro\s*(život|zivot)\b|\bkolopro\b|\btalent\s*cup\b|\bjunior\s*cup\b|\bprima\s*cup\b/i;
+
+/** Kids-first series (Talent Cup, Junior Cup) — not open adult marathons. */
+const KIDS_PRIMARY_SERIES = /\btalent\s*cup\b|\bjunior\s*cup\b/i;
+
+export function isFamilyOrKidsSeries(text: string | null | undefined): boolean {
+  return Boolean(text && FAMILY_OR_KIDS_SERIES.test(text));
+}
+
+export function isKidsPrimarySeries(text: string | null | undefined): boolean {
+  return Boolean(text && KIDS_PRIMARY_SERIES.test(text));
+}
+
 export function audienceFromAgeCategories(cats: AgeCategory[]): Audience {
   if (!cats.length) return "mixed";
   const hasKids = cats.includes("kids");
@@ -293,17 +308,39 @@ export type InferredClassification = {
 export function inferClassification(opts: {
   name: string;
   placeText?: string;
+  seriesName?: string | null;
+  seriesSlug?: string | null;
   disciplines?: string[] | null;
   categoryNames?: string[] | null;
   existingLevel?: string | null;
   existingClassLabel?: string | null;
+  existingAudience?: string | null;
 }): InferredClassification {
-  const text = `${opts.name} ${opts.placeText ?? ""} ${(opts.categoryNames ?? []).join(" ")} ${opts.existingClassLabel ?? ""}`;
+  const seriesBlob = `${opts.seriesName ?? ""} ${opts.seriesSlug ?? ""}`;
+  const text = `${opts.name} ${opts.placeText ?? ""} ${seriesBlob} ${(opts.categoryNames ?? []).join(" ")} ${opts.existingClassLabel ?? ""}`;
   const t = text.toLowerCase();
 
   const disciplines = inferDisciplines(text, opts.disciplines);
-  const ageCategories = inferAgeCategories(text, opts.categoryNames);
-  const audience = audienceFromAgeCategories(ageCategories);
+  const ageCategories = new Set(inferAgeCategories(text, opts.categoryNames));
+  if (opts.existingAudience === "kids") ageCategories.add("kids");
+  if (opts.existingAudience === "youth") ageCategories.add("youth");
+
+  const familySeries = isFamilyOrKidsSeries(`${opts.name} ${seriesBlob}`);
+  const kidsPrimary = isKidsPrimarySeries(`${opts.name} ${seriesBlob}`);
+  if (familySeries || kidsPrimary) ageCategories.add("kids");
+  // Open family series (Kolo pro život) also have adult hobby fields
+  if (familySeries && !kidsPrimary) {
+    if (![...ageCategories].some((c) => c === "elite" || c === "masters" || c === "u23")) {
+      ageCategories.add("masters");
+    }
+  }
+
+  const ageList = AGE_CATEGORIES.filter((c) => ageCategories.has(c));
+  let audience = ageList.length
+    ? audienceFromAgeCategories(ageList)
+    : ((opts.existingAudience as Audience) || "mixed");
+  if (kidsPrimary) audience = "kids";
+  else if (familySeries) audience = "mixed";
 
   let uciClass: UciClass | null = null;
   if (/\bhc\b|hors[\s-]?categorie|hors catégorie/.test(t)) uciClass = "hc";
@@ -347,8 +384,8 @@ export function inferClassification(opts: {
 
   return {
     disciplines,
-    ageCategories,
-    audience: ageCategories.length ? audience : "mixed",
+    ageCategories: ageList,
+    audience: ageList.length ? audience : opts.existingAudience === "adults" ? "adults" : audience,
     level,
     uciClass,
     classLabel,

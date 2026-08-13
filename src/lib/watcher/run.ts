@@ -5,7 +5,14 @@ import {
   slugifyEvent,
   type ParsedEvent,
 } from "@/lib/domain";
-import { extractEvents, fetchPage, nextPollAt } from "@/lib/watcher/core";
+import {
+  extractEvents,
+  fetchPage,
+  nextPollAt,
+  errorPollAt,
+  reviewPollAt,
+} from "@/lib/watcher/core";
+import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -20,23 +27,70 @@ export type WatchOutcome = {
   preview?: ParsedEvent[];
 };
 
-export async function runDueWatches(limit = 8): Promise<WatchOutcome[]> {
+const MAX_NEW_PER_RUN = 200;
+const MAX_NEW_PER_RUN_FCI = 400;
+const MAX_REFRESH_PER_RUN = 40;
+/** Soft claim window so overlapping crons don't double-process the same row. */
+const CLAIM_MS = 12 * 60 * 1000;
+/** Stay under typical serverless caps. */
+const DEFAULT_BUDGET_MS = 50_000;
+const DEFAULT_CONCURRENCY = 3;
+
+export async function runDueWatches(
+  limit = 12,
+  opts?: { concurrency?: number; budgetMs?: number },
+): Promise<WatchOutcome[]> {
   const supabase = createServerSupabase();
+  const nowIso = new Date().toISOString();
   const { data: due, error } = await supabase
     .from("watched_urls")
     .select("*")
     .eq("status", "active")
-    .lte("next_poll_at", new Date().toISOString())
+    .lte("next_poll_at", nowIso)
     .order("next_poll_at", { ascending: true })
     .limit(limit);
 
   if (error) throw new Error(error.message);
-  const outcomes: WatchOutcome[] = [];
+
+  // Optimistic lease: push next_poll_at forward; only winners keep the claim
+  const claimed: typeof due = [];
+  const claimUntil = new Date(Date.now() + CLAIM_MS).toISOString();
   for (const row of due ?? []) {
-    outcomes.push(await watchOne(row));
-    // polite delay between domains
-    await new Promise((r) => setTimeout(r, 1500));
+    const { data: won } = await supabase
+      .from("watched_urls")
+      .update({
+        next_poll_at: claimUntil,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", row.id)
+      .eq("status", "active")
+      .lte("next_poll_at", nowIso)
+      .select("id")
+      .maybeSingle();
+    if (won?.id) claimed.push(row);
   }
+
+  const deadline = Date.now() + (opts?.budgetMs ?? DEFAULT_BUDGET_MS);
+  const concurrency = opts?.concurrency ?? DEFAULT_CONCURRENCY;
+  const outcomes = await mapPool(claimed, concurrency, async (row) => {
+    if (Date.now() > deadline) {
+      // Release claim so another run can pick it up soon
+      await supabase
+        .from("watched_urls")
+        .update({ next_poll_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .eq("id", row.id);
+      return {
+        watchedUrlId: row.id,
+        url: row.url,
+        ok: false,
+        eventsUpserted: 0,
+        linksDiscovered: 0,
+        error: "time budget exceeded",
+      } satisfies WatchOutcome;
+    }
+    return watchOne(row);
+  });
+
   return outcomes;
 }
 
@@ -47,6 +101,7 @@ export async function watchOne(row: {
   last_modified?: string | null;
   content_hash?: string | null;
   kind?: string;
+  last_extract_status?: string | null;
 }): Promise<WatchOutcome> {
   const supabase = createServerSupabase();
   const runInsert = await supabase
@@ -99,6 +154,7 @@ export async function watchOne(row: {
           http_status: fetched.status,
           next_poll_at: nextPollAt().toISOString(),
           last_extract_status: "unchanged",
+          last_error: null,
           updated_at: new Date().toISOString(),
         })
         .eq("id", row.id);
@@ -119,7 +175,6 @@ export async function watchOne(row: {
     }
 
     const extracted = await extractEvents(row.url, fetched.html);
-    // Skip already-linked external IDs so large aggregators can finish across polls
     const { data: knownRows } = await supabase
       .from("event_sources")
       .select("external_id")
@@ -128,50 +183,73 @@ export async function watchOne(row: {
     const known = new Set(
       (knownRows ?? []).map((r) => r.external_id).filter((id): id is string => Boolean(id)),
     );
-    const MAX_NEW_PER_RUN = 280;
-    const fresh = extracted.events
-      .filter((ev) => ev.confidence >= 0.35 && (!ev.externalId || !known.has(ev.externalId)))
-      .slice(0, MAX_NEW_PER_RUN);
+
+    const candidates = extracted.events.filter((ev) => ev.confidence >= 0.35);
+    const maxNew =
+      extracted.strategy?.includes("fci") || row.url.includes("federciclismo")
+        ? MAX_NEW_PER_RUN_FCI
+        : MAX_NEW_PER_RUN;
+    const fresh = candidates
+      .filter((ev) => !ev.externalId || !known.has(ev.externalId))
+      .slice(0, maxNew);
+    // When page changed, refresh a sample of known races so updates land
+    const refresh = candidates
+      .filter((ev) => ev.externalId && known.has(ev.externalId))
+      .slice(0, MAX_REFRESH_PER_RUN);
+    const toUpsert = dedupeByExternalId([...fresh, ...refresh]);
 
     let upserted = 0;
-    for (const ev of fresh) {
-      const id = await upsertParsedEvent(ev, row.id);
-      if (id) upserted += 1;
-    }
+    // Bounded parallelism for DB upserts (same-host sources stay polite upstream)
+    const upsertResults = await mapPool(toUpsert, 4, async (ev) => upsertParsedEvent(ev, row.id));
+    upserted = upsertResults.filter(Boolean).length;
 
     let linksDiscovered = 0;
     for (const child of extracted.childUrls) {
-      const sameHost = new URL(child).hostname === new URL(row.url).hostname;
-      const isSeriesPage =
-        child.includes("serialosss=") ||
-        /\/cup\//i.test(child) ||
-        /\/serie/i.test(child);
-      if (sameHost && (row.kind === "series" || row.kind === "federation" || row.kind === "aggregator")) {
-        const { error } = await supabase.from("watched_urls").upsert(
-          {
-            url: child,
-            kind: isSeriesPage ? "series" : "race",
-            parent_id: row.id,
-            status: "active",
-            added_by: "auto-same-domain",
-            notes: isSeriesPage ? "Series page discovered from calendar" : null,
-            next_poll_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "url", ignoreDuplicates: true },
-        );
-        if (!error) linksDiscovered += 1;
-      } else {
-        const { error } = await supabase.from("discovered_links").upsert(
-          {
-            url: child,
-            from_watched_url_id: row.id,
-            status: "pending",
-            hint_kind: "race",
-          },
-          { onConflict: "url", ignoreDuplicates: true },
-        );
-        if (!error) linksDiscovered += 1;
+      try {
+        const sameHost = hostnameOf(child) === hostnameOf(row.url);
+        const isSeriesPage =
+          child.includes("serialosss=") ||
+          /\/cup\//i.test(child) ||
+          /\/serie/i.test(child);
+        if (
+          sameHost &&
+          (row.kind === "series" || row.kind === "federation" || row.kind === "aggregator")
+        ) {
+          // FCI /race/detail and ical feeds are covered by the list crawl — don't enqueue them
+          if (
+            hostnameOf(child).includes("federciclismo.it") &&
+            (/\/race\/detail\//i.test(child) || /\/race\/icald\//i.test(child))
+          ) {
+            continue;
+          }
+          const { error } = await supabase.from("watched_urls").upsert(
+            {
+              url: child,
+              kind: isSeriesPage ? "series" : "race",
+              parent_id: row.id,
+              status: "active",
+              added_by: "auto-same-domain",
+              notes: isSeriesPage ? "Series page discovered from calendar" : null,
+              next_poll_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "url", ignoreDuplicates: true },
+          );
+          if (!error) linksDiscovered += 1;
+        } else {
+          const { error } = await supabase.from("discovered_links").upsert(
+            {
+              url: child,
+              from_watched_url_id: row.id,
+              status: "pending",
+              hint_kind: "race",
+            },
+            { onConflict: "url", ignoreDuplicates: true },
+          );
+          if (!error) linksDiscovered += 1;
+        }
+      } catch {
+        /* ignore bad child URLs */
       }
     }
 
@@ -187,21 +265,23 @@ export async function watchOne(row: {
         last_changed_at: new Date().toISOString(),
         last_error: needsReview ? "low confidence or empty extract" : null,
         last_extract_status: needsReview ? "needs_review" : "ok",
-        status: needsReview ? "needs_review" : "active",
-        next_poll_at: nextPollAt(extracted.events[0]?.startDate).toISOString(),
+        // Stay active — retry later instead of permanent pause
+        status: "active",
+        next_poll_at: needsReview
+          ? reviewPollAt().toISOString()
+          : extracted.strategy?.includes("fci")
+            ? // Rotate month windows every ~2h until season is filled
+              new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+            : nextPollAt(extracted.events[0]?.startDate).toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", row.id);
 
     if (extracted.strategy.startsWith("adapter") || extracted.strategy === "jsonld") {
-      const host = new URL(row.url).hostname.replace(/^www\./, "");
-      await supabase.from("extraction_profiles").insert({
-        host,
-        strategy: extracted.strategy,
-        recipe: { source: extracted.strategy },
-        success_count: 1,
-        last_success_at: new Date().toISOString(),
-      });
+      await bumpExtractionProfile(
+        hostnameOf(row.url),
+        extracted.strategy,
+      );
     }
 
     await finishRun(runInsert.data?.id, {
@@ -224,13 +304,14 @@ export async function watchOne(row: {
     };
   } catch (e) {
     const message = e instanceof Error ? e.message : "unknown error";
+    const priorFail = row.last_extract_status === "error" ? 2 : 1;
     await supabase
       .from("watched_urls")
       .update({
         last_error: message,
         last_extract_status: "error",
         last_fetched_at: new Date().toISOString(),
-        next_poll_at: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+        next_poll_at: errorPollAt(priorFail).toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", row.id);
@@ -243,6 +324,47 @@ export async function watchOne(row: {
       linksDiscovered: 0,
       error: message,
     };
+  }
+}
+
+function dedupeByExternalId(events: ParsedEvent[]): ParsedEvent[] {
+  const seen = new Set<string>();
+  const out: ParsedEvent[] = [];
+  for (const ev of events) {
+    const key = ev.externalId || `${ev.startDate}:${normalizeName(ev.name)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(ev);
+  }
+  return out;
+}
+
+async function bumpExtractionProfile(host: string, strategy: string) {
+  const supabase = createServerSupabase();
+  const { data: existing } = await supabase
+    .from("extraction_profiles")
+    .select("id, success_count")
+    .eq("host", host)
+    .eq("strategy", strategy)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (existing?.id) {
+    await supabase
+      .from("extraction_profiles")
+      .update({
+        success_count: (existing.success_count ?? 0) + 1,
+        last_success_at: new Date().toISOString(),
+      })
+      .eq("id", existing.id);
+  } else {
+    await supabase.from("extraction_profiles").insert({
+      host,
+      strategy,
+      recipe: { source: strategy },
+      success_count: 1,
+      last_success_at: new Date().toISOString(),
+    });
   }
 }
 
@@ -282,13 +404,17 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     lng: ev.lng,
   });
   const { inferClassification } = await import("@/lib/taxonomy");
-  const { isLikelyDuplicate } = await import("@/lib/dedup");
+  const { isLikelyDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
+    await import("@/lib/dedup");
   const { publicRaceUrl } = await import("@/lib/watcher/public-url");
   const classified = inferClassification({
     name: ev.name,
     placeText: ev.placeText,
+    seriesName: ev.seriesName,
+    seriesSlug: ev.seriesSlug,
     disciplines: ev.discipline,
     categoryNames: (ev.categories ?? []).map((c) => c.name),
+    existingAudience: ev.audience,
   });
   const levelInfo = {
     level: classified.level,
@@ -303,39 +429,175 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     : ev.audience ?? "mixed";
   const ageCategories = classified.ageCategories;
 
+  const incomingWebsite = publicRaceUrl(ev.websiteUrl, ev.sourceUrl);
+  const incomingRegistration = publicRaceUrl(ev.registrationUrl);
+  const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(Boolean);
+
   // 1) exact fingerprint
   let existingId: string | undefined;
   const { data: byFp } = await supabase
     .from("events")
-    .select("id, name, start_date, fingerprint, location:locations(lat, lng), overrides:event_overrides(locked_fields)")
+    .select(
+      "id, name, start_date, end_date, fingerprint, website_url, registration_url, location:locations(lat, lng, name, municipality), overrides:event_overrides(locked_fields)",
+    )
     .eq("fingerprint", fp)
     .maybeSingle();
   existingId = byFp?.id;
 
-  // 2) soft dedup: same day + similar name / nearby
+  // 1b) same specific website / race-detail URL (strong signal)
   if (!existingId) {
-    const { data: sameDay } = await supabase
+    const exactUrls = [incomingWebsite, incomingRegistration].filter(
+      (u): u is string => Boolean(u && normalizeUrlForDedup(u)),
+    );
+    for (const url of exactUrls) {
+      const { data: bySite } = await supabase
+        .from("events")
+        .select(
+          "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality)",
+        )
+        .eq("website_url", url)
+        .limit(8);
+      const { data: byReg } = await supabase
+        .from("events")
+        .select(
+          "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality)",
+        )
+        .eq("registration_url", url)
+        .limit(8);
+      for (const row of [...(bySite ?? []), ...(byReg ?? [])]) {
+        const loc = row.location as {
+          lat?: number;
+          lng?: number;
+          name?: string;
+          municipality?: string;
+        } | null;
+        if (
+          isLikelyDuplicate(
+            {
+              startDate: ev.startDate,
+              endDate: ev.endDate ?? ev.startDate,
+              name: ev.name,
+              lat: ev.lat,
+              lng: ev.lng,
+              placeText: ev.placeText,
+              urls: incomingUrls,
+            },
+            {
+              startDate: row.start_date,
+              endDate: row.end_date,
+              name: row.name,
+              lat: loc?.lat,
+              lng: loc?.lng,
+              placeText: loc?.municipality || loc?.name,
+              urls: [row.website_url, row.registration_url],
+            },
+          )
+        ) {
+          existingId = row.id;
+          break;
+        }
+      }
+      if (existingId) break;
+    }
+
+    if (!existingId && ev.sourceUrl && normalizeUrlForDedup(ev.sourceUrl)) {
+      const { data: bySrc } = await supabase
+        .from("event_sources")
+        .select(
+          "event_id, source_url, event:events(id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality))",
+        )
+        .eq("source_url", ev.sourceUrl)
+        .limit(5);
+      for (const row of bySrc ?? []) {
+        const rawEvent = row.event as unknown;
+        const evRow = (Array.isArray(rawEvent) ? rawEvent[0] : rawEvent) as {
+          id: string;
+          name: string;
+          start_date: string;
+          end_date?: string;
+          website_url?: string;
+          registration_url?: string;
+          location?: { lat?: number; lng?: number; name?: string; municipality?: string } | null;
+        } | null;
+        if (!evRow?.id) continue;
+        if (
+          isLikelyDuplicate(
+            {
+              startDate: ev.startDate,
+              endDate: ev.endDate ?? ev.startDate,
+              name: ev.name,
+              lat: ev.lat,
+              lng: ev.lng,
+              placeText: ev.placeText,
+              urls: incomingUrls,
+            },
+            {
+              startDate: evRow.start_date,
+              endDate: evRow.end_date,
+              name: evRow.name,
+              lat: evRow.location?.lat,
+              lng: evRow.location?.lng,
+              placeText: evRow.location?.municipality || evRow.location?.name,
+              urls: [evRow.website_url, evRow.registration_url, row.source_url],
+            },
+          )
+        ) {
+          existingId = evRow.id;
+          break;
+        }
+      }
+    }
+  }
+
+  // 2) soft dedup: multi-signal (name + day/weekend + place + urls)
+  if (!existingId) {
+    const day = ev.startDate.slice(0, 10);
+    const prev = new Date(`${day}T12:00:00Z`);
+    prev.setUTCDate(prev.getUTCDate() - 1);
+    const next = new Date(`${day}T12:00:00Z`);
+    next.setUTCDate(next.getUTCDate() + 1);
+    const from = prev.toISOString().slice(0, 10);
+    const to = next.toISOString().slice(0, 10);
+
+    const { data: nearbyDays } = await supabase
       .from("events")
-      .select("id, name, start_date, fingerprint, location:locations(lat, lng)")
-      .eq("start_date", ev.startDate)
-      .limit(80);
-    for (const row of sameDay ?? []) {
-      const loc = row.location as { lat?: number; lng?: number } | null;
+      .select(
+        "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, location:locations(lat, lng, name, municipality), sources:event_sources(source_url)",
+      )
+      .gte("start_date", from)
+      .lte("start_date", to)
+      .neq("status", "cancelled")
+      .limit(120);
+
+    for (const row of nearbyDays ?? []) {
+      const loc = row.location as {
+        lat?: number;
+        lng?: number;
+        name?: string;
+        municipality?: string;
+      } | null;
+      const srcs = (row.sources as { source_url?: string }[] | null) ?? [];
       if (
         isLikelyDuplicate(
           {
             startDate: ev.startDate,
+            endDate: ev.endDate ?? ev.startDate,
             name: ev.name,
             lat: ev.lat,
             lng: ev.lng,
+            placeText: ev.placeText,
             fingerprint: fp,
+            urls: incomingUrls,
           },
           {
             startDate: row.start_date,
+            endDate: row.end_date,
             name: row.name,
             lat: loc?.lat,
             lng: loc?.lng,
+            placeText: loc?.municipality || loc?.name,
             fingerprint: row.fingerprint,
+            urls: [row.website_url, row.registration_url, ...srcs.map((s) => s.source_url)],
           },
         )
       ) {
@@ -348,7 +610,9 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
   const { data: existingFull } = existingId
     ? await supabase
         .from("events")
-        .select("id, overrides:event_overrides(locked_fields)")
+        .select(
+          "id, name, start_date, end_date, level, uci_class, class_label, overrides:event_overrides(locked_fields)",
+        )
         .eq("id", existingId)
         .maybeSingle()
     : { data: byFp };
@@ -359,6 +623,20 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
   const lockedFields = Array.isArray(locked)
     ? locked[0]?.locked_fields ?? []
     : locked?.locked_fields ?? [];
+
+  const { shouldIngestByCountry, isRoughlyInEurope } = await import("@/lib/geo/europe");
+  // Drop explicit non-European races early (before locations / geocode queue)
+  if (ev.countryHint && !shouldIngestByCountry(ev.countryHint)) {
+    return null;
+  }
+  if (
+    ev.lat != null &&
+    ev.lng != null &&
+    !ev.countryHint &&
+    !isRoughlyInEurope(ev.lat, ev.lng)
+  ) {
+    return null;
+  }
 
   let locationId: string | null = null;
   if (ev.placeText) {
@@ -385,48 +663,134 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
       }
     }
 
-    const { data: loc } = await supabase
+    if (!shouldIngestByCountry(country)) {
+      return null;
+    }
+
+    // Reuse an existing location with same query + country (cuts geocode queue growth)
+    const { data: reused } = await supabase
       .from("locations")
-      .insert({
-        name: ev.placeText,
-        municipality: geocodeQuery,
-        country_code: country,
-        lat,
-        lng,
-        geocode_query: geocodeQuery,
-        geocode_status: geocodeStatus,
-      })
-      .select("id")
-      .single();
-    locationId = loc?.id ?? null;
-    if (locationId && lat != null && lng != null) {
-      await supabase.rpc("set_location_geog", {
-        loc_id: locationId,
-        lng,
-        lat,
-      });
+      .select("id, lat, lng")
+      .eq("geocode_query", geocodeQuery)
+      .eq("country_code", country)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (reused?.id) {
+      locationId = reused.id;
+      if (reused.lat == null && lat != null && lng != null) {
+        await supabase
+          .from("locations")
+          .update({
+            lat,
+            lng,
+            geocode_status: "ok",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", reused.id);
+        await supabase.rpc("set_location_geog", {
+          loc_id: reused.id,
+          lng,
+          lat,
+        });
+      }
+    } else {
+      const { data: loc } = await supabase
+        .from("locations")
+        .insert({
+          name: ev.placeText,
+          municipality: geocodeQuery,
+          country_code: country,
+          lat,
+          lng,
+          geocode_query: geocodeQuery,
+          geocode_status: geocodeStatus,
+        })
+        .select("id")
+        .single();
+      locationId = loc?.id ?? null;
+      if (locationId && lat != null && lng != null) {
+        await supabase.rpc("set_location_geog", {
+          loc_id: locationId,
+          lng,
+          lat,
+        });
+      }
     }
   }
 
-  const website = publicRaceUrl(ev.websiteUrl, ev.sourceUrl);
-  const registration = publicRaceUrl(ev.registrationUrl);
+  const website = incomingWebsite;
+  const registration = incomingRegistration;
+  const { isNonRaceEventName } = await import("@/lib/event-visibility");
+  const hideAsNonRace = isNonRaceEventName(ev.name);
+
+  const existingRow = existingFull as {
+    id?: string;
+    name?: string;
+    start_date?: string;
+    end_date?: string;
+    level?: string;
+    uci_class?: string | null;
+    class_label?: string | null;
+  } | null;
+
+  let mergedName = ev.name;
+  let mergedStart = ev.startDate;
+  let mergedEnd = ev.endDate ?? ev.startDate;
+  let mergedLevel: { level: string; uciClass: string | null; classLabel: string | null } = {
+    level: levelInfo.level,
+    uciClass: levelInfo.uciClass,
+    classLabel: levelInfo.classLabel,
+  };
+
+  if (existingId && existingRow?.start_date) {
+    const span = mergeDateSpan(
+      { startDate: existingRow.start_date, endDate: existingRow.end_date },
+      { startDate: ev.startDate, endDate: ev.endDate ?? ev.startDate },
+    );
+    mergedStart = span.startDate;
+    mergedEnd = span.endDate;
+    mergedName = preferEventName(existingRow.name || ev.name, ev.name);
+    mergedLevel = preferLevel(
+      {
+        level: existingRow.level,
+        uciClass: existingRow.uci_class,
+        classLabel: existingRow.class_label,
+      },
+      {
+        level: levelInfo.level,
+        uciClass: levelInfo.uciClass,
+        classLabel: levelInfo.classLabel,
+      },
+    );
+  }
 
   const payload: Record<string, unknown> = {
-    name: ev.name,
-    name_normalized: normalizeName(ev.name),
-    start_date: ev.startDate,
-    end_date: ev.endDate ?? ev.startDate,
+    name: mergedName,
+    name_normalized: normalizeName(mergedName),
+    start_date: mergedStart,
+    end_date: mergedEnd,
     disciplines,
     audience,
     age_categories: ageCategories,
-    fingerprint: fp,
+    fingerprint: fingerprint({
+      startDate: mergedStart,
+      name: mergedName,
+      lat: ev.lat,
+      lng: ev.lng,
+    }),
     source_kind: "scraped",
-    level: levelInfo.level,
-    class_label: levelInfo.classLabel ?? null,
-    uci_class: levelInfo.uciClass ?? null,
+    level: mergedLevel.level,
+    class_label: mergedLevel.classLabel ?? null,
+    uci_class: mergedLevel.uciClass ?? null,
     last_seen_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
+
+  if (hideAsNonRace && !lockedFields.includes("status")) {
+    payload.status = "hidden";
+  }
 
   // Only write website/registration when we have a real race URL (never wipe with aggregator)
   if (website) payload.website_url = website;

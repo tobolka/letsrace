@@ -601,8 +601,18 @@ export async function geocodePendingFromGazetteer(): Promise<GeocodeBatchResult>
   const result: GeocodeBatchResult = { attempted: 0, updated: 0, failed: 0, skipped: 0 };
   const byQuery = new Map<string, { geo: GeocodeResult; ids: string[] }>();
 
+  const { shouldIngestByCountry } = await import("@/lib/geo/europe");
+
   for (const row of rows ?? []) {
     result.attempted += 1;
+    if (!shouldIngestByCountry(row.country_code)) {
+      await supabase
+        .from("locations")
+        .update({ geocode_status: "skipped", updated_at: new Date().toISOString() })
+        .eq("id", row.id);
+      result.skipped += 1;
+      continue;
+    }
     const raw = (row.geocode_query || row.municipality || row.name || "").trim();
     const geo = geocodeFromGazetteer(raw, row.country_code);
     if (!geo) continue;
@@ -671,8 +681,18 @@ export async function geocodePendingLocations(
   let nominatimCalls = 0;
   const nominatimBudget = Math.min(limit, 25);
 
+  const { shouldIngestByCountry } = await import("@/lib/geo/europe");
+
   for (const row of rows ?? []) {
     if (nominatimCalls >= nominatimBudget) break;
+    if (!shouldIngestByCountry(row.country_code)) {
+      await supabase
+        .from("locations")
+        .update({ geocode_status: "skipped", updated_at: new Date().toISOString() })
+        .eq("id", row.id);
+      result.skipped += 1;
+      continue;
+    }
     const raw = (row.geocode_query || row.municipality || row.name || "").trim();
     const { query, countryCode } = cleanGeocodeQuery(raw, row.country_code);
     if (!query) {

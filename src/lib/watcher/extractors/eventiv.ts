@@ -1,5 +1,6 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { shouldIngestByCountry } from "@/lib/geo/europe";
 
 type MapFeature = {
   type: string;
@@ -433,13 +434,24 @@ function toParsed(f: MapFeature): ParsedEvent | null {
     ? `https://eventivsport.com/events/${p.slug}`
     : "https://eventivsport.com/map";
   const websiteUrl = p.website_url || undefined;
+  const cc = countryCode(p.country) || countryCode(place);
+  if (cc && !shouldIngestByCountry(cc)) return null;
+  // No country but clearly outside Europe (Eventiv is global)
+  if (
+    !cc &&
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    (lat < 34 || lat > 72 || lng < -31 || lng > 60)
+  ) {
+    return null;
+  }
 
   return {
     externalId: `eventiv-${id}-${startDate}`,
     name: p.title.trim(),
     startDate,
     placeText: place.slice(0, 100),
-    countryHint: countryCode(p.country) || countryCode(place),
+    countryHint: cc,
     discipline: [disc],
     audience: /kids|junior|youth|u1[0-9]|žák|deti/i.test(p.title) ? "youth" : "mixed",
     sourceUrl,

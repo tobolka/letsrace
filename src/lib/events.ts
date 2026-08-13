@@ -63,16 +63,38 @@ export type EventFilters = {
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
   const supabase = createServerSupabase();
   const { expandDisciplineFilter } = await import("@/lib/taxonomy");
+  const { EUROPE_COUNTRY_CODES, isEuropeanCountry } = await import("@/lib/geo/europe");
+
+  const hasBbox =
+    filters.west != null &&
+    filters.south != null &&
+    filters.east != null &&
+    filters.north != null;
+  // Without bbox, unfiltered Europe is huge — keep a higher cap but prefer bbox queries.
+  const limit = hasBbox ? 1200 : 800;
+
   let query = supabase
     .from("events")
     .select(
       `id, slug, name, start_date, end_date, disciplines, audience, age_categories, status, website_url, registration_url, source_kind, level, class_label, uci_class,
-       location:locations(id, name, municipality, country_code, lat, lng),
+       location:locations!inner(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug),
        categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
     )
+    .in("location.country_code", [...EUROPE_COUNTRY_CODES])
     .order("start_date", { ascending: true })
-    .limit(300);
+    .limit(limit);
+
+  // Apply map viewport in SQL *before* the limit so off-map races can't starve the list
+  if (hasBbox) {
+    query = query
+      .gte("location.lat", filters.south!)
+      .lte("location.lat", filters.north!)
+      .gte("location.lng", filters.west!)
+      .lte("location.lng", filters.east!)
+      .not("location.lat", "is", null)
+      .not("location.lng", "is", null);
+  }
 
   if (filters.dateFrom) query = query.gte("start_date", filters.dateFrom);
   if (filters.dateTo) query = query.lte("start_date", filters.dateTo);
@@ -103,13 +125,31 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     }
   }
   if (filters.q) {
-    query = query.ilike("name", `%${filters.q}%`);
+    const q = filters.q.trim().replace(/[%_,.()]/g, " ").replace(/\s+/g, " ").trim();
+    if (q) {
+      const { data: seriesHits } = await supabase
+        .from("series")
+        .select("id")
+        .ilike("name", `%${q}%`);
+      const seriesIds = (seriesHits ?? []).map((s) => s.id as string);
+      if (seriesIds.length) {
+        query = query.or(`name.ilike.%${q}%,series_id.in.(${seriesIds.join(",")})`);
+      } else {
+        query = query.ilike("name", `%${q}%`);
+      }
+    }
   }
+
+  // Public explore: races only (hide camps, cancelled, manually hidden)
+  const { PUBLIC_EVENT_STATUSES } = await import("@/lib/event-visibility");
+  query = query.in("status", [...PUBLIC_EVENT_STATUSES]);
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
 
-  let rows = (data ?? []).map(mapEventRow);
+  let rows = (data ?? [])
+    .map(mapEventRow)
+    .filter((e) => isEuropeanCountry(e.location?.countryCode));
 
   if (
     filters.west != null &&
@@ -117,6 +157,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     filters.east != null &&
     filters.north != null
   ) {
+    // Keep as safety net if nested PostgREST geo filters are ignored
     rows = rows.filter((e) => {
       const lat = e.location?.lat;
       const lng = e.location?.lng;
@@ -427,11 +468,23 @@ export async function updateEventFields(
   if (error) throw new Error(error.message);
 
   if (lock) {
+    const { data: existing } = await supabase
+      .from("event_overrides")
+      .select("locked_fields, fields")
+      .eq("event_id", eventId)
+      .maybeSingle();
+    const prevLocked = (existing?.locked_fields as string[] | null) ?? [];
+    const nextKeys = Object.keys(payload).filter((k) => k !== "updated_at");
+    const locked = [...new Set([...prevLocked, ...nextKeys])];
+    const prevFields =
+      existing?.fields && typeof existing.fields === "object"
+        ? (existing.fields as Record<string, unknown>)
+        : {};
     await supabase.from("event_overrides").upsert(
       {
         event_id: eventId,
-        fields: payload,
-        locked_fields: Object.keys(payload).filter((k) => k !== "updated_at"),
+        fields: { ...prevFields, ...payload },
+        locked_fields: locked,
         updated_by: "admin",
         updated_at: new Date().toISOString(),
       },

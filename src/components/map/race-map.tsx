@@ -11,8 +11,8 @@ import {
   type PaddingOptions,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { LocateFixed, Loader2 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
+import { levelColor } from "@/lib/map-visuals";
 
 type Props = {
   events: EventListItem[];
@@ -51,19 +51,17 @@ const RASTER_STYLE: StyleSpecification = {
   layers: [{ id: "carto", type: "raster", source: "carto" }],
 };
 
-function pinColor(audience: string) {
-  if (audience === "kids") return "#ea580c";
-  if (audience === "adults") return "#1e293b";
-  return "#475569";
-}
-
 function makePinElement(event: EventListItem, selected: boolean) {
   const wrap = document.createElement("button");
   wrap.type = "button";
   wrap.className = "startline-map-pin";
   wrap.setAttribute("aria-label", event.name);
   wrap.dataset.eventId = event.id;
-  const size = selected ? 28 : 20;
+  wrap.dataset.level = event.level || "local";
+
+  const size = selected ? 14 : 10;
+  const color = levelColor(event.level);
+
   wrap.style.cssText = [
     "display:block",
     `width:${size}px`,
@@ -71,34 +69,47 @@ function makePinElement(event: EventListItem, selected: boolean) {
     "padding:0",
     "margin:0",
     "border-radius:9999px",
-    `background:${pinColor(event.audience)}`,
-    "border:3px solid #fff",
-    "box-shadow:0 2px 10px rgba(0,0,0,.5)",
+    `background:${color}`,
+    "border:1.5px solid #fff",
+    "box-shadow:0 1px 2px rgba(0,0,0,.28)",
     "cursor:pointer",
     "appearance:none",
     "-webkit-appearance:none",
+    "transition:transform 120ms ease",
+    selected ? "transform:scale(1.35)" : "transform:none",
   ].join(";");
+
   return wrap;
 }
 
 function makeUserLocationElement() {
   const wrap = document.createElement("div");
   wrap.className = "startline-user-location";
-  wrap.setAttribute("aria-hidden", "true");
+  wrap.setAttribute("aria-label", "Your location");
   wrap.style.cssText = [
     "position:relative",
-    "width:22px",
-    "height:22px",
+    "width:18px",
+    "height:18px",
     "pointer-events:none",
+    "z-index:5",
   ].join(";");
 
   const pulse = document.createElement("span");
   pulse.style.cssText = [
     "position:absolute",
-    "inset:-10px",
+    "inset:-14px",
     "border-radius:9999px",
-    "background:rgba(26,115,232,.28)",
+    "background:rgba(26,115,232,.25)",
     "animation:startline-loc-pulse 2.2s ease-out infinite",
+  ].join(";");
+
+  const ring = document.createElement("span");
+  ring.style.cssText = [
+    "position:absolute",
+    "inset:-4px",
+    "border-radius:9999px",
+    "border:2px solid rgba(26,115,232,.45)",
+    "background:transparent",
   ].join(";");
 
   const dot = document.createElement("span");
@@ -107,16 +118,74 @@ function makeUserLocationElement() {
     "inset:0",
     "border-radius:9999px",
     "background:#1a73e8",
-    "border:3px solid #fff",
-    "box-shadow:0 1px 6px rgba(0,0,0,.35)",
+    "border:2.5px solid #fff",
+    "box-shadow:0 1px 8px rgba(0,0,0,.4)",
   ].join(";");
 
   wrap.appendChild(pulse);
+  wrap.appendChild(ring);
   wrap.appendChild(dot);
   return wrap;
 }
 
+function upsertUserMarker(
+  map: Map,
+  markerRef: { current: Marker | null },
+  pos: { lng: number; lat: number },
+) {
+  if (!markerRef.current) {
+    markerRef.current = new Marker({
+      element: makeUserLocationElement(),
+      anchor: "center",
+      className: "startline-user-marker",
+    })
+      .setLngLat([pos.lng, pos.lat])
+      .addTo(map);
+  } else {
+    markerRef.current.setLngLat([pos.lng, pos.lat]).addTo(map);
+  }
+  // Keep the blue dot above race pins
+  const el = markerRef.current.getElement();
+  el.style.zIndex = "5";
+}
+
+const GEO_OPTS_FAST: PositionOptions = {
+  enableHighAccuracy: false,
+  maximumAge: 60_000,
+  timeout: 12_000,
+};
+const GEO_OPTS_PRECISE: PositionOptions = {
+  enableHighAccuracy: true,
+  maximumAge: 10_000,
+  timeout: 20_000,
+};
+
 const DEFAULT_PADDING: PaddingOptions = { top: 72, bottom: 56, left: 56, right: 56 };
+/** Default map view: user location with ~200 km radius. */
+const DEFAULT_RADIUS_KM = 200;
+const FALLBACK_CENTER: [number, number] = [15.5, 49.75]; // Czechia
+
+function boundsAround(lng: number, lat: number, radiusKm: number): LngLatBounds {
+  const dLat = radiusKm / 111;
+  const cos = Math.cos((lat * Math.PI) / 180);
+  const dLng = radiusKm / (111 * Math.max(cos, 0.2));
+  return new LngLatBounds([lng - dLng, lat - dLat], [lng + dLng, lat + dLat]);
+}
+
+function fitRadius(
+  map: Map,
+  lng: number,
+  lat: number,
+  radiusKm: number,
+  padding: PaddingOptions,
+  duration = 0,
+) {
+  map.fitBounds(boundsAround(lng, lat, radiusKm), {
+    padding,
+    duration,
+    maxZoom: 9,
+  });
+}
 
 export function RaceMap({
   events,
@@ -135,7 +204,8 @@ export function RaceMap({
   const markersRef = useRef<Marker[]>([]);
   const userMarkerRef = useRef<Marker | null>(null);
   const watchIdRef = useRef<number | null>(null);
-  const fittedRef = useRef(false);
+  const locateBtnRef = useRef<HTMLButtonElement | null>(null);
+  const initialViewDoneRef = useRef(false);
   const userMovedRef = useRef(false);
   const onSelectRef = useRef(onSelect);
   const onBoundsChangeRef = useRef(onBoundsChange);
@@ -150,6 +220,26 @@ export function RaceMap({
   onSelectRef.current = onSelect;
   onBoundsChangeRef.current = onBoundsChange;
   paddingRef.current = padding;
+
+  const goToMyLocationRef = useRef<() => void>(() => {});
+
+  function emitBounds(map: Map) {
+    const b = map.getBounds();
+    onBoundsChangeRef.current({
+      west: b.getWest(),
+      south: b.getSouth(),
+      east: b.getEast(),
+      north: b.getNorth(),
+    });
+  }
+
+  function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
+    if (initialViewDoneRef.current || userMovedRef.current) return;
+    fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
+    initialViewDoneRef.current = true;
+    // Let the camera settle, then sync list filters to this area
+    window.setTimeout(() => emitBounds(map), duration + 50);
+  }
 
   useEffect(() => {
     const el = containerRef.current;
@@ -167,6 +257,20 @@ export function RaceMap({
         @media (prefers-reduced-motion: reduce) {
           .startline-user-location span:first-child { animation: none !important; opacity: 0.35; }
         }
+        .maplibregl-ctrl-bottom-right {
+          display: flex;
+          flex-direction: column-reverse;
+          align-items: flex-end;
+          gap: 8px;
+          margin: 0 10px 10px 0 !important;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl {
+          margin: 0 !important;
+        }
+        .maplibregl-marker.startline-user-marker {
+          z-index: 5 !important;
+          overflow: visible !important;
+        }
       `;
       document.head.appendChild(style);
     }
@@ -174,15 +278,54 @@ export function RaceMap({
     const map = new MapLibreMap({
       container: el,
       style: RASTER_STYLE,
-      center: [15.5, 49.75],
-      zoom: 6.4,
+      center: FALLBACK_CENTER,
+      zoom: 7,
       attributionControl: { compact: true },
     });
     mapRef.current = map;
-    fittedRef.current = false;
+    initialViewDoneRef.current = false;
     (window as unknown as { __startlineMap?: Map }).__startlineMap = map;
+
+    // Zoom + locate stacked in the same MapLibre corner (no overlap)
     map.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
+
+    const locateCtrl = {
+      onAdd() {
+        const container = document.createElement("div");
+        container.className = "maplibregl-ctrl maplibregl-ctrl-group";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "startline-locate-ctrl";
+        btn.setAttribute("aria-label", myLocationLabel);
+        btn.title = myLocationLabel;
+        btn.style.cssText =
+          "display:flex;align-items:center;justify-content:center;width:29px;height:29px;cursor:pointer;background:#fff;border:0;padding:0;";
+        btn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
+        locateBtnRef.current = btn;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          goToMyLocationRef.current();
+        });
+        container.appendChild(btn);
+        return container;
+      },
+      onRemove() {
+        locateBtnRef.current = null;
+      },
+    };
+    map.addControl(locateCtrl, "bottom-right");
     setMapEpoch((n) => n + 1);
+
+    // Fallback view: Czechia ~200 km until GPS arrives
+    map.once("load", () => {
+      if (!initialViewDoneRef.current) {
+        fitRadius(map, FALLBACK_CENTER[0], FALLBACK_CENTER[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
+        // Don't lock initialViewDone yet — GPS can still refine once
+        window.setTimeout(() => emitBounds(map), 80);
+      }
+    });
 
     map.on("dragstart", () => {
       userMovedRef.current = true;
@@ -192,13 +335,7 @@ export function RaceMap({
     });
     map.on("moveend", () => {
       if (!userMovedRef.current) return;
-      const b = map.getBounds();
-      onBoundsChangeRef.current({
-        west: b.getWest(),
-        south: b.getSouth(),
-        east: b.getEast(),
-        north: b.getNorth(),
-      });
+      emitBounds(map);
     });
 
     const resize = () => map.resize();
@@ -221,6 +358,7 @@ export function RaceMap({
       map.remove();
       mapRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -257,23 +395,13 @@ export function RaceMap({
     (window as unknown as { __startlineMarkerCount?: number }).__startlineMarkerCount =
       markersRef.current.length;
 
-    if (!fittedRef.current && withCoords.length > 0) {
-      const bounds = new LngLatBounds();
-      withCoords.forEach((e) =>
-        bounds.extend([Number(e.location!.lng), Number(e.location!.lat)]),
-      );
-      if (!bounds.isEmpty()) {
-        map.fitBounds(bounds, {
-          padding: paddingRef.current,
-          maxZoom: 8,
-          duration: 0,
-        });
-        fittedRef.current = true;
-      }
+    // Race pin rebuild must not leave the user dot behind / under
+    if (userPos) {
+      upsertUserMarker(map, userMarkerRef, userPos);
     }
 
     requestAnimationFrame(() => map.resize());
-  }, [events, selectedId, mapEpoch]);
+  }, [events, selectedId, mapEpoch, userPos]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -288,46 +416,75 @@ export function RaceMap({
     });
   }, [selectedId, events, padding]);
 
-  // Keep user location marker in sync
+  // Keep user location marker in sync + initial camera on first GPS fix
   useEffect(() => {
     const map = mapRef.current;
     if (!map || mapEpoch === 0 || !userPos) return;
 
-    if (!userMarkerRef.current) {
-      userMarkerRef.current = new Marker({
-        element: makeUserLocationElement(),
-        anchor: "center",
-      })
-        .setLngLat([userPos.lng, userPos.lat])
-        .addTo(map);
-    } else {
-      userMarkerRef.current.setLngLat([userPos.lng, userPos.lat]);
-    }
+    upsertUserMarker(map, userMarkerRef, userPos);
+    applyInitialView(map, userPos.lng, userPos.lat, 650);
+
+    const btn = locateBtnRef.current;
+    if (btn) btn.style.color = "#1a73e8";
   }, [userPos, mapEpoch]);
 
-  // Auto-request location once map is ready (shows blue dot; no forced fly)
+  // Resolve location: fast network position first, then optional precise watch
   useEffect(() => {
     if (mapEpoch === 0 || !navigator.geolocation) return;
-    if (watchIdRef.current != null) return;
 
-    watchIdRef.current = navigator.geolocation.watchPosition(
+    let cancelled = false;
+    let watchId: number | null = null;
+
+    const onFix = (pos: GeolocationPosition) => {
+      if (cancelled) return;
+      setUserPos({
+        lng: pos.coords.longitude,
+        lat: pos.coords.latitude,
+        accuracy: pos.coords.accuracy,
+      });
+      setLocError(null);
+      setLocating(false);
+    };
+
+    const onFail = (err: GeolocationPositionError) => {
+      if (cancelled) return;
+      setLocating(false);
+      if (!initialViewDoneRef.current) {
+        initialViewDoneRef.current = true;
+      }
+      // Only surface hard denials — timeouts fall back to Czechia quietly
+      if (err.code === err.PERMISSION_DENIED) {
+        setLocError(locationDeniedLabel);
+      }
+    };
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setUserPos({
-          lng: pos.coords.longitude,
-          lat: pos.coords.latitude,
-          accuracy: pos.coords.accuracy,
-        });
-        setLocError(null);
-        setLocating(false);
+        onFix(pos);
+        // Keep updating in the background (wifi/cell is enough)
+        watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_FAST);
+        watchIdRef.current = watchId;
       },
-      () => {
-        // Silent on auto-start — error shown only after explicit button tap
-        setLocating(false);
+      (err) => {
+        // Retry once with high accuracy (phones)
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            onFix(pos);
+            watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_PRECISE);
+            watchIdRef.current = watchId;
+          },
+          onFail,
+          GEO_OPTS_PRECISE,
+        );
+        if (err.code === err.PERMISSION_DENIED) onFail(err);
       },
-      { enableHighAccuracy: true, maximumAge: 15_000, timeout: 20_000 },
+      GEO_OPTS_FAST,
     );
 
     return () => {
+      cancelled = true;
+      if (watchId != null) navigator.geolocation.clearWatch(watchId);
       if (watchIdRef.current != null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
         watchIdRef.current = null;
@@ -343,32 +500,44 @@ export function RaceMap({
     setLocating(true);
     setLocError(null);
 
+    const apply = (pos: GeolocationPosition) => {
+      const lng = pos.coords.longitude;
+      const lat = pos.coords.latitude;
+      setUserPos({ lng, lat, accuracy: pos.coords.accuracy });
+      setLocating(false);
+      const map = mapRef.current;
+      if (!map) return;
+      userMovedRef.current = true;
+      upsertUserMarker(map, userMarkerRef, { lng, lat });
+      fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, 700);
+      window.setTimeout(() => emitBounds(map), 750);
+    };
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lng = pos.coords.longitude;
-        const lat = pos.coords.latitude;
-        setUserPos({ lng, lat, accuracy: pos.coords.accuracy });
-        setLocating(false);
-        const map = mapRef.current;
-        if (!map) return;
-        map.easeTo({
-          center: [lng, lat],
-          zoom: Math.max(map.getZoom(), 12),
-          padding: paddingRef.current,
-          duration: 700,
-        });
+      apply,
+      () => {
+        navigator.geolocation.getCurrentPosition(
+          apply,
+          () => {
+            setLocating(false);
+            setLocError(locationDeniedLabel);
+          },
+          GEO_OPTS_PRECISE,
+        );
       },
-      (err) => {
-        setLocating(false);
-        if (err.code === err.PERMISSION_DENIED) {
-          setLocError(locationDeniedLabel);
-        } else {
-          setLocError(locationDeniedLabel);
-        }
-      },
-      { enableHighAccuracy: true, maximumAge: 5_000, timeout: 15_000 },
+      GEO_OPTS_FAST,
     );
   }
+
+  goToMyLocationRef.current = goToMyLocation;
+
+  useEffect(() => {
+    const btn = locateBtnRef.current;
+    if (!btn) return;
+    btn.style.opacity = locating ? "0.55" : "1";
+    btn.style.color = userPos ? "#0284c7" : "#334155";
+    btn.disabled = locating;
+  }, [locating, userPos, mapEpoch]);
 
   const leftPad = typeof padding.left === "number" ? padding.left : 56;
 
@@ -386,33 +555,15 @@ export function RaceMap({
         </button>
       )}
 
-      <div className="absolute bottom-28 right-2.5 z-10 flex flex-col items-end gap-2 md:bottom-24">
-        {locError ? (
-          <p
-            className="max-w-[11rem] rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] text-stone-600 shadow ring-1 ring-stone-200"
-            role="status"
-            aria-live="polite"
-          >
-            {locError}
-          </p>
-        ) : null}
-        <button
-          type="button"
-          onClick={goToMyLocation}
-          aria-label={myLocationLabel}
-          title={myLocationLabel}
-          className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-stone-800 shadow-md ring-1 ring-stone-200 hover:bg-stone-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+      {locError ? (
+        <p
+          className="absolute bottom-24 right-2.5 z-10 max-w-[11rem] rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] text-stone-600 shadow ring-1 ring-stone-200 md:bottom-20"
+          role="status"
+          aria-live="polite"
         >
-          {locating ? (
-            <Loader2 className="h-5 w-5 animate-spin text-sky-600" aria-hidden />
-          ) : (
-            <LocateFixed
-              className={`h-5 w-5 ${userPos ? "text-sky-600" : "text-stone-700"}`}
-              aria-hidden
-            />
-          )}
-        </button>
-      </div>
+          {locError}
+        </p>
+      ) : null}
     </div>
   );
 }

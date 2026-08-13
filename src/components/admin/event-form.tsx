@@ -171,12 +171,23 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
             value={values.status}
             onChange={(e) => set("status", e.target.value)}
           >
-            {["scheduled", "tbc", "postponed", "cancelled"].map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {(
+              [
+                ["scheduled", "Scheduled (on map)"],
+                ["tbc", "TBC (on map)"],
+                ["postponed", "Postponed (on map)"],
+                ["hidden", "Hidden (not on map)"],
+                ["cancelled", "Cancelled"],
+              ] as const
+            ).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>
+          <p className="mt-1 text-xs text-stone-500">
+            Use Hidden for camps, trainings, and other non-race listings
+          </p>
         </Field>
       </div>
 

@@ -1,23 +1,52 @@
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { Badge } from "@/components/ui/primitives";
+import {
+  AdminEventsTable,
+  type AdminEventRow,
+} from "@/components/admin/admin-events-table";
 
-export default async function EventsAdminPage() {
+export default async function EventsAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
   await requireAdminPage();
+  const sp = await searchParams;
+  const view = sp.view === "hidden" || sp.view === "all" ? sp.view : "visible";
+
   const supabase = createServerSupabase();
-  const { data: events } = await supabase
+  let query = supabase
     .from("events")
-    .select("id, name, start_date, audience, source_kind, status, location:locations(name, country_code)")
+    .select(
+      "id, name, start_date, audience, source_kind, status, location:locations(name, country_code)",
+    )
     .order("start_date", { ascending: true })
-    .limit(100);
+    .limit(200);
+
+  if (view === "hidden") query = query.eq("status", "hidden");
+  else if (view === "visible") query = query.neq("status", "hidden");
+
+  const { data: events } = await query;
+
+  const rows: AdminEventRow[] = (events ?? []).map((e) => ({
+    id: e.id,
+    name: e.name,
+    start_date: e.start_date,
+    audience: e.audience,
+    source_kind: e.source_kind,
+    status: e.status,
+    location: (e.location as AdminEventRow["location"]) ?? null,
+  }));
 
   return (
     <div className="space-y-4">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="font-sans tracking-tight text-3xl font-semibold">Events</h1>
-          <p className="text-sm text-stone-500">Edit scraped data or open a race to fix fields</p>
+          <h1 className="font-sans text-3xl font-semibold tracking-tight">Events</h1>
+          <p className="text-sm text-stone-500">
+            Hide camps and non-races from the map, or bring them back
+          </p>
         </div>
         <Link
           href="/admin/events/new"
@@ -26,46 +55,7 @@ export default async function EventsAdminPage() {
           Add event
         </Link>
       </div>
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-stone-50 text-stone-500">
-            <tr>
-              <th className="px-3 py-2">Date</th>
-              <th className="px-3 py-2">Name</th>
-              <th className="px-3 py-2">Place</th>
-              <th className="px-3 py-2">Audience</th>
-              <th className="px-3 py-2">Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(events ?? []).map((e) => {
-              const loc = e.location as { name?: string; country_code?: string } | null;
-              return (
-                <tr key={e.id} className="border-t border-stone-100">
-                  <td className="px-3 py-2 whitespace-nowrap">{e.start_date}</td>
-                  <td className="px-3 py-2">
-                    <Link href={`/admin/events/${e.id}`} className="font-medium text-stone-900 hover:underline">
-                      {e.name}
-                    </Link>
-                  </td>
-                  <td className="px-3 py-2">
-                    {loc?.name ?? "—"}
-                    {loc?.country_code ? ` · ${loc.country_code}` : ""}
-                  </td>
-                  <td className="px-3 py-2">
-                    <Badge>{e.audience}</Badge>
-                  </td>
-                  <td className="px-3 py-2">
-                    <Badge className={e.source_kind === "manual" ? "bg-orange-100 text-orange-800" : ""}>
-                      {e.source_kind}
-                    </Badge>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <AdminEventsTable events={rows} filter={view} />
     </div>
   );
 }

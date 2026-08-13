@@ -21,6 +21,7 @@ import {
   type Discipline,
   type RaceLevel,
 } from "@/lib/taxonomy";
+import { levelColor } from "@/lib/map-visuals";
 import {
   addDays,
   endOfMonth,
@@ -92,6 +93,7 @@ function nextMonthRange() {
 
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
+  const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(true);
   const [moved, setMoved] = useState(false);
@@ -201,7 +203,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       categories.forEach((a) => params.append("categories", a));
       disciplines.forEach((d) => params.append("disciplines", d));
       levels.forEach((l) => params.append("levels", l));
-      if (b && ((overrides.forceBounds as boolean) || filters.updateOnMove)) {
+      // Always scope to the current map viewport when we know it — otherwise an
+      // unfiltered query hits a global limit and looks emptier than a discipline filter.
+      if (b) {
         params.set("west", String(b.west));
         params.set("south", String(b.south));
         params.set("east", String(b.east));
@@ -228,7 +232,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       return { top: 16, right: 16, bottom: selected && mobileOpen ? 420 : 120, left: 16 };
     }
     const listW = 400 + 12 + 12;
-    const detailW = selected ? 380 + 12 : 0;
+    const detailW = selected ? 340 + 12 : 0;
     return {
       top: 16,
       right: 56,
@@ -276,9 +280,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           }}
           onBoundsChange={(b) => {
             setBounds(b);
-            setMoved(true);
+            // First camera settle → load races for this viewport
+            if (!initialBoundsFetchDone.current) {
+              initialBoundsFetchDone.current = true;
+              refetch({ bounds: b, forceBounds: true });
+              return;
+            }
             if (filters.updateOnMove) {
               refetch({ bounds: b, forceBounds: true });
+            } else {
+              setMoved(true);
             }
           }}
           searchThisAreaLabel={messages.searchThisArea}
@@ -299,7 +310,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         />
       </div>
 
-      <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden p-3 md:flex md:gap-3">
+      <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden items-start p-3 md:flex md:gap-3">
         <aside className="pointer-events-auto flex h-full w-[400px] flex-col rounded-2xl bg-white/95 shadow-xl ring-1 ring-stone-200 backdrop-blur">
           <Header
             messages={messages}
@@ -857,7 +868,7 @@ function MapFilterBar({
           </button>
           {moreOpen && (
             <div className="absolute left-0 top-[calc(100%+8px)] z-40 max-h-64 w-64 overflow-y-auto rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
-              {seriesList.slice(0, 16).map((s) => (
+              {seriesList.slice(0, 24).map((s) => (
                 <button
                   key={s.slug}
                   type="button"
@@ -1065,7 +1076,15 @@ function EventCard({
       }`}
     >
       <p className="font-mono text-[11px] font-medium uppercase tracking-wide text-stone-500">
+        <span
+          className="mr-1.5 inline-block h-2 w-2 rounded-full align-middle"
+          style={{ background: levelColor(event.level) }}
+          aria-hidden
+        />
         {format(parseISO(event.startDate), "d MMM yyyy")}
+        {event.endDate && event.endDate !== event.startDate
+          ? `–${format(parseISO(event.endDate), "d MMM")}`
+          : ""}
         {level ? ` · ${level}` : ""}
         {event.series ? ` · ${event.series.name}` : ""}
       </p>

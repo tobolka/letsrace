@@ -74,16 +74,37 @@ function parseSumatorHtml(url: string, html: string, year: number): ParsedEvent[
     const disc = mapDisc(discRaw);
     void inferRaceLevel(`${name} ${sub}`);
 
+    const placeCc = (() => {
+      const m = place.match(
+        /\((south africa|spain|portugal|belgium|france|italy|germany|austria|slovakia|poland|switzerland|netherlands|slovenia|croatia|hungary)\)/i,
+      );
+      if (!m) return "CZ";
+      const map: Record<string, string> = {
+        "south africa": "ZA",
+        spain: "ES",
+        portugal: "PT",
+        belgium: "BE",
+        france: "FR",
+        italy: "IT",
+        germany: "DE",
+        austria: "AT",
+        slovakia: "SK",
+        poland: "PL",
+        switzerland: "CH",
+        netherlands: "NL",
+        slovenia: "SI",
+        croatia: "HR",
+        hungary: "HU",
+      };
+      return map[m[1].toLowerCase()] ?? "CZ";
+    })();
+
     events.push({
       externalId: `sumator-${normalizeName(name)}-${startDate}`,
       name,
       startDate,
       placeText: place.slice(0, 80),
-      countryHint: /\((south africa|spain|portugal|belgium|france|italy|germany|austria|slovakia|poland)\)/i.test(
-        place,
-      )
-        ? undefined
-        : "CZ",
+      countryHint: placeCc,
       discipline: disc ? [disc] : undefined,
       audience: /junior|žák|deti|děti|kids|talent/i.test(name) ? "kids" : "mixed",
       sourceUrl: abs,
@@ -132,64 +153,59 @@ export function extractSumatorOfficialLinks(html: string): {
   return { websiteUrl, registrationUrl };
 }
 
-async function fetchSumatorRacePage(raceUrl: string): Promise<string> {
-  const res = await fetch(raceUrl, {
-    headers: {
-      "User-Agent": "StartlineBot/0.1 (+https://startline.app; race calendar aggregator)",
-      Accept: "text/html",
-    },
-    signal: AbortSignal.timeout(15000),
-  });
-  if (!res.ok) return "";
-  return res.text();
-}
+async function enrichOfficialWebsites(
+  events: ParsedEvent[],
+  opts?: { max?: number },
+): Promise<ParsedEvent[]> {
+  const max = opts?.max ?? 40;
+  const { mapPool } = await import("@/lib/watcher/pool");
+  const { fetchText } = await import("@/lib/watcher/http");
 
-async function enrichOfficialWebsites(events: ParsedEvent[]): Promise<ParsedEvent[]> {
-  const out: ParsedEvent[] = [];
-  const concurrency = 6;
-  for (let i = 0; i < events.length; i += concurrency) {
-    const batch = events.slice(i, i + concurrency);
-    const enriched = await Promise.all(
-      batch.map(async (ev) => {
-        if (!ev.sourceUrl.includes("sumator.cz/race/")) return ev;
-        try {
-          const html = await fetchSumatorRacePage(ev.sourceUrl);
-          if (!html) return ev;
-          const links = extractSumatorOfficialLinks(html);
-          return {
-            ...ev,
-            websiteUrl: links.websiteUrl,
-            registrationUrl: links.registrationUrl || ev.registrationUrl,
-            confidence: links.websiteUrl ? Math.max(ev.confidence, 0.9) : ev.confidence,
-          };
-        } catch {
-          return ev;
-        }
-      }),
-    );
-    out.push(...enriched);
-    if (i + concurrency < events.length) {
-      await new Promise((r) => setTimeout(r, 200));
+  const enrichable = events.filter((e) => e.sourceUrl.includes("sumator.cz/race/"));
+  // Prefer upcoming races without an official site yet
+  const today = new Date().toISOString().slice(0, 10);
+  const ranked = [...enrichable].sort((a, b) => {
+    const aFuture = a.startDate >= today ? 0 : 1;
+    const bFuture = b.startDate >= today ? 0 : 1;
+    if (aFuture !== bFuture) return aFuture - bFuture;
+    return a.startDate.localeCompare(b.startDate);
+  });
+  const selected = new Set(ranked.slice(0, max).map((e) => e.sourceUrl));
+
+  const enriched = await mapPool(events, 6, async (ev) => {
+    if (!selected.has(ev.sourceUrl) || !ev.sourceUrl.includes("sumator.cz/race/")) {
+      return ev;
     }
-  }
-  return out;
+    try {
+      const page = await fetchText(ev.sourceUrl, { timeoutMs: 15_000 });
+      if (!page.ok || !page.text) return ev;
+      const links = extractSumatorOfficialLinks(page.text);
+      return {
+        ...ev,
+        websiteUrl: links.websiteUrl,
+        registrationUrl: links.registrationUrl || ev.registrationUrl,
+        confidence: links.websiteUrl ? Math.max(ev.confidence, 0.9) : ev.confidence,
+      };
+    } catch {
+      return ev;
+    }
+  });
+  return enriched;
 }
 
 async function fetchSumatorMonth(year: number, month: number): Promise<string> {
+  const { fetchText } = await import("@/lib/watcher/http");
   const url = `https://sumator.cz/?date_from=${month}-${year}&date_to=${month}-${year}`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "StartlineBot/0.1 (+https://startline.app; race calendar aggregator)",
-      Accept: "text/html",
-    },
-    signal: AbortSignal.timeout(20000),
-  });
-  if (!res.ok) return "";
-  return res.text();
+  const page = await fetchText(url, { timeoutMs: 20_000 });
+  return page.ok ? page.text : "";
 }
 
-/** Sumator list — homepage + month crawl; race detail supplies official Web. */
+/** Sumator list — homepage, month crawl, or /cup/ series page. */
 export async function parseSumator(url: string, html: string): Promise<ParsedEvent[]> {
+  if (/sumator\.cz\/cup\//i.test(url)) {
+    return enrichOfficialWebsites(parseSumatorCup(url, html), { max: 24 });
+  }
+
   const year = yearFromUrl(url);
   const events = parseSumatorHtml(url, html, year);
 
@@ -217,7 +233,44 @@ export async function parseSumator(url: string, html: string): Promise<ParsedEve
   }
 
   const unique = dedupe(events).slice(0, 250);
-  return enrichOfficialWebsites(unique);
+  return enrichOfficialWebsites(unique, { max: 40 });
+}
+
+function parseSumatorCup(url: string, html: string): ParsedEvent[] {
+  const year = yearFromUrl(url);
+  const $ = cheerio.load(html);
+  const heading =
+    $("h1").first().text().replace(/\s+/g, " ").trim() ||
+    $("title").first().text().replace(/\s+/g, " ").trim() ||
+    "Cup";
+  const seriesName = heading
+    .replace(/\b20\d{2}\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim() || "Cup";
+  const cupSlugRaw =
+    url.match(/\/cup\/([a-z0-9-]+)/i)?.[1]?.replace(/-20\d{2}$/i, "") ||
+    seriesName
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 60);
+  // Align with existing DB slugs from Hynek / older scrapes
+  const cupSlug =
+    (
+      {
+        "prima-cup": "primacup",
+        primacup: "primacup",
+      } as Record<string, string>
+    )[cupSlugRaw] || cupSlugRaw;
+
+  return parseSumatorHtml(url, html, year).map((ev) => ({
+    ...ev,
+    seriesName,
+    seriesSlug: cupSlug,
+    confidence: Math.max(ev.confidence, 0.9),
+  }));
 }
 
 function dedupe(events: ParsedEvent[]): ParsedEvent[] {

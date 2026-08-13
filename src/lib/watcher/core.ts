@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { extractJsonLdEvents } from "@/lib/watcher/extractors/jsonld";
@@ -6,49 +5,7 @@ import { extractWithAdapter } from "@/lib/watcher/extractors/adapters";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { discoverChildLinks } from "@/lib/watcher/discover";
 
-export type FetchResult = {
-  html: string;
-  status: number;
-  etag?: string | null;
-  lastModified?: string | null;
-  hash: string;
-  unchanged: boolean;
-};
-
-export async function fetchPage(
-  url: string,
-  opts?: { etag?: string | null; lastModified?: string | null; contentHash?: string | null },
-): Promise<FetchResult> {
-  const headers: Record<string, string> = {
-    "User-Agent": "StartlineBot/0.1 (+https://startline.app; race calendar aggregator)",
-    Accept: "text/html,application/xhtml+xml",
-  };
-  if (opts?.etag) headers["If-None-Match"] = opts.etag;
-  if (opts?.lastModified) headers["If-Modified-Since"] = opts.lastModified;
-
-  const res = await fetch(url, { headers, redirect: "follow", signal: AbortSignal.timeout(25000) });
-  if (res.status === 304) {
-    return {
-      html: "",
-      status: 304,
-      etag: opts?.etag,
-      lastModified: opts?.lastModified,
-      hash: opts?.contentHash ?? "",
-      unchanged: true,
-    };
-  }
-
-  const html = await res.text();
-  const hash = createHash("sha256").update(html).digest("hex");
-  return {
-    html,
-    status: res.status,
-    etag: res.headers.get("etag"),
-    lastModified: res.headers.get("last-modified"),
-    hash,
-    unchanged: Boolean(opts?.contentHash && opts.contentHash === hash),
-  };
-}
+export { fetchPage, type FetchResult } from "@/lib/watcher/http";
 
 export type ExtractResult = {
   events: ParsedEvent[];
@@ -115,4 +72,15 @@ export function nextPollAt(startDate?: string | null): Date {
   if (days < -7) return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   if (days <= 30) return new Date(now.getTime() + 24 * 60 * 60 * 1000);
   return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+}
+
+/** Backoff after errors — grows with consecutive failures, capped at 2 days. */
+export function errorPollAt(consecutiveFailures = 1): Date {
+  const hours = Math.min(48, Math.max(1, 2 ** Math.min(consecutiveFailures, 5)));
+  return new Date(Date.now() + hours * 60 * 60 * 1000);
+}
+
+/** Soft review: keep active, retry in a few days instead of permanent pause. */
+export function reviewPollAt(): Date {
+  return new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
 }
