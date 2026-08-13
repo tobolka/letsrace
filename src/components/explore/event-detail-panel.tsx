@@ -12,11 +12,9 @@ import {
   Heart,
   Calendar,
   CalendarPlus,
-  Check,
-  CreditCard,
   ClipboardCheck,
 } from "lucide-react";
-import { Button, Badge } from "@/components/ui/primitives";
+import { Badge } from "@/components/ui/primitives";
 import type { EventListItem } from "@/lib/events";
 import { publicRaceUrl } from "@/lib/watcher/public-url";
 import { formatAudienceList } from "@/lib/audience";
@@ -187,25 +185,6 @@ export function EventDetailPanel({
     }
   }
 
-  async function toggleFlag(memberId: string, field: "registered" | "paid") {
-    if (!userId) return;
-    const row = attendance.find((a) => a.member_id === memberId);
-    if (!row) return;
-    setBusy(true);
-    const next = !row[field];
-    const supabase = createBrowserSupabase();
-    await supabase
-      .from("event_attendance")
-      .update({ [field]: next, updated_at: new Date().toISOString() })
-      .eq("user_id", userId)
-      .eq("event_id", event.id)
-      .eq("member_id", memberId);
-    setAttendance((prev) =>
-      prev.map((a) => (a.member_id === memberId ? { ...a, [field]: next } : a)),
-    );
-    setBusy(false);
-  }
-
   const levelKey = (event.level || "local") as RaceLevel;
   const levelLabel = event.classLabel || LEVEL_LABELS[levelKey] || event.level;
   const websiteUrl = publicRaceUrl(event.websiteUrl);
@@ -286,7 +265,6 @@ export function EventDetailPanel({
         </InfoRow>
         <InfoRow icon={<Trophy className="h-4 w-4" />}>
           Level: <strong>{levelLabel}</strong>
-          <span className="text-stone-500"> ({levelKey})</span>
         </InfoRow>
         <InfoRow icon={<Users className="h-4 w-4" />}>
           {audienceLabel}
@@ -346,73 +324,6 @@ export function EventDetailPanel({
             </ul>
           </div>
         )}
-
-        <div className="rounded-xl border border-stone-200 p-3">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-stone-400">
-            Family / who is going
-          </p>
-          {!userId ? (
-            <p className="text-sm text-stone-600">
-              <button
-                type="button"
-                className="font-medium text-stone-900 underline"
-                onClick={() => requireAuth("calendar")}
-              >
-                Sign in
-              </button>{" "}
-              to save favorites and track registration for you and your kids.
-            </p>
-          ) : members.length === 0 ? (
-            <p className="text-sm text-stone-600">
-              Add family members in{" "}
-              <Link href={`/${locale}/account`} className="text-stone-900 underline">
-                Account
-              </Link>
-              .
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {members.map((m) => {
-                const att = attendance.find((a) => a.member_id === m.id);
-                const going = Boolean(att);
-                return (
-                  <li key={m.id} className="rounded-lg bg-stone-50 p-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <p className="font-medium text-stone-900">{m.name}</p>
-                        <p className="text-[11px] text-stone-500">{m.relationship}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant={going ? "default" : "outline"}
-                        disabled={busy}
-                        onClick={() => void toggleGoing(m.id)}
-                      >
-                        {going ? "Going" : "Add"}
-                      </Button>
-                    </div>
-                    {going && (
-                      <div className="mt-2 flex gap-2">
-                        <FlagBtn
-                          active={att!.registered}
-                          icon={<ClipboardCheck className="h-3.5 w-3.5" />}
-                          label="Registered"
-                          onClick={() => void toggleFlag(m.id, "registered")}
-                        />
-                        <FlagBtn
-                          active={att!.paid}
-                          icon={<CreditCard className="h-3.5 w-3.5" />}
-                          label="Paid"
-                          onClick={() => void toggleFlag(m.id, "paid")}
-                        />
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
       </div>
 
       <AuthDialog
@@ -459,32 +370,5 @@ function InfoRow({ icon, children }: { icon: React.ReactNode; children: React.Re
       <span className="mt-0.5 text-stone-400">{icon}</span>
       <div className="min-w-0 flex-1">{children}</div>
     </div>
-  );
-}
-
-function FlagBtn({
-  active,
-  icon,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ${
-        active
-          ? "bg-stone-900 text-white ring-stone-900"
-          : "bg-white text-stone-600 ring-stone-200"
-      }`}
-    >
-      {active ? <Check className="h-3 w-3" /> : icon}
-      {label}
-    </button>
   );
 }

@@ -31,7 +31,14 @@ export type EventListItem = {
     lng: number | null;
   } | null;
   series: { id: string; name: string; slug: string } | null;
-  categories?: { id: string; name: string; ageMin: number | null; ageMax: number | null; distanceKm: number | null }[];
+  categories?: {
+    id: string;
+    name: string;
+    ageMin: number | null;
+    ageMax: number | null;
+    distanceKm: number | null;
+    audience?: string | null;
+  }[];
 };
 
 export type EventFilters = {
@@ -58,7 +65,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
       `id, slug, name, start_date, end_date, disciplines, audience, status, website_url, registration_url, source_kind, level, class_label,
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug),
-       categories:event_categories(id, name, age_min, age_max, distance_km)`,
+       categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
     )
     .order("start_date", { ascending: true })
     .limit(300);
@@ -225,6 +232,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
       ageMin: (c.age_min as number) ?? null,
       ageMax: (c.age_max as number) ?? null,
       distanceKm: (c.distance_km as number) ?? null,
+      audience: (c.audience as string) ?? null,
     })),
   };
 }

@@ -32,11 +32,9 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function weekendRange() {
+/** Sat–Sun of the current calendar weekend (including today if already weekend). */
+function thisWeekendRange() {
   const now = new Date();
-  const sat = nextSaturday(now);
-  const sun = nextSunday(sat);
-  // if today is Sat/Sun, nextSaturday jumps ahead — clamp to this weekend
   const day = now.getDay();
   if (day === 6) {
     return { from: format(now, "yyyy-MM-dd"), to: format(addDays(now, 1), "yyyy-MM-dd") };
@@ -44,7 +42,18 @@ function weekendRange() {
   if (day === 0) {
     return { from: format(addDays(now, -1), "yyyy-MM-dd"), to: format(now, "yyyy-MM-dd") };
   }
+  const sat = nextSaturday(now);
+  const sun = nextSunday(sat);
   return { from: format(sat, "yyyy-MM-dd"), to: format(sun, "yyyy-MM-dd") };
+}
+
+/** The weekend after thisWeekendRange(). */
+function nextWeekendRange() {
+  const thisW = thisWeekendRange();
+  return {
+    from: format(addDays(parseISO(thisW.from), 7), "yyyy-MM-dd"),
+    to: format(addDays(parseISO(thisW.to), 7), "yyyy-MM-dd"),
+  };
 }
 
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
@@ -284,6 +293,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 <EventCard
                   key={event.id}
                   event={event}
+                  messages={messages}
                   active={event.id === selectedId}
                   onClick={() => setSelectedId(event.id)}
                 />
@@ -386,6 +396,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     <EventCard
                       key={event.id}
                       event={event}
+                      messages={messages}
                       active={event.id === selectedId}
                       onClick={() => setSelectedId(event.id)}
                     />
@@ -505,25 +516,27 @@ function MapFilterBar({
   }
 
   const upcoming = dateFrom === todayIso() && !dateTo;
-  const w = weekendRange();
-  const isWeekend = dateFrom === w.from && dateTo === w.to;
-  const d30 = addDays(new Date(), 30).toISOString().slice(0, 10);
-  const d90 = addDays(new Date(), 90).toISOString().slice(0, 10);
-  const is30 = dateFrom === todayIso() && dateTo === d30;
-  const is90 = dateFrom === todayIso() && dateTo === d90;
+  const thisW = thisWeekendRange();
+  const nextW = nextWeekendRange();
+  const isThisWeekend = dateFrom === thisW.from && dateTo === thisW.to;
+  const isNextWeekend = dateFrom === nextW.from && dateTo === nextW.to;
   const anyDate = !dateFrom && !dateTo;
   const dateActive = Boolean(dateFrom || dateTo);
-  const dateLabel = isWeekend
+  const isCustom =
+    dateActive && !upcoming && !isThisWeekend && !isNextWeekend && !anyDate;
+  const dateLabel = isThisWeekend
     ? messages.thisWeekend
-    : is30
-      ? messages.next30
-      : is90
-        ? messages.next90
-        : upcoming
-          ? messages.upcoming
-          : anyDate
-            ? messages.date
-            : messages.date;
+    : isNextWeekend
+      ? messages.nextWeekend
+      : upcoming
+        ? messages.upcoming
+        : anyDate
+          ? messages.anyDate
+          : isCustom && dateFrom && dateTo
+            ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
+            : isCustom && dateFrom
+              ? `${messages.from} ${format(parseISO(dateFrom), "d MMM")}`
+              : messages.date;
 
   const seriesName = seriesList.find((s) => s.slug === series)?.name;
   const typeLabel =
@@ -538,6 +551,33 @@ function MapFilterBar({
       : levels.length === 1
         ? CATEGORY_OPTIONS.find((c) => c.id === levels[0])?.label || levels[0]
         : `${messages.categoryFilter} · ${levels.length}`;
+
+  const datePresets: { id: string; label: string; active: boolean; apply: () => void }[] = [
+    {
+      id: "upcoming",
+      label: messages.upcoming,
+      active: upcoming,
+      apply: () => onPreset(todayIso(), ""),
+    },
+    {
+      id: "thisWeekend",
+      label: messages.thisWeekend,
+      active: isThisWeekend,
+      apply: () => onPreset(thisW.from, thisW.to),
+    },
+    {
+      id: "nextWeekend",
+      label: messages.nextWeekend,
+      active: isNextWeekend,
+      apply: () => onPreset(nextW.from, nextW.to),
+    },
+    {
+      id: "any",
+      label: messages.anyDate,
+      active: anyDate,
+      apply: () => onPreset("", ""),
+    },
+  ];
 
   return (
     <div
@@ -561,49 +601,49 @@ function MapFilterBar({
           <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
         </button>
         {dateOpen && (
-          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-72 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-stone-200">
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {(
-                [
-                  [messages.upcoming, () => onPreset(todayIso(), "")],
-                  [messages.thisWeekend, () => onPreset(w.from, w.to)],
-                  [messages.next30, () => onPreset(todayIso(), d30)],
-                  [messages.next90, () => onPreset(todayIso(), d90)],
-                  [messages.anyDate, () => onPreset("", "")],
-                ] as const
-              ).map(([label, action]) => (
-                <button
-                  key={label}
-                  type="button"
-                  className="rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-stone-200 hover:bg-stone-50"
-                  onClick={() => {
-                    action();
-                    setDateOpen(false);
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <label className="space-y-1">
-                <span className="text-[11px] text-stone-500">{messages.from}</span>
-                <Input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => onFrom(e.target.value)}
-                  className="h-9"
-                />
-              </label>
-              <label className="space-y-1">
-                <span className="text-[11px] text-stone-500">{messages.to}</span>
-                <Input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => onTo(e.target.value)}
-                  className="h-9"
-                />
-              </label>
+          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-72 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
+            <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+              {messages.date}
+            </p>
+            {datePresets.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                className={`flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm ${
+                  opt.active ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+                }`}
+                onClick={() => {
+                  opt.apply();
+                  setDateOpen(false);
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
+            <div className="mt-1 border-t border-stone-100 px-2 pb-1 pt-2">
+              <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+                {messages.customDate}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <label className="space-y-1">
+                  <span className="text-[11px] text-stone-500">{messages.from}</span>
+                  <Input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => onFrom(e.target.value)}
+                    className="h-9"
+                  />
+                </label>
+                <label className="space-y-1">
+                  <span className="text-[11px] text-stone-500">{messages.to}</span>
+                  <Input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => onTo(e.target.value)}
+                    className="h-9"
+                  />
+                </label>
+              </div>
             </div>
           </div>
         )}
@@ -914,10 +954,12 @@ function Header({
 
 function EventCard({
   event,
+  messages,
   active,
   onClick,
 }: {
   event: EventListItem;
+  messages: Messages;
   active: boolean;
   onClick: () => void;
 }) {
@@ -925,6 +967,11 @@ function EventCard({
     event.classLabel ||
     LEVEL_LABELS[(event.level || "local") as RaceLevel] ||
     event.level;
+  const audienceLabel = formatAudienceList(
+    event.audience,
+    { kids: messages.kids, youth: messages.youth, adults: messages.adults },
+    event.categories,
+  );
   return (
     <button
       type="button"
@@ -943,7 +990,7 @@ function EventCard({
         {event.location?.municipality || event.location?.name || "—"}
         {event.location?.countryCode ? ` · ${event.location.countryCode}` : ""}
         {event.disciplines.length ? ` · ${event.disciplines.join(", ")}` : ""}
-        {` · ${event.audience}`}
+        {` · ${audienceLabel}`}
       </p>
     </button>
   );
