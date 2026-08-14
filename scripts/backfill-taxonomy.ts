@@ -39,6 +39,7 @@ const headers = {
 type Row = {
   id: string;
   name: string;
+  start_date?: string;
   disciplines: string[] | null;
   level: string | null;
   class_label: string | null;
@@ -52,7 +53,7 @@ async function main() {
   let updated = 0;
   for (;;) {
     const res = await fetch(
-      `${url}/rest/v1/events?select=id,name,disciplines,level,class_label,audience,categories:event_categories(name)&offset=${offset}&limit=${page}`,
+      `${url}/rest/v1/events?select=id,name,start_date,disciplines,level,class_label,audience,categories:event_categories(name)&offset=${offset}&limit=${page}`,
       { headers },
     );
     if (!res.ok) throw new Error(`fetch ${res.status}: ${await res.text()}`);
@@ -66,6 +67,7 @@ async function main() {
         categoryNames: (row.categories ?? []).map((c) => c.name),
         existingLevel: row.level,
         existingClassLabel: row.class_label,
+        startDate: row.start_date,
       });
 
       const up = await fetch(`${url}/rest/v1/events?id=eq.${row.id}`, {
@@ -73,6 +75,7 @@ async function main() {
         headers,
         body: JSON.stringify({
           disciplines: classified.disciplines,
+          formats: classified.formats,
           age_categories: classified.ageCategories,
           audience: classified.ageCategories.length
             ? classified.audience
@@ -80,6 +83,9 @@ async function main() {
           level: classified.level,
           uci_class: classified.uciClass,
           class_label: classified.classLabel,
+          event_type: classified.eventType,
+          competition_type: classified.competitionType,
+          season: classified.season || undefined,
           updated_at: new Date().toISOString(),
         }),
       });

@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useRef, useState, useTransition, useEffect } from "react";
-import { useQueryStates, parseAsString, parseAsArrayOf, parseAsBoolean } from "nuqs";
-import { RaceMap } from "@/components/map/race-map";
+import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
+import { RaceMap, type MapBounds } from "@/components/map/race-map";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
 import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
 import { FeedbackModal } from "@/components/explore/feedback-modal";
@@ -10,18 +10,19 @@ import { AuthDialog } from "@/components/account/auth-dialog";
 import { Button, Input } from "@/components/ui/primitives";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
-import { formatAudienceList } from "@/lib/audience";
 import {
-  AGE_CATEGORIES,
+  AGE_CATEGORY_FILTERS,
   AGE_CATEGORY_LABELS,
   DISCIPLINE_LABELS,
   DISCIPLINE_TREE,
   RACE_LEVEL_LABELS,
   RACE_LEVELS,
+  formatEventCategoryLabel,
   type Discipline,
   type RaceLevel,
 } from "@/lib/taxonomy";
-import { levelColor } from "@/lib/map-visuals";
+import { disciplineColor, familyColor } from "@/lib/map-visuals";
+import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import {
   addDays,
   endOfMonth,
@@ -38,7 +39,10 @@ import {
   Calendar,
   SlidersHorizontal,
   ChevronDown,
+  Globe,
 } from "lucide-react";
+import { DateRangeCalendar, isoToRange } from "@/components/explore/date-range-calendar";
+import type { DateRange } from "react-day-picker";
 import Link from "next/link";
 
 type Props = {
@@ -47,8 +51,52 @@ type Props = {
   locale: string;
 };
 
+type SeriesOption = { slug: string; name: string; eventCount: number; countryCode: string | null };
+
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
+}
+
+const INT_COUNTRY = "INT";
+
+function seriesCountryKey(code: string | null | undefined) {
+  const cc = (code || "").trim().toUpperCase();
+  return cc.length === 2 ? cc : INT_COUNTRY;
+}
+
+function groupSeriesByCountry(
+  list: SeriesOption[],
+  locale: string,
+  internationalLabel: string,
+): { key: string; label: string; items: SeriesOption[] }[] {
+  const groups = new Map<string, SeriesOption[]>();
+  for (const s of list) {
+    const key = seriesCountryKey(s.countryCode);
+    const arr = groups.get(key) ?? [];
+    arr.push(s);
+    groups.set(key, arr);
+  }
+  const keys = [
+    ...sortCountryCodes(
+      [...groups.keys()].filter((k) => k !== INT_COUNTRY),
+      locale,
+    ),
+    ...(groups.has(INT_COUNTRY) ? [INT_COUNTRY] : []),
+  ];
+  return keys.map((key) => ({
+    key,
+    label: key === INT_COUNTRY ? internationalLabel : countryDisplayName(key, locale),
+    items: (groups.get(key) ?? []).sort(
+      (a, b) => b.eventCount - a.eventCount || a.name.localeCompare(b.name),
+    ),
+  }));
+}
+
+function eventInBounds(event: EventListItem, b: MapBounds) {
+  const lat = event.location?.lat;
+  const lng = event.location?.lng;
+  if (lat == null || lng == null) return false;
+  return lng >= b.west && lng <= b.east && lat >= b.south && lat <= b.north;
 }
 
 /** Sat–Sun of the current calendar weekend (including today if already weekend). */
@@ -101,14 +149,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [seriesList, setSeriesList] = useState<{ slug: string; name: string; eventCount: number }[]>([]);
+  const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
   const [pending, startTransition] = useTransition();
-  const [bounds, setBounds] = useState<{
-    west: number;
-    south: number;
-    east: number;
-    north: number;
-  } | null>(null);
+  const [bounds, setBounds] = useState<MapBounds | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const mobileListRef = useRef<HTMLDivElement>(null);
+  const [fitSeq, setFitSeq] = useState(0);
 
   const [filters, setFilters] = useQueryStates({
     q: parseAsString.withDefault(""),
@@ -116,9 +162,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     disciplines: parseAsArrayOf(parseAsString).withDefault([]),
     levels: parseAsArrayOf(parseAsString).withDefault([]),
     series: parseAsString.withDefault(""),
+    country: parseAsString.withDefault(""),
     dateFrom: parseAsString.withDefault(todayIso()),
     dateTo: parseAsString.withDefault(""),
-    updateOnMove: parseAsBoolean.withDefault(false),
     west: parseAsString,
     south: parseAsString,
     east: parseAsString,
@@ -126,16 +172,40 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   });
 
   useEffect(() => {
-    void fetch("/api/series")
+    const params = new URLSearchParams();
+    if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
+    if (filters.dateTo) params.set("dateTo", filters.dateTo);
+    filters.categories.forEach((a) => params.append("categories", a));
+    filters.disciplines.forEach((d) => params.append("disciplines", d));
+    filters.levels.forEach((l) => params.append("levels", l));
+    const qs = params.toString();
+    void fetch(`/api/series${qs ? `?${qs}` : ""}`)
       .then((r) => r.json())
-      .then((data: { slug: string; name: string; eventCount: number }[]) => setSeriesList(data))
+      .then((data: SeriesOption[]) => setSeriesList(data))
       .catch(() => undefined);
-  }, []);
+  }, [filters.dateFrom, filters.dateTo, filters.categories, filters.disciplines, filters.levels]);
 
   const selected = useMemo(
     () => events.find((e) => e.id === selectedId) ?? null,
     [events, selectedId],
   );
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const selector = `[data-event-id="${CSS.escape(selectedId)}"]`;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    for (const root of [listRef.current, mobileListRef.current]) {
+      if (!root || root.offsetHeight === 0) continue;
+      const el = root.querySelector<HTMLElement>(selector);
+      if (!el) continue;
+      el.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+        behavior: reduce ? "auto" : "smooth",
+      });
+      break;
+    }
+  }, [selectedId]);
 
   function toggleCategory(value: string) {
     const next = filters.categories.includes(value)
@@ -177,7 +247,30 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   function setSeries(slug: string) {
     const next = filters.series === slug ? "" : slug;
     void setFilters({ series: next });
-    refetch({ series: next });
+    refetch({ series: next, skipBounds: Boolean(next) || Boolean(filters.country), fitMap: Boolean(next) });
+  }
+
+  function applySeries(slug: string) {
+    void setFilters({ series: slug });
+    refetch({
+      series: slug,
+      skipBounds: true,
+      fitMap: true,
+    });
+  }
+
+  function setCountry(code: string) {
+    const next = filters.country === code ? "" : code;
+    const seriesRow = seriesList.find((s) => s.slug === filters.series);
+    const seriesCountry = seriesCountryKey(seriesRow?.countryCode);
+    const dropSeries = Boolean(next && filters.series && seriesCountry !== INT_COUNTRY && seriesCountry !== next);
+    void setFilters({ country: next, ...(dropSeries ? { series: "" } : {}) });
+    refetch({
+      country: next,
+      ...(dropSeries ? { series: "" } : {}),
+      skipBounds: Boolean(next) || Boolean(filters.series && !dropSeries),
+      fitMap: Boolean(next),
+    });
   }
 
   function setDateRange(dateFrom: string, dateTo: string) {
@@ -193,11 +286,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       const disciplines = (overrides.disciplines as string[]) ?? filters.disciplines;
       const levels = (overrides.levels as string[]) ?? filters.levels;
       const series = (overrides.series as string) ?? filters.series;
+      const country = (overrides.country as string) ?? filters.country;
       const dateFrom = (overrides.dateFrom as string) ?? filters.dateFrom;
       const dateTo = (overrides.dateTo as string) ?? filters.dateTo;
-      const b = (overrides.bounds as typeof bounds) ?? bounds;
+      const skipBounds =
+        overrides.skipBounds === true ||
+        (Boolean(series || country) && overrides.forceBounds !== true);
+      const b = skipBounds ? null : ((overrides.bounds as typeof bounds) ?? bounds);
       if (q) params.set("q", q);
       if (series) params.set("series", series);
+      if (country) params.set("country", country);
       if (dateFrom) params.set("dateFrom", dateFrom);
       if (dateTo) params.set("dateTo", dateTo);
       categories.forEach((a) => params.append("categories", a));
@@ -214,6 +312,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       const res = await fetch(`/api/events?${params.toString()}`);
       const data = (await res.json()) as EventListItem[];
       setEvents(data);
+      if (overrides.fitMap) setFitSeq((n) => n + 1);
     });
   }
 
@@ -245,16 +344,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     return (
       <MapFilterBar
         messages={messages}
+        locale={locale}
         dateFrom={filters.dateFrom}
         dateTo={filters.dateTo}
         categories={filters.categories}
         disciplines={filters.disciplines}
         levels={filters.levels}
         series={filters.series}
+        country={filters.country}
         seriesList={seriesList}
         onPreset={setDateRange}
-        onFrom={(dateFrom) => setDateRange(dateFrom, filters.dateTo)}
-        onTo={(dateTo) => setDateRange(filters.dateFrom, dateTo)}
         onCategory={toggleCategory}
         onDiscipline={setDiscipline}
         onLevel={toggleLevel}
@@ -262,6 +361,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onClearLevels={clearLevels}
         onClearCategories={clearCategories}
         onSeries={setSeries}
+        onCountry={setCountry}
         stacked
       />
     );
@@ -274,6 +374,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           events={events}
           selectedId={selectedId}
           padding={mapPadding}
+          fitSeq={fitSeq}
           onSelect={(id) => {
             setSelectedId(id);
             setMobileOpen(true);
@@ -283,28 +384,31 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             // First camera settle → load races for this viewport
             if (!initialBoundsFetchDone.current) {
               initialBoundsFetchDone.current = true;
-              refetch({ bounds: b, forceBounds: true });
+              if (filters.series || filters.country) {
+                refetch({ skipBounds: true, fitMap: true });
+              } else {
+                refetch({ bounds: b, forceBounds: true });
+              }
               return;
             }
-            if (filters.updateOnMove) {
-              refetch({ bounds: b, forceBounds: true });
-            } else {
+            if (!filters.series && !filters.country) {
               setMoved(true);
             }
           }}
           searchThisAreaLabel={messages.searchThisArea}
           myLocationLabel={messages.myLocation}
           locationDeniedLabel={messages.locationDenied}
-          showSearchArea={moved && !filters.updateOnMove}
-          onSearchArea={() => {
-            if (!bounds) return;
+          showSearchArea={moved}
+          onSearchArea={(b) => {
+            setBounds(b);
             void setFilters({
-              west: String(bounds.west),
-              south: String(bounds.south),
-              east: String(bounds.east),
-              north: String(bounds.north),
+              west: String(b.west),
+              south: String(b.south),
+              east: String(b.east),
+              north: String(b.north),
             });
-            refetch({ bounds, forceBounds: true });
+            setEvents((prev) => prev.filter((e) => eventInBounds(e, b)));
+            refetch({ bounds: b, forceBounds: true });
             setMoved(false);
           }}
         />
@@ -335,7 +439,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             </span>
             {pending ? <span>…</span> : null}
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
             {events.length === 0 ? (
               <p className="p-4 text-sm text-stone-500">{messages.noResults}</p>
             ) : (
@@ -350,14 +454,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               ))
             )}
           </div>
-          <label className="flex items-center gap-2 border-t border-stone-200 px-4 py-3 text-xs text-stone-600">
-            <input
-              type="checkbox"
-              checked={filters.updateOnMove}
-              onChange={(e) => void setFilters({ updateOnMove: e.target.checked })}
-            />
-            {messages.updateOnMove}
-          </label>
         </aside>
 
         {selected && (
@@ -365,6 +461,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             event={selected}
             locale={locale}
             onClose={() => setSelectedId(null)}
+            onSelectSeries={applySeries}
           />
         )}
       </div>
@@ -388,6 +485,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 event={selected}
                 locale={locale}
                 onClose={() => setSelectedId(null)}
+                onSelectSeries={applySeries}
               />
             </div>
           ) : (
@@ -410,7 +508,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 />
               </div>
               {mobileOpen && (
-                <div className="max-h-[60vh] overflow-y-auto">
+                <div ref={mobileListRef} className="max-h-[60vh] overflow-y-auto">
                   <div className="relative z-30 border-b border-stone-100 px-3 py-2">
                     {renderFilterBar()}
                   </div>
@@ -466,16 +564,16 @@ function disciplineLabel(id: string): string {
 
 function MapFilterBar({
   messages,
+  locale,
   dateFrom,
   dateTo,
   categories,
   disciplines,
   levels,
   series,
+  country,
   seriesList,
   onPreset,
-  onFrom,
-  onTo,
   onCategory,
   onDiscipline,
   onLevel,
@@ -483,19 +581,20 @@ function MapFilterBar({
   onClearLevels,
   onClearCategories,
   onSeries,
+  onCountry,
   stacked,
 }: {
   messages: Messages;
+  locale: string;
   dateFrom: string;
   dateTo: string;
   categories: string[];
   disciplines: string[];
   levels: string[];
   series: string;
-  seriesList: { slug: string; name: string; eventCount: number }[];
+  country: string;
+  seriesList: SeriesOption[];
   onPreset: (from: string, to: string) => void;
-  onFrom: (v: string) => void;
-  onTo: (v: string) => void;
   onCategory: (v: string) => void;
   onDiscipline: (v: string) => void;
   onLevel: (v: string) => void;
@@ -503,17 +602,23 @@ function MapFilterBar({
   onClearLevels: () => void;
   onClearCategories: () => void;
   onSeries: (slug: string) => void;
+  onCountry: (code: string) => void;
   stacked?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
+  const [customPicked, setCustomPicked] = useState(false);
+  const [dateDraft, setDateDraft] = useState<DateRange | undefined>();
   const [typeOpen, setTypeOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [levelOpen, setLevelOpen] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [seriesQuery, setSeriesQuery] = useState("");
   const dateRef = useRef<HTMLDivElement>(null);
   const typeRef = useRef<HTMLDivElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
   const levelRef = useRef<HTMLDivElement>(null);
+  const countryRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -523,17 +628,19 @@ function MapFilterBar({
       if (typeRef.current && !typeRef.current.contains(t)) setTypeOpen(false);
       if (categoryRef.current && !categoryRef.current.contains(t)) setCategoryOpen(false);
       if (levelRef.current && !levelRef.current.contains(t)) setLevelOpen(false);
+      if (countryRef.current && !countryRef.current.contains(t)) setCountryOpen(false);
       if (moreRef.current && !moreRef.current.contains(t)) setMoreOpen(false);
     }
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  function closeOthers(except: "date" | "type" | "category" | "level" | "series") {
+  function closeOthers(except: "date" | "type" | "category" | "level" | "country" | "series") {
     if (except !== "date") setDateOpen(false);
     if (except !== "type") setTypeOpen(false);
     if (except !== "category") setCategoryOpen(false);
     if (except !== "level") setLevelOpen(false);
+    if (except !== "country") setCountryOpen(false);
     if (except !== "series") setMoreOpen(false);
   }
 
@@ -545,27 +652,71 @@ function MapFilterBar({
   const isNextWeekend = dateFrom === nextW.from && dateTo === nextW.to;
   const isThisMonth = dateFrom === thisM.from && dateTo === thisM.to;
   const isNextMonth = dateFrom === nextM.from && dateTo === nextM.to;
+  const today = todayIso();
+  const isUpcoming = dateFrom === today && !dateTo;
   const anyDate = !dateFrom && !dateTo;
   const dateActive = Boolean(dateFrom || dateTo);
-  const isPreset = isThisWeekend || isNextWeekend || isThisMonth || isNextMonth || anyDate;
-  const isCustom = dateActive && !isPreset;
-  const dateLabel = isThisWeekend
-    ? messages.thisWeekend
-    : isNextWeekend
-      ? messages.nextWeekend
-      : isThisMonth
-        ? messages.thisMonth
-        : isNextMonth
-          ? messages.nextMonth
-          : anyDate
-            ? messages.anyDate
-            : isCustom && dateFrom && dateTo
-              ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
-              : isCustom && dateFrom
-                ? `${messages.from} ${format(parseISO(dateFrom), "d MMM")}`
+  const isPreset =
+    isThisWeekend || isNextWeekend || isThisMonth || isNextMonth || anyDate || isUpcoming;
+  const isCustom = customPicked || (dateActive && !isPreset);
+
+  useEffect(() => {
+    if (!dateOpen) return;
+    setCustomPicked(dateActive && !isPreset);
+    setDateDraft(undefined);
+  }, [dateOpen]);
+
+  const draftFrom = dateDraft?.from ? format(dateDraft.from, "d MMM") : null;
+  const draftTo = dateDraft?.to ? format(dateDraft.to, "d MMM") : null;
+  const dateLabel = isCustom
+    ? draftFrom && draftTo
+      ? `${draftFrom} – ${draftTo}`
+      : draftFrom
+        ? `${draftFrom} – …`
+        : dateFrom && dateTo
+          ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
+          : dateFrom
+            ? `${messages.from} ${format(parseISO(dateFrom), "d MMM")}`
+            : messages.customDate
+    : isThisWeekend
+      ? messages.thisWeekend
+      : isNextWeekend
+        ? messages.nextWeekend
+        : isThisMonth
+          ? messages.thisMonth
+          : isNextMonth
+            ? messages.nextMonth
+            : isUpcoming
+              ? messages.upcoming
+              : anyDate
+                ? messages.anyDate
                 : messages.date;
 
   const seriesName = seriesList.find((s) => s.slug === series)?.name;
+  const countryLabel = country ? countryDisplayName(country, locale) : messages.allCountries;
+  const countryCodes = sortCountryCodes(
+    seriesList.map((s) => seriesCountryKey(s.countryCode)).filter((k) => k !== INT_COUNTRY),
+    locale,
+  );
+  const visibleSeries = country
+    ? seriesList.filter((s) => seriesCountryKey(s.countryCode) === country)
+    : seriesList;
+  const seriesGroups = groupSeriesByCountry(visibleSeries, locale, messages.international);
+  const seriesQ = seriesQuery.trim().toLowerCase();
+  const filteredSeriesGroups = seriesQ
+    ? seriesGroups
+        .map((g) => ({
+          ...g,
+          items: g.items.filter(
+            (s) =>
+              s.name.toLowerCase().includes(seriesQ) ||
+              s.slug.includes(seriesQ) ||
+              (s.shortName?.toLowerCase().includes(seriesQ) ?? false),
+          ),
+        }))
+        .filter((g) => g.items.length > 0)
+    : seriesGroups;
+  const showSeriesHeaders = !country && seriesGroups.length > 1;
   const selectedDisc = disciplines[0];
   const typeLabel = selectedDisc ? disciplineLabel(selectedDisc) : messages.typeFilter;
   const categoryLabel =
@@ -581,36 +732,48 @@ function MapFilterBar({
         ? RACE_LEVEL_LABELS[levels[0] as RaceLevel] || levels[0]
         : `${messages.levelFilter} · ${levels.length}`;
 
+  function applyPreset(from: string, to: string) {
+    setCustomPicked(false);
+    setDateDraft(undefined);
+    onPreset(from, to);
+  }
+
   const datePresets: { id: string; label: string; active: boolean; apply: () => void }[] = [
+    {
+      id: "upcoming",
+      label: messages.upcoming,
+      active: !isCustom && isUpcoming,
+      apply: () => applyPreset(today, ""),
+    },
     {
       id: "thisWeekend",
       label: messages.thisWeekend,
-      active: isThisWeekend,
-      apply: () => onPreset(thisW.from, thisW.to),
+      active: !isCustom && isThisWeekend,
+      apply: () => applyPreset(thisW.from, thisW.to),
     },
     {
       id: "nextWeekend",
       label: messages.nextWeekend,
-      active: isNextWeekend,
-      apply: () => onPreset(nextW.from, nextW.to),
+      active: !isCustom && isNextWeekend,
+      apply: () => applyPreset(nextW.from, nextW.to),
     },
     {
       id: "thisMonth",
       label: messages.thisMonth,
-      active: isThisMonth,
-      apply: () => onPreset(thisM.from, thisM.to),
+      active: !isCustom && isThisMonth,
+      apply: () => applyPreset(thisM.from, thisM.to),
     },
     {
       id: "nextMonth",
       label: messages.nextMonth,
-      active: isNextMonth,
-      apply: () => onPreset(nextM.from, nextM.to),
+      active: !isCustom && isNextMonth,
+      apply: () => applyPreset(nextM.from, nextM.to),
     },
     {
       id: "any",
       label: messages.anyDate,
-      active: anyDate,
-      apply: () => onPreset("", ""),
+      active: !isCustom && anyDate,
+      apply: () => applyPreset("", ""),
     },
   ];
 
@@ -626,6 +789,8 @@ function MapFilterBar({
         <button
           type="button"
           className={mapChip(dateActive && !anyDate)}
+          aria-expanded={dateOpen}
+          aria-haspopup="dialog"
           onClick={() => {
             closeOthers("date");
             setDateOpen((v) => !v);
@@ -636,50 +801,55 @@ function MapFilterBar({
           <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
         </button>
         {dateOpen && (
-          <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-72 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
-            <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
-              {messages.date}
-            </p>
-            {datePresets.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                className={`flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm ${
-                  opt.active ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
-                }`}
-                onClick={() => {
-                  opt.apply();
-                  setDateOpen(false);
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
-            <div className="mt-1 border-t border-stone-100 px-2 pb-1 pt-2">
-              <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
-                {messages.customDate}
+          <div
+            className="z-40 mt-2 flex w-full flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-stone-200 overscroll-contain md:absolute md:left-0 md:top-[calc(100%+8px)] md:mt-0 md:w-[min(calc(100vw-24px),36rem)] md:flex-row"
+            role="dialog"
+            aria-label={messages.date}
+          >
+            <div className="flex w-full shrink-0 flex-col p-2 md:w-44">
+              <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+                {messages.date}
               </p>
-              <div className="grid grid-cols-2 gap-2">
-                <label className="space-y-1">
-                  <span className="text-[11px] text-stone-500">{messages.from}</span>
-                  <Input
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => onFrom(e.target.value)}
-                    className="h-9"
-                  />
-                </label>
-                <label className="space-y-1">
-                  <span className="text-[11px] text-stone-500">{messages.to}</span>
-                  <Input
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => onTo(e.target.value)}
-                    className="h-9"
-                  />
-                </label>
-              </div>
+              {datePresets.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  aria-pressed={opt.active}
+                  className={`flex min-h-9 w-full items-center rounded-xl px-3 py-2 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 ${
+                    opt.active ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+                  }`}
+                  onClick={opt.apply}
+                >
+                  {opt.label}
+                </button>
+              ))}
+              <button
+                type="button"
+                aria-pressed={isCustom}
+                className={`mt-0.5 flex min-h-9 w-full items-center rounded-xl px-3 py-2 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 ${
+                  isCustom ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+                }`}
+                onClick={() => setCustomPicked(true)}
+              >
+                {messages.customDate}
+              </button>
             </div>
+            <div className="hidden w-px bg-stone-100 md:block" />
+            <div className="h-px bg-stone-100 md:hidden" />
+            <DateRangeCalendar
+              locale={locale}
+              selected={dateDraft ?? isoToRange(dateFrom, dateTo)}
+              onSelect={(range) => {
+                if (!range?.from) return;
+                setCustomPicked(true);
+                setDateDraft(range);
+                if (range.to) {
+                  const start = range.from <= range.to ? range.from : range.to;
+                  const end = range.from <= range.to ? range.to : range.from;
+                  onPreset(format(start, "yyyy-MM-dd"), format(end, "yyyy-MM-dd"));
+                }
+              }}
+            />
           </div>
         )}
       </div>
@@ -707,7 +877,7 @@ function MapFilterBar({
                 <div key={opt.id}>
                   <button
                     type="button"
-                    className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+                    className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm ${
                       on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
                     }`}
                     onClick={() => {
@@ -715,6 +885,11 @@ function MapFilterBar({
                       if (!opt.children?.length) setTypeOpen(false);
                     }}
                   >
+                    <span
+                      className="inline-block h-2 w-2 shrink-0 rounded-full"
+                      style={{ background: familyColor(opt.id) }}
+                      aria-hidden
+                    />
                     {opt.label}
                   </button>
                   {opt.children?.map((child) => {
@@ -723,7 +898,7 @@ function MapFilterBar({
                       <button
                         key={child.id}
                         type="button"
-                        className={`flex w-full items-center rounded-xl py-1.5 pl-6 pr-3 text-left text-sm ${
+                        className={`flex w-full items-center gap-2 rounded-xl py-1.5 pl-6 pr-3 text-left text-sm ${
                           childOn
                             ? "bg-stone-900 text-white"
                             : "text-stone-600 hover:bg-stone-50"
@@ -733,6 +908,11 @@ function MapFilterBar({
                           setTypeOpen(false);
                         }}
                       >
+                        <span
+                          className="inline-block h-2 w-2 shrink-0 rounded-full"
+                          style={{ background: familyColor(child.id) }}
+                          aria-hidden
+                        />
                         {child.label}
                       </button>
                     );
@@ -773,18 +953,18 @@ function MapFilterBar({
             <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
               {messages.categoryFilter}
             </p>
-            {AGE_CATEGORIES.map((id) => {
-              const on = categories.includes(id);
+            {AGE_CATEGORY_FILTERS.map((opt) => {
+              const on = categories.includes(opt.id);
               return (
                 <button
-                  key={id}
+                  key={opt.id}
                   type="button"
                   className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
                     on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
                   }`}
-                  onClick={() => onCategory(id)}
+                  onClick={() => onCategory(opt.id)}
                 >
-                  {AGE_CATEGORY_LABELS[id]}
+                  {opt.label}
                 </button>
               );
             })}
@@ -852,7 +1032,59 @@ function MapFilterBar({
         )}
       </div>
 
-      {seriesList.length > 0 && (
+      <div className="relative" ref={countryRef}>
+        <button
+          type="button"
+          className={mapChip(Boolean(country))}
+          onClick={() => {
+            closeOthers("country");
+            setCountryOpen((v) => !v);
+          }}
+        >
+          <Globe className="h-4 w-4 text-stone-500" />
+          {country ? countryLabel : messages.countryFilter}
+          <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
+        </button>
+        {countryOpen && (
+          <div className="absolute left-0 top-[calc(100%+8px)] z-40 max-h-80 w-64 overflow-y-auto rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
+            <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+              {messages.countryFilter}
+            </p>
+            <button
+              type="button"
+              className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+                !country ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+              }`}
+              onClick={() => {
+                if (country) onCountry(country);
+                setCountryOpen(false);
+              }}
+            >
+              {messages.allCountries}
+            </button>
+            {countryCodes.map((code) => {
+              const on = country === code;
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+                    on ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50"
+                  }`}
+                  onClick={() => {
+                    onCountry(code);
+                    setCountryOpen(false);
+                  }}
+                >
+                  {countryDisplayName(code, locale)}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {visibleSeries.length > 0 && (
         <div className="relative" ref={moreRef}>
           <button
             type="button"
@@ -860,31 +1092,55 @@ function MapFilterBar({
             onClick={() => {
               closeOthers("series");
               setMoreOpen((v) => !v);
+              setSeriesQuery("");
             }}
           >
             <SlidersHorizontal className="h-4 w-4 text-stone-500" />
-            {seriesName || "Series"}
+            {seriesName || messages.seriesFilter}
             <ChevronDown className="h-3.5 w-3.5 text-stone-400" />
           </button>
           {moreOpen && (
-            <div className="absolute left-0 top-[calc(100%+8px)] z-40 max-h-64 w-64 overflow-y-auto rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
-              {seriesList.slice(0, 24).map((s) => (
-                <button
-                  key={s.slug}
-                  type="button"
-                  className={`block w-full rounded-xl px-3 py-2 text-left text-sm ${
-                    series === s.slug
-                      ? "bg-stone-900 text-white"
-                      : "text-stone-700 hover:bg-stone-50"
-                  }`}
-                  onClick={() => {
-                    onSeries(s.slug);
-                    setMoreOpen(false);
-                  }}
-                >
-                  {s.name}
-                  <span className="ml-1 text-xs opacity-60">({s.eventCount})</span>
-                </button>
+            <div className="absolute left-0 top-[calc(100%+8px)] z-40 max-h-80 w-72 overflow-y-auto rounded-2xl bg-white p-2 shadow-xl ring-1 ring-stone-200">
+              <div className="sticky top-0 z-10 bg-white pb-1">
+                <Input
+                  type="search"
+                  value={seriesQuery}
+                  onChange={(e) => setSeriesQuery(e.target.value)}
+                  placeholder={messages.searchSeries}
+                  className="h-9"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </div>
+              {filteredSeriesGroups.length === 0 ? (
+                <p className="px-3 py-2 text-sm text-stone-500">{messages.noSeries}</p>
+              ) : null}
+              {filteredSeriesGroups.map((group) => (
+                <div key={group.key}>
+                  {showSeriesHeaders ? (
+                    <p className="px-3 pb-1 pt-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+                      {group.label}
+                    </p>
+                  ) : null}
+                  {group.items.map((s) => (
+                    <button
+                      key={s.slug}
+                      type="button"
+                      className={`block w-full rounded-xl px-3 py-2 text-left text-sm ${
+                        series === s.slug
+                          ? "bg-stone-900 text-white"
+                          : "text-stone-700 hover:bg-stone-50"
+                      }`}
+                      onClick={() => {
+                        onSeries(s.slug);
+                        setMoreOpen(false);
+                      }}
+                    >
+                      {s.name}
+                      <span className="ml-1 text-xs opacity-60">({s.eventCount})</span>
+                    </button>
+                  ))}
+                </div>
               ))}
               {series ? (
                 <button
@@ -1056,29 +1312,25 @@ function EventCard({
     event.classLabel ||
     RACE_LEVEL_LABELS[(event.level || "local") as RaceLevel] ||
     event.level;
-  const audienceLabel =
-    event.ageCategories?.length
-      ? event.ageCategories
-          .map((c) => AGE_CATEGORY_LABELS[c as keyof typeof AGE_CATEGORY_LABELS] || c)
-          .join(" · ")
-      : formatAudienceList(
-          event.audience,
-          { kids: messages.kids, youth: messages.youth, adults: messages.adults },
-          event.categories,
-        );
+  const audienceLabel = formatEventCategoryLabel(event, {
+    kids: messages.kids,
+    youth: messages.youth,
+    adults: messages.adults,
+  });
   const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
   return (
     <button
       type="button"
+      data-event-id={event.id}
       onClick={onClick}
-      className={`w-full border-b border-stone-100 px-4 py-3 text-left transition hover:bg-stone-50 ${
+      className={`w-full scroll-my-2 border-b border-stone-100 px-4 py-3 text-left transition hover:bg-stone-50 ${
         active ? "bg-stone-100" : ""
       }`}
     >
       <p className="font-mono text-[11px] font-medium uppercase tracking-wide text-stone-500">
         <span
           className="mr-1.5 inline-block h-2 w-2 rounded-full align-middle"
-          style={{ background: levelColor(event.level) }}
+          style={{ background: disciplineColor(event.disciplines) }}
           aria-hidden
         />
         {format(parseISO(event.startDate), "d MMM yyyy")}
@@ -1093,7 +1345,7 @@ function EventCard({
         {event.location?.municipality || event.location?.name || "—"}
         {event.location?.countryCode ? ` · ${event.location.countryCode}` : ""}
         {discLabel ? ` · ${discLabel}` : ""}
-        {` · ${audienceLabel}`}
+        {audienceLabel ? ` · ${audienceLabel}` : ""}
       </p>
     </button>
   );

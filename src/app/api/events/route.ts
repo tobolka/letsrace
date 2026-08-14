@@ -23,6 +23,9 @@ export async function GET(req: NextRequest) {
     levels: levels.length ? levels : undefined,
     ageCategories: ageCategories.length ? ageCategories : undefined,
     seriesSlug: sp.get("series") || undefined,
+    countryCodes: sp.getAll("country").filter(Boolean),
+    season: sp.get("season") || undefined,
+    eventTypes: sp.getAll("eventType").filter(Boolean),
     dateFrom: sp.get("dateFrom") || undefined,
     dateTo: sp.get("dateTo") || undefined,
     west: sp.get("west") ? Number(sp.get("west")) : undefined,
@@ -31,5 +34,9 @@ export async function GET(req: NextRequest) {
     north: sp.get("north") ? Number(sp.get("north")) : undefined,
     polygon,
   });
-  return NextResponse.json(events);
+  return NextResponse.json(events, {
+    headers: {
+      "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+    },
+  });
 }

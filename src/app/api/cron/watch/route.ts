@@ -2,15 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { runDueWatches } from "@/lib/watcher/run";
 import { geocodePendingLocations } from "@/lib/geocode";
 
+export const maxDuration = 60;
+
 export async function GET(req: NextRequest) {
   const secret = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const outcomes = await runDueWatches(12, { concurrency: 3, budgetMs: 50_000 });
+  const outcomes = await runDueWatches(40, { concurrency: 4, budgetMs: 52_000 });
   let geocode = null;
   try {
-    geocode = await geocodePendingLocations(40);
+    geocode = await geocodePendingLocations(60);
   } catch (e) {
     console.error("geocode after watch failed", e);
   }

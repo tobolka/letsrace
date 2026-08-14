@@ -5,32 +5,40 @@ import {
   Map as MapLibreMap,
   Marker,
   NavigationControl,
+  Popup,
   LngLatBounds,
   type Map,
   type StyleSpecification,
   type PaddingOptions,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
-import { levelColor } from "@/lib/map-visuals";
+import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
+import { disciplineColor } from "@/lib/map-visuals";
+import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
+
+export type MapBounds = {
+  west: number;
+  south: number;
+  east: number;
+  north: number;
+};
 
 type Props = {
   events: EventListItem[];
   selectedId?: string | null;
   onSelect: (id: string) => void;
-  onBoundsChange: (b: {
-    west: number;
-    south: number;
-    east: number;
-    north: number;
-  }) => void;
+  onBoundsChange: (b: MapBounds) => void;
   searchThisAreaLabel: string;
   showSearchArea: boolean;
-  onSearchArea: () => void;
+  onSearchArea: (b: MapBounds) => void;
   myLocationLabel?: string;
   locationDeniedLabel?: string;
   /** Keep markers clear of side panels / bottom sheet */
   padding?: PaddingOptions;
+  /** Increment to fit the camera to current `events`. */
+  fitSeq?: number;
 };
 
 const RASTER_STYLE: StyleSpecification = {
@@ -51,6 +59,30 @@ const RASTER_STYLE: StyleSpecification = {
   layers: [{ id: "carto", type: "raster", source: "carto" }],
 };
 
+let lastPinTipAt = 0;
+
+function pinTipContent(event: EventListItem) {
+  const root = document.createElement("div");
+  const name = document.createElement("p");
+  name.textContent = event.name;
+  name.style.cssText =
+    "margin:0;font-size:13px;font-weight:600;line-height:1.3;color:#1c1917;letter-spacing:-0.01em";
+
+  const meta = document.createElement("p");
+  const date = format(parseISO(event.startDate), "d MMM yyyy");
+  const discs = event.disciplines
+    .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
+    .filter(Boolean)
+    .slice(0, 3)
+    .join(" · ");
+  meta.textContent = discs ? `${date} · ${discs}` : date;
+  meta.style.cssText =
+    "margin:3px 0 0;font-size:11px;line-height:1.35;color:#78716c;font-variant-numeric:tabular-nums";
+
+  root.append(name, meta);
+  return root;
+}
+
 function makePinElement(event: EventListItem, selected: boolean) {
   const wrap = document.createElement("button");
   wrap.type = "button";
@@ -58,26 +90,41 @@ function makePinElement(event: EventListItem, selected: boolean) {
   wrap.setAttribute("aria-label", event.name);
   wrap.dataset.eventId = event.id;
   wrap.dataset.level = event.level || "local";
-
-  const size = selected ? 14 : 10;
-  const color = levelColor(event.level);
+  wrap.dataset.discipline = event.disciplines?.[0] || "other";
 
   wrap.style.cssText = [
-    "display:block",
-    `width:${size}px`,
-    `height:${size}px`,
+    "display:flex",
+    "align-items:center",
+    "justify-content:center",
+    "width:32px",
+    "height:32px",
     "padding:0",
     "margin:0",
-    "border-radius:9999px",
-    `background:${color}`,
-    "border:1.5px solid #fff",
-    "box-shadow:0 1px 2px rgba(0,0,0,.28)",
+    "border:0",
+    "background:transparent",
     "cursor:pointer",
     "appearance:none",
     "-webkit-appearance:none",
-    "transition:transform 120ms ease",
-    selected ? "transform:scale(1.35)" : "transform:none",
+    "touch-action:manipulation",
   ].join(";");
+
+  const dot = document.createElement("span");
+  const size = selected ? 20 : 16;
+  const color = disciplineColor(event.disciplines);
+  dot.setAttribute("aria-hidden", "true");
+  dot.style.cssText = [
+    `width:${size}px`,
+    `height:${size}px`,
+    "border-radius:9999px",
+    `background:${color}`,
+    "border:2px solid #fff",
+    "box-shadow:0 1px 3px rgba(0,0,0,.32)",
+    selected ? "transform:scale(1.25)" : "",
+    "transition:transform 120ms ease",
+    "pointer-events:none",
+    "flex:0 0 auto",
+  ].join(";");
+  wrap.appendChild(dot);
 
   return wrap;
 }
@@ -87,7 +134,6 @@ function makeUserLocationElement() {
   wrap.className = "startline-user-location";
   wrap.setAttribute("aria-label", "Your location");
   wrap.style.cssText = [
-    "position:relative",
     "width:18px",
     "height:18px",
     "pointer-events:none",
@@ -187,6 +233,22 @@ function fitRadius(
   });
 }
 
+function visibleBounds(map: Map, padding: PaddingOptions): MapBounds {
+  const canvas = map.getCanvas();
+  const left = typeof padding.left === "number" ? padding.left : 0;
+  const right = typeof padding.right === "number" ? padding.right : 0;
+  const top = typeof padding.top === "number" ? padding.top : 0;
+  const bottom = typeof padding.bottom === "number" ? padding.bottom : 0;
+  const sw = map.unproject([left, canvas.height - bottom]);
+  const ne = map.unproject([canvas.width - right, top]);
+  return {
+    west: Math.min(sw.lng, ne.lng),
+    south: Math.min(sw.lat, ne.lat),
+    east: Math.max(sw.lng, ne.lng),
+    north: Math.max(sw.lat, ne.lat),
+  };
+}
+
 export function RaceMap({
   events,
   selectedId,
@@ -198,11 +260,14 @@ export function RaceMap({
   myLocationLabel = "My location",
   locationDeniedLabel = "Location permission denied",
   padding = DEFAULT_PADDING,
+  fitSeq = 0,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const userMarkerRef = useRef<Marker | null>(null);
+  const hoverPopupRef = useRef<Popup | null>(null);
+  const hoverTimerRef = useRef<number>(0);
   const watchIdRef = useRef<number | null>(null);
   const locateBtnRef = useRef<HTMLButtonElement | null>(null);
   const initialViewDoneRef = useRef(false);
@@ -210,6 +275,7 @@ export function RaceMap({
   const onSelectRef = useRef(onSelect);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const paddingRef = useRef(padding);
+  const fitSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
   const [userPos, setUserPos] = useState<{ lng: number; lat: number; accuracy?: number } | null>(
     null,
@@ -224,13 +290,7 @@ export function RaceMap({
   const goToMyLocationRef = useRef<() => void>(() => {});
 
   function emitBounds(map: Map) {
-    const b = map.getBounds();
-    onBoundsChangeRef.current({
-      west: b.getWest(),
-      south: b.getSouth(),
-      east: b.getEast(),
-      north: b.getNorth(),
-    });
+    onBoundsChangeRef.current(visibleBounds(map, paddingRef.current));
   }
 
   function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
@@ -271,6 +331,30 @@ export function RaceMap({
           z-index: 5 !important;
           overflow: visible !important;
         }
+        .maplibregl-marker:has(.startline-map-pin:hover) {
+          z-index: 20 !important;
+        }
+        .startline-pin-tip {
+          pointer-events: none;
+          z-index: 30 !important;
+        }
+        .startline-pin-tip .maplibregl-popup-content {
+          padding: 8px 10px;
+          border-radius: 10px;
+          background: #fff;
+          box-shadow: 0 1px 2px rgba(28,25,23,.06), 0 10px 24px rgba(28,25,23,.14);
+          border: 1px solid rgba(28,25,23,.08);
+          font-family: ui-sans-serif, system-ui, sans-serif;
+        }
+        .startline-pin-tip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+          border-top-color: #fff;
+        }
+        .startline-pin-tip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+          border-bottom-color: #fff;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .startline-map-pin span { transition: none !important; }
+        }
       `;
       document.head.appendChild(style);
     }
@@ -280,6 +364,8 @@ export function RaceMap({
       style: RASTER_STYLE,
       center: FALLBACK_CENTER,
       zoom: 7,
+      maxBounds: EUROPE_CAMERA_BOUNDS,
+      renderWorldCopies: false,
       attributionControl: { compact: true },
     });
     mapRef.current = map;
@@ -340,6 +426,8 @@ export function RaceMap({
 
     const resize = () => map.resize();
     window.addEventListener("resize", resize);
+    const ro = new ResizeObserver(resize);
+    ro.observe(el);
     const t1 = window.setTimeout(resize, 50);
     const t2 = window.setTimeout(resize, 400);
 
@@ -347,12 +435,16 @@ export function RaceMap({
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.removeEventListener("resize", resize);
+      ro.disconnect();
       if (watchIdRef.current != null && navigator.geolocation) {
         navigator.geolocation.clearWatch(watchIdRef.current);
         watchIdRef.current = null;
       }
       userMarkerRef.current?.remove();
       userMarkerRef.current = null;
+      window.clearTimeout(hoverTimerRef.current);
+      hoverPopupRef.current?.remove();
+      hoverPopupRef.current = null;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
       map.remove();
@@ -367,6 +459,21 @@ export function RaceMap({
 
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
+    window.clearTimeout(hoverTimerRef.current);
+    hoverPopupRef.current?.remove();
+
+    if (!hoverPopupRef.current) {
+      hoverPopupRef.current = new Popup({
+        closeButton: false,
+        closeOnClick: false,
+        closeOnMove: false,
+        offset: 18,
+        className: "startline-pin-tip",
+        maxWidth: "260px",
+        anchor: "bottom",
+      });
+    }
+    const popup = hoverPopupRef.current;
 
     const withCoords = events.filter(
       (e) =>
@@ -379,14 +486,30 @@ export function RaceMap({
     for (const event of withCoords) {
       const selected = event.id === selectedId;
       const pin = makePinElement(event, selected);
+      const lngLat: [number, number] = [Number(event.location!.lng), Number(event.location!.lat)];
+
       pin.addEventListener("click", (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
+        window.clearTimeout(hoverTimerRef.current);
+        popup.remove();
         onSelectRef.current(event.id);
+      });
+      pin.addEventListener("mouseenter", () => {
+        window.clearTimeout(hoverTimerRef.current);
+        const delay = Date.now() - lastPinTipAt < 500 ? 0 : 280;
+        hoverTimerRef.current = window.setTimeout(() => {
+          popup.setLngLat(lngLat).setDOMContent(pinTipContent(event)).addTo(map);
+          lastPinTipAt = Date.now();
+        }, delay);
+      });
+      pin.addEventListener("mouseleave", () => {
+        window.clearTimeout(hoverTimerRef.current);
+        popup.remove();
       });
 
       const marker = new Marker({ element: pin, anchor: "center" })
-        .setLngLat([Number(event.location!.lng), Number(event.location!.lat)])
+        .setLngLat(lngLat)
         .addTo(map);
 
       markersRef.current.push(marker);
@@ -403,9 +526,12 @@ export function RaceMap({
     requestAnimationFrame(() => map.resize());
   }, [events, selectedId, mapEpoch, userPos]);
 
+  const prevSelectedIdRef = useRef(selectedId);
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !selectedId) return;
+    const selectedChanged = selectedId !== prevSelectedIdRef.current;
+    prevSelectedIdRef.current = selectedId;
+    if (!map || !selectedId || !selectedChanged) return;
     const ev = events.find((e) => e.id === selectedId);
     if (ev?.location?.lat == null || ev.location.lng == null) return;
     map.easeTo({
@@ -415,6 +541,29 @@ export function RaceMap({
       duration: 550,
     });
   }, [selectedId, events, padding]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || mapEpoch === 0 || !fitSeq || fitSeq === fitSeqRef.current) return;
+    fitSeqRef.current = fitSeq;
+    const coords = events.filter(
+      (e) =>
+        e.location?.lat != null &&
+        e.location?.lng != null &&
+        Number.isFinite(Number(e.location.lat)) &&
+        Number.isFinite(Number(e.location.lng)),
+    );
+    if (coords.length === 0) return;
+    const b = new LngLatBounds();
+    for (const e of coords) {
+      b.extend([Number(e.location!.lng), Number(e.location!.lat)]);
+    }
+    map.fitBounds(b, {
+      padding: paddingRef.current,
+      maxZoom: coords.length === 1 ? 9 : 8,
+      duration: 600,
+    });
+  }, [fitSeq, events, mapEpoch]);
 
   // Keep user location marker in sync + initial camera on first GPS fix
   useEffect(() => {
@@ -437,9 +586,15 @@ export function RaceMap({
 
     const onFix = (pos: GeolocationPosition) => {
       if (cancelled) return;
+      const lng = pos.coords.longitude;
+      const lat = pos.coords.latitude;
+      if (!isInEuropeMap(lat, lng)) {
+        setLocating(false);
+        return;
+      }
       setUserPos({
-        lng: pos.coords.longitude,
-        lat: pos.coords.latitude,
+        lng,
+        lat,
         accuracy: pos.coords.accuracy,
       });
       setLocError(null);
@@ -503,8 +658,9 @@ export function RaceMap({
     const apply = (pos: GeolocationPosition) => {
       const lng = pos.coords.longitude;
       const lat = pos.coords.latitude;
-      setUserPos({ lng, lat, accuracy: pos.coords.accuracy });
       setLocating(false);
+      if (!isInEuropeMap(lat, lng)) return;
+      setUserPos({ lng, lat, accuracy: pos.coords.accuracy });
       const map = mapRef.current;
       if (!map) return;
       userMovedRef.current = true;
@@ -547,7 +703,11 @@ export function RaceMap({
       {showSearchArea && (
         <button
           type="button"
-          onClick={onSearchArea}
+          onClick={() => {
+            const map = mapRef.current;
+            if (!map) return;
+            onSearchArea(visibleBounds(map, paddingRef.current));
+          }}
           className="absolute top-16 z-10 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-medium text-stone-800 shadow-md ring-1 ring-stone-200 hover:bg-stone-50 md:top-4"
           style={{ left: `calc(${leftPad}px + (100% - ${leftPad}px) / 2)` }}
         >

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Label } from "@/components/ui/primitives";
 import { AUDIENCES, DISCIPLINES } from "@/lib/domain";
+import { europeCountryOptions } from "@/lib/geo/europe";
 
 export type EventFormValues = {
   id?: string;
@@ -20,6 +21,7 @@ export type EventFormValues = {
   websiteUrl?: string;
   registrationUrl?: string;
   status: string;
+  visibility: string;
   lockFields: boolean;
 };
 
@@ -37,6 +39,7 @@ const empty: EventFormValues = {
   websiteUrl: "",
   registrationUrl: "",
   status: "scheduled",
+  visibility: "public",
   lockFields: true,
 };
 
@@ -81,6 +84,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
         websiteUrl: values.websiteUrl || undefined,
         registrationUrl: values.registrationUrl || undefined,
         status: values.status,
+        visibility: values.visibility,
         lockFields: values.lockFields,
       }),
     });
@@ -132,7 +136,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
             value={values.countryCode}
             onChange={(e) => set("countryCode", e.target.value)}
           >
-            {["CZ", "DE", "AT", "SK", "PL", "IT"].map((c) => (
+            {europeCountryOptions(values.countryCode).map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -176,7 +180,6 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
                 ["scheduled", "Scheduled (on map)"],
                 ["tbc", "TBC (on map)"],
                 ["postponed", "Postponed (on map)"],
-                ["hidden", "Hidden (not on map)"],
                 ["cancelled", "Cancelled"],
               ] as const
             ).map(([value, label]) => (
@@ -185,8 +188,26 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
               </option>
             ))}
           </select>
+        </Field>
+        <Field label="Visibility">
+          <select
+            className="h-10 w-full rounded-md border border-stone-300 px-3 text-sm"
+            value={values.visibility ?? (values.status === "hidden" ? "hidden" : "public")}
+            onChange={(e) => set("visibility", e.target.value)}
+          >
+            {(
+              [
+                ["public", "Public (on map)"],
+                ["hidden", "Hidden (not on map)"],
+              ] as const
+            ).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
           <p className="mt-1 text-xs text-stone-500">
-            Use Hidden for camps, trainings, and other non-race listings
+            Hide camps, trainings, and other non-race listings without changing race status
           </p>
         </Field>
       </div>

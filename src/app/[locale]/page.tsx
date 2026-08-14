@@ -12,14 +12,33 @@ export function generateStaticParams() {
 
 export default async function LocalePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale: raw } = await params;
   if (!locales.includes(raw as Locale)) notFound();
   const locale = (raw as Locale) || defaultLocale;
+  const sp = await searchParams;
+  const one = (key: string) => {
+    const v = sp[key];
+    return typeof v === "string" && v ? v : undefined;
+  };
+  const many = (key: string) => {
+    const v = sp[key];
+    if (Array.isArray(v)) return v.filter(Boolean);
+    return typeof v === "string" && v ? [v] : [];
+  };
   const events = await listEvents({
-    dateFrom: new Date().toISOString().slice(0, 10),
+    dateFrom: one("dateFrom") || new Date().toISOString().slice(0, 10),
+    dateTo: one("dateTo"),
+    seriesSlug: one("series"),
+    countryCodes: many("country"),
+    ageCategories: many("categories"),
+    disciplines: many("disciplines"),
+    levels: many("levels"),
+    q: one("q"),
   });
 
   return (

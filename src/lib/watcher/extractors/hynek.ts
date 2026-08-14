@@ -198,7 +198,7 @@ export function parseHynekMusil(url: string, html: string): ParsedEvent[] {
       const b = rest.join(" ").trim();
       if (
         /uci|world cup|čp|cp\b|cup|kpž|kpz|pohár|pohar|maraton|tour|c1|c2|c3/i.test(a) &&
-        (/,/.test(b) || /france|belgium|italy|germany|švýcar|slovakia|slovensko|ostrava|praha|brno/i.test(b))
+        (/,/.test(b) || /france|belgium|italy|germany|švýcar|slovakia|slovensko|slovenia|slovinsko|nizozemsko|netherlands|denmark|dánsko|ostrava|praha|brno/i.test(b))
       ) {
         name = a;
         place = b;
@@ -253,7 +253,7 @@ export function parseHynekMusil(url: string, html: string): ParsedEvent[] {
       name: name.slice(0, 120),
       startDate,
       placeText: place.slice(0, 80),
-      countryHint: /france|belgium|italy|germany|švýcar|switzerland|slovensko/i.test(placeName)
+      countryHint: /france|belgium|italy|germany|švýcar|switzerland|slovensko|slovenia|slovinsko|nizozemsko|netherlands|denmark|dánsko/i.test(placeName)
         ? undefined
         : "CZ",
       discipline: disc,

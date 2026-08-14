@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { isJunkListingName } from "@/lib/event-visibility";
 
 const MONTHS_CS: Record<string, string> = {
   ledna: "01",
@@ -48,7 +49,9 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
     if (m) startDate = `${csWord[3]}-${m}-${csWord[1].padStart(2, "0")}`;
   }
 
-  if (!startDate || !title) return [];
+  const name = title.replace(/\s*[|\-–].*$/, "").trim().slice(0, 140);
+  if (!startDate || !name) return [];
+  if (isJunkListingName(name)) return [];
 
   const audience = /junior|žák|deti|děti|kids|mládež|talent/i.test(title + text)
     ? "kids"
@@ -70,7 +73,7 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
   return [
     {
       externalId: `generic-${normalizeName(title)}-${startDate}`,
-      name: title.replace(/\s*[|\-–].*$/, "").trim().slice(0, 140),
+      name,
       startDate,
       placeText: guessPlace(text) || "Unknown",
       countryHint: guessCountry(url, text),
@@ -90,11 +93,16 @@ function guessPlace(text: string): string | null {
 }
 
 function guessCountry(url: string, text: string): string {
-  if (/\.cz\b|Česk|Czech/i.test(url + text)) return "CZ";
-  if (/\.sk\b|Slovensk/i.test(url + text)) return "SK";
-  if (/\.de\b|Deutsch|Germany/i.test(url + text)) return "DE";
-  if (/\.at\b|Öster|Austria/i.test(url + text)) return "AT";
-  if (/\.pl\b|Polsk|Poland/i.test(url + text)) return "PL";
-  if (/\.it\b|Italia|Italy/i.test(url + text)) return "IT";
+  const blob = url + text;
+  if (/\.si\b|slovinsko|slovenia|slovenija/i.test(blob)) return "SI";
+  if (/\.dk\b|dánsko|dansko|denmark|dänemark/i.test(blob)) return "DK";
+  if (/\.nl\b|nizozemsko|netherlands|nederland|holland/i.test(blob)) return "NL";
+  if (/\.be\b|belgie|belgicko|belgium|belgien|belgique/i.test(blob)) return "BE";
+  if (/\.cz\b|Česk|Czech/i.test(blob)) return "CZ";
+  if (/\.sk\b|Slovensk/i.test(blob)) return "SK";
+  if (/\.de\b|Deutsch|Germany/i.test(blob)) return "DE";
+  if (/\.at\b|Öster|Austria/i.test(blob)) return "AT";
+  if (/\.pl\b|Polsk|Poland/i.test(blob)) return "PL";
+  if (/\.it\b|Italia|Italy/i.test(blob)) return "IT";
   return "CZ";
 }

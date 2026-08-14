@@ -30,19 +30,128 @@ const SERIES_ALIAS_RULES: { re: RegExp; token: string }[] = [
     token: "series:cesky_pohar_mtb",
   },
   { re: /\bprima\s*cup\b/i, token: "series:prima_cup" },
-  { re: /\btalent\s*cup\b/i, token: "series:talent_cup" },
+  { re: /\btalent\s*cup\b|\btalentcup\b/i, token: "series:talent_cup" },
+  { re: /\bmtb\s*biatlon\b/i, token: "series:mtb_biatlon" },
   { re: /\bkolo\s*pro\b|\bkolopro\b/i, token: "series:kolopro" },
   { re: /\bjunior\s*cup\b/i, token: "series:junior_cup" },
+  { re: /\b(vpace\s*)?kids\s*cup\b/i, token: "series:kids_cup" },
+  { re: /\bcube\s*(kids\s*)?cup\b/i, token: "series:cube_cup" },
+  { re: /\btbc\b|\btbc\s*s[eé]rie\b/i, token: "series:tbc_cx" },
+  { re: /\brookies\s*(dh\s*)?cup\b|\brdc\b/i, token: "series:rookies_dh" },
+  { re: /\bixs\s*(european\s*)?(downhill|dh)\s*cup\b|\bixs\s*edc\b|\bixs\s*dhc\b/i, token: "series:ixs_dh" },
+  { re: /\bczech\s*enduro|\benduro\s*serie/i, token: "series:czech_enduro" },
+  { re: /\bprazsky\s*mtb\s*pohar|pražský\s*mtb\s*pohár/i, token: "series:prazsky_mtb" },
+  { re: /\bcesky\s*pohar\s*mtb|český\s*pohár\s*mtb|poharmtb/i, token: "series:cesky_pohar_mtb" },
+  { re: /\buci\s*mtb\s*world\s*(cup|series)\b/i, token: "series:uci_mtb_ws" },
+  { re: /\bd[eě]tsk[yý]\s*mtb\s*cup\b/i, token: "series:detsky_mtb_cup" },
+  {
+    re: /\bvelk[yý]\s*h[aá]j\b|\bpohar\s*m[cč]\s*praha\s*4\b/i,
+    token: "series:pohar_praha_4",
+  },
+  {
+    re: /\bppkbike\b|\bpohar\s*plzenskeho\s*kraje\b/i,
+    token: "series:ppkbike",
+  },
+  { re: /\bpohar\s*kv\s*kraje\b/i, token: "series:pohar_kv_hk" },
+  { re: /\bdetska\s*tour(\s*petra\s*sagana)?\b|\bdtps\b/i, token: "series:dtps" },
+  { re: /\balb-?gold\s*juniors/i, token: "series:alb_gold" },
+  { re: /\brookies\s*cup\s*ostbayern\b/i, token: "series:rookies_ostbayern" },
+  { re: /\bxco-?bikecup\b/i, token: "series:xco_bikecup" },
+  { re: /\bjunior\s*bike\s*cup\b/i, token: "series:junior_bike_cup" },
+  { re: /\bon-off\s*mtb/i, token: "series:on_off_mtb" },
+  { re: /\bpoland\s*bike\b/i, token: "series:poland_bike" },
+  { re: /\bsalzkammergut\s*trophy\b/i, token: "series:skg_trophy" },
+  { re: /\bpeklo\s*severu\b/i, token: "series:peklo_severu" },
   { re: /\bsport\s*challenge\b/i, token: "series:sport_challenge" },
+  { re: /\bsumavsk[yý]\s*(mtb\s*)?pohar\b|\bšumavsk[yý]\s*(mtb\s*)?pohár\b/i, token: "series:sumavsky" },
+  { re: /\bbayerwald\s*mtb\s*cup\b/i, token: "series:bayerwald" },
+  { re: /\bwerdenfels/i, token: "series:werdenfels" },
+  { re: /\bpodkrkonossk[yý]\s*maraton\b|\bpodkrkonošsk[yý]\s*maraton\b/i, token: "series:podkrkonossky" },
+  { re: /\brhein-main\s*cup\b/i, token: "series:rhein_main" },
+  { re: /\beldorado\s*kids/i, token: "series:eldorado_kids" },
+  { re: /\bktm\s*junior\s*challenge\b/i, token: "series:ktm_junior" },
+  { re: /\bdetska\s*vrl\b|\bvrl\s*adriana\s*babica/i, token: "series:detska_vrl" },
+  { re: /\bberg\s*&\s*bike\b|\bmpdv\s*(mountainbike\s*)?cup\b/i, token: "series:berg_bike" },
+  { re: /\bwiesbadener\s*stadtmeisterschaft\b/i, token: "series:wiesbaden_stadt" },
+  { re: /\ballga[eu]er\s*alpenwasser\b/i, token: "series:allgaeu_kids" },
+  { re: /\bzanzenberg\b/i, token: "series:zanzenberg" },
+  { re: /\bglobmetal\b/i, token: "series:globmetal" },
+  { re: /\b(skoda\s*)?swiss\s*bike\s*cup\b/i, token: "series:skoda_swiss_bike" },
+  { re: /\bvittoria(-fischer)?\b/i, token: "series:vittoria_fischer" },
+  { re: /\bkids\s*bike\s*cup\s*valais\b|\bvalais\/wallis\b/i, token: "series:valais_kids" },
+  { re: /\bvaliant\s*gp\b/i, token: "series:valiant_gp" },
+  { re: /\bbike\s*kingdom\b/i, token: "series:bike_kingdom" },
+  { re: /\bbundicycling\b/i, token: "series:bundi_kids" },
+  { re: /\beiger\s*bike.*kids\b|\bkids\s*race.*eiger\b/i, token: "series:eiger_kids" },
+  { re: /\beiger\s*bike\s*challenge\b/i, token: "series:eiger_adult" },
+  { re: /\bkids\s*bike\s*trophy\b/i, token: "series:kids_bike_trophy" },
+  { re: /\bxco-nrw\b|\bschuler[\s-]*cup\b|\bschüler[\s-]*cup\b/i, token: "series:xco_nrw" },
+  { re: /\brena\s*kids\b/i, token: "series:rena_kids" },
+  { re: /\bsparkassen[\s-]*kids\b/i, token: "series:albstadt_kids" },
+  { re: /\bstoakart\b/i, token: "series:stoakart" },
+  { re: /\bjarni\s*bahno\b|\bbahno\b/i, token: "series:bahno" },
+  { re: /\bbike\s*revolution\b/i, token: "series:bike_revolution" },
+  { re: /\bbikeside\b/i, token: "series:bikeside" },
+  { re: /\bcopa\s*madrid\b/i, token: "series:copa_madrid" },
+  { re: /\blillelunds\b/i, token: "series:lillelunds" },
+  { re: /\bmtb\s*race\s*series\b/i, token: "series:mtb_race_series" },
+  { re: /\bmarathon[\s-]*man\b/i, token: "series:marathon_man" },
+  { re: /\bkr[aá]l\s+[sš]umavy\b/i, token: "series:kral_sumavy" },
+  { re: /\bmalevil\b/i, token: "series:malevil" },
+  { re: /\bhoral\b/i, token: "series:horal" },
+  { re: /\bnationalpark\s*bike\b/i, token: "series:np_bike" },
+  { re: /\bgrand\s*raid\b/i, token: "series:grand_raid" },
+  { re: /\bevol[eé]nard\s*fmv\b/i, token: "series:evolenard_fmv" },
+  { re: /\bpomerania\b/i, token: "series:pomerania" },
+  { re: /\bsilesia\s*bike\b/i, token: "series:silesia_bike" },
+  { re: /\bhero\s*(s[uü]dtirol|dolomites)\b/i, token: "series:hero_dolomites" },
+  { re: /\btroi\s*trek\b/i, token: "series:troi_trek" },
+  { re: /\bsloenduro\b/i, token: "series:sloenduro" },
+  { re: /\b3\s*nations\s*cup\b/i, token: "series:3_nations" },
+  { re: /\bitalia\s*bike\s*cup\s*young\b/i, token: "series:ibc_young" },
+  { re: /\bitalia\s*bike\s*cup(?!\s*young)\b/i, token: "series:ibc" },
+  { re: /\bcoppa\s*italia\s*giovanile\b/i, token: "series:cig_mtb" },
+  { re: /\bcopa\s*catalana\s*internacional\b/i, token: "series:copa_cat_int" },
+  { re: /\bcopa\s*catalunya\s*btt\b/i, token: "series:copa_cat_btt" },
+  { re: /\bcopa\s*de\s*espa[nñ]a\s*xcm\b/i, token: "series:copa_es_xcm" },
+  { re: /\bcopa\s*de\s*espa[nñ]a\s*enduro\b/i, token: "series:copa_es_enduro" },
+  { re: /\bcopa\s*de\s*espa[nñ]a\s*(dh|descenso)\b/i, token: "series:copa_es_dh" },
+  { re: /\bcroatia\s*mtb\s*xco\s*cup\b|\bmtb\s*croatia\s*cup\b/i, token: "series:croatia_xco" },
+  { re: /\bkultainen\s*kampi\b/i, token: "series:kampi" },
+  { re: /\b4\s*islands\s*epic\b/i, token: "series:4_islands" },
+  { re: /\bmtb\s*kids\s*series\b|\bvlaanderen\s*mtb\s*kids\b/i, token: "series:vl_kids" },
+  { re: /\bmtb\s*xco\s*series\b|\bvlaanderen\s*mtb\s*xco\b/i, token: "series:vl_xco" },
+  { re: /\boost-nederland\b|\bmtb\s*cup\s*oost\b/i, token: "series:oost_nl" },
+  { re: /\bstreetrace\b/i, token: "series:streetrace" },
+  { re: /\bnk\s*mountainbike\b/i, token: "series:nk_mtb" },
+  { re: /\bsloxcup\b|\bslo\s*x[\s-]*cup\b/i, token: "series:sloxcup" },
+  {
+    re: /\bslovenia\s*downhill\b|\bslovenija\s*downhill\b/i,
+    token: "series:slovenia_dh",
+  },
+  { re: /\bmb\s*race\b/i, token: "series:mb_race" },
+  { re: /\btransmaurienne\b/i, token: "series:transmaurienne" },
+  { re: /\broc\s*d['’]?azur\b/i, token: "series:roc_azur" },
+  { re: /\brye\s*bike\b/i, token: "series:rye_bike" },
+  { re: /\bcrosskov[aá]csi\b/i, token: "series:crosskovacsi" },
+  { re: /\balpentour\b/i, token: "series:alpentour" },
+  { re: /\b(la\s*)?rioja\s*bike\b/i, token: "series:rioja_bike" },
+  { re: /\b(telenet\s*)?superprestige\b/i, token: "series:superprestige" },
+  { re: /\buci\s*cyclo-?cross\s*world\s*cup\b|\bcyclo-?cross\s*world\s*cup\b/i, token: "series:uci_cx_wc" },
+  { re: /\buec\b/i, token: "series:uec" },
   { re: /\bworld\s*cup\b|\bswc\b|\bcdm\b/i, token: "series:world_cup" },
 ];
 
 const NOISE_WORDS =
-  /\b(zavod|race|open|memorial|memoria|uci|c1|c2|c3|hc|xco|xcc|xcm|dh|enduro|gravel|road|mtb|cx|bmx|elite|junior|u23|masters|kids|deti|mladez)\b/gi;
+  /\b(zavod|race|open|memorial|memoria|uci|c1|c2|c3|hc|xco|xcc|xcm|dh|enduro|gravel|road|mtb|cx|bmx|elite|junior|u23|masters|kids|deti|mladez|vpace)\b/gi;
 
 /** Calendar roots that must not count as “same URL”. */
 const GENERIC_HOST_PATH =
-  /^(hynekmusil\.cz|sumator\.cz|mtbs\.cz|radsport-events\.de|eventivsport\.com|velokal\.de|jiskra\.potocky\.cz)(\/(kalendar|sekce\/kalendar|map|race\/?)?)?$/i;
+  /^(hynekmusil\.cz|sumator\.cz|mtbs\.cz|radsport-events\.de|eventivsport\.com|velokal\.de|jiskra\.potocky\.cz|jihoceskymtbpohar\.cz|maraton\.cz|mso\.swiss)(\/(kalendar|sekce\/kalendar|map|race\/?|terminovka)?)?$/i;
+
+/** Series calendars / hub pages — shared by every round, never identity. */
+const CALENDAR_URL_PATH =
+  /kidscup\.bike\/(en\/)?(race-calendar|rennkalender)|rookiescup\.bike\/(en\/)?(race-calendar|rennkalender)|ixsdownhillcup\.com\/(en\/)?(race-calendar|rennkalender)|cup\.cube\.eu\/?(anmeldung)?\/?$|kolopro\.cz\/zavody\/?$|juniorcup\.net\/?$|iprimacup\.cz\/zavody-20\d{2}|poharmtb\.cz\/(cross-country|enduro|downhill)|zapadoceskaamaterskaliga\.cz\/kalendare|prahamtb\.cz|enduroserie\.cz\/zavody|enduro\.sportsoft\.cz|cyklokros\.cz\/kalendar|ucimtbworldseries\.com\/calendar|swiss-cycling\.ch\/.*kalender|cyclingaustria\.at\/kalender|detskymtbcup\.cz\/?$|skvelopraha\.cz\/velky-haj|ppkbike\.cz|ppk-hk\.cz|cyklistikaszc\.sk\/.*kalendar|albgold-juniorscup\.de|rookiescup-ostbayern\.de\/rennen|xco-bikecup\.de|schwarzwaelder-mtb-cup\.de|rhein-eifel-mtb-cup\.de|mtb-oberschwaben-cup\.de|mtbsaarlandliga\.de\/rennen|juniorbikecup\.at\/termine|polandbike\.pl\/kalendarz|salzkammergut-trophy\.at|pekloseveru\.cz\/(cz\/)?registrace|pekloseveru\.cz\/en\/registration|pekloseveru\.cz\/.*propozice-serialu|pekloseveru\.cz\/.*series-regulations|ustimtbcup\.cz\/?$|jcp-mtb\.cz\/?$|bayerwald-mtb-cup\.com\/?$|skiclub-bb\.com\/werdenfelscup|mtb-rhein-main-cup\.de\/?$|mtb-kidscup\.de\/start\/termine-2|mountainbike-challenge\.at\/?$|soof\.sk\/podujatia-a-akcie|mpdv-cup\.de\/?$|swissbikecup\.ch(\/(en|de|fr))?\/?$|mtb-cup\.ch\/(en\/)?race\/?$|valais-cycling\.ch\/.*kids-bike-cup-valais|bikekingdom\.ch\/.*kids-cup|eigerbike\.ch\/.*kids-race|eigerbike\.ch\/.*race\/informations|marathon-man\.eu\/?$|mtbpomerania\.pl\/?$|silesia\.bike\/?$|sloenduro\.com\/.*sloenduro-calendar|sloxcup\.com\/dirke-2026|sloveniadownhillcup\.si\/(en\/)?(races|dirke)-2026|belgiancycling\.be\/.*3-nations-cup\/kalender|cycling\.vlaanderen\/competitie\/mtb\/(xco|kids)-series|mtbcompetitieoostnederland\.nl\/.*agenda-mbt-cup|knwu\.nl\/kampioenschappen\/nk-mountainbike|knwu\.nl\/nieuws\/klaar-voor-mtb-streetrace|federciclismo\.it\/.*circuiti-mtb\/(italia-bike-cup|coppa-italia-giovanile)|ciclisme\.cat\/campionat\/btt\/copa-catal|hbs\.hr\/kalendar|pyoraily\.fi\/.*kultainen-kampi|esmtb\.com\/calendario-de-las-copas-de-espana|bikeclub-engelberg\.ch\/wp\/valiant-gp|brvinfo\.ch\/bundicycling-kidscup|xco-nrw-cup\.de\/?$|schwarzwald-bike-marathon\.de\/.*rena-kids-cup|albstadt-bike-marathon\.de\/?$|rsv-bad-griesbach\.de\/?$|bahno\.ambike\.com\/?$|mtbraceseries\.ch\/egg|bikeside\.ch(\/kategorien)?\/?$|fmciclismo\.com\/.*ESCUELAS|superprestigecyclocross\.be\/.+\/kalender\/?$|ucicyclocrossworldcup\.com\/.+\/calendar\/?$|uec\.ch\/.+\/calendar|detskatour\.sk\/?$/i;
 
 /**
  * Strip tracking noise; hostname + pathname only.
@@ -57,6 +166,7 @@ export function normalizeUrlForDedup(raw: string | null | undefined): string {
     // Drop empty or root-only aggregators
     const key = `${host}${path}`.toLowerCase();
     if (GENERIC_HOST_PATH.test(key) || GENERIC_HOST_PATH.test(host)) return "";
+    if (CALENDAR_URL_PATH.test(key)) return "";
     // Bare domain with no meaningful path → ignore
     if (!path || path === "/") return "";
     return key;
@@ -115,6 +225,7 @@ export function isWeakRaceName(name: string): boolean {
   if (!folded || folded.length < 4) return true;
   if (/^(uci\s*)?(hc|c[1-3]|cdm)$/i.test(folded)) return true;
   if (/^(uci\s*c[1-3]|uci\s*hc)$/i.test(folded)) return true;
+  if (/^(uci mtb world cup|nmnm|vimperk|bedrichov)$/.test(folded)) return true;
   const canon = canonicalizeForDedup(name);
   return !canon || canon.length < 3;
 }
@@ -123,6 +234,10 @@ export function isWeakRaceName(name: string): boolean {
 export function nameSimilarity(a: string, b: string): number {
   const x = canonicalizeForDedup(a) || normalizeName(a);
   const y = canonicalizeForDedup(b) || normalizeName(b);
+  return dice(x, y);
+}
+
+function dice(x: string, y: string): number {
   if (!x || !y) return 0;
   if (x === y) return 1;
   const bigrams = (s: string) => {
@@ -143,6 +258,34 @@ export function nameSimilarity(a: string, b: string): number {
     }
   }
   return (2 * inter) / (A.length + B.length);
+}
+
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function placeTokens(...places: (string | null | undefined)[]): string[] {
+  const out = new Set<string>();
+  for (const p of places) {
+    if (!p) continue;
+    for (const w of fold(p)
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length >= 4)) {
+      out.add(w);
+    }
+  }
+  return [...out];
+}
+
+/** Canonical title with venue words stripped so "Blovice - DÚŠA KAP" ≈ "5. TalentCUP: DÚŠA KAP". */
+function coreCanonical(ev: DedupEvent, other: DedupEvent): string {
+  let s = fold(ev.name);
+  for (const tok of placeTokens(ev.placeText, other.placeText)) {
+    s = s.replace(new RegExp(`\\b${escapeRe(tok)}\\b`, "g"), " ");
+  }
+  const blob = ev.seriesName ? `${s} ${fold(ev.seriesName)}` : s;
+  return canonicalizeForDedup(blob);
 }
 
 function parseDay(iso: string): number {
@@ -171,6 +314,14 @@ export function datesCompatible(a: DateSpan, b: DateSpan, maxGap = 1): boolean {
   return true;
 }
 
+export function isGarbagePlace(place?: string | null): boolean {
+  const p = fold(place || "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return !p || /^(uci\s*(c[123]|cn|hc)|unknown|silnice)$/.test(p);
+}
+
 export function placesNearby(
   a: { lat?: number | null; lng?: number | null; placeText?: string | null },
   b: { lat?: number | null; lng?: number | null; placeText?: string | null },
@@ -181,7 +332,7 @@ export function placesNearby(
   }
   const pa = fold(a.placeText || "").replace(/[^a-z0-9\s]/g, " ").trim();
   const pb = fold(b.placeText || "").replace(/[^a-z0-9\s]/g, " ").trim();
-  if (!pa || !pb) return false;
+  if (!pa || !pb || isGarbagePlace(pa) || isGarbagePlace(pb)) return false;
   const ta = pa.split(/\s+/).filter((w) => w.length >= 4);
   const tb = pb.split(/\s+/).filter((w) => w.length >= 4);
   return ta.some((w) => pb.includes(w)) || tb.some((w) => pa.includes(w));
@@ -194,6 +345,7 @@ export type DedupEvent = {
   lat?: number | null;
   lng?: number | null;
   placeText?: string | null;
+  seriesName?: string | null;
   fingerprint?: string;
   /** website / registration / race-detail source URLs (not calendar roots) */
   urls?: (string | null | undefined)[];
@@ -221,15 +373,40 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   const sameUrl = urlsOverlap(a.urls, b.urls);
   const datesOk = datesCompatible(a, b, 1);
   const sameDay = a.startDate.slice(0, 10) === b.startDate.slice(0, 10);
-  const near = placesNearby(a, b);
-  const sim = nameSimilarity(a.name, b.name);
-  const ca = canonicalizeForDedup(a.name);
-  const cb = canonicalizeForDedup(b.name);
-  const aliasesA = seriesAliasTokens(a.name);
-  const aliasesB = seriesAliasTokens(b.name);
+  let near = placesNearby(a, b);
+  const ca = coreCanonical(a, b);
+  const cb = coreCanonical(b, a);
+  const sim = Math.max(nameSimilarity(a.name, b.name), dice(ca, cb));
+  const aliasesA = seriesAliasTokens(`${a.name} ${a.seriesName ?? ""}`);
+  const aliasesB = seriesAliasTokens(`${b.name} ${b.seriesName ?? ""}`);
   const sharedAlias = aliasesA.some((t) => aliasesB.includes(t));
   const weakA = isWeakRaceName(a.name);
   const weakB = isWeakRaceName(b.name);
+
+  // Distinct formats at the same venue/weekend (XCO vs biatlon, DH vs XCM, …)
+  if (!sameUrl && formatConflict(a.name, b.name)) {
+    return { score: 0, reasons: ["format_conflict"] };
+  }
+
+  // Women's race vs open/men's race the same day (UMAG/Poreč Classic)
+  if (!sameUrl && genderConflict(a.name, b.name)) {
+    return { score: 0, reasons: ["gender_conflict"] };
+  }
+
+  // Distinct named series at the same venue (Kids Cup vs iXS DHC, …)
+  if (!sameUrl && aliasesA.length && aliasesB.length && !sharedAlias) {
+    return { score: 0, reasons: ["series_conflict"] };
+  }
+
+  if (
+    !near &&
+    datesOk &&
+    (isGarbagePlace(a.placeText) || isGarbagePlace(b.placeText)) &&
+    (sharedAlias || sim >= 0.55 || weakA || weakB)
+  ) {
+    near = true;
+    reasons.push("place_unknown_same_weekend");
+  }
 
   // --- URL (strong, but still need plausible dates for multi-year reuse of pages)
   if (sameUrl) {
@@ -266,9 +443,14 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   if (ca && cb && ca === cb) {
     score += 28;
     reasons.push("same_canonical_name");
-  } else if (sharedAlias) {
+  } else if (sharedAlias && near && sameDay) {
+    // Same series + venue + day (Hynek listing vs official calendar).
+    // Consecutive cup rounds share branding — do not merge across the weekend.
     score += 24;
     reasons.push("series_alias");
+  } else if (sharedAlias) {
+    score += 8;
+    reasons.push("series_alias_weak");
   } else if (sim >= 0.88) {
     score += 26;
     reasons.push("name_sim_high");
@@ -321,11 +503,45 @@ export function isLikelyDuplicate(a: DedupEvent, b: DedupEvent): boolean {
   return scoreDuplicate(a, b).score >= DEDUP_THRESHOLD;
 }
 
+/** Conflicting race-format tokens → not the same event even at one venue. */
+const FORMAT_TOKENS = [
+  "biatlon",
+  "xco",
+  "xcm",
+  "xcc",
+  "dh",
+  "downhill",
+  "enduro",
+  "gravel",
+  "cyclo",
+  "casovka",
+  "časovka",
+  "eliminator",
+  "eliminátor",
+  "short track",
+  "maraton",
+] as const;
+
+export function formatConflict(aName: string, bName: string): boolean {
+  const fa = fold(aName);
+  const fb = fold(bName);
+  const ta = FORMAT_TOKENS.filter((t) => fa.includes(fold(t)));
+  const tb = FORMAT_TOKENS.filter((t) => fb.includes(fold(t)));
+  if (!ta.length || !tb.length) return false;
+  return !ta.some((t) => tb.includes(t));
+}
+
+function genderConflict(aName: string, bName: string): boolean {
+  const lady = /\b(ladies|women|donne|žen|zeny|femminile|female)\b/i;
+  return lady.test(aName) !== lady.test(bName);
+}
+
 /** Prefer a human-useful title over class-only or English stub. */
 export function preferEventName(a: string, b: string): string {
   const score = (n: string) => {
     let s = n.trim().length;
     if (isWeakRaceName(n)) s -= 40;
+    if (/^\d{1,2}\.\s/.test(n.trim())) s -= 35;
     if (seriesAliasTokens(n).length) s += 25;
     if (/[áčďéěíňóřšťúůýž]/i.test(n) || /\bčp\b/i.test(n)) s += 8;
     if (/\bostrava|praha|brno|plzen|liberec\b/i.test(n)) s += 10;
@@ -347,9 +563,11 @@ const LEVEL_RANK: Record<string, number> = {
   local: 1,
   regional: 2,
   national: 3,
-  international: 4,
-  european_championship: 5,
-  world_championship: 6,
+  continental: 4,
+  international: 5,
+  world_cup: 6,
+  european_championship: 7,
+  world_championship: 8,
 };
 
 export function preferLevel(

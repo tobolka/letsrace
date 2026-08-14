@@ -20,8 +20,7 @@ export function expandAudience(
   const fromCats = inferFromCategories(categories);
   if (fromCats.length) return fromCats;
 
-  // "mixed" / unknown → list who can typically start
-  return ["kids", "youth", "adults"];
+  return [];
 }
 
 function inferFromCategories(categories?: CatHint[] | null): ConcreteAudience[] {

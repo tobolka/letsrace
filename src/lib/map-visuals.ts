@@ -1,34 +1,46 @@
-import type { Discipline, RaceLevel } from "@/lib/taxonomy";
+import {
+  disciplineFamily,
+  eventDisciplineFamily,
+  type Discipline,
+} from "@/lib/taxonomy";
 
-/** Race-level colors for map dots + list accents. Keep flat and readable. */
-export const LEVEL_COLORS: Record<RaceLevel, string> = {
-  local: "#16a34a",
-  regional: "#2563eb",
-  national: "#7c3aed",
-  international: "#ea580c",
-  world_cup: "#dc2626",
-  european_championship: "#ca8a04",
-  world_championship: "#ca8a04",
+export { disciplineFamily, eventDisciplineFamily };
+
+/** One hue per discipline family — map pins, list dots, detail header. */
+export const DISCIPLINE_FAMILY_COLORS: Record<string, string> = {
+  mtb: "#16a34a",
+  road: "#2563eb",
+  gravel: "#d97706",
+  cx: "#c2410c",
+  track: "#7c3aed",
+  bmx: "#e11d48",
+  para: "#0891b2",
+  other: "#78716c",
 };
 
-export const LEVEL_COLORS_DARK: Record<RaceLevel, string> = {
-  local: "#15803d",
-  regional: "#1d4ed8",
-  national: "#6d28d9",
-  international: "#c2410c",
-  world_cup: "#b91c1c",
-  european_championship: "#a16207",
-  world_championship: "#a16207",
+export const DISCIPLINE_FAMILY_COLORS_DARK: Record<string, string> = {
+  mtb: "#15803d",
+  road: "#1d4ed8",
+  gravel: "#b45309",
+  cx: "#9a3412",
+  track: "#6d28d9",
+  bmx: "#be123c",
+  para: "#0e7490",
+  other: "#57534e",
 };
 
-export function levelColor(level: string | null | undefined): string {
-  const key = (level || "local") as RaceLevel;
-  return LEVEL_COLORS[key] ?? LEVEL_COLORS.local;
+export function disciplineColor(disciplines: string[] | null | undefined): string {
+  const fam = eventDisciplineFamily(disciplines);
+  return DISCIPLINE_FAMILY_COLORS[fam] ?? DISCIPLINE_FAMILY_COLORS.other;
 }
 
-export function levelColorDark(level: string | null | undefined): string {
-  const key = (level || "local") as RaceLevel;
-  return LEVEL_COLORS_DARK[key] ?? LEVEL_COLORS_DARK.local;
+export function disciplineColorDark(disciplines: string[] | null | undefined): string {
+  const fam = eventDisciplineFamily(disciplines);
+  return DISCIPLINE_FAMILY_COLORS_DARK[fam] ?? DISCIPLINE_FAMILY_COLORS_DARK.other;
+}
+
+export function familyColor(id: string | null | undefined): string {
+  return DISCIPLINE_FAMILY_COLORS[disciplineFamily(id)] ?? DISCIPLINE_FAMILY_COLORS.other;
 }
 
 export function primaryDiscipline(disciplines: string[] | null | undefined): Discipline | null {

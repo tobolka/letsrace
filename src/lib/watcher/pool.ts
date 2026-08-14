@@ -74,5 +74,13 @@ export function hostIntervalMs(host: string): number {
   if (h.includes("eventivsport.com")) return 200;
   if (h.includes("radsport-events.de")) return 250;
   if (h.includes("federciclismo.it")) return 220;
+  if (h.includes("iprimacup.cz")) return 350;
+  if (h.includes("swiss-cycling.ch")) return 300;
+  if (h.includes("swissbikecup.ch")) return 280;
+  if (h.includes("mtb-cup.ch")) return 250;
+  if (h.includes("valais-cycling.ch")) return 280;
+  if (h.includes("bikekingdom.ch")) return 280;
+  if (h.includes("cyclingaustria.at")) return 300;
+  if (h.includes("ucimtbworldseries.com")) return 300;
   return 200;
 }

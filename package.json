@@ -28,6 +28,7 @@
     "nuqs": "^2.9.5",
     "postgres": "^3.4.9",
     "react": "19.2.8",
+    "react-day-picker": "^10.0.1",
     "react-dom": "19.2.8",
     "slugify": "^1.6.9",
     "supercluster": "^9.0.0",

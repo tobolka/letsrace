@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
       websiteUrl: body.websiteUrl,
       registrationUrl: body.registrationUrl,
       status: body.status,
+      visibility: body.visibility,
       lockFields: Boolean(body.lockFields),
     });
     return NextResponse.json({ id });
@@ -63,6 +64,7 @@ export async function PATCH(req: NextRequest) {
           websiteUrl: body.websiteUrl,
           registrationUrl: body.registrationUrl,
           status: body.status,
+          visibility: body.visibility,
           lockFields: Boolean(body.lockFields),
         },
         body.id,
@@ -81,6 +83,7 @@ export async function PATCH(req: NextRequest) {
         websiteUrl: body.websiteUrl,
         registrationUrl: body.registrationUrl,
         status: body.status,
+        visibility: body.visibility,
       },
       Boolean(body.lockFields),
     );

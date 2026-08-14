@@ -7,7 +7,7 @@ const RACE_HINT =
 function isJunkSumatorUrl(url: string): boolean {
   try {
     const u = new URL(url);
-    if (!u.hostname.includes("sumator.cz")) return false;
+    if (!/sumator\.cz|jihoceskymtbpohar\.cz/i.test(u.hostname)) return false;
     const path = u.pathname.replace(/\/$/, "") || "/";
     if (path === "/") return false;
     if (path.startsWith("/race/")) return false;
@@ -42,7 +42,7 @@ export function discoverChildLinks(baseUrl: string, html: string): string[] {
     if (isJunkSumatorUrl(absolute)) return;
 
     // Sumator: follow cup/series calendars, not every /race detail
-    if (host.includes("sumator.cz")) {
+    if (host.includes("sumator.cz") || host.includes("jihoceskymtbpohar.cz")) {
       try {
         const path = new URL(absolute).pathname;
         if (path.startsWith("/cup/")) {

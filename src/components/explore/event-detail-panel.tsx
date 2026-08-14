@@ -10,25 +10,22 @@ import {
   Heart,
   Calendar,
   CalendarPlus,
-  ClipboardCheck,
   Users,
   Bike,
   Flag,
 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
-import { publicRaceUrl } from "@/lib/watcher/public-url";
-import { formatAudienceList } from "@/lib/audience";
 import { messages, type Locale } from "@/lib/i18n/messages";
 import {
-  AGE_CATEGORY_LABELS,
   DISCIPLINE_LABELS,
   RACE_LEVEL_LABELS,
   UCI_CLASS_LABELS,
+  formatEventCategoryLabel,
   type Discipline,
   type RaceLevel,
   type UciClass,
 } from "@/lib/taxonomy";
-import { levelColor, levelColorDark } from "@/lib/map-visuals";
+import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
 import Link from "next/link";
@@ -51,10 +48,12 @@ export function EventDetailPanel({
   event,
   onClose,
   locale,
+  onSelectSeries,
 }: {
   event: EventListItem;
   onClose: () => void;
   locale: string;
+  onSelectSeries?: (slug: string) => void;
 }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -202,34 +201,25 @@ export function EventDetailPanel({
     event.classLabel ||
     RACE_LEVEL_LABELS[levelKey] ||
     event.level;
-  const websiteUrl = publicRaceUrl(event.websiteUrl);
-  const registrationUrl = publicRaceUrl(event.registrationUrl);
+  const websiteUrl = event.websiteUrl || event.listingUrl;
   const t = messages[(locale as Locale) in messages ? (locale as Locale) : "en"];
-  const audienceLabel =
-    event.ageCategories?.length
-      ? event.ageCategories
-          .map((c) => AGE_CATEGORY_LABELS[c as keyof typeof AGE_CATEGORY_LABELS] || c)
-          .join(" · ")
-      : formatAudienceList(
-          event.audience,
-          { kids: t.kids, youth: t.youth, adults: t.adults },
-          event.categories,
-        );
+  const audienceLabel = formatEventCategoryLabel(event, {
+    kids: t.kids,
+    youth: t.youth,
+    adults: t.adults,
+  });
   const discLabel = event.disciplines
     .slice(0, 3)
     .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
     .join(" · ");
 
-  const headerFrom = levelColor(event.level);
-  const headerTo = levelColorDark(event.level);
-  const isChampionship =
-    event.level === "european_championship" || event.level === "world_championship";
-  const headerText = isChampionship ? "text-stone-900" : "text-white";
+  const headerFrom = disciplineColor(event.disciplines);
+  const headerTo = disciplineColorDark(event.disciplines);
 
   return (
     <aside className="pointer-events-auto flex w-full flex-col overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-stone-200 md:w-[300px] md:self-start md:max-h-[calc(100dvh-1.5rem)]">
       <div
-        className={`relative px-3 py-2.5 ${headerText}`}
+        className="relative px-3 py-2.5 text-white"
         style={{
           background: `linear-gradient(145deg, ${headerFrom} 0%, ${headerTo} 100%)`,
         }}
@@ -237,9 +227,7 @@ export function EventDetailPanel({
         <button
           type="button"
           onClick={onClose}
-          className={`absolute right-2 top-2 rounded-full p-1 ${
-            isChampionship ? "bg-black/10 hover:bg-black/15" : "bg-black/20 hover:bg-black/30"
-          }`}
+          className="absolute right-2 top-2 rounded-full p-1 bg-black/20 hover:bg-black/30"
           aria-label="Close"
         >
           <X className="h-4 w-4" />
@@ -263,12 +251,22 @@ export function EventDetailPanel({
         {audienceLabel ? <Row icon={<Users className="h-3.5 w-3.5" />}>{audienceLabel}</Row> : null}
         {event.series ? (
           <Row icon={<Flag className="h-3.5 w-3.5" />}>
-            <Link
-              href={`/${locale}?series=${event.series.slug}`}
-              className="font-medium text-stone-900 underline decoration-stone-300 underline-offset-2"
-            >
-              {event.series.name}
-            </Link>
+            {onSelectSeries ? (
+              <button
+                type="button"
+                onClick={() => onSelectSeries(event.series!.slug)}
+                className="font-medium text-stone-900 underline decoration-stone-300 underline-offset-2"
+              >
+                {event.series.name}
+              </button>
+            ) : (
+              <Link
+                href={`/${locale}?series=${event.series.slug}`}
+                className="font-medium text-stone-900 underline decoration-stone-300 underline-offset-2"
+              >
+                {event.series.name}
+              </Link>
+            )}
           </Row>
         ) : null}
       </div>
@@ -300,23 +298,11 @@ export function EventDetailPanel({
             href={websiteUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label="Website"
-            title="Website"
+            aria-label={t.openWebsite}
+            title={t.openWebsite}
             className="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-600 hover:bg-stone-100 hover:text-stone-900"
           >
             <Globe className="h-4 w-4" />
-          </a>
-        ) : null}
-        {registrationUrl ? (
-          <a
-            href={registrationUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Register"
-            title="Register"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-stone-600 hover:bg-stone-100 hover:text-stone-900"
-          >
-            <ClipboardCheck className="h-4 w-4" />
           </a>
         ) : null}
       </div>

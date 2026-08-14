@@ -11,6 +11,9 @@ import {
   nextPollAt,
   errorPollAt,
   reviewPollAt,
+  sourcePollAt,
+  nextSeasonUrl,
+  isPendingSeasonUrl,
 } from "@/lib/watcher/core";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 
@@ -33,42 +36,53 @@ const MAX_REFRESH_PER_RUN = 40;
 /** Soft claim window so overlapping crons don't double-process the same row. */
 const CLAIM_MS = 12 * 60 * 1000;
 /** Stay under typical serverless caps. */
-const DEFAULT_BUDGET_MS = 50_000;
-const DEFAULT_CONCURRENCY = 3;
+const DEFAULT_BUDGET_MS = 52_000;
+const DEFAULT_CONCURRENCY = 4;
+const CALENDAR_KINDS = ["series", "federation", "aggregator", "calendar"] as const;
 
 export async function runDueWatches(
-  limit = 12,
+  limit = 40,
   opts?: { concurrency?: number; budgetMs?: number },
 ): Promise<WatchOutcome[]> {
   const supabase = createServerSupabase();
   const nowIso = new Date().toISOString();
-  const { data: due, error } = await supabase
-    .from("watched_urls")
-    .select("*")
-    .eq("status", "active")
-    .lte("next_poll_at", nowIso)
-    .order("next_poll_at", { ascending: true })
-    .limit(limit);
-
-  if (error) throw new Error(error.message);
-
-  // Optimistic lease: push next_poll_at forward; only winners keep the claim
-  const claimed: typeof due = [];
   const claimUntil = new Date(Date.now() + CLAIM_MS).toISOString();
-  for (const row of due ?? []) {
-    const { data: won } = await supabase
+
+  async function claimDue(kinds: readonly string[], take: number) {
+    if (take <= 0) return [];
+    const { data: due, error } = await supabase
       .from("watched_urls")
-      .update({
-        next_poll_at: claimUntil,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", row.id)
+      .select("*")
       .eq("status", "active")
+      .in("kind", [...kinds])
       .lte("next_poll_at", nowIso)
-      .select("id")
-      .maybeSingle();
-    if (won?.id) claimed.push(row);
+      .order("next_poll_at", { ascending: true })
+      .limit(take);
+    if (error) throw new Error(error.message);
+    const claimed: NonNullable<typeof due> = [];
+    for (const row of due ?? []) {
+      const { data: won } = await supabase
+        .from("watched_urls")
+        .update({
+          next_poll_at: claimUntil,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", row.id)
+        .eq("status", "active")
+        .lte("next_poll_at", nowIso)
+        .select("id")
+        .maybeSingle();
+      if (won?.id) claimed.push(row);
+    }
+    return claimed;
   }
+
+  // Calendars first — one series page is worth dozens of race pages.
+  const calendars = await claimDue(CALENDAR_KINDS, limit);
+  const claimed = [
+    ...calendars,
+    ...(await claimDue(["race"], limit - calendars.length)),
+  ];
 
   const deadline = Date.now() + (opts?.budgetMs ?? DEFAULT_BUDGET_MS);
   const concurrency = opts?.concurrency ?? DEFAULT_CONCURRENCY;
@@ -118,6 +132,36 @@ export async function watchOne(row: {
     });
 
     if (fetched.status === 404) {
+      // Next-year calendars (`/zavody-2027/`) 404 until published — keep watching.
+      if (isPendingSeasonUrl(row.url)) {
+        await supabase
+          .from("watched_urls")
+          .update({
+            status: "active",
+            http_status: 404,
+            last_fetched_at: new Date().toISOString(),
+            last_error: null,
+            last_extract_status: "off_season",
+            next_poll_at: sourcePollAt([]).toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", row.id);
+        await finishRun(runInsert.data?.id, {
+          ok: true,
+          error: "404 pending season",
+          httpStatus: 404,
+        });
+        return {
+          watchedUrlId: row.id,
+          url: row.url,
+          ok: true,
+          eventsUpserted: 0,
+          linksDiscovered: 0,
+          strategy: "off_season",
+          error: "404 pending season",
+          httpStatus: 404,
+        };
+      }
       await supabase
         .from("watched_urls")
         .update({
@@ -200,20 +244,29 @@ export async function watchOne(row: {
 
     let upserted = 0;
     // Bounded parallelism for DB upserts (same-host sources stay polite upstream)
-    const upsertResults = await mapPool(toUpsert, 4, async (ev) => upsertParsedEvent(ev, row.id));
+    const upsertResults = await mapPool(toUpsert, 4, async (ev) =>
+      upsertParsedEvent(ev, row.id, row.kind),
+    );
     upserted = upsertResults.filter(Boolean).length;
 
     let linksDiscovered = 0;
     for (const child of extracted.childUrls) {
       try {
+        if (/\.pdf($|\?)/i.test(child)) continue;
+        if (
+          /mtbkalender\.dk|kidsmtbcup\.dk|dgi\.dk|kenniscentrum\.knwu\.nl|mijn\.knwu\.nl|velo\.ffc\.fr|competitions\.ffc\.fr|rfec\.com|orobiecup\.it|mtbsport\.it|jiskra\.potocky\.cz|potocky\.cz/i.test(
+            child,
+          )
+        ) {
+          continue;
+        }
         const sameHost = hostnameOf(child) === hostnameOf(row.url);
-        const isSeriesPage =
-          child.includes("serialosss=") ||
-          /\/cup\//i.test(child) ||
-          /\/serie/i.test(child);
         if (
           sameHost &&
-          (row.kind === "series" || row.kind === "federation" || row.kind === "aggregator")
+          (row.kind === "series" ||
+            row.kind === "federation" ||
+            row.kind === "aggregator" ||
+            row.kind === "calendar")
         ) {
           // FCI /race/detail and ical feeds are covered by the list crawl — don't enqueue them
           if (
@@ -222,38 +275,669 @@ export async function watchOne(row: {
           ) {
             continue;
           }
+          if (
+            hostnameOf(child).includes("federciclismo.it") &&
+            !hostnameOf(child).includes("members.")
+          ) {
+            if (
+              !/circuiti-mtb\/italia-bike-cup/i.test(child) &&
+              !/circuiti-mtb\/coppa-italia-giovanile\/?(\?|$)/i.test(child)
+            ) {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("ciclisme.cat")) {
+            if (!/campionat\/btt\/copa-catalana-internacional-btt|campionat\/btt\/copa-catalunya-btt/i.test(child)) {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("esmtb.com")) {
+            if (!/calendario-de-las-copas-de-espana/i.test(child)) continue;
+          }
+          // Racement calendars already have every round — skip detail/hub noise
+          if (
+            hostnameOf(child).includes("kidscup.bike") ||
+            hostnameOf(child).includes("rookiescup.bike") ||
+            hostnameOf(child).includes("ixsdownhillcup.com")
+          ) {
+            const path = (() => {
+              try {
+                return new URL(child).pathname;
+              } catch {
+                return child;
+              }
+            })();
+            if (!/\/(en\/)?race-calendar|\/rennkalender\/?$/i.test(path)) {
+              continue;
+            }
+          }
+          // Prima / ČP / ZAL / Enduro / Praha listings — don't enqueue every CMS page
+          if (hostnameOf(child).includes("iprimacup.cz")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/\/zavody-20\d{2}/i.test(path) && path.replace(/\/$/, "") !== "") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("poharmtb.cz")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/cross-country|enduro|downhill/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("zapadoceskaamaterskaliga.cz")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/\/kalendare\//i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("enduroserie.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && path !== "/zavody") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("jihoceskymtbpohar.cz")) {
+            try {
+              const path = new URL(child).pathname;
+              if (path.startsWith("/race/")) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("ucimtbworldseries.com")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/\/calendar\/?$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("swiss-cycling.ch")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/\/kalender\/?$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("swissbikecup.ch")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(en|de|fr)?$/.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("mtb-cup.ch")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (!/^\/(en\/)?race$/.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("valais-cycling.ch")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/kids-bike-cup-valais/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("eigerbike.ch")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/kids-race/i.test(path) && !/\/race\/informations/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("bikekingdom.ch")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/kids-cup/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("bikeclub-engelberg.ch")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/valiant-gp/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("brvinfo.ch")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/bundicycling-kidscup") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("mso.swiss")) continue;
+          if (hostnameOf(child).includes("detskymtbcup.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("skvelopraha.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/velky-haj") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("pekloseveru.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (
+                !/\/(registrace|registration)$/i.test(path) &&
+                !/\/(propozice-serialu|series-regulations)$/i.test(path)
+              ) {
+                continue;
+              }
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("ustimtbcup.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (
+            hostnameOf(child).includes("ppkbike.cz") ||
+            hostnameOf(child).includes("ppk-hk.cz")
+          ) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && path !== "/index.html" && path !== "/ppk-races.js") {
+                continue;
+              }
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("cyclingaustria.at")) {
+            try {
+              const u = new URL(child);
+              if (!/kalender/i.test(u.pathname + u.search)) continue;
+            } catch {
+              continue;
+            }
+          }
+          // CUBE Cup homepage lists all races — skip news/detail/anmeldung noise
+          if (hostnameOf(child).includes("cup.cube.eu")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          // TBC: only series root + season calendars (not individual /zavod- pages)
+          if (hostnameOf(child).includes("tbcserie.cz")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/^\/?$/.test(path) && !/\/kalendar-?20\d{2}/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("cyklistikaszc.sk")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/\/mtb-cross-country\/kalendar\/?$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (
+            hostnameOf(child).includes("albgold-juniorscup.de") ||
+            hostnameOf(child).includes("xco-bikecup.de") ||
+            hostnameOf(child).includes("schwarzwaelder-mtb-cup.de") ||
+            hostnameOf(child).includes("rhein-eifel-mtb-cup.de") ||
+            hostnameOf(child).includes("mtb-oberschwaben-cup.de") ||
+            hostnameOf(child).includes("salzkammergut-trophy.at")
+          ) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("jcp-mtb.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("bayerwald-mtb-cup.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("skiclub-bb.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/werdenfelscup.html") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("sportchallenge.cz")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (!/\/podkrkonosskymaraton\/2026$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (
+            hostnameOf(child).includes("mtb-rhein-main-cup.de") ||
+            hostnameOf(child).includes("mpdv-cup.de") ||
+            hostnameOf(child).includes("mountainbike-challenge.at") ||
+            hostnameOf(child).includes("globmetalxc.pl")
+          ) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("mtb-kidscup.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/start/termine-2") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("soof.sk")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/podujatia-a-akcie") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("schulsportverein.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/stadtmeisterschaft") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("raceresult.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (!/\/(387659|377510)(\/info)?$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("datasport.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (!/mtbwildpoldsried2026/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("rookiescup-ostbayern.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/rennen") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("mtbsaarlandliga.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/rennen") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("juniorbikecup.at")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "");
+              if (path !== "/termine") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("on-offteam.cz")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/on-off-mtb-pohar/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("polandbike.pl")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/kalendarz/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("xco-nrw-cup.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("schwarzwald-bike-marathon.de")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/rena-kids-cup/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("albstadt-bike-marathon.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("rsv-bad-griesbach.de")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("bahno.ambike.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && !/propozice-2026-jaro/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("bike-revolution.ch")) {
+            if (!/anmeldung-2026/i.test(child)) continue;
+          }
+          if (hostnameOf(child).includes("bikeside.ch")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && path !== "/kategorien") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("mtbraceseries.ch")) {
+            try {
+              const path = new URL(child).pathname;
+              if (!/\/egg/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("fmciclismo.com")) {
+            if (!/ESCUELAS/i.test(child)) continue;
+          }
+          if (hostnameOf(child).includes("marathon-man.eu")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (
+            hostnameOf(child).includes("authorkralsumavy.cz") ||
+            hostnameOf(child).includes("malevilcup.cz") ||
+            hostnameOf(child).includes("horal.sk") ||
+            hostnameOf(child).includes("grand-raid-bcvs.ch") ||
+            hostnameOf(child).includes("raidevolenard-fmv.ch") ||
+            hostnameOf(child).includes("mtbpomerania.pl") ||
+            hostnameOf(child).includes("silesia.bike") ||
+            hostnameOf(child).includes("troitrek.it") ||
+            hostnameOf(child).includes("mb-race.com") ||
+            hostnameOf(child).includes("transmaurienne-vanoise.com") ||
+            hostnameOf(child).includes("ryebikefestival.no") ||
+            hostnameOf(child).includes("alpen-tour.at") ||
+            hostnameOf(child).includes("riojabikeexperience.com")
+          ) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("bike-marathon.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(de|en)?$/.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("herodolomites.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(en|it|de|fr)?$/.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("sloenduro.com")) {
+            if (!/sloenduro-calendar/i.test(child)) continue;
+          }
+          if (hostnameOf(child).includes("sloxcup.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/dirke-2026/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("sloveniadownhillcup.si")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/((en|sl)\/)?(races|dirke)-2026/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("belgiancycling.be")) {
+            if (!/3-nations-cup\/kalender/i.test(child)) continue;
+          }
+          if (hostnameOf(child).includes("cycling.vlaanderen")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/\/competitie\/mtb\/(xco|kids)-series$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("mtbcompetitieoostnederland.nl")) {
+            if (!/agenda-mbt-cup/i.test(child)) continue;
+          }
+          if (hostnameOf(child).includes("knwu.nl") || hostnameOf(child).includes("kenniscentrum.knwu.nl")) {
+            if (
+              !/kampioenschappen\/nk-mountainbike/i.test(child) &&
+              !/streetrace-competitie-2026/i.test(child)
+            ) {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("rocazur.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(fr|en)?$/.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("crosskovacsi.hu")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && path !== "/hu/nyitolap") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("hbs.hr")) {
+            if (
+              !/\/kalendar\/mtb/i.test(child) &&
+              !/\/kalendar\/?(\?|$)/i.test(child) &&
+              !/\/kalendar\/page\/\d+/i.test(child)
+            ) {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("superprestigecyclocross.be")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(nl|en|fr)?\/?kalender$/i.test(path) && path !== "/") continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("ucicyclocrossworldcup.com")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(en|nl|fr)?\/?calendar$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("uec.ch")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/^\/(en|fr|de)\/calendar$/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (
+            hostnameOf(child).includes("letour.fr") ||
+            hostnameOf(child).includes("paris-roubaix.fr") ||
+            hostnameOf(child).includes("oesterreich-rundfahrt.at") ||
+            hostnameOf(child).includes("tourofaustria.com") ||
+            hostnameOf(child).includes("tourdesuisse.ch") ||
+            hostnameOf(child).includes("gravelchallenge.dk") ||
+            hostnameOf(child).includes("quebrantahuesos.com") ||
+            hostnameOf(child).includes("lapuritoandorra.com") ||
+            hostnameOf(child).includes("kotl.at") ||
+            hostnameOf(child).includes("faustocoppi.net") ||
+            hostnameOf(child).includes("haervejsloebet.dk")
+          ) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && !/^\/(en|fr|de|es|it)?$/.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
+          if (hostnameOf(child).includes("pyoraily.fi")) {
+            if (!/kultainen-kampi/i.test(child)) continue;
+          }
           const { error } = await supabase.from("watched_urls").upsert(
             {
               url: child,
-              kind: isSeriesPage ? "series" : "race",
+              kind: "series",
               parent_id: row.id,
               status: "active",
               added_by: "auto-same-domain",
-              notes: isSeriesPage ? "Series page discovered from calendar" : null,
+              notes: "Calendar follow-up from adapter",
               next_poll_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             },
             { onConflict: "url", ignoreDuplicates: true },
           );
           if (!error) linksDiscovered += 1;
-        } else {
-          const { error } = await supabase.from("discovered_links").upsert(
-            {
-              url: child,
-              from_watched_url_id: row.id,
-              status: "pending",
-              hint_kind: "race",
-            },
-            { onConflict: "url", ignoreDuplicates: true },
-          );
-          if (!error) linksDiscovered += 1;
         }
+        // Race pages and cross-host links stay off the watch list.
       } catch {
         /* ignore bad child URLs */
       }
     }
 
-    const needsReview = extracted.events.length === 0 || extracted.confidence < 0.4;
+    const successor = nextSeasonUrl(row.url);
+    if (
+      successor &&
+      (row.kind === "series" ||
+        row.kind === "federation" ||
+        row.kind === "aggregator" ||
+        row.kind === "calendar")
+    ) {
+      const { data: existingSeason } = await supabase
+        .from("watched_urls")
+        .select("id, status")
+        .eq("url", successor)
+        .maybeSingle();
+      if (!existingSeason) {
+        const { error } = await supabase.from("watched_urls").insert({
+          url: successor,
+          kind: row.kind,
+          parent_id: row.id,
+          status: "active",
+          added_by: "season-successor",
+          notes: "Next season URL derived from year-stamped calendar",
+          next_poll_at: sourcePollAt([]).toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        if (!error) linksDiscovered += 1;
+      } else if (existingSeason.status === "dead") {
+        await supabase
+          .from("watched_urls")
+          .update({
+            status: "active",
+            last_extract_status: "off_season",
+            last_error: null,
+            next_poll_at: sourcePollAt([]).toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingSeason.id);
+      }
+    }
+
+    const calendarKind =
+      row.kind === "series" ||
+      row.kind === "federation" ||
+      row.kind === "aggregator" ||
+      row.kind === "calendar";
+    const offSeasonEmpty = calendarKind && extracted.events.length === 0;
+    const needsReview =
+      !offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4);
     await supabase
       .from("watched_urls")
       .update({
@@ -264,7 +948,11 @@ export async function watchOne(row: {
         last_fetched_at: new Date().toISOString(),
         last_changed_at: new Date().toISOString(),
         last_error: needsReview ? "low confidence or empty extract" : null,
-        last_extract_status: needsReview ? "needs_review" : "ok",
+        last_extract_status: offSeasonEmpty
+          ? "off_season"
+          : needsReview
+            ? "needs_review"
+            : "ok",
         // Stay active — retry later instead of permanent pause
         status: "active",
         next_poll_at: needsReview
@@ -272,7 +960,7 @@ export async function watchOne(row: {
           : extracted.strategy?.includes("fci")
             ? // Rotate month windows every ~2h until season is filled
               new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
-            : nextPollAt(extracted.events[0]?.startDate).toISOString(),
+            : sourcePollAt(extracted.events).toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", row.id);
@@ -395,7 +1083,150 @@ async function finishRun(
     .eq("id", id);
 }
 
-async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
+function slugifySeries(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60);
+}
+
+function unionText(a: string[] | null | undefined, b: string[] | null | undefined): string[] {
+  return [...new Set([...(a ?? []), ...(b ?? [])].filter(Boolean))];
+}
+
+const SERIES_LEVEL_RANK: Record<string, number> = {
+  local: 0,
+  regional: 1,
+  national: 2,
+  continental: 3,
+  international: 4,
+  world_cup: 5,
+  european_championship: 6,
+  world_championship: 7,
+};
+
+async function resolveSeriesId(
+  supabase: ReturnType<typeof createServerSupabase>,
+  ev: ParsedEvent,
+  classified: {
+    disciplines: string[];
+    ageCategories: string[];
+    level: string;
+    competitionType: string;
+    season: string;
+  },
+  websiteFn: (url?: string | null, fallback?: string | null) => string | null,
+): Promise<string | undefined> {
+  if (!ev.seriesName && !ev.seriesSlug) return undefined;
+
+  const { inferSeriesType, inferSeriesSourceKind, audienceFromAgeCategories } =
+    await import("@/lib/taxonomy");
+  type AgeCategory = import("@/lib/taxonomy").AgeCategory;
+
+  const slug = ev.seriesSlug || slugifySeries(ev.seriesName || "series");
+  const name = ev.seriesName || slug;
+  const website = websiteFn(ev.seriesWebsite);
+  const country =
+    ev.countryHint && ev.countryHint.length === 2 ? ev.countryHint.toUpperCase() : null;
+  const seriesType = inferSeriesType({
+    name,
+    slug,
+    disciplines: classified.disciplines,
+    ageCategories: classified.ageCategories,
+  });
+  const sourceKind = inferSeriesSourceKind({
+    name,
+    slug,
+    url: website || ev.seriesWebsite || ev.sourceUrl,
+  });
+  const now = new Date().toISOString();
+
+  const { data: existing } = await supabase.from("series").select("*").eq("slug", slug).maybeSingle();
+
+  if (existing) {
+    const disciplines = unionText(existing.disciplines as string[], classified.disciplines);
+    const ageCategories = unionText(existing.age_categories as string[], classified.ageCategories);
+    const existingLevel = String(existing.level ?? "local");
+    const level =
+      (SERIES_LEVEL_RANK[classified.level] ?? 0) > (SERIES_LEVEL_RANK[existingLevel] ?? 0)
+        ? classified.level
+        : existingLevel;
+    const competitionType =
+      existing.competition_type && existing.competition_type !== "other"
+        ? String(existing.competition_type)
+        : classified.competitionType;
+    const patch: Record<string, unknown> = {
+      last_seen_at: now,
+      updated_at: now,
+      name_normalized: existing.name_normalized || normalizeName(name),
+      disciplines,
+      age_categories: ageCategories,
+      level,
+      competition_type: competitionType,
+    };
+    if (ageCategories.length) {
+      patch.audience_hint = audienceFromAgeCategories(ageCategories as AgeCategory[]);
+    }
+    if (website && !existing.website_url) patch.website_url = website;
+    if (country && !existing.country_code) patch.country_code = country;
+    if (classified.season && !existing.season) patch.season = classified.season;
+    if (!existing.series_type || existing.series_type === "other") patch.series_type = seriesType;
+    if (!existing.source_url && (website || ev.sourceUrl)) {
+      patch.source_url = website || ev.sourceUrl;
+    }
+    if (!existing.source_kind || existing.source_kind === "other") patch.source_kind = sourceKind;
+    await supabase.from("series").update(patch).eq("id", existing.id);
+    return existing.id as string;
+  }
+
+  const { data: created, error } = await supabase
+    .from("series")
+    .insert({
+      slug,
+      name,
+      name_normalized: normalizeName(name),
+      website_url: website,
+      audience_hint: classified.ageCategories.length
+        ? audienceFromAgeCategories(classified.ageCategories as AgeCategory[])
+        : ev.audience || "mixed",
+      country_code: country,
+      disciplines: classified.disciplines,
+      age_categories: classified.ageCategories,
+      series_type: seriesType,
+      level: classified.level,
+      competition_type: classified.competitionType,
+      season: classified.season || null,
+      source_url: website || ev.sourceUrl || null,
+      source_kind: sourceKind,
+      last_seen_at: now,
+      updated_at: now,
+    })
+    .select("id")
+    .single();
+  if (created?.id) return created.id as string;
+  // Parallel upserts of the same series race on unique(slug).
+  if (error) {
+    const { data: raced } = await supabase.from("series").select("id").eq("slug", slug).maybeSingle();
+    if (raced?.id) return raced.id as string;
+  }
+  return undefined;
+}
+
+async function upsertParsedEvent(
+  ev: ParsedEvent,
+  watchedUrlId: string,
+  watchedKind?: string,
+) {
+  const { isIngestibleDate, inferClassification, audienceFromAgeCategories } = await import(
+    "@/lib/taxonomy"
+  );
+  if (!isIngestibleDate(ev.startDate)) return null;
+
   const supabase = createServerSupabase();
   const fp = fingerprint({
     startDate: ev.startDate,
@@ -403,7 +1234,6 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     lat: ev.lat,
     lng: ev.lng,
   });
-  const { inferClassification } = await import("@/lib/taxonomy");
   const { isLikelyDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
     await import("@/lib/dedup");
   const { publicRaceUrl } = await import("@/lib/watcher/public-url");
@@ -415,6 +1245,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     disciplines: ev.discipline,
     categoryNames: (ev.categories ?? []).map((c) => c.name),
     existingAudience: ev.audience,
+    startDate: ev.startDate,
   });
   const levelInfo = {
     level: classified.level,
@@ -427,7 +1258,6 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
   const audience = classified.ageCategories.length
     ? classified.audience
     : ev.audience ?? "mixed";
-  const ageCategories = classified.ageCategories;
 
   const incomingWebsite = publicRaceUrl(ev.websiteUrl, ev.sourceUrl);
   const incomingRegistration = publicRaceUrl(ev.registrationUrl);
@@ -480,6 +1310,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
               lat: ev.lat,
               lng: ev.lng,
               placeText: ev.placeText,
+              seriesName: ev.seriesName,
               urls: incomingUrls,
             },
             {
@@ -529,6 +1360,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
               lat: ev.lat,
               lng: ev.lng,
               placeText: ev.placeText,
+              seriesName: ev.seriesName,
               urls: incomingUrls,
             },
             {
@@ -559,23 +1391,51 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     const from = prev.toISOString().slice(0, 10);
     const to = next.toISOString().slice(0, 10);
 
+    const eventCols =
+      "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series(name), location:locations(lat, lng, name, municipality), sources:event_sources(source_url)";
+
     const { data: nearbyDays } = await supabase
       .from("events")
-      .select(
-        "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, location:locations(lat, lng, name, municipality), sources:event_sources(source_url)",
-      )
+      .select(eventCols)
       .gte("start_date", from)
       .lte("start_date", to)
       .neq("status", "cancelled")
-      .limit(120);
+      .limit(400);
 
-    for (const row of nearbyDays ?? []) {
+    const byId = new Map((nearbyDays ?? []).map((r) => [r.id as string, r]));
+
+    if (ev.lat != null && ev.lng != null) {
+      const { data: nearLocs } = await supabase
+        .from("locations")
+        .select("id")
+        .gte("lat", ev.lat - 0.35)
+        .lte("lat", ev.lat + 0.35)
+        .gte("lng", ev.lng - 0.5)
+        .lte("lng", ev.lng + 0.5)
+        .limit(80);
+      const locIds = (nearLocs ?? []).map((l) => l.id as string);
+      if (locIds.length) {
+        const { data: nearbyGeo } = await supabase
+          .from("events")
+          .select(eventCols)
+          .gte("start_date", from)
+          .lte("start_date", to)
+          .neq("status", "cancelled")
+          .in("location_id", locIds)
+          .limit(80);
+        for (const row of nearbyGeo ?? []) byId.set(row.id as string, row);
+      }
+    }
+
+    for (const row of byId.values()) {
       const loc = row.location as {
         lat?: number;
         lng?: number;
         name?: string;
         municipality?: string;
       } | null;
+      const series = row.series as { name?: string } | { name?: string }[] | null;
+      const seriesName = Array.isArray(series) ? series[0]?.name : series?.name;
       const srcs = (row.sources as { source_url?: string }[] | null) ?? [];
       if (
         isLikelyDuplicate(
@@ -586,6 +1446,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
             lat: ev.lat,
             lng: ev.lng,
             placeText: ev.placeText,
+            seriesName: ev.seriesName,
             fingerprint: fp,
             urls: incomingUrls,
           },
@@ -596,6 +1457,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
             lat: loc?.lat,
             lng: loc?.lng,
             placeText: loc?.municipality || loc?.name,
+            seriesName,
             fingerprint: row.fingerprint,
             urls: [row.website_url, row.registration_url, ...srcs.map((s) => s.source_url)],
           },
@@ -611,7 +1473,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -625,6 +1487,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     : locked?.locked_fields ?? [];
 
   const { shouldIngestByCountry, isRoughlyInEurope } = await import("@/lib/geo/europe");
+  const { timezoneForCountry } = await import("@/lib/geo/timezones");
   // Drop explicit non-European races early (before locations / geocode queue)
   if (ev.countryHint && !shouldIngestByCountry(ev.countryHint)) {
     return null;
@@ -648,10 +1511,14 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     if (lat == null) {
       try {
         const { geocodeFromGazetteer, cleanGeocodeQuery } = await import("@/lib/geocode");
-        const cleaned = cleanGeocodeQuery(ev.placeText, ev.countryHint);
+        const placeLooksJunk = /^(uci\s*(c[123]|cn)|unknown|silnice)$/i.test(ev.placeText.trim());
+        const source = placeLooksJunk && ev.name ? ev.name : ev.placeText;
+        const cleaned = cleanGeocodeQuery(source, ev.countryHint);
         if (cleaned.query) geocodeQuery = cleaned.query;
         country = cleaned.countryCode || country;
-        const geo = geocodeFromGazetteer(ev.placeText, ev.countryHint);
+        const geo =
+          geocodeFromGazetteer(source, ev.countryHint) ||
+          (placeLooksJunk ? geocodeFromGazetteer(ev.name, ev.countryHint) : null);
         if (geo) {
           lat = geo.lat;
           lng = geo.lng;
@@ -706,6 +1573,7 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
           lng,
           geocode_query: geocodeQuery,
           geocode_status: geocodeStatus,
+          timezone: timezoneForCountry(country),
         })
         .select("id")
         .single();
@@ -733,6 +1601,8 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     level?: string;
     uci_class?: string | null;
     class_label?: string | null;
+    audience?: string | null;
+    age_categories?: string[] | null;
   } | null;
 
   let mergedName = ev.name;
@@ -766,14 +1636,26 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     );
   }
 
+  const mergedAgeCategories = unionText(existingRow?.age_categories, classified.ageCategories);
+  const mergedAudience = mergedAgeCategories.length
+    ? audienceFromAgeCategories(
+        mergedAgeCategories as import("@/lib/taxonomy").AgeCategory[],
+      )
+    : audience;
+
   const payload: Record<string, unknown> = {
     name: mergedName,
     name_normalized: normalizeName(mergedName),
     start_date: mergedStart,
     end_date: mergedEnd,
     disciplines,
-    audience,
-    age_categories: ageCategories,
+    formats: classified.formats,
+    audience: mergedAudience,
+    age_categories: mergedAgeCategories,
+    event_type: classified.eventType,
+    competition_type: classified.competitionType,
+    season: classified.season || mergedStart.slice(0, 4),
+    timezone: timezoneForCountry(ev.countryHint),
     fingerprint: fingerprint({
       startDate: mergedStart,
       name: mergedName,
@@ -788,8 +1670,9 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
     updated_at: new Date().toISOString(),
   };
 
-  if (hideAsNonRace && !lockedFields.includes("status")) {
-    payload.status = "hidden";
+  if (hideAsNonRace && !lockedFields.includes("visibility")) {
+    payload.visibility = "hidden";
+    payload.event_type = "training";
   }
 
   // Only write website/registration when we have a real race URL (never wipe with aggregator)
@@ -804,32 +1687,9 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
 
   // Attach / create series (Talent Cup, KPŽ, …)
   if (ev.seriesName || ev.seriesSlug) {
-    const slug =
-      ev.seriesSlug ||
-      (ev.seriesName || "series")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "")
-        .slice(0, 60);
-    const { data: seriesRow } = await supabase
-      .from("series")
-      .upsert(
-        {
-          slug,
-          name: ev.seriesName || slug,
-          website: publicRaceUrl(ev.seriesWebsite),
-          audience_hint: ev.audience || "mixed",
-        },
-        { onConflict: "slug" },
-      )
-      .select("id")
-      .single();
-    if (seriesRow?.id && !lockedFields.includes("series_id")) {
-      payload.series_id = seriesRow.id;
+    const seriesId = await resolveSeriesId(supabase, ev, classified, publicRaceUrl);
+    if (seriesId && !lockedFields.includes("series_id")) {
+      payload.series_id = seriesId;
     }
   }
 
@@ -867,6 +1727,14 @@ async function upsertParsedEvent(ev: ParsedEvent, watchedUrlId: string) {
       watched_url_id: watchedUrlId,
       source_url: ev.sourceUrl,
       external_id: ev.externalId,
+      kind:
+        watchedKind === "federation"
+          ? "national_federation"
+          : watchedKind === "aggregator"
+            ? "aggregator"
+            : watchedKind === "series"
+              ? "series"
+              : "official",
       is_canonical: true,
     },
     { onConflict: "watched_url_id,external_id" },

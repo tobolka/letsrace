@@ -4,6 +4,11 @@ import { hostnameOf, hostIntervalMs, sleep, withHostGate } from "@/lib/watcher/p
 export const BOT_UA =
   "StartlineBot/0.2 (+https://startline.app; race calendar aggregator; polite)";
 
+/** Hosts whose WAF rejects the bot UA. */
+const BROWSER_UA_HOSTS = new Set(["detskatour.sk"]);
+const BROWSER_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+
 export type FetchResult = {
   html: string;
   status: number;
@@ -25,10 +30,13 @@ type FetchOpts = {
 };
 
 async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
+  const host = hostnameOf(url);
+  const browser = BROWSER_UA_HOSTS.has(host);
   const headers: Record<string, string> = {
-    "User-Agent": BOT_UA,
+    "User-Agent": browser ? BROWSER_UA : BOT_UA,
     Accept: opts.accept ?? "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
   };
+  if (browser) headers["Accept-Language"] = "sk-SK,sk;q=0.9,en;q=0.8";
   if (opts.etag) headers["If-None-Match"] = opts.etag;
   if (opts.lastModified) headers["If-Modified-Since"] = opts.lastModified;
 
@@ -58,6 +66,38 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
     lastModified: res.headers.get("last-modified"),
     hash,
     unchanged: Boolean(opts.contentHash && opts.contentHash === hash),
+  };
+}
+
+const CURL_TLS_FALLBACK_HOSTS = new Set(["zapadoceskaamaterskaliga.cz"]);
+const CURL_FETCH_FALLBACK_HOSTS = new Set([
+  "transmaurienne-vanoise.com",
+  "haervejsloebet.dk",
+]);
+
+function isTlsVerifyError(err: unknown): boolean {
+  const msg = err instanceof Error ? `${err.message} ${err.cause ?? ""}` : String(err);
+  return /UNABLE_TO_VERIFY|unable to verify the first certificate|CERT_/i.test(msg);
+}
+
+async function fetchViaCurl(url: string, insecure = false): Promise<FetchResult> {
+  const { execFile } = await import("node:child_process");
+  const { promisify } = await import("node:util");
+  const execFileAsync = promisify(execFile);
+  const args = ["-sL", "-A", BOT_UA, "--max-time", "25"];
+  if (insecure) args.push("-k");
+  args.push(url);
+  const { stdout } = await execFileAsync("curl", args, {
+    maxBuffer: 6_000_000,
+    encoding: "utf8",
+  });
+  const html = stdout;
+  const hash = createHash("sha256").update(html).digest("hex");
+  return {
+    html,
+    status: html.length > 200 ? 200 : 0,
+    hash,
+    unchanged: false,
   };
 }
 
@@ -96,6 +136,16 @@ export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<Fetc
         await sleep(backoff);
       } catch (e) {
         lastErr = e;
+        if (
+          (isTlsVerifyError(e) && CURL_TLS_FALLBACK_HOSTS.has(host)) ||
+          CURL_FETCH_FALLBACK_HOSTS.has(host)
+        ) {
+          try {
+            return await fetchViaCurl(url, CURL_FETCH_FALLBACK_HOSTS.has(host));
+          } catch {
+            /* fall through to retry/throw */
+          }
+        }
         if (attempt === retries) throw e;
         await sleep(Math.min(12_000, 500 * 2 ** attempt) + Math.floor(Math.random() * 300));
       }

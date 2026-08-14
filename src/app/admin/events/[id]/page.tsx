@@ -45,6 +45,7 @@ export default async function EditEventPage({
           websiteUrl: event.website_url ?? "",
           registrationUrl: event.registration_url ?? "",
           status: event.status,
+          visibility: event.visibility ?? "public",
           lockFields: true,
         }}
       />

@@ -38,9 +38,23 @@ function mapDisc(raw: string | undefined): Discipline | undefined {
   return DISC_MAP[raw.toLowerCase().trim()] ?? undefined;
 }
 
+function originOf(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return "https://sumator.cz";
+  }
+}
+
+export function isSumatorHost(host: string): boolean {
+  const h = host.replace(/^www\./i, "").toLowerCase();
+  return h.includes("sumator.cz") || h.includes("jihoceskymtbpohar.cz");
+}
+
 function parseSumatorHtml(url: string, html: string, year: number): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
+  const origin = originOf(url);
 
   $(".rd-row").each((_, el) => {
     const $row = $(el);
@@ -70,13 +84,13 @@ function parseSumatorHtml(url: string, html: string, year: number): ParsedEvent[
 
     const abs = link.startsWith("http")
       ? link.split("?")[0]
-      : `https://sumator.cz${link.split("?")[0]}`;
+      : `${origin}${link.split("?")[0]}`;
     const disc = mapDisc(discRaw);
     void inferRaceLevel(`${name} ${sub}`);
 
     const placeCc = (() => {
       const m = place.match(
-        /\((south africa|spain|portugal|belgium|france|italy|germany|austria|slovakia|poland|switzerland|netherlands|slovenia|croatia|hungary)\)/i,
+        /\((south africa|spain|portugal|belgium|france|italy|germany|austria|slovakia|poland|switzerland|netherlands|slovenia|croatia|hungary|denmark)\)/i,
       );
       if (!m) return "CZ";
       const map: Record<string, string> = {
@@ -95,6 +109,7 @@ function parseSumatorHtml(url: string, html: string, year: number): ParsedEvent[
         slovenia: "SI",
         croatia: "HR",
         hungary: "HU",
+        denmark: "DK",
       };
       return map[m[1].toLowerCase()] ?? "CZ";
     })();
@@ -161,7 +176,7 @@ async function enrichOfficialWebsites(
   const { mapPool } = await import("@/lib/watcher/pool");
   const { fetchText } = await import("@/lib/watcher/http");
 
-  const enrichable = events.filter((e) => e.sourceUrl.includes("sumator.cz/race/"));
+  const enrichable = events.filter((e) => /\/race\//i.test(e.sourceUrl) || /\/race\//i.test(e.websiteUrl || ""));
   // Prefer upcoming races without an official site yet
   const today = new Date().toISOString().slice(0, 10);
   const ranked = [...enrichable].sort((a, b) => {
@@ -170,14 +185,17 @@ async function enrichOfficialWebsites(
     if (aFuture !== bFuture) return aFuture - bFuture;
     return a.startDate.localeCompare(b.startDate);
   });
-  const selected = new Set(ranked.slice(0, max).map((e) => e.sourceUrl));
+  const selected = new Set(
+    ranked.slice(0, max).map((e) => e.websiteUrl || e.sourceUrl),
+  );
 
   const enriched = await mapPool(events, 6, async (ev) => {
-    if (!selected.has(ev.sourceUrl) || !ev.sourceUrl.includes("sumator.cz/race/")) {
+    const detail = ev.websiteUrl || ev.sourceUrl;
+    if (!selected.has(detail) || !/\/race\//i.test(detail)) {
       return ev;
     }
     try {
-      const page = await fetchText(ev.sourceUrl, { timeoutMs: 15_000 });
+      const page = await fetchText(detail, { timeoutMs: 15_000 });
       if (!page.ok || !page.text) return ev;
       const links = extractSumatorOfficialLinks(page.text);
       return {
@@ -200,35 +218,56 @@ async function fetchSumatorMonth(year: number, month: number): Promise<string> {
   return page.ok ? page.text : "";
 }
 
-/** Sumator list — homepage, month crawl, or /cup/ series page. */
+/** Sumator list — homepage, month crawl, or /cup/ series page (incl. white-label hosts). */
 export async function parseSumator(url: string, html: string): Promise<ParsedEvent[]> {
-  if (/sumator\.cz\/cup\//i.test(url)) {
-    return enrichOfficialWebsites(parseSumatorCup(url, html), { max: 24 });
+  const host = (() => {
+    try {
+      return new URL(url).hostname.replace(/^www\./i, "").toLowerCase();
+    } catch {
+      return "";
+    }
+  })();
+
+  if (/\/cup\//i.test(url) || host.includes("jihoceskymtbpohar.cz")) {
+    const parsed = host.includes("jihoceskymtbpohar.cz")
+      ? parseSumatorHtml(url, html, yearFromUrl(url)).map((ev) => ({
+          ...ev,
+          seriesName: "Jihočeský MTB pohár",
+          seriesSlug: "jihocesky-mtb-pohar",
+          seriesWebsite: "https://www.jihoceskymtbpohar.cz/",
+          confidence: Math.max(ev.confidence, 0.9),
+        }))
+      : parseSumatorCup(url, html);
+    return enrichOfficialWebsites(parsed, { max: 24 });
   }
 
   const year = yearFromUrl(url);
   const events = parseSumatorHtml(url, html, year);
 
-  const now = new Date();
-  const startMonth = url.includes("date_from=")
-    ? Number(url.match(/date_from=(\d{1,2})/)?.[1] || 3)
-    : Math.max(1, now.getMonth());
-  const months: number[] = [];
-  for (let m = Math.min(startMonth, 3); m <= 12; m++) months.push(m);
-  if (!months.includes(now.getMonth() + 1)) months.push(now.getMonth() + 1);
+  if (host.includes("sumator.cz")) {
+    const now = new Date();
+    const startMonth = url.includes("date_from=")
+      ? Number(url.match(/date_from=(\d{1,2})/)?.[1] || 3)
+      : Math.max(1, now.getMonth());
+    const months: number[] = [];
+    for (let m = Math.min(startMonth, 3); m <= 12; m++) months.push(m);
+    if (!months.includes(now.getMonth() + 1)) months.push(now.getMonth() + 1);
 
-  for (const month of [...new Set(months)].sort((a, b) => a - b)) {
-    const already = events.filter((e) =>
-      e.startDate.startsWith(`${year}-${String(month).padStart(2, "0")}`),
-    );
-    if (already.length >= 8) continue;
-    try {
-      const chunk = await fetchSumatorMonth(year, month);
-      if (!chunk) continue;
-      events.push(...parseSumatorHtml(`https://sumator.cz/?date_from=${month}-${year}`, chunk, year));
-      await new Promise((r) => setTimeout(r, 400));
-    } catch {
-      /* ignore month failures */
+    for (const month of [...new Set(months)].sort((a, b) => a - b)) {
+      const already = events.filter((e) =>
+        e.startDate.startsWith(`${year}-${String(month).padStart(2, "0")}`),
+      );
+      if (already.length >= 8) continue;
+      try {
+        const chunk = await fetchSumatorMonth(year, month);
+        if (!chunk) continue;
+        events.push(
+          ...parseSumatorHtml(`https://sumator.cz/?date_from=${month}-${year}`, chunk, year),
+        );
+        await new Promise((r) => setTimeout(r, 400));
+      } catch {
+        /* ignore month failures */
+      }
     }
   }
 

@@ -12,6 +12,7 @@ export type AdminEventRow = {
   audience: string;
   source_kind: string;
   status: string;
+  visibility: string;
   location: { name?: string; country_code?: string } | null;
 };
 
@@ -26,12 +27,12 @@ export function AdminEventsTable({
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function setStatus(id: string, status: string) {
+  async function setVisibility(id: string, visibility: "public" | "hidden") {
     setBusyId(id);
     const res = await fetch("/api/admin/events", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status, lockFields: true }),
+      body: JSON.stringify({ id, visibility, lockFields: true }),
     });
     setBusyId(null);
     if (!res.ok) {
@@ -88,7 +89,7 @@ export function AdminEventsTable({
             ) : (
               events.map((e) => {
                 const loc = e.location;
-                const hidden = e.status === "hidden";
+                const hidden = e.visibility === "hidden" || e.status === "hidden";
                 return (
                   <tr key={e.id} className="border-t border-stone-100">
                     <td className="px-3 py-2 whitespace-nowrap">{e.start_date}</td>
@@ -106,7 +107,7 @@ export function AdminEventsTable({
                     </td>
                     <td className="px-3 py-2">
                       <Badge className={hidden ? "bg-stone-200 text-stone-700" : ""}>
-                        {e.status}
+                        {hidden ? "hidden" : e.status}
                       </Badge>
                     </td>
                     <td className="px-3 py-2">
@@ -123,7 +124,7 @@ export function AdminEventsTable({
                         type="button"
                         disabled={pending || busyId === e.id}
                         onClick={() =>
-                          void setStatus(e.id, hidden ? "scheduled" : "hidden")
+                          void setVisibility(e.id, hidden ? "public" : "hidden")
                         }
                         className="rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-stone-200 hover:bg-stone-50 disabled:opacity-40"
                       >

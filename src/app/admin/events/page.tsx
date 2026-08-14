@@ -19,13 +19,13 @@ export default async function EventsAdminPage({
   let query = supabase
     .from("events")
     .select(
-      "id, name, start_date, audience, source_kind, status, location:locations(name, country_code)",
+      "id, name, start_date, audience, source_kind, status, visibility, location:locations(name, country_code)",
     )
     .order("start_date", { ascending: true })
     .limit(200);
 
-  if (view === "hidden") query = query.eq("status", "hidden");
-  else if (view === "visible") query = query.neq("status", "hidden");
+  if (view === "hidden") query = query.eq("visibility", "hidden");
+  else if (view === "visible") query = query.eq("visibility", "public");
 
   const { data: events } = await query;
 
@@ -36,6 +36,7 @@ export default async function EventsAdminPage({
     audience: e.audience,
     source_kind: e.source_kind,
     status: e.status,
+    visibility: e.visibility ?? "public",
     location: (e.location as AdminEventRow["location"]) ?? null,
   }));
 
