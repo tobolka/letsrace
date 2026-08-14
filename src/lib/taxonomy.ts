@@ -149,7 +149,7 @@ export function disciplineFamily(id: string | null | undefined): Discipline {
  * Drop XCM that was inferred from "marathon" on a road/gravel event.
  * Keep XCM when the event also has a real MTB format.
  */
-export function canonicalEventDisciplines(raw: string[] | null | undefined): string[] {
+export function canonicalEventDisciplines(raw: string[] | null | undefined): Discipline[] {
   const ids = canonicalizeDisciplines(raw);
   const hasRealMtb = ids.some((d) => MTB_RACE.has(d));
   const hasRoad = ids.some((d) => disciplineFamily(d) === "road");
@@ -196,7 +196,7 @@ export function matchesDisciplineFilter(
   const fam = eventDisciplineFamily(ids);
   return selected.some((s) => {
     if (FAMILY_FILTERS.has(s)) return fam === s;
-    return ids.includes(s);
+    return (ids as string[]).includes(s);
   });
 }
 

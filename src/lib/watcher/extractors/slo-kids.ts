@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { AnyNode } from "domhandler";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 
@@ -14,7 +15,7 @@ function dmy(day: string, month: string, year: string): string {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
-function cellText($: cheerio.CheerioAPI, el: cheerio.Element): string {
+function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
   return $(el)
     .text()
     .replace(/&#8211;|&ndash;/gi, "–")
@@ -22,7 +23,7 @@ function cellText($: cheerio.CheerioAPI, el: cheerio.Element): string {
     .trim();
 }
 
-function firstRaceHref($: cheerio.CheerioAPI, tr: cheerio.Element, base: string): string {
+function firstRaceHref($: cheerio.CheerioAPI, tr: AnyNode, base: string): string {
   const hrefs = $(tr)
     .find("a[href]")
     .map((_, a) => $(a).attr("href") || "")

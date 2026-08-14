@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { AnyNode } from "domhandler";
 import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 
@@ -36,7 +37,7 @@ function dmy(day: string, month: string, year: string): string {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
-function cells($: cheerio.CheerioAPI, tr: cheerio.Element): string[] {
+function cells($: cheerio.CheerioAPI, tr: AnyNode): string[] {
   return $(tr)
     .find("td")
     .toArray()

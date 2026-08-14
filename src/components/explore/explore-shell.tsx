@@ -51,7 +51,13 @@ type Props = {
   locale: string;
 };
 
-type SeriesOption = { slug: string; name: string; eventCount: number; countryCode: string | null };
+type SeriesOption = {
+  slug: string;
+  name: string;
+  eventCount: number;
+  countryCode: string | null;
+  shortName?: string | null;
+};
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);

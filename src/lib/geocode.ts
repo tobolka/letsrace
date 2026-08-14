@@ -871,8 +871,6 @@ const GAZETTEER: Record<string, { lat: number; lng: number; cc: string }> = {
   sudomerice: { lat: 48.866, lng: 17.257, cc: "CZ" },
   "sudoměřice": { lat: 48.866, lng: 17.257, cc: "CZ" },
   boletice: { lat: 48.825, lng: 14.217, cc: "CZ" },
-  "vysoke myto": { lat: 49.953, lng: 16.162, cc: "CZ" },
-  "vysoké mýto": { lat: 49.953, lng: 16.162, cc: "CZ" },
   vlasenice: { lat: 49.35, lng: 15.05, cc: "CZ" },
   suhrovice: { lat: 50.52, lng: 15.05, cc: "CZ" },
   abensberg: { lat: 48.817, lng: 11.849, cc: "DE" },
