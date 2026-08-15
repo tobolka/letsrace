@@ -64,7 +64,7 @@ export type EuropeCountryCode = (typeof EUROPE_COUNTRY_CODES)[number];
  * Temporarily off the public map / ingest to keep payloads smaller.
  * Still treated as Europe (admin, geocode) — just not listed.
  */
-export const PAUSED_COUNTRY_CODES = ["FR"] as const;
+export const PAUSED_COUNTRY_CODES = [] as const;
 
 const PAUSED_SET = new Set<string>(PAUSED_COUNTRY_CODES);
 

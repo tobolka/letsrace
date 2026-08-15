@@ -1,6 +1,6 @@
 # Startline
 
-Map-first cycling race finder for kids and adults across Central Europe (CZ, DE, AT, SK, PL, IT). Road, gravel, XC, XCM, and more — not just mountain bike.
+Map-first cycling race finder for kids and adults across Central Europe (CZ, DE, AT, SK, PL, IT, FR). Road, gravel, XC, XCM, and more — not just mountain bike.
 
 ## Stack
 
