@@ -129,7 +129,7 @@ function parseCzechRaceDate(raw: string): { start: string; end?: string } | null
 }
 
 function placeFromTitle(name: string): string {
-  let n = name.replace(/^[\s\-–—]+/, "").trim();
+  const n = name.replace(/^[\s\-–—]+/, "").trim();
   // "XCO obce LITOHLAVY" / "XCO města KRALOVICE"
   const labeled = n.match(
     /^(?:xco|xc|mtb\s*biatlon)?\s*(?:obce|města|mesta)\s+([A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ][\wÁ-ž]*)/i,

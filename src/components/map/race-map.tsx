@@ -344,7 +344,7 @@ export function RaceMap({
           background: #fff;
           box-shadow: 0 1px 2px rgba(28,25,23,.06), 0 10px 24px rgba(28,25,23,.14);
           border: 1px solid rgba(28,25,23,.08);
-          font-family: ui-sans-serif, system-ui, sans-serif;
+          font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
         }
         .startline-pin-tip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
           border-top-color: #fff;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { listIncompleteEvents } from "@/lib/admin/data-quality";
+import { getIngestHealth, pct } from "@/lib/admin/ingest-health";
 import { CompletenessDashboard } from "@/components/admin/completeness-dashboard";
 import { Badge, Button } from "@/components/ui/primitives";
 
@@ -9,7 +10,7 @@ export default async function AdminHomePage() {
   await requireAdminPage();
   const supabase = createServerSupabase();
 
-  const [{ count: sourceCount }, { count: pendingCount }, { data: recentRuns }, quality] =
+  const [{ count: sourceCount }, { count: pendingCount }, { data: recentRuns }, quality, health] =
     await Promise.all([
       supabase.from("watched_urls").select("*", { count: "exact", head: true }),
       supabase
@@ -22,6 +23,7 @@ export default async function AdminHomePage() {
         .order("started_at", { ascending: false })
         .limit(6),
       listIncompleteEvents({ upcomingOnly: true, limit: 500 }),
+      getIngestHealth(),
     ]);
 
   const { data: needsReview } = await supabase
@@ -29,6 +31,8 @@ export default async function AdminHomePage() {
     .select("id, url, last_error, last_extract_status")
     .eq("status", "needs_review")
     .limit(8);
+
+  const c = health.completeness;
 
   return (
     <div className="space-y-8">
@@ -58,6 +62,78 @@ export default async function AdminHomePage() {
           </form>
         </div>
       </div>
+
+      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-200">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h2 className="font-mono text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+              Catalog health
+            </h2>
+            <p className="mt-1 text-sm text-stone-500">
+              Upcoming public races — ages · format · link · pin
+            </p>
+          </div>
+          <p className="font-mono text-xs text-stone-500">
+            7d ingest fail rate{" "}
+            <span className="font-semibold text-stone-800">
+              {pct(health.recentFails, health.recentRuns)}
+            </span>{" "}
+            ({health.recentFails}/{health.recentRuns})
+          </p>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <HealthStat
+            label="Ages known"
+            value={pct(c.withAges, c.total)}
+            sub={`${c.withAges}/${c.total}`}
+          />
+          <HealthStat
+            label="Discipline"
+            value={pct(c.withDisciplines, c.total)}
+            sub={`${c.withDisciplines}/${c.total}`}
+          />
+          <HealthStat
+            label="Website / reg"
+            value={pct(c.withWebsiteOrReg, c.total)}
+            sub={`${c.withWebsiteOrReg}/${c.total}`}
+          />
+          <HealthStat
+            label="Map pin"
+            value={pct(c.withCoords, c.total)}
+            sub={`${c.withCoords}/${c.total}`}
+          />
+          <HealthStat
+            label="Complete core"
+            value={pct(c.completeCore, c.total)}
+            sub={`${c.completeCore}/${c.total}`}
+          />
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-4">
+          <HealthStat label="Sources active" value={String(health.sourceHealth.active)} />
+          <HealthStat label="Needs review" value={String(health.sourceHealth.needsReview)} />
+          <HealthStat label="Paused" value={String(health.sourceHealth.paused)} />
+          <HealthStat label="With last error" value={String(health.sourceHealth.withError)} />
+        </div>
+        {health.adapterFailures.length > 0 ? (
+          <div className="mt-5">
+            <h3 className="font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+              Adapter failures (7d)
+            </h3>
+            <ul className="mt-2 divide-y divide-stone-100">
+              {health.adapterFailures.map((f) => (
+                <li
+                  key={`${f.strategy ?? "unknown"}-${f.lastAt}`}
+                  className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-sm"
+                >
+                  <span className="font-medium text-stone-800">{f.strategy || "unknown"}</span>
+                  <span className="font-mono text-xs text-stone-500">{f.fails}×</span>
+                  <p className="w-full truncate text-xs text-red-600">{f.lastError || "—"}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </section>
 
       <CompletenessDashboard
         initialSummary={quality.summary}
@@ -139,6 +215,16 @@ export default async function AdminHomePage() {
           </table>
         </div>
       </section>
+    </div>
+  );
+}
+
+function HealthStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="rounded-xl bg-stone-50 px-3 py-2.5 ring-1 ring-stone-100">
+      <p className="font-mono text-[10px] uppercase tracking-wide text-stone-500">{label}</p>
+      <p className="mt-0.5 font-mono text-xl font-semibold tabular-nums text-stone-900">{value}</p>
+      {sub ? <p className="font-mono text-[11px] text-stone-400">{sub}</p> : null}
     </div>
   );
 }

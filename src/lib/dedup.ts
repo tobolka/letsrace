@@ -162,7 +162,7 @@ export function normalizeUrlForDedup(raw: string | null | undefined): string {
   try {
     const u = new URL(raw.trim());
     const host = u.hostname.replace(/^www\./i, "").toLowerCase();
-    let path = u.pathname.replace(/\/+$/, "") || "";
+    const path = u.pathname.replace(/\/+$/, "") || "";
     // Drop empty or root-only aggregators
     const key = `${host}${path}`.toLowerCase();
     if (GENERIC_HOST_PATH.test(key) || GENERIC_HOST_PATH.test(host)) return "";

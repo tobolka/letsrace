@@ -63,6 +63,29 @@ function asDedup(row: Row): DedupEvent {
 const JUNK_LISTING =
   /partne|proběhl|d[eě]tsk[eé]\s+z[aá]vody|kategorie prestige|junior trophy|hynek\s*musil/i;
 
+const STAGE_RACE =
+  /trilogy|etapov|stage\s*race|v[ií]cedenn|multi[- ]?day|3[- ]?day|t[rř][ií]denn/i;
+
+const FORMAT_TAG = /\b(xco|xcc|xcm|dhi|dh|enduro|cx|road|gravel|mtbo?)\b/i;
+
+const MTB_FORMATS = new Set(["xco", "xcc", "xcm", "dhi", "dh", "enduro", "mtb"]);
+
+function formatTagConflict(a: string, b: string): boolean {
+  const ta = a.match(FORMAT_TAG)?.[1]?.toLowerCase();
+  const tb = b.match(FORMAT_TAG)?.[1]?.toLowerCase();
+  if (!ta || !tb || ta === tb) return false;
+  // "MTB" is a family label — compatible with XCO/XCC/etc., not with MTBO/CX/road.
+  if (ta === "mtb" && MTB_FORMATS.has(tb) && tb !== "mtbo") return false;
+  if (tb === "mtb" && MTB_FORMATS.has(ta) && ta !== "mtbo") return false;
+  return true;
+}
+
+function hasRoundNumber(name: string): boolean {
+  return /(?:^|\s)(?:#|rd\.?|round|kolo|etapa|stage|leg)\s*\d{1,2}\b|\d{1,2}\.\s*(?:kolo|etapa|round|čp|cp)\b/i.test(
+    name,
+  );
+}
+
 function isJunkPair(a: Row, b: Row): boolean {
   if (JUNK_LISTING.test(a.name) || JUNK_LISTING.test(b.name)) return true;
   const kidsA = /\bkids\b/i.test(a.name);
@@ -71,6 +94,26 @@ function isJunkPair(a: Row, b: Row): boolean {
   const ttA = /časovka|\btt\b|time.?trial/i.test(a.name);
   const ttB = /časovka|\btt\b|time.?trial/i.test(b.name);
   if (ttA !== ttB) return true;
+  if (roundConflict(a.name, b.name)) return true;
+  if (formatTagConflict(a.name, b.name)) return true;
+  const tagA = a.name.match(FORMAT_TAG)?.[1]?.toLowerCase();
+  const tagB = b.name.match(FORMAT_TAG)?.[1]?.toLowerCase();
+  // Same venue weekend can host XCO + MTB as separate listings — only merge same day.
+  if (a.start_date !== b.start_date && tagA && tagB && tagA !== tagB) return true;
+  // Don't absorb a numbered round into a generic series label on another day.
+  if (
+    a.start_date !== b.start_date &&
+    hasRoundNumber(a.name) !== hasRoundNumber(b.name)
+  ) {
+    return true;
+  }
+  // Stage/multi-day listings on adjacent days are usually distinct stages, not clones.
+  if (
+    a.start_date !== b.start_date &&
+    (STAGE_RACE.test(a.name) || STAGE_RACE.test(b.name))
+  ) {
+    return true;
+  }
   const la = a.location?.lat;
   const ln = a.location?.lng;
   const lb = b.location?.lat;
@@ -79,6 +122,23 @@ function isJunkPair(a: Row, b: Row): boolean {
     if (distanceKm({ lat: la, lng: ln }, { lat: lb, lng: lo }) > 10) return true;
   }
   return false;
+}
+
+function roundConflict(a: string, b: string): boolean {
+  const roundRe =
+    /(?:^|\s)(?:#|rd\.?|round|kolo|etapa|stage|leg)\s*(\d{1,2})\b|(\d{1,2})\.\s*(?:kolo|etapa|round|čp|cp)\b/gi;
+  const nums = (s: string) => {
+    const out = new Set<string>();
+    for (const m of s.matchAll(roundRe)) {
+      out.add(m[1] || m[2] || "");
+    }
+    return out;
+  };
+  const aa = nums(a);
+  const bb = nums(b);
+  if (!aa.size || !bb.size) return false;
+  for (const n of aa) if (bb.has(n)) return false;
+  return true;
 }
 
 function winner(a: Row, b: Row): Row {
@@ -170,6 +230,50 @@ async function main() {
       if (drop.id === keep.id) continue;
       const { reasons } = scoreDuplicate(asDedup(keep), asDedup(drop));
       merges.push({ keep, drop, reasons });
+    }
+  }
+
+  // Same official website + similar name within ±21 days → date-scrape clones
+  const byWebsite = new Map<string, Row[]>();
+  for (const row of rows) {
+    const url = (row.website_url || "").trim().toLowerCase().replace(/\/$/, "");
+    if (!url || url.length < 16) continue;
+    const list = byWebsite.get(url) ?? [];
+    list.push(row);
+    byWebsite.set(url, list);
+  }
+  const already = new Set(merges.flatMap((m) => [m.keep.id, m.drop.id]));
+  for (const group of byWebsite.values()) {
+    if (group.length < 2) continue;
+    const sorted = [...group].sort((a, b) => a.start_date.localeCompare(b.start_date));
+    for (let i = 0; i < sorted.length; i++) {
+      for (let j = i + 1; j < sorted.length; j++) {
+        const a = sorted[i]!;
+        const b = sorted[j]!;
+        if (already.has(a.id) && already.has(b.id)) continue;
+        const days =
+          Math.abs(
+            (Date.parse(a.start_date) - Date.parse(b.start_date)) / (24 * 60 * 60 * 1000),
+          );
+        if (days > 21) continue;
+        const { score, reasons } = scoreDuplicate(asDedup(a), asDedup(b));
+        const nameClose =
+          reasons.includes("same_canonical_name") ||
+          reasons.includes("name_sim_high") ||
+          (reasons.includes("name_substring") && reasons.includes("series_alias"));
+        // Website clones must be clearly the same race — not adjacent series rounds.
+        if (!nameClose) continue;
+        if (isJunkPair(a, b)) continue;
+        const keep = winner(a, b);
+        const drop = keep.id === a.id ? b : a;
+        if (merges.some((m) => m.drop.id === drop.id)) continue;
+        merges.push({
+          keep,
+          drop,
+          reasons: [...new Set([...reasons, "same_website", "near_date"])],
+        });
+        already.add(drop.id);
+      }
     }
   }
 

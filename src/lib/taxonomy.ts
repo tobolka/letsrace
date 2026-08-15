@@ -469,14 +469,24 @@ export function isKidsPrimarySeries(text: string | null | undefined): boolean {
 
 /** Czech/Slovak national MTB XC cups run U13 through Elite. */
 const NATIONAL_MTB_ALL_AGES =
-  /česk[ýy]\s*poh[áa]r\s*mtb|cesky\s*pohar\s*mtb|slovensk[ýy]\s*poh[áa]r\s*mtb|poh[áa]r\s*mtb\s*xc|\bčp\s*xco\b|\bcp\s*xco\b/i;
+  /česk[ýy]\s*poh[áa]r(\s*mtb|\s*xc|\s*xco)?|cesky\s*pohar(\s*mtb|\s*xc|\s*xco)?|slovensk[ýy]\s*poh[áa]r(\s*mtb|\s*xc|\s*xco)?|poh[áa]r\s*mtb\s*xc|\bčp\s*xco\b|\bcp\s*xco\b|\bčp\s*mtb\b/i;
 
 /** UCI World Cup / World Series / Superprestige — junior–elite, not kids. */
 const UCI_JUNIOR_TO_ELITE =
   /world[\s-]?cup|world[\s-]?series|superprestige|world[\s-]?tour|uci\s+mtb\s+world/i;
 
+/** UCI class races (C1–C3, HC, 1.x / 2.x) — typically junior–elite. */
+const UCI_CLASS_RACE =
+  /\buci\s*c[123]\b|\bc[123]\s*uci\b|\buci\s*hc\b|\bhc\s*uci\b|\b[12]\.[12uw]\b|\buci\s+(wt|proseries|pro\s*series)\b/i;
+
+const NATIONAL_CHAMPIONSHIP =
+  /\bnational\s+championship|\bnational\s+champ\b|mistrovstv[ií]\s+(republiky|čr|cr|sr|slovenska)|mistrovstv[ií]\s+česka|\bmčr\b|\bm[cč]sr\b/i;
+
+const PRO_ROAD_ELITE =
+  /\b(vuelta|giro\s+d['’]?italia|tour\s+de\s+france|il\s+lombardia|amstel\s+gold|paris[\s-]?roubaix|milano[\s-]?san[\s-]?remo|li[eè]ge|fl[eè]che\s+wallonne|strade\s+bianche|tour\s+of\s+britain|renewi\s+tour|worldtour|bretagne\s+classic|classic\s+lorient)\b/i;
+
 const MASS_PARTICIPATION =
-  /gran[\s-]?fondo|jedermann|cyklosport|sportive|radmarathon|bike\s*marathon|kolo\s*pro\s*(život|zivot)|kolopro/i;
+  /gran[\s-]?fondo|jedermann|cyklosport|sportive|radmarathon|rad[\s-]?marathon|cycling[\s-]?marathon|bike\s*marathon|kolo\s*pro\s*(život|zivot)|kolopro|race\s+around|race\s+across|ultramaraton|ultra[\s-]?(race|distance)/i;
 
 function addAgeDefaults(
   found: Set<AgeCategory>,
@@ -486,9 +496,17 @@ function addAgeDefaults(
     kidsPrimary: boolean;
     existingAudience?: string | null;
     level?: string | null;
+    disciplines?: string[] | null;
   },
 ) {
   const t = opts.text;
+  const discs = opts.disciplines ?? [];
+  const hasGravel = discs.includes("gravel") || /\bgravel\b/.test(t);
+  const hasRoadFamily =
+    discs.some((d) =>
+      ["road", "road_race", "tt", "criterium", "hill_climb", "gran_fondo"].includes(d),
+    ) || /\broad\b|silnic|gran[\s-]?fondo/.test(t);
+
   if (opts.kidsPrimary) {
     found.add("kids");
     found.add("youth");
@@ -501,6 +519,8 @@ function addAgeDefaults(
     found.add("masters");
     return;
   }
+  // Keep explicit age tokens from the name; only fill when still empty.
+  if (found.size) return;
   if (
     opts.level === "world_cup" ||
     opts.level === "world_championship" ||
@@ -518,6 +538,12 @@ function addAgeDefaults(
     found.add("elite");
     return;
   }
+  if (UCI_CLASS_RACE.test(t) || PRO_ROAD_ELITE.test(t)) {
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
   if (NATIONAL_MTB_ALL_AGES.test(t)) {
     found.add("kids");
     found.add("youth");
@@ -526,7 +552,24 @@ function addAgeDefaults(
     found.add("elite");
     return;
   }
+  if (NATIONAL_CHAMPIONSHIP.test(t) && !isKidsPrimarySeries(t) && !/\bkids|děti|deti|giovanile\b/.test(t)) {
+    found.add("junior");
+    found.add("u23");
+    found.add("elite");
+    return;
+  }
   if (MASS_PARTICIPATION.test(t)) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  // Open gravel / road mass starts — not kids races unless named as such
+  if (hasGravel && !/\buci\b/.test(t)) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
+  if (hasRoadFamily && /\b(marathon|fondo|jedermann|sportive|hobby|open)\b/.test(t)) {
     found.add("amateur");
     found.add("masters");
     return;
@@ -950,6 +993,7 @@ export function inferClassification(opts: {
     kidsPrimary,
     existingAudience: opts.existingAudience,
     level,
+    disciplines,
   });
 
   const ageList = AGE_CATEGORIES.filter((c) => ageCategories.has(c));

@@ -45,7 +45,7 @@ function cells($: cheerio.CheerioAPI, tr: AnyNode): string[] {
 }
 
 function stripItPlace(raw: string): string {
-  let p = raw
+  const p = raw
     .replace(/\s*\(([^)]+)\)\s*$/, "")
     .replace(/\s+[A-Z]{2}\s*$/, "")
     .replace(/\s*-\s*OASI ZEGNA.*/i, "")

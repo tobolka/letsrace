@@ -171,11 +171,24 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     country: parseAsString.withDefault(""),
     dateFrom: parseAsString.withDefault(todayIso()),
     dateTo: parseAsString.withDefault(""),
+    e: parseAsString.withDefault(""),
     west: parseAsString,
     south: parseAsString,
     east: parseAsString,
     north: parseAsString,
   });
+
+  function selectEvent(id: string | null) {
+    setSelectedId(id);
+    const slug = id ? (events.find((ev) => ev.id === id)?.slug ?? "") : "";
+    void setFilters({ e: slug || null });
+  }
+
+  useEffect(() => {
+    if (!filters.e) return;
+    const hit = events.find((ev) => ev.slug === filters.e);
+    if (hit && hit.id !== selectedId) setSelectedId(hit.id);
+  }, [filters.e, events, selectedId]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -334,7 +347,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      return { top: 16, right: 16, bottom: selected && mobileOpen ? 420 : 120, left: 16 };
+      return { top: 16, right: 16, bottom: selected && mobileOpen ? 480 : 130, left: 16 };
     }
     const listW = 400 + 12 + 12;
     const detailW = selected ? 340 + 12 : 0;
@@ -382,7 +395,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           padding={mapPadding}
           fitSeq={fitSeq}
           onSelect={(id) => {
-            setSelectedId(id);
+            selectEvent(id);
             setMobileOpen(true);
           }}
           onBoundsChange={(b) => {
@@ -455,7 +468,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   event={event}
                   messages={messages}
                   active={event.id === selectedId}
-                  onClick={() => setSelectedId(event.id)}
+                  onClick={() => selectEvent(event.id)}
                 />
               ))
             )}
@@ -466,7 +479,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           <EventDetailPanel
             event={selected}
             locale={locale}
-            onClose={() => setSelectedId(null)}
+            onClose={() => selectEvent(null)}
             onSelectSeries={applySeries}
           />
         )}
@@ -474,23 +487,27 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
       <div className="absolute inset-x-0 bottom-0 z-20 md:hidden">
         <div
-          className={`rounded-t-2xl bg-white shadow-2xl ring-1 ring-stone-200 transition-[max-height] ${
-            mobileOpen ? "max-h-[75vh]" : "max-h-14"
+          className={`flex flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl ring-1 ring-stone-200 transition-[max-height] duration-200 ease-out motion-reduce:transition-none ${
+            mobileOpen ? "max-h-[min(85dvh,40rem)]" : "max-h-14"
           }`}
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <button
             type="button"
-            className="flex w-full items-center justify-center py-2"
+            className="flex min-h-11 w-full shrink-0 items-center justify-center touch-manipulation"
             onClick={() => setMobileOpen((v) => !v)}
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "Collapse" : "Expand"}
           >
             <span className="h-1 w-10 rounded-full bg-stone-300" />
           </button>
           {selected && mobileOpen ? (
-            <div className="max-h-[70vh] overflow-y-auto px-2 pb-3">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
               <EventDetailPanel
                 event={selected}
                 locale={locale}
-                onClose={() => setSelectedId(null)}
+                embedded
+                onClose={() => selectEvent(null)}
                 onSelectSeries={applySeries}
               />
             </div>
@@ -534,7 +551,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                       event={event}
                       messages={messages}
                       active={event.id === selectedId}
-                      onClick={() => setSelectedId(event.id)}
+                      onClick={() => selectEvent(event.id)}
                     />
                   ))}
                 </div>
@@ -557,7 +574,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 }
 
 function mapChip(active: boolean) {
-  return `inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-medium shadow-md ring-1 transition ${
+  return `inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-medium shadow-md ring-1 transition-[background-color,color,box-shadow] duration-150 ease-out active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 ${
     active
       ? "text-stone-900 ring-stone-900"
       : "text-stone-800 ring-stone-200/90 hover:bg-stone-50"
@@ -1224,7 +1241,7 @@ function Header({
                 <Link
                   key={l}
                   href={`/${l}`}
-                  className={`block px-3 py-2 text-sm ${
+                  className={`block min-h-11 px-3 py-2.5 text-sm leading-none md:min-h-0 md:py-2 ${
                     l === locale ? "bg-stone-100 font-medium text-stone-900" : "text-stone-600 hover:bg-stone-50"
                   }`}
                   onClick={() => onMenuOpen(false)}
@@ -1235,7 +1252,7 @@ function Header({
               <div className="my-1 border-t border-stone-100" />
               <button
                 type="button"
-                className="block w-full px-3 py-2 text-left text-sm text-stone-600 hover:bg-stone-50"
+                className="block min-h-11 w-full px-3 py-2.5 text-left text-sm text-stone-600 hover:bg-stone-50 md:min-h-0 md:py-2"
                 onClick={() => {
                   onMenuOpen(false);
                   onSignIn();
@@ -1329,7 +1346,7 @@ function EventCard({
       type="button"
       data-event-id={event.id}
       onClick={onClick}
-      className={`w-full scroll-my-2 border-b border-stone-100 px-4 py-3 text-left transition hover:bg-stone-50 ${
+      className={`w-full scroll-my-2 border-b border-stone-100 px-4 py-3.5 text-left transition-[background-color] duration-150 ease-out hover:bg-stone-50 active:bg-stone-100/80 touch-manipulation motion-reduce:transition-none sm:py-3 ${
         active ? "bg-stone-100" : ""
       }`}
     >

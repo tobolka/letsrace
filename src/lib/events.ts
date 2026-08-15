@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
   fingerprint,
@@ -411,6 +412,56 @@ export async function getEventBySlug(slug: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data;
+}
+
+/** Public race by slug for SEO pages and deep links. */
+export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
+  slug: string,
+): Promise<EventListItem | null> {
+  const supabase = createServerSupabase();
+  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, shouldHideFromMap } = await import(
+    "@/lib/event-visibility"
+  );
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, source_kind, level, class_label, uci_class,
+       location:locations(id, name, municipality, country_code, lat, lng),
+       series:series(id, name, slug, visibility, website_url, age_categories),
+       sources:event_sources(source_url)`,
+    )
+    .eq("slug", slug)
+    .eq("visibility", PUBLIC_VISIBILITY)
+    .in("status", [...PUBLIC_EVENT_STATUSES])
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  const event = mapEventRow(data as Record<string, unknown>);
+  if (shouldHideFromMap(event.name, event.status, event.visibility)) return null;
+  return event;
+});
+
+/** Upcoming public races for sitemap (capped). */
+export async function listSitemapEvents(limit = 4000): Promise<
+  { slug: string; startDate: string; updatedAt: string | null }[]
+> {
+  const supabase = createServerSupabase();
+  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY } = await import("@/lib/event-visibility");
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from("events")
+    .select("slug, start_date, updated_at")
+    .eq("visibility", PUBLIC_VISIBILITY)
+    .in("status", [...PUBLIC_EVENT_STATUSES])
+    .gte("start_date", today)
+    .order("start_date", { ascending: true })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => ({
+    slug: String(row.slug),
+    startDate: String(row.start_date),
+    updatedAt: row.updated_at ? String(row.updated_at) : null,
+  }));
 }
 
 function sourceUrlsFromRow(row: Record<string, unknown>): string[] {

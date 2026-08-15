@@ -159,7 +159,7 @@ export function discoverTbcCalendarUrls(html: string, baseUrl: string): string[]
 }
 
 export async function parseTbcSerie(url: string, html: string): Promise<ParsedEvent[]> {
-  let events = parseTbcSerieCalendar(url, html);
+  const events = parseTbcSerieCalendar(url, html);
 
   // Homepage / empty 2026 page: pull published TBC rows from maraton.cz
   const needsFallback =
