@@ -81,7 +81,7 @@ export default async function AdminHomePage() {
             ({health.recentFails}/{health.recentRuns})
           </p>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <HealthStat
             label="Ages known"
             value={pct(c.withAges, c.total)}
@@ -96,6 +96,11 @@ export default async function AdminHomePage() {
             label="Website / reg"
             value={pct(c.withWebsiteOrReg, c.total)}
             sub={`${c.withWebsiteOrReg}/${c.total}`}
+          />
+          <HealthStat
+            label="Registration URL"
+            value={pct(c.withRegistration, c.total)}
+            sub={`${c.withRegistration}/${c.total}`}
           />
           <HealthStat
             label="Map pin"

@@ -5,6 +5,7 @@ export type CompletenessSlice = {
   withAges: number;
   withDisciplines: number;
   withWebsiteOrReg: number;
+  withRegistration: number;
   withCoords: number;
   completeCore: number;
 };
@@ -89,6 +90,7 @@ export async function getIngestHealth(): Promise<IngestHealth> {
     withAges: 0,
     withDisciplines: 0,
     withWebsiteOrReg: 0,
+    withRegistration: 0,
     withCoords: 0,
     completeCore: 0,
   };
@@ -99,14 +101,16 @@ export async function getIngestHealth(): Promise<IngestHealth> {
     const discs = (row.disciplines as string[] | null) ?? [];
     const hasAges = ages.length > 0;
     const hasDisc = discs.length > 0;
+    const hasReg = Boolean(row.registration_url);
     const hasUrl = Boolean(row.website_url || row.registration_url);
     const loc = Array.isArray(row.location) ? row.location[0] : row.location;
     const hasCoords = loc?.lat != null && loc?.lng != null;
     if (hasAges) completeness.withAges += 1;
     if (hasDisc) completeness.withDisciplines += 1;
     if (hasUrl) completeness.withWebsiteOrReg += 1;
+    if (hasReg) completeness.withRegistration += 1;
     if (hasCoords) completeness.withCoords += 1;
-    if (hasAges && hasDisc && hasUrl && hasCoords) completeness.completeCore += 1;
+    if (hasAges && hasDisc && hasReg && hasCoords) completeness.completeCore += 1;
   }
 
   const failByStrategy = new Map<string, AdapterFailure>();

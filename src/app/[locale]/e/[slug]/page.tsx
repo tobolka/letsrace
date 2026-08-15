@@ -208,7 +208,9 @@ export default async function EventPage({ params }: Props) {
               <ExternalLink className="size-4" aria-hidden />
               {enterLabel}
             </OutboundTrackLink>
-          ) : null}
+          ) : (
+            <p className="text-center text-sm text-stone-500">{t.noOnlineEntry}</p>
+          )}
         </div>
       </div>
     </main>

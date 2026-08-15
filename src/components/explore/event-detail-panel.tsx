@@ -14,7 +14,7 @@ import {
   Bike,
   Flag,
   ExternalLink,
-  Link2,
+  Share2,
 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messages, type Locale } from "@/lib/i18n/messages";
@@ -34,6 +34,7 @@ import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/primitives";
+import { eventTrustLevel, trustLabel } from "@/lib/trust";
 
 type Member = {
   id: string;
@@ -252,19 +253,27 @@ export function EventDetailPanel({
     const url =
       typeof window !== "undefined" ? `${window.location.origin}${sharePath}` : sharePath;
     try {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        await navigator.share({ title: event.name, url });
+        track("share_native", { slug: event.slug });
+        return;
+      }
       await navigator.clipboard.writeText(url);
       setLinkCopied(true);
       track("share_link", { slug: event.slug });
       if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
       copyTimerRef.current = window.setTimeout(() => setLinkCopied(false), 1800);
     } catch {
-      /* ignore */
+      /* user cancelled share or clipboard blocked */
     }
   }
 
   function trackEnter(kind: string) {
     track("outbound_enter", { slug: event.slug, kind });
   }
+
+  const trust = eventTrustLevel(event);
+  const trustText = trustLabel(trust, t);
 
   const headerFrom = disciplineColor(event.disciplines);
   const headerTo = disciplineColorDark(event.disciplines);
@@ -386,9 +395,21 @@ export function EventDetailPanel({
               ) : null}
             </div>
           ) : (
-            <p className="mt-1 text-sm text-stone-400">{t.noLinkYet}</p>
+            <p className="mt-1 text-sm text-stone-400">{t.noOnlineEntry}</p>
           )}
         </div>
+        <p
+          className={cn(
+            "font-mono text-[10px] font-semibold uppercase tracking-wide",
+            trust === "official"
+              ? "text-emerald-700"
+              : trust === "low"
+                ? "text-amber-700"
+                : "text-stone-400",
+          )}
+        >
+          {trustText}
+        </p>
       </div>
 
       <div
@@ -425,11 +446,11 @@ export function EventDetailPanel({
           <CalendarPlus className="h-4 w-4" aria-hidden />
         </IconBtn>
         <IconBtn
-          label={linkCopied ? t.linkCopied : t.copyLink}
+          label={linkCopied ? t.linkCopied : t.shareRace}
           onClick={() => void copyShareLink()}
           pressed={linkCopied}
         >
-          <Link2 className={`h-4 w-4 ${linkCopied ? "text-emerald-600" : ""}`} aria-hidden />
+          <Share2 className={`h-4 w-4 ${linkCopied ? "text-emerald-600" : ""}`} aria-hidden />
         </IconBtn>
         {primaryEnter ? (
           <a

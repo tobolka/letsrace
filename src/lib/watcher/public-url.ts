@@ -1,3 +1,5 @@
+import { pickRegistrationUrl } from "@/lib/watcher/registration-url";
+
 /** Aggregator calendars — never show these as the race “Website” link. */
 const AGGREGATOR_HOSTS = [
   "sumator.cz",
@@ -85,7 +87,10 @@ export function resolveEventOutboundUrls(input: {
     input.seriesWebsiteUrl,
     ...sources,
   );
-  const registrationUrl = publicRaceUrl(input.registrationUrl);
-  const listingUrl = websiteUrl ? null : calendarListingUrl(...sources);
-  return { websiteUrl, registrationUrl, listingUrl };
+  const registrationUrl = pickRegistrationUrl(input.registrationUrl, ...sources);
+  // Don't duplicate the same URL as both website + registration.
+  const websiteClean =
+    websiteUrl && registrationUrl && websiteUrl === registrationUrl ? null : websiteUrl;
+  const listingUrl = websiteClean || registrationUrl ? null : calendarListingUrl(...sources);
+  return { websiteUrl: websiteClean, registrationUrl, listingUrl };
 }

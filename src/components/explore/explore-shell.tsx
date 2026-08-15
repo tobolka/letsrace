@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useTransition, useEffect } from "react";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
-import { RaceMap, type MapBounds } from "@/components/map/race-map";
+import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
 import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
 import { FeedbackModal } from "@/components/explore/feedback-modal";
@@ -27,8 +27,6 @@ import {
   addDays,
   endOfMonth,
   format,
-  nextSaturday,
-  nextSunday,
   parseISO,
   startOfMonth,
 } from "date-fns";
@@ -44,6 +42,11 @@ import {
 import { DateRangeCalendar, isoToRange } from "@/components/explore/date-range-calendar";
 import type { DateRange } from "react-day-picker";
 import Link from "next/link";
+import {
+  nextWeekendRange,
+  thisWeekendRange,
+  todayIso,
+} from "@/lib/date-presets";
 
 type Props = {
   initialEvents: EventListItem[];
@@ -58,10 +61,6 @@ type SeriesOption = {
   countryCode: string | null;
   shortName?: string | null;
 };
-
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 const INT_COUNTRY = "INT";
 
@@ -105,30 +104,6 @@ function eventInBounds(event: EventListItem, b: MapBounds) {
   return lng >= b.west && lng <= b.east && lat >= b.south && lat <= b.north;
 }
 
-/** Sat–Sun of the current calendar weekend (including today if already weekend). */
-function thisWeekendRange() {
-  const now = new Date();
-  const day = now.getDay();
-  if (day === 6) {
-    return { from: format(now, "yyyy-MM-dd"), to: format(addDays(now, 1), "yyyy-MM-dd") };
-  }
-  if (day === 0) {
-    return { from: format(addDays(now, -1), "yyyy-MM-dd"), to: format(now, "yyyy-MM-dd") };
-  }
-  const sat = nextSaturday(now);
-  const sun = nextSunday(sat);
-  return { from: format(sat, "yyyy-MM-dd"), to: format(sun, "yyyy-MM-dd") };
-}
-
-/** The weekend after thisWeekendRange(). */
-function nextWeekendRange() {
-  const thisW = thisWeekendRange();
-  return {
-    from: format(addDays(parseISO(thisW.from), 7), "yyyy-MM-dd"),
-    to: format(addDays(parseISO(thisW.to), 7), "yyyy-MM-dd"),
-  };
-}
-
 function thisMonthRange() {
   const now = new Date();
   return {
@@ -162,6 +137,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const mobileListRef = useRef<HTMLDivElement>(null);
   const [fitSeq, setFitSeq] = useState(0);
 
+  const weekend = thisWeekendRange();
   const [filters, setFilters] = useQueryStates({
     q: parseAsString.withDefault(""),
     categories: parseAsArrayOf(parseAsString).withDefault([]),
@@ -169,8 +145,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     levels: parseAsArrayOf(parseAsString).withDefault([]),
     series: parseAsString.withDefault(""),
     country: parseAsString.withDefault(""),
-    dateFrom: parseAsString.withDefault(todayIso()),
-    dateTo: parseAsString.withDefault(""),
+    dateFrom: parseAsString.withDefault(weekend.from),
+    dateTo: parseAsString.withDefault(weekend.to),
     e: parseAsString.withDefault(""),
     west: parseAsString,
     south: parseAsString,
@@ -460,7 +436,48 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           </div>
           <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
             {events.length === 0 ? (
-              <p className="p-4 text-sm text-stone-500">{messages.noResults}</p>
+              <div className="space-y-3 p-4">
+                <p className="text-sm text-stone-500">{messages.noResults}</p>
+                <p className="text-xs text-stone-400">{messages.weekendNearYou}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const w = thisWeekendRange();
+                      void setFilters({
+                        q: null,
+                        categories: [],
+                        disciplines: [],
+                        levels: [],
+                        series: null,
+                        country: null,
+                        dateFrom: w.from,
+                        dateTo: w.to,
+                        e: null,
+                      });
+                      refetch({
+                        q: "",
+                        categories: [],
+                        disciplines: [],
+                        levels: [],
+                        series: "",
+                        country: "",
+                        dateFrom: w.from,
+                        dateTo: w.to,
+                        skipBounds: true,
+                        fitMap: true,
+                      });
+                    }}
+                  >
+                    {messages.clearFilters}
+                  </Button>
+                  <Button type="button" variant="secondary" size="sm" onClick={() => setSubmitOpen(true)}>
+                    Report race
+                  </Button>
+                </div>
+              </div>
             ) : (
               events.map((event) => (
                 <EventCard

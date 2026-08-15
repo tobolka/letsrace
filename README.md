@@ -32,13 +32,13 @@ npm run dev
 - Discovery queue (accept/reject found links)
 - **Add event manually** with URL + full field edit
 - **Edit scraped events** and lock fields so the watcher will not overwrite them
-- Run watcher on demand; Vercel Cron hits `/api/cron/watch` every 6 hours
+- Run watcher on demand; Vercel Cron hits `/api/cron/watch` twice daily (05:00 & 17:00 UTC)
 
 ## Watcher
 
 `GET/POST /api/cron/watch` with `Authorization: Bearer $CRON_SECRET`
 
-Polls due `watched_urls`, hashes content, extracts events, discovers child links, respects locked overrides.
+Polls due `watched_urls`, hashes content, extracts events, discovers child links, respects locked overrides. Cron runs twice daily (05:00 and 17:00 UTC) on the Hobby plan.
 
 ## Locales
 

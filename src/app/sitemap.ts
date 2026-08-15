@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { defaultLocale, locales } from "@/lib/i18n/messages";
 import { listSitemapEvents } from "@/lib/events";
+import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { absoluteUrl, getSiteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
   ];
+
+  for (const code of ["CZ", "SK", "PL", "DE", "AT", "IT", "FR", "CH"] as const) {
+    if (!PUBLIC_COUNTRY_CODES.includes(code)) continue;
+    const path = `c/${code.toLowerCase()}`;
+    entries.push({
+      url: absoluteUrl(`/${defaultLocale}/${path}`),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.75,
+      alternates: {
+        languages: Object.fromEntries(
+          locales.map((l) => [l, absoluteUrl(`/${l}/${path}`)]),
+        ),
+      },
+    });
+  }
 
   try {
     const events = await listSitemapEvents();

@@ -1,10 +1,12 @@
 import { Suspense } from "react";
 import { ExploreShell } from "@/components/explore/explore-shell";
 import { listEvents } from "@/lib/events";
+import { thisWeekendRange } from "@/lib/date-presets";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+/** Cache the explore shell briefly; client refetch handles bbox. */
+export const revalidate = 120;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -30,9 +32,10 @@ export default async function LocalePage({
     if (Array.isArray(v)) return v.filter(Boolean);
     return typeof v === "string" && v ? [v] : [];
   };
+  const weekend = thisWeekendRange();
   const events = await listEvents({
-    dateFrom: one("dateFrom") || new Date().toISOString().slice(0, 10),
-    dateTo: one("dateTo"),
+    dateFrom: one("dateFrom") || weekend.from,
+    dateTo: one("dateTo") || (one("dateFrom") ? undefined : weekend.to),
     seriesSlug: one("series"),
     countryCodes: many("country"),
     ageCategories: many("categories"),
