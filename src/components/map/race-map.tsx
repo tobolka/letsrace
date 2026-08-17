@@ -49,6 +49,8 @@ type Props = {
   initialFocus?: { lng: number; lat: number } | null;
   /** Don't steal the camera with geolocation (used with `initialFocus`). */
   skipInitialLocate?: boolean;
+  /** GPS fix for sorting the race list by distance. */
+  onUserLocation?: (pos: { lat: number; lng: number }) => void;
 };
 
 const RASTER_STYLE: StyleSpecification = {
@@ -276,6 +278,7 @@ export function RaceMap({
   fallbackCenter = CZECHIA_CENTER,
   initialFocus = null,
   skipInitialLocate = false,
+  onUserLocation,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
@@ -289,6 +292,7 @@ export function RaceMap({
   const userMovedRef = useRef(false);
   const onSelectRef = useRef(onSelect);
   const onBoundsChangeRef = useRef(onBoundsChange);
+  const onUserLocationRef = useRef(onUserLocation);
   const paddingRef = useRef(padding);
   const initialFocusRef = useRef(initialFocus);
   const skipInitialLocateRef = useRef(skipInitialLocate);
@@ -304,6 +308,7 @@ export function RaceMap({
 
   onSelectRef.current = onSelect;
   onBoundsChangeRef.current = onBoundsChange;
+  onUserLocationRef.current = onUserLocation;
   paddingRef.current = padding;
   initialFocusRef.current = initialFocus;
   skipInitialLocateRef.current = skipInitialLocate;
@@ -642,6 +647,7 @@ export function RaceMap({
 
     upsertUserMarker(map, userMarkerRef, userPos);
     applyInitialView(map, userPos.lng, userPos.lat, 650);
+    onUserLocationRef.current?.({ lat: userPos.lat, lng: userPos.lng });
 
     const btn = locateBtnRef.current;
     if (btn) btn.style.color = "#1a73e8";

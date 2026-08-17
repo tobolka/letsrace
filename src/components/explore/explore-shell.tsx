@@ -24,6 +24,7 @@ import {
 import { disciplineColor, familyColor } from "@/lib/map-visuals";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
+import { eventDistanceKm, formatDistanceKm, sortByDistanceFrom, distanceKm } from "@/lib/geo/distance";
 import {
   addDays,
   endOfMonth,
@@ -139,6 +140,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [fitSeq, setFitSeq] = useState(0);
   const [destination, setDestination] = useState<MapBounds | null>(null);
   const [destinationSeq, setDestinationSeq] = useState(0);
+  const [userOrigin, setUserOrigin] = useState<{ lat: number; lng: number } | null>(null);
   const lastPlacedQ = useRef("");
   const destFlyingRef = useRef(false);
   const placeAbortRef = useRef<AbortController | null>(null);
@@ -197,6 +199,19 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     () => events.find((e) => e.id === selectedId) ?? null,
     [events, selectedId],
   );
+
+  const sortedEvents = useMemo(
+    () => sortByDistanceFrom(events, userOrigin),
+    [events, userOrigin],
+  );
+
+  function handleUserLocation(pos: { lat: number; lng: number }) {
+    setUserOrigin((prev) => {
+      if (!prev) return pos;
+      if (distanceKm(prev, pos) < 0.3) return prev;
+      return pos;
+    });
+  }
 
   const initialFocus = useMemo(() => {
     if (!filters.e) return null;
@@ -482,6 +497,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           fallbackCenter={fallbackCenter}
           initialFocus={initialFocus}
           skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
+          onUserLocation={handleUserLocation}
           onSelect={(id) => {
             selectEvent(id);
             setMobileOpen(true);
@@ -607,11 +623,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 </div>
               </div>
             ) : (
-              events.map((event) => (
+              sortedEvents.map((event) => (
                 <EventCard
                   key={event.id}
                   event={event}
                   messages={messages}
+                  locale={locale}
+                  distanceKm={eventDistanceKm(event, userOrigin)}
                   active={event.id === selectedId}
                   onClick={() => selectEvent(event.id)}
                 />
@@ -688,11 +706,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                       {messages.missingRace}
                     </button>
                   </div>
-                  {events.map((event) => (
+                  {sortedEvents.map((event) => (
                     <EventCard
                       key={event.id}
                       event={event}
                       messages={messages}
+                      locale={locale}
+                      distanceKm={eventDistanceKm(event, userOrigin)}
                       active={event.id === selectedId}
                       onClick={() => selectEvent(event.id)}
                     />
@@ -1478,11 +1498,15 @@ function Header({
 function EventCard({
   event,
   messages,
+  locale,
+  distanceKm: km,
   active,
   onClick,
 }: {
   event: EventListItem;
   messages: Messages;
+  locale: string;
+  distanceKm?: number | null;
   active: boolean;
   onClick: () => void;
 }) {
@@ -1497,6 +1521,7 @@ function EventCard({
     adults: messages.adults,
   });
   const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
+  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
   return (
     <button
       type="button"
@@ -1523,6 +1548,12 @@ function EventCard({
       <p className="mt-0.5 text-xs text-stone-500">
         {event.location?.municipality || event.location?.name || "—"}
         {event.location?.countryCode ? ` · ${event.location.countryCode}` : ""}
+        {distanceLabel ? (
+          <>
+            {" · "}
+            <span className="tabular-nums">{distanceLabel}</span>
+          </>
+        ) : null}
         {discLabel ? ` · ${discLabel}` : ""}
         {audienceLabel ? ` · ${audienceLabel}` : ""}
       </p>

@@ -6,9 +6,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node scripts/with-node.cjs next dev",
+    "build": "node scripts/with-node.cjs next build",
+    "start": "node scripts/with-node.cjs next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
