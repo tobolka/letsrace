@@ -185,6 +185,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     [events, selectedId],
   );
 
+  const initialFocus = useMemo(() => {
+    if (!filters.e) return null;
+    const ev = events.find((e) => e.slug === filters.e);
+    if (ev?.location?.lat == null || ev.location.lng == null) return null;
+    const lng = Number(ev.location.lng);
+    const lat = Number(ev.location.lat);
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+    return { lng, lat };
+  }, [filters.e, events]);
+
   useEffect(() => {
     if (!selectedId) return;
     const selector = `[data-event-id="${CSS.escape(selectedId)}"]`;
@@ -306,7 +316,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       }
       const res = await fetch(`/api/events?${params.toString()}`);
       const data = (await res.json()) as EventListItem[];
-      setEvents(data);
+      const focusSlug = filters.e;
+      setEvents((prev) => {
+        if (!focusSlug) return data;
+        const kept =
+          data.find((e) => e.slug === focusSlug) ?? prev.find((e) => e.slug === focusSlug);
+        if (!kept || data.some((e) => e.id === kept.id)) return data;
+        return [kept, ...data];
+      });
       if (overrides.fitMap) setFitSeq((n) => n + 1);
     });
   }
@@ -370,6 +387,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           selectedId={selectedId}
           padding={mapPadding}
           fitSeq={fitSeq}
+          initialFocus={initialFocus}
+          skipInitialLocate={Boolean(filters.e)}
           onSelect={(id) => {
             selectEvent(id);
             setMobileOpen(true);

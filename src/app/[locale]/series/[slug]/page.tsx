@@ -5,6 +5,7 @@ import { format, parseISO } from "date-fns";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { eventMapPath } from "@/lib/event-url";
 import { buttonVariants } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +65,7 @@ export default async function SeriesPage({ params }: Props) {
           {(upcoming.length ? upcoming : data.events).map((event) => (
             <li key={event.id}>
               <Link
-                href={`/${locale}/e/${event.slug}`}
+                href={eventMapPath(locale, event)}
                 className="flex min-h-14 flex-col gap-0.5 py-3.5 touch-manipulation hover:bg-stone-50/80 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
               >
                 <span className="font-medium text-stone-900">{event.name}</span>

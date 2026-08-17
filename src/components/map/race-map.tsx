@@ -39,6 +39,10 @@ type Props = {
   padding?: PaddingOptions;
   /** Increment to fit the camera to current `events`. */
   fitSeq?: number;
+  /** Open on this point instead of GPS (shared race deep-link). */
+  initialFocus?: { lng: number; lat: number } | null;
+  /** Don't steal the camera with geolocation (used with `initialFocus`). */
+  skipInitialLocate?: boolean;
 };
 
 const RASTER_STYLE: StyleSpecification = {
@@ -261,6 +265,8 @@ export function RaceMap({
   locationDeniedLabel = "Location permission denied",
   padding = DEFAULT_PADDING,
   fitSeq = 0,
+  initialFocus = null,
+  skipInitialLocate = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
@@ -275,6 +281,8 @@ export function RaceMap({
   const onSelectRef = useRef(onSelect);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const paddingRef = useRef(padding);
+  const initialFocusRef = useRef(initialFocus);
+  const skipInitialLocateRef = useRef(skipInitialLocate);
   const fitSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
   const [userPos, setUserPos] = useState<{ lng: number; lat: number; accuracy?: number } | null>(
@@ -286,6 +294,8 @@ export function RaceMap({
   onSelectRef.current = onSelect;
   onBoundsChangeRef.current = onBoundsChange;
   paddingRef.current = padding;
+  initialFocusRef.current = initialFocus;
+  skipInitialLocateRef.current = skipInitialLocate;
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
@@ -294,6 +304,7 @@ export function RaceMap({
   }
 
   function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
+    if (skipInitialLocateRef.current) return;
     if (initialViewDoneRef.current || userMovedRef.current) return;
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
     initialViewDoneRef.current = true;
@@ -404,8 +415,19 @@ export function RaceMap({
     map.addControl(locateCtrl, "bottom-right");
     setMapEpoch((n) => n + 1);
 
-    // Fallback view: Czechia ~200 km until GPS arrives
+    // Fallback view: Czechia ~200 km until GPS arrives (or a shared race focus)
     map.once("load", () => {
+      const focus = initialFocusRef.current;
+      if (focus) {
+        fitRadius(map, focus.lng, focus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
+        initialViewDoneRef.current = true;
+        window.setTimeout(() => emitBounds(map), 80);
+        return;
+      }
+      if (skipInitialLocateRef.current) {
+        fitRadius(map, FALLBACK_CENTER[0], FALLBACK_CENTER[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
+        return;
+      }
       if (!initialViewDoneRef.current) {
         fitRadius(map, FALLBACK_CENTER[0], FALLBACK_CENTER[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
         // Don't lock initialViewDone yet — GPS can still refine once
@@ -538,6 +560,16 @@ export function RaceMap({
       duration: 550,
     });
   }, [selectedId, events, padding]);
+
+  // Shared-race deep link: focus arrived after map load
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || mapEpoch === 0 || !initialFocus) return;
+    if (initialViewDoneRef.current) return;
+    fitRadius(map, initialFocus.lng, initialFocus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
+    initialViewDoneRef.current = true;
+    window.setTimeout(() => emitBounds(map), 80);
+  }, [initialFocus, mapEpoch]);
 
   useEffect(() => {
     const map = mapRef.current;

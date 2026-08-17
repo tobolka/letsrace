@@ -18,6 +18,7 @@ import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { buttonVariants } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
+import { eventMapPath } from "@/lib/event-url";
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -94,7 +95,7 @@ export default async function EventPage({ params }: Props) {
     .filter(Boolean)
     .join(" · ");
   const levelLabel = RACE_LEVEL_LABELS[event.level as RaceLevel] || event.level;
-  const mapHref = `/${locale}?e=${encodeURIComponent(event.slug)}&dateFrom=${event.startDate}`;
+  const mapHref = eventMapPath(locale, event);
   const enterUrl = event.registrationUrl || event.websiteUrl || event.listingUrl;
   const enterLabel = event.registrationUrl
     ? t.register

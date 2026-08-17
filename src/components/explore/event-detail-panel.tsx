@@ -35,6 +35,7 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/primitives";
 import { eventTrustLevel, trustLabel } from "@/lib/trust";
+import { eventMapPath, eventPagePath } from "@/lib/event-url";
 
 type Member = {
   id: string;
@@ -247,7 +248,8 @@ export function EventDetailPanel({
         ? t.calendarListing
         : null;
 
-  const sharePath = `/${locale}/e/${event.slug}`;
+  const sharePath = eventMapPath(locale, event);
+  const racePageHref = eventPagePath(locale, event.slug);
 
   async function copyShareLink() {
     const url =
@@ -466,7 +468,7 @@ export function EventDetailPanel({
           </a>
         ) : null}
         <Link
-          href={sharePath}
+          href={racePageHref}
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
             "ml-auto max-w-full shrink text-[11px] text-stone-500",
