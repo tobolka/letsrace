@@ -16,6 +16,7 @@ import {
   isPendingSeasonUrl,
 } from "@/lib/watcher/core";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
+import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -884,8 +885,13 @@ export async function watchOne(row: {
             { onConflict: "url", ignoreDuplicates: true },
           );
           if (!error) linksDiscovered += 1;
+        } else if (linksDiscovered < 24 && looksLikeIndependentRaceUrl(child)) {
+          const queued = await queueDiscoveredLink(child, {
+            hintKind: "outbound",
+            fromWatchedUrlId: row.id,
+          });
+          if (queued) linksDiscovered += 1;
         }
-        // Race pages and cross-host links stay off the watch list.
       } catch {
         /* ignore bad child URLs */
       }

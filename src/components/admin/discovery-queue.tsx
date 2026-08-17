@@ -25,7 +25,7 @@ export function DiscoveryQueue({ initial }: { initial: Item[] }) {
   if (!initial.length) {
     return (
       <p className="rounded-2xl bg-white p-6 text-sm text-stone-500 shadow-sm ring-1 ring-stone-200">
-        Queue is empty. Run the watcher on series/federation sources to discover race pages.
+        Queue is empty. Run “Explore the web” or wait for the daily explorer cron.
       </p>
     );
   }
