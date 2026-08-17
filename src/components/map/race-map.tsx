@@ -15,7 +15,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
-import { buildClusterIndex } from "@/lib/map-clusters";
 import { disciplineColor } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 
@@ -82,32 +81,6 @@ function pinTipContent(event: EventListItem) {
 
   root.append(name, meta);
   return root;
-}
-
-function makeClusterElement(count: number) {
-  const wrap = document.createElement("button");
-  wrap.type = "button";
-  wrap.className = "startline-map-cluster";
-  wrap.setAttribute("aria-label", `${count} races`);
-  wrap.style.cssText = [
-    "display:flex",
-    "align-items:center",
-    "justify-content:center",
-    "width:40px",
-    "height:40px",
-    "padding:0",
-    "margin:0",
-    "border:0",
-    "border-radius:9999px",
-    "background:#1c1917",
-    "color:#fafaf9",
-    "font:600 12px/1 var(--font-geist-sans),system-ui,sans-serif",
-    "box-shadow:0 1px 2px rgba(28,25,23,.2),0 6px 16px rgba(28,25,23,.18)",
-    "cursor:pointer",
-    "touch-action:manipulation",
-  ].join(";");
-  wrap.textContent = count > 99 ? "99+" : String(count);
-  return wrap;
 }
 
 function makePinElement(event: EventListItem, selected: boolean) {
@@ -484,116 +457,70 @@ export function RaceMap({
     const map = mapRef.current;
     if (!map || mapEpoch === 0) return;
 
-    const rebuild = () => {
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = [];
-      window.clearTimeout(hoverTimerRef.current);
-      hoverPopupRef.current?.remove();
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+    window.clearTimeout(hoverTimerRef.current);
+    hoverPopupRef.current?.remove();
 
-      if (!hoverPopupRef.current) {
-        hoverPopupRef.current = new Popup({
-          closeButton: false,
-          closeOnClick: false,
-          closeOnMove: false,
-          offset: 18,
-          className: "startline-pin-tip",
-          maxWidth: "260px",
-          anchor: "bottom",
-        });
-      }
-      const popup = hoverPopupRef.current;
+    if (!hoverPopupRef.current) {
+      hoverPopupRef.current = new Popup({
+        closeButton: false,
+        closeOnClick: false,
+        closeOnMove: false,
+        offset: 18,
+        className: "startline-pin-tip",
+        maxWidth: "260px",
+        anchor: "bottom",
+      });
+    }
+    const popup = hoverPopupRef.current;
 
-      const withCoords = events.filter(
-        (e) =>
-          e.location?.lat != null &&
-          e.location?.lng != null &&
-          Number.isFinite(Number(e.location.lat)) &&
-          Number.isFinite(Number(e.location.lng)),
+    const withCoords = events.filter(
+      (e) =>
+        e.location?.lat != null &&
+        e.location?.lng != null &&
+        Number.isFinite(Number(e.location.lat)) &&
+        Number.isFinite(Number(e.location.lng)),
+    );
+
+    for (const event of withCoords) {
+      const selected = event.id === selectedId;
+      const pin = makePinElement(event, selected);
+      const lngLat: [number, number] = [Number(event.location!.lng), Number(event.location!.lat)];
+
+      pin.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        window.clearTimeout(hoverTimerRef.current);
+        popup.remove();
+        onSelectRef.current(event.id);
+      });
+      pin.addEventListener("mouseenter", () => {
+        window.clearTimeout(hoverTimerRef.current);
+        const delay = Date.now() - lastPinTipAt < 500 ? 0 : 280;
+        hoverTimerRef.current = window.setTimeout(() => {
+          popup.setLngLat(lngLat).setDOMContent(pinTipContent(event)).addTo(map);
+          lastPinTipAt = Date.now();
+        }, delay);
+      });
+      pin.addEventListener("mouseleave", () => {
+        window.clearTimeout(hoverTimerRef.current);
+        popup.remove();
+      });
+
+      markersRef.current.push(
+        new Marker({ element: pin, anchor: "center" }).setLngLat(lngLat).addTo(map),
       );
-      const byId = new globalThis.Map(withCoords.map((e) => [e.id, e]));
-      const index = buildClusterIndex(withCoords);
-      const b = map.getBounds();
-      const zoom = map.getZoom();
-      const clusters = index.getClusters(
-        [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()],
-        Math.round(zoom),
-      );
+    }
 
-      for (const feature of clusters) {
-        const [lng, lat] = feature.geometry.coordinates;
-        const props = feature.properties as {
-          cluster?: boolean;
-          cluster_id?: number;
-          point_count?: number;
-          eventId?: string;
-        };
+    (window as unknown as { __startlineMarkerCount?: number }).__startlineMarkerCount =
+      markersRef.current.length;
 
-        if (props.cluster && props.cluster_id != null) {
-          const count = props.point_count ?? 0;
-          const el = makeClusterElement(count);
-          el.addEventListener("click", (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            const expansionZoom = Math.min(
-              index.getClusterExpansionZoom(props.cluster_id!),
-              14,
-            );
-            map.easeTo({ center: [lng, lat], zoom: expansionZoom, duration: 420 });
-          });
-          markersRef.current.push(
-            new Marker({ element: el, anchor: "center" }).setLngLat([lng, lat]).addTo(map),
-          );
-          continue;
-        }
+    if (userPos) {
+      upsertUserMarker(map, userMarkerRef, userPos);
+    }
 
-        const event = props.eventId ? byId.get(props.eventId) : undefined;
-        if (!event) continue;
-        const selected = event.id === selectedId;
-        const pin = makePinElement(event, selected);
-        const lngLat: [number, number] = [lng, lat];
-
-        pin.addEventListener("click", (ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          window.clearTimeout(hoverTimerRef.current);
-          popup.remove();
-          onSelectRef.current(event.id);
-        });
-        pin.addEventListener("mouseenter", () => {
-          window.clearTimeout(hoverTimerRef.current);
-          const delay = Date.now() - lastPinTipAt < 500 ? 0 : 280;
-          hoverTimerRef.current = window.setTimeout(() => {
-            popup.setLngLat(lngLat).setDOMContent(pinTipContent(event)).addTo(map);
-            lastPinTipAt = Date.now();
-          }, delay);
-        });
-        pin.addEventListener("mouseleave", () => {
-          window.clearTimeout(hoverTimerRef.current);
-          popup.remove();
-        });
-
-        markersRef.current.push(
-          new Marker({ element: pin, anchor: "center" }).setLngLat(lngLat).addTo(map),
-        );
-      }
-
-      (window as unknown as { __startlineMarkerCount?: number }).__startlineMarkerCount =
-        markersRef.current.length;
-
-      if (userPos) {
-        upsertUserMarker(map, userMarkerRef, userPos);
-      }
-    };
-
-    rebuild();
-    map.on("moveend", rebuild);
-    map.on("zoomend", rebuild);
     requestAnimationFrame(() => map.resize());
-
-    return () => {
-      map.off("moveend", rebuild);
-      map.off("zoomend", rebuild);
-    };
   }, [events, selectedId, mapEpoch, userPos]);
 
   const prevSelectedIdRef = useRef(selectedId);
