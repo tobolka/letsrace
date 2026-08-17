@@ -123,6 +123,19 @@ describe("golden races — age categories", () => {
     expect(c.audience).toBe("mixed");
     expect(matchesAgeCategoryFilter(c, ["kids"])).toBe(true);
   });
+
+  it("Konárovický kořen is family (kids + adults)", () => {
+    const c = inferClassification({
+      name: "Konárovický kořen 2026",
+      seriesName: "Konárovický kořen",
+      disciplines: ["xco"],
+    });
+    expect(c.ageCategories).toEqual(
+      expect.arrayContaining(["kids", "youth", "amateur", "masters"]),
+    );
+    expect(c.audience).toBe("mixed");
+    expect(matchesAgeCategoryFilter(c, ["kids"])).toBe(true);
+  });
 });
 
 describe("golden races — discipline family + filter", () => {

@@ -1,3 +1,5 @@
+import { pickerCountryCodes } from "@/lib/coverage";
+
 /**
  * ISO 3166-1 alpha-2 codes we treat as Europe for Startline.
  * Includes EU/EFTA/UK, Balkans, Caucasus edge cases used in UCI calendars, and TR/CY.
@@ -73,24 +75,8 @@ export const PUBLIC_COUNTRY_CODES = EUROPE_COUNTRY_CODES.filter(
   (c) => !PAUSED_SET.has(c),
 );
 
-/** Prefer these at the top of admin country pickers. */
-const PREFERRED_COUNTRY_CODES = [
-  "CZ",
-  "SK",
-  "PL",
-  "DE",
-  "AT",
-  "CH",
-  "IT",
-  "FR",
-  "SI",
-  "HR",
-  "DK",
-  "NL",
-  "BE",
-  "ES",
-  "GB",
-] as const;
+/** Prefer coverage markets at the top of admin / filter country pickers. */
+const PREFERRED_COUNTRY_CODES = pickerCountryCodes();
 
 /** Europe ISO-2 codes with CZ / neighbouring countries first. */
 export function europeCountryOptions(current?: string | null): string[] {

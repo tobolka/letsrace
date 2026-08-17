@@ -27,6 +27,7 @@ export type EventListItem = {
   season: string | null;
   websiteUrl: string | null;
   registrationUrl: string | null;
+  regulationsUrl: string | null;
   listingUrl: string | null;
   sourceKind: string;
   level: string;
@@ -92,7 +93,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   let query = supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, source_kind, level, class_label, uci_class,
+      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class,
        ${locationSelect},
        series:series(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -371,7 +372,7 @@ export async function getSeriesBySlug(
   const { data: eventRows, error: eventError } = await supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, source_kind, level, class_label, uci_class,
+      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class,
        location:locations!inner(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -429,7 +430,7 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
   const { data, error } = await supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, source_kind, level, class_label, uci_class,
+      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class,
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -494,6 +495,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
   const outbound = resolveEventOutboundUrls({
     websiteUrl: row.website_url as string | null,
     registrationUrl: row.registration_url as string | null,
+    regulationsUrl: row.regulations_url as string | null,
     seriesWebsiteUrl: series?.website_url as string | null,
     sourceUrls: sourceUrlsFromRow(row),
   });
@@ -518,6 +520,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     season: row.season ? String(row.season) : null,
     websiteUrl: outbound.websiteUrl,
     registrationUrl: outbound.registrationUrl,
+    regulationsUrl: outbound.regulationsUrl,
     listingUrl: outbound.listingUrl,
     sourceKind: String(row.source_kind ?? "scraped"),
     level: String(row.level ?? "local"),
@@ -565,6 +568,7 @@ export type ManualEventInput = {
   audience?: Audience;
   websiteUrl?: string;
   registrationUrl?: string;
+  regulationsUrl?: string;
   status?: string;
   visibility?: string;
   notes?: string;
@@ -626,6 +630,7 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
     visibility: input.visibility ?? (input.status === "hidden" ? "hidden" : "public"),
     website_url: input.websiteUrl ?? null,
     registration_url: input.registrationUrl ?? null,
+    regulations_url: input.regulationsUrl ?? null,
     fingerprint: fp,
     source_kind: "manual",
     season: input.startDate.slice(0, 4),
@@ -714,6 +719,7 @@ export async function updateEventFields(
     disciplines: string[];
     websiteUrl: string;
     registrationUrl: string;
+    regulationsUrl: string;
     status: string;
     visibility: string;
   }>,
@@ -731,6 +737,7 @@ export async function updateEventFields(
   if (fields.disciplines != null) payload.disciplines = fields.disciplines;
   if (fields.websiteUrl != null) payload.website_url = fields.websiteUrl;
   if (fields.registrationUrl != null) payload.registration_url = fields.registrationUrl;
+  if (fields.regulationsUrl != null) payload.regulations_url = fields.regulationsUrl;
   if (fields.visibility != null) payload.visibility = fields.visibility;
   if (fields.status != null) {
     // Legacy admin "hidden" status → visibility split

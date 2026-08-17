@@ -1,4 +1,5 @@
 import { pickRegistrationUrl } from "@/lib/watcher/registration-url";
+import { isRegulationsUrl } from "@/lib/watcher/regulations-url";
 
 /** Aggregator calendars — never show these as the race “Website” link. */
 const AGGREGATOR_HOSTS = [
@@ -74,23 +75,44 @@ function scoreListing(url: string): number {
 export function resolveEventOutboundUrls(input: {
   websiteUrl?: string | null;
   registrationUrl?: string | null;
+  regulationsUrl?: string | null;
   seriesWebsiteUrl?: string | null;
   sourceUrls?: (string | null | undefined)[];
 }): {
   websiteUrl: string | null;
   registrationUrl: string | null;
   listingUrl: string | null;
+  regulationsUrl: string | null;
 } {
   const sources = input.sourceUrls ?? [];
-  const websiteUrl = publicRaceUrl(
+  let websiteUrl = publicRaceUrl(
     input.websiteUrl,
     input.seriesWebsiteUrl,
     ...sources,
   );
   const registrationUrl = pickRegistrationUrl(input.registrationUrl, ...sources);
-  // Don't duplicate the same URL as both website + registration.
-  const websiteClean =
-    websiteUrl && registrationUrl && websiteUrl === registrationUrl ? null : websiteUrl;
-  const listingUrl = websiteClean || registrationUrl ? null : calendarListingUrl(...sources);
-  return { websiteUrl: websiteClean, registrationUrl, listingUrl };
+  let regulationsUrl = publicRaceUrl(input.regulationsUrl);
+
+  if (websiteUrl && registrationUrl && websiteUrl === registrationUrl) {
+    websiteUrl = null;
+  }
+
+  if (websiteUrl && isRegulationsUrl(websiteUrl)) {
+    regulationsUrl = regulationsUrl || websiteUrl;
+    websiteUrl = publicRaceUrl(
+      input.seriesWebsiteUrl,
+      ...sources.filter((s) => s && s !== websiteUrl && !isRegulationsUrl(s)),
+    );
+    if (websiteUrl && regulationsUrl && websiteUrl === regulationsUrl) websiteUrl = null;
+  }
+
+  if (regulationsUrl && (regulationsUrl === registrationUrl || regulationsUrl === websiteUrl)) {
+    if (regulationsUrl === registrationUrl) regulationsUrl = null;
+  }
+
+  const websiteClean = websiteUrl;
+  const listingUrl =
+    websiteClean || registrationUrl ? null : calendarListingUrl(...sources);
+  if (regulationsUrl && regulationsUrl === listingUrl) regulationsUrl = null;
+  return { websiteUrl: websiteClean, registrationUrl, listingUrl, regulationsUrl };
 }

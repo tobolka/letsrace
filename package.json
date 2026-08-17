@@ -2,6 +2,9 @@
   "name": "startline",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -48,7 +51,7 @@
     "@types/geojson": "^7946.0.16",
     "@types/mapbox__mapbox-gl-draw": "^1.4.9",
     "@types/ngeohash": "^0.6.8",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.18.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/supercluster": "^7.1.3",

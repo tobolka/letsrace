@@ -11,7 +11,7 @@ export function EventJsonLd({
   const placeName =
     event.location?.municipality || event.location?.name || undefined;
   const pageUrl = absoluteUrl(`/${locale}/e/${event.slug}`);
-  const sameAs = [event.websiteUrl, event.registrationUrl].filter(
+  const sameAs = [event.websiteUrl, event.registrationUrl, event.regulationsUrl].filter(
     (u): u is string => Boolean(u),
   );
 

@@ -23,6 +23,7 @@ import {
 } from "@/lib/taxonomy";
 import { disciplineColor, familyColor } from "@/lib/map-visuals";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
+import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import {
   addDays,
   endOfMonth,
@@ -136,6 +137,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const mobileListRef = useRef<HTMLDivElement>(null);
   const [fitSeq, setFitSeq] = useState(0);
+  const [destination, setDestination] = useState<MapBounds | null>(null);
+  const [destinationSeq, setDestinationSeq] = useState(0);
+  const lastPlacedQ = useRef("");
+  const destFlyingRef = useRef(false);
+  const placeAbortRef = useRef<AbortController | null>(null);
+  const searchTimerRef = useRef(0);
+  const searchGen = useRef(0);
+
+  const fallbackCenter = useMemo(() => {
+    const c = coldStartCenter(locale);
+    return [c.lng, c.lat] as [number, number];
+  }, [locale]);
 
   const weekend = thisWeekendRange();
   const [filters, setFilters] = useQueryStates({
@@ -286,7 +299,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   function refetch(overrides: Record<string, unknown> = {}) {
     startTransition(async () => {
       const params = new URLSearchParams();
-      const q = (overrides.q as string) ?? filters.q;
+      const qRaw = (overrides.q as string) ?? filters.q;
+      const placed = lastPlacedQ.current;
+      const q =
+        placed && foldPlaceQuery(qRaw) === foldPlaceQuery(placed) ? "" : qRaw;
       const categories = (overrides.categories as string[]) ?? filters.categories;
       const disciplines = (overrides.disciplines as string[]) ?? filters.disciplines;
       const levels = (overrides.levels as string[]) ?? filters.levels;
@@ -327,6 +343,80 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (overrides.fitMap) setFitSeq((n) => n + 1);
     });
   }
+
+  async function flyToPlace(q: string, gen: number): Promise<boolean> {
+    placeAbortRef.current?.abort();
+    const ac = new AbortController();
+    placeAbortRef.current = ac;
+    try {
+      const res = await fetch(`/api/places?q=${encodeURIComponent(q)}`, { signal: ac.signal });
+      if (!res.ok) return false;
+      const data = (await res.json()) as { bounds: MapBounds };
+      if (!data.bounds || gen !== searchGen.current) return false;
+      lastPlacedQ.current = q;
+      destFlyingRef.current = true;
+      setBounds(data.bounds);
+      setDestination(data.bounds);
+      setDestinationSeq((n) => n + 1);
+      void setFilters({
+        west: String(data.bounds.west),
+        south: String(data.bounds.south),
+        east: String(data.bounds.east),
+        north: String(data.bounds.north),
+        country: "",
+      });
+      refetch({
+        q: "",
+        country: "",
+        bounds: data.bounds,
+        forceBounds: true,
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async function runSearch(q: string) {
+    const gen = ++searchGen.current;
+    const trimmed = q.trim();
+    if (trimmed.length >= 3) {
+      const ok = await flyToPlace(trimmed, gen);
+      if (gen !== searchGen.current) return;
+      if (ok) return;
+    }
+    if (gen !== searchGen.current) return;
+    lastPlacedQ.current = "";
+    refetch({ q: trimmed });
+  }
+
+  function handleSearchChange(q: string) {
+    void setFilters({ q });
+    window.clearTimeout(searchTimerRef.current);
+    const trimmed = q.trim();
+    if (trimmed.length < 2) {
+      lastPlacedQ.current = "";
+      searchGen.current += 1;
+      placeAbortRef.current?.abort();
+      refetch({ q: trimmed });
+      return;
+    }
+    searchTimerRef.current = window.setTimeout(() => {
+      void runSearch(q);
+    }, 400);
+  }
+
+  function handleSearchSubmit() {
+    window.clearTimeout(searchTimerRef.current);
+    void runSearch(filters.q);
+  }
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(searchTimerRef.current);
+      placeAbortRef.current?.abort();
+    };
+  }, []);
 
   // Desktop: clear list (+ detail) panels. Mobile: clear bottom sheet.
   const [isDesktop, setIsDesktop] = useState(false);
@@ -387,8 +477,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           selectedId={selectedId}
           padding={mapPadding}
           fitSeq={fitSeq}
+          destination={destination}
+          destinationSeq={destinationSeq}
+          fallbackCenter={fallbackCenter}
           initialFocus={initialFocus}
-          skipInitialLocate={Boolean(filters.e)}
+          skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
           onSelect={(id) => {
             selectEvent(id);
             setMobileOpen(true);
@@ -398,11 +491,19 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             // First camera settle → load races for this viewport
             if (!initialBoundsFetchDone.current) {
               initialBoundsFetchDone.current = true;
+              if (filters.q.trim().length >= 3) {
+                void runSearch(filters.q);
+                return;
+              }
               if (filters.series || filters.country) {
                 refetch({ skipBounds: true, fitMap: true });
               } else {
                 refetch({ bounds: b, forceBounds: true });
               }
+              return;
+            }
+            if (destFlyingRef.current) {
+              destFlyingRef.current = false;
               return;
             }
             if (!filters.series && !filters.country) {
@@ -439,10 +540,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onSubmitRace={() => setSubmitOpen(true)}
             onFeedback={() => setFeedbackOpen(true)}
             onSignIn={() => setAuthOpen(true)}
-            onQ={(q) => {
-              void setFilters({ q });
-              refetch({ q });
-            }}
+            onQ={handleSearchChange}
+            onSearchSubmit={handleSearchSubmit}
           />
           <div className="relative z-30 shrink-0 border-b border-stone-100 px-3 py-2.5">
             {renderFilterBar()}
@@ -569,10 +668,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   onSubmitRace={() => setSubmitOpen(true)}
                   onFeedback={() => setFeedbackOpen(true)}
                   onSignIn={() => setAuthOpen(true)}
-                  onQ={(q) => {
-                    void setFilters({ q });
-                    refetch({ q });
-                  }}
+                  onQ={handleSearchChange}
+                  onSearchSubmit={handleSearchSubmit}
                   compact
                 />
               </div>
@@ -1236,6 +1333,7 @@ function Header({
   locale,
   q,
   onQ,
+  onSearchSubmit,
   menuOpen,
   onMenuOpen,
   onSubmitRace,
@@ -1247,6 +1345,7 @@ function Header({
   locale: string;
   q: string;
   onQ: (q: string) => void;
+  onSearchSubmit: () => void;
   menuOpen: boolean;
   onMenuOpen: (v: boolean) => void;
   onSubmitRace: () => void;
@@ -1352,15 +1451,26 @@ function Header({
           )}
         </div>
       </div>
-      <div className="relative">
+      <form
+        className="relative"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSearchSubmit();
+        }}
+      >
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
         <Input
+          name="q"
+          type="search"
           value={q}
           onChange={(e) => onQ(e.target.value)}
           placeholder={messages.searchPlaceholder}
           className="pl-9"
+          autoComplete="off"
+          enterKeyHint="search"
+          aria-label={messages.searchPlaceholder}
         />
-      </div>
+      </form>
     </div>
   );
 }

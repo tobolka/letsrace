@@ -56,6 +56,7 @@ import {
   parsePrimaCup,
   parseVelkyHaj,
   parseVanGillern,
+  parseKonarovickyKoren,
   parseZal,
   parseUstiMtbCup,
 } from "@/lib/watcher/extractors/cz-calendars";
@@ -295,6 +296,17 @@ export async function extractWithAdapter(
       return { events: [], strategy: "adapter:van-gillern-skip" };
     }
     return { events: parseVanGillern(url, html), strategy: "adapter:van-gillern" };
+  }
+  if (host.includes("k-koren.cz")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (path !== "/") {
+        return { events: [], strategy: "adapter:k-koren-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:k-koren-skip" };
+    }
+    return { events: parseKonarovickyKoren(url, html), strategy: "adapter:k-koren" };
   }
   if (host.includes("skvelopraha.cz")) {
     if (!/\/velky-haj/i.test(url)) {

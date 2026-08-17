@@ -1,3 +1,5 @@
+import { allowsUnlinkedPublicListing, UNLINKED_LISTING_CODES } from "@/lib/coverage";
+
 /** Statuses shown on the public map / explore list. */
 export const PUBLIC_EVENT_STATUSES = ["scheduled", "tbc", "postponed", "registration_open"] as const;
 
@@ -5,11 +7,13 @@ export const PUBLIC_EVENT_STATUSES = ["scheduled", "tbc", "postponed", "registra
  * Home map: keep listing even without an official enter link.
  * Everywhere else (especially thin federation dumps like Italy/FCI) needs a website
  * or registration URL so unverified pins don't starve the weekend view.
+ *
+ * Sourced from `coverage.ts` so a new neighbor is one market row, not a rewrite.
  */
-export const HOME_MAP_COUNTRIES = ["CZ", "SK", "AT", "DE", "PL", "CH"] as const;
+export const HOME_MAP_COUNTRIES = UNLINKED_LISTING_CODES;
 
 export function isHomeMapCountry(code: string | null | undefined): boolean {
-  return Boolean(code && (HOME_MAP_COUNTRIES as readonly string[]).includes(code.toUpperCase()));
+  return allowsUnlinkedPublicListing(code);
 }
 
 export function isPublicMapWorthy(event: {

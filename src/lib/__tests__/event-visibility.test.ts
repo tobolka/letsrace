@@ -18,6 +18,20 @@ describe("public map quality gate", () => {
         location: { countryCode: "SK" },
       }),
     ).toBe(true);
+    expect(
+      isPublicMapWorthy({
+        websiteUrl: null,
+        registrationUrl: null,
+        location: { countryCode: "CH" },
+      }),
+    ).toBe(true);
+    expect(
+      isPublicMapWorthy({
+        websiteUrl: null,
+        registrationUrl: null,
+        location: { countryCode: "SI" },
+      }),
+    ).toBe(false);
   });
 
   it("parks thin Italy/FCI rows without a website or registration URL", () => {

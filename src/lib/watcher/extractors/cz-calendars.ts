@@ -788,8 +788,57 @@ export function parseVanGillern(url: string, html: string): ParsedEvent[] {
       sourceUrl: url.split("?")[0]!,
       websiteUrl: VAN_GILLERN_SITE,
       registrationUrl,
+      regulationsUrl: `${VAN_GILLERN_SITE.replace(/\/$/, "")}/wordpress/propozice/`,
       lat: coordM ? Number(coordM[1]) : VAN_GILLERN_LAT,
       lng: coordM ? Number(coordM[2]) : VAN_GILLERN_LNG,
+      confidence: 0.92,
+    },
+  ];
+}
+
+const K_KOREN_LAT = 50.04139;
+const K_KOREN_LNG = 15.28417;
+const K_KOREN_SITE = "https://www.k-koren.cz";
+
+/**
+ * Konárovický kořen — one-day family MTB (balance-bike kids through masters)
+ * at the fire-station grounds in Konárovice. Date lives on the homepage
+ * (“Těšíme se na vás 27. září 2026”); do not parse /online-prihlasky/
+ * (cancellation / close dates).
+ *
+ * Do not use `\b` after `září` — `í` is non-`\w` so the boundary never matches.
+ */
+export function parseKonarovickyKoren(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const text = $("article, .entry-content, main, body").text().replace(/\s+/g, " ");
+  const yearMatch = text.match(/(\d{1,2})\.\s*(září|zari)\s*(20\d{2})/i);
+  const year = yearMatch ? Number(yearMatch[3]) : seasonYearFromHtml(html);
+  const dayM =
+    text.match(/těšíme se na vás\s+(\d{1,2})\.\s*(září|zari)/i) ||
+    text.match(/(\d{1,2})\.\s*(září|zari)\s*20\d{2}\s+na\s+\d/i) ||
+    text.match(/(\d{1,2})\.\s*(září|zari)\s*20\d{2}/i);
+  if (!dayM) return [];
+  const startDate = namedDayToIso(dayM[1]!, dayM[2]!, year);
+  if (!startDate) return [];
+
+  return [
+    {
+      externalId: `k-koren-${startDate}`,
+      name: `Konárovický kořen ${year}`,
+      startDate,
+      placeText: "Konárovice — hasičské hřiště",
+      countryHint: "CZ",
+      discipline: ["xco"],
+      audience: "mixed",
+      seriesName: "Konárovický kořen",
+      seriesSlug: "konarovicky-koren",
+      seriesWebsite: K_KOREN_SITE,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: K_KOREN_SITE,
+      registrationUrl: `${K_KOREN_SITE}/online-prihlasky/`,
+      regulationsUrl: `${K_KOREN_SITE}/kategorie/`,
+      lat: K_KOREN_LAT,
+      lng: K_KOREN_LNG,
       confidence: 0.92,
     },
   ];

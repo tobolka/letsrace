@@ -80,6 +80,7 @@ export const events = pgTable("events", {
   visibility: text("visibility").notNull().default("public"),
   websiteUrl: text("website_url"),
   registrationUrl: text("registration_url"),
+  regulationsUrl: text("regulations_url"),
   resultsUrl: text("results_url"),
   registrationOpensAt: timestamp("registration_opens_at", { withTimezone: true }),
   registrationClosesAt: timestamp("registration_closes_at", { withTimezone: true }),

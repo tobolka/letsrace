@@ -39,6 +39,12 @@ type Props = {
   padding?: PaddingOptions;
   /** Increment to fit the camera to current `events`. */
   fitSeq?: number;
+  /** Fly to this bbox (place / vacation search). */
+  destination?: MapBounds | null;
+  /** Increment to apply `destination`. */
+  destinationSeq?: number;
+  /** Cold-start camera until GPS (locale market). */
+  fallbackCenter?: [number, number];
   /** Open on this point instead of GPS (shared race deep-link). */
   initialFocus?: { lng: number; lat: number } | null;
   /** Don't steal the camera with geolocation (used with `initialFocus`). */
@@ -213,7 +219,7 @@ const GEO_OPTS_PRECISE: PositionOptions = {
 const DEFAULT_PADDING: PaddingOptions = { top: 72, bottom: 56, left: 56, right: 56 };
 /** Default map view: user location with ~200 km radius. */
 const DEFAULT_RADIUS_KM = 200;
-const FALLBACK_CENTER: [number, number] = [15.5, 49.75]; // Czechia
+const CZECHIA_CENTER: [number, number] = [15.5, 49.75];
 
 function boundsAround(lng: number, lat: number, radiusKm: number): LngLatBounds {
   const dLat = radiusKm / 111;
@@ -265,6 +271,9 @@ export function RaceMap({
   locationDeniedLabel = "Location permission denied",
   padding = DEFAULT_PADDING,
   fitSeq = 0,
+  destination = null,
+  destinationSeq = 0,
+  fallbackCenter = CZECHIA_CENTER,
   initialFocus = null,
   skipInitialLocate = false,
 }: Props) {
@@ -283,7 +292,9 @@ export function RaceMap({
   const paddingRef = useRef(padding);
   const initialFocusRef = useRef(initialFocus);
   const skipInitialLocateRef = useRef(skipInitialLocate);
+  const fallbackCenterRef = useRef(fallbackCenter);
   const fitSeqRef = useRef(0);
+  const destSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
   const [userPos, setUserPos] = useState<{ lng: number; lat: number; accuracy?: number } | null>(
     null,
@@ -296,6 +307,7 @@ export function RaceMap({
   paddingRef.current = padding;
   initialFocusRef.current = initialFocus;
   skipInitialLocateRef.current = skipInitialLocate;
+  fallbackCenterRef.current = fallbackCenter;
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
@@ -355,13 +367,20 @@ export function RaceMap({
           background: #fff;
           box-shadow: 0 1px 2px rgba(28,25,23,.06), 0 10px 24px rgba(28,25,23,.14);
           border: 1px solid rgba(28,25,23,.08);
+          overflow: visible;
           font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
         }
         .startline-pin-tip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
           border-top-color: #fff;
+          margin-top: -1px;
+          z-index: 2;
+          filter: drop-shadow(0 1px 0 rgba(28,25,23,.08));
         }
         .startline-pin-tip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
           border-bottom-color: #fff;
+          margin-bottom: -1px;
+          z-index: 2;
+          filter: drop-shadow(0 -1px 0 rgba(28,25,23,.08));
         }
         @media (prefers-reduced-motion: reduce) {
           .startline-map-pin span { transition: none !important; }
@@ -373,7 +392,7 @@ export function RaceMap({
     const map = new MapLibreMap({
       container: el,
       style: RASTER_STYLE,
-      center: FALLBACK_CENTER,
+      center: fallbackCenterRef.current,
       zoom: 7,
       maxBounds: EUROPE_CAMERA_BOUNDS,
       renderWorldCopies: false,
@@ -415,9 +434,10 @@ export function RaceMap({
     map.addControl(locateCtrl, "bottom-right");
     setMapEpoch((n) => n + 1);
 
-    // Fallback view: Czechia ~200 km until GPS arrives (or a shared race focus)
+    // Fallback view: locale market ~200 km until GPS arrives (or a shared race focus)
     map.once("load", () => {
       const focus = initialFocusRef.current;
+      const home = fallbackCenterRef.current;
       if (focus) {
         fitRadius(map, focus.lng, focus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
         initialViewDoneRef.current = true;
@@ -425,11 +445,11 @@ export function RaceMap({
         return;
       }
       if (skipInitialLocateRef.current) {
-        fitRadius(map, FALLBACK_CENTER[0], FALLBACK_CENTER[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
+        fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
         return;
       }
       if (!initialViewDoneRef.current) {
-        fitRadius(map, FALLBACK_CENTER[0], FALLBACK_CENTER[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
+        fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
         // Don't lock initialViewDone yet — GPS can still refine once
         window.setTimeout(() => emitBounds(map), 80);
       }
@@ -594,6 +614,27 @@ export function RaceMap({
     });
   }, [fitSeq, events, mapEpoch]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || mapEpoch === 0 || !destinationSeq || destinationSeq === destSeqRef.current) return;
+    if (!destination) return;
+    destSeqRef.current = destinationSeq;
+    userMovedRef.current = true;
+    initialViewDoneRef.current = true;
+    const b = new LngLatBounds(
+      [destination.west, destination.south],
+      [destination.east, destination.north],
+    );
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    map.fitBounds(b, {
+      padding: paddingRef.current,
+      maxZoom: 11,
+      duration: reduce ? 0 : 700,
+    });
+  }, [destination, destinationSeq, mapEpoch]);
+
   // Keep user location marker in sync + initial camera on first GPS fix
   useEffect(() => {
     const map = mapRef.current;
@@ -636,7 +677,7 @@ export function RaceMap({
       if (!initialViewDoneRef.current) {
         initialViewDoneRef.current = true;
       }
-      // Only surface hard denials — timeouts fall back to Czechia quietly
+      // Only surface hard denials — timeouts stay on the locale fallback quietly
       if (err.code === err.PERMISSION_DENIED) {
         setLocError(locationDeniedLabel);
       }

@@ -1267,6 +1267,10 @@ async function upsertParsedEvent(
 
   const incomingWebsite = publicRaceUrl(ev.websiteUrl, ev.sourceUrl);
   const incomingRegistration = publicRaceUrl(ev.registrationUrl);
+  const { preferRegulationsUrl, isRegulationsUrl } = await import("@/lib/watcher/regulations-url");
+  const incomingRegulations =
+    publicRaceUrl(ev.regulationsUrl) ||
+    (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
   const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(Boolean);
 
   // 1) exact fingerprint
@@ -1686,6 +1690,19 @@ async function upsertParsedEvent(
   else if (!existingId) payload.website_url = null;
   if (registration) payload.registration_url = registration;
   else if (!existingId) payload.registration_url = null;
+  if (incomingRegulations) {
+    let existingRegulations: string | null = null;
+    if (existingId) {
+      const { data: cur } = await supabase
+        .from("events")
+        .select("regulations_url")
+        .eq("id", existingId)
+        .maybeSingle();
+      existingRegulations = (cur?.regulations_url as string | null) ?? null;
+    }
+    const regulations = preferRegulationsUrl(incomingRegulations, existingRegulations);
+    if (regulations) payload.regulations_url = regulations;
+  }
 
   if (!lockedFields.includes("location_id") && locationId) {
     payload.location_id = locationId;

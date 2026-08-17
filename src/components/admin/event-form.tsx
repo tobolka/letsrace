@@ -20,6 +20,7 @@ export type EventFormValues = {
   disciplines: string[];
   websiteUrl?: string;
   registrationUrl?: string;
+  regulationsUrl?: string;
   status: string;
   visibility: string;
   lockFields: boolean;
@@ -38,6 +39,7 @@ const empty: EventFormValues = {
   disciplines: [],
   websiteUrl: "",
   registrationUrl: "",
+  regulationsUrl: "",
   status: "scheduled",
   visibility: "public",
   lockFields: true,
@@ -83,6 +85,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
         disciplines: values.disciplines,
         websiteUrl: values.websiteUrl || undefined,
         registrationUrl: values.registrationUrl || undefined,
+        regulationsUrl: values.regulationsUrl || undefined,
         status: values.status,
         visibility: values.visibility,
         lockFields: values.lockFields,
@@ -167,6 +170,14 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
             type="url"
             value={values.registrationUrl}
             onChange={(e) => set("registrationUrl", e.target.value)}
+          />
+        </Field>
+        <Field label="Propozice / PDF">
+          <Input
+            type="url"
+            value={values.regulationsUrl}
+            onChange={(e) => set("regulationsUrl", e.target.value)}
+            placeholder="https://…/propozice.pdf"
           />
         </Field>
         <Field label="Status">

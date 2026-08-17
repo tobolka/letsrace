@@ -392,10 +392,35 @@ export function EventDetailPanel({
                   {t.openWebsite}
                 </a>
               ) : null}
+              {event.regulationsUrl &&
+              event.regulationsUrl !== registerUrl &&
+              event.regulationsUrl !== websiteUrl &&
+              event.regulationsUrl !== listingUrl ? (
+                <a
+                  href={event.regulationsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEnter("regulations")}
+                  className="inline-flex min-h-10 items-center gap-1.5 text-xs text-stone-600 underline decoration-stone-300 underline-offset-2 hover:text-stone-900 md:min-h-8"
+                >
+                  {t.regulations}
+                </a>
+              ) : null}
               {!registerUrl && !websiteUrl && listingUrl ? (
                 <p className="text-[11px] text-stone-500">{t.calendarListing}</p>
               ) : null}
             </div>
+          ) : event.regulationsUrl ? (
+            <a
+              href={event.regulationsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEnter("regulations")}
+              className="mt-1.5 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-stone-900 underline decoration-stone-300 underline-offset-2 md:min-h-9"
+            >
+              <ExternalLink className="h-3.5 w-3.5 shrink-0 text-stone-400" aria-hidden />
+              {t.regulations}
+            </a>
           ) : (
             <p className="mt-1 text-sm text-stone-400">{t.noOnlineEntry}</p>
           )}

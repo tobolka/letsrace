@@ -181,6 +181,17 @@ export default async function EventPage({ params }: Props) {
               {enterLabel}
             </OutboundTrackLink>
           ) : null}
+          {event.regulationsUrl && event.regulationsUrl !== enterUrl ? (
+            <OutboundTrackLink
+              href={event.regulationsUrl}
+              eventName="outbound_enter"
+              eventProps={{ slug: event.slug, kind: "regulations" }}
+              className="gap-2"
+            >
+              <ExternalLink className="size-4" aria-hidden />
+              {t.regulations}
+            </OutboundTrackLink>
+          ) : null}
         </div>
 
         <p className="mt-10 hidden text-sm text-stone-500 sm:mt-12 sm:block">{t.tagline}</p>
@@ -212,6 +223,16 @@ export default async function EventPage({ params }: Props) {
           ) : (
             <p className="text-center text-sm text-stone-500">{t.noOnlineEntry}</p>
           )}
+          {event.regulationsUrl && event.regulationsUrl !== enterUrl ? (
+            <a
+              href={event.regulationsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 w-full items-center justify-center text-sm font-medium text-stone-700 underline decoration-stone-300 underline-offset-2"
+            >
+              {t.regulations}
+            </a>
+          ) : null}
         </div>
       </div>
     </main>

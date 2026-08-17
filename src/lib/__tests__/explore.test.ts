@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   canonicalExploreUrl,
   looksLikeIndependentRaceUrl,
+  pickExplorePacks,
   scoreRacePage,
   shouldAutoWatch,
 } from "@/lib/watcher/explore";
-import { parseVanGillern } from "@/lib/watcher/extractors/cz-calendars";
+import { parseVanGillern, parseKonarovickyKoren } from "@/lib/watcher/extractors/cz-calendars";
 
 describe("race website explorer", () => {
   it("canonicalizes WordPress homes to the origin", () => {
@@ -23,6 +24,7 @@ describe("race website explorer", () => {
     expect(looksLikeIndependentRaceUrl("https://tatry-mtb.sk/preteky")).toBe(true);
     expect(looksLikeIndependentRaceUrl("https://puchar-beskid.pl/zapisy")).toBe(true);
     expect(looksLikeIndependentRaceUrl("https://granfondo-lago.it/iscrizioni")).toBe(true);
+    expect(looksLikeIndependentRaceUrl("https://www.k-koren.cz")).toBe(true);
     expect(looksLikeIndependentRaceUrl("https://hynekmusil.cz/?serialosss=tc")).toBe(false);
     expect(looksLikeIndependentRaceUrl("https://federciclismo.it/calendario")).toBe(false);
     expect(looksLikeIndependentRaceUrl("https://facebook.com/some-race")).toBe(false);
@@ -78,7 +80,35 @@ describe("race website explorer", () => {
     expect(events).toHaveLength(1);
     expect(events[0]?.startDate).toBe("2026-09-06");
     expect(events[0]?.registrationUrl).toContain("eztiming.eu");
+    expect(events[0]?.regulationsUrl).toContain("propozice");
     expect(events[0]?.lat).toBeCloseTo(49.889, 2);
     expect(events[0]?.lng).toBeCloseTo(14.565, 2);
+  });
+
+  it("parses Konárovický kořen 2026 from the homepage, not the signup deadline", () => {
+    const html = `
+      <html><head><title>Konárovický kořen</title></head>
+      <body>
+        <h1>Konárovický kořen</h1>
+        <p>Těšíme se na vás 27. září 2026 na 26. ročníku!</p>
+        <p>Tradiční cyklistický závod na horských kolech.</p>
+        <a href="/online-prihlasky/">On-line přihlášky</a>
+      </body></html>
+    `;
+    const events = parseKonarovickyKoren("https://www.k-koren.cz/", html);
+    expect(events).toHaveLength(1);
+    expect(events[0]?.startDate).toBe("2026-09-27");
+    expect(events[0]?.registrationUrl).toContain("online-prihlasky");
+    expect(events[0]?.regulationsUrl).toContain("kategorie");
+    expect(events[0]?.lat).toBeCloseTo(50.041, 2);
+  });
+
+  it("weights explorer packs toward home markets and sniffs Italy every third window", () => {
+    const home = pickExplorePacks(1);
+    expect(home.every((p) => p.id !== "it")).toBe(true);
+    expect(home.length).toBe(2);
+    const withItaly = pickExplorePacks(3);
+    expect(withItaly.some((p) => p.id === "it")).toBe(true);
+    expect(withItaly.some((p) => p.id === "ch" || p.id === "cz" || p.id === "de")).toBe(true);
   });
 });

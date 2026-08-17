@@ -1,11 +1,22 @@
 import { createServerSupabase } from "@/lib/supabase/server";
-import { EUROPE_COUNTRY_CODES } from "@/lib/geo/europe";
+import {
+  boundsFromRadiusKm,
+  isPlaceSearchStopword,
+  resolveCoveragePlace,
+} from "@/lib/coverage";
+import { EUROPE_COUNTRY_CODES, isInEuropeMap } from "@/lib/geo/europe";
 
 export type GeocodeResult = {
   lat: number;
   lng: number;
   displayName?: string;
   countryCode?: string;
+  bounds?: {
+    west: number;
+    south: number;
+    east: number;
+    north: number;
+  };
 };
 
 /** Common Central-European race towns — instant pins without API. */
@@ -39,6 +50,8 @@ const GAZETTEER: Record<string, { lat: number; lng: number; cc: string }> = {
   beroun: { lat: 49.9638, lng: 14.072, cc: "CZ" },
   kolin: { lat: 50.0281, lng: 15.2006, cc: "CZ" },
   "kolín": { lat: 50.0281, lng: 15.2006, cc: "CZ" },
+  konarovice: { lat: 50.04139, lng: 15.28417, cc: "CZ" },
+  "konárovice": { lat: 50.04139, lng: 15.28417, cc: "CZ" },
   kutna: { lat: 49.9484, lng: 15.2682, cc: "CZ" },
   "kutna hora": { lat: 49.9484, lng: 15.2682, cc: "CZ" },
   "kutná hora": { lat: 49.9484, lng: 15.2682, cc: "CZ" },
@@ -989,7 +1002,7 @@ const COUNTRY_WORDS: { re: RegExp; cc: string }[] = [
   { re: /\b(slovakia|slovensko)\b/i, cc: "SK" },
   { re: /\b(denmark|dánsko|dansko|dänemark|danemark)\b/i, cc: "DK" },
   { re: /\b(poland|polsko)\b/i, cc: "PL" },
-  { re: /\b(italy|italien|italsko)\b/i, cc: "IT" },
+  { re: /\b(italy|italien|italia|italsko|itálie)\b/i, cc: "IT" },
   { re: /\b(france|frankreich|francie)\b/i, cc: "FR" },
   { re: /\b(belgium|belgie|belgicko|belgien|belgique)\b/i, cc: "BE" },
   { re: /\b(spain|spanien|španělsko)\b/i, cc: "ES" },
@@ -1240,6 +1253,144 @@ export async function geocodePlace(
   if (local) return { ...local, countryCode: local.countryCode || countryCode };
 
   return nominatimSearch(query, countryCode);
+}
+
+type NominatimHit = {
+  lat: string;
+  lon: string;
+  display_name?: string;
+  boundingbox?: [string, string, string, string];
+  class?: string;
+  type?: string;
+  address?: { country_code?: string };
+};
+
+const PLACE_TYPES = new Set([
+  "city",
+  "town",
+  "village",
+  "municipality",
+  "hamlet",
+  "suburb",
+  "county",
+  "state",
+  "country",
+  "region",
+  "province",
+  "administrative",
+  "peak",
+  "mountain_range",
+  "wood",
+  "lake",
+  "reservoir",
+  "national_park",
+]);
+
+function isPlaceLikeHit(hit: NominatimHit): boolean {
+  if (hit.class === "boundary" && hit.type === "administrative") return true;
+  if (hit.class === "place") return true;
+  if (hit.class === "natural" || hit.class === "water" || hit.class === "waterway") return true;
+  return PLACE_TYPES.has(hit.type || "");
+}
+
+function nominatimBounds(hit: NominatimHit): GeocodeResult["bounds"] {
+  const bb = hit.boundingbox;
+  if (!bb || bb.length < 4) return undefined;
+  const south = Number(bb[0]);
+  const north = Number(bb[1]);
+  const west = Number(bb[2]);
+  const east = Number(bb[3]);
+  if (![south, north, west, east].every(Number.isFinite)) return undefined;
+  return { west, south, east, north };
+}
+
+function hitToResult(hit: NominatimHit, countryCode?: string): GeocodeResult | null {
+  const lat = Number(hit.lat);
+  const lng = Number(hit.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (!isInEuropeMap(lat, lng)) return null;
+  const cc = (hit.address?.country_code || countryCode || "").toUpperCase() || undefined;
+  const bounds = nominatimBounds(hit) ?? boundsFromRadiusKm(lng, lat, 80);
+  return {
+    lat,
+    lng,
+    displayName: hit.display_name,
+    countryCode: cc,
+    bounds,
+  };
+}
+
+const publicPlaceCache = new Map<string, GeocodeResult | null>();
+let lastNominatimAt = 0;
+
+async function nominatimPublicSearch(query: string): Promise<GeocodeResult | null> {
+  const wait = 1100 - (Date.now() - lastNominatimAt);
+  if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+  lastNominatimAt = Date.now();
+
+  const params = new URLSearchParams({
+    q: query,
+    format: "json",
+    limit: "5",
+    addressdetails: "1",
+  });
+  const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+    headers: {
+      "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
+      Accept: "application/json",
+    },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as NominatimHit[];
+  if (!data?.length) return null;
+
+  const inEurope = data
+    .map((hit) => ({ hit, result: hitToResult(hit) }))
+    .filter((row): row is { hit: NominatimHit; result: GeocodeResult } => row.result != null);
+
+  const placeLike = inEurope.find((row) => isPlaceLikeHit(row.hit));
+  return (placeLike ?? inEurope[0])?.result ?? null;
+}
+
+/**
+ * Public search box: country / vacation destination / town, never forced to CZ.
+ * Does not use `cleanGeocodeQuery`'s CZ default — that is for ingest pinning.
+ */
+export async function geocodePublicPlace(raw: string): Promise<GeocodeResult | null> {
+  const q = raw.replace(/\s+/g, " ").trim();
+  if (q.length < 3) return null;
+  if (isPlaceSearchStopword(q)) return null;
+
+  const cacheKey = fold(q);
+  if (publicPlaceCache.has(cacheKey)) return publicPlaceCache.get(cacheKey) ?? null;
+
+  const coverage = resolveCoveragePlace(q);
+  if (coverage) {
+    const hit: GeocodeResult = {
+      lat: coverage.lat,
+      lng: coverage.lng,
+      countryCode: coverage.countryCode,
+      displayName: coverage.displayName,
+      bounds: coverage.bounds,
+    };
+    publicPlaceCache.set(cacheKey, hit);
+    return hit;
+  }
+
+  const local = gazetteerLookup(q);
+  if (local) {
+    const hit: GeocodeResult = {
+      ...local,
+      bounds: boundsFromRadiusKm(local.lng, local.lat, 80),
+    };
+    publicPlaceCache.set(cacheKey, hit);
+    return hit;
+  }
+
+  const remote = await nominatimPublicSearch(q);
+  publicPlaceCache.set(cacheKey, remote);
+  return remote;
 }
 
 export type GeocodeBatchResult = {

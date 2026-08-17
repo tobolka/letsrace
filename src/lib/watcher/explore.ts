@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { explorerWeight } from "@/lib/coverage";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { fetchPage } from "@/lib/watcher/http";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
@@ -10,7 +11,7 @@ const SEARCH_UA =
 
 const YEAR = new Date().getFullYear();
 
-type CountryPack = {
+export type CountryPack = {
   id: string;
   queries: string[];
   crt: string[];
@@ -70,6 +71,15 @@ const COUNTRY_PACKS: CountryPack[] = [
     crt: ["cup.pl", "mtb.pl", "bike.pl"],
   },
   {
+    id: "ch",
+    queries: [
+      `MTB Rennen ${YEAR} site:.ch`,
+      `Radrennen Anmeldung ${YEAR} Schweiz`,
+      `Gravel Rennen ${YEAR} Schweiz`,
+    ],
+    crt: ["cup.ch", "mtb.ch", "bike.ch"],
+  },
+  {
     id: "it",
     queries: [
       `gara MTB ${YEAR} site:.it -federciclismo`,
@@ -82,7 +92,7 @@ const COUNTRY_PACKS: CountryPack[] = [
 ];
 
 const RACE_HOST =
-  /cup|coppa|puchar|race|rennen|gara|wyscig|wyścig|pretek|mtb|xco|xcm|xcc|\bxc\b|gravel|kolo|bike|velo|maraton|marathon|cyclo|cyklo|enduro|downhill|criterium|kritérium|granfondo|bikemaraton|tour|radsport/i;
+  /cup|coppa|puchar|race|rennen|gara|wyscig|wyścig|pretek|mtb|xco|xcm|xcc|\bxc\b|gravel|kolo|bike|velo|maraton|marathon|cyclo|cyklo|enduro|downhill|criterium|kritérium|granfondo|bikemaraton|tour|radsport|k-koren/i;
 
 const RACE_PATH =
   /zavod|závod|zavody|pretek|preteky|race|rennen|gara|wyscig|wyścig|zawody|cup|kalendar|kalendář|kalender|calendario|kalendarz|propozic|registrac|prihlas|anmeldung|ausschreibung|nennung|iscriz|regolamento|zapisy|regulamin|trat|termine/i;
@@ -293,6 +303,17 @@ function pickRotated<T>(items: T[], take: number, salt: number): T[] {
   return out;
 }
 
+/** Home markets every window; expanding (Italy) about every third. */
+export function pickExplorePacks(salt: number, packs = COUNTRY_PACKS): CountryPack[] {
+  const home = packs.filter((p) => explorerWeight(p.id) === "home");
+  const expanding = packs.filter((p) => explorerWeight(p.id) === "expanding");
+  const chosen = pickRotated(home, Math.min(2, home.length), salt);
+  if (expanding.length && salt % 3 === 0) {
+    chosen.push(...pickRotated(expanding, 1, salt));
+  }
+  return chosen;
+}
+
 function unwrapSearchHref(href: string): string | null {
   try {
     const u = new URL(href, "https://duckduckgo.com");
@@ -426,7 +447,7 @@ export async function runExplore(opts?: {
   const deadline = Date.now() + budgetMs;
   const supabase = createServerSupabase();
   const salt = Math.floor(Date.now() / (6 * 60 * 60 * 1000));
-  const packs = pickRotated(COUNTRY_PACKS, 2, salt);
+  const packs = pickExplorePacks(salt);
   const queries = packs.flatMap((p) => pickRotated(p.queries, 2, salt));
   const crtSuffix = pickRotated(
     packs.flatMap((p) => p.crt),

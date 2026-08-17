@@ -44,6 +44,7 @@ export default async function EditEventPage({
           disciplines: event.disciplines ?? [],
           websiteUrl: event.website_url ?? "",
           registrationUrl: event.registration_url ?? "",
+          regulationsUrl: event.regulations_url ?? "",
           status: event.status,
           visibility: event.visibility ?? "public",
           lockFields: true,

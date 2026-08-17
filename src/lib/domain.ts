@@ -34,6 +34,8 @@ export type ParsedEvent = {
   /** Official race website for UI — never an aggregator calendar. */
   websiteUrl?: string;
   registrationUrl?: string;
+  /** Official race info / propozice (HTML page or PDF). */
+  regulationsUrl?: string;
   /** Link event into a series (Talent Cup, KPŽ, …) */
   seriesName?: string;
   seriesSlug?: string;

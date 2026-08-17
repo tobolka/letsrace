@@ -3,6 +3,7 @@ import type { ParsedEvent } from "@/lib/domain";
 import { extractJsonLdEvents } from "@/lib/watcher/extractors/jsonld";
 import { extractWithAdapter } from "@/lib/watcher/extractors/adapters";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
+import { attachRegulationsUrl } from "@/lib/watcher/regulations-url";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
 
@@ -18,10 +19,8 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
 
   const adapted = await extractWithAdapter(host, url, html);
   if (adapted) {
-    // Calendars already yield every round. Only follow URLs the adapter opted into
-    // (pagination, Hynek series filters) — never crawl the rest of the site.
     return {
-      events: adapted.events,
+      events: attachRegulationsUrl(url, html, adapted.events),
       strategy: adapted.strategy,
       childUrls: [...new Set(adapted.events.flatMap((e) => e.childUrls ?? []))],
       confidence: adapted.events.length
@@ -30,7 +29,7 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
     };
   }
 
-  const jsonld = extractJsonLdEvents(url, html);
+  const jsonld = attachRegulationsUrl(url, html, extractJsonLdEvents(url, html));
   if (jsonld.length) {
     return {
       events: jsonld,
@@ -40,7 +39,7 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
     };
   }
 
-  const generic = extractGeneric(url, html);
+  const generic = attachRegulationsUrl(url, html, extractGeneric(url, html));
   return {
     events: generic,
     strategy: "generic",
