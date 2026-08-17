@@ -126,12 +126,20 @@ const SKIP_HOSTS = [
 ];
 
 const QUEUE_MIN = 0.45;
-const AUTO_WATCH_MIN = 0.7;
+/** High enough that a dated club page with entry still auto-watches; junk calendars stay queued. */
+export const AUTO_WATCH_MIN = 0.82;
 
 export type ExploreScore = {
   score: number;
   reasons: string[];
 };
+
+export function shouldAutoWatch(hit: ExploreScore): boolean {
+  if (hit.score < AUTO_WATCH_MIN) return false;
+  const reasons = new Set(hit.reasons);
+  if (!reasons.has("date")) return false;
+  return reasons.has("entry") || reasons.has("structured");
+}
 
 export type ExploreResult = {
   queries: string[];
@@ -471,9 +479,9 @@ export async function runExplore(opts?: {
       const page = await fetchPage(url, { timeoutMs: 12_000, retries: 1 });
       fetched += 1;
       if (page.status >= 400 || page.html.length < 200) return null;
-      const { score } = scoreRacePage(url, page.html);
+      const { score, reasons } = scoreRacePage(url, page.html);
       const title = titleFromHtml(page.html);
-      return { url, score, title, html: page.html };
+      return { url, score, reasons, title };
     } catch {
       return null;
     }
@@ -487,7 +495,7 @@ export async function runExplore(opts?: {
     if (!ok) continue;
     queued += 1;
     known.add(hostnameOf(hit.url));
-    if (hit.score >= AUTO_WATCH_MIN) {
+    if (shouldAutoWatch(hit)) {
       const { error } = await supabase.from("watched_urls").upsert(
         {
           url: hit.url,

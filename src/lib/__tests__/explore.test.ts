@@ -3,7 +3,9 @@ import {
   canonicalExploreUrl,
   looksLikeIndependentRaceUrl,
   scoreRacePage,
+  shouldAutoWatch,
 } from "@/lib/watcher/explore";
+import { parseVanGillern } from "@/lib/watcher/extractors/cz-calendars";
 
 describe("race website explorer", () => {
   it("canonicalizes WordPress homes to the origin", () => {
@@ -50,5 +52,33 @@ describe("race website explorer", () => {
     const { score, reasons } = scoreRacePage("https://schwarzwald-rennen.de", html);
     expect(score).toBeGreaterThanOrEqual(0.7);
     expect(reasons).toEqual(expect.arrayContaining(["host", "title", "date", "entry"]));
+    expect(shouldAutoWatch({ score, reasons })).toBe(true);
+  });
+
+  it("does not auto-watch a titled club page without a date", () => {
+    const html = `
+      <html><head><title>Alpen MTB Cup</title></head>
+      <body><h1>Alpen MTB Cup</h1><p>Registrace a propozice brzy.</p></body></html>
+    `;
+    const { score, reasons } = scoreRacePage("https://alpen-cup.at/rennen", html);
+    expect(shouldAutoWatch({ score, reasons })).toBe(false);
+  });
+
+  it("parses Van Gillern Cup 2026 from the homepage", () => {
+    const html = `
+      <html><head><title>Van Gillern Cup 2026</title></head>
+      <body>
+        <h1>Van Gillern Cup 2026</h1>
+        <p>Neděle 6.září</p>
+        <p>Upraveny propozice a byla spuštěna registrace</p>
+        <a href="https://online.eztiming.eu/prihlasky/vgc2026/">Registrace</a>
+      </body></html>
+    `;
+    const events = parseVanGillern("http://vangillerncup.cz", html);
+    expect(events).toHaveLength(1);
+    expect(events[0]?.startDate).toBe("2026-09-06");
+    expect(events[0]?.registrationUrl).toContain("eztiming.eu");
+    expect(events[0]?.lat).toBeCloseTo(49.889, 2);
+    expect(events[0]?.lng).toBeCloseTo(14.565, 2);
   });
 });

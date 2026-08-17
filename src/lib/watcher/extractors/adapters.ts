@@ -55,6 +55,7 @@ import {
   parsePrahaMtb,
   parsePrimaCup,
   parseVelkyHaj,
+  parseVanGillern,
   parseZal,
   parseUstiMtbCup,
 } from "@/lib/watcher/extractors/cz-calendars";
@@ -288,6 +289,12 @@ export async function extractWithAdapter(
   }
   if (host.includes("detskymtbcup.cz")) {
     return { events: parseDetskyMtbCup(url, html), strategy: "adapter:detsky-mtb" };
+  }
+  if (host.includes("vangillerncup.cz")) {
+    if (/\/(fotky|tym|vysledky)\/?$/i.test(url)) {
+      return { events: [], strategy: "adapter:van-gillern-skip" };
+    }
+    return { events: parseVanGillern(url, html), strategy: "adapter:van-gillern" };
   }
   if (host.includes("skvelopraha.cz")) {
     if (!/\/velky-haj/i.test(url)) {

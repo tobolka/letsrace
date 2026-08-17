@@ -3,13 +3,16 @@
 import { useState } from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui/primitives";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
+import type { Messages } from "@/lib/i18n/messages";
 
 export function SubmitRaceModal({
   open,
   onClose,
+  messages,
 }: {
   open: boolean;
   onClose: () => void;
+  messages: Messages;
 }) {
   const [url, setUrl] = useState("");
   const [note, setNote] = useState("");
@@ -28,51 +31,63 @@ export function SubmitRaceModal({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        url,
-        note,
+        url: url.trim(),
+        note: note.trim(),
         userId: auth.user?.id ?? null,
       }),
     });
     setBusy(false);
     if (!res.ok) {
-      setStatus("Could not submit — try again");
+      setStatus(messages.submitFailed);
       return;
     }
-    setStatus("Thanks! Admins will review this URL.");
+    setStatus(messages.submitThanks);
     setUrl("");
     setNote("");
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4 overscroll-contain">
       <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-        <h2 className="font-sans tracking-tight text-xl font-semibold">Report a race</h2>
-        <p className="mt-1 text-sm text-stone-500">
-          Paste the official race URL. We&apos;ll queue it for admins and start watching it after
-          approval.
-        </p>
+        <h2 className="font-sans tracking-tight text-xl font-semibold">{messages.reportRace}</h2>
+        <p className="mt-1 text-sm text-stone-500">{messages.submitRaceHelp}</p>
         <form onSubmit={submit} className="mt-4 space-y-3">
           <div className="space-y-1">
-            <Label>Race URL</Label>
+            <Label htmlFor="missing-race-url">{messages.raceUrl}</Label>
             <Input
+              id="missing-race-url"
               required
               type="url"
+              name="url"
+              autoComplete="url"
+              inputMode="url"
+              spellCheck={false}
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://…"
             />
           </div>
           <div className="space-y-1">
-            <Label>Note (optional)</Label>
-            <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Kids race near Cheb…" />
+            <Label htmlFor="missing-race-note">{messages.optionalNote}</Label>
+            <Textarea
+              id="missing-race-note"
+              name="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Kids race near Cheb…"
+            />
           </div>
-          {status && <p className="text-sm text-stone-900">{status}</p>}
+          {status ? (
+            <p className="text-sm text-stone-900" aria-live="polite">
+              {status}
+            </p>
+          ) : null}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              Close
+              {messages.close}
             </Button>
-            <Button type="submit" disabled={busy}>
-              {busy ? "Sending…" : "Submit"}
+            <Button type="submit" disabled={busy} aria-busy={busy}>
+              {messages.submit}
             </Button>
           </div>
         </form>

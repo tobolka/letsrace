@@ -110,6 +110,19 @@ describe("golden races — age categories", () => {
       matchesAgeCategoryFilter({ audience: "mixed", ageCategories: [] }, ["kids"]),
     ).toBe(false);
   });
+
+  it("Van Gillern Cup is family (kids + adults)", () => {
+    const c = inferClassification({
+      name: "Van Gillern Cup 2026",
+      seriesName: "Van Gillern Cup",
+      disciplines: ["xcm"],
+    });
+    expect(c.ageCategories).toEqual(
+      expect.arrayContaining(["kids", "youth", "amateur", "masters"]),
+    );
+    expect(c.audience).toBe("mixed");
+    expect(matchesAgeCategoryFilter(c, ["kids"])).toBe(true);
+  });
 });
 
 describe("golden races — discipline family + filter", () => {

@@ -451,7 +451,17 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             <span>
               {events.length} {messages.racesCount}
             </span>
-            {pending ? <span>…</span> : null}
+            <div className="flex items-center gap-2">
+              {pending ? <span>…</span> : null}
+              <button
+                type="button"
+                className="inline-flex min-h-8 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium text-stone-700 ring-1 ring-stone-200 hover:bg-stone-50"
+                onClick={() => setSubmitOpen(true)}
+              >
+                <Flag className="h-3 w-3" aria-hidden />
+                {messages.missingRace}
+              </button>
+            </div>
           </div>
           <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
             {events.length === 0 ? (
@@ -493,7 +503,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     {messages.clearFilters}
                   </Button>
                   <Button type="button" variant="secondary" size="sm" onClick={() => setSubmitOpen(true)}>
-                    Report race
+                    {messages.missingRace}
                   </Button>
                 </div>
               </div>
@@ -577,8 +587,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                       className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-stone-200"
                       onClick={() => setSubmitOpen(true)}
                     >
-                      <Flag className="h-3 w-3" />
-                      Report race
+                      <Flag className="h-3 w-3" aria-hidden />
+                      {messages.missingRace}
                     </button>
                   </div>
                   {events.map((event) => (
@@ -597,7 +607,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </div>
       </div>
 
-      <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
+      <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} messages={messages} />
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       <AuthDialog
         open={authOpen}
@@ -1318,7 +1328,7 @@ function Header({
                   onSubmitRace();
                 }}
               >
-                Report a race
+                {messages.reportRace}
               </button>
               <button
                 type="button"

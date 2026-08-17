@@ -1,6 +1,26 @@
 /** Statuses shown on the public map / explore list. */
 export const PUBLIC_EVENT_STATUSES = ["scheduled", "tbc", "postponed", "registration_open"] as const;
 
+/**
+ * Home map: keep listing even without an official enter link.
+ * Everywhere else (especially thin federation dumps like Italy/FCI) needs a website
+ * or registration URL so unverified pins don't starve the weekend view.
+ */
+export const HOME_MAP_COUNTRIES = ["CZ", "SK", "AT", "DE", "PL", "CH"] as const;
+
+export function isHomeMapCountry(code: string | null | undefined): boolean {
+  return Boolean(code && (HOME_MAP_COUNTRIES as readonly string[]).includes(code.toUpperCase()));
+}
+
+export function isPublicMapWorthy(event: {
+  websiteUrl?: string | null;
+  registrationUrl?: string | null;
+  location?: { countryCode?: string | null } | null;
+}): boolean {
+  if (isHomeMapCountry(event.location?.countryCode)) return true;
+  return Boolean(event.websiteUrl?.trim() || event.registrationUrl?.trim());
+}
+
 export type PublicEventStatus = (typeof PUBLIC_EVENT_STATUSES)[number];
 
 export const PUBLIC_VISIBILITY = "public" as const;

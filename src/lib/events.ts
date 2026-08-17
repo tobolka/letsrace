@@ -179,9 +179,12 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   }
 
   // Public explore: races only (hide camps, cancelled, manually hidden)
-  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, shouldHideFromMap } = await import(
-    "@/lib/event-visibility"
-  );
+  const {
+    PUBLIC_EVENT_STATUSES,
+    PUBLIC_VISIBILITY,
+    shouldHideFromMap,
+    isPublicMapWorthy,
+  } = await import("@/lib/event-visibility");
   query = query.in("status", [...PUBLIC_EVENT_STATUSES]).eq("visibility", PUBLIC_VISIBILITY);
 
   const { data, error } = await query;
@@ -191,6 +194,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     .map(mapEventRow)
     .filter((e) => {
       if (shouldHideFromMap(e.name, e.status, e.visibility)) return false;
+      if (!bySeries && !isPublicMapWorthy(e)) return false;
       if (!e.location?.countryCode) return bySeries;
       return isListedCountry(e.location.countryCode);
     });
@@ -446,22 +450,35 @@ export async function listSitemapEvents(limit = 4000): Promise<
   { slug: string; startDate: string; updatedAt: string | null }[]
 > {
   const supabase = createServerSupabase();
-  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY } = await import("@/lib/event-visibility");
+  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy } =
+    await import("@/lib/event-visibility");
   const today = new Date().toISOString().slice(0, 10);
   const { data, error } = await supabase
     .from("events")
-    .select("slug, start_date, updated_at")
+    .select(
+      "slug, start_date, updated_at, website_url, registration_url, location:locations(country_code)",
+    )
     .eq("visibility", PUBLIC_VISIBILITY)
     .in("status", [...PUBLIC_EVENT_STATUSES])
     .gte("start_date", today)
     .order("start_date", { ascending: true })
     .limit(limit);
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => ({
-    slug: String(row.slug),
-    startDate: String(row.start_date),
-    updatedAt: row.updated_at ? String(row.updated_at) : null,
-  }));
+  return (data ?? [])
+    .filter((row) => {
+      const loc = row.location as { country_code?: string } | { country_code?: string }[] | null;
+      const countryCode = Array.isArray(loc) ? loc[0]?.country_code : loc?.country_code;
+      return isPublicMapWorthy({
+        websiteUrl: row.website_url as string | null,
+        registrationUrl: row.registration_url as string | null,
+        location: countryCode ? { countryCode } : null,
+      });
+    })
+    .map((row) => ({
+      slug: String(row.slug),
+      startDate: String(row.start_date),
+      updatedAt: row.updated_at ? String(row.updated_at) : null,
+    }));
 }
 
 function sourceUrlsFromRow(row: Record<string, unknown>): string[] {

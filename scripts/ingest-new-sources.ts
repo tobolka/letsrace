@@ -44,6 +44,7 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://www.cyklokros.cz/kalendar", kind: "aggregator" },
   { url: "https://www.detskymtbcup.cz/", kind: "series" },
   { url: "https://skvelopraha.cz/velky-haj/", kind: "series" },
+  { url: "http://vangillerncup.cz", kind: "race" },
   { url: "https://ppkbike.cz/", kind: "series" },
   { url: "https://ppkbike.cz/ppk-races.js", kind: "series" },
   { url: "https://www.cyklistikaszc.sk/sk/mtb-cross-country/kalendar", kind: "federation" },
@@ -223,7 +224,9 @@ async function main() {
           added_by: "admin",
           notes: t.url.includes("velky-haj")
             ? "O Pohár MČ Praha 4 — off-season watch for next year"
-            : null,
+            : t.url.includes("gillern")
+              ? "Kamenice family MTB — adults + kids"
+              : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })

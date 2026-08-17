@@ -747,6 +747,54 @@ export function parseVelkyHaj(url: string, html: string): ParsedEvent[] {
   return events;
 }
 
+const VAN_GILLERN_LAT = 49.8891081;
+const VAN_GILLERN_LNG = 14.5650803;
+const VAN_GILLERN_SITE = "http://vangillerncup.cz";
+
+/**
+ * Van Gillern Cup — one-day family MTB (adults + kids) in Kamenice u Prahy.
+ * Date lives on the homepage (“Neděle 6.září”); coords on /propozice/.
+ */
+export function parseVanGillern(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const text = $("article, .entry-content, main, body").text().replace(/\s+/g, " ");
+  const yearMatch = text.match(/Van\s*Gillern\s*Cup\s*(20\d{2})/i);
+  const year = yearMatch ? Number(yearMatch[1]) : seasonYearFromHtml(html);
+  const dayM = text.match(/(\d{1,2})\.\s*(září|zari)/i);
+  if (!dayM) return [];
+  const startDate = namedDayToIso(dayM[1]!, dayM[2]!, year);
+  if (!startDate) return [];
+
+  let registrationUrl = "http://vangillerncup.cz/wordpress/registrace/";
+  $("a[href]").each((_, el) => {
+    const href = $(el).attr("href") || "";
+    if (/eztiming\.eu\/prihlasky/i.test(href)) registrationUrl = href.split("?")[0]!;
+  });
+
+  const coordM = text.match(/(\d{2}\.\d+)\s*N[,\s]+(\d{2}\.\d+)\s*E/i);
+
+  return [
+    {
+      externalId: `van-gillern-${startDate}`,
+      name: `Van Gillern Cup ${year}`,
+      startDate,
+      placeText: "Kamenice u Prahy — Těptín",
+      countryHint: "CZ",
+      discipline: ["xcm"],
+      audience: "mixed",
+      seriesName: "Van Gillern Cup",
+      seriesSlug: "van-gillern-cup",
+      seriesWebsite: VAN_GILLERN_SITE,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: VAN_GILLERN_SITE,
+      registrationUrl,
+      lat: coordM ? Number(coordM[1]) : VAN_GILLERN_LAT,
+      lng: coordM ? Number(coordM[2]) : VAN_GILLERN_LNG,
+      confidence: 0.92,
+    },
+  ];
+}
+
 const PPK_REGISTRATION =
   "https://hynekmusil.cz/resreg/?designindex=data/registry.php&seiresepyt=ppk&dohzormhenyh=&swordssapll=&rebmunyavd=0&langtext=";
 
