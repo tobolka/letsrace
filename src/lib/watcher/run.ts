@@ -637,6 +637,14 @@ export async function watchOne(row: {
               continue;
             }
           }
+          if (hostnameOf(child).includes("sport-base.eu")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/competitions") continue;
+            } catch {
+              continue;
+            }
+          }
           if (hostnameOf(child).includes("raceresult.com")) {
             try {
               const path = new URL(child).pathname.replace(/\/$/, "");
@@ -1347,7 +1355,7 @@ async function upsertParsedEvent(
   const { data: byFp } = await supabase
     .from("events")
     .select(
-      "id, name, start_date, end_date, fingerprint, website_url, registration_url, location:locations(lat, lng, name, municipality), overrides:event_overrides(locked_fields)",
+      "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality), overrides:event_overrides(locked_fields)",
     )
     .eq("fingerprint", fp)
     .maybeSingle();
@@ -1552,7 +1560,7 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, website_url, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, status, visibility, website_url, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -1680,6 +1688,8 @@ async function upsertParsedEvent(
     class_label?: string | null;
     audience?: string | null;
     age_categories?: string[] | null;
+    status?: string | null;
+    visibility?: string | null;
     website_url?: string | null;
   } | null;
 
@@ -1781,6 +1791,15 @@ async function upsertParsedEvent(
   if (hideAsNonRace && !lockedFields.includes("visibility")) {
     payload.visibility = "hidden";
     payload.event_type = "training";
+  } else if (
+    existingRow?.visibility === "hidden" &&
+    audience === "kids" &&
+    !lockedFields.includes("visibility")
+  ) {
+    payload.visibility = "public";
+    if (existingRow.status === "hidden" && !lockedFields.includes("status")) {
+      payload.status = "scheduled";
+    }
   }
 
   if (beforeSnap && isCancelledRaceName(mergedName) && !lockedFields.includes("status")) {

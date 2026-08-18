@@ -262,6 +262,7 @@ const TARGETS: { url: string; kind: string }[] = [
   },
   { url: "https://bratislavskymtbmaraton.biker.sk/preteky/maraton", kind: "race" },
   { url: "https://bratislavskymtbmaraton.biker.sk/preteky/detske-preteky-2026", kind: "race" },
+  { url: "https://sport-base.eu/competitions", kind: "aggregator" },
 ];
 
 async function main() {
@@ -352,6 +353,8 @@ async function main() {
                         ? "auner Austrian Gravity Series / Downhill Cup — DH U13–Elite"
                       : t.url.includes("bratislavskymtbmaraton")
                         ? "GARMIN Bratislavský MTB maratón — adult XCM + kids loop, keep pins separate"
+                      : t.url.includes("sport-base.eu")
+                        ? "sport:base timing — cycling rows only"
                       : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

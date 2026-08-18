@@ -10,6 +10,7 @@ import { parseRadsportEvents } from "@/lib/watcher/extractors/radsport";
 import { parseEventiv } from "@/lib/watcher/extractors/eventiv";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
+import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
 import { isRacementHost, parseRacement } from "@/lib/watcher/extractors/racement";
 import {
   isHynekSeriesCalendarHost,
@@ -352,6 +353,17 @@ export async function extractWithAdapter(
       events: await enrichEnduroSerie(parseEnduroSerie(url, html)),
       strategy: "adapter:enduroserie",
     };
+  }
+  if (host.includes("sport-base.eu")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (path !== "/competitions") {
+        return { events: [], strategy: "adapter:sportbase-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:sportbase-skip" };
+    }
+    return { events: parseSportBase(url, html), strategy: "adapter:sportbase" };
   }
   if (host.includes("kalendar.sportsoft.cz")) {
     try {
