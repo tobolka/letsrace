@@ -59,9 +59,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full`}
+      className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable} h-full`}
     >
-      <body className="min-h-full bg-stone-100 font-sans text-stone-900 antialiased">
+      <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <NuqsAdapter>{children}</NuqsAdapter>
         <Analytics />
         <SpeedInsights />

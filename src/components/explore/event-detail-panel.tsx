@@ -5,16 +5,16 @@ import { format, parseISO } from "date-fns";
 import {
   X,
   MapPin,
-  Globe,
   Trophy,
   Heart,
   Calendar,
+  CalendarCheck,
   CalendarPlus,
-  Users,
   Bike,
-  Flag,
   ExternalLink,
   Share2,
+  UserRound,
+  ChartNoAxesColumnIncreasing,
 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messages, type Locale } from "@/lib/i18n/messages";
@@ -27,15 +27,26 @@ import {
   type RaceLevel,
   type UciClass,
 } from "@/lib/taxonomy";
-import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
+import { disciplineColor } from "@/lib/map-visuals";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Toggle } from "@/components/ui/toggle";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/primitives";
 import { eventTrustLevel, trustLabel } from "@/lib/trust";
-import { eventMapPath, eventPagePath } from "@/lib/event-url";
+import { eventMapPath } from "@/lib/event-url";
 
 type Member = {
   id: string;
@@ -225,11 +236,11 @@ export function EventDetailPanel({
     youth: t.youth,
     adults: t.adults,
   });
-  const discLabel = event.disciplines
+  const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
+  const discChips = event.disciplines
     .slice(0, 4)
     .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
-    .filter(Boolean)
-    .join(" · ");
+    .filter(Boolean);
 
   const registerUrl = event.registrationUrl;
   const websiteUrl = event.websiteUrl;
@@ -249,7 +260,6 @@ export function EventDetailPanel({
         : null;
 
   const sharePath = eventMapPath(locale, event);
-  const racePageHref = eventPagePath(locale, event.slug);
 
   async function copyShareLink() {
     const url =
@@ -274,234 +284,232 @@ export function EventDetailPanel({
     track("outbound_enter", { slug: event.slug, kind });
   }
 
+  const extraLinks: { href: string; label: string; kind: string }[] = [];
+  if (registerUrl && websiteUrl && websiteUrl !== registerUrl) {
+    extraLinks.push({ href: websiteUrl, label: t.openWebsite, kind: "website" });
+  }
+  if (
+    event.regulationsUrl &&
+    event.regulationsUrl !== registerUrl &&
+    event.regulationsUrl !== websiteUrl &&
+    event.regulationsUrl !== listingUrl
+  ) {
+    extraLinks.push({
+      href: event.regulationsUrl,
+      label: t.regulations,
+      kind: "regulations",
+    });
+  }
+
   const trust = eventTrustLevel(event);
   const trustText = trustLabel(trust, t);
+  const accent = disciplineColor(event.disciplines);
+  const selfMember = members.find((m) => m.is_self) ?? members[0];
+  const going = Boolean(
+    selfMember && attendance.some((a) => a.member_id === selfMember.id),
+  );
+  const placeLabel = [
+    event.location?.municipality || event.location?.name,
+    event.location?.countryCode,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
-  const headerFrom = disciplineColor(event.disciplines);
-  const headerTo = disciplineColorDark(event.disciplines);
+  const primaryHref = primaryEnter || event.regulationsUrl;
+  const primaryLabel = primaryEnterLabel ?? (event.regulationsUrl ? t.regulations : null);
+  const primaryKind = registerUrl
+    ? "register"
+    : websiteUrl
+      ? "website"
+      : listingUrl
+        ? "listing"
+        : "regulations";
+  const secondaryLinks = extraLinks.filter((link) => link.href !== primaryHref);
+  const actionLinks = [
+    ...(primaryHref && primaryLabel
+      ? [{ href: primaryHref, label: primaryLabel, kind: primaryKind }]
+      : []),
+    ...secondaryLinks,
+  ];
 
   return (
-    <aside
+    <Card
+      aria-labelledby="race-detail-title"
       className={cn(
-        "pointer-events-auto flex w-full flex-col overflow-hidden bg-white",
+        "pointer-events-auto w-full gap-0 overflow-hidden py-0",
         embedded
-          ? "rounded-none shadow-none ring-0"
-          : "rounded-xl shadow-lg ring-1 ring-stone-200 md:w-[300px] md:max-h-[calc(100dvh-1.5rem)] md:self-start",
+          ? "border-0 shadow-none"
+          : "shadow-lg md:w-[320px] md:max-h-[calc(100dvh-1.5rem)] md:self-start",
       )}
     >
-      <div
-        className="relative px-3 py-3 text-white sm:py-2.5"
-        style={{
-          background: `linear-gradient(145deg, ${headerFrom} 0%, ${headerTo} 100%)`,
-        }}
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="touch-target absolute right-1.5 top-1.5 inline-flex size-11 items-center justify-center rounded-full bg-black/20 text-white transition-[background-color,transform] duration-150 ease-out hover:bg-black/35 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 md:size-9"
-          aria-label="Close"
+      <CardHeader className="border-b px-4 py-3 [.border-b]:pb-3">
+        <CardTitle
+          id="race-detail-title"
+          className="flex min-w-0 items-start gap-2 text-base leading-snug"
         >
-          <X className="h-4 w-4" aria-hidden />
-        </button>
-        <h2 className="pr-12 text-[15px] font-semibold leading-snug tracking-tight sm:pr-10">
-          {event.name}
-        </h2>
-      </div>
+          <span
+            className="mt-1.5 size-2 shrink-0 rounded-full"
+            style={{ background: accent }}
+            aria-hidden
+          />
+          <span className="min-w-0">{event.name}</span>
+        </CardTitle>
+        <CardAction>
+          <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label={t.close}>
+            <X />
+          </Button>
+        </CardAction>
+      </CardHeader>
 
-      <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3 py-3 text-[13px] text-stone-700">
-        <Row icon={<Calendar className="h-3.5 w-3.5" />}>
-          <time className="tabular" dateTime={event.startDate}>
-            {format(parseISO(event.startDate), "EEE d MMM yyyy")}
-            {event.endDate && event.endDate !== event.startDate
-              ? ` – ${format(parseISO(event.endDate), "d MMM")}`
-              : ""}
-          </time>
-        </Row>
-        <Row icon={<MapPin className="h-3.5 w-3.5" />}>
-          <span className="break-words">
-            {event.location?.municipality || event.location?.name || "—"}
-            {event.location?.countryCode ? ` · ${event.location.countryCode}` : ""}
-          </span>
-        </Row>
-
-        <Fact
-          icon={<Users className="h-3.5 w-3.5" />}
-          label={t.audience}
-          known={Boolean(whoLabel)}
-        >
-          {whoLabel || t.whoUnknown}
-        </Fact>
-        <Fact
-          icon={<Bike className="h-3.5 w-3.5" />}
-          label={t.formatLabel}
-          known={Boolean(discLabel)}
-        >
-          {discLabel || t.formatUnknown}
-        </Fact>
-        <Fact icon={<Trophy className="h-3.5 w-3.5" />} label={t.levelFilter} known>
-          {levelLabel}
-        </Fact>
-
-        {event.series ? (
-          <Row icon={<Flag className="h-3.5 w-3.5" />}>
-            {onSelectSeries ? (
-              <button
-                type="button"
-                onClick={() => onSelectSeries(event.series!.slug)}
-                className="min-h-11 text-left font-medium text-stone-900 underline decoration-stone-300 underline-offset-2 md:min-h-0"
-              >
-                {event.series.name}
-              </button>
-            ) : (
-              <Link
-                href={`/${locale}?series=${event.series.slug}`}
-                className="inline-flex min-h-11 items-center font-medium text-stone-900 underline decoration-stone-300 underline-offset-2 md:min-h-0"
-              >
-                {event.series.name}
-              </Link>
-            )}
-          </Row>
-        ) : null}
-
-        <div className="rounded-lg bg-stone-50 px-2.5 py-2.5 ring-1 ring-stone-100">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
-            {t.enterLabel}
+      <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+        <div className="flex flex-col gap-2">
+          <p className="flex items-center gap-2 text-base font-medium">
+            <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            <time className="tabular" dateTime={event.startDate}>
+              {format(parseISO(event.startDate), "EEE d MMM yyyy")}
+              {event.endDate && event.endDate !== event.startDate
+                ? ` – ${format(parseISO(event.endDate), "d MMM")}`
+                : ""}
+            </time>
           </p>
-          {primaryEnter && primaryEnterLabel ? (
-            <div className="mt-1.5 flex flex-col gap-1">
-              <a
-                href={primaryEnter}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() =>
-                  trackEnter(registerUrl ? "register" : websiteUrl ? "website" : "listing")
-                }
-                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-stone-900 underline decoration-stone-300 underline-offset-2 transition-colors duration-150 ease-out hover:decoration-stone-900 md:min-h-9"
-              >
-                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-stone-400" aria-hidden />
-                <span className="break-all">{primaryEnterLabel}</span>
-              </a>
-              {registerUrl && websiteUrl && websiteUrl !== registerUrl ? (
-                <a
-                  href={websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEnter("website")}
-                  className="inline-flex min-h-10 items-center gap-1.5 text-xs text-stone-600 underline decoration-stone-300 underline-offset-2 hover:text-stone-900 md:min-h-8"
-                >
-                  {t.openWebsite}
-                </a>
-              ) : null}
-              {event.regulationsUrl &&
-              event.regulationsUrl !== registerUrl &&
-              event.regulationsUrl !== websiteUrl &&
-              event.regulationsUrl !== listingUrl ? (
-                <a
-                  href={event.regulationsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEnter("regulations")}
-                  className="inline-flex min-h-10 items-center gap-1.5 text-xs text-stone-600 underline decoration-stone-300 underline-offset-2 hover:text-stone-900 md:min-h-8"
-                >
-                  {t.regulations}
-                </a>
-              ) : null}
-              {!registerUrl && !websiteUrl && listingUrl ? (
-                <p className="text-[11px] text-stone-500">{t.calendarListing}</p>
-              ) : null}
-            </div>
-          ) : event.regulationsUrl ? (
-            <a
-              href={event.regulationsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEnter("regulations")}
-              className="mt-1.5 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-stone-900 underline decoration-stone-300 underline-offset-2 md:min-h-9"
-            >
-              <ExternalLink className="h-3.5 w-3.5 shrink-0 text-stone-400" aria-hidden />
-              {t.regulations}
-            </a>
-          ) : (
-            <p className="mt-1 text-sm text-stone-400">{t.noOnlineEntry}</p>
-          )}
+          <p className="flex items-start gap-2 text-sm font-medium">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+            <span className="min-w-0 break-words">{placeLabel || "—"}</span>
+          </p>
         </div>
+
+        <div className="mt-4 flex flex-col gap-2.5">
+          <MetaRow icon={<UserRound />} label={t.audience}>
+            {whoChips.length > 0 ? (
+              whoChips.map((chip) => (
+                <Badge key={chip} variant="outline">
+                  {chip}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-sm text-muted-foreground">{t.whoUnknown}</span>
+            )}
+          </MetaRow>
+          <MetaRow icon={<Bike />} label={t.formatLabel}>
+            {discChips.length > 0 ? (
+              discChips.map((chip) => (
+                <Badge key={chip} variant="outline">
+                  {chip}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-sm text-muted-foreground">{t.formatUnknown}</span>
+            )}
+          </MetaRow>
+          <MetaRow icon={<ChartNoAxesColumnIncreasing />} label={t.levelFilter}>
+            <Badge variant="outline">{levelLabel}</Badge>
+          </MetaRow>
+          {event.series ? (
+            <MetaRow icon={<Trophy />} label={t.seriesFilter}>
+              {onSelectSeries ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="xs"
+                  onClick={() => onSelectSeries(event.series!.slug)}
+                >
+                  {event.series.name}
+                </Button>
+              ) : (
+                <Button asChild variant="outline" size="xs">
+                  <Link href={`/${locale}?series=${event.series.slug}`}>{event.series.name}</Link>
+                </Button>
+              )}
+            </MetaRow>
+          ) : null}
+        </div>
+
+        {actionLinks.length > 0 ? (
+          <ButtonGroup orientation="vertical" className="mt-4 w-full">
+            {actionLinks.map((link, index) => (
+              <Button
+                key={link.href}
+                asChild
+                variant={index === 0 ? "default" : "outline"}
+                className="w-full"
+              >
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEnter(link.kind)}
+                >
+                  <ExternalLink data-icon="inline-start" />
+                  {link.label}
+                </a>
+              </Button>
+            ))}
+          </ButtonGroup>
+        ) : (
+          <p className="mt-4 text-sm text-muted-foreground">{t.noOnlineEntry}</p>
+        )}
+
         <p
           className={cn(
-            "font-mono text-[10px] font-semibold uppercase tracking-wide",
-            trust === "official"
-              ? "text-emerald-700"
-              : trust === "low"
-                ? "text-amber-700"
-                : "text-stone-400",
+            "mt-3 text-xs",
+            trust === "low" ? "text-destructive" : "text-muted-foreground",
           )}
         >
           {trustText}
         </p>
-      </div>
+      </CardContent>
 
-      <div
+      <CardFooter
         className={cn(
-          "flex flex-wrap items-center gap-0.5 border-t border-stone-100 px-1.5 py-1.5 md:flex-nowrap md:px-2",
-          embedded ? "pb-1.5" : "pb-[max(0.375rem,env(safe-area-inset-bottom))] md:pb-1.5",
+          "flex-wrap gap-0.5 border-t px-2 py-2 md:flex-nowrap [.border-t]:pt-2",
+          embedded ? "" : "pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2",
         )}
       >
         <p className="sr-only" aria-live="polite">
           {linkCopied ? t.linkCopied : ""}
         </p>
-        <IconBtn
-          label={favorited ? "Saved" : "Save"}
-          onClick={() => void toggleFavorite()}
+        <Toggle
+          pressed={favorited}
           disabled={busy}
+          size="lg"
+          aria-label={favorited ? t.savedRace : t.saveRace}
+          title={favorited ? t.savedRace : t.saveRace}
+          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          onPressedChange={() => void toggleFavorite()}
         >
-          <Heart
-            className={`h-4 w-4 ${favorited ? "fill-rose-500 text-rose-500" : ""}`}
-            aria-hidden
-          />
-        </IconBtn>
-        <IconBtn
-          label="Calendar"
-          onClick={() => {
+          <Heart className={cn(favorited && "fill-current")} />
+        </Toggle>
+        <Toggle
+          pressed={going}
+          disabled={busy}
+          size="lg"
+          aria-label={t.calendarAdd}
+          title={t.calendarAdd}
+          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          onPressedChange={() => {
             if (!userId) {
               requireAuth("calendar");
               return;
             }
-            if (!members[0]) return;
-            void toggleGoing(members[0].id);
+            if (!selfMember) return;
+            void toggleGoing(selfMember.id);
           }}
-          disabled={busy}
         >
-          <CalendarPlus className="h-4 w-4" aria-hidden />
-        </IconBtn>
-        <IconBtn
-          label={linkCopied ? t.linkCopied : t.shareRace}
-          onClick={() => void copyShareLink()}
+          {going ? <CalendarCheck /> : <CalendarPlus />}
+        </Toggle>
+        <Toggle
           pressed={linkCopied}
+          size="lg"
+          aria-label={linkCopied ? t.linkCopied : t.shareRace}
+          title={linkCopied ? t.linkCopied : t.shareRace}
+          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          onPressedChange={() => {
+            if (!linkCopied) void copyShareLink();
+          }}
         >
-          <Share2 className={`h-4 w-4 ${linkCopied ? "text-emerald-600" : ""}`} aria-hidden />
-        </IconBtn>
-        {primaryEnter ? (
-          <a
-            href={primaryEnter}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackEnter(registerUrl ? "register" : "website")}
-            aria-label={primaryEnterLabel ?? t.openWebsite}
-            title={primaryEnterLabel ?? t.openWebsite}
-            className="touch-target inline-flex size-11 items-center justify-center rounded-md text-stone-600 transition-[background-color,color,transform] duration-150 ease-out hover:bg-stone-100 hover:text-stone-900 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 md:size-9"
-          >
-            <Globe className="h-4 w-4" aria-hidden />
-          </a>
-        ) : null}
-        <Link
-          href={racePageHref}
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "sm" }),
-            "ml-auto max-w-full shrink text-[11px] text-stone-500",
-          )}
-        >
-          {t.racePage}
-        </Link>
-      </div>
+          <Share2 />
+        </Toggle>
+      </CardFooter>
 
       <AuthDialog
         open={authOpen}
@@ -513,71 +521,28 @@ export function EventDetailPanel({
         locale={locale}
         reason={authReason}
       />
-    </aside>
+    </Card>
   );
 }
 
-function Fact({
+function MetaRow({
   icon,
   label,
-  known,
   children,
 }: {
   icon: React.ReactNode;
   label: string;
-  known: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-2">
-      <span className="mt-0.5 shrink-0 text-stone-400" aria-hidden>
+    <div className="flex items-center gap-2">
+      <span className="shrink-0 text-muted-foreground [&_svg]:size-4" aria-hidden>
         {icon}
       </span>
-      <div className="min-w-0 leading-snug">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-wide text-stone-400">
-          {label}
-        </p>
-        <p className={known ? "text-stone-800" : "text-stone-400"}>{children}</p>
+      <div className="flex min-w-0 flex-wrap items-center gap-1">
+        <span className="sr-only">{label}</span>
+        {children}
       </div>
     </div>
-  );
-}
-
-function Row({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <p className="flex items-start gap-2">
-      <span className="mt-0.5 shrink-0 text-stone-400" aria-hidden>
-        {icon}
-      </span>
-      <span className="min-w-0 leading-snug">{children}</span>
-    </p>
-  );
-}
-
-function IconBtn({
-  children,
-  label,
-  onClick,
-  disabled,
-  pressed,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  pressed?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      aria-pressed={pressed}
-      disabled={disabled}
-      onClick={onClick}
-      className="touch-target inline-flex size-11 items-center justify-center rounded-md text-stone-600 transition-[background-color,color,transform] duration-150 ease-out hover:bg-stone-100 hover:text-stone-900 active:scale-[0.97] disabled:opacity-40 motion-reduce:transition-none motion-reduce:active:scale-100 md:size-9"
-    >
-      {children}
-    </button>
   );
 }

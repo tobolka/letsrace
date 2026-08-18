@@ -10,12 +10,14 @@ export function AuthForm({
   onSuccess,
   initialMode = "login",
   reason,
+  hideTitle,
 }: {
   locale: string;
   /** Called after successful sign-in/register with a session (stay on page). */
   onSuccess?: () => void;
   initialMode?: "login" | "register";
   reason?: string;
+  hideTitle?: boolean;
 }) {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">(initialMode);
@@ -86,33 +88,39 @@ export function AuthForm({
   }
 
   return (
-    <div>
-      <h1 className="font-sans text-2xl font-semibold tracking-tight">
-        {mode === "register" ? "Create account" : "Sign in"}
-      </h1>
-      {reason ? <p className="mt-1 text-sm text-stone-500">{reason}</p> : null}
-      <div className="mt-4 flex gap-2 text-sm">
-        <button
+    <div className="flex flex-col gap-4">
+      {!hideTitle ? (
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {mode === "register" ? "Create account" : "Sign in"}
+          </h1>
+          {reason ? <p className="text-sm text-muted-foreground">{reason}</p> : null}
+        </div>
+      ) : null}
+      <div className="flex gap-1">
+        <Button
           type="button"
-          className={mode === "register" ? "font-semibold text-stone-900" : "text-stone-500"}
+          variant={mode === "register" ? "secondary" : "ghost"}
+          size="sm"
           onClick={() => setMode("register")}
         >
           Register
-        </button>
-        <span className="text-stone-300">·</span>
-        <button
+        </Button>
+        <Button
           type="button"
-          className={mode === "login" ? "font-semibold text-stone-900" : "text-stone-500"}
+          variant={mode === "login" ? "secondary" : "ghost"}
+          size="sm"
           onClick={() => setMode("login")}
         >
           Sign in
-        </button>
+        </Button>
       </div>
-      <form onSubmit={onSubmit} className="mt-4 space-y-3">
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
         {mode === "register" && (
-          <div className="space-y-1">
-            <Label>Name</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="auth-name">Name</Label>
             <Input
+              id="auth-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name…"
@@ -120,9 +128,10 @@ export function AuthForm({
             />
           </div>
         )}
-        <div className="space-y-1">
-          <Label>Email</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="auth-email">Email</Label>
           <Input
+            id="auth-email"
             type="email"
             required
             autoComplete="email"
@@ -130,9 +139,10 @@ export function AuthForm({
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="space-y-1">
-          <Label>Password</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="auth-password">Password</Label>
           <Input
+            id="auth-password"
             type="password"
             required
             minLength={6}
@@ -141,10 +151,10 @@ export function AuthForm({
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {info && <p className="text-sm text-stone-900">{info}</p>}
-        <Button type="submit" className="w-full" disabled={busy}>
-          {busy ? "…" : mode === "register" ? "Create account" : "Sign in"}
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {info ? <p className="text-sm">{info}</p> : null}
+        <Button type="submit" className="w-full" disabled={busy} aria-busy={busy}>
+          {mode === "register" ? "Create account" : "Sign in"}
         </Button>
       </form>
     </div>

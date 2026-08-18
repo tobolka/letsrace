@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input, Label, Textarea } from "@/components/ui/primitives";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 type Kind = "feature" | "feedback" | "bug";
@@ -18,8 +29,6 @@ export function FeedbackModal({
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
-
-  if (!open) return null;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,35 +63,35 @@ export function FeedbackModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-        <h2 className="text-xl font-semibold tracking-tight">Feature / feedback</h2>
-        <p className="mt-1 text-sm text-stone-500">
-          Tell us what to build next, what&apos;s broken, or what feels off.
-        </p>
-        <form onSubmit={submit} className="mt-4 space-y-3">
-          <div className="space-y-1.5">
+    <Dialog open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Feature / feedback</DialogTitle>
+          <DialogDescription>
+            Tell us what to build next, what&apos;s broken, or what feels off.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={submit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <Label>Type</Label>
             <div className="flex flex-wrap gap-1.5">
               {kinds.map((k) => (
-                <button
+                <Button
                   key={k.id}
                   type="button"
+                  size="sm"
+                  variant={kind === k.id ? "default" : "outline"}
                   onClick={() => setKind(k.id)}
-                  className={`rounded-full px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wide ring-1 ${
-                    kind === k.id
-                      ? "bg-stone-900 text-white ring-stone-900"
-                      : "bg-white text-stone-600 ring-stone-200"
-                  }`}
                 >
                   {k.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
-          <div className="space-y-1">
-            <Label>Message</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="feedback-message">Message</Label>
             <Textarea
+              id="feedback-message"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -90,9 +99,10 @@ export function FeedbackModal({
               className="min-h-[120px]"
             />
           </div>
-          <div className="space-y-1">
-            <Label>Email (optional)</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="feedback-email">Email (optional)</Label>
             <Input
+              id="feedback-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -101,17 +111,17 @@ export function FeedbackModal({
               spellCheck={false}
             />
           </div>
-          {status ? <p className="text-sm text-stone-900">{status}</p> : null}
-          <div className="flex justify-end gap-2">
+          {status ? <p className="text-sm">{status}</p> : null}
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button type="submit" disabled={busy || message.trim().length < 3}>
-              {busy ? "Sending…" : "Send"}
+            <Button type="submit" disabled={busy || message.trim().length < 3} aria-busy={busy}>
+              Send
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

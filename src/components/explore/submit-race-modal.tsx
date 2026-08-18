@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input, Label, Textarea } from "@/components/ui/primitives";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import type { Messages } from "@/lib/i18n/messages";
 
@@ -18,8 +29,6 @@ export function SubmitRaceModal({
   const [note, setNote] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
-
-  if (!open) return null;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,12 +56,14 @@ export function SubmitRaceModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4 overscroll-contain">
-      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-        <h2 className="font-sans tracking-tight text-xl font-semibold">{messages.reportRace}</h2>
-        <p className="mt-1 text-sm text-stone-500">{messages.submitRaceHelp}</p>
-        <form onSubmit={submit} className="mt-4 space-y-3">
-          <div className="space-y-1">
+    <Dialog open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
+      <DialogContent className="overscroll-contain">
+        <DialogHeader>
+          <DialogTitle>{messages.reportRace}</DialogTitle>
+          <DialogDescription>{messages.submitRaceHelp}</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={submit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="missing-race-url">{messages.raceUrl}</Label>
             <Input
               id="missing-race-url"
@@ -67,7 +78,7 @@ export function SubmitRaceModal({
               placeholder="https://…"
             />
           </div>
-          <div className="space-y-1">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="missing-race-note">{messages.optionalNote}</Label>
             <Textarea
               id="missing-race-note"
@@ -78,20 +89,20 @@ export function SubmitRaceModal({
             />
           </div>
           {status ? (
-            <p className="text-sm text-stone-900" aria-live="polite">
+            <p className="text-sm" aria-live="polite">
               {status}
             </p>
           ) : null}
-          <div className="flex justify-end gap-2">
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {messages.close}
             </Button>
             <Button type="submit" disabled={busy} aria-busy={busy}>
               {messages.submit}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

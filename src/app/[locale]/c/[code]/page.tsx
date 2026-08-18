@@ -12,8 +12,21 @@ import {
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
 import { eventMapPath } from "@/lib/event-url";
-import { buttonVariants } from "@/components/ui/primitives";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 
 type Props = { params: Promise<{ locale: string; code: string }> };
 
@@ -62,44 +75,49 @@ export default async function CountryHubPage({ params }: Props) {
   });
 
   return (
-    <main className="min-h-[100dvh] bg-stone-100 px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
+    <main className="min-h-[100dvh] bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
       <div className="mx-auto max-w-2xl py-8">
-        <Link
-          href={`/${locale}`}
-          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "-ml-2")}
-        >
-          {SITE_NAME}
-        </Link>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-stone-950">{name}</h1>
-        <p className="mt-2 text-stone-600">
+        <Button asChild variant="ghost" size="sm" className="-ml-2">
+          <Link href={`/${locale}`}>{SITE_NAME}</Link>
+        </Button>
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight">{name}</h1>
+        <p className="mt-2 text-muted-foreground">
           {events.length} {t.racesCount} · {t.thisWeekend}+
         </p>
         <div className="mt-6">
-          <Link
-            href={`/${locale}?country=${code}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}
-            className={cn(buttonVariants({ size: "lg" }))}
-          >
-            {t.viewOnMap}
-          </Link>
+          <Button asChild size="lg">
+            <Link href={`/${locale}?country=${code}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}>
+              {t.viewOnMap}
+            </Link>
+          </Button>
         </div>
-        <ul className="mt-8 divide-y divide-stone-200 border-y border-stone-200">
-          {events.slice(0, 40).map((event) => (
-            <li key={event.id}>
-              <Link
-                href={eventMapPath(locale, event)}
-                className="flex min-h-14 flex-col gap-0.5 py-3.5 touch-manipulation hover:bg-stone-50/80 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
-              >
-                <span className="font-medium text-stone-900">{event.name}</span>
-                <time className="tabular shrink-0 text-sm text-stone-500" dateTime={event.startDate}>
-                  {format(parseISO(event.startDate), "d MMM yyyy")}
-                </time>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        {!events.length ? (
-          <p className="mt-6 text-sm text-stone-500">{t.noResults}</p>
-        ) : null}
+        {events.length ? (
+          <Card className="mt-8 gap-0 overflow-hidden py-0">
+            <ItemGroup>
+              {events.slice(0, 40).map((event) => (
+                <Item key={event.id} asChild size="sm" className="rounded-none border-x-0 border-t-0">
+                  <Link href={eventMapPath(locale, event)}>
+                    <ItemContent>
+                      <ItemTitle>{event.name}</ItemTitle>
+                    </ItemContent>
+                    <ItemActions>
+                      <time className="tabular text-sm text-muted-foreground" dateTime={event.startDate}>
+                        {format(parseISO(event.startDate), "d MMM yyyy")}
+                      </time>
+                    </ItemActions>
+                  </Link>
+                </Item>
+              ))}
+            </ItemGroup>
+          </Card>
+        ) : (
+          <Empty className="mt-8 border-0 p-0 md:p-0">
+            <EmptyHeader>
+              <EmptyTitle>{t.noResults}</EmptyTitle>
+              <EmptyDescription>{t.weekendNearYou}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
       </div>
     </main>
   );
