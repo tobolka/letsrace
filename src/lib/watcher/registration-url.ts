@@ -12,6 +12,12 @@ const REGISTRATION_HOSTS = [
   "chronorace.be",
   "sportsoft.cz",
   "sporsek.cz",
+  "time-and-voice.com",
+  "runtix.com",
+  "njuko.com",
+  "nazavody.cz",
+  "sportt.cz",
+  "eztiming.eu",
   "entrywall.com",
   "raceid.com",
   "athlinks.com",
@@ -29,6 +35,19 @@ const REGISTRATION_HOSTS = [
 const REGISTRATION_PATH =
   /\/(anmeldung|anmelden|registration|register|inscription|inschrijven|prihlask|prihlas|zapisy|entry|entries|signup|sign-up|registrace)(\/|$|\?)/i;
 
+/** Series-wide entry hubs — not a race page, don't steal the primary outbound link. */
+export function isSeriesRegistrationHubUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./i, "").toLowerCase();
+    const path = u.pathname.replace(/\/+$/, "") || "/";
+    return host === "iprimacup.cz" && path === "/prihlaseni";
+  } catch {
+    return false;
+  }
+}
+
 export function hostOfUrl(url: string | null | undefined): string | null {
   if (!url) return null;
   try {
@@ -39,6 +58,7 @@ export function hostOfUrl(url: string | null | undefined): string | null {
 }
 
 export function isRegistrationPlatformUrl(url: string | null | undefined): boolean {
+  if (isSeriesRegistrationHubUrl(url)) return false;
   const host = hostOfUrl(url);
   if (!host) return false;
   if (REGISTRATION_HOSTS.some((h) => host === h || host.endsWith(`.${h}`) || host.includes(h))) {
@@ -60,10 +80,17 @@ export function pickRegistrationUrl(
 ): string | null {
   const candidates = [explicit, ...sources]
     .map((u) => (u || "").trim())
-    .filter((u) => /^https?:\/\//i.test(u));
+    .filter((u) => /^https?:\/\//i.test(u))
+    .filter((u) => !isSeriesRegistrationHubUrl(u));
   for (const u of candidates) {
     if (isRegistrationPlatformUrl(u)) return u;
   }
-  if (explicit && /^https?:\/\//i.test(explicit.trim())) return explicit.trim();
+  if (
+    explicit &&
+    /^https?:\/\//i.test(explicit.trim()) &&
+    !isSeriesRegistrationHubUrl(explicit)
+  ) {
+    return explicit.trim();
+  }
   return null;
 }

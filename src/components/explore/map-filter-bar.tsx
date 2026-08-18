@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Globe,
   Plus,
+  Search,
   Trophy,
   UserRound,
   X,
@@ -31,12 +32,18 @@ import {
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -161,6 +168,9 @@ export function MapFilterBar({
   onClearCategories,
   onSeries,
   onCountry,
+  q,
+  onQ,
+  onSearchSubmit,
 }: {
   messages: Messages;
   locale: string;
@@ -181,11 +191,15 @@ export function MapFilterBar({
   onClearCategories: () => void;
   onSeries: (slug: string) => void;
   onCountry: (code: string) => void;
+  q: string;
+  onQ: (q: string) => void;
+  onSearchSubmit: () => void;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
   const [dateDraft, setDateDraft] = useState<DateRange | undefined>();
   const [seriesQuery, setSeriesQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const thisW = thisWeekendRange();
   const nextW = nextWeekendRange();
@@ -460,8 +474,9 @@ export function MapFilterBar({
         {filteredSeriesGroups.length === 0 ? (
           <p className="px-2 py-2 text-sm text-muted-foreground">{messages.noSeries}</p>
         ) : null}
-        {filteredSeriesGroups.map((group) => (
+        {filteredSeriesGroups.map((group, index) => (
           <DropdownMenuGroup key={group.key}>
+            {index > 0 && showSeriesHeaders ? <DropdownMenuSeparator /> : null}
             {showSeriesHeaders ? (
               <DropdownMenuLabel className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
                 {group.label}
@@ -638,7 +653,105 @@ export function MapFilterBar({
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}
+
+      {q.trim() ? (
+        <div className="inline-flex max-w-full shrink-0 items-stretch">
+          <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                aria-label={messages.search}
+                className="rounded-r-none"
+              >
+                <Search />
+                <span className="max-w-[12rem] truncate">{q.trim()}</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-72 p-2" collisionPadding={12}>
+              <PlaceSearchForm
+                q={q}
+                messages={messages}
+                onQ={onQ}
+                onSubmit={() => {
+                  onSearchSubmit();
+                  setSearchOpen(false);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon-sm"
+            aria-label={messages.clearFilter}
+            className="rounded-l-none"
+            onClick={() => onQ("")}
+          >
+            <X />
+          </Button>
+        </div>
+      ) : (
+        <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+          <PopoverTrigger asChild>
+            <Button type="button" variant="ghost" size="icon-sm" aria-label={messages.search}>
+              <Search />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-72 p-2" collisionPadding={12}>
+            <PlaceSearchForm
+              q={q}
+              messages={messages}
+              onQ={onQ}
+              onSubmit={() => {
+                onSearchSubmit();
+                setSearchOpen(false);
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
+  );
+}
+
+function PlaceSearchForm({
+  q,
+  messages,
+  onQ,
+  onSubmit,
+}: {
+  q: string;
+  messages: Messages;
+  onQ: (q: string) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+    >
+      <InputGroup>
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+        <InputGroupInput
+          name="q"
+          type="search"
+          value={q}
+          onChange={(e) => onQ(e.target.value)}
+          placeholder={messages.searchPlaceholder}
+          autoComplete="off"
+          spellCheck={false}
+          enterKeyHint="search"
+          aria-label={messages.search}
+          autoFocus
+        />
+      </InputGroup>
+    </form>
   );
 }
 

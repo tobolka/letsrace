@@ -1,7 +1,9 @@
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { DiscoveryQueue } from "@/components/admin/discovery-queue";
-import { Button } from "@/components/ui/primitives";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { CircleCheck, TriangleAlert } from "lucide-react";
 
 export default async function DiscoveryPage({
   searchParams,
@@ -19,11 +21,11 @@ export default async function DiscoveryPage({
     .limit(100);
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="font-sans text-3xl font-semibold tracking-tight">Discovery queue</h1>
-          <p className="text-sm text-stone-500">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Discovery queue</h1>
+          <p className="text-sm text-muted-foreground">
             Independent race sites from web search and calendar outbound links. Accept to start
             watching.
           </p>
@@ -33,15 +35,19 @@ export default async function DiscoveryPage({
         </form>
       </div>
       {sp.error ? (
-        <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800 ring-1 ring-red-200">
-          Explore run failed. Check ingest logs.
-        </p>
+        <Alert variant="destructive">
+          <TriangleAlert />
+          <AlertDescription>Explore run failed. Check ingest logs.</AlertDescription>
+        </Alert>
       ) : null}
       {sp.queued != null ? (
-        <p className="rounded-xl bg-stone-50 px-3 py-2 text-sm text-stone-700 ring-1 ring-stone-200">
-          Queued {sp.queued} new site{sp.queued === "1" ? "" : "s"}
-          {sp.watched && sp.watched !== "0" ? ` · auto-watched ${sp.watched}` : ""}.
-        </p>
+        <Alert>
+          <CircleCheck />
+          <AlertDescription>
+            Queued {sp.queued} new site{sp.queued === "1" ? "" : "s"}
+            {sp.watched && sp.watched !== "0" ? ` · auto-watched ${sp.watched}` : ""}.
+          </AlertDescription>
+        </Alert>
       ) : null}
       <DiscoveryQueue initial={data ?? []} />
     </div>

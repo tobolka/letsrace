@@ -22,10 +22,10 @@ export default async function EditEventPage({
   } | null;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="font-sans tracking-tight text-3xl font-semibold">Edit event</h1>
-        <p className="text-sm text-stone-500">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Edit event</h1>
+        <p className="text-sm text-muted-foreground">
           Fix scraped mistakes here. Enable lock so the watcher will not overwrite your edits.
         </p>
       </div>

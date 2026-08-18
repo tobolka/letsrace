@@ -1,16 +1,32 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button, Badge } from "@/components/ui/primitives";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 
-type Item = {
+type ItemRow = {
   id: string;
   url: string;
   hint_kind: string | null;
   from?: { url?: string } | null;
 };
 
-export function DiscoveryQueue({ initial }: { initial: Item[] }) {
+export function DiscoveryQueue({ initial }: { initial: ItemRow[] }) {
   const router = useRouter();
 
   async function setStatus(id: string, status: "accepted" | "rejected") {
@@ -24,38 +40,44 @@ export function DiscoveryQueue({ initial }: { initial: Item[] }) {
 
   if (!initial.length) {
     return (
-      <p className="rounded-2xl bg-white p-6 text-sm text-stone-500 shadow-sm ring-1 ring-stone-200">
-        Queue is empty. Run “Explore the web” or wait for the daily explorer cron.
-      </p>
+      <Empty>
+        <EmptyHeader>
+          <EmptyTitle>Queue is empty</EmptyTitle>
+          <EmptyDescription>
+            Run “Explore the web” or wait for the daily explorer cron.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
   return (
-    <ul className="space-y-2">
+    <ItemGroup className="gap-2">
       {initial.map((item) => (
-        <li
-          key={item.id}
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white p-3 shadow-sm ring-1 ring-stone-200"
-        >
-          <div className="min-w-0">
-            <a href={item.url} className="break-all text-sm text-stone-900 underline" target="_blank" rel="noreferrer">
-              {item.url}
-            </a>
-            <div className="mt-1 flex flex-wrap gap-2 text-xs text-stone-500">
-              {item.hint_kind && <Badge>{item.hint_kind}</Badge>}
-              {item.from?.url && <span>from {item.from.url}</span>}
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={() => setStatus(item.id, "accepted")}>
-              Accept
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setStatus(item.id, "rejected")}>
-              Reject
-            </Button>
-          </div>
-        </li>
+        <Item key={item.id} variant="outline">
+          <ItemContent>
+            <ItemTitle>
+              <a href={item.url} className="break-all" target="_blank" rel="noreferrer">
+                {item.url}
+              </a>
+            </ItemTitle>
+            <ItemDescription>
+              {item.hint_kind ? <Badge variant="secondary">{item.hint_kind}</Badge> : null}
+              {item.from?.url ? <span> from {item.from.url}</span> : null}
+            </ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <ButtonGroup>
+              <Button size="sm" onClick={() => setStatus(item.id, "accepted")}>
+                Accept
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setStatus(item.id, "rejected")}>
+                Reject
+              </Button>
+            </ButtonGroup>
+          </ItemActions>
+        </Item>
       ))}
-    </ul>
+    </ItemGroup>
   );
 }

@@ -2,7 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input, Label } from "@/components/ui/primitives";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -29,28 +39,37 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-      <h1 className="font-sans tracking-tight text-2xl font-semibold">Admin login</h1>
-      <p className="mt-1 text-sm text-stone-500">
-        Manage race sources, fix scraped data, add events manually.
-      </p>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Signing in…" : "Sign in"}
-        </Button>
-      </form>
-    </div>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle>Admin login</CardTitle>
+        <CardDescription>
+          Manage race sources, fix scraped data, add events manually.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={onSubmit}>
+          <FieldGroup>
+            <Field data-invalid={error ? true : undefined}>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+                aria-invalid={error ? true : undefined}
+              />
+              {error ? <FieldError>{error}</FieldError> : null}
+            </Field>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <Spinner data-icon="inline-start" /> : null}
+              Sign in
+            </Button>
+          </FieldGroup>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

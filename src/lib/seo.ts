@@ -11,6 +11,12 @@ export function getSiteUrl(): string {
 
 export const SITE_NAME = "Startline";
 
+export const SITE_AUTHOR = {
+  name: "Radek Tobolka",
+  url: "https://radektobolka.com",
+  email: "tobolka@gmail.com",
+} as const;
+
 export const seoCopy: Record<
   Locale,
   { title: string; description: string; ogLocale: string }

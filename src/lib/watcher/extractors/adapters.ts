@@ -37,16 +37,20 @@ import {
   parseSalzkammergutTrophy,
   parseSchwarzwalderCup,
   parseSumavskyPohar,
+  enrichSumavskyPohar,
   parseSzcMtb,
   parseWerdenfelserCup,
   parseWiesbadenStadtmeisterschaft,
   parseXcoBikecup,
   parseZanzenbergOem,
+  enrichDeAtRacePages,
 } from "@/lib/watcher/extractors/kids-mtb-cups";
 import {
   parseCyklokros,
   parseDetskyMtbCup,
+  enrichDetskyMtbCup,
   parseEnduroSerie,
+  enrichEnduroSerie,
   parseEnduroSportsoft,
   parseMaratonTerminovka,
   parsePoharMtb,
@@ -167,6 +171,14 @@ export async function extractWithAdapter(
     return { events: await parseSumator(url, html), strategy: "adapter:sumator" };
   }
   if (host.includes("kolopro.cz")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (path !== "/zavody") {
+        return { events: [], strategy: "adapter:kolopro-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:kolopro-skip" };
+    }
     return { events: parseKolopro(url, html), strategy: "adapter:kolopro" };
   }
   if (
@@ -241,7 +253,10 @@ export async function extractWithAdapter(
     return { events: await parseEventiv(url, html), strategy: "adapter:eventiv" };
   }
   if (isRacementHost(host)) {
-    return { events: parseRacement(url, html), strategy: "adapter:racement" };
+    return {
+      events: await enrichDeAtRacePages(parseRacement(url, html)),
+      strategy: "adapter:racement",
+    };
   }
   if (host.includes("ppkbike.cz") || host.includes("ppk-hk.cz")) {
     return { events: await parsePpkBike(url, html), strategy: "adapter:ppkbike" };
@@ -254,7 +269,13 @@ export async function extractWithAdapter(
     }
   }
   if (host.includes("cup.cube.eu")) {
-    return { events: parseCubeCup(url, html), strategy: "adapter:cubecup" };
+    if (/rennen-detail/i.test(url)) {
+      return { events: [], strategy: "adapter:cubecup-skip" };
+    }
+    return {
+      events: await enrichDeAtRacePages(parseCubeCup(url, html)),
+      strategy: "adapter:cubecup",
+    };
   }
   if (host.includes("tbcserie.cz")) {
     return { events: await parseTbcSerie(url, html), strategy: "adapter:tbcserie" };
@@ -281,16 +302,30 @@ export async function extractWithAdapter(
     return { events: parsePrahaMtb(url, html), strategy: "adapter:prahamtb" };
   }
   if (host.includes("enduroserie.cz")) {
-    return { events: parseEnduroSerie(url, html), strategy: "adapter:enduroserie" };
+    return {
+      events: await enrichEnduroSerie(parseEnduroSerie(url, html)),
+      strategy: "adapter:enduroserie",
+    };
   }
   if (host.includes("enduro.sportsoft.cz")) {
     return { events: parseEnduroSportsoft(url, html), strategy: "adapter:enduro-sportsoft" };
   }
   if (host.includes("cyklokros.cz")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (!/^\/(kalendar|janev-cup(-20\d{2})?)$/i.test(path)) {
+        return { events: [], strategy: "adapter:cyklokros-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:cyklokros-skip" };
+    }
     return { events: parseCyklokros(url, html), strategy: "adapter:cyklokros" };
   }
   if (host.includes("detskymtbcup.cz")) {
-    return { events: parseDetskyMtbCup(url, html), strategy: "adapter:detsky-mtb" };
+    return {
+      events: await enrichDetskyMtbCup(parseDetskyMtbCup(url, html)),
+      strategy: "adapter:detsky-mtb",
+    };
   }
   if (host.includes("vangillerncup.cz")) {
     if (/\/(fotky|tym|vysledky)\/?$/i.test(url)) {
@@ -345,7 +380,10 @@ export async function extractWithAdapter(
     return { events: parseUstiMtbCup(url, html), strategy: "adapter:usti-mtb" };
   }
   if (host.includes("cyclingaustria.at")) {
-    return { events: parseCyclingAustria(url, html), strategy: "adapter:oerv" };
+    return {
+      events: await enrichDeAtRacePages(parseCyclingAustria(url, html)),
+      strategy: "adapter:oerv",
+    };
   }
   if (host.includes("ucimtbworldseries.com")) {
     return { events: parseUciMtbWorldSeries(url, html), strategy: "adapter:uciws" };
@@ -422,10 +460,16 @@ export async function extractWithAdapter(
     return { events: parseSzcMtb(url, html), strategy: "adapter:szc-mtb" };
   }
   if (host.includes("albgold-juniorscup.de")) {
-    return { events: await parseAlbGoldJuniors(url, html), strategy: "adapter:alb-gold" };
+    return {
+      events: await enrichDeAtRacePages(await parseAlbGoldJuniors(url, html)),
+      strategy: "adapter:alb-gold",
+    };
   }
   if (host.includes("rookiescup-ostbayern.de")) {
-    return { events: parseRookiesOstbayern(url, html), strategy: "adapter:rookies-ob" };
+    return {
+      events: await enrichDeAtRacePages(parseRookiesOstbayern(url, html)),
+      strategy: "adapter:rookies-ob",
+    };
   }
   if (host.includes("xco-bikecup.de")) {
     return { events: parseXcoBikecup(url, html), strategy: "adapter:xco-bikecup" };
@@ -440,7 +484,10 @@ export async function extractWithAdapter(
     return { events: parseOberschwabenCup(url, html), strategy: "adapter:omv" };
   }
   if (host.includes("mtbsaarlandliga.de")) {
-    return { events: parseSaarlandliga(url, html), strategy: "adapter:saarlandliga" };
+    return {
+      events: await enrichDeAtRacePages(parseSaarlandliga(url, html)),
+      strategy: "adapter:saarlandliga",
+    };
   }
   if (host.includes("juniorbikecup.at")) {
     return { events: parseJuniorBikeCup(url, html), strategy: "adapter:jbc" };
@@ -464,7 +511,10 @@ export async function extractWithAdapter(
     } catch {
       return { events: [], strategy: "adapter:sumavsky-skip" };
     }
-    return { events: parseSumavskyPohar(url, html), strategy: "adapter:sumavsky" };
+    return {
+      events: await enrichSumavskyPohar(parseSumavskyPohar(url, html)),
+      strategy: "adapter:sumavsky",
+    };
   }
   if (host.includes("bayerwald-mtb-cup.com")) {
     try {
@@ -473,7 +523,10 @@ export async function extractWithAdapter(
     } catch {
       return { events: [], strategy: "adapter:bayerwald-skip" };
     }
-    return { events: parseBayerwaldCup(url, html), strategy: "adapter:bayerwald" };
+    return {
+      events: parseBayerwaldCup(url, html),
+      strategy: "adapter:bayerwald",
+    };
   }
   if (host.includes("skiclub-bb.com")) {
     if (!/werdenfelscup/i.test(url)) {
@@ -500,7 +553,10 @@ export async function extractWithAdapter(
     if (!/termine-2/i.test(url)) {
       return { events: [], strategy: "adapter:eldorado-skip" };
     }
-    return { events: parseEldoradoKidsCup(url, html), strategy: "adapter:eldorado" };
+    return {
+      events: await enrichDeAtRacePages(parseEldoradoKidsCup(url, html)),
+      strategy: "adapter:eldorado",
+    };
   }
   if (host.includes("mountainbike-challenge.at")) {
     try {
@@ -560,7 +616,10 @@ export async function extractWithAdapter(
     } catch {
       return { events: [], strategy: "adapter:nrw-skip" };
     }
-    return { events: parseXcoNrw(url, html), strategy: "adapter:xco-nrw" };
+    return {
+      events: await enrichDeAtRacePages(parseXcoNrw(url, html)),
+      strategy: "adapter:xco-nrw",
+    };
   }
   if (host.includes("schwarzwald-bike-marathon.de")) {
     if (!/rena-kids-cup/i.test(url)) {
@@ -989,27 +1048,81 @@ function parseJuniorCup(url: string, html: string): ParsedEvent[] {
 function parseKolopro(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
-  $("h2, h3, a").each((_, el) => {
-    const name = $(el).text().replace(/\s+/g, " ").trim();
-    if (!name || name.length < 8 || name.length > 100) return;
-    if (!/tour|maraton|trophy|mlýnice|ralsko|železné|znojmo|beroun|drásal|malevil|fanatik/i.test(name))
+  const seen = new Set<string>();
+  const year =
+    Number(html.match(/Kolo pro život[^<]{0,40}(20\d{2})/i)?.[1]) ||
+    Number(html.match(/20(2[6-9]|3\d)/)?.[0]) ||
+    new Date().getFullYear();
+  const seriesRegs = $("a[href*='pravidla'][href$='.pdf'], a[href*='pravidla_kpz']")
+    .first()
+    .attr("href");
+  let regulationsUrl: string | undefined;
+  if (seriesRegs) {
+    try {
+      regulationsUrl = new URL(seriesRegs, url).toString();
+    } catch {
+      /* ignore */
+    }
+  }
+
+  $('a[href*="/zavody/"]').each((_, a) => {
+    const href = $(a).attr("href") || "";
+    const label = $(a).text().replace(/\s+/g, " ").trim();
+    if (!href || !label) return;
+    if (/\/zavody\/?$/i.test(href) || /partnersk/i.test(label)) return;
+    const range = label.match(/(\d{1,2})\s*[-–]\s*(\d{1,2})\s*\/\s*(\d{1,2})\s*$/);
+    const one = label.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*$/);
+    let startDate: string | null = null;
+    let endDate: string | undefined;
+    if (range) {
+      const mo = range[3]!.padStart(2, "0");
+      startDate = `${year}-${mo}-${range[1]!.padStart(2, "0")}`;
+      endDate = `${year}-${mo}-${range[2]!.padStart(2, "0")}`;
+    } else if (one) {
+      startDate = `${year}-${one[2]!.padStart(2, "0")}-${one[1]!.padStart(2, "0")}`;
+    }
+    if (!startDate) return;
+
+    let abs: string;
+    try {
+      abs = new URL(href, url).toString();
+    } catch {
       return;
-    if (/partneři|partneri|registruj|více informací|kategorie prestige/i.test(name)) return;
+    }
+    const name = label
+      .replace(/\s+\d{1,2}\s*[-–]\s*\d{1,2}\s*\/\s*\d{1,2}\s*$/, "")
+      .replace(/\s+\d{1,2}\s*\/\s*\d{1,2}\s*$/, "")
+      .replace(/\s+proběhl\s*$/i, "")
+      .trim();
+    if (!name || name.length < 6) return;
+    const externalId = `kolopro-${startDate}-${normalizeName(name)}`;
+    if (seen.has(externalId)) return;
+    seen.add(externalId);
+    const place =
+      name
+        .replace(/^(DIRECT|ŠKODA AUTO|VEOLIA|CARDION|NOVA SPORT)\s+/i, "")
+        .replace(/\s+(TOUR|CUP|TROPHY).*$/i, "")
+        .replace(/^Bikemaraton\s+/i, "")
+        .trim() || name;
     events.push({
-      externalId: `kolopro-${normalizeName(name)}`,
+      externalId,
       name,
-      startDate: "2026-05-01",
-      placeText: name,
+      startDate,
+      endDate: endDate && endDate !== startDate ? endDate : undefined,
+      placeText: place.slice(0, 80),
       countryHint: "CZ",
       discipline: ["xcm"],
       audience: "mixed",
       seriesName: "Kolo pro život",
       seriesSlug: "kolo-pro-zivot",
-      sourceUrl: url,
-      confidence: 0.45,
+      seriesWebsite: "https://www.kolopro.cz/",
+      sourceUrl: abs,
+      websiteUrl: abs,
+      regulationsUrl,
+      confidence: 0.9,
     });
   });
-  return dedupe(events).slice(0, 20);
+  return events;
 }
 
 function dedupe(events: ParsedEvent[]): ParsedEvent[] {

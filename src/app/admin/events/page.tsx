@@ -5,6 +5,7 @@ import {
   AdminEventsTable,
   type AdminEventRow,
 } from "@/components/admin/admin-events-table";
+import { Button } from "@/components/ui/button";
 
 export default async function EventsAdminPage({
   searchParams,
@@ -41,20 +42,17 @@ export default async function EventsAdminPage({
   }));
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <div className="flex items-end justify-between gap-3">
-        <div>
-          <h1 className="font-sans text-3xl font-semibold tracking-tight">Events</h1>
-          <p className="text-sm text-stone-500">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Events</h1>
+          <p className="text-sm text-muted-foreground">
             Hide camps and non-races from the map, or bring them back
           </p>
         </div>
-        <Link
-          href="/admin/events/new"
-          className="rounded-md bg-stone-900 px-3 py-2 text-sm text-white hover:bg-stone-900"
-        >
-          Add event
-        </Link>
+        <Button asChild>
+          <Link href="/admin/events/new">Add event</Link>
+        </Button>
       </div>
       <AdminEventsTable events={rows} filter={view} />
     </div>

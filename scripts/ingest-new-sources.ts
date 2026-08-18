@@ -28,6 +28,7 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://www.rookiescup.bike/en/race-calendar", kind: "series" },
   { url: "https://www.ixsdownhillcup.com/en/race-calendar", kind: "series" },
   { url: "https://www.iprimacup.cz/zavody-2026/", kind: "series" },
+  { url: "https://www.kolopro.cz/zavody/", kind: "series" },
   { url: "https://maraton.cz/terminovka", kind: "aggregator" },
   { url: "https://www.poharmtb.cz/cross-country", kind: "series" },
   { url: "https://zapadoceskaamaterskaliga.cz/", kind: "series" },
@@ -42,6 +43,7 @@ const TARGETS: { url: string; kind: string }[] = [
     kind: "federation",
   },
   { url: "https://www.cyklokros.cz/kalendar", kind: "aggregator" },
+  { url: "https://www.cyklokros.cz/janev-cup-2026", kind: "series" },
   { url: "https://www.detskymtbcup.cz/", kind: "series" },
   { url: "https://skvelopraha.cz/velky-haj/", kind: "series" },
   { url: "http://vangillerncup.cz", kind: "race" },
@@ -51,6 +53,7 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://ppkbike.cz/ppk-races.js", kind: "series" },
   { url: "https://www.cyklistikaszc.sk/sk/mtb-cross-country/kalendar", kind: "federation" },
   { url: "https://albgold-juniorscup.de/", kind: "series" },
+  { url: "https://cup.cube.eu/", kind: "series" },
   { url: "https://rookiescup-ostbayern.de/rennen/", kind: "series" },
   { url: "https://xco-bikecup.de/", kind: "series" },
   { url: "https://schwarzwaelder-mtb-cup.de/", kind: "series" },
@@ -228,9 +231,13 @@ async function main() {
             ? "O Pohár MČ Praha 4 — off-season watch for next year"
             : t.url.includes("gillern")
               ? "Kamenice family MTB — adults + kids"
-              : t.url.includes("jesenicky")
+                : t.url.includes("jesenicky")
                 ? "Jesenický šnek — Jeseníky XC + šneček"
-                : null,
+                : t.url.includes("jcp-mtb")
+                  ? "Šumavský pohár MTB — South Bohemia XC + Waldkirchen"
+                  : t.url.includes("janev-cup")
+                    ? "JANEV Cup 2026 — Czech UCI cyclocross"
+                    : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })

@@ -1,7 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Badge } from "@/components/ui/primitives";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 
 type Note = {
   id: string;
@@ -75,140 +98,149 @@ export function SubmissionsInbox({
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      <section className="space-y-3">
-        <h2 className="font-mono text-[11px] font-semibold uppercase tracking-wide text-stone-400">
-          Feature / feedback
-        </h2>
-        {items.length === 0 ? (
-          <p className="text-sm text-stone-500">No feedback yet.</p>
-        ) : (
-          <ul className="space-y-2">
-            {items.map((f) => (
-              <li key={f.id} className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-stone-200">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0">
+    <div className="grid gap-6 lg:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Feature / feedback</CardTitle>
+          <CardDescription>Requests from the map.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {items.length === 0 ? (
+            <Empty className="border-0 p-0">
+              <EmptyHeader>
+                <EmptyTitle>No feedback yet</EmptyTitle>
+                <EmptyDescription>New messages will show up here.</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <ItemGroup className="gap-3">
+              {items.map((f) => (
+                <Item key={f.id} variant="outline">
+                  <ItemContent>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge className="font-mono uppercase">{f.kind}</Badge>
-                      <Badge>{f.status}</Badge>
+                      <Badge variant="secondary">{f.kind}</Badge>
+                      <Badge variant="outline">{f.status}</Badge>
                     </div>
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-stone-800">{f.message}</p>
+                    <ItemDescription className="whitespace-pre-wrap">{f.message}</ItemDescription>
                     {f.email ? (
-                      <a
-                        href={`mailto:${f.email}`}
-                        className="mt-1 inline-block text-xs text-stone-500 underline"
-                      >
+                      <a href={`mailto:${f.email}`} className="text-xs underline">
                         {f.email}
                       </a>
                     ) : null}
-                    <p className="mt-1 font-mono text-[11px] text-stone-400">
+                    <ItemDescription className="tabular-nums">
                       {new Date(f.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-                {f.status === "pending" && (
-                  <div className="mt-3 flex gap-2">
-                    <Button size="sm" onClick={() => void setFeedbackStatus(f.id, "done")}>
-                      Done
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void setFeedbackStatus(f.id, "dismissed")}
-                    >
-                      Dismiss
-                    </Button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                    </ItemDescription>
+                    {f.status === "pending" ? (
+                      <ButtonGroup>
+                        <Button size="sm" onClick={() => void setFeedbackStatus(f.id, "done")}>
+                          Done
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void setFeedbackStatus(f.id, "dismissed")}
+                        >
+                          Dismiss
+                        </Button>
+                      </ButtonGroup>
+                    ) : null}
+                  </ItemContent>
+                </Item>
+              ))}
+            </ItemGroup>
+          )}
+        </CardContent>
+      </Card>
 
-      <section className="space-y-3">
-        <h2 className="font-mono text-[11px] font-semibold uppercase tracking-wide text-stone-400">
-          Race submissions
-        </h2>
-        {subs.length === 0 ? (
-          <p className="text-sm text-stone-500">No submissions yet.</p>
-        ) : (
-          <ul className="space-y-2">
-            {subs.map((s) => (
-              <li key={s.id} className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-stone-200">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="break-all text-sm font-medium text-stone-900 underline"
-                    >
-                      {s.url}
-                    </a>
-                    {s.note && <p className="mt-1 text-xs text-stone-500">{s.note}</p>}
-                    <p className="mt-1 font-mono text-[11px] text-stone-400">
+      <Card>
+        <CardHeader>
+          <CardTitle>Race submissions</CardTitle>
+          <CardDescription>URLs sent in as missing races.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {subs.length === 0 ? (
+            <Empty className="border-0 p-0">
+              <EmptyHeader>
+                <EmptyTitle>No submissions yet</EmptyTitle>
+                <EmptyDescription>Missing-race reports land here.</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <ItemGroup className="gap-3">
+              {subs.map((s) => (
+                <Item key={s.id} variant="outline">
+                  <ItemContent>
+                    <ItemTitle>
+                      <a href={s.url} target="_blank" rel="noreferrer" className="break-all">
+                        {s.url}
+                      </a>
+                    </ItemTitle>
+                    {s.note ? <ItemDescription>{s.note}</ItemDescription> : null}
+                    <ItemDescription className="tabular-nums">
                       {new Date(s.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <Badge>{s.status}</Badge>
-                </div>
-                {s.status === "pending" && (
-                  <div className="mt-3 flex gap-2">
-                    <Button size="sm" onClick={() => void setStatus(s.id, "approved")}>
-                      Approve + watch
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void setStatus(s.id, "rejected")}
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                    </ItemDescription>
+                    {s.status === "pending" ? (
+                      <ButtonGroup>
+                        <Button size="sm" onClick={() => void setStatus(s.id, "approved")}>
+                          Approve + watch
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void setStatus(s.id, "rejected")}
+                        >
+                          Reject
+                        </Button>
+                      </ButtonGroup>
+                    ) : null}
+                  </ItemContent>
+                  <ItemActions>
+                    <Badge variant="outline">{s.status}</Badge>
+                  </ItemActions>
+                </Item>
+              ))}
+            </ItemGroup>
+          )}
+        </CardContent>
+      </Card>
 
-      <section className="space-y-3 lg:col-span-2">
-        <h2 className="font-mono text-[11px] font-semibold uppercase tracking-wide text-stone-400">
-          Notifications
-        </h2>
-        {notes.length === 0 ? (
-          <p className="text-sm text-stone-500">Inbox empty.</p>
-        ) : (
-          <ul className="grid gap-2 lg:grid-cols-2">
-            {notes.map((n) => (
-              <li
-                key={n.id}
-                className={`rounded-xl p-4 shadow-sm ring-1 ring-stone-200 ${
-                  n.read_at ? "bg-stone-50" : "bg-white"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium text-stone-900">{n.title}</p>
-                    <p className="mt-0.5 break-all whitespace-pre-wrap text-sm text-stone-600">
-                      {n.body}
-                    </p>
-                    <p className="mt-1 font-mono text-[11px] text-stone-400">
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>Watcher and ingest alerts.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {notes.length === 0 ? (
+            <Empty className="border-0 p-0">
+              <EmptyHeader>
+                <EmptyTitle>Inbox empty</EmptyTitle>
+                <EmptyDescription>No notifications right now.</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <ItemGroup className="grid gap-2 lg:grid-cols-2">
+              {notes.map((n) => (
+                <Item key={n.id} variant={n.read_at ? "muted" : "outline"}>
+                  <ItemContent>
+                    <ItemTitle>{n.title}</ItemTitle>
+                    <ItemDescription className="whitespace-pre-wrap">{n.body}</ItemDescription>
+                    <ItemDescription className="tabular-nums">
                       {new Date(n.created_at).toLocaleString()} · {n.kind}
-                    </p>
-                  </div>
-                  {!n.read_at && (
-                    <Button size="sm" variant="outline" onClick={() => void markRead(n.id)}>
-                      Mark read
-                    </Button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                    </ItemDescription>
+                  </ItemContent>
+                  {!n.read_at ? (
+                    <ItemActions>
+                      <Button size="sm" variant="outline" onClick={() => void markRead(n.id)}>
+                        Mark read
+                      </Button>
+                    </ItemActions>
+                  ) : null}
+                </Item>
+              ))}
+            </ItemGroup>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

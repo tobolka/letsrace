@@ -2,7 +2,44 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Badge, Button, Input, Label, Textarea } from "@/components/ui/primitives";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 
 type Source = {
   id: string;
@@ -23,11 +60,9 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
   const [preview, setPreview] = useState<unknown>(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
 
   async function addSources() {
     setBusy(true);
-    setMessage("");
     const list = urls
       .split("\n")
       .map((u) => u.trim())
@@ -39,11 +74,11 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
     });
     setBusy(false);
     if (!res.ok) {
-      setMessage("Failed to add sources");
+      toast.error("Failed to add sources");
       return;
     }
     setUrls("");
-    setMessage(`Added ${list.length} URL(s)`);
+    toast.success(`Added ${list.length} URL(s)`);
     router.refresh();
   }
 
@@ -69,101 +104,133 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
   }
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-stone-200 lg:grid-cols-2">
-        <div className="space-y-3">
-          <h2 className="font-medium">Add URLs</h2>
-          <div className="space-y-1.5">
-            <Label>Kind</Label>
-            <select
-              className="h-10 w-full rounded-md border border-stone-300 px-3 text-sm"
-              value={kind}
-              onChange={(e) => setKind(e.target.value)}
-            >
-              <option value="federation">Federation</option>
-              <option value="aggregator">Aggregator</option>
-              <option value="series">Series</option>
-              <option value="race">Single race</option>
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label>URLs (one per line)</Label>
-            <Textarea
-              value={urls}
-              onChange={(e) => setUrls(e.target.value)}
-              placeholder="https://example.com/race-2026"
-            />
-          </div>
-          <Button onClick={addSources} disabled={busy || !urls.trim()}>
-            {busy ? "Saving…" : "Watch these URLs"}
-          </Button>
-          {message && <p className="text-sm text-stone-900">{message}</p>}
-        </div>
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Add URLs</CardTitle>
+            <CardDescription>One URL per line. The watcher keeps them fresh.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="kind">Kind</FieldLabel>
+                <Select value={kind} onValueChange={setKind}>
+                  <SelectTrigger id="kind" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="federation">Federation</SelectItem>
+                      <SelectItem value="aggregator">Aggregator</SelectItem>
+                      <SelectItem value="series">Series</SelectItem>
+                      <SelectItem value="race">Single race</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="urls">URLs</FieldLabel>
+                <Textarea
+                  id="urls"
+                  value={urls}
+                  onChange={(e) => setUrls(e.target.value)}
+                  placeholder="https://example.com/race-2026"
+                />
+              </Field>
+              <Button onClick={addSources} disabled={busy || !urls.trim()}>
+                {busy ? <Spinner data-icon="inline-start" /> : null}
+                Watch these URLs
+              </Button>
+            </FieldGroup>
+          </CardContent>
+        </Card>
 
-        <div className="space-y-3">
-          <h2 className="font-medium">Extraction preview</h2>
-          <div className="flex gap-2">
-            <Input
-              value={previewUrl}
-              onChange={(e) => setPreviewUrl(e.target.value)}
-              placeholder="https://…"
-            />
-            <Button variant="outline" onClick={runPreview} disabled={busy}>
-              Preview
-            </Button>
-          </div>
-          <pre className="max-h-72 overflow-auto rounded-lg bg-stone-950 p-3 text-xs text-stone-100">
-            {preview ? JSON.stringify(preview, null, 2) : "Run preview to see parsed events"}
-          </pre>
-        </div>
-      </section>
+        <Card>
+          <CardHeader>
+            <CardTitle>Extraction preview</CardTitle>
+            <CardDescription>Parse a URL without adding it as a source.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <Input
+                value={previewUrl}
+                onChange={(e) => setPreviewUrl(e.target.value)}
+                placeholder="https://…"
+              />
+              <Button variant="outline" onClick={runPreview} disabled={busy}>
+                {busy ? <Spinner data-icon="inline-start" /> : null}
+                Preview
+              </Button>
+            </div>
+            <ScrollArea className="h-72 rounded-lg bg-muted">
+              <pre className="p-3 text-xs">
+                {preview ? JSON.stringify(preview, null, 2) : "Run preview to see parsed events"}
+              </pre>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
 
-      <section className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-stone-200">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-stone-50 text-stone-500">
-            <tr>
-              <th className="px-3 py-2">URL</th>
-              <th className="px-3 py-2">Kind</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Last</th>
-              <th className="px-3 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+      {initialSources.length === 0 ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>No sources yet</EmptyTitle>
+            <EmptyDescription>Paste federation or race URLs above to start watching.</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>URL</TableHead>
+              <TableHead>Kind</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Last</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {initialSources.map((s) => (
-              <tr key={s.id} className="border-t border-stone-100 align-top">
-                <td className="px-3 py-2">
-                  <a href={s.url} className="break-all text-stone-900 underline" target="_blank" rel="noreferrer">
+              <TableRow key={s.id}>
+                <TableCell>
+                  <a href={s.url} className="break-all underline" target="_blank" rel="noreferrer">
                     {s.url}
                   </a>
-                  {s.last_error && <p className="mt-1 text-xs text-red-600">{s.last_error}</p>}
-                </td>
-                <td className="px-3 py-2">{s.kind}</td>
-                <td className="px-3 py-2">
-                  <Badge>{s.status}</Badge>
-                  {s.last_extract_status && (
-                    <div className="mt-1 text-xs text-stone-500">{s.last_extract_status}</div>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-xs text-stone-500">
+                  {s.last_error ? (
+                    <p className="mt-1 text-xs text-destructive">{s.last_error}</p>
+                  ) : null}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary">{s.kind}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={s.status === "needs_review" ? "destructive" : "outline"}>
+                    {s.status}
+                  </Badge>
+                  {s.last_extract_status ? (
+                    <p className="mt-1 text-xs text-muted-foreground">{s.last_extract_status}</p>
+                  ) : null}
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground tabular-nums">
                   {s.last_fetched_at ? new Date(s.last_fetched_at).toLocaleString() : "never"}
                   {s.http_status ? ` · HTTP ${s.http_status}` : ""}
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex flex-col gap-1">
+                </TableCell>
+                <TableCell>
+                  <ButtonGroup orientation="vertical">
                     <Button size="sm" variant="outline" onClick={() => setStatus(s.id, "paused")}>
                       Pause
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => setStatus(s.id, "active")}>
                       Resume
                     </Button>
-                  </div>
-                </td>
-              </tr>
+                  </ButtonGroup>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </section>
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }

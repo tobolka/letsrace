@@ -97,7 +97,7 @@ export function parseCyclingAustria(url: string, html: string): ParsedEvent[] {
       audience: /nachwuchs|jugend|u1[13579]|kids|kinder/i.test(name + discRaw)
         ? "youth"
         : "mixed",
-      sourceUrl: url,
+      sourceUrl: abs,
       websiteUrl: abs,
       confidence: 0.82,
     });

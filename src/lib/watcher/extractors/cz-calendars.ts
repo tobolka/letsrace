@@ -100,6 +100,41 @@ function originOf(url: string): string {
   }
 }
 
+function absHref(href: string | undefined, base: string): string | undefined {
+  const raw = (href || "").trim();
+  if (!raw || raw.startsWith("javascript:") || raw === "#") return undefined;
+  try {
+    return new URL(raw, base).toString();
+  } catch {
+    return undefined;
+  }
+}
+
+function pathOnly(url: string): string {
+  try {
+    return new URL(url).pathname.replace(/\/+$/, "") || "/";
+  } catch {
+    return url;
+  }
+}
+
+function isPdfHref(url: string): boolean {
+  return /\.pdf(\?|#|$)/i.test(url);
+}
+
+function isSameListing(url: string, listingUrl: string): boolean {
+  try {
+    const a = new URL(url);
+    const b = new URL(listingUrl);
+    if (a.hostname.replace(/^www\./i, "") !== b.hostname.replace(/^www\./i, "")) {
+      return false;
+    }
+    return pathOnly(a.toString()) === pathOnly(b.toString());
+  } catch {
+    return false;
+  }
+}
+
 /** Prima Cup listing (`/zavody-2026/`) — dates live on each race page. */
 export async function parsePrimaCup(url: string, html: string): Promise<ParsedEvent[]> {
   const $ = cheerio.load(html);
@@ -165,6 +200,26 @@ export async function parsePrimaCup(url: string, html: string): Promise<ParsedEv
           )
           .trim() || card.name;
 
+      let registrationUrl: string | undefined;
+      let regulationsUrl: string | undefined;
+      $$("a[href]").each((_, a) => {
+        const href = absHref($$(a).attr("href"), card.href);
+        if (!href) return;
+        if (/\/prihlaseni\/?$/i.test(href) || /\/zavody-20\d{2}\/?$/i.test(href)) return;
+        const text = $$(a).text().replace(/\s+/g, " ").trim();
+        const blob = `${href} ${text}`;
+        if (!registrationUrl && /prihlá|prihlas|registrac|sportsoft|raceresult|entrywall/i.test(blob)) {
+          registrationUrl = href;
+        }
+        if (
+          !regulationsUrl &&
+          (isPdfHref(href) || /propozic|pravidla|rozpis/i.test(blob)) &&
+          !/vysledk|výsled|fotogal/i.test(blob)
+        ) {
+          regulationsUrl = href;
+        }
+      });
+
       return {
         externalId: `prima-${normalizeName(card.name)}-${startDate}`,
         name: card.name.replace(/\s*20\d{2}\s*$/, "").trim() || card.name,
@@ -176,8 +231,10 @@ export async function parsePrimaCup(url: string, html: string): Promise<ParsedEv
         seriesName: "Prima Cup",
         seriesSlug: "primacup",
         seriesWebsite: "https://www.iprimacup.cz/",
-        sourceUrl: url,
+        sourceUrl: card.href,
         websiteUrl: card.href,
+        registrationUrl,
+        regulationsUrl,
         confidence: 0.88,
       };
     } catch {
@@ -286,15 +343,26 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
     if (seen.has(externalId)) return;
     seen.add(externalId);
 
-    const infoHref = $tr.find("td.links a[href]").first().attr("href");
-    let websiteUrl = "https://www.poharmtb.cz/cross-country";
-    if (infoHref) {
-      try {
-        websiteUrl = new URL(infoHref, url).toString();
-      } catch {
-        /* keep */
+    const listing = "https://www.poharmtb.cz/cross-country";
+    let regulationsUrl: string | undefined;
+    let websiteUrl: string | undefined;
+    $tr.find("td.links a[href]").each((_, a) => {
+      const href = absHref($(a).attr("href"), url);
+      if (!href) return;
+      const text = $(a).text().replace(/\s+/g, " ").trim();
+      if (/propozic/i.test(`${href} ${text}`)) {
+        regulationsUrl = regulationsUrl || href;
+        return;
       }
-    }
+      if (isPdfHref(href)) {
+        if (/technical|časov|casov|program/i.test(`${href} ${text}`)) return;
+        regulationsUrl = regulationsUrl || href;
+        return;
+      }
+      if (isSameListing(href, listing) || pathOnly(href) === "/") return;
+      websiteUrl = websiteUrl || href;
+    });
+    const sourceUrl = websiteUrl || regulationsUrl || url;
 
     events.push({
       externalId,
@@ -308,8 +376,9 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
       seriesName: /mčr|mcr/i.test(tag) ? "MČR MTB" : "Český pohár MTB",
       seriesSlug: /mčr|mcr/i.test(tag) ? "mcr-mtb" : "cesky-pohar-mtb",
       seriesWebsite: "https://www.poharmtb.cz/",
-      sourceUrl: url,
-      websiteUrl,
+      sourceUrl,
+      websiteUrl: websiteUrl || listing,
+      regulationsUrl,
       confidence: 0.9,
     });
   });
@@ -331,15 +400,12 @@ export function parseZal(url: string, html: string): ParsedEvent[] {
     if (!name || name.length < 3) return;
     if (/vyhlášení|slavnost/i.test(name)) return;
 
-    const href = $el.find(".nadpis a").attr("href");
-    let websiteUrl = originOf(url);
-    if (href) {
-      try {
-        websiteUrl = new URL(href, url).toString();
-      } catch {
-        /* keep */
-      }
-    }
+    const href = absHref($el.find(".nadpis a").attr("href"), url);
+    const origin = originOf(url);
+    const year = dates.start.slice(0, 4);
+    const websiteUrl = href || `${origin}/`;
+    const regulationsUrl = href && /\/propozice\//i.test(href) ? href : undefined;
+    const registrationUrl = `${origin}/prihlasky/zal-${year}`;
 
     const externalId = `zal-${dates.start}-${normalizeName(name)}`;
     if (seen.has(externalId)) return;
@@ -359,9 +425,11 @@ export function parseZal(url: string, html: string): ParsedEvent[] {
       audience: "adults",
       seriesName: "Západočeská amatérská liga",
       seriesSlug: "zal",
-      seriesWebsite: originOf(url) + "/",
-      sourceUrl: url,
+      seriesWebsite: `${origin}/`,
+      sourceUrl: href || url,
       websiteUrl,
+      registrationUrl,
+      regulationsUrl,
       confidence: 0.86,
     });
   });
@@ -369,14 +437,99 @@ export function parseZal(url: string, html: string): ParsedEvent[] {
   return events;
 }
 
+const PRAHA_KOLO_RE =
+  /(\d+)\.\s*kolo\s*[–-]\s*(\d{1,2})\.\s*([A-Za-záčďéěíňóřšťúůýž]+)\s*(20\d{2})\s*,\s*([A-Za-záčďéěíňóřšťúůýž0-9 ]{2,40})/i;
+
+function prahaPlaceLabel(place: string): string {
+  return /motol|kbely|letňany|letnany|zličín|zlicin|libuš|libus|beckov/i.test(place)
+    ? `Praha — ${place}`
+    : place;
+}
+
+function prahaBlockLinks(
+  html: string,
+  pageUrl: string,
+): { regulationsUrl?: string; registrationUrl?: string } {
+  const $ = cheerio.load(`<div>${html}</div>`);
+  let regulationsUrl: string | undefined;
+  let registrationUrl: string | undefined;
+  $("a[href]").each((_, a) => {
+    const href = absHref($(a).attr("href"), pageUrl);
+    if (!href) return;
+    const text = $(a).text().replace(/\s+/g, " ").trim();
+    const blob = `${href} ${text}`;
+    if (
+      !registrationUrl &&
+      /sportt\.cz\/register|nazavody|prihlá|prihlas|registrac/i.test(blob)
+    ) {
+      registrationUrl = href;
+    }
+    if (
+      !regulationsUrl &&
+      /propozic/i.test(blob) &&
+      !/vysledk|výsled|startovn/i.test(blob)
+    ) {
+      regulationsUrl = href;
+    }
+  });
+  return { regulationsUrl, registrationUrl };
+}
+
 /** Pražský MTB pohár — propozice headings `N.kolo – DD. month YYYY, Place`. */
 export function parsePrahaMtb(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
-  const text = $("article, .entry-content, main, body").text();
+  const root = $("article, .entry-content, main, body").first();
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
-  const re =
-    /(\d+)\.\s*kolo\s*[–-]\s*(\d{1,2})\.\s*([A-Za-záčďéěíňóřšťúůýž]+)\s*(20\d{2})\s*,\s*([A-Za-záčďéěíňóřšťúůýž0-9 ]{2,40})/gi;
+  const blocks: { heading: string; html: string }[] = [];
+  let current: { heading: string; html: string } | null = null;
+
+  root.find("p, h2, h3, h4").each((_, el) => {
+    const text = $(el).text().replace(/\s+/g, " ").trim();
+    const hm = text.match(PRAHA_KOLO_RE);
+    if (hm && Number(hm[4]) >= 2026) {
+      current = { heading: text, html: $.html(el) };
+      blocks.push(current);
+      return;
+    }
+    if (current) current.html += $.html(el);
+  });
+
+  for (const block of blocks) {
+    const m = block.heading.match(PRAHA_KOLO_RE);
+    if (!m) continue;
+    const startDate = parseCzNamed(`${m[2]}. ${m[3]} ${m[4]}`);
+    if (!startDate) continue;
+    const round = m[1]!;
+    const place = m[5]!.replace(/\s+/g, " ").trim();
+    const externalId = `prahamtb-${startDate}-${normalizeName(place)}`;
+    if (seen.has(externalId)) continue;
+    seen.add(externalId);
+    const links = prahaBlockLinks(block.html, url);
+    const sourceUrl = links.regulationsUrl || url;
+    events.push({
+      externalId,
+      name: `Pražský MTB pohár — ${round}. kolo ${place}`,
+      startDate,
+      placeText: prahaPlaceLabel(place),
+      countryHint: "CZ",
+      discipline: /xcc/i.test(place) ? ["xcc"] : ["xco"],
+      audience: "mixed",
+      seriesName: "Pražský MTB pohár",
+      seriesSlug: "prazsky-mtb-pohar",
+      seriesWebsite: "https://prahamtb.cz/",
+      sourceUrl,
+      websiteUrl: url,
+      registrationUrl: links.registrationUrl,
+      regulationsUrl: links.regulationsUrl,
+      confidence: 0.86,
+    });
+  }
+
+  if (events.length) return events;
+
+  const text = $("article, .entry-content, main, body").text();
+  const re = new RegExp(PRAHA_KOLO_RE.source, "gi");
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
     const year = Number(m[4]);
@@ -392,9 +545,7 @@ export function parsePrahaMtb(url: string, html: string): ParsedEvent[] {
       externalId,
       name: `Pražský MTB pohár — ${round}. kolo ${place}`,
       startDate,
-      placeText: /motol|kbely|letňany|letnany|zličín|zlicin|libuš|libus|beckov/i.test(place)
-        ? `Praha — ${place}`
-        : place,
+      placeText: prahaPlaceLabel(place),
       countryHint: "CZ",
       discipline: /xcc/i.test(place) ? ["xcc"] : ["xco"],
       audience: "mixed",
@@ -409,58 +560,113 @@ export function parsePrahaMtb(url: string, html: string): ParsedEvent[] {
   return events;
 }
 
+function enduroSeasonYear(html: string): number {
+  const y = new Date().getFullYear();
+  const years = [...html.matchAll(/20(?:2[5-9]|3\d)/g)]
+    .map((m) => Number(m[0]))
+    .filter((n) => n >= 2025 && n <= y + 1);
+  return years.length ? Math.max(...years) : y;
+}
+
 /** Czech Enduro Series — official `/zavody/` listing. */
 export function parseEnduroSerie(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
+  const year = enduroSeasonYear(html);
 
   $('a[href*="/zavody/"]').each((_, a) => {
-    const href = $(a).attr("href");
+    const href = absHref($(a).attr("href"), url);
     const label = $(a).text().replace(/\s+/g, " ").trim();
     if (!href || !label) return;
-    if (/\/zavody\/?$/i.test(href)) return;
+    if (/\/zavody\/?$/i.test(href) || /tba/i.test(href)) return;
     const dates = parseCzIso(label) || parseCzNamed(label);
-    const start =
-      typeof dates === "string" ? dates : dates?.start;
-    // Date often sits in the link text: "Enduro Race Kouty 24.5."
+    const start = typeof dates === "string" ? dates : dates?.start;
     const dm = label.match(/(\d{1,2})\.\s*(\d{1,2})\.?/);
-    const year = new Date().getFullYear();
     const startDate =
       start ||
       (dm ? `${year}-${dm[2]!.padStart(2, "0")}-${dm[1]!.padStart(2, "0")}` : null);
     if (!startDate) return;
 
-    let abs: string;
-    try {
-      abs = new URL(href, url).toString();
-    } catch {
-      return;
-    }
-    const slug = abs.replace(/\/$/, "").split("/").pop() || normalizeName(label);
+    const slug = href.replace(/\/$/, "").split("/").pop() || normalizeName(label);
     const externalId = `enduroserie-${slug}-${startDate}`;
     if (seen.has(externalId)) return;
     seen.add(externalId);
 
-    const name = label.replace(/\s+\d{1,2}\.\s*\d{1,2}\.?\s*$/, "").trim();
+    const name = label
+      .replace(/^(proběhl|probiha|probíhá)\s+/i, "")
+      .replace(/\s+\d{1,2}\.\s*\d{1,2}\.?\s*$/, "")
+      .trim();
     events.push({
       externalId,
       name,
       startDate,
-      placeText: name.replace(/^Enduro (Race|Challenge)\s+/i, "").trim() || name,
+      placeText: name.replace(/^Enduro (Race|Challenge)\s+/i, "").replace(/\s+MČR$/i, "").trim() || name,
       countryHint: /czarna|gora/i.test(name) ? "PL" : "CZ",
       discipline: ["enduro"],
       audience: "mixed",
       seriesName: "Czech Enduro Series",
       seriesSlug: "czech-enduro-series",
       seriesWebsite: "https://www.enduroserie.cz/",
-      sourceUrl: url,
-      websiteUrl: abs,
-      confidence: 0.88,
+      sourceUrl: href,
+      websiteUrl: href,
+      confidence: 0.9,
     });
   });
 
   return events;
+}
+
+function enduroPageEntryLinks(pageUrl: string, html: string): {
+  registrationUrl?: string;
+  regulationsUrl?: string;
+} {
+  const $ = cheerio.load(html);
+  let registrationUrl: string | undefined;
+  let regulationsUrl: string | undefined;
+  $("a[href]").each((_, a) => {
+    const href = absHref($(a).attr("href"), pageUrl);
+    if (!href) return;
+    const text = $(a).text().replace(/\s+/g, " ").trim();
+    const blob = `${href} ${text}`;
+    if (
+      !registrationUrl &&
+      /njuko|sportsoft|raceresult|entrywall|prihlá|prihlas|registruj/i.test(blob)
+    ) {
+      if (!/\/registrace\/?$/i.test(href) || /njuko|sportsoft|raceresult/i.test(href)) {
+        registrationUrl = href;
+      }
+    }
+    if (!regulationsUrl && /propozic|technical|rozpis/i.test(blob) && !/registrac/i.test(blob)) {
+      regulationsUrl = href;
+    }
+  });
+  return { registrationUrl, regulationsUrl };
+}
+
+/** Attach Njuko / Sportsoft entry links from each Enduro race page. */
+export async function enrichEnduroSerie(events: ParsedEvent[]): Promise<ParsedEvent[]> {
+  const pages = events.filter((e) => e.websiteUrl && !isSameListing(e.websiteUrl, "https://www.enduroserie.cz/zavody/"));
+  if (!pages.length) return events;
+  const extras = await mapPool(pages.slice(0, 12), 3, async (ev) => {
+    try {
+      const page = await fetchText(ev.websiteUrl!, { timeoutMs: 15_000 });
+      if (!page.ok || !page.text) return { id: ev.externalId };
+      return { id: ev.externalId, ...enduroPageEntryLinks(ev.websiteUrl!, page.text) };
+    } catch {
+      return { id: ev.externalId };
+    }
+  });
+  const byId = new Map(extras.map((x) => [x.id, x]));
+  return events.map((ev) => {
+    const extra = byId.get(ev.externalId);
+    if (!extra) return ev;
+    return {
+      ...ev,
+      registrationUrl: extra.registrationUrl || ev.registrationUrl,
+      regulationsUrl: extra.regulationsUrl || ev.regulationsUrl,
+    };
+  });
 }
 
 /** SportSoft results calendar (`enduro.sportsoft.cz/2026/races.aspx`). */
@@ -501,11 +707,59 @@ export function parseEnduroSportsoft(url: string, html: string): ParsedEvent[] {
   return events;
 }
 
-/** cyklokros.cz — watch the page; 2026/27 calendar is still “bude upřesněno”. */
+/** JANEV Cup + MČR cards on `/janev-cup-2026`; fallback for `/kalendar`. */
 export function parseCyklokros(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
+  const origin = originOf(url);
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
+  const seriesRegs = absCyklokrosHref(
+    $('a[href*="rozpis-janev"], a[href*="janev-cup-2026-cyklokros"]').first().attr("href"),
+    origin,
+  );
+
+  $(".box-container").each((_, box) => {
+    const $box = $(box);
+    const place = $box.find("h2").first().text().replace(/\s+/g, " ").trim();
+    if (!place || /janev\s*cup/i.test(place)) return;
+    const blob = $box.find("p").text().replace(/\s+/g, " ").trim();
+    const dates = parseCzIso(blob);
+    if (!dates) return;
+    const href = absCyklokrosHref($box.find("a.btn[href], a[href*='/janev-'], a[href*='/mcr-']").first().attr("href"), origin);
+    const media =
+      $box.find("img").attr("data-srcset") ||
+      $box.find("img").attr("src") ||
+      $box.find(".container-background").attr("style") ||
+      "";
+    const uci = /c1-box/i.test(media) ? "C1" : /c2-box/i.test(media) ? "C2" : null;
+    const isMcr = /mčr|mistrovství/i.test(blob) || /trikolora/i.test(media);
+    const youth = /mládež/i.test(blob);
+    const name = isMcr
+      ? `MČR cyklokros${youth ? " mládež" : ""} — ${place}`
+      : uci
+        ? `JANEV Cup ${uci} — ${place}`
+        : `JANEV Cup — ${place}`;
+    const externalId = `${isMcr ? "mcr-cx" : "janev"}-${dates.start}-${normalizeName(place)}`;
+    if (seen.has(externalId)) return;
+    seen.add(externalId);
+    events.push({
+      externalId,
+      name,
+      startDate: dates.start,
+      placeText: place,
+      countryHint: "CZ",
+      discipline: ["cx"],
+      audience: youth ? "youth" : "mixed",
+      seriesName: isMcr ? "Mistrovství ČR cyklokros" : "JANEV Cup",
+      seriesSlug: isMcr ? "mcr-cyclocross" : "janev-cup",
+      seriesWebsite: "https://www.cyklokros.cz/janev-cup-2026",
+      sourceUrl: href || url.split("?")[0]!,
+      websiteUrl: href || url.split("?")[0]!,
+      regulationsUrl: seriesRegs,
+      confidence: 0.92,
+    });
+  });
+  if (events.length) return events;
 
   $("article, .sp-content, main")
     .find("h2, h3, li")
@@ -517,6 +771,7 @@ export function parseCyklokros(url: string, html: string): ParsedEvent[] {
       if (/bude upřesněno|upresneno/i.test(t)) return;
       const name = t.replace(/\d{1,2}\.\s*\d{1,2}\.\s*20\d{2}/, "").trim();
       if (!name || name.length < 4) return;
+      if (/^(pondělí|úterý|středa|čtvrtek|pátek|sobota|neděle)$/i.test(name)) return;
       const externalId = `cyklokros-${start}-${normalizeName(name)}`;
       if (seen.has(externalId)) return;
       seen.add(externalId);
@@ -530,7 +785,7 @@ export function parseCyklokros(url: string, html: string): ParsedEvent[] {
         audience: "mixed",
         seriesName: "JANEV Cup",
         seriesSlug: "janev-cup",
-        seriesWebsite: "https://www.cyklokros.cz/",
+        seriesWebsite: "https://www.cyklokros.cz/janev-cup-2026",
         sourceUrl: url,
         websiteUrl: url,
         confidence: 0.7,
@@ -538,6 +793,16 @@ export function parseCyklokros(url: string, html: string): ParsedEvent[] {
     });
 
   return events;
+}
+
+function absCyklokrosHref(href: string | undefined, origin: string): string | undefined {
+  const raw = (href || "").trim();
+  if (!raw) return undefined;
+  try {
+    return new URL(raw, origin).toString();
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -560,12 +825,26 @@ export function parseDetskyMtbCup(url: string, html: string): ParsedEvent[] {
     const href = $el.find("h2 a").attr("href") || $el.find("a[href]").attr("href");
     let websiteUrl = "https://www.detskymtbcup.cz/";
     if (href) {
-      try {
-        websiteUrl = new URL(href, url).toString();
-      } catch {
-        /* keep */
-      }
+      websiteUrl = absHref(href, url) || websiteUrl;
     }
+    let registrationUrl: string | undefined;
+    let regulationsUrl: string | undefined;
+    $el.find("a[href]").each((_, a) => {
+      const link = absHref($(a).attr("href"), url);
+      if (!link) return;
+      const text = $(a).text().replace(/\s+/g, " ").trim();
+      const blob = `${link} ${text}`;
+      if (!registrationUrl && /nazavody|prihlá|prihlas|registrac/i.test(blob)) {
+        registrationUrl = link;
+      }
+      if (
+        !regulationsUrl &&
+        /pravidla|propozic/i.test(blob) &&
+        !/vysledk|výsled/i.test(blob)
+      ) {
+        regulationsUrl = link;
+      }
+    });
 
     const externalId = `detsky-mtb-${dates.start}-${normalizeName(name)}`;
     if (seen.has(externalId)) return;
@@ -582,13 +861,68 @@ export function parseDetskyMtbCup(url: string, html: string): ParsedEvent[] {
       seriesName: "Dětský MTB Cup",
       seriesSlug: "detsky-mtb-cup",
       seriesWebsite: "https://www.detskymtbcup.cz/",
-      sourceUrl: url.split("#")[0]!,
+      sourceUrl: websiteUrl,
       websiteUrl,
+      registrationUrl,
+      regulationsUrl,
       confidence: 0.9,
     });
   });
 
   return events;
+}
+
+function detskyPageLinks(pageUrl: string, html: string): {
+  registrationUrl?: string;
+  regulationsUrl?: string;
+} {
+  const $ = cheerio.load(html);
+  let registrationUrl: string | undefined;
+  let regulationsUrl: string | undefined;
+  $("a[href]").each((_, a) => {
+    const href = absHref($(a).attr("href"), pageUrl);
+    if (!href) return;
+    const text = $(a).text().replace(/\s+/g, " ").trim();
+    const blob = `${href} ${text}`;
+    if (!registrationUrl && /nazavody|prihlá|prihlas|registrac/i.test(blob)) {
+      if (!/\/registrace\/nova-registrace/i.test(href)) registrationUrl = href;
+    }
+    if (
+      !regulationsUrl &&
+      /pravidla|propozic/i.test(blob) &&
+      !/vysledk|výsled/i.test(blob)
+    ) {
+      regulationsUrl = href;
+    }
+  });
+  return { registrationUrl, regulationsUrl };
+}
+
+/** Attach NaZavody entry + pravidla PDF from each Dětský MTB product page. */
+export async function enrichDetskyMtbCup(events: ParsedEvent[]): Promise<ParsedEvent[]> {
+  const pages = events.filter(
+    (e) => e.websiteUrl && !isSameListing(e.websiteUrl, "https://www.detskymtbcup.cz/"),
+  );
+  if (!pages.length) return events;
+  const extras = await mapPool(pages.slice(0, 12), 3, async (ev) => {
+    try {
+      const page = await fetchText(ev.websiteUrl!, { timeoutMs: 15_000 });
+      if (!page.ok || !page.text) return { id: ev.externalId };
+      return { id: ev.externalId, ...detskyPageLinks(ev.websiteUrl!, page.text) };
+    } catch {
+      return { id: ev.externalId };
+    }
+  });
+  const byId = new Map(extras.map((x) => [x.id, x]));
+  return events.map((ev) => {
+    const extra = byId.get(ev.externalId);
+    if (!extra) return ev;
+    return {
+      ...ev,
+      registrationUrl: extra.registrationUrl || ev.registrationUrl,
+      regulationsUrl: extra.regulationsUrl || ev.regulationsUrl,
+    };
+  });
 }
 
 function ustiPlace(name: string): string {
@@ -657,7 +991,7 @@ export function parseUstiMtbCup(url: string, html: string): ParsedEvent[] {
       seriesName: "Ústí MTB Cup",
       seriesSlug: "usti-mtb-cup",
       seriesWebsite: "https://www.ustimtbcup.cz/",
-      sourceUrl: url.split("?")[0]!,
+      sourceUrl: registrationUrl || url.split("?")[0]!,
       websiteUrl: "https://www.ustimtbcup.cz/",
       registrationUrl,
       confidence: 0.9,
@@ -940,7 +1274,7 @@ function parsePekloTable(url: string, html: string): ParsedEvent[] {
       seriesName: "Peklo Severu",
       seriesSlug: "peklo-severu",
       seriesWebsite: "https://www.pekloseveru.cz/cz/",
-      sourceUrl: url,
+      sourceUrl: websiteUrl,
       websiteUrl,
       registrationUrl,
       confidence: 0.92,

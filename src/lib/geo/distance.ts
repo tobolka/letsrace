@@ -52,6 +52,12 @@ export function eventDistanceKm(
   return distanceKm(origin, pt);
 }
 
+export type EventSort = "date" | "distance";
+
+export function sortByStartDate<T extends Located>(events: T[]): T[] {
+  return [...events].sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
+}
+
 /** Nearest first; undated/unlocated events go last. Date is the tiebreaker. */
 export function sortByDistanceFrom<T extends Located>(
   events: T[],
@@ -64,4 +70,13 @@ export function sortByDistanceFrom<T extends Located>(
     if (da !== db) return da - db;
     return (a.startDate || "").localeCompare(b.startDate || "");
   });
+}
+
+export function sortEvents<T extends Located>(
+  events: T[],
+  sort: EventSort,
+  origin: { lat: number; lng: number } | null,
+): T[] {
+  if (sort === "distance") return sortByDistanceFrom(events, origin);
+  return sortByStartDate(events);
 }

@@ -13,7 +13,7 @@ import {
   type RaceLevel,
 } from "@/lib/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
-import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
@@ -190,7 +190,21 @@ export default async function EventPage({ params }: Props) {
           ) : null}
         </div>
 
-        <p className="mt-10 hidden text-sm text-muted-foreground sm:mt-12 sm:block">{t.tagline}</p>
+        <p className="mt-10 hidden text-sm text-muted-foreground sm:mt-12 sm:block">
+          {t.tagline}
+          <span className="mx-1.5" aria-hidden>
+            ·
+          </span>
+          {t.madeBy}{" "}
+          <a
+            href={SITE_AUTHOR.url}
+            target="_blank"
+            rel="noreferrer"
+            className="underline-offset-2 hover:text-foreground hover:underline"
+          >
+            {SITE_AUTHOR.name}
+          </a>
+        </p>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur sm:hidden">

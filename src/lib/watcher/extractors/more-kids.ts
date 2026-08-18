@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { fetchText } from "@/lib/watcher/http";
+import { attachDeAtHub, deAtPageLinks } from "@/lib/watcher/extractors/kids-mtb-cups";
 
 const EN_MON: Record<string, string> = {
   jan: "01",
@@ -91,6 +92,14 @@ export function parseXcoNrw(url: string, html: string): ParsedEvent[] {
     const endDate = days[2] ? `${year}-${mo}-${days[2].padStart(2, "0")}` : undefined;
     const href = $el.find("a[href]").first().attr("href");
     const shortPlace = place.replace(/\s*\(.*\)\s*$/, "").trim();
+    let websiteUrl = url.split("?")[0]!;
+    if (href) {
+      try {
+        websiteUrl = new URL(href, url).toString();
+      } catch {
+        /* keep */
+      }
+    }
     push(events, seen, {
       externalId: `xco-nrw-${startDate}-${normalizeName(shortPlace)}`,
       name: `XCO-NRW / Schüler-Cup — ${shortPlace}`,
@@ -103,12 +112,12 @@ export function parseXcoNrw(url: string, html: string): ParsedEvent[] {
       seriesName: "XCO-NRW Cup",
       seriesSlug: "xco-nrw-cup",
       seriesWebsite: "https://www.xco-nrw-cup.de/",
-      sourceUrl: url.split("?")[0]!,
-      websiteUrl: href || url.split("?")[0]!,
+      sourceUrl: websiteUrl,
+      websiteUrl,
       confidence: 0.88,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 /** RENA Kids Cup — Saturday of the Furtwangen marathon weekend. */

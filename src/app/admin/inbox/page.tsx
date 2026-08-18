@@ -24,10 +24,10 @@ export default async function AdminInboxPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">Inbox</h1>
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-muted-foreground">
           Feature requests, race URLs, and notifications.
         </p>
       </div>

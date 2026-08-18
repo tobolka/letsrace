@@ -64,9 +64,9 @@ export function parseCubeCup(url: string, html: string): ParsedEvent[] {
       seriesName: "CUBE Cup",
       seriesSlug: "cube-cup",
       seriesWebsite: "https://cup.cube.eu/",
-      sourceUrl: url,
+      sourceUrl: abs,
       websiteUrl: abs,
-      registrationUrl: undefined, // shared /anmeldung hub — not race identity
+      registrationUrl: "https://cup.cube.eu/anmeldung",
       confidence: 0.9,
     });
   });

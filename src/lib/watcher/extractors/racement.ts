@@ -215,7 +215,7 @@ export function parseRacement(url: string, html: string): ParsedEvent[] {
       seriesName: series.seriesName,
       seriesSlug: series.seriesSlug,
       seriesWebsite: cfg.seriesWebsite,
-      sourceUrl: url,
+      sourceUrl: abs,
       websiteUrl: abs,
       confidence: 0.92,
     });

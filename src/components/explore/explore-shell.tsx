@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useTransition, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
@@ -14,10 +14,12 @@ import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
 import { FeedbackModal } from "@/components/explore/feedback-modal";
 import { AuthDialog } from "@/components/account/auth-dialog";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Card,
   CardAction,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -38,11 +40,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import {
   Item,
   ItemContent,
   ItemDescription,
@@ -62,11 +59,19 @@ import {
 } from "@/lib/taxonomy";
 import { disciplineColor } from "@/lib/map-visuals";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
-import { eventDistanceKm, formatDistanceKm, sortByDistanceFrom, distanceKm } from "@/lib/geo/distance";
+import {
+  eventDistanceKm,
+  formatDistanceKm,
+  sortEvents,
+  distanceKm,
+  type EventSort,
+} from "@/lib/geo/distance";
+import { viewportChangedEnough } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { Search, MoreHorizontal, Flag } from "lucide-react";
+import { MoreHorizontal, Flag } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
+import { SITE_AUTHOR } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -87,12 +92,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(true);
-  const [moved, setMoved] = useState(false);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
-  const [pending, startTransition] = useTransition();
+  const [listLoading, setListLoading] = useState(false);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const mobileListRef = useRef<HTMLDivElement>(null);
@@ -105,6 +109,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const placeAbortRef = useRef<AbortController | null>(null);
   const searchTimerRef = useRef(0);
   const searchGen = useRef(0);
+  const eventsFetchGen = useRef(0);
+  const lastAreaRef = useRef<MapBounds | null>(null);
+  const areaTimerRef = useRef(0);
+  const searchViewportRef = useRef<(b: MapBounds) => void>(() => {});
   const [filterBarReset, setFilterBarReset] = useState(0);
 
   const fallbackCenter = useMemo(() => {
@@ -123,6 +131,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     dateFrom: parseAsString.withDefault(weekend.from),
     dateTo: parseAsString.withDefault(weekend.to),
     e: parseAsString.withDefault(""),
+    sort: parseAsString.withDefault("date"),
     west: parseAsString,
     south: parseAsString,
     east: parseAsString,
@@ -160,9 +169,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     [events, selectedId],
   );
 
+  const distanceEnabled = userOrigin != null;
+  const listSort: EventSort =
+    filters.sort === "distance" && distanceEnabled ? "distance" : "date";
+
   const sortedEvents = useMemo(
-    () => sortByDistanceFrom(events, userOrigin),
-    [events, userOrigin],
+    () => sortEvents(events, listSort, userOrigin),
+    [events, listSort, userOrigin],
   );
 
   function handleUserLocation(pos: { lat: number; lng: number }) {
@@ -171,6 +184,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (distanceKm(prev, pos) < 0.3) return prev;
       return pos;
     });
+  }
+
+  function setListSort(next: EventSort) {
+    if (next === "distance" && !distanceEnabled) return;
+    void setFilters({ sort: next === "date" ? null : "distance" });
   }
 
   const initialFocus = useMemo(() => {
@@ -300,7 +318,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   function refetch(overrides: Record<string, unknown> = {}) {
-    startTransition(async () => {
+    const gen = ++eventsFetchGen.current;
+    setListLoading(true);
+    void (async () => {
       const params = new URLSearchParams();
       const qRaw = (overrides.q as string) ?? filters.q;
       const placed = lastPlacedQ.current;
@@ -333,18 +353,23 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         params.set("east", String(b.east));
         params.set("north", String(b.north));
       }
-      const res = await fetch(`/api/events?${params.toString()}`);
-      const data = (await res.json()) as EventListItem[];
-      const focusSlug = filters.e;
-      setEvents((prev) => {
-        if (!focusSlug) return data;
-        const kept =
-          data.find((e) => e.slug === focusSlug) ?? prev.find((e) => e.slug === focusSlug);
-        if (!kept || data.some((e) => e.id === kept.id)) return data;
-        return [kept, ...data];
-      });
-      if (overrides.fitMap) setFitSeq((n) => n + 1);
-    });
+      try {
+        const res = await fetch(`/api/events?${params.toString()}`);
+        const data = (await res.json()) as EventListItem[];
+        if (gen !== eventsFetchGen.current) return;
+        const focusSlug = filters.e;
+        setEvents((prev) => {
+          if (!focusSlug) return data;
+          const kept =
+            data.find((e) => e.slug === focusSlug) ?? prev.find((e) => e.slug === focusSlug);
+          if (!kept || data.some((e) => e.id === kept.id)) return data;
+          return [kept, ...data];
+        });
+        if (overrides.fitMap) setFitSeq((n) => n + 1);
+      } finally {
+        if (gen === eventsFetchGen.current) setListLoading(false);
+      }
+    })();
   }
 
   async function flyToPlace(q: string, gen: number): Promise<boolean> {
@@ -358,6 +383,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (!data.bounds || gen !== searchGen.current) return false;
       lastPlacedQ.current = q;
       destFlyingRef.current = true;
+      window.clearTimeout(areaTimerRef.current);
+      lastAreaRef.current = data.bounds;
       setBounds(data.bounds);
       setDestination(data.bounds);
       setDestinationSeq((n) => n + 1);
@@ -414,9 +441,41 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     void runSearch(filters.q);
   }
 
+  searchViewportRef.current = (b) => {
+    if (filters.series || filters.country) return;
+    if (lastAreaRef.current && !viewportChangedEnough(lastAreaRef.current, b)) return;
+    lastAreaRef.current = b;
+    void setFilters({
+      west: String(b.west),
+      south: String(b.south),
+      east: String(b.east),
+      north: String(b.north),
+    });
+    setEvents((prev) => {
+      const next = prev.filter((e) => eventInBounds(e, b));
+      if (!filters.e) return next;
+      const kept = prev.find((e) => e.slug === filters.e);
+      if (kept && !next.some((e) => e.id === kept.id)) return [kept, ...next];
+      return next;
+    });
+    refetch({ bounds: b, forceBounds: true });
+  };
+
+  function scheduleSearchViewport(b: MapBounds, immediate = false) {
+    window.clearTimeout(areaTimerRef.current);
+    if (immediate) {
+      searchViewportRef.current(b);
+      return;
+    }
+    areaTimerRef.current = window.setTimeout(() => {
+      searchViewportRef.current(b);
+    }, 320);
+  }
+
   useEffect(() => {
     return () => {
       window.clearTimeout(searchTimerRef.current);
+      window.clearTimeout(areaTimerRef.current);
       placeAbortRef.current?.abort();
     };
   }, []);
@@ -468,6 +527,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onClearCategories={clearCategories}
         onSeries={setSeries}
         onCountry={setCountry}
+        q={filters.q}
+        onQ={handleSearchChange}
+        onSearchSubmit={handleSearchSubmit}
       />
     );
   }
@@ -490,11 +552,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             selectEvent(id);
             setMobileOpen(true);
           }}
-          onBoundsChange={(b) => {
+          onBoundsChange={(b, reason) => {
             setBounds(b);
             // First camera settle → load races for this viewport
             if (!initialBoundsFetchDone.current) {
               initialBoundsFetchDone.current = true;
+              lastAreaRef.current = b;
               if (filters.q.trim().length >= 3) {
                 void runSearch(filters.q);
                 return;
@@ -508,28 +571,19 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             }
             if (destFlyingRef.current) {
               destFlyingRef.current = false;
+              lastAreaRef.current = b;
               return;
             }
-            if (!filters.series && !filters.country) {
-              setMoved(true);
+            if (reason === "user") {
+              scheduleSearchViewport(b);
+              return;
+            }
+            if (reason === "gps" || reason === "locate") {
+              scheduleSearchViewport(b, true);
             }
           }}
-          searchThisAreaLabel={messages.searchThisArea}
           myLocationLabel={messages.myLocation}
           locationDeniedLabel={messages.locationDenied}
-          showSearchArea={moved}
-          onSearchArea={(b) => {
-            setBounds(b);
-            void setFilters({
-              west: String(b.west),
-              south: String(b.south),
-              east: String(b.east),
-              north: String(b.north),
-            });
-            setEvents((prev) => prev.filter((e) => eventInBounds(e, b)));
-            refetch({ bounds: b, forceBounds: true });
-            setMoved(false);
-          }}
         />
       </div>
 
@@ -538,34 +592,22 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           <Header
             messages={messages}
             locale={locale}
-            q={filters.q}
             onSubmitRace={() => setSubmitOpen(true)}
             onFeedback={() => setFeedbackOpen(true)}
             onSignIn={() => setAuthOpen(true)}
-            onQ={handleSearchChange}
-            onSearchSubmit={handleSearchSubmit}
           />
           <div className="relative z-30 shrink-0 px-3 py-2.5">
             {renderFilterBar()}
           </div>
           <Separator />
-          <div className="flex items-center justify-between gap-2 px-4 py-2">
-            <span className="text-xs text-muted-foreground">
-              {events.length} {messages.racesCount}
-            </span>
-            <div className="flex items-center gap-2">
-              {pending ? <span className="text-xs text-muted-foreground">…</span> : null}
-              <Button
-                type="button"
-                variant="outline"
-                size="xs"
-                onClick={() => setSubmitOpen(true)}
-              >
-                <Flag data-icon="inline-start" />
-                {messages.missingRace}
-              </Button>
-            </div>
-          </div>
+          <ListToolbar
+            count={events.length}
+            pending={listLoading}
+            sort={listSort}
+            distanceEnabled={distanceEnabled}
+            messages={messages}
+            onSort={setListSort}
+          />
           <Separator />
           <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
             {events.length === 0 ? (
@@ -606,6 +648,24 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </ItemGroup>
             )}
           </div>
+          <p className="shrink-0 border-t px-4 py-2 text-[11px] text-muted-foreground">
+            {messages.madeBy}{" "}
+            <a
+              href={SITE_AUTHOR.url}
+              target="_blank"
+              rel="noreferrer"
+              className="underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {SITE_AUTHOR.name}
+            </a>
+            <span aria-hidden> · </span>
+            <a
+              href={`mailto:${SITE_AUTHOR.email}`}
+              className="underline-offset-2 hover:text-foreground hover:underline"
+            >
+              {SITE_AUTHOR.email}
+            </a>
+          </p>
         </Card>
 
         {selected && (
@@ -651,12 +711,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 <Header
                   messages={messages}
                   locale={locale}
-                  q={filters.q}
                   onSubmitRace={() => setSubmitOpen(true)}
                   onFeedback={() => setFeedbackOpen(true)}
                   onSignIn={() => setAuthOpen(true)}
-                  onQ={handleSearchChange}
-                  onSearchSubmit={handleSearchSubmit}
                   compact
                 />
               </div>
@@ -666,17 +723,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     {renderFilterBar()}
                   </div>
                   <Separator />
-                  <div className="flex shrink-0 px-4 py-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="xs"
-                      onClick={() => setSubmitOpen(true)}
-                    >
-                      <Flag data-icon="inline-start" />
-                      {messages.missingRace}
-                    </Button>
-                  </div>
+                  <ListToolbar
+                    count={events.length}
+                    pending={listLoading}
+                    sort={listSort}
+                    distanceEnabled={distanceEnabled}
+                    messages={messages}
+                    onSort={setListSort}
+                  />
                   <Separator />
                   <div ref={mobileListRef} className="max-h-[60vh] overflow-y-auto">
                     <ItemGroup>
@@ -716,12 +770,75 @@ function disciplineLabel(id: string): string {
   return DISCIPLINE_LABELS[id as Discipline] || id;
 }
 
+function ListToolbar({
+  count,
+  pending,
+  sort,
+  distanceEnabled,
+  messages,
+  onSort,
+}: {
+  count: number;
+  pending: boolean;
+  sort: EventSort;
+  distanceEnabled: boolean;
+  messages: Messages;
+  onSort: (sort: EventSort) => void;
+}) {
+  const distanceItem = (
+    <ToggleGroupItem
+      value="distance"
+      disabled={!distanceEnabled}
+      className={cn(!distanceEnabled && "disabled:pointer-events-auto")}
+      aria-label={
+        distanceEnabled
+          ? messages.sortDistance
+          : `${messages.sortDistance}. ${messages.sortNeedsLocation}`
+      }
+    >
+      {messages.sortDistance}
+    </ToggleGroupItem>
+  );
+
+  return (
+    <div className="flex items-center justify-between gap-2 px-4 py-2">
+      <span
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
+        aria-live="polite"
+        aria-busy={pending}
+      >
+        {pending ? <Spinner /> : null}
+        {count} {messages.racesCount}
+      </span>
+      <div className="flex items-center gap-2">
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          size="xs"
+          value={sort}
+          onValueChange={(value) => {
+            if (value === "date" || value === "distance") onSort(value);
+          }}
+          aria-label={messages.sortBy}
+        >
+          <ToggleGroupItem value="date">{messages.date}</ToggleGroupItem>
+          {distanceEnabled ? (
+            distanceItem
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>{distanceItem}</TooltipTrigger>
+              <TooltipContent>{messages.sortNeedsLocation}</TooltipContent>
+            </Tooltip>
+          )}
+        </ToggleGroup>
+      </div>
+    </div>
+  );
+}
+
 function Header({
   messages,
   locale,
-  q,
-  onQ,
-  onSearchSubmit,
   onSubmitRace,
   onFeedback,
   onSignIn,
@@ -729,20 +846,16 @@ function Header({
 }: {
   messages: Messages;
   locale: string;
-  q: string;
-  onQ: (q: string) => void;
-  onSearchSubmit: () => void;
   onSubmitRace: () => void;
   onFeedback: () => void;
   onSignIn: () => void;
   compact?: boolean;
 }) {
   return (
-    <CardHeader className={cn(compact ? "gap-3 px-0 py-0" : "gap-3 border-b px-4 py-4 [.border-b]:pb-4")}>
+    <CardHeader className={cn(compact ? "gap-0 px-0 py-0" : "border-b px-4 py-3")}>
       <CardTitle className="text-sm font-semibold tracking-[0.14em] uppercase">
         <Link href={`/${locale}`}>{messages.appName}</Link>
       </CardTitle>
-      {!compact ? <CardDescription>{messages.tagline}</CardDescription> : null}
       <CardAction>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -750,7 +863,7 @@ function Header({
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
               <DropdownMenuLabel>{messages.language}</DropdownMenuLabel>
               {(["en", "cs", "pl", "sk"] as const).map((l) => (
@@ -768,8 +881,23 @@ function Header({
               <DropdownMenuItem asChild>
                 <Link href={`/${locale}/calendar`}>My calendar</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onSubmitRace}>{messages.reportRace}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onSubmitRace}>
+                <Flag />
+                {messages.missingRace}
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>{messages.madeBy}</DropdownMenuLabel>
+              <DropdownMenuItem asChild>
+                <a href={SITE_AUTHOR.url} target="_blank" rel="noreferrer">
+                  {SITE_AUTHOR.name}
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href={`mailto:${SITE_AUTHOR.email}`}>{SITE_AUTHOR.email}</a>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -778,29 +906,6 @@ function Header({
           </DropdownMenuContent>
         </DropdownMenu>
       </CardAction>
-      <form
-        className="col-span-full"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSearchSubmit();
-        }}
-      >
-        <InputGroup className="[@media(pointer:coarse)]:h-11">
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-          <InputGroupInput
-            name="q"
-            type="search"
-            value={q}
-            onChange={(e) => onQ(e.target.value)}
-            placeholder={messages.searchPlaceholder}
-            autoComplete="off"
-            enterKeyHint="search"
-            aria-label={messages.searchPlaceholder}
-          />
-        </InputGroup>
-      </form>
     </CardHeader>
   );
 }

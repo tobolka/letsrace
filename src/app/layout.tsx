@@ -4,7 +4,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { getSiteUrl, seoCopy, SITE_NAME } from "@/lib/seo";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 import "./globals.css";
 
 const site = getSiteUrl();
@@ -35,7 +36,8 @@ export const metadata: Metadata = {
     "Czech Republic",
     "kids races",
   ],
-  authors: [{ name: SITE_NAME }],
+  authors: [{ name: SITE_AUTHOR.name, url: SITE_AUTHOR.url }],
+  creator: SITE_AUTHOR.name,
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
@@ -62,7 +64,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable} h-full`}
     >
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <TooltipProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </TooltipProvider>
         <Analytics />
         <SpeedInsights />
       </body>

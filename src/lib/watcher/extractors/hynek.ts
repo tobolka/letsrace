@@ -230,6 +230,12 @@ export function parseHynekMusil(url: string, html: string): ParsedEvent[] {
 
     // Race name should be the event, not "5. TalentCUP: …"
     name = name.replace(/^\d+\.\s*Talent\s*Cup[:\s-]*/i, "").trim() || name;
+    if (
+      /^janev\s*cup(\s+uci)?(\s+c[123])?(\s+nz)?(\s*\(.*\))?$/i.test(name.trim()) &&
+      /^(czechia|česko|cesko)?$/i.test(place.trim())
+    ) {
+      return;
+    }
 
     const level = inferRaceLevel(`${series?.name ?? ""} ${name}`);
     const disc = mapSeriesDisc(series?.name ?? seriesRaw, name);

@@ -11,10 +11,10 @@ export default async function SourcesPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="font-sans tracking-tight text-3xl font-semibold">Sources</h1>
-        <p className="text-sm text-stone-500">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Sources</h1>
+        <p className="text-sm text-muted-foreground">
           Paste federation, series, aggregator, or single-race URLs. The watcher keeps them fresh.
         </p>
       </div>

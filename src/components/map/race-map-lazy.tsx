@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
 
-export type { MapBounds } from "@/components/map/race-map";
+export type { MapBounds, BoundsChangeReason } from "@/components/map/race-map";
 
 const RaceMapInner = dynamic(
   () => import("@/components/map/race-map").then((m) => ({ default: m.RaceMap })),

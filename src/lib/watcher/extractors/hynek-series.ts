@@ -219,6 +219,22 @@ export function parseHynekSeriesCalendar(url: string, html: string): ParsedEvent
     let registrationUrl: string | undefined;
     if (regHref && /^https?:/i.test(regHref)) registrationUrl = regHref;
 
+    const raceHref = $row
+      .find("a[href*='.pdf'], a[href*='propozice'], a[title*='PROPOZICE' i]")
+      .first()
+      .attr("href");
+    let websiteUrl = series.website;
+    let regulationsUrl: string | undefined;
+    if (raceHref) {
+      try {
+        const abs = new URL(raceHref, url).toString();
+        if (/\.pdf(\?|#|$)/i.test(abs) || /propozic/i.test(abs)) regulationsUrl = abs;
+        else websiteUrl = abs;
+      } catch {
+        /* keep series site */
+      }
+    }
+
     events.push({
       externalId,
       name,
@@ -231,9 +247,10 @@ export function parseHynekSeriesCalendar(url: string, html: string): ParsedEvent
       seriesName: series.name,
       seriesSlug: series.slug,
       seriesWebsite: series.website,
-      sourceUrl: url,
-      websiteUrl: series.website,
+      sourceUrl: websiteUrl !== series.website ? websiteUrl : `${url}#${dates.start}`,
+      websiteUrl,
       registrationUrl,
+      regulationsUrl,
       confidence: 0.88,
     });
   });

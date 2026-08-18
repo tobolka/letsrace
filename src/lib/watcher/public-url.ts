@@ -51,7 +51,25 @@ export function publicRaceUrl(
   return null;
 }
 
-/** Keep a same-host race page (`/event/149`) over a club homepage from an aggregator. */
+function officialDepth(url: string): number {
+  try {
+    const path = new URL(url).pathname.replace(/\/+$/, "") || "/";
+    if (path === "/") return 1;
+    if (
+      /^\/(zavody-?\d*|kalendar|kalendare|termine|prihlaseni|prihlasky|anmeldung)$/i.test(
+        path,
+      )
+    ) {
+      return 2;
+    }
+    if (isRegulationsUrl(url)) return 3;
+    return 10 + path.split("/").filter(Boolean).length * 8;
+  } catch {
+    return 0;
+  }
+}
+
+/** Keep a same-host race page (`/26-hk/`) over a listing, homepage, or /prihlaseni. */
 export function preferDeeperOfficialUrl(
   incoming: string | null | undefined,
   existing: string | null | undefined,
@@ -60,15 +78,15 @@ export function preferDeeperOfficialUrl(
   const prev = publicRaceUrl(existing);
   if (!next) return prev;
   if (!prev) return next;
+  if (isRegulationsUrl(prev) && !isRegulationsUrl(next)) return next;
+  if (isRegulationsUrl(next) && !isRegulationsUrl(prev)) return prev;
   try {
     const a = new URL(next);
     const b = new URL(prev);
     const hostA = a.hostname.replace(/^www\./i, "").toLowerCase();
     const hostB = b.hostname.replace(/^www\./i, "").toLowerCase();
     if (hostA !== hostB) return next;
-    const pathA = a.pathname.replace(/\/+$/, "") || "/";
-    const pathB = b.pathname.replace(/\/+$/, "") || "/";
-    if (pathB !== "/" && (pathA === "/" || pathB.length > pathA.length)) return prev;
+    return officialDepth(next) >= officialDepth(prev) ? next : prev;
   } catch {
     /* ignore */
   }
@@ -109,11 +127,13 @@ export function resolveEventOutboundUrls(input: {
   regulationsUrl: string | null;
 } {
   const sources = input.sourceUrls ?? [];
-  let websiteUrl = publicRaceUrl(
-    input.websiteUrl,
-    input.seriesWebsiteUrl,
-    ...sources,
-  );
+  let websiteUrl = publicRaceUrl(input.websiteUrl);
+  for (const c of sources) {
+    const u = publicRaceUrl(c);
+    if (!u) continue;
+    websiteUrl = preferDeeperOfficialUrl(u, websiteUrl);
+  }
+  if (!websiteUrl) websiteUrl = publicRaceUrl(input.seriesWebsiteUrl);
   const registrationUrl = pickRegistrationUrl(input.registrationUrl, ...sources);
   let regulationsUrl = publicRaceUrl(input.regulationsUrl);
 

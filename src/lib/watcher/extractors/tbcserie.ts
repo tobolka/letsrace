@@ -71,7 +71,7 @@ export function parseTbcSerieCalendar(url: string, html: string): ParsedEvent[] 
       seriesName: "TBC série cyklokros",
       seriesSlug: "tbc-cyclocross",
       seriesWebsite: "https://www.tbcserie.cz/",
-      sourceUrl: url,
+      sourceUrl: /\/zavod-/i.test(websiteUrl) ? websiteUrl : url,
       websiteUrl,
       confidence: 0.9,
     });

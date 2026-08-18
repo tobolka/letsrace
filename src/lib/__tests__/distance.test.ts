@@ -3,6 +3,7 @@ import {
   distanceKm,
   formatDistanceKm,
   sortByDistanceFrom,
+  sortEvents,
 } from "@/lib/geo/distance";
 
 describe("distance from me", () => {
@@ -26,6 +27,18 @@ describe("distance from me", () => {
       { startDate: "2026-08-22", location: { lat: 50.08, lng: 14.45 } },
     ];
     expect(sortByDistanceFrom(events, null)).toBe(events);
+  });
+
+  it("sorts by date or distance", () => {
+    const events = [
+      { startDate: "2026-08-23", location: { lat: 49.2, lng: 16.6 } },
+      { startDate: "2026-08-22", location: { lat: 50.08, lng: 14.45 } },
+    ];
+    expect(sortEvents(events, "date", prague).map((e) => e.startDate)).toEqual([
+      "2026-08-22",
+      "2026-08-23",
+    ]);
+    expect(sortEvents(events, "distance", prague)[0]?.location?.lat).toBe(50.08);
   });
 
   it("formats walking and driving distances", () => {

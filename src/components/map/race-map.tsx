@@ -25,14 +25,14 @@ export type MapBounds = {
   north: number;
 };
 
+/** Why the camera settled — parent auto-searches only on user/gps/locate. */
+export type BoundsChangeReason = "sync" | "user" | "gps" | "locate";
+
 type Props = {
   events: EventListItem[];
   selectedId?: string | null;
   onSelect: (id: string) => void;
-  onBoundsChange: (b: MapBounds) => void;
-  searchThisAreaLabel: string;
-  showSearchArea: boolean;
-  onSearchArea: (b: MapBounds) => void;
+  onBoundsChange: (b: MapBounds, reason: BoundsChangeReason) => void;
   myLocationLabel?: string;
   locationDeniedLabel?: string;
   /** Keep markers clear of side panels / bottom sheet */
@@ -157,7 +157,7 @@ function makeUserLocationElement() {
     "position:absolute",
     "inset:-14px",
     "border-radius:9999px",
-    "background:rgba(26,115,232,.25)",
+    "background:rgba(23,23,23,.22)",
     "animation:startline-loc-pulse 2.2s ease-out infinite",
   ].join(";");
 
@@ -166,7 +166,7 @@ function makeUserLocationElement() {
     "position:absolute",
     "inset:-4px",
     "border-radius:9999px",
-    "border:2px solid rgba(26,115,232,.45)",
+    "border:2px solid rgba(23,23,23,.45)",
     "background:transparent",
   ].join(";");
 
@@ -175,7 +175,7 @@ function makeUserLocationElement() {
     "position:absolute",
     "inset:0",
     "border-radius:9999px",
-    "background:#1a73e8",
+    "background:#171717",
     "border:2.5px solid #fff",
     "box-shadow:0 1px 8px rgba(0,0,0,.4)",
   ].join(";");
@@ -202,7 +202,7 @@ function upsertUserMarker(
   } else {
     markerRef.current.setLngLat([pos.lng, pos.lat]).addTo(map);
   }
-  // Keep the blue dot above race pins
+  // Keep the user dot above race pins
   const el = markerRef.current.getElement();
   el.style.zIndex = "5";
 }
@@ -266,9 +266,6 @@ export function RaceMap({
   selectedId,
   onSelect,
   onBoundsChange,
-  searchThisAreaLabel,
-  showSearchArea,
-  onSearchArea,
   myLocationLabel = "My location",
   locationDeniedLabel = "Location permission denied",
   padding = DEFAULT_PADDING,
@@ -290,6 +287,7 @@ export function RaceMap({
   const locateBtnRef = useRef<HTMLButtonElement | null>(null);
   const initialViewDoneRef = useRef(false);
   const userMovedRef = useRef(false);
+  const userGestureRef = useRef(false);
   const onSelectRef = useRef(onSelect);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onUserLocationRef = useRef(onUserLocation);
@@ -316,8 +314,8 @@ export function RaceMap({
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
-  function emitBounds(map: Map) {
-    onBoundsChangeRef.current(visibleBounds(map, paddingRef.current));
+  function emitBounds(map: Map, reason: BoundsChangeReason = "sync") {
+    onBoundsChangeRef.current(visibleBounds(map, paddingRef.current), reason);
   }
 
   function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
@@ -326,17 +324,20 @@ export function RaceMap({
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
     initialViewDoneRef.current = true;
     // Let the camera settle, then sync list filters to this area
-    window.setTimeout(() => emitBounds(map), duration + 50);
+    window.setTimeout(() => emitBounds(map, "gps"), duration + 50);
   }
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    if (!document.getElementById("startline-loc-pulse-style")) {
-      const style = document.createElement("style");
-      style.id = "startline-loc-pulse-style";
-      style.textContent = `
+    let mapCtrlStyle = document.getElementById("startline-loc-pulse-style") as HTMLStyleElement | null;
+    if (!mapCtrlStyle) {
+      mapCtrlStyle = document.createElement("style");
+      mapCtrlStyle.id = "startline-loc-pulse-style";
+      document.head.appendChild(mapCtrlStyle);
+    }
+    mapCtrlStyle.textContent = `
         @keyframes startline-loc-pulse {
           0% { transform: scale(0.55); opacity: 0.85; }
           70% { transform: scale(1.35); opacity: 0; }
@@ -347,13 +348,16 @@ export function RaceMap({
         }
         .maplibregl-ctrl-bottom-right {
           display: flex;
-          flex-direction: column-reverse;
+          flex-direction: column;
           align-items: flex-end;
           gap: 8px;
           margin: 0 10px 10px 0 !important;
         }
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl {
           margin: 0 !important;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+          order: 1;
         }
         .maplibregl-marker.startline-user-marker {
           z-index: 5 !important;
@@ -391,8 +395,6 @@ export function RaceMap({
           .startline-map-pin span { transition: none !important; }
         }
       `;
-      document.head.appendChild(style);
-    }
 
     const map = new MapLibreMap({
       container: el,
@@ -462,13 +464,19 @@ export function RaceMap({
 
     map.on("dragstart", () => {
       userMovedRef.current = true;
+      userGestureRef.current = true;
     });
     map.on("zoomstart", (e) => {
-      if (e.originalEvent) userMovedRef.current = true;
+      if (e.originalEvent) {
+        userMovedRef.current = true;
+        userGestureRef.current = true;
+      }
     });
     map.on("moveend", () => {
       if (!userMovedRef.current) return;
-      emitBounds(map);
+      const fromUser = userGestureRef.current;
+      userGestureRef.current = false;
+      emitBounds(map, fromUser ? "user" : "sync");
     });
 
     const resize = () => map.resize();
@@ -650,7 +658,7 @@ export function RaceMap({
     onUserLocationRef.current?.({ lat: userPos.lat, lng: userPos.lng });
 
     const btn = locateBtnRef.current;
-    if (btn) btn.style.color = "#1a73e8";
+    if (btn) btn.style.color = "#171717";
   }, [userPos, mapEpoch]);
 
   // Resolve location: fast network position first, then optional precise watch
@@ -742,7 +750,7 @@ export function RaceMap({
       userMovedRef.current = true;
       upsertUserMarker(map, userMarkerRef, { lng, lat });
       fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, 700);
-      window.setTimeout(() => emitBounds(map), 750);
+      window.setTimeout(() => emitBounds(map, "locate"), 750);
     };
 
     navigator.geolocation.getCurrentPosition(
@@ -767,29 +775,13 @@ export function RaceMap({
     const btn = locateBtnRef.current;
     if (!btn) return;
     btn.style.opacity = locating ? "0.55" : "1";
-    btn.style.color = userPos ? "#0284c7" : "#334155";
+    btn.style.color = userPos ? "#171717" : "#334155";
     btn.disabled = locating;
   }, [locating, userPos, mapEpoch]);
-
-  const leftPad = typeof padding.left === "number" ? padding.left : 56;
 
   return (
     <div className="relative h-full w-full bg-stone-200">
       <div ref={containerRef} className="absolute inset-0 h-full w-full" />
-      {showSearchArea && (
-        <button
-          type="button"
-          onClick={() => {
-            const map = mapRef.current;
-            if (!map) return;
-            onSearchArea(visibleBounds(map, paddingRef.current));
-          }}
-          className="absolute top-16 z-10 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-medium text-stone-800 shadow-md ring-1 ring-stone-200 hover:bg-stone-50 md:top-4"
-          style={{ left: `calc(${leftPad}px + (100% - ${leftPad}px) / 2)` }}
-        >
-          {searchThisAreaLabel}
-        </button>
-      )}
 
       {locError ? (
         <p

@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { fetchText } from "@/lib/watcher/http";
+import { isAggregatorUrl } from "@/lib/watcher/public-url";
 
 const DE_MONTHS: Record<string, string> = {
   januar: "01",
@@ -87,6 +88,188 @@ function push(
   if (seen.has(ev.externalId)) return;
   seen.add(ev.externalId);
   events.push(ev);
+}
+
+const DE_AT_SKIP =
+  /ergebnis|gesamtwertung|teilnehmer|starterliste|fotogal|facebook|instagram|satzung|meldungen.*202[0-3]/i;
+const DE_AT_REG =
+  /anmeld|nennung|raceresult|datasport|runtix|anmeldeservice|time-and-voice|mylaps|entrywall|registration/i;
+const DE_AT_REGS = /ausschreibung|reglement|nennungsschluss|technical.?guide|generalausschreibung/i;
+
+function deAtAbs(href: string | undefined, base: string): string | undefined {
+  const raw = (href || "").trim();
+  if (!raw || raw.startsWith("javascript:") || raw === "#") return undefined;
+  try {
+    if (/^https?:\/\//i.test(raw) || raw.startsWith("/")) return new URL(raw, base).toString();
+    const looksLikeFile = /\.(pdf|html?|php|aspx?|jpe?g|png|gif|webp|css|js)(\?|$)/i.test(raw);
+    if (
+      !looksLikeFile &&
+      /^(www\.)?[\w-]+\.[a-z]{2,}(\/|$)/i.test(raw)
+    ) {
+      return `https://${raw.replace(/^\/\//, "")}`;
+    }
+    return new URL(raw, base).toString();
+  } catch {
+    return undefined;
+  }
+}
+
+function uniqueSource(listing: string, racePage?: string): string {
+  const race = (racePage || "").trim();
+  if (!race) return listing;
+  try {
+    const a = new URL(race).href.replace(/\/+$/, "");
+    const b = new URL(listing).href.replace(/\/+$/, "");
+    return a === b ? listing : race;
+  } catch {
+    return listing;
+  }
+}
+
+function deAtRegScore(href: string, text: string): number {
+  const blob = `${href} ${text}`;
+  if (DE_AT_SKIP.test(blob) || /\.pdf(\?|#|$)/i.test(href) || /\/info(\/?$|\?)/i.test(href)) {
+    return 0;
+  }
+  if (/202[0-3]/.test(href) && !/2026/.test(href)) return 0;
+  if (/raceresult\.com\/\d+\/registration/i.test(href)) return 6;
+  if (/runtix\.com\/sts\/10400/i.test(href)) return 6;
+  if (/datasport\.(de|com)\/anmeldeservice/i.test(href)) return 6;
+  if (/time-and-voice\.com/i.test(href)) return 5;
+  if (DE_AT_REG.test(blob)) return 2;
+  return 0;
+}
+
+function deAtRegsScore(href: string, text: string): number {
+  const blob = `${href} ${text}`;
+  if (DE_AT_SKIP.test(blob) || /\/registration(\/?$|\?)/i.test(href)) return 0;
+  if (/202[0-3]/.test(href) && !/2026/.test(href)) return 0;
+  if (/generalausschreibung|gesamtausschreibung/i.test(blob)) return 6;
+  if (/\/reglement(\.php|\/|$)/i.test(href)) return 5;
+  if (/raceresult\.com\/\d+\/info/i.test(href)) return 5;
+  if (/runtix\.com\/sts\/10021/i.test(href)) return 5;
+  if (DE_AT_REGS.test(blob) && /\.pdf(\?|#|$)/i.test(href)) return 5;
+  if (DE_AT_REGS.test(blob)) return 3;
+  return 0;
+}
+
+function isSeriesHubHref(href: string): boolean {
+  return (
+    /raceresult\.com|datasport\.(de|com)|runtix\.com|time-and-voice\.com|anmeldeservice/i.test(
+      href,
+    ) ||
+    /generalausschreibung|gesamtausschreibung/i.test(href) ||
+    /\/reglement(\.php|\/|$)/i.test(href) ||
+    /\/anmeldung\/?$/i.test(href) ||
+    /\/ausschreibungen?(\.php|\/|$)/i.test(href) ||
+    /\/-pid\d+/i.test(href)
+  );
+}
+
+/** Anmeldung / Ausschreibung links on a DE/AT race or series page. */
+export function deAtPageLinks(
+  pageUrl: string,
+  html: string,
+): { registrationUrl?: string; regulationsUrl?: string } {
+  const $ = cheerio.load(html);
+  let bestReg: { href: string; score: number } | undefined;
+  let bestRegs: { href: string; score: number } | undefined;
+  $("a[href]").each((_, a) => {
+    const href = deAtAbs($(a).attr("href"), pageUrl);
+    if (!href) return;
+    const text = $(a).text().replace(/\s+/g, " ").trim();
+    const regScore = deAtRegScore(href, text);
+    if (regScore && (!bestReg || regScore > bestReg.score)) bestReg = { href, score: regScore };
+    const regsScore = deAtRegsScore(href, text);
+    if (regsScore && (!bestRegs || regsScore > bestRegs.score)) {
+      bestRegs = { href, score: regsScore };
+    }
+  });
+  return { registrationUrl: bestReg?.href, regulationsUrl: bestRegs?.href };
+}
+
+function placeKey(place: string): string {
+  return fold(place).replace(/[^a-z0-9]+/g, "");
+}
+
+function hrefMatchesPlace(href: string, place: string): boolean {
+  const t = placeKey(place);
+  if (t.length < 4) return false;
+  return placeKey(href).includes(t) || fold(href).includes(fold(place).replace(/\s+/g, "-"));
+}
+
+function deAtLinksForPlace(
+  pageUrl: string,
+  html: string,
+  place: string,
+): { registrationUrl?: string; regulationsUrl?: string } {
+  const $ = cheerio.load(html);
+  let registrationUrl: string | undefined;
+  let regulationsUrl: string | undefined;
+  $("a[href]").each((_, a) => {
+    const href = deAtAbs($(a).attr("href"), pageUrl);
+    if (!href || !hrefMatchesPlace(href, place)) return;
+    const text = $(a).text().replace(/\s+/g, " ").trim();
+    const blob = `${href} ${text}`;
+    if (DE_AT_SKIP.test(blob)) return;
+    if (!registrationUrl && deAtRegScore(href, text)) registrationUrl = href;
+    if (!regulationsUrl && deAtRegsScore(href, text)) regulationsUrl = href;
+  });
+  return { registrationUrl, regulationsUrl };
+}
+
+export function attachDeAtHub(
+  events: ParsedEvent[],
+  hub: { registrationUrl?: string; regulationsUrl?: string },
+): ParsedEvent[] {
+  const registrationUrl =
+    hub.registrationUrl && isSeriesHubHref(hub.registrationUrl)
+      ? hub.registrationUrl
+      : undefined;
+  const regulationsUrl =
+    hub.regulationsUrl && isSeriesHubHref(hub.regulationsUrl)
+      ? hub.regulationsUrl
+      : undefined;
+  if (!events.length || (!registrationUrl && !regulationsUrl)) return events;
+  return events.map((e) => ({
+    ...e,
+    registrationUrl: e.registrationUrl || registrationUrl,
+    regulationsUrl: e.regulationsUrl || regulationsUrl,
+  }));
+}
+
+/** Fetch race pages (not club homepages) for Anmeldung / Ausschreibung. */
+export async function enrichDeAtRacePages(events: ParsedEvent[]): Promise<ParsedEvent[]> {
+  const { mapPool } = await import("@/lib/watcher/pool");
+  const pages = events.filter((e) => {
+    if (!e.websiteUrl || (e.registrationUrl && e.regulationsUrl)) return false;
+    try {
+      const path = new URL(e.websiteUrl).pathname.replace(/\/+$/, "") || "/";
+      return path !== "/";
+    } catch {
+      return false;
+    }
+  });
+  if (!pages.length) return events;
+  const extras = await mapPool(pages.slice(0, 16), 4, async (ev) => {
+    try {
+      const page = await fetchText(ev.websiteUrl!, { timeoutMs: 12_000 });
+      if (!page.ok || !page.text) return { id: ev.externalId };
+      return { id: ev.externalId, ...deAtPageLinks(ev.websiteUrl!, page.text) };
+    } catch {
+      return { id: ev.externalId };
+    }
+  });
+  const byId = new Map(extras.map((x) => [x.id, x]));
+  return events.map((ev) => {
+    const extra = byId.get(ev.externalId);
+    if (!extra) return ev;
+    return {
+      ...ev,
+      registrationUrl: extra.registrationUrl || ev.registrationUrl,
+      regulationsUrl: extra.regulationsUrl || ev.regulationsUrl,
+    };
+  });
 }
 
 function szcSeries(name: string): {
@@ -241,12 +424,13 @@ export async function parseAlbGoldJuniors(
       seriesName: "ALB-GOLD Juniors Cup",
       seriesSlug: "alb-gold-juniors-cup",
       seriesWebsite: "https://albgold-juniorscup.de/",
-      sourceUrl: url,
+      sourceUrl: uniqueSource(url, ev.url),
       websiteUrl: ev.url || "https://albgold-juniorscup.de/",
       confidence: 0.9,
     });
   }
-  return events;
+  const hub = deAtPageLinks(url, _html);
+  return attachDeAtHub(events, { regulationsUrl: hub.regulationsUrl });
 }
 
 export function parseRookiesOstbayern(url: string, html: string): ParsedEvent[] {
@@ -280,12 +464,12 @@ export function parseRookiesOstbayern(url: string, html: string): ParsedEvent[] 
       seriesName: "Rookies Cup Ostbayern",
       seriesSlug: "rookies-cup-ostbayern",
       seriesWebsite: "https://rookiescup-ostbayern.de/",
-      sourceUrl: url,
+      sourceUrl: uniqueSource(url, websiteUrl),
       websiteUrl,
       confidence: 0.88,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 export function parseXcoBikecup(url: string, html: string): ParsedEvent[] {
@@ -314,7 +498,7 @@ export function parseXcoBikecup(url: string, html: string): ParsedEvent[] {
       confidence: 0.86,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 export function parseSchwarzwalderCup(url: string, html: string): ParsedEvent[] {
@@ -349,7 +533,7 @@ export function parseSchwarzwalderCup(url: string, html: string): ParsedEvent[] 
       confidence: 0.84,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 export function parseRheinEifelCup(url: string, html: string): ParsedEvent[] {
@@ -379,7 +563,7 @@ export function parseRheinEifelCup(url: string, html: string): ParsedEvent[] {
       confidence: 0.85,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 export function parseOberschwabenCup(url: string, html: string): ParsedEvent[] {
@@ -399,6 +583,10 @@ export function parseOberschwabenCup(url: string, html: string): ParsedEvent[] {
     const place = m[2]!.replace(/\s+Kurz.*$/i, "").trim();
     if (!startDate || place.length < 3 || place.length > 40) return;
     if (/übersicht|ergebnis|anmeld|home|cup/i.test(place)) return;
+    const href = deAtAbs($(a).attr("href"), url);
+    const venue =
+      href && !/anmeld|ausschreibung|ergebnis|nennung/i.test(href) ? href : undefined;
+    const extra = deAtLinksForPlace(url, html, place);
     push(events, seen, {
       externalId: `omv-${startDate}-${normalizeName(place)}`,
       name: `MTB Oberschwaben Cup — ${place}`,
@@ -410,12 +598,14 @@ export function parseOberschwabenCup(url: string, html: string): ParsedEvent[] {
       seriesName: "MTB Oberschwaben Cup",
       seriesSlug: "mtb-oberschwaben-cup",
       seriesWebsite: "https://mtb-oberschwaben-cup.de/",
-      sourceUrl: url,
-      websiteUrl: url,
+      sourceUrl: uniqueSource(url, venue),
+      websiteUrl: venue || url,
+      registrationUrl: extra.registrationUrl,
+      regulationsUrl: extra.regulationsUrl,
       confidence: 0.82,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 const SAARLAND_VENUES: { place: string; slug: string }[] = [
@@ -468,32 +658,47 @@ export function parseSaarlandliga(url: string, html: string): ParsedEvent[] {
       seriesName: "MTB Saarlandliga",
       seriesSlug: "mtb-saarlandliga",
       seriesWebsite: "https://mtbsaarlandliga.de/",
-      sourceUrl: url,
+      sourceUrl: `https://mtbsaarlandliga.de/rennen/${venue.slug}/`,
       websiteUrl: `https://mtbsaarlandliga.de/rennen/${venue.slug}/`,
       confidence: 0.86,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 export function parseJuniorBikeCup(url: string, html: string): ParsedEvent[] {
-  const $ = cheerio.load(html);
-  const text = $("body").text();
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
-  const re = /(\d{2}\.\d{2}\.20\d{2})\s*[–-]\s*([^|\n]+)/g;
+  const re = /(\d{2}\.\d{2}\.20\d{2})\s*(?:&#8211;|[–-])\s*/g;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(text))) {
+  while ((m = re.exec(html))) {
     const dates = dmy(m[1]!);
-    const rest = m[2]!.replace(/\s+/g, " ").trim();
+    const rawSlice = html.slice(m.index, m.index + 700);
+    const nextDate = rawSlice.slice(12).search(/\d{2}\.\d{2}\.20\d{2}/);
+    const slice = nextDate >= 0 ? rawSlice.slice(0, 12 + nextDate) : rawSlice;
+    const rest = slice
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&#223;|&szlig;/gi, "ß")
+      .replace(/&#8211;|&ndash;/gi, "–")
+      .replace(/&#822[0-2];|&ldquo;|&rdquo;|&bdquo;/gi, '"')
+      .replace(/&#\d+;/g, " ")
+      .replace(/&[a-z]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
     if (!dates || /stra[sß]e|pumptrack/i.test(rest)) continue;
-    const slash = rest.split(/\s*\/\s*/);
+    const named = rest.match(
+      /\d{2}\.\d{2}\.20\d{2}\s+[–-]\s*(.+?)(?:\s+Link\b|$)/i,
+    );
+    const line = (named?.[1] || rest).trim();
+    const slash = line.split(/\s*\/\s*/);
     const place = (slash[1] || slash[0] || "")
       .replace(/[„"].*$/, "")
       .replace(/\s+Link.*$/i, "")
       .replace(/^Union MTB Club\s+/i, "")
       .trim();
     if (!place || place.length < 3 || /^[a-z]$/i.test(place)) continue;
+    const href = slice.match(/href="(https?:[^"#]+)"/i)?.[1];
     push(events, seen, {
       externalId: `jbc-${dates.start}-${normalizeName(place)}`,
       name: `Junior Bike Cup — ${place}`,
@@ -505,12 +710,12 @@ export function parseJuniorBikeCup(url: string, html: string): ParsedEvent[] {
       seriesName: "Junior Bike Cup",
       seriesSlug: "junior-bike-cup",
       seriesWebsite: "https://www.juniorbikecup.at/",
-      sourceUrl: url,
-      websiteUrl: url,
+      sourceUrl: uniqueSource(url, href),
+      websiteUrl: href || url,
       confidence: 0.84,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 export function parseOnOffMtb(url: string, html: string): ParsedEvent[] {
@@ -600,54 +805,174 @@ export function parseSalzkammergutTrophy(url: string, html: string): ParsedEvent
   const m = text.match(/(\d{2}\.\d{2}\.20\d{2})\s+Salzkammergut Trophy/i);
   const dates = m ? dmy(m[1]!) : null;
   if (!dates) return [];
-  return [
-    {
-      externalId: `skgtrophy-${dates.start}`,
-      name: "Salzkammergut Trophy",
-      startDate: dates.start,
-      placeText: "Bad Goisern",
-      countryHint: "AT",
-      discipline: ["xcm"],
-      audience: "mixed",
-      seriesName: "Salzkammergut Trophy",
-      seriesSlug: "salzkammergut-trophy",
-      seriesWebsite: "https://www.salzkammergut-trophy.at/",
-      sourceUrl: url,
-      websiteUrl: "https://www.salzkammergut-trophy.at/",
-      confidence: 0.9,
-    },
-  ];
+  return attachDeAtHub(
+    [
+      {
+        externalId: `skgtrophy-${dates.start}`,
+        name: "Salzkammergut Trophy",
+        startDate: dates.start,
+        placeText: "Bad Goisern",
+        countryHint: "AT",
+        discipline: ["xcm"],
+        audience: "mixed",
+        seriesName: "Salzkammergut Trophy",
+        seriesSlug: "salzkammergut-trophy",
+        seriesWebsite: "https://www.salzkammergut-trophy.at/",
+        sourceUrl: url,
+        websiteUrl: "https://www.salzkammergut-trophy.at/",
+        confidence: 0.9,
+      },
+    ],
+    deAtPageLinks(url, html),
+  );
 }
+
+const SUMAVSKY_SITE = "https://jcp-mtb.cz";
 
 function sumavskyPlace(place: string): string {
   if (/tábor|cekanice|čekanice|cihelna/i.test(place)) return "Tábor";
   return place.split("–")[0]!.split("-")[0]!.trim();
 }
 
+function sumavskyTableHref(
+  $: cheerio.CheerioAPI,
+  $s: ReturnType<cheerio.CheerioAPI>,
+  label: RegExp,
+): string | undefined {
+  let found: string | undefined;
+  $s.find("tr").each((_, tr) => {
+    if (found) return;
+    const th = $(tr).find("th").text().replace(/\s+/g, " ").trim();
+    if (!label.test(th)) return;
+    $(tr)
+      .find("a[href]")
+      .each((_, a) => {
+        if (found) return;
+        const text = $(a).text().replace(/\s+/g, " ").trim();
+        const href = ($(a).attr("href") || "").trim();
+        if (!href || /plakát|poster/i.test(text)) return;
+        found = absHttp(href, SUMAVSKY_SITE);
+      });
+  });
+  return found;
+}
+
+function sumavskyTermDate(
+  $: cheerio.CheerioAPI,
+  $s: ReturnType<cheerio.CheerioAPI>,
+): string | null {
+  let raw = "";
+  $s.find("tr").each((_, tr) => {
+    if (/termín/i.test($(tr).find("th").text())) {
+      raw = $(tr).find("td").text().replace(/\s+/g, " ").trim();
+    }
+  });
+  return dmy(raw)?.start ?? null;
+}
+
+function sumavskyOfficialName(
+  $s: ReturnType<cheerio.CheerioAPI>,
+  shortPlace: string,
+): string {
+  const heading = $s.find("h3").first().text().replace(/\s+/g, " ").trim();
+  if (
+    heading.length >= 8 &&
+    !/^mapa/i.test(heading) &&
+    /mtb|xco|xcc|cup|cena|pohár|pohar/i.test(heading)
+  ) {
+    return heading;
+  }
+  return `Šumavský pohár MTB — ${shortPlace}`;
+}
+
 function pushSumavsky(
   events: ParsedEvent[],
   seen: Set<string>,
   url: string,
-  place: string,
-  startDate: string,
+  opts: {
+    place: string;
+    startDate: string;
+    sectionId?: string;
+    name?: string;
+    registrationUrl?: string;
+    regulationsUrl?: string;
+  },
 ): void {
-  if (/waldkirchen/i.test(place)) return;
-  const shortPlace = sumavskyPlace(place);
+  const shortPlace = sumavskyPlace(opts.place);
   if (!shortPlace) return;
+  const source = url.split("?")[0]!;
+  const hash = opts.sectionId?.replace(/^#/, "");
+  const websiteUrl = hash ? `${SUMAVSKY_SITE}/#${hash}` : `${SUMAVSKY_SITE}/`;
+  let registrationUrl = opts.registrationUrl;
+  if (registrationUrl && isAggregatorUrl(registrationUrl)) {
+    registrationUrl = hash
+      ? `${SUMAVSKY_SITE}/registrace.html#${hash.replace(/^race_/, "")}`
+      : `${SUMAVSKY_SITE}/registrace.html`;
+  }
   push(events, seen, {
-    externalId: `sumavsky-${startDate}-${normalizeName(shortPlace)}`,
-    name: `Šumavský pohár MTB — ${shortPlace}`,
-    startDate,
+    externalId: `sumavsky-${opts.startDate}-${normalizeName(shortPlace)}`,
+    name: opts.name || `Šumavský pohár MTB — ${shortPlace}`,
+    startDate: opts.startDate,
     placeText: shortPlace,
-    countryHint: "CZ",
+    countryHint: /waldkirchen/i.test(shortPlace) ? "DE" : "CZ",
     discipline: ["xco"],
     audience: "mixed",
     seriesName: "Šumavský MTB pohár",
     seriesSlug: "sumavsky-mtb-pohar",
-    seriesWebsite: "https://jcp-mtb.cz/",
-    sourceUrl: url.split("?")[0]!,
-    websiteUrl: "https://jcp-mtb.cz/",
+    seriesWebsite: `${SUMAVSKY_SITE}/`,
+    sourceUrl: source,
+    websiteUrl,
+    registrationUrl,
+    regulationsUrl: opts.regulationsUrl,
     confidence: 0.9,
+  });
+}
+
+function parseSumavskyRegPage(html: string): Map<string, string> {
+  const $ = cheerio.load(html);
+  const byDate = new Map<string, string>();
+  $("a[id]").each((_, anchor) => {
+    const id = ($(anchor).attr("id") || "").trim();
+    if (!id) return;
+    const $box = $(anchor).parent();
+    const heading = $box.find("h2").first().text().replace(/\s+/g, " ").trim();
+    const startDate = dmy(heading)?.start;
+    if (!startDate) return;
+    let href: string | undefined;
+    $box.find("a[href]").each((_, a) => {
+      if (href) return;
+      const text = $(a).text().replace(/\s+/g, " ").trim();
+      if (!/přihlášk|prihlask|anmeldung/i.test(text)) return;
+      href = ($(a).attr("href") || "").trim();
+    });
+    if (!href) return;
+    const abs = absHttp(href, SUMAVSKY_SITE);
+    byDate.set(
+      startDate,
+      isAggregatorUrl(abs) ? `${SUMAVSKY_SITE}/registrace.html#${id}` : abs,
+    );
+  });
+  return byDate;
+}
+
+/** Attach Sportsoft / RaceResult entry links from `/registrace.html`. */
+export async function enrichSumavskyPohar(events: ParsedEvent[]): Promise<ParsedEvent[]> {
+  if (!events.length) return events;
+  const fetched = await fetchText(`${SUMAVSKY_SITE}/registrace.html`);
+  if (!fetched.ok || !fetched.text) return events;
+  const byDate = parseSumavskyRegPage(fetched.text);
+  if (!byDate.size) return events;
+  return events.map((ev) => {
+    const extra = byDate.get(ev.startDate);
+    if (!extra) return ev;
+    if (
+      ev.registrationUrl &&
+      !/registrace\.html/i.test(ev.registrationUrl) &&
+      !isAggregatorUrl(ev.registrationUrl)
+    ) {
+      return ev;
+    }
+    return { ...ev, registrationUrl: extra };
   });
 }
 
@@ -660,10 +985,17 @@ export function parseSumavskyPohar(url: string, html: string): ParsedEvent[] {
     const $s = $(section);
     const place = $s.find("h2").first().text().replace(/\s+/g, " ").trim();
     if (!place || /regionální|seriál|kalendář/i.test(place)) return;
-    const chunk = $s.find("table").first().text().replace(/\s+/g, " ");
-    const dates = dmy(chunk.match(/TERMÍN[^0-9]*(\d{1,2}\.\d{1,2}\.20\d{2})/i)?.[1] ?? "");
-    if (!dates) return;
-    pushSumavsky(events, seen, url, place, dates.start);
+    const startDate = sumavskyTermDate($, $s);
+    if (!startDate) return;
+    const sectionId = ($s.attr("id") || "").trim();
+    pushSumavsky(events, seen, url, {
+      place,
+      startDate,
+      sectionId,
+      name: sumavskyOfficialName($s, sumavskyPlace(place)),
+      registrationUrl: sumavskyTableHref($, $s, /přihlášk|prihlask|registrac/i),
+      regulationsUrl: sumavskyTableHref($, $s, /propozice/i),
+    });
   });
   if (events.length) return events;
   $(".calendar-item").each((_, el) => {
@@ -671,7 +1003,9 @@ export function parseSumavskyPohar(url: string, html: string): ParsedEvent[] {
     const dates = dmy(t);
     if (!dates) return;
     const place = t.replace(/.*?(\d{1,2}\.\d{1,2}\.20\d{2})\s*/, "").trim();
-    pushSumavsky(events, seen, url, place, dates.start);
+    const href = $(el).attr("href") || "";
+    const sectionId = href.startsWith("#") ? href.slice(1) : undefined;
+    pushSumavsky(events, seen, url, { place, startDate: dates.start, sectionId });
   });
   return events;
 }
@@ -761,12 +1095,12 @@ export function parseBayerwaldCup(url: string, html: string): ParsedEvent[] {
       seriesName: "Bayerwald MTB Cup",
       seriesSlug: "bayerwald-mtb-cup",
       seriesWebsite: "https://www.bayerwald-mtb-cup.com/",
-      sourceUrl: url.split("?")[0]!,
+      sourceUrl: uniqueSource(url.split("?")[0]!, websiteUrl),
       websiteUrl,
       confidence: 0.88,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 /** Werdenfelser MTB-Kids-Cup — `werdenfelscup.html` date list. */
@@ -799,7 +1133,7 @@ export function parseWerdenfelserCup(url: string, html: string): ParsedEvent[] {
       confidence: 0.9,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 /** FILIPA Podkrkonošský maraton — single 2026 race with kids categories. */
@@ -866,7 +1200,7 @@ export function parseRheinMainCup(url: string, html: string): ParsedEvent[] {
       confidence: 0.9,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 /** eldoRADo Kids-Cup — `termine-2` table. Skip marathon + awards + Benediktbeuern (Werdenfels). */
@@ -888,6 +1222,7 @@ export function parseEldoradoKidsCup(url: string, html: string): ParsedEvent[] {
     const cc = /\(GER\)|\(DE\)/i.test(placeRaw) ? "DE" : "AT";
     const place = placeRaw.replace(/\s*\((AUT|GER|DE|AT)\)\s*/i, "").trim();
     if (!place) return;
+    const websiteUrl = absHttp(href, url.split("?")[0]!);
     push(events, seen, {
       externalId: `eldorado-${dates.start}-${normalizeName(place)}`,
       name: `eldoRADo Kids-Cup — ${place}`,
@@ -899,12 +1234,12 @@ export function parseEldoradoKidsCup(url: string, html: string): ParsedEvent[] {
       seriesName: "eldoRADo Kids-Cup",
       seriesSlug: "eldorado-kids-cup",
       seriesWebsite: "https://mtb-kidscup.de/start/termine-2/",
-      sourceUrl: url.split("?")[0]!,
-      websiteUrl: absHttp(href, url.split("?")[0]!),
+      sourceUrl: uniqueSource(url.split("?")[0]!, websiteUrl),
+      websiteUrl,
       confidence: 0.9,
     });
   });
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 /** KTM Junior Challenge — dates labelled with Austrian state codes. */
@@ -936,7 +1271,7 @@ export function parseKtmJuniorChallenge(url: string, html: string): ParsedEvent[
       confidence: 0.88,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 function vrlPlace(raw: string): string {
@@ -1019,7 +1354,7 @@ export function parseMpdvCup(url: string, html: string): ParsedEvent[] {
       confidence: 0.84,
     });
   }
-  return events;
+  return attachDeAtHub(events, deAtPageLinks(url, html));
 }
 
 /** Wiesbadener Stadtmeisterschaft — Adamstal round only (Dexheim is Rhein-Main). */
@@ -1029,23 +1364,26 @@ export function parseWiesbadenStadtmeisterschaft(url: string, html: string): Par
   const m = text.match(/Hofgut Adamstal am (\d{1,2})\.(\d{1,2})\.(20\d{2})/i);
   if (!m) return [];
   const startDate = `${m[3]}-${m[2]!.padStart(2, "0")}-${m[1]!.padStart(2, "0")}`;
-  return [
-    {
-      externalId: `wiesbaden-stadt-${startDate}`,
-      name: "Wiesbadener Stadtmeisterschaft MTB",
-      startDate,
-      placeText: "Wiesbaden",
-      countryHint: "DE",
-      discipline: ["xco"],
-      audience: "kids",
-      seriesName: "Wiesbadener Stadtmeisterschaft MTB",
-      seriesSlug: "wiesbadener-stadtmeisterschaft-mtb",
-      seriesWebsite: "https://schulsportverein.de/stadtmeisterschaft/",
-      sourceUrl: url.split("?")[0]!,
-      websiteUrl: url.split("?")[0]!,
-      confidence: 0.86,
-    },
-  ];
+  return attachDeAtHub(
+    [
+      {
+        externalId: `wiesbaden-stadt-${startDate}`,
+        name: "Wiesbadener Stadtmeisterschaft MTB",
+        startDate,
+        placeText: "Wiesbaden",
+        countryHint: "DE",
+        discipline: ["xco"],
+        audience: "kids",
+        seriesName: "Wiesbadener Stadtmeisterschaft MTB",
+        seriesSlug: "wiesbadener-stadtmeisterschaft-mtb",
+        seriesWebsite: "https://schulsportverein.de/stadtmeisterschaft/",
+        sourceUrl: url.split("?")[0]!,
+        websiteUrl: url.split("?")[0]!,
+        confidence: 0.86,
+      },
+    ],
+    deAtPageLinks(url, html),
+  );
 }
 
 /** globmetal XC Race — SPA; dates live in the meta description. */
