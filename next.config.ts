@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@sparticuz/chromium"],
+  outputFileTracingExcludes: {
+    "*": [
+      "src/lib/watcher/extractors/csc-render.ts",
+      "node_modules/@sparticuz/chromium/**",
+    ],
+  },
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
   },

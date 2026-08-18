@@ -42,12 +42,14 @@ export function hasCscPublicGrid(html: string): boolean {
  */
 export async function parseCscCalendar(url: string, html: string): Promise<ParsedEvent[]> {
   let pageHtml = html;
-  if (!hasCscPublicGrid(pageHtml)) {
+  if (!hasCscPublicGrid(pageHtml) && process.env.NEXT_PHASE !== "phase-production-build") {
     try {
       const host = new URL(url).hostname.replace(/^www\./, "");
       if (isCscPortalHost(host)) {
         const { renderCscPublicCalendar } = await import(
-          "@/lib/watcher/extractors/csc-render"
+          /* webpackIgnore: true */
+          /* turbopackIgnore: true */
+          "./csc-render"
         );
         pageHtml = await renderCscPublicCalendar(url);
       }

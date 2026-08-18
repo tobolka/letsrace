@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from "node:child_process";
+import { type ChildProcess } from "node:child_process";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -14,14 +14,21 @@ type CdpResponse = { id?: number; method?: string; result?: unknown; error?: { m
  * page size to 500 so one snapshot covers the season.
  */
 export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
-  // Never launch Chrome while Next is prerendering pages (Turbopack traces spawn).
+  // Never launch Chrome while Next is bundling or on Vercel (NFT traces spawn).
   if (process.env.NEXT_PHASE === "phase-production-build") return "";
+  if (process.env.VERCEL) return "";
   const chrome = await resolveChrome();
   if (!chrome) return "";
 
+  const { spawn } = await import(
+    /* webpackIgnore: true */
+    /* turbopackIgnore: true */
+    "node:child_process"
+  );
   const port = 10_000 + Math.floor(Math.random() * 20_000);
-  const profile = await mkdtemp(join(tmpdir(), "csc-chrome-"));
+  const profile = await mkdtemp(join(/* turbopackIgnore: true */ tmpdir(), "csc-chrome-"));
   const proc = spawn(
+    /* turbopackIgnore: true */
     chrome.path,
     [
       ...chrome.args,
