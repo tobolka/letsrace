@@ -885,10 +885,14 @@ export async function watchOne(row: {
             { onConflict: "url", ignoreDuplicates: true },
           );
           if (!error) linksDiscovered += 1;
-        } else if (linksDiscovered < 24 && looksLikeIndependentRaceUrl(child)) {
+        } else if (
+          linksDiscovered < 24 &&
+          (looksLikeIndependentRaceUrl(child) || row.kind === "aggregator")
+        ) {
           const queued = await queueDiscoveredLink(child, {
             hintKind: "outbound",
             fromWatchedUrlId: row.id,
+            force: row.kind === "aggregator",
           });
           if (queued) linksDiscovered += 1;
         }
@@ -1242,7 +1246,7 @@ async function upsertParsedEvent(
   });
   const { isLikelyDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
     await import("@/lib/dedup");
-  const { publicRaceUrl } = await import("@/lib/watcher/public-url");
+  const { publicRaceUrl, preferDeeperOfficialUrl } = await import("@/lib/watcher/public-url");
   const classified = inferClassification({
     name: ev.name,
     placeText: ev.placeText,
@@ -1483,7 +1487,7 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, website_url, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -1598,8 +1602,6 @@ async function upsertParsedEvent(
     }
   }
 
-  const website = incomingWebsite;
-  const registration = incomingRegistration;
   const { isNonRaceEventName } = await import("@/lib/event-visibility");
   const hideAsNonRace = isNonRaceEventName(ev.name);
 
@@ -1613,7 +1615,11 @@ async function upsertParsedEvent(
     class_label?: string | null;
     audience?: string | null;
     age_categories?: string[] | null;
+    website_url?: string | null;
   } | null;
+
+  const website = preferDeeperOfficialUrl(incomingWebsite, existingRow?.website_url ?? null);
+  const registration = incomingRegistration;
 
   let mergedName = ev.name;
   let mergedStart = ev.startDate;

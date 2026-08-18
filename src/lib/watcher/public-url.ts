@@ -51,6 +51,30 @@ export function publicRaceUrl(
   return null;
 }
 
+/** Keep a same-host race page (`/event/149`) over a club homepage from an aggregator. */
+export function preferDeeperOfficialUrl(
+  incoming: string | null | undefined,
+  existing: string | null | undefined,
+): string | null {
+  const next = publicRaceUrl(incoming);
+  const prev = publicRaceUrl(existing);
+  if (!next) return prev;
+  if (!prev) return next;
+  try {
+    const a = new URL(next);
+    const b = new URL(prev);
+    const hostA = a.hostname.replace(/^www\./i, "").toLowerCase();
+    const hostB = b.hostname.replace(/^www\./i, "").toLowerCase();
+    if (hostA !== hostB) return next;
+    const pathA = a.pathname.replace(/\/+$/, "") || "/";
+    const pathB = b.pathname.replace(/\/+$/, "") || "/";
+    if (pathB !== "/" && (pathA === "/" || pathB.length > pathA.length)) return prev;
+  } catch {
+    /* ignore */
+  }
+  return next;
+}
+
 /** Last-resort outbound link (aggregator calendar listing) when no official site exists. */
 export function calendarListingUrl(
   ...candidates: (string | null | undefined)[]

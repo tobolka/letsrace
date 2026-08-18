@@ -130,14 +130,50 @@ function parseSumatorHtml(url: string, html: string, year: number): ParsedEvent[
   return events;
 }
 
-/** Official Web / Registrace from Sumator race detail “Odkazy”. */
+const SOCIAL_HOST = /facebook\.com|instagram\.com|youtube\.|youtu\.be|tiktok\.com|x\.com|twitter\.com/i;
+
+function isHttp(url: string): boolean {
+  return /^https?:\/\//i.test(url);
+}
+
+/** Club homepage from an official outbound link — never Sumator or socials. */
+export function officialSiteHome(url: string | undefined): string | null {
+  if (!url || !isHttp(url) || isAggregatorUrl(url) || SOCIAL_HOST.test(url)) return null;
+  try {
+    const u = new URL(url);
+    u.hash = "";
+    u.search = "";
+    u.pathname = "/";
+    return u.toString().replace(/\/$/, "");
+  } catch {
+    return null;
+  }
+}
+
+/** Official Web / Registrace / Propozice from Sumator race detail “Odkazy”. */
 export function extractSumatorOfficialLinks(html: string): {
   websiteUrl?: string;
   registrationUrl?: string;
+  regulationsUrl?: string;
+  extraUrls: string[];
 } {
   const $ = cheerio.load(html);
   let websiteUrl: string | undefined;
   let registrationUrl: string | undefined;
+  let regulationsUrl: string | undefined;
+  const extraUrls: string[] = [];
+
+  const consider = (label: string, href: string) => {
+    if (!isHttp(href) || isAggregatorUrl(href) || SOCIAL_HOST.test(href)) return;
+    extraUrls.push(href);
+    if (/^(web|www|stránka|stranka|homepage|home|oficiální web|oficialni web)$/i.test(label)) {
+      websiteUrl = href;
+    } else if (/registr|přihláš|prihlas|entry|anmeld|zapisy/i.test(label)) {
+      registrationUrl = href;
+    } else if (/propozic|regul|ausschreibung|nennung/i.test(label)) {
+      regulationsUrl = href;
+    }
+  };
 
   $(".rd-card__title").each((_, el) => {
     if (!/odkazy/i.test($(el).text())) return;
@@ -145,64 +181,251 @@ export function extractSumatorOfficialLinks(html: string): {
       .parent()
       .find("a[href]")
       .each((__, a) => {
-        const label = $(a).text().replace(/\s+/g, " ").trim();
-        const href = ($(a).attr("href") || "").trim();
-        if (!href.startsWith("http") || isAggregatorUrl(href)) return;
-        if (/^web$/i.test(label) || /^stránka$/i.test(label) || /^homepage$/i.test(label)) {
-          websiteUrl = href;
-        } else if (/registr/i.test(label)) {
-          registrationUrl = href;
-        }
+        consider($(a).text().replace(/\s+/g, " ").trim(), ($(a).attr("href") || "").trim());
       });
   });
 
   if (!websiteUrl) {
     $("a.rd-btn").each((_, a) => {
-      const label = $(a).text().replace(/\s+/g, " ").trim();
-      const href = ($(a).attr("href") || "").trim();
-      if (!/^web$/i.test(label)) return;
-      if (href.startsWith("http") && !isAggregatorUrl(href)) websiteUrl = href;
+      consider($(a).text().replace(/\s+/g, " ").trim(), ($(a).attr("href") || "").trim());
     });
   }
 
-  return { websiteUrl, registrationUrl };
+  return { websiteUrl, registrationUrl, regulationsUrl, extraUrls: [...new Set(extraUrls)] };
+}
+
+function parseKm(raw: string): number | undefined {
+  const m = raw.replace(/\s/g, "").replace(",", ".").match(/(\d+(?:\.\d+)?)/);
+  if (!m) return undefined;
+  const n = Number(m[1]);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function parseAgeRange(text: string): { ageMin?: number; ageMax?: number } {
+  const range = text.match(/(\d+)\s*[–-]\s*(\d+)\s*let/i);
+  if (range) return { ageMin: Number(range[1]), ageMax: Number(range[2]) };
+  const plus = text.match(/(\d+)\s*a\s*(více|vice)/i);
+  if (plus) return { ageMin: Number(plus[1]) };
+  return {};
+}
+
+function categoryAudience(
+  name: string,
+  ageMax?: number,
+): "kids" | "youth" | "mixed" {
+  if (/šneček|snecek|děti|deti|\bkids\b|benjamin|předžák|predzak|žák/i.test(name)) {
+    return "kids";
+  }
+  if (ageMax != null && ageMax <= 14) return "kids";
+  if (/kadet|junior/i.test(name) || (ageMax != null && ageMax <= 18)) return "youth";
+  return "mixed";
+}
+
+/** Trail cards + “Trasy” fact line (20 km / 15 km / Jesenický šneček). */
+export function extractSumatorTrails(html: string): NonNullable<ParsedEvent["categories"]> {
+  const $ = cheerio.load(html);
+  const cats: NonNullable<ParsedEvent["categories"]> = [];
+  const seen = new Set<string>();
+
+  $(".rd-trail__head").each((_, head) => {
+    const $head = $(head);
+    const name = $head.find(".rd-trail__name").clone().children().remove().end().text().replace(/\s+/g, " ").trim();
+    const distRaw = $head.find(".rd-trail__stats").text();
+    const distanceKm = parseKm(distRaw);
+    const $card = $head.closest(".rd-card");
+    $card.find(".rd-trail__block").each((__, block) => {
+      if (!/kategorie/i.test($(block).find(".rd-trail__block-title").text())) return;
+      $(block)
+        .find("li")
+        .each((___, li) => {
+          const label = $(li).text().replace(/\s+/g, " ").trim();
+          if (!label || seen.has(label)) return;
+          seen.add(label);
+          const ages = parseAgeRange(label);
+          cats.push({
+            name: label,
+            distanceKm,
+            ...ages,
+            audience: categoryAudience(label, ages.ageMax),
+          });
+        });
+    });
+    if (name && !seen.has(name)) {
+      seen.add(name);
+      cats.push({
+        name,
+        distanceKm,
+        audience: categoryAudience(name),
+      });
+    }
+  });
+
+  if (!cats.length) {
+    const facts = $(".rd-facts__item")
+      .filter((_, el) => /trasy/i.test($(el).find(".rd-facts__key").text()))
+      .first()
+      .find(".rd-facts__val")
+      .text()
+      .replace(/\s+/g, " ")
+      .trim();
+    for (const part of facts.split(/\s*\/\s*/).map((s) => s.trim()).filter(Boolean)) {
+      if (seen.has(part)) continue;
+      seen.add(part);
+      cats.push({
+        name: part,
+        distanceKm: parseKm(part),
+        audience: categoryAudience(part),
+      });
+    }
+  }
+
+  return cats;
+}
+
+export function extractSumatorSeries(html: string): {
+  seriesName?: string;
+  seriesSlug?: string;
+  cupUrl?: string;
+} {
+  const $ = cheerio.load(html);
+  const cup = $("a[href*='/cup/']").first();
+  const href = (cup.attr("href") || "").trim();
+  const fromBtn = cup.text().replace(/\s+/g, " ").trim();
+  const perex = $(".rd-perex, [property='og:description']")
+    .first()
+    .text()
+    .replace(/\s+/g, " ")
+    .trim();
+  const fromPerex = perex.match(/seriálu\s+(.+?)\s*$/i)?.[1]?.replace(/[.\s]+$/, "").trim();
+  const seriesName = (fromBtn && !/^cup$/i.test(fromBtn) ? fromBtn : fromPerex) || undefined;
+  const slugRaw = href.match(/\/cup\/([a-z0-9-]+)/i)?.[1]?.replace(/-20\d{2}$/i, "");
+  let cupUrl: string | undefined;
+  try {
+    if (href) cupUrl = new URL(href, "https://sumator.cz").toString().split("?")[0];
+  } catch {
+    /* ignore */
+  }
+  return { seriesName, seriesSlug: slugRaw, cupUrl };
+}
+
+function parseCzDay(raw: string): string | null {
+  const m = raw.replace(/\s+/g, " ").trim().match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/);
+  if (!m) return null;
+  return `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+}
+
+/** One Sumator `/race/slug` page — official Web, tratě, seriál. */
+export function parseSumatorRaceDetail(url: string, html: string): ParsedEvent | null {
+  const $ = cheerio.load(html);
+  const name =
+    $("h1.rd-hero__title, h1").first().text().replace(/\s+/g, " ").trim() ||
+    $("meta[property='og:title']").attr("content")?.trim() ||
+    "";
+  if (!name || name.length < 3) return null;
+
+  const dateRaw = $(".rd-facts__item")
+    .filter((_, el) => /datum/i.test($(el).find(".rd-facts__key").text()))
+    .first()
+    .find(".rd-facts__val")
+    .clone()
+    .children()
+    .remove()
+    .end()
+    .text();
+  const startDate = parseCzDay(dateRaw);
+  if (!startDate) return null;
+
+  const place =
+    $(".rd-facts__item")
+      .filter((_, el) => /místo|misto/i.test($(el).find(".rd-facts__key").text()))
+      .first()
+      .find(".rd-facts__val")
+      .text()
+      .replace(/\s+/g, " ")
+      .trim() || "Czechia";
+
+  const discRaw = $(".rd-type-tag, .rd-type-dot").first().text().replace(/\s+/g, " ").trim();
+  const disc = mapDisc(discRaw);
+  const links = extractSumatorOfficialLinks(html);
+  const series = extractSumatorSeries(html);
+  const categories = extractSumatorTrails(html);
+  const sourceUrl = url.split("?")[0]!;
+  const websiteUrl = links.websiteUrl;
+  const home = officialSiteHome(websiteUrl);
+  const childUrls = [...new Set([home, series.cupUrl].filter(Boolean))] as string[];
+
+  return {
+    externalId: `sumator-${normalizeName(name)}-${startDate}`,
+    name,
+    startDate,
+    placeText: place.slice(0, 80),
+    countryHint: "CZ",
+    discipline: disc ? [disc] : undefined,
+    audience: categories.some((c) => c.audience === "kids") ? "mixed" : "mixed",
+    categories: categories.length ? categories : undefined,
+    sourceUrl,
+    websiteUrl,
+    registrationUrl: links.registrationUrl,
+    regulationsUrl: links.regulationsUrl,
+    seriesName: series.seriesName,
+    seriesSlug: series.seriesSlug,
+    seriesWebsite: home || undefined,
+    childUrls: childUrls.length ? childUrls : undefined,
+    confidence: websiteUrl ? 0.92 : 0.85,
+  };
 }
 
 async function enrichOfficialWebsites(
   events: ParsedEvent[],
   opts?: { max?: number },
 ): Promise<ParsedEvent[]> {
-  const max = opts?.max ?? 40;
+  const max = opts?.max ?? 80;
   const { mapPool } = await import("@/lib/watcher/pool");
   const { fetchText } = await import("@/lib/watcher/http");
 
-  const enrichable = events.filter((e) => /\/race\//i.test(e.sourceUrl) || /\/race\//i.test(e.websiteUrl || ""));
-  // Prefer upcoming races without an official site yet
+  const enrichable = events.filter((e) => /\/race\//i.test(e.sourceUrl));
   const today = new Date().toISOString().slice(0, 10);
   const ranked = [...enrichable].sort((a, b) => {
+    const aNeed = a.websiteUrl ? 1 : 0;
+    const bNeed = b.websiteUrl ? 1 : 0;
+    if (aNeed !== bNeed) return aNeed - bNeed;
     const aFuture = a.startDate >= today ? 0 : 1;
     const bFuture = b.startDate >= today ? 0 : 1;
     if (aFuture !== bFuture) return aFuture - bFuture;
     return a.startDate.localeCompare(b.startDate);
   });
-  const selected = new Set(
-    ranked.slice(0, max).map((e) => e.websiteUrl || e.sourceUrl),
-  );
+  const selected = new Set(ranked.slice(0, max).map((e) => e.sourceUrl));
 
   const enriched = await mapPool(events, 6, async (ev) => {
-    const detail = ev.websiteUrl || ev.sourceUrl;
-    if (!selected.has(detail) || !/\/race\//i.test(detail)) {
-      return ev;
-    }
+    if (!selected.has(ev.sourceUrl) || !/\/race\//i.test(ev.sourceUrl)) return ev;
     try {
-      const page = await fetchText(detail, { timeoutMs: 15_000 });
+      const page = await fetchText(ev.sourceUrl, { timeoutMs: 15_000 });
       if (!page.ok || !page.text) return ev;
-      const links = extractSumatorOfficialLinks(page.text);
+      const detail = parseSumatorRaceDetail(ev.sourceUrl, page.text);
+      const links = detail
+        ? {
+            websiteUrl: detail.websiteUrl,
+            registrationUrl: detail.registrationUrl,
+            regulationsUrl: detail.regulationsUrl,
+          }
+        : extractSumatorOfficialLinks(page.text);
+      const home = officialSiteHome(links.websiteUrl);
+      const childUrls = [
+        ...new Set(
+          [...(ev.childUrls ?? []), ...(detail?.childUrls ?? []), home].filter(Boolean) as string[],
+        ),
+      ];
       return {
         ...ev,
-        websiteUrl: links.websiteUrl,
+        websiteUrl: links.websiteUrl || ev.websiteUrl,
         registrationUrl: links.registrationUrl || ev.registrationUrl,
-        confidence: links.websiteUrl ? Math.max(ev.confidence, 0.9) : ev.confidence,
+        regulationsUrl: links.regulationsUrl || ev.regulationsUrl,
+        seriesName: detail?.seriesName || ev.seriesName,
+        seriesSlug: detail?.seriesSlug || ev.seriesSlug,
+        seriesWebsite: home || ev.seriesWebsite,
+        categories: detail?.categories?.length ? detail.categories : ev.categories,
+        childUrls: childUrls.length ? childUrls : ev.childUrls,
+        confidence: links.websiteUrl ? Math.max(ev.confidence, 0.92) : ev.confidence,
       };
     } catch {
       return ev;
@@ -228,6 +451,16 @@ export async function parseSumator(url: string, html: string): Promise<ParsedEve
     }
   })();
 
+  try {
+    const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+    if (/^\/race\/[^/]+$/.test(path)) {
+      const one = parseSumatorRaceDetail(url, html);
+      return one ? [one] : [];
+    }
+  } catch {
+    /* fall through */
+  }
+
   if (/\/cup\//i.test(url) || host.includes("jihoceskymtbpohar.cz")) {
     const parsed = host.includes("jihoceskymtbpohar.cz")
       ? parseSumatorHtml(url, html, yearFromUrl(url)).map((ev) => ({
@@ -238,7 +471,7 @@ export async function parseSumator(url: string, html: string): Promise<ParsedEve
           confidence: Math.max(ev.confidence, 0.9),
         }))
       : parseSumatorCup(url, html);
-    return enrichOfficialWebsites(parsed, { max: 24 });
+    return enrichOfficialWebsites(parsed, { max: 40 });
   }
 
   const year = yearFromUrl(url);

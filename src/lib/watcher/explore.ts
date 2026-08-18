@@ -276,10 +276,14 @@ export function scoreRacePage(url: string, html: string): ExploreScore {
 
 export async function queueDiscoveredLink(
   url: string,
-  opts?: { hintKind?: string; fromWatchedUrlId?: string | null },
+  opts?: { hintKind?: string; fromWatchedUrlId?: string | null; force?: boolean },
 ): Promise<boolean> {
   const canonical = canonicalExploreUrl(url);
-  if (!canonical || !looksLikeIndependentRaceUrl(canonical)) return false;
+  if (!canonical) return false;
+  if (isAggregatorUrl(canonical)) return false;
+  const host = hostnameOf(canonical);
+  if (SKIP_HOSTS.some((h) => host === h || host.endsWith(`.${h}`))) return false;
+  if (!opts?.force && !looksLikeIndependentRaceUrl(canonical)) return false;
   const supabase = createServerSupabase();
   const { error } = await supabase.from("discovered_links").upsert(
     {
