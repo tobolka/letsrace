@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "**/*.cjs",
+    "public/maplibre/**",
   ]),
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx}"],

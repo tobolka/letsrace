@@ -239,7 +239,7 @@ const AT_STATE =
   /\s+(OÖ|OOE|STMK|Stmk|NÖ|NOE|VBG|Wien|T|S|K|W|B)(?=\s+(Einzel|Omnium|Kombi)|$)/i;
 
 function atCupsPlace(raw: string): string {
-  let t = raw
+  const t = raw
     .replace(/\s*Road Cycling League Austria\s+(Frauen|Herren)\s*/gi, " ")
     .replace(AT_STATE, "")
     .replace(/\s+\*?(Einzel|Omnium|Kombi)\b.*$/i, "")

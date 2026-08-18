@@ -508,7 +508,7 @@ function szcRoadSeries(name: string): {
 }
 
 function szcRoadName(raw: string): string {
-  let name = raw
+  const name = raw
     .replace(/\s+/g, " ")
     .replace(/\s*Cestná cyklistika\s*$/i, "")
     .replace(/;\s*všetky kategórie[^;]*/gi, "")
