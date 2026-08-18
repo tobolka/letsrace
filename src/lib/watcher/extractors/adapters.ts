@@ -23,6 +23,7 @@ import {
   parseDetskaTourPropozicie,
   parseAustriaKidsXc2026,
   parseYoungstersCup,
+  parseMtbLiga,
   parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
@@ -394,6 +395,15 @@ export async function extractWithAdapter(
     return {
       events: parseYoungstersCup(url, html),
       strategy: "adapter:ayc",
+    };
+  }
+  if (host.includes("mtb-liga.at")) {
+    if (/ergebnisse|impressum|kontakt/i.test(url)) {
+      return { events: [], strategy: "adapter:mla-skip" };
+    }
+    return {
+      events: parseMtbLiga(url, html),
+      strategy: "adapter:mla",
     };
   }
   if (host.includes("cyclingaustria.at")) {

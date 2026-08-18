@@ -1668,8 +1668,7 @@ const AT_KIDS_XC_2026: {
     lng: 10.885,
     disc: ["xco"],
     cats: "U7–U17",
-    website: "https://racingteam-haiming.at/",
-    registration: "https://racingteam-haiming.at/anmeldung/anmeldung-einzeln/",
+    website: "http://www.youngsters-cup.at/26042026__haiming_t-pid473",
   },
   {
     date: "2026-05-09",
@@ -1701,7 +1700,7 @@ const AT_KIDS_XC_2026: {
     lng: 13.155,
     disc: ["xco"],
     cats: "U13–U17",
-    website: "https://www.nocksteintrophy.at/",
+    website: "http://www.youngsters-cup.at/27062026__koppl_s-pid476",
   },
   {
     date: "2026-07-12",
@@ -1880,6 +1879,177 @@ export function parseYoungstersCup(url: string, html: string): ParsedEvent[] {
       websiteUrl: row.href,
       lat: undefined,
       lng: undefined,
+      confidence: 0.86,
+    };
+  });
+}
+
+const MLA_SITE = "http://www.mtb-liga.at/";
+
+/** Mountainbike Liga Austria 2026 — official termine at mtb-liga.at. */
+const MTB_LIGA_2026: {
+  date: string;
+  end?: string;
+  name: string;
+  place: string;
+  lat: number;
+  lng: number;
+  website?: string;
+  regs?: string;
+  registration?: string;
+}[] = [
+  {
+    date: "2026-03-29",
+    name: "34. Internationale KTM Kamptal Trophy",
+    place: "Langenlois / Zöbing, Niederösterreich",
+    lat: 48.495,
+    lng: 15.7,
+    website: "https://kamptaltrophy.at/",
+    registration: "https://kamptaltrophy.at/anmeldung",
+  },
+  {
+    date: "2026-04-25",
+    end: "2026-04-26",
+    name: "Ötztaler Mountainbike Festival — MLA",
+    place: "Haiming, Tirol",
+    lat: 47.248,
+    lng: 10.885,
+    website: "http://www.mtb-liga.at/25_26042026__haiming-pid446",
+    registration: "https://racingteam-haiming.at/anmeldung/anmeldung-einzeln/",
+  },
+  {
+    date: "2026-05-10",
+    name: "7. Wilder Kaiser MTB Race",
+    place: "Scheffau, Tirol",
+    lat: 47.531,
+    lng: 12.248,
+    website: "https://www.rvscheffau.at/wkmbr",
+    regs: "https://www.rvscheffau.at/_files/ugd/282863_67f17c68664a4da9967e453cc26d265b.pdf",
+  },
+  {
+    date: "2026-05-30",
+    name: "Raiffeisen Österreich Grand Prix",
+    place: "Windhaag bei Perg, Oberösterreich",
+    lat: 48.284,
+    lng: 14.682,
+    website: "https://www.mtb-windhaag.com/",
+  },
+  {
+    date: "2026-06-27",
+    name: "Nockstein Trophy — MLA",
+    place: "Koppl, Salzburg",
+    lat: 47.808,
+    lng: 13.155,
+    website: "http://www.mtb-liga.at/27062026__koppl-pid671",
+    regs: "https://www.new-mountainbikers.at/wp-content/uploads/2026/06/NocksteinTrophy-TechnischerLeitfaden-DE-Neu2026.pdf",
+  },
+  {
+    date: "2026-09-20",
+    name: "29. MTB XCO Rund um den Roadlberg",
+    place: "Ottenschlag im Mühlkreis, Oberösterreich",
+    lat: 48.47,
+    lng: 14.05,
+    website: "https://www.rc-arboe-linz.at/",
+  },
+];
+
+const MTB_LIGA_BY_DATE = new Map(MTB_LIGA_2026.map((row) => [row.date, row]));
+
+function mlaEvent(
+  sourceUrl: string,
+  row: (typeof MTB_LIGA_2026)[number],
+  racePage?: string,
+): ParsedEvent {
+  return {
+    externalId: `mla-${row.date}-${normalizeName(row.place)}`,
+    name: row.name,
+    startDate: row.date,
+    endDate: row.end,
+    placeText: row.place,
+    countryHint: "AT",
+    discipline: ["xco"],
+    audience: "mixed",
+    categories: [{ name: "Amateur" }, { name: "Elite" }],
+    seriesName: "Mountainbike Liga",
+    seriesSlug: "mountainbike-liga",
+    seriesWebsite: MLA_SITE,
+    sourceUrl: racePage || sourceUrl,
+    websiteUrl: row.website || racePage,
+    registrationUrl: row.registration,
+    regulationsUrl: row.regs,
+    lat: row.lat,
+    lng: row.lng,
+    confidence: 0.93,
+  };
+}
+
+function parseMlaTermineTitle(
+  title: string,
+): { date: string; end?: string; place: string } | null {
+  const t = title.replace(/\s+/g, " ").trim();
+  if (!t || /^-+$/.test(t) || /vorbehaltlich/i.test(t)) return null;
+  const range = t.match(
+    /(\d{1,2})\.\/(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]?\s*(.+)/,
+  );
+  const one = t.match(/(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]?\s*(.+)/);
+  let date: string;
+  let end: string | undefined;
+  let rest: string;
+  if (range) {
+    const y = range[4]!;
+    const mo = range[3]!.padStart(2, "0");
+    date = `${y}-${mo}-${range[1]!.padStart(2, "0")}`;
+    end = `${y}-${mo}-${range[2]!.padStart(2, "0")}`;
+    rest = range[5]!;
+  } else if (one) {
+    date = `${one[3]}-${one[2]!.padStart(2, "0")}-${one[1]!.padStart(2, "0")}`;
+    rest = one[4]!;
+  } else {
+    return null;
+  }
+  const place = rest
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\bb\.\s+/gi, "bei ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!place || place.length < 3) return null;
+  return end ? { date, end, place } : { date, place };
+}
+
+/** Live calendar from http://www.mtb-liga.at (Termine sidebar). */
+export function parseMtbLiga(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const found: { date: string; end?: string; place: string; href: string }[] = [];
+  const seen = new Set<string>();
+  $(".block-termine a[href]").each((_, a) => {
+    const title = ($(a).attr("title") || $(a).text()).replace(/\s+/g, " ").trim();
+    const parsed = parseMlaTermineTitle(title);
+    if (!parsed || seen.has(parsed.date)) return;
+    const href = deAtAbs($(a).attr("href"), url);
+    if (!href || /_{3,}|-pid597|-pid546|-pid683/i.test(href)) return;
+    seen.add(parsed.date);
+    found.push({ ...parsed, href });
+  });
+  if (!found.length) {
+    return MTB_LIGA_2026.map((row) => mlaEvent(url.split("#")[0] || MLA_SITE, row));
+  }
+  return found.map((row) => {
+    const extra = MTB_LIGA_BY_DATE.get(row.date);
+    if (extra) return mlaEvent(url, extra, row.href);
+    return {
+      externalId: `mla-${row.date}-${normalizeName(row.place)}`,
+      name: `Mountainbike Liga — ${row.place}`,
+      startDate: row.date,
+      endDate: row.end,
+      placeText: row.place,
+      countryHint: "AT",
+      discipline: ["xco"] as Discipline[],
+      audience: "mixed" as Audience,
+      seriesName: "Mountainbike Liga",
+      seriesSlug: "mountainbike-liga",
+      seriesWebsite: MLA_SITE,
+      sourceUrl: row.href,
+      websiteUrl: row.href,
       confidence: 0.86,
     };
   });

@@ -9,6 +9,7 @@ import {
   parseBayerwaldCup,
   parseAustriaKidsXc2026,
   parseYoungstersCup,
+  parseMtbLiga,
   parseGermanCxBundesliga,
   parseJuniorBikeCup,
   parseOberschwabenCup,
@@ -324,8 +325,38 @@ describe("Austria Youngsters Cup", () => {
       "",
     );
     expect(events).toHaveLength(10);
-    expect(events[0]?.websiteUrl).toContain("racingteam-haiming.at");
+    expect(events[0]?.websiteUrl).toContain("youngsters-cup.at");
     expect(events[5]?.startDate).toBe("2026-08-22");
+  });
+});
+
+describe("Mountainbike Liga Austria", () => {
+  it("reads the six 2026 rounds and skips placeholder Termine rows", () => {
+    const html = `
+      <div class="block block-termine"><h2>Termine</h2><ul>
+        <li><a href="http://www.mtb-liga.at/29032026__langenlois_zoebing-pid445" title="29.03.2026 - Langenlois/Zöbing">29.03.2026 - Langenlois/Zöbing</a></li>
+        <li><a href="http://www.mtb-liga.at/25_26042026__haiming-pid446" title="25./26.04.2026 - Haiming">25./26.04.2026 - Haiming</a></li>
+        <li><a href="http://www.mtb-liga.at/10052026__scheffau_t-pid679" title="10.05.2026 - Scheffau (T)">10.05.2026 - Scheffau (T)</a></li>
+        <li><a href="http://www.mtb-liga.at/30052026__windhaag_b_perg-pid482" title="30.05.2026 - Windhaag b. Perg">30.05.2026 - Windhaag b. Perg</a></li>
+        <li><a href="http://www.mtb-liga.at/27062026__koppl-pid671" title="27.06.2026 - Koppl">27.06.2026 - Koppl</a></li>
+        <li><a href="http://www.mtb-liga.at/20092026__ottenschlag-pid642" title="20.09.2026 - Ottenschlag">20.09.2026 - Ottenschlag</a></li>
+        <li><a href="http://www.mtb-liga.at/___________________-pid546" title="--------------------------------------">------</a></li>
+        <li><a href="http://www.mtb-liga.at/-pid597" title="(Vorbehaltlich der Zustimmung der Veranstalter:innen zu den Cupbedingungen!)">Vorbehaltlich</a></li>
+      </ul></div>
+    `;
+    const events = parseMtbLiga("http://www.mtb-liga.at/", html);
+    expect(events).toHaveLength(6);
+    expect(events.map((e) => e.startDate)).toEqual([
+      "2026-03-29",
+      "2026-04-25",
+      "2026-05-10",
+      "2026-05-30",
+      "2026-06-27",
+      "2026-09-20",
+    ]);
+    expect(events[1]?.endDate).toBe("2026-04-26");
+    expect(events[0]?.websiteUrl).toContain("kamptaltrophy.at");
+    expect(events.every((e) => e.seriesSlug === "mountainbike-liga")).toBe(true);
   });
 });
 

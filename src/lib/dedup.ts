@@ -35,6 +35,7 @@ const SERIES_ALIAS_RULES: { re: RegExp; token: string }[] = [
   { re: /\bkolo\s*pro\b|\bkolopro\b/i, token: "series:kolopro" },
   { re: /\bjunior\s*cup\b/i, token: "series:junior_cup" },
   { re: /\byoungsters\s*cup\b|\bayc\b/i, token: "series:youngsters_cup" },
+  { re: /\bmountainbike\s*liga\b|\bml-?austria\b/i, token: "series:mountainbike_liga" },
   { re: /\b(vpace\s*)?kids\s*cup\b/i, token: "series:kids_cup" },
   { re: /\bcube\s*(kids\s*)?cup\b/i, token: "series:cube_cup" },
   { re: /\btbc\b|\btbc\s*s[eé]rie\b/i, token: "series:tbc_cx" },
@@ -394,8 +395,8 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
     return { score: 0, reasons: ["gender_conflict"] };
   }
 
-  // Distinct named series at the same venue (Kids Cup vs iXS DHC, …)
-  if (!sameUrl && aliasesA.length && aliasesB.length && !sharedAlias) {
+  // Distinct named series at the same venue (Kids Cup vs iXS DHC, AYC vs MLA, …)
+  if (aliasesA.length && aliasesB.length && !sharedAlias) {
     return { score: 0, reasons: ["series_conflict"] };
   }
 

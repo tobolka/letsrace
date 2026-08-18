@@ -43,6 +43,8 @@ const TARGETS: { url: string; kind: string }[] = [
   },
   { url: "http://www.youngsters-cup.at/", kind: "series" },
   { url: "http://www.youngsters-cup.at/termine_2026-pid444", kind: "series" },
+  { url: "http://www.mtb-liga.at/", kind: "series" },
+  { url: "http://www.mtb-liga.at/termine_2026-pid443", kind: "series" },
   { url: "https://www.ucimtbworldseries.com/calendar", kind: "series" },
   {
     url: "https://www.swiss-cycling.ch/de/veranstaltungen/kalender/?discipline=mtb&save=true",
