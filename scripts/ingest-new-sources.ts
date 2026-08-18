@@ -41,6 +41,8 @@ const TARGETS: { url: string; kind: string }[] = [
     url: "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austria%20Youngsters%20Cup%202026.pdf",
     kind: "series",
   },
+  { url: "http://www.youngsters-cup.at/", kind: "series" },
+  { url: "http://www.youngsters-cup.at/termine_2026-pid444", kind: "series" },
   { url: "https://www.ucimtbworldseries.com/calendar", kind: "series" },
   {
     url: "https://www.swiss-cycling.ch/de/veranstaltungen/kalender/?discipline=mtb&save=true",

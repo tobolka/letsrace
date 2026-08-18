@@ -22,6 +22,7 @@ import {
   parseDetskaTour,
   parseDetskaTourPropozicie,
   parseAustriaKidsXc2026,
+  parseYoungstersCup,
   parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
@@ -385,6 +386,15 @@ export async function extractWithAdapter(
       return { events: [], strategy: "adapter:usti-skip" };
     }
     return { events: parseUstiMtbCup(url, html), strategy: "adapter:usti-mtb" };
+  }
+  if (host.includes("youngsters-cup.at")) {
+    if (/ergebnisse|youngsters_team|impressum|kontakt/i.test(url)) {
+      return { events: [], strategy: "adapter:ayc-skip" };
+    }
+    return {
+      events: parseYoungstersCup(url, html),
+      strategy: "adapter:ayc",
+    };
   }
   if (host.includes("cyclingaustria.at")) {
     let decoded = url;

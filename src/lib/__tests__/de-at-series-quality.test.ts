@@ -8,6 +8,7 @@ import {
   deAtPageLinks,
   parseBayerwaldCup,
   parseAustriaKidsXc2026,
+  parseYoungstersCup,
   parseGermanCxBundesliga,
   parseJuniorBikeCup,
   parseOberschwabenCup,
@@ -279,33 +280,52 @@ describe("SooF.sk series", () => {
   });
 });
 
-describe("Austria kids XC 2026 CSV", () => {
-  it("emits every remaining AYC / Nachwuchs round from the calendar", () => {
+describe("Austria Youngsters Cup", () => {
+  it("reads all ten 2026 rounds from the official Termine sidebar", () => {
+    const html = `
+      <div class="block block-termine"><h2>Termine</h2><ul>
+        <li><a href="http://www.youngsters-cup.at/26042026__haiming_t-pid473" title="26.04.2026 - Haiming (T)">26.04.2026 - Haiming (T)</a></li>
+        <li><a href="http://www.youngsters-cup.at/09052026__scheffau_t-pid657" title="09.05.2026 - Scheffau (T)">09.05.2026 - Scheffau (T)</a></li>
+        <li><a href="http://www.youngsters-cup.at/23052026__kleinzell_ooe+ts-pid521" title="23.05.2026 - Kleinzell (OÖ)+TS ">23.05.2026 - Kleinzell (OÖ)+TS</a></li>
+        <li><a href="http://www.youngsters-cup.at/27062026__koppl_s-pid476" title="27.06.2026 - Koppl (S)">27.06.2026 - Koppl (S)</a></li>
+        <li><a href="http://www.youngsters-cup.at/12072026__kirchschlag_idbw_noe__kombi-pid479" title="12.07.2026 - Kirchschlag i.d.b.W. (NÖ) - Kombi">12.07.2026 - Kirchschlag</a></li>
+        <li><a href="http://www.youngsters-cup.at/22082026_fusch_glockner_s-pid688" title="22.08.2026 Fusch/Glockner (S)">22.08.2026 Fusch/Glockner (S)</a></li>
+        <li><a href="http://www.youngsters-cup.at/29082026__krumbach_noe-pid475" title="29.08.2026 - Krumbach (NÖ)">29.08.2026 - Krumbach (NÖ)</a></li>
+        <li><a href="http://www.youngsters-cup.at/13092026__petzen_k-pid622" title="13.09.2026 - Petzen (K)">13.09.2026 - Petzen (K)</a></li>
+        <li><a href="http://www.youngsters-cup.at/19092026__ottenschlag_ooe-pid674" title="19.09.2026 - Ottenschlag (OÖ)">19.09.2026 - Ottenschlag (OÖ)</a></li>
+        <li><a href="http://www.youngsters-cup.at/-pid649" title="03.10.2026  Grazer AYC-Finale Stattegg & 3. Pumpiläum">03.10.2026 Stattegg</a></li>
+      </ul></div>
+    `;
+    const events = parseYoungstersCup("http://www.youngsters-cup.at/", html);
+    expect(events).toHaveLength(10);
+    expect(events.map((e) => e.startDate)).toEqual([
+      "2026-04-26",
+      "2026-05-09",
+      "2026-05-23",
+      "2026-06-27",
+      "2026-07-12",
+      "2026-08-22",
+      "2026-08-29",
+      "2026-09-13",
+      "2026-09-19",
+      "2026-10-03",
+    ]);
+    expect(events.find((e) => e.startDate === "2026-08-22")?.websiteUrl).toContain(
+      "bikeinfection.at",
+    );
+    expect(events.some((e) => e.startDate === "2026-09-26")).toBe(false);
+    expect(events.every((e) => e.seriesSlug === "austrian-youngsters-cup")).toBe(true);
+    expect(events.find((e) => e.startDate === "2026-10-03")?.discipline).toEqual(["xcc"]);
+  });
+
+  it("falls back to the published 2026 table when Termine is missing", () => {
     const events = parseAustriaKidsXc2026(
       "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austria%20Youngsters%20Cup%202026.pdf",
       "",
     );
-    expect(events).toHaveLength(5);
-    expect(events.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
-      "2026-08-29 Krumbach, Niederösterreich",
-      "2026-09-13 St. Michael ob Bleiburg, Kärnten",
-      "2026-09-19 Ottenschlag im Mühlkreis, Oberösterreich",
-      "2026-09-26 Fusch an der Großglocknerstraße, Salzburg",
-      "2026-10-03 Stattegg, Steiermark",
-    ]);
-    expect(events.every((e) => e.seriesSlug === "austrian-youngsters-cup")).toBe(true);
-    expect(events[0]?.websiteUrl).toBe("https://www.bikethebugles.at/");
-    expect(events[3]?.regulationsUrl).toContain("Youngsters");
-    expect(events[4]?.discipline).toEqual(["xcc"]);
-    expect(events[0]?.categories?.map((c) => c.name)).toEqual([
-      "U5",
-      "U7",
-      "U9",
-      "U11",
-      "U13",
-      "U15",
-      "U17",
-    ]);
+    expect(events).toHaveLength(10);
+    expect(events[0]?.websiteUrl).toContain("racingteam-haiming.at");
+    expect(events[5]?.startDate).toBe("2026-08-22");
   });
 });
 

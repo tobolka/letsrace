@@ -34,6 +34,7 @@ const SERIES_ALIAS_RULES: { re: RegExp; token: string }[] = [
   { re: /\bmtb\s*biatlon\b/i, token: "series:mtb_biatlon" },
   { re: /\bkolo\s*pro\b|\bkolopro\b/i, token: "series:kolopro" },
   { re: /\bjunior\s*cup\b/i, token: "series:junior_cup" },
+  { re: /\byoungsters\s*cup\b|\bayc\b/i, token: "series:youngsters_cup" },
   { re: /\b(vpace\s*)?kids\s*cup\b/i, token: "series:kids_cup" },
   { re: /\bcube\s*(kids\s*)?cup\b/i, token: "series:cube_cup" },
   { re: /\btbc\b|\btbc\s*s[eé]rie\b/i, token: "series:tbc_cx" },
