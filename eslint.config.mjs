@@ -1,6 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import reactHooks from "eslint-plugin-react-hooks";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -12,8 +13,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "**/*.cjs",
   ]),
   {
+    files: ["**/*.{js,jsx,mjs,ts,tsx}"],
+    // Flat config requires the plugin on the same object as the rule overrides.
+    plugins: {
+      "react-hooks": reactHooks,
+    },
     // React Compiler rules flag legitimate map/geo patterns; keep as warnings until refactored.
     rules: {
       "react-hooks/set-state-in-effect": "warn",
