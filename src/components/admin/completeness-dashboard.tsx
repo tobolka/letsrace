@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { MapPin, SquarePen, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,16 +30,28 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
-} from "@/components/ui/item";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AUDIENCES, DISCIPLINES } from "@/lib/domain";
 import {
   MISSING_LABELS,
@@ -45,7 +59,7 @@ import {
   type MissingFlag,
   type DataQualitySummary,
 } from "@/lib/admin/data-quality";
-import { ExternalLink, MapPin } from "lucide-react";
+import { firstOpenableUrl, OpenUrlButton, UrlInput } from "@/components/admin/open-url";
 
 type Props = {
   initialSummary: DataQualitySummary;
@@ -83,6 +97,28 @@ export function CompletenessDashboard({ initialSummary, initialEvents }: Props) 
     return summary[id];
   }
 
+  function refreshAfter(removedId: string) {
+    startTransition(async () => {
+      const res = await fetch("/api/admin/data-quality");
+      if (res.ok) {
+        const data = (await res.json()) as {
+          summary: DataQualitySummary;
+          events: IncompleteEvent[];
+        };
+        setSummary(data.summary);
+        setEvents(data.events);
+        const still = data.events.filter((e) =>
+          filter === "all" ? true : e.missing.includes(filter as MissingFlag),
+        );
+        const idx = still.findIndex((e) => e.id === removedId);
+        const next =
+          still[idx + 1] ?? still.find((e) => e.id !== removedId) ?? still[0] ?? null;
+        setSelectedId(next?.id ?? null);
+      }
+      router.refresh();
+    });
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
@@ -113,7 +149,7 @@ export function CompletenessDashboard({ initialSummary, initialEvents }: Props) 
         ))}
       </ToggleGroup>
 
-      <div className="grid gap-3 lg:grid-cols-[1fr_380px]">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="gap-0 py-0">
           <CardHeader className="border-b py-4">
             <CardTitle>Work queue</CardTitle>
@@ -124,7 +160,7 @@ export function CompletenessDashboard({ initialSummary, initialEvents }: Props) 
               </CardAction>
             ) : null}
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="max-h-[70vh] overflow-auto p-0">
             {filtered.length === 0 ? (
               <Empty className="border-0">
                 <EmptyHeader>
@@ -133,40 +169,63 @@ export function CompletenessDashboard({ initialSummary, initialEvents }: Props) 
                 </EmptyHeader>
               </Empty>
             ) : (
-              <ScrollArea className="h-[70vh]">
-                <ItemGroup>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Race</TableHead>
+                    <TableHead>Place</TableHead>
+                    <TableHead>Missing</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {filtered.map((event) => {
                     const active = selected?.id === event.id;
+                    const place = event.municipality || event.placeName;
+                    const url = firstOpenableUrl(event.websiteUrl, event.registrationUrl);
                     return (
-                      <Item
+                      <TableRow
                         key={event.id}
-                        asChild
-                        variant={active ? "muted" : "default"}
-                        size="sm"
+                        data-state={active ? "selected" : undefined}
+                        className="cursor-pointer"
+                        onClick={() => setSelectedId(event.id)}
+                        aria-selected={active}
                       >
-                        <button type="button" onClick={() => setSelectedId(event.id)}>
-                          <ItemContent>
-                            <ItemDescription>
-                              {event.startDate}
-                              {event.municipality || event.placeName
-                                ? ` · ${event.municipality || event.placeName}`
-                                : ""}
-                            </ItemDescription>
-                            <ItemTitle>{event.name}</ItemTitle>
-                            <div className="flex flex-wrap gap-1">
-                              {event.missing.map((m) => (
-                                <Badge key={m} variant="outline">
-                                  {MISSING_LABELS[m]}
-                                </Badge>
-                              ))}
-                            </div>
-                          </ItemContent>
-                        </button>
-                      </Item>
+                        <TableCell className="tabular-nums text-muted-foreground">
+                          {event.startDate}
+                        </TableCell>
+                        <TableCell className="max-w-80 min-w-48 whitespace-normal font-medium">
+                          {event.name}
+                        </TableCell>
+                        <TableCell className="max-w-48 whitespace-normal text-muted-foreground">
+                          {place || "—"}
+                        </TableCell>
+                        <TableCell className="whitespace-normal">
+                          <div className="flex flex-wrap gap-1">
+                            {event.missing.map((m) => (
+                              <Badge key={m} variant="outline">
+                                {MISSING_LABELS[m]}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-end gap-1">
+                            <OpenUrlButton href={url} label="Open race URL" />
+                            <DiscardRaceButton
+                              name={event.name}
+                              icon
+                              disabled={pending}
+                              onDiscard={() => discardRace(event.id, event.name, refreshAfter)}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
-                </ItemGroup>
-              </ScrollArea>
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
@@ -177,27 +236,8 @@ export function CompletenessDashboard({ initialSummary, initialEvents }: Props) 
               key={selected.id}
               event={selected}
               busy={pending}
-              onSaved={(savedId) => {
-                startTransition(async () => {
-                  const res = await fetch("/api/admin/data-quality");
-                  if (res.ok) {
-                    const data = (await res.json()) as {
-                      summary: DataQualitySummary;
-                      events: IncompleteEvent[];
-                    };
-                    setSummary(data.summary);
-                    setEvents(data.events);
-                    const still = data.events.filter((e) =>
-                      filter === "all" ? true : e.missing.includes(filter as MissingFlag),
-                    );
-                    const idx = still.findIndex((e) => e.id === savedId);
-                    const next =
-                      still[idx + 1] ?? still.find((e) => e.id !== savedId) ?? still[0] ?? null;
-                    setSelectedId(next?.id ?? null);
-                  }
-                  router.refresh();
-                });
-              }}
+              onSaved={refreshAfter}
+              onDiscarded={refreshAfter}
             />
           ) : (
             <Empty className="border-0">
@@ -210,6 +250,78 @@ export function CompletenessDashboard({ initialSummary, initialEvents }: Props) 
         </Card>
       </div>
     </div>
+  );
+}
+
+async function discardRace(
+  id: string,
+  name: string,
+  onDone: (id: string) => void,
+) {
+  const res = await fetch("/api/admin/events", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, visibility: "hidden", lockFields: true }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    toast.error(data.error || "Discard failed");
+    return;
+  }
+  toast.success(`Discarded ${name}`);
+  onDone(id);
+}
+
+function DiscardRaceButton({
+  name,
+  disabled,
+  icon,
+  onDiscard,
+}: {
+  name: string;
+  disabled?: boolean;
+  icon?: boolean;
+  onDiscard: () => void | Promise<void>;
+}) {
+  const trigger = icon ? (
+    <Button type="button" variant="ghost" size="icon-sm" disabled={disabled} aria-label="Discard race">
+      <Trash2 />
+    </Button>
+  ) : (
+    <Button type="button" variant="outline" disabled={disabled}>
+      Discard
+    </Button>
+  );
+
+  const triggerWithTooltip = icon ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      </TooltipTrigger>
+      <TooltipContent>Discard</TooltipContent>
+    </Tooltip>
+  ) : (
+    <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+  );
+
+  return (
+    <AlertDialog>
+      {triggerWithTooltip}
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Discard this race?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {name} will leave the map. Restore it later from Events → Hidden.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={() => void onDiscard()}>
+            Discard
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -238,10 +350,12 @@ function QuickEditPanel({
   event,
   busy,
   onSaved,
+  onDiscarded,
 }: {
   event: IncompleteEvent;
   busy: boolean;
   onSaved: (savedId: string) => void;
+  onDiscarded: (id: string) => void;
 }) {
   const [placeName, setPlaceName] = useState(event.municipality || event.placeName || "");
   const [countryCode, setCountryCode] = useState(event.countryCode || "CZ");
@@ -254,6 +368,7 @@ function QuickEditPanel({
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [geocoding, setGeocoding] = useState(false);
+  const raceUrl = firstOpenableUrl(websiteUrl, registrationUrl, event.websiteUrl, event.registrationUrl);
 
   async function geocodePlace() {
     if (!placeName.trim()) return;
@@ -320,13 +435,21 @@ function QuickEditPanel({
     <>
       <CardHeader className="border-b py-4">
         <CardDescription>Quick fill</CardDescription>
-        <CardTitle className="truncate">{event.name}</CardTitle>
+        <CardTitle className="text-base leading-snug">{event.name}</CardTitle>
         <CardAction>
-          <Button variant="ghost" size="icon-sm" asChild>
-            <Link href={`/admin/events/${event.id}`} aria-label="Full edit">
-              <ExternalLink />
-            </Link>
-          </Button>
+          <div className="flex gap-1">
+            <OpenUrlButton href={raceUrl} label="Open race URL" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon-sm" asChild>
+                  <Link href={`/admin/events/${event.id}`} aria-label="Full edit">
+                    <SquarePen />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Full edit</TooltipContent>
+            </Tooltip>
+          </div>
         </CardAction>
         <div className="flex flex-wrap gap-1">
           {event.missing.map((m) => (
@@ -393,21 +516,21 @@ function QuickEditPanel({
 
           <Field>
             <FieldLabel htmlFor="web">Website</FieldLabel>
-            <Input
+            <UrlInput
               id="web"
               value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
-              placeholder="https://…"
+              onChange={setWebsiteUrl}
+              openLabel="Open website"
             />
           </Field>
 
           <Field>
             <FieldLabel htmlFor="reg">Registration URL</FieldLabel>
-            <Input
+            <UrlInput
               id="reg"
               value={registrationUrl}
-              onChange={(e) => setRegistrationUrl(e.target.value)}
-              placeholder="https://…"
+              onChange={setRegistrationUrl}
+              openLabel="Open registration"
             />
           </Field>
 
@@ -453,13 +576,26 @@ function QuickEditPanel({
           </Field>
 
           {error ? <FieldError>{error}</FieldError> : null}
-
-          <Button type="button" className="w-full" disabled={saving || busy} onClick={() => void save()}>
+        </FieldGroup>
+      </CardContent>
+      <CardFooter className="border-t py-4">
+        <div className="flex w-full gap-2">
+          <DiscardRaceButton
+            name={event.name}
+            disabled={saving || busy}
+            onDiscard={() => discardRace(event.id, event.name, onDiscarded)}
+          />
+          <Button
+            type="button"
+            className="flex-1"
+            disabled={saving || busy}
+            onClick={() => void save()}
+          >
             {saving ? <Spinner data-icon="inline-start" /> : null}
             Save & next
           </Button>
-        </FieldGroup>
-      </CardContent>
+        </div>
+      </CardFooter>
     </>
   );
 }

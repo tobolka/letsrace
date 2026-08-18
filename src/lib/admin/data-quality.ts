@@ -85,6 +85,8 @@ export async function listIncompleteEvents(opts?: {
       `id, name, start_date, audience, disciplines, website_url, registration_url, level, location_id,
        location:locations(id, name, municipality, country_code, lat, lng, geocode_status)`,
     )
+    .eq("visibility", "public")
+    .neq("status", "cancelled")
     .order("start_date", { ascending: true })
     .limit(limit);
 

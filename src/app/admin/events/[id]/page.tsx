@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { getEventById } from "@/lib/events";
 import { EventForm } from "@/components/admin/event-form";
+import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
 
 export default async function EditEventPage({
   params,
@@ -23,11 +24,17 @@ export default async function EditEventPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Edit event</h1>
-        <p className="text-sm text-muted-foreground">
-          Fix scraped mistakes here. Enable lock so the watcher will not overwrite your edits.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Edit event</h1>
+          <p className="text-sm text-muted-foreground">
+            Fix scraped mistakes here. Enable lock so the watcher will not overwrite your edits.
+          </p>
+        </div>
+        <OpenUrlButton
+          href={firstOpenableUrl(event.website_url, event.registration_url, event.regulations_url)}
+          label="Open race URL"
+        />
       </div>
       <EventForm
         initial={{

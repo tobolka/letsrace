@@ -18,6 +18,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
+import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
 
 type ItemRow = {
   id: string;
@@ -56,10 +57,9 @@ export function DiscoveryQueue({ initial }: { initial: ItemRow[] }) {
       {initial.map((item) => (
         <Item key={item.id} variant="outline">
           <ItemContent>
-            <ItemTitle>
-              <a href={item.url} className="break-all" target="_blank" rel="noreferrer">
-                {item.url}
-              </a>
+            <ItemTitle className="flex items-start gap-1">
+              <span className="min-w-0 break-all">{item.url}</span>
+              <OpenUrlButton href={firstOpenableUrl(item.url)} label="Open discovered URL" />
             </ItemTitle>
             <ItemDescription>
               {item.hint_kind ? <Badge variant="secondary">{item.hint_kind}</Badge> : null}

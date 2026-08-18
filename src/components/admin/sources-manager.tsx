@@ -20,7 +20,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -40,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { firstOpenableUrl, OpenUrlButton, UrlInput } from "@/components/admin/open-url";
 
 type Source = {
   id: string;
@@ -153,10 +153,10 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             <div className="flex gap-2">
-              <Input
+              <UrlInput
                 value={previewUrl}
-                onChange={(e) => setPreviewUrl(e.target.value)}
-                placeholder="https://…"
+                onChange={setPreviewUrl}
+                openLabel="Open preview URL"
               />
               <Button variant="outline" onClick={runPreview} disabled={busy}>
                 {busy ? <Spinner data-icon="inline-start" /> : null}
@@ -194,9 +194,10 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
             {initialSources.map((s) => (
               <TableRow key={s.id}>
                 <TableCell>
-                  <a href={s.url} className="break-all underline" target="_blank" rel="noreferrer">
-                    {s.url}
-                  </a>
+                  <div className="flex items-start gap-1">
+                    <span className="min-w-0 break-all">{s.url}</span>
+                    <OpenUrlButton href={firstOpenableUrl(s.url)} label="Open source URL" />
+                  </div>
                   {s.last_error ? (
                     <p className="mt-1 text-xs text-destructive">{s.last_error}</p>
                   ) : null}

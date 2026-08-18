@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
 
 export type AdminEventRow = {
   id: string;
@@ -31,6 +32,8 @@ export type AdminEventRow = {
   source_kind: string;
   status: string;
   visibility: string;
+  website_url: string | null;
+  registration_url: string | null;
   location: { name?: string; country_code?: string } | null;
 };
 
@@ -92,7 +95,7 @@ export function AdminEventsTable({
               <TableHead>Place</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Source</TableHead>
-              <TableHead className="text-right">Map</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -100,10 +103,11 @@ export function AdminEventsTable({
               const loc = e.location;
               const hidden = e.visibility === "hidden" || e.status === "hidden";
               const busy = pending || busyId === e.id;
+              const url = firstOpenableUrl(e.website_url, e.registration_url);
               return (
                 <TableRow key={e.id}>
                   <TableCell className="whitespace-nowrap tabular-nums">{e.start_date}</TableCell>
-                  <TableCell>
+                  <TableCell className="max-w-80 whitespace-normal">
                     <Link href={`/admin/events/${e.id}`} className="font-medium hover:underline">
                       {e.name}
                     </Link>
@@ -123,16 +127,19 @@ export function AdminEventsTable({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="xs"
-                      disabled={busy}
-                      onClick={() => void setVisibility(e.id, hidden ? "public" : "hidden")}
-                    >
-                      {busyId === e.id ? <Spinner data-icon="inline-start" /> : null}
-                      {hidden ? "Show on map" : "Hide"}
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <OpenUrlButton href={url} label="Open race URL" />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="xs"
+                        disabled={busy}
+                        onClick={() => void setVisibility(e.id, hidden ? "public" : "hidden")}
+                      >
+                        {busyId === e.id ? <Spinner data-icon="inline-start" /> : null}
+                        {hidden ? "Show on map" : "Discard"}
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               );

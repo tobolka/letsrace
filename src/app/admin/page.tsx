@@ -4,6 +4,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { listIncompleteEvents } from "@/lib/admin/data-quality";
 import { getIngestHealth, pct } from "@/lib/admin/ingest-health";
 import { CompletenessDashboard } from "@/components/admin/completeness-dashboard";
+import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -186,9 +187,8 @@ export default async function AdminHomePage() {
               {needsReview!.map((w) => (
                 <li key={w.id} className="flex flex-wrap items-center gap-2">
                   <Badge variant="secondary">{w.last_extract_status}</Badge>
-                  <a href={w.url} target="_blank" rel="noreferrer">
-                    {w.url}
-                  </a>
+                  <span className="min-w-0 break-all">{w.url}</span>
+                  <OpenUrlButton href={firstOpenableUrl(w.url)} label="Open source URL" />
                   <span>{w.last_error}</span>
                 </li>
               ))}

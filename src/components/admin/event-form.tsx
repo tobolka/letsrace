@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { UrlInput } from "@/components/admin/open-url";
 import { AUDIENCES, DISCIPLINES } from "@/lib/domain";
 import { europeCountryOptions } from "@/lib/geo/europe";
 
@@ -136,12 +137,11 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
               </Field>
               <Field>
                 <FieldLabel htmlFor="websiteUrl">Official URL</FieldLabel>
-                <Input
+                <UrlInput
                   id="websiteUrl"
-                  type="url"
-                  value={values.websiteUrl}
-                  onChange={(e) => set("websiteUrl", e.target.value)}
-                  placeholder="https://…"
+                  value={values.websiteUrl ?? ""}
+                  onChange={(value) => set("websiteUrl", value)}
+                  openLabel="Open official URL"
                 />
                 <FieldDescription>Optional — will be watched</FieldDescription>
               </Field>
@@ -240,21 +240,21 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
               </Field>
               <Field>
                 <FieldLabel htmlFor="registrationUrl">Registration URL</FieldLabel>
-                <Input
+                <UrlInput
                   id="registrationUrl"
-                  type="url"
-                  value={values.registrationUrl}
-                  onChange={(e) => set("registrationUrl", e.target.value)}
+                  value={values.registrationUrl ?? ""}
+                  onChange={(value) => set("registrationUrl", value)}
+                  openLabel="Open registration"
                 />
               </Field>
               <Field>
                 <FieldLabel htmlFor="regulationsUrl">Propozice / PDF</FieldLabel>
-                <Input
+                <UrlInput
                   id="regulationsUrl"
-                  type="url"
-                  value={values.regulationsUrl}
-                  onChange={(e) => set("regulationsUrl", e.target.value)}
+                  value={values.regulationsUrl ?? ""}
+                  onChange={(value) => set("regulationsUrl", value)}
                   placeholder="https://…/propozice.pdf"
+                  openLabel="Open regulations"
                 />
               </Field>
               <Field>

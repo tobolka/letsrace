@@ -25,6 +25,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
+import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
 
 type Note = {
   id: string;
@@ -170,10 +171,9 @@ export function SubmissionsInbox({
               {subs.map((s) => (
                 <Item key={s.id} variant="outline">
                   <ItemContent>
-                    <ItemTitle>
-                      <a href={s.url} target="_blank" rel="noreferrer" className="break-all">
-                        {s.url}
-                      </a>
+                    <ItemTitle className="flex items-start gap-1">
+                      <span className="min-w-0 break-all">{s.url}</span>
+                      <OpenUrlButton href={firstOpenableUrl(s.url)} label="Open submitted URL" />
                     </ItemTitle>
                     {s.note ? <ItemDescription>{s.note}</ItemDescription> : null}
                     <ItemDescription className="tabular-nums">

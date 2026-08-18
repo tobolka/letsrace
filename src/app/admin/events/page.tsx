@@ -20,7 +20,7 @@ export default async function EventsAdminPage({
   let query = supabase
     .from("events")
     .select(
-      "id, name, start_date, audience, source_kind, status, visibility, location:locations(name, country_code)",
+      "id, name, start_date, audience, source_kind, status, visibility, website_url, registration_url, location:locations(name, country_code)",
     )
     .order("start_date", { ascending: true })
     .limit(200);
@@ -38,6 +38,8 @@ export default async function EventsAdminPage({
     source_kind: e.source_kind,
     status: e.status,
     visibility: e.visibility ?? "public",
+    website_url: e.website_url ?? null,
+    registration_url: e.registration_url ?? null,
     location: (e.location as AdminEventRow["location"]) ?? null,
   }));
 
