@@ -14,7 +14,7 @@ import {
   ChartNoAxesColumnIncreasing,
   ChevronDown,
   Globe,
-  Plus,
+  ListFilter,
   Search,
   Trophy,
   UserRound,
@@ -501,161 +501,167 @@ export function MapFilterBar({
   }
 
   return (
-    <div className="pointer-events-auto flex flex-wrap items-center gap-1.5">
-      <Popover
-        open={dateOpen}
-        onOpenChange={(next) => {
-          setDateOpen(next);
-          if (next) {
-            setCustomPicked(dateActive && !isPreset);
-            setDateDraft(undefined);
-          }
-        }}
-      >
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            aria-pressed={dateOpen}
-          >
-            <Calendar />
-            {dateLabel}
-            <ChevronDown />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          className="w-auto p-0"
-          collisionPadding={12}
+    <div className="pointer-events-auto flex w-full items-center gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 max-md:flex-nowrap max-md:overflow-x-auto">
+        <Popover
+          open={dateOpen}
+          onOpenChange={(next) => {
+            setDateOpen(next);
+            if (next) {
+              setCustomPicked(dateActive && !isPreset);
+              setDateDraft(undefined);
+            }
+          }}
         >
-          <div className="flex w-full flex-col overflow-hidden md:flex-row">
-            <div className="flex w-full shrink-0 flex-col p-1 md:w-36">
-              {datePresets.map((opt) => (
-                <Button
-                  key={opt.id}
-                  type="button"
-                  variant={opt.active ? "default" : "ghost"}
-                  size="sm"
-                  className="w-full justify-start"
-                  aria-pressed={opt.active}
-                  onClick={opt.apply}
-                >
-                  {opt.label}
-                </Button>
-              ))}
-              <Button
-                type="button"
-                variant={isCustom ? "default" : "ghost"}
-                size="sm"
-                className="w-full justify-start"
-                aria-pressed={isCustom}
-                onClick={() => setCustomPicked(true)}
-              >
-                {messages.customDate}
-              </Button>
-            </div>
-            <Separator orientation="vertical" className="hidden md:block" />
-            <Separator className="md:hidden" />
-            <DateRangeCalendar
-              locale={locale}
-              selected={dateDraft ?? isoToRange(dateFrom, dateTo)}
-              onSelect={(range) => {
-                if (!range?.from) return;
-                setCustomPicked(true);
-                setDateDraft(range);
-                if (range.to) {
-                  const start = range.from <= range.to ? range.from : range.to;
-                  const end = range.from <= range.to ? range.to : range.from;
-                  onPreset(format(start, "yyyy-MM-dd"), format(end, "yyyy-MM-dd"));
-                }
-              }}
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      {visible.map((id) => {
-        const Icon = FILTER_ICONS[id];
-        return (
-          <div key={id} className="inline-flex max-w-full shrink-0 items-stretch">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  aria-label={`${extraMeta[id].label} ${extraMeta[id].value ?? ""}`.trim()}
-                  className="rounded-r-none"
-                >
-                  <Icon />
-                  <span className="max-w-[12rem] truncate">
-                    {extraMeta[id].value || extraMeta[id].label}
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                className={cn("max-h-80", id === "series" ? "w-72" : "w-56")}
-                collisionPadding={12}
-              >
-                {renderValues(id)}
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <PopoverTrigger asChild>
             <Button
               type="button"
               variant="secondary"
-              size="icon-sm"
-              aria-label={`${messages.clearFilter} ${extraMeta[id].label}`}
-              className="rounded-l-none"
-              onClick={() => unpin(id)}
+              size="sm"
+              aria-pressed={dateOpen}
             >
-              <X />
+              <Calendar />
+              {dateLabel}
+              <ChevronDown />
             </Button>
-          </div>
-        );
-      })}
+          </PopoverTrigger>
+          <PopoverContent
+            align="start"
+            className="w-auto max-h-[min(70dvh,36rem)] overflow-y-auto overscroll-contain p-0"
+            collisionPadding={12}
+          >
+            <div className="flex w-full flex-col overflow-hidden md:flex-row">
+              <div className="flex w-full shrink-0 flex-col p-1 md:w-36">
+                {datePresets.map((opt) => (
+                  <Button
+                    key={opt.id}
+                    type="button"
+                    variant={opt.active ? "default" : "ghost"}
+                    size="sm"
+                    className="w-full justify-start"
+                    aria-pressed={opt.active}
+                    onClick={opt.apply}
+                  >
+                    {opt.label}
+                  </Button>
+                ))}
+                <Button
+                  type="button"
+                  variant={isCustom ? "default" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  aria-pressed={isCustom}
+                  onClick={() => setCustomPicked(true)}
+                >
+                  {messages.customDate}
+                </Button>
+              </div>
+              <Separator orientation="vertical" className="hidden md:block" />
+              <Separator className="md:hidden" />
+              <DateRangeCalendar
+                locale={locale}
+                selected={dateDraft ?? isoToRange(dateFrom, dateTo)}
+                onSelect={(range) => {
+                  if (!range?.from) return;
+                  setCustomPicked(true);
+                  setDateDraft(range);
+                  if (range.to) {
+                    const start = range.from <= range.to ? range.from : range.to;
+                    const end = range.from <= range.to ? range.to : range.from;
+                    onPreset(format(start, "yyyy-MM-dd"), format(end, "yyyy-MM-dd"));
+                  }
+                }}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
 
-      {availableToAdd.length > 0 ? (
-        <DropdownMenu
-          onOpenChange={(next) => {
-            if (next) setSeriesQuery("");
-          }}
-        >
-          <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="sm">
-              <Plus data-icon="inline-start" />
-              {messages.addFilter}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56" collisionPadding={12}>
-            {availableToAdd.map((id) => {
-              const Icon = FILTER_ICONS[id];
-              return (
-                <DropdownMenuSub key={id}>
-                  <DropdownMenuSubTrigger className={itemClass}>
+        {visible.map((id) => {
+          const Icon = FILTER_ICONS[id];
+          return (
+            <div key={id} className="inline-flex max-w-full shrink-0 items-stretch">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    aria-label={`${extraMeta[id].label} ${extraMeta[id].value ?? ""}`.trim()}
+                    className="rounded-r-none"
+                  >
                     <Icon />
-                    {extraMeta[id].label}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent
-                      className={cn(
-                        "max-h-80 overflow-y-auto",
-                        id === "series" ? "w-72" : "w-56",
-                      )}
-                    >
-                      {renderValues(id)}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              );
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
+                    <span className="max-w-[12rem] truncate">
+                      {extraMeta[id].value || extraMeta[id].label}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className={cn("max-h-80", id === "series" ? "w-72" : "w-56")}
+                  collisionPadding={12}
+                >
+                  {renderValues(id)}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-sm"
+                aria-label={`${messages.clearFilter} ${extraMeta[id].label}`}
+                className="rounded-l-none"
+                onClick={() => unpin(id)}
+              >
+                <X />
+              </Button>
+            </div>
+          );
+        })}
+
+        {availableToAdd.length > 0 ? (
+          <DropdownMenu
+            onOpenChange={(next) => {
+              if (next) setSeriesQuery("");
+            }}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={messages.addFilter}
+              >
+                <ListFilter />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56" collisionPadding={12}>
+              {availableToAdd.map((id) => {
+                const Icon = FILTER_ICONS[id];
+                return (
+                  <DropdownMenuSub key={id}>
+                    <DropdownMenuSubTrigger className={itemClass}>
+                      <Icon />
+                      {extraMeta[id].label}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent
+                        className={cn(
+                          "max-h-80 overflow-y-auto",
+                          id === "series" ? "w-72" : "w-56",
+                        )}
+                      >
+                        {renderValues(id)}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
+      </div>
 
       {q.trim() ? (
-        <div className="inline-flex max-w-full shrink-0 items-stretch">
+        <div className="inline-flex max-w-[min(100%,12rem)] shrink-0 items-stretch">
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -666,10 +672,10 @@ export function MapFilterBar({
                 className="rounded-r-none"
               >
                 <Search />
-                <span className="max-w-[12rem] truncate">{q.trim()}</span>
+                <span className="max-w-[8rem] truncate">{q.trim()}</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-72 p-2" collisionPadding={12}>
+            <PopoverContent align="end" className="w-72 p-2" collisionPadding={12}>
               <PlaceSearchForm
                 q={q}
                 messages={messages}
@@ -699,7 +705,7 @@ export function MapFilterBar({
               <Search />
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-72 p-2" collisionPadding={12}>
+          <PopoverContent align="end" className="w-72 p-2" collisionPadding={12}>
             <PlaceSearchForm
               q={q}
               messages={messages}

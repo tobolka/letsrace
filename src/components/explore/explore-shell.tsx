@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, type PointerEvent } from "react";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
@@ -66,7 +66,7 @@ import {
   distanceKm,
   type EventSort,
 } from "@/lib/geo/distance";
-import { viewportChangedEnough } from "@/lib/geo/viewport";
+import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
 import { MoreHorizontal, Flag } from "lucide-react";
 import Link from "next/link";
@@ -80,18 +80,13 @@ type Props = {
   locale: string;
 };
 
-function eventInBounds(event: EventListItem, b: MapBounds) {
-  const lat = event.location?.lat;
-  const lng = event.location?.lng;
-  if (lat == null || lng == null) return false;
-  return lng >= b.west && lng <= b.east && lat >= b.south && lat <= b.north;
-}
-
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const sheetDragY = useRef<number | null>(null);
+  const sheetSwiped = useRef(false);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -443,22 +438,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   searchViewportRef.current = (b) => {
     if (filters.series || filters.country) return;
-    if (lastAreaRef.current && !viewportChangedEnough(lastAreaRef.current, b)) return;
-    lastAreaRef.current = b;
+    if (lastAreaRef.current && !viewportNeedsFetch(lastAreaRef.current, b)) return;
+    const query = expandViewport(b);
+    lastAreaRef.current = query;
     void setFilters({
-      west: String(b.west),
-      south: String(b.south),
-      east: String(b.east),
-      north: String(b.north),
+      west: String(query.west),
+      south: String(query.south),
+      east: String(query.east),
+      north: String(query.north),
     });
-    setEvents((prev) => {
-      const next = prev.filter((e) => eventInBounds(e, b));
-      if (!filters.e) return next;
-      const kept = prev.find((e) => e.slug === filters.e);
-      if (kept && !next.some((e) => e.id === kept.id)) return [kept, ...next];
-      return next;
-    });
-    refetch({ bounds: b, forceBounds: true });
+    refetch({ bounds: query, forceBounds: true });
   };
 
   function scheduleSearchViewport(b: MapBounds, immediate = false) {
@@ -469,7 +458,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     }
     areaTimerRef.current = window.setTimeout(() => {
       searchViewportRef.current(b);
-    }, 320);
+    }, 160);
   }
 
   useEffect(() => {
@@ -480,19 +469,34 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     };
   }, []);
 
-  // Desktop: clear list (+ detail) panels. Mobile: clear bottom sheet.
+  // Desktop: side panels. Mobile: bottom sheet over a usable map.
   const [isDesktop, setIsDesktop] = useState(false);
+  const [viewportH, setViewportH] = useState(800);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
-    const apply = () => setIsDesktop(mq.matches);
+    const apply = () => {
+      setIsDesktop(mq.matches);
+      setViewportH(window.innerHeight);
+    };
     apply();
     mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
+    window.addEventListener("resize", apply);
+    return () => {
+      mq.removeEventListener("change", apply);
+      window.removeEventListener("resize", apply);
+    };
   }, []);
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      return { top: 16, right: 16, bottom: selected && mobileOpen ? 480 : 130, left: 16 };
+      const peek = selected ? 148 : 132;
+      const open = Math.round(Math.min(viewportH * 0.5, 560));
+      return {
+        top: 56,
+        right: 48,
+        bottom: (mobileOpen ? open : peek) + 12,
+        left: 12,
+      };
     }
     const listW = 400 + 12 + 12;
     const detailW = selected ? 320 + 12 : 0;
@@ -502,7 +506,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, mobileOpen]);
+  }, [selected, isDesktop, mobileOpen, viewportH]);
 
   function renderFilterBar() {
     return (
@@ -534,6 +538,37 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     );
   }
 
+  function onSheetHandlePointerDown(e: PointerEvent<HTMLButtonElement>) {
+    sheetSwiped.current = false;
+    sheetDragY.current = e.clientY;
+  }
+
+  function onSheetHandlePointerUp(e: PointerEvent<HTMLButtonElement>) {
+    if (sheetDragY.current == null) return;
+    const dy = e.clientY - sheetDragY.current;
+    sheetDragY.current = null;
+    if (Math.abs(dy) < 24) return;
+    sheetSwiped.current = true;
+    setMobileOpen(dy < 0);
+  }
+
+  function onSheetHandleClick() {
+    if (sheetSwiped.current) {
+      sheetSwiped.current = false;
+      return;
+    }
+    setMobileOpen((open) => !open);
+  }
+
+  const selectedPeekMeta = selected
+    ? [
+        format(parseISO(selected.startDate), "d MMM"),
+        selected.location?.municipality || selected.location?.name,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : "";
+
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
       <div className="absolute inset-0">
@@ -554,27 +589,29 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           }}
           onBoundsChange={(b, reason) => {
             setBounds(b);
-            // First camera settle → load races for this viewport
+            // First camera settle → load races for this viewport (padded query box)
             if (!initialBoundsFetchDone.current) {
               initialBoundsFetchDone.current = true;
-              lastAreaRef.current = b;
               if (filters.q.trim().length >= 3) {
                 void runSearch(filters.q);
                 return;
               }
               if (filters.series || filters.country) {
+                lastAreaRef.current = expandViewport(b);
                 refetch({ skipBounds: true, fitMap: true });
               } else {
-                refetch({ bounds: b, forceBounds: true });
+                const query = expandViewport(b);
+                lastAreaRef.current = query;
+                refetch({ bounds: query, forceBounds: true });
               }
               return;
             }
             if (destFlyingRef.current) {
               destFlyingRef.current = false;
-              lastAreaRef.current = b;
+              lastAreaRef.current = expandViewport(b);
               return;
             }
-            if (reason === "user") {
+            if (reason === "user" || reason === "sync") {
               scheduleSearchViewport(b);
               return;
             }
@@ -678,25 +715,66 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         )}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 md:hidden">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 md:hidden">
         <Card
           className={cn(
-            "flex flex-col gap-0 overflow-hidden rounded-b-none py-0 shadow-lg transition-[max-height] duration-200 ease-out motion-reduce:transition-none",
-            mobileOpen ? "max-h-[min(85dvh,40rem)]" : "max-h-14",
+            "pointer-events-auto flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-t-2xl rounded-b-none py-0 shadow-[0_-8px_32px_rgba(28,25,23,.12)]",
+            mobileOpen ? "h-[min(50dvh,34rem)]" : "h-auto",
           )}
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
         >
           <button
             type="button"
-            className="flex min-h-11 w-full shrink-0 items-center justify-center touch-manipulation"
-            onClick={() => setMobileOpen((v) => !v)}
+            className="flex min-h-11 w-full shrink-0 touch-manipulation flex-col items-center justify-center pt-1.5"
+            onClick={onSheetHandleClick}
+            onPointerDown={onSheetHandlePointerDown}
+            onPointerUp={onSheetHandlePointerUp}
+            onPointerCancel={() => {
+              sheetDragY.current = null;
+            }}
             aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? "Collapse" : "Expand"}
+            aria-label={mobileOpen ? messages.sheetCollapse : messages.sheetExpand}
           >
             <span className="h-1 w-10 rounded-full bg-muted-foreground/40" />
           </button>
-          {selected && mobileOpen ? (
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
+
+          {selected && !mobileOpen ? (
+            <button
+              type="button"
+              className="flex min-h-11 w-full items-start gap-2 px-4 pb-3 text-left touch-manipulation"
+              onClick={() => setMobileOpen(true)}
+            >
+              <span
+                className="mt-2 size-2.5 shrink-0 rounded-full"
+                style={{ background: disciplineColor(selected.disciplines) }}
+                aria-hidden
+              />
+              <span className="min-w-0">
+                <span className="block truncate text-[15px] font-semibold leading-snug">
+                  {selected.name}
+                </span>
+                {selectedPeekMeta ? (
+                  <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                    {selectedPeekMeta}
+                  </span>
+                ) : null}
+              </span>
+            </button>
+          ) : (
+            <div className="px-3 pb-2">
+              <Header
+                messages={messages}
+                locale={locale}
+                onSubmitRace={() => setSubmitOpen(true)}
+                onFeedback={() => setFeedbackOpen(true)}
+                onSignIn={() => setAuthOpen(true)}
+                compact
+              />
+            </div>
+          )}
+
+          {mobileOpen && selected ? (
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-1">
               <EventDetailPanel
                 event={selected}
                 locale={locale}
@@ -705,52 +783,65 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 onSelectSeries={applySeries}
               />
             </div>
-          ) : (
+          ) : null}
+
+          {mobileOpen && !selected ? (
             <>
-              <div className="px-3 pb-2">
-                <Header
-                  messages={messages}
-                  locale={locale}
-                  onSubmitRace={() => setSubmitOpen(true)}
-                  onFeedback={() => setFeedbackOpen(true)}
-                  onSignIn={() => setAuthOpen(true)}
-                  compact
-                />
+              <div className="relative z-30 shrink-0 px-3 pb-2">
+                {renderFilterBar()}
               </div>
-              {mobileOpen && (
-                <>
-                  <div className="relative z-30 shrink-0 px-3 py-2">
-                    {renderFilterBar()}
-                  </div>
-                  <Separator />
-                  <ListToolbar
-                    count={events.length}
-                    pending={listLoading}
-                    sort={listSort}
-                    distanceEnabled={distanceEnabled}
-                    messages={messages}
-                    onSort={setListSort}
-                  />
-                  <Separator />
-                  <div ref={mobileListRef} className="max-h-[60vh] overflow-y-auto">
-                    <ItemGroup>
-                      {sortedEvents.map((event) => (
-                        <EventCard
-                          key={event.id}
-                          event={event}
-                          messages={messages}
-                          locale={locale}
-                          distanceKm={eventDistanceKm(event, userOrigin)}
-                          active={event.id === selectedId}
-                          onClick={() => selectEvent(event.id)}
-                        />
-                      ))}
-                    </ItemGroup>
-                  </div>
-                </>
-              )}
+              <Separator />
+              <ListToolbar
+                count={events.length}
+                pending={listLoading}
+                sort={listSort}
+                distanceEnabled={distanceEnabled}
+                messages={messages}
+                onSort={setListSort}
+              />
+              <Separator />
+              <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                {events.length === 0 ? (
+                  <Empty className="border-0 p-6">
+                    <EmptyHeader>
+                      <EmptyTitle>{messages.noResults}</EmptyTitle>
+                      <EmptyDescription>{messages.weekendNearYou}</EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => resetExploreFilters({ clearSearch: true })}
+                      >
+                        {messages.clearFilters}
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
+                ) : (
+                  <ItemGroup>
+                    {sortedEvents.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        messages={messages}
+                        locale={locale}
+                        distanceKm={eventDistanceKm(event, userOrigin)}
+                        active={event.id === selectedId}
+                        onClick={() => selectEvent(event.id)}
+                      />
+                    ))}
+                  </ItemGroup>
+                )}
+              </div>
             </>
-          )}
+          ) : null}
+
+          {!mobileOpen && !selected ? (
+            <p className="px-4 pb-2 text-xs text-muted-foreground tabular-nums">
+              {events.length} {messages.racesCount}
+            </p>
+          ) : null}
         </Card>
       </div>
 
@@ -807,8 +898,10 @@ function ListToolbar({
         aria-live="polite"
         aria-busy={pending}
       >
-        {pending ? <Spinner /> : null}
         {count} {messages.racesCount}
+        <span className="inline-flex size-4 shrink-0 items-center justify-center" aria-hidden={!pending}>
+          {pending ? <Spinner className="size-3.5" /> : null}
+        </span>
       </span>
       <div className="flex items-center gap-2">
         <ToggleGroup
@@ -852,14 +945,35 @@ function Header({
   compact?: boolean;
 }) {
   return (
-    <CardHeader className={cn(compact ? "gap-0 px-0 py-0" : "border-b px-4 py-3")}>
-      <CardTitle className="text-sm font-semibold tracking-[0.14em] uppercase">
-        <Link href={`/${locale}`}>{messages.appName}</Link>
+    <CardHeader
+      className={cn(
+        "items-center",
+        compact ? "gap-0 px-0 py-0" : "border-b px-4 py-3 [.border-b]:pb-3",
+      )}
+    >
+      <CardTitle
+        className={cn(
+          "font-semibold tracking-tight",
+          compact ? "text-lg" : "text-[1.375rem]",
+        )}
+      >
+        <Link
+          href={`/${locale}`}
+          className="rounded-sm text-brand outline-offset-2 focus-visible:outline-2"
+        >
+          {messages.appName}
+        </Link>
       </CardTitle>
-      <CardAction>
+      <CardAction className="self-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="icon" aria-label={messages.more}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={messages.more}
+              className="[@media(pointer:coarse)]:size-11"
+            >
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
@@ -968,7 +1082,7 @@ function EventCard({
         type="button"
         data-event-id={event.id}
         onClick={onClick}
-        className="w-full scroll-my-2 text-left touch-manipulation"
+        className="w-full min-h-11 scroll-my-2 text-left touch-manipulation"
       >
         <ItemContent>
           <ItemHeader>

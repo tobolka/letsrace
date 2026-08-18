@@ -247,12 +247,25 @@ function fitRadius(
 
 function visibleBounds(map: Map, padding: PaddingOptions): MapBounds {
   const canvas = map.getCanvas();
+  const width = canvas.clientWidth || canvas.width;
+  const height = canvas.clientHeight || canvas.height;
   const left = typeof padding.left === "number" ? padding.left : 0;
   const right = typeof padding.right === "number" ? padding.right : 0;
   const top = typeof padding.top === "number" ? padding.top : 0;
   const bottom = typeof padding.bottom === "number" ? padding.bottom : 0;
-  const sw = map.unproject([left, canvas.height - bottom]);
-  const ne = map.unproject([canvas.width - right, top]);
+  // Side panels can eat the inner rectangle on a narrow window — never
+  // search a collapsed sliver or the map stays empty after tiles appear.
+  if (width - left - right < 160 || height - top - bottom < 160) {
+    const b = map.getBounds();
+    return {
+      west: b.getWest(),
+      south: b.getSouth(),
+      east: b.getEast(),
+      north: b.getNorth(),
+    };
+  }
+  const sw = map.unproject([left, height - bottom]);
+  const ne = map.unproject([width - right, top]);
   return {
     west: Math.min(sw.lng, ne.lng),
     south: Math.min(sw.lat, ne.lat),
@@ -318,13 +331,27 @@ export function RaceMap({
     onBoundsChangeRef.current(visibleBounds(map, paddingRef.current), reason);
   }
 
+  function emitBoundsWhenIdle(map: Map, reason: BoundsChangeReason) {
+    let done = false;
+    const fire = () => {
+      if (done || mapRef.current !== map) return;
+      done = true;
+      emitBounds(map, reason);
+    };
+    if (map.loaded() && !map.isMoving()) {
+      fire();
+      return;
+    }
+    map.once("idle", fire);
+    window.setTimeout(fire, 350);
+  }
+
   function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
     if (skipInitialLocateRef.current) return;
     if (initialViewDoneRef.current || userMovedRef.current) return;
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
     initialViewDoneRef.current = true;
-    // Let the camera settle, then sync list filters to this area
-    window.setTimeout(() => emitBounds(map, "gps"), duration + 50);
+    emitBoundsWhenIdle(map, "gps");
   }
 
   useEffect(() => {
@@ -358,6 +385,28 @@ export function RaceMap({
         }
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
           order: 1;
+        }
+        @media (max-width: 767px) {
+          .maplibregl-ctrl-top-right {
+            top: max(8px, env(safe-area-inset-top));
+            right: 8px;
+          }
+          .maplibregl-ctrl-top-right .maplibregl-ctrl {
+            margin: 0 0 8px 0 !important;
+          }
+          .maplibregl-ctrl-bottom-right {
+            bottom: calc(7.5rem + env(safe-area-inset-bottom));
+            right: 8px;
+            margin: 0 !important;
+          }
+          .maplibregl-ctrl-zoom-in,
+          .maplibregl-ctrl-zoom-out,
+          .startline-locate-ctrl {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px;
+            min-height: 44px;
+          }
         }
         .maplibregl-marker.startline-user-marker {
           z-index: 5 !important;
@@ -410,7 +459,10 @@ export function RaceMap({
     (window as unknown as { __startlineMap?: Map }).__startlineMap = map;
 
     // Zoom + locate stacked in the same MapLibre corner (no overlap)
-    map.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
+    const controlCorner = window.matchMedia("(min-width: 768px)").matches
+      ? "bottom-right"
+      : "top-right";
+    map.addControl(new NavigationControl({ showCompass: false }), controlCorner);
 
     const locateCtrl = {
       onAdd() {
@@ -438,7 +490,7 @@ export function RaceMap({
         locateBtnRef.current = null;
       },
     };
-    map.addControl(locateCtrl, "bottom-right");
+    map.addControl(locateCtrl, controlCorner);
     setMapEpoch((n) => n + 1);
 
     // Fallback view: locale market ~200 km until GPS arrives (or a shared race focus)
@@ -448,17 +500,18 @@ export function RaceMap({
       if (focus) {
         fitRadius(map, focus.lng, focus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
         initialViewDoneRef.current = true;
-        window.setTimeout(() => emitBounds(map), 80);
+        emitBoundsWhenIdle(map, "gps");
         return;
       }
       if (skipInitialLocateRef.current) {
         fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
+        emitBoundsWhenIdle(map, "gps");
         return;
       }
       if (!initialViewDoneRef.current) {
         fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
         // Don't lock initialViewDone yet — GPS can still refine once
-        window.setTimeout(() => emitBounds(map), 80);
+        emitBoundsWhenIdle(map, "gps");
       }
     });
 
@@ -479,7 +532,14 @@ export function RaceMap({
       emitBounds(map, fromUser ? "user" : "sync");
     });
 
-    const resize = () => map.resize();
+    let resizeSyncTimer = 0;
+    const resize = () => {
+      map.resize();
+      window.clearTimeout(resizeSyncTimer);
+      resizeSyncTimer = window.setTimeout(() => {
+        if (map.loaded()) emitBounds(map, "sync");
+      }, 180);
+    };
     window.addEventListener("resize", resize);
     const ro = new ResizeObserver(resize);
     ro.observe(el);
@@ -489,6 +549,7 @@ export function RaceMap({
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
+      window.clearTimeout(resizeSyncTimer);
       window.removeEventListener("resize", resize);
       ro.disconnect();
       if (watchIdRef.current != null && navigator.geolocation) {
@@ -601,7 +662,7 @@ export function RaceMap({
     if (initialViewDoneRef.current) return;
     fitRadius(map, initialFocus.lng, initialFocus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
     initialViewDoneRef.current = true;
-    window.setTimeout(() => emitBounds(map), 80);
+    emitBoundsWhenIdle(map, "gps");
   }, [initialFocus, mapEpoch]);
 
   useEffect(() => {
@@ -750,7 +811,7 @@ export function RaceMap({
       userMovedRef.current = true;
       upsertUserMarker(map, userMarkerRef, { lng, lat });
       fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, 700);
-      window.setTimeout(() => emitBounds(map, "locate"), 750);
+      emitBoundsWhenIdle(map, "locate");
     };
 
     navigator.geolocation.getCurrentPosition(
@@ -785,7 +846,7 @@ export function RaceMap({
 
       {locError ? (
         <p
-          className="absolute bottom-24 right-2.5 z-10 max-w-[11rem] rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] text-stone-600 shadow ring-1 ring-stone-200 md:bottom-20"
+          className="absolute left-2.5 top-[max(0.75rem,env(safe-area-inset-top))] z-10 max-w-[11rem] rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] text-stone-600 shadow ring-1 ring-stone-200 md:left-auto md:right-2.5 md:top-auto md:bottom-20"
           role="status"
           aria-live="polite"
         >

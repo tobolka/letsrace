@@ -338,11 +338,11 @@ export function EventDetailPanel({
       className={cn(
         "pointer-events-auto w-full gap-0 overflow-hidden py-0",
         embedded
-          ? "border-0 shadow-none"
+          ? "flex h-full min-h-0 flex-col border-0 shadow-none"
           : "shadow-lg md:w-[320px] md:max-h-[calc(100dvh-1.5rem)] md:self-start",
       )}
     >
-      <CardHeader className="border-b px-4 py-3 [.border-b]:pb-3">
+      <CardHeader className="shrink-0 border-b px-4 py-3 [.border-b]:pb-3">
         <CardTitle
           id="race-detail-title"
           className="flex min-w-0 items-start gap-2 text-base leading-snug"
@@ -448,67 +448,68 @@ export function EventDetailPanel({
         ) : (
           <p className="mt-4 text-sm text-muted-foreground">{t.noOnlineEntry}</p>
         )}
-
-        <p
-          className={cn(
-            "mt-3 text-xs",
-            trust === "low" ? "text-destructive" : "text-muted-foreground",
-          )}
-        >
-          {trustText}
-        </p>
       </CardContent>
 
       <CardFooter
         className={cn(
-          "flex-wrap gap-0.5 border-t px-2 py-2 md:flex-nowrap [.border-t]:pt-2",
+          "shrink-0 justify-between gap-2 border-t px-2 py-2 [.border-t]:pt-2",
           embedded ? "" : "pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2",
         )}
       >
         <p className="sr-only" aria-live="polite">
           {linkCopied ? t.linkCopied : ""}
         </p>
-        <Toggle
-          pressed={favorited}
-          disabled={busy}
-          size="lg"
-          aria-label={favorited ? t.savedRace : t.saveRace}
-          title={favorited ? t.savedRace : t.saveRace}
-          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          onPressedChange={() => void toggleFavorite()}
+        <p
+          className={cn(
+            "min-w-0 truncate text-xs",
+            trust === "low" ? "text-destructive" : "text-muted-foreground",
+          )}
         >
-          <Heart className={cn(favorited && "fill-current")} />
-        </Toggle>
-        <Toggle
-          pressed={going}
-          disabled={busy}
-          size="lg"
-          aria-label={t.calendarAdd}
-          title={t.calendarAdd}
-          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          onPressedChange={() => {
-            if (!userId) {
-              requireAuth("calendar");
-              return;
-            }
-            if (!selfMember) return;
-            void toggleGoing(selfMember.id);
-          }}
-        >
-          {going ? <CalendarCheck /> : <CalendarPlus />}
-        </Toggle>
-        <Toggle
-          pressed={linkCopied}
-          size="lg"
-          aria-label={linkCopied ? t.linkCopied : t.shareRace}
-          title={linkCopied ? t.linkCopied : t.shareRace}
-          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          onPressedChange={() => {
-            if (!linkCopied) void copyShareLink();
-          }}
-        >
-          <Share2 />
-        </Toggle>
+          {trustText}
+        </p>
+        <div className="ml-auto flex items-center gap-0.5">
+          <Toggle
+            pressed={favorited}
+            disabled={busy}
+            size="lg"
+            aria-label={favorited ? t.savedRace : t.saveRace}
+            title={favorited ? t.savedRace : t.saveRace}
+            className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            onPressedChange={() => void toggleFavorite()}
+          >
+            <Heart className={cn(favorited && "fill-current")} />
+          </Toggle>
+          <Toggle
+            pressed={going}
+            disabled={busy}
+            size="lg"
+            aria-label={t.calendarAdd}
+            title={t.calendarAdd}
+            className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            onPressedChange={() => {
+              if (!userId) {
+                requireAuth("calendar");
+                return;
+              }
+              if (!selfMember) return;
+              void toggleGoing(selfMember.id);
+            }}
+          >
+            {going ? <CalendarCheck /> : <CalendarPlus />}
+          </Toggle>
+          <Toggle
+            pressed={linkCopied}
+            size="lg"
+            aria-label={linkCopied ? t.linkCopied : t.shareRace}
+            title={linkCopied ? t.linkCopied : t.shareRace}
+            className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            onPressedChange={() => {
+              if (!linkCopied) void copyShareLink();
+            }}
+          >
+            <Share2 />
+          </Toggle>
+        </div>
       </CardFooter>
 
       <AuthDialog
