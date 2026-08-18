@@ -181,11 +181,15 @@ export async function extractWithAdapter(
     }
     return { events: parseKolopro(url, html), strategy: "adapter:kolopro" };
   }
-  if (
-    host.includes("ceskysvazcyklistiky.cz") ||
-    host.includes("czechcyclingfederation.com")
-  ) {
-    return { events: parseCscCalendar(url, html), strategy: "adapter:csc" };
+  if (host.includes("portal.czechcyclingfederation.com")) {
+    return { events: await parseCscCalendar(url, html), strategy: "adapter:csc" };
+  }
+  if (host.includes("czechcyclingfederation.com")) {
+    // Marketing WP site — calendar there is a 2021 snapshot, not the live IS.
+    return { events: [], strategy: "adapter:csc-skip-marketing" };
+  }
+  if (host.includes("ceskysvazcyklistiky.cz")) {
+    return { events: await parseCscCalendar(url, html), strategy: "adapter:csc" };
   }
   if (host.includes("mtbs.cz")) {
     return { events: await parseMtbs(url, html), strategy: "adapter:mtbs" };

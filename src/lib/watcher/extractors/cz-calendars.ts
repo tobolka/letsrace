@@ -3,6 +3,7 @@ import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { fetchText } from "@/lib/watcher/http";
 import { mapPool } from "@/lib/watcher/pool";
+import { isStartListUrl } from "@/lib/watcher/registration-url";
 
 const CZ_MONTHS: Record<string, string> = {
   leden: "01",
@@ -579,7 +580,7 @@ export function parseEnduroSerie(url: string, html: string): ParsedEvent[] {
     const href = absHref($(a).attr("href"), url);
     const label = $(a).text().replace(/\s+/g, " ").trim();
     if (!href || !label) return;
-    if (/\/zavody\/?$/i.test(href) || /tba/i.test(href)) return;
+    if (/\/zavody\/?$/i.test(href)) return;
     const dates = parseCzIso(label) || parseCzNamed(label);
     const start = typeof dates === "string" ? dates : dates?.start;
     const dm = label.match(/(\d{1,2})\.\s*(\d{1,2})\.?/);
@@ -588,16 +589,16 @@ export function parseEnduroSerie(url: string, html: string): ParsedEvent[] {
       (dm ? `${year}-${dm[2]!.padStart(2, "0")}-${dm[1]!.padStart(2, "0")}` : null);
     if (!startDate) return;
 
-    const slug = href.replace(/\/$/, "").split("/").pop() || normalizeName(label);
-    const externalId = `enduroserie-${slug}-${startDate}`;
-    if (seen.has(externalId)) return;
-    seen.add(externalId);
-
     const name = label
       .replace(/^(proběhl|probiha|probíhá)\s+/i, "")
+      .replace(/\s+(proběhl|probiha|probíhá)\s*$/i, "")
       .replace(/\s+\d{1,2}\.\s*\d{1,2}\.?\s*$/, "")
       .trim();
-    events.push({
+    if (/\btba\b/i.test(name)) return;
+
+    const slug = href.replace(/\/$/, "").split("/").pop() || normalizeName(label);
+    const externalId = `enduroserie-${slug}-${startDate}`;
+    const next: ParsedEvent = {
       externalId,
       name,
       startDate,
@@ -611,13 +612,22 @@ export function parseEnduroSerie(url: string, html: string): ParsedEvent[] {
       sourceUrl: href,
       websiteUrl: href,
       confidence: 0.9,
-    });
+    };
+    const prevIdx = events.findIndex((e) => e.externalId === externalId);
+    if (prevIdx >= 0) {
+      const prev = events[prevIdx]!;
+      if (/mčr/i.test(next.name) && !/mčr/i.test(prev.name)) events[prevIdx] = next;
+      return;
+    }
+    if (seen.has(externalId)) return;
+    seen.add(externalId);
+    events.push(next);
   });
 
   return events;
 }
 
-function enduroPageEntryLinks(pageUrl: string, html: string): {
+export function enduroRacePageLinks(pageUrl: string, html: string): {
   registrationUrl?: string;
   regulationsUrl?: string;
 } {
@@ -629,19 +639,41 @@ function enduroPageEntryLinks(pageUrl: string, html: string): {
     if (!href) return;
     const text = $(a).text().replace(/\s+/g, " ").trim();
     const blob = `${href} ${text}`;
-    if (
-      !registrationUrl &&
-      /njuko|sportsoft|raceresult|entrywall|prihlá|prihlas|registruj/i.test(blob)
-    ) {
-      if (!/\/registrace\/?$/i.test(href) || /njuko|sportsoft|raceresult/i.test(href)) {
-        registrationUrl = href;
-      }
+    if (!registrationUrl && isEnduroEntryHref(href, text)) {
+      registrationUrl = stripNjukoToken(href);
     }
-    if (!regulationsUrl && /propozic|technical|rozpis/i.test(blob) && !/registrac/i.test(blob)) {
+    if (
+      !regulationsUrl &&
+      /propozic|technical|rozpis/i.test(blob) &&
+      !/registrac|startovk|startlist/i.test(blob)
+    ) {
       regulationsUrl = href;
     }
   });
   return { registrationUrl, regulationsUrl };
+}
+
+function isEnduroEntryHref(href: string, text: string): boolean {
+  if (isStartListUrl(href) || /entry-list/i.test(href)) return false;
+  try {
+    const path = new URL(href).pathname.replace(/\/$/, "") || "/";
+    if (/enduroserie\.cz$/i.test(new URL(href).hostname.replace(/^www\./, "")) && path === "/registrace") {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+  return /njuko|raceresult|entrywall/i.test(href) || /registruj se/i.test(text);
+}
+
+function stripNjukoToken(href: string): string {
+  try {
+    const u = new URL(href);
+    u.searchParams.delete("token");
+    return u.toString();
+  } catch {
+    return href;
+  }
 }
 
 /** Attach Njuko / Sportsoft entry links from each Enduro race page. */
@@ -652,7 +684,7 @@ export async function enrichEnduroSerie(events: ParsedEvent[]): Promise<ParsedEv
     try {
       const page = await fetchText(ev.websiteUrl!, { timeoutMs: 15_000 });
       if (!page.ok || !page.text) return { id: ev.externalId };
-      return { id: ev.externalId, ...enduroPageEntryLinks(ev.websiteUrl!, page.text) };
+      return { id: ev.externalId, ...enduroRacePageLinks(ev.websiteUrl!, page.text) };
     } catch {
       return { id: ev.externalId };
     }

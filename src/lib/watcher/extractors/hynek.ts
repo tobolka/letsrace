@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { inferRaceLevel } from "@/lib/race-level";
+import { isNonRaceEventName } from "@/lib/event-visibility";
 
 const WEEKDAYS = /^(pondělí|úterý|středa|čtvrtek|pátek|sobota|neděle)$/i;
 
@@ -230,6 +231,7 @@ export function parseHynekMusil(url: string, html: string): ParsedEvent[] {
 
     // Race name should be the event, not "5. TalentCUP: …"
     name = name.replace(/^\d+\.\s*Talent\s*Cup[:\s-]*/i, "").trim() || name;
+    if (isNonRaceEventName(name)) return;
     if (
       /^janev\s*cup(\s+uci)?(\s+c[123])?(\s+nz)?(\s*\(.*\))?$/i.test(name.trim()) &&
       /^(czechia|česko|cesko)?$/i.test(place.trim())

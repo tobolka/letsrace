@@ -4,7 +4,7 @@ import {
   isPlaceSearchStopword,
   resolveCoveragePlace,
 } from "@/lib/coverage";
-import { EUROPE_COUNTRY_CODES, isInEuropeMap } from "@/lib/geo/europe";
+import { EUROPE_COUNTRY_CODES, isInEuropeMap, isOmittedMapCountry } from "@/lib/geo/europe";
 
 export type GeocodeResult = {
   lat: number;
@@ -1310,6 +1310,7 @@ function hitToResult(hit: NominatimHit, countryCode?: string): GeocodeResult | n
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   if (!isInEuropeMap(lat, lng)) return null;
   const cc = (hit.address?.country_code || countryCode || "").toUpperCase() || undefined;
+  if (isOmittedMapCountry(cc)) return null;
   const bounds = nominatimBounds(hit) ?? boundsFromRadiusKm(lng, lat, 80);
   return {
     lat,

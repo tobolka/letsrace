@@ -23,8 +23,11 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -44,7 +47,7 @@ import {
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
-import type { Messages } from "@/lib/i18n/messages";
+import { locales, type Messages } from "@/lib/i18n/messages";
 import {
   DISCIPLINE_LABELS,
   RACE_LEVEL_LABELS,
@@ -63,10 +66,9 @@ import {
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { MoreHorizontal, Flag } from "lucide-react";
+import { MoreHorizontal, Flag, Check } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
-import { SITE_AUTHOR } from "@/lib/seo";
 import { BrandMark } from "@/components/brand-mark";
 import { cn } from "@/lib/utils";
 
@@ -661,7 +663,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         />
       </div>
 
-      <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden items-start p-3 md:flex md:gap-3">
+      <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
         <Card className="pointer-events-auto flex h-full w-[400px] flex-col gap-0 overflow-hidden py-0 shadow-lg">
           <Header
             messages={messages}
@@ -722,24 +724,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </ItemGroup>
             )}
           </div>
-          <p className="shrink-0 border-t px-4 py-2 text-[11px] text-muted-foreground">
-            {messages.madeBy}{" "}
-            <a
-              href={SITE_AUTHOR.url}
-              target="_blank"
-              rel="noreferrer"
-              className="underline-offset-2 hover:text-foreground hover:underline"
-            >
-              {SITE_AUTHOR.name}
-            </a>
-            <span aria-hidden> · </span>
-            <a
-              href={`mailto:${SITE_AUTHOR.email}`}
-              className="underline-offset-2 hover:text-foreground hover:underline"
-            >
-              {SITE_AUTHOR.email}
-            </a>
-          </p>
         </Card>
 
         {selected && (
@@ -982,7 +966,7 @@ function Header({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-between px-3",
+        "flex shrink-0 items-center justify-between border-b px-3",
         compact ? "h-11" : "h-12",
       )}
     >
@@ -1001,39 +985,39 @@ function Header({
         </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>{messages.language}</DropdownMenuLabel>
-              {(["en", "cs", "pl", "sk"] as const).map((l) => (
-                <DropdownMenuItem key={l} asChild>
-                  <Link href={`/${l}`}>{l.toUpperCase()}</Link>
-                </DropdownMenuItem>
-              ))}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  {messages.language}
+                  <span className="ml-auto text-xs text-muted-foreground">{locale.toUpperCase()}</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    {locales.map((l) => (
+                      <DropdownMenuItem key={l} asChild>
+                        <Link href={`/${l}`} aria-current={l === locale ? "page" : undefined}>
+                          <Check aria-hidden className={l === locale ? undefined : "opacity-0"} />
+                          {l.toUpperCase()}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onSelect={onSignIn}>Sign in</DropdownMenuItem>
+              <DropdownMenuItem onSelect={onSignIn}>{messages.signIn}</DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/${locale}/account`}>Account</Link>
+                <Link href={`/${locale}/account`}>{messages.account}</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/${locale}/calendar`}>My calendar</Link>
+                <Link href={`/${locale}/calendar`}>{messages.myCalendar}</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={onSubmitRace}>
                 <Flag />
                 {messages.missingRace}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>{messages.madeBy}</DropdownMenuLabel>
-              <DropdownMenuItem asChild>
-                <a href={SITE_AUTHOR.url} target="_blank" rel="noreferrer">
-                  {SITE_AUTHOR.name}
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a href={`mailto:${SITE_AUTHOR.email}`}>{SITE_AUTHOR.email}</a>
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

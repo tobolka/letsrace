@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { format, parseISO } from "date-fns";
 import {
   X,
   MapPin,
   Trophy,
-  Heart,
   Calendar,
-  CalendarCheck,
-  CalendarPlus,
   Bike,
   ExternalLink,
   Share2,
@@ -17,7 +14,7 @@ import {
   ChartNoAxesColumnIncreasing,
 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
-import { messages, type Locale } from "@/lib/i18n/messages";
+import { messagesFor } from "@/lib/i18n/messages";
 import {
   DISCIPLINE_LABELS,
   RACE_LEVEL_LABELS,
@@ -30,6 +27,7 @@ import {
 import { disciplineColor } from "@/lib/map-visuals";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
+import { RacePlanControls } from "@/components/account/race-plan-controls";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -47,6 +45,11 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
+import { type PlanMemberStatus } from "@/lib/planner";
+import {
+  setMemberPlanStatus,
+  type AttendanceRecord,
+} from "@/lib/planner-db";
 
 type Member = {
   id: string;
@@ -55,12 +58,23 @@ type Member = {
   is_self: boolean;
 };
 
-type Attendance = {
-  member_id: string;
-  status: string;
-  registered: boolean;
-  paid: boolean;
-};
+type Attendance = AttendanceRecord;
+
+/** Must match the desktop list card in explore-shell (width + overlay padding + gap). */
+const DEFAULT_X = 12 + 400 + 12;
+const DEFAULT_Y = 12;
+const DRAG_MARGIN = 12;
+
+function clampPanelPos(x: number, y: number, el: HTMLElement | null) {
+  const w = el?.offsetWidth ?? 320;
+  const h = el?.offsetHeight ?? 200;
+  const maxX = Math.max(DRAG_MARGIN, window.innerWidth - w - DRAG_MARGIN);
+  const maxY = Math.max(DRAG_MARGIN, window.innerHeight - h - DRAG_MARGIN);
+  return {
+    x: Math.min(maxX, Math.max(DRAG_MARGIN, x)),
+    y: Math.min(maxY, Math.max(DRAG_MARGIN, y)),
+  };
+}
 
 export function EventDetailPanel({
   event,
@@ -76,16 +90,86 @@ export function EventDetailPanel({
   /** Flat layout inside the mobile bottom sheet (no outer card chrome). */
   embedded?: boolean;
 }) {
+  const t = messagesFor(locale);
   const [userId, setUserId] = useState<string | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [favorited, setFavorited] = useState(false);
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [busy, setBusy] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [authReason, setAuthReason] = useState("Sign in to save races and use your calendar.");
-  const [pendingAction, setPendingAction] = useState<"save" | "calendar" | null>(null);
+  const [authReason, setAuthReason] = useState("");
+  const [pendingAction, setPendingAction] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const copyTimerRef = useRef<number | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    origX: number;
+    origY: number;
+  } | null>(null);
+  const offsetRef = useRef({ x: DEFAULT_X, y: DEFAULT_Y });
+  const [offset, setOffset] = useState({ x: DEFAULT_X, y: DEFAULT_Y });
+  const [dragging, setDragging] = useState(false);
+
+  useEffect(() => {
+    if (embedded) return;
+    const onResize = () => {
+      const next = clampPanelPos(offsetRef.current.x, offsetRef.current.y, cardRef.current);
+      offsetRef.current = next;
+      setOffset(next);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [embedded]);
+
+  function onHeaderPointerDown(e: PointerEvent<HTMLDivElement>) {
+    if (embedded || e.button !== 0) return;
+    if ((e.target as HTMLElement).closest("button, a, input")) return;
+    const pos = offsetRef.current;
+    dragRef.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: pos.x,
+      origY: pos.y,
+    };
+    setDragging(true);
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function onHeaderPointerMove(e: PointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current;
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    const next = clampPanelPos(
+      drag.origX + (e.clientX - drag.startX),
+      drag.origY + (e.clientY - drag.startY),
+      cardRef.current,
+    );
+    const el = cardRef.current;
+    if (el) el.style.transform = `translate(${next.x - drag.origX}px, ${next.y - drag.origY}px)`;
+  }
+
+  function endHeaderDrag(e: PointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current;
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    const next = clampPanelPos(
+      drag.origX + (e.clientX - drag.startX),
+      drag.origY + (e.clientY - drag.startY),
+      cardRef.current,
+    );
+    dragRef.current = null;
+    offsetRef.current = next;
+    setOffset(next);
+    setDragging(false);
+    const el = cardRef.current;
+    if (el) el.style.transform = "";
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  }
 
   useEffect(() => {
     return () => {
@@ -127,99 +211,50 @@ export function EventDetailPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event.id]);
 
-  function requireAuth(action: "save" | "calendar") {
-    setPendingAction(action);
-    setAuthReason(
-      action === "save"
-        ? "Sign in to save this race to your favorites."
-        : "Sign in to add this race to your calendar.",
-    );
+  function requireAuth() {
+    setPendingAction(true);
+    setAuthReason(t.planAuthGoing);
     setAuthOpen(true);
   }
 
-  async function toggleFavorite(uidOverride?: string) {
+  async function setStatus(
+    memberId: string,
+    status: PlanMemberStatus,
+    uidOverride?: string,
+  ) {
     const uid = uidOverride ?? userId;
     if (!uid) {
-      requireAuth("save");
+      requireAuth();
       return;
     }
     setBusy(true);
     const supabase = createBrowserSupabase();
-    if (favorited) {
-      await supabase.from("event_favorites").delete().eq("user_id", uid).eq("event_id", event.id);
-      setFavorited(false);
-    } else {
-      await supabase.from("event_favorites").insert({ user_id: uid, event_id: event.id });
-      setFavorited(true);
-    }
-    setBusy(false);
-  }
-
-  async function toggleGoing(memberId: string, uidOverride?: string) {
-    const uid = uidOverride ?? userId;
-    if (!uid) {
-      requireAuth("calendar");
-      return;
-    }
-    setBusy(true);
-    const supabase = createBrowserSupabase();
-    const existing = attendance.find((a) => a.member_id === memberId);
-    if (existing) {
-      await supabase
-        .from("event_attendance")
-        .delete()
-        .eq("user_id", uid)
-        .eq("event_id", event.id)
-        .eq("member_id", memberId);
-      setAttendance((prev) => prev.filter((a) => a.member_id !== memberId));
-    } else {
-      await supabase.from("event_attendance").insert({
-        user_id: uid,
-        event_id: event.id,
-        member_id: memberId,
-        status: "going",
-      });
-      setAttendance((prev) => [
-        ...prev,
-        { member_id: memberId, status: "going", registered: false, paid: false },
-      ]);
-    }
+    const next = await setMemberPlanStatus({
+      supabase,
+      userId: uid,
+      eventId: event.id,
+      memberId,
+      status,
+      rows: attendance,
+      favorited,
+    });
+    setAttendance(next.rows);
+    setFavorited(next.favorited);
     setBusy(false);
   }
 
   async function onAuthSuccess() {
-    const action = pendingAction;
+    const shouldSetGoing = pendingAction;
     const supabase = createBrowserSupabase();
     const { data: auth } = await supabase.auth.getUser();
     const uid = auth.user?.id ?? null;
     setUserId(uid);
-    setPendingAction(null);
+    setPendingAction(false);
     if (!uid) return;
     const mems = await loadUserState(uid);
-    if (action === "save") {
-      const { data: fav } = await supabase
-        .from("event_favorites")
-        .select("event_id")
-        .eq("user_id", uid)
-        .eq("event_id", event.id)
-        .maybeSingle();
-      if (!fav) {
-        await supabase.from("event_favorites").insert({ user_id: uid, event_id: event.id });
-        setFavorited(true);
-      }
-    } else if (action === "calendar") {
-      const self = mems.find((m) => m.is_self) ?? mems[0];
-      if (self) {
-        const { data: existing } = await supabase
-          .from("event_attendance")
-          .select("member_id")
-          .eq("user_id", uid)
-          .eq("event_id", event.id)
-          .eq("member_id", self.id)
-          .maybeSingle();
-        if (!existing) await toggleGoing(self.id, uid);
-      }
-    }
+    if (!shouldSetGoing) return;
+    const self = mems.find((m) => m.is_self) ?? mems[0];
+    if (self) await setStatus(self.id, "going", uid);
   }
 
   const levelKey = (event.level || "local") as RaceLevel;
@@ -230,7 +265,6 @@ export function EventDetailPanel({
     event.classLabel ||
     RACE_LEVEL_LABELS[levelKey] ||
     event.level;
-  const t = messages[(locale as Locale) in messages ? (locale as Locale) : "en"];
   const whoLabel = formatEventCategoryLabel(event, {
     kids: t.kids,
     youth: t.youth,
@@ -305,10 +339,6 @@ export function EventDetailPanel({
   const trustText = trustLabel(trust, t);
   const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
   const accent = disciplineColor(event.disciplines);
-  const selfMember = members.find((m) => m.is_self) ?? members[0];
-  const going = Boolean(
-    selfMember && attendance.some((a) => a.member_id === selfMember.id),
-  );
   const placeLabel = [
     event.location?.municipality || event.location?.name,
     event.location?.countryCode,
@@ -335,34 +365,51 @@ export function EventDetailPanel({
 
   return (
     <Card
+      ref={cardRef}
       aria-labelledby="race-detail-title"
       className={cn(
         "pointer-events-auto w-full gap-0 overflow-hidden py-0",
+        dragging && "select-none",
         embedded
           ? "flex h-full min-h-0 flex-col border-0 shadow-none"
-          : "shadow-lg md:w-[320px] md:max-h-[calc(100dvh-1.5rem)] md:self-start",
+          : "absolute z-10 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
       )}
+      style={embedded ? undefined : { left: offset.x, top: offset.y }}
     >
-      <CardHeader className="shrink-0 border-b px-4 py-3 [.border-b]:pb-3">
+      <CardHeader
+        className={cn(
+          "shrink-0 items-center border-b px-4 py-3 [.border-b]:pb-3",
+          !embedded && "cursor-grab touch-none select-none",
+          dragging && "cursor-grabbing",
+        )}
+        onPointerDown={onHeaderPointerDown}
+        onPointerMove={onHeaderPointerMove}
+        onPointerUp={endHeaderDrag}
+        onPointerCancel={endHeaderDrag}
+        onLostPointerCapture={endHeaderDrag}
+      >
         <CardTitle
           id="race-detail-title"
-          className="flex min-w-0 items-start gap-2 text-base leading-snug"
+          className="flex min-w-0 items-center gap-2 text-base leading-snug"
         >
           <span
-            className="mt-1.5 size-2 shrink-0 rounded-full"
+            className="size-2 shrink-0 rounded-full"
             style={{ background: accent }}
             aria-hidden
           />
           <span className="min-w-0">{event.name}</span>
         </CardTitle>
-        <CardAction>
+        <CardAction className="self-center">
           <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label={t.close}>
             <X />
           </Button>
         </CardAction>
       </CardHeader>
 
-      <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+      <CardContent
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3"
+        inert={dragging || undefined}
+      >
         <div className="flex flex-col gap-2">
           <p className="flex items-center gap-2 text-base font-medium">
             <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -425,6 +472,33 @@ export function EventDetailPanel({
           ) : null}
         </div>
 
+        {members.length > 0 ? (
+          <div className="mt-4 border-t border-border pt-3">
+            <RacePlanControls
+              locale={locale}
+              members={members.map((m) => ({
+                id: m.id,
+                name: m.name,
+                relationship: m.relationship,
+                isSelf: m.is_self,
+              }))}
+              attendance={attendance}
+              busy={busy}
+              addPeopleHref={`/${locale}/account`}
+              onStatusChange={(memberId, status) => void setStatus(memberId, status)}
+            />
+          </div>
+        ) : !userId ? (
+          <button
+            type="button"
+            className="mt-4 w-full rounded-lg border border-dashed border-border px-3 py-2.5 text-left text-sm text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+            onClick={() => requireAuth()}
+          >
+            <span className="font-medium text-foreground">{t.planWhoGoes}</span>
+            <span className="mt-0.5 block text-xs">{t.planAuthGoing}</span>
+          </button>
+        ) : null}
+
         {actionLinks.length > 0 ? (
           <ButtonGroup orientation="vertical" className="mt-4 w-full">
             {actionLinks.map((link, index) => (
@@ -456,6 +530,7 @@ export function EventDetailPanel({
           "shrink-0 justify-between gap-2 border-t px-2 py-2 [.border-t]:pt-2",
           embedded ? "" : "pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2",
         )}
+        inert={dragging || undefined}
       >
         <p className="sr-only" aria-live="polite">
           {linkCopied ? t.linkCopied : ""}
@@ -478,35 +553,6 @@ export function EventDetailPanel({
         </p>
         <div className="ml-auto flex items-center gap-0.5">
           <Toggle
-            pressed={favorited}
-            disabled={busy}
-            size="lg"
-            aria-label={favorited ? t.savedRace : t.saveRace}
-            title={favorited ? t.savedRace : t.saveRace}
-            className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            onPressedChange={() => void toggleFavorite()}
-          >
-            <Heart className={cn(favorited && "fill-current")} />
-          </Toggle>
-          <Toggle
-            pressed={going}
-            disabled={busy}
-            size="lg"
-            aria-label={t.calendarAdd}
-            title={t.calendarAdd}
-            className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            onPressedChange={() => {
-              if (!userId) {
-                requireAuth("calendar");
-                return;
-              }
-              if (!selfMember) return;
-              void toggleGoing(selfMember.id);
-            }}
-          >
-            {going ? <CalendarCheck /> : <CalendarPlus />}
-          </Toggle>
-          <Toggle
             pressed={linkCopied}
             size="lg"
             aria-label={linkCopied ? t.linkCopied : t.shareRace}
@@ -525,7 +571,7 @@ export function EventDetailPanel({
         open={authOpen}
         onClose={() => {
           setAuthOpen(false);
-          setPendingAction(null);
+          setPendingAction(false);
         }}
         onSuccess={() => void onAuthSuccess()}
         locale={locale}

@@ -1296,6 +1296,7 @@ async function upsertParsedEvent(
   const incomingWebsite = publicRaceUrl(ev.websiteUrl, ev.sourceUrl);
   const incomingRegistration = publicRaceUrl(ev.registrationUrl);
   const { preferRegulationsUrl, isRegulationsUrl } = await import("@/lib/watcher/regulations-url");
+  const { isStartListUrl } = await import("@/lib/watcher/registration-url");
   const incomingRegulations =
     publicRaceUrl(ev.regulationsUrl) ||
     (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
@@ -1642,6 +1643,28 @@ async function upsertParsedEvent(
     website_url?: string | null;
   } | null;
 
+  const { isCancelledRaceName, shouldTreatAsReschedule } = await import(
+    "@/lib/plan-changes"
+  );
+  let beforeSnap: import("@/lib/plan-changes").EventSnapshot | null = null;
+  if (existingId) {
+    const { data: snap } = await supabase
+      .from("events")
+      .select("name, start_date, end_date, status, disciplines, registration_url")
+      .eq("id", existingId)
+      .maybeSingle();
+    if (snap) {
+      beforeSnap = {
+        name: snap.name,
+        startDate: snap.start_date,
+        endDate: snap.end_date,
+        status: snap.status,
+        disciplines: snap.disciplines ?? [],
+        registrationUrl: snap.registration_url,
+      };
+    }
+  }
+
   const website = preferDeeperOfficialUrl(incomingWebsite, existingRow?.website_url ?? null);
   const registration = incomingRegistration;
 
@@ -1655,12 +1678,17 @@ async function upsertParsedEvent(
   };
 
   if (existingId && existingRow?.start_date) {
-    const span = mergeDateSpan(
-      { startDate: existingRow.start_date, endDate: existingRow.end_date },
-      { startDate: ev.startDate, endDate: ev.endDate ?? ev.startDate },
-    );
-    mergedStart = span.startDate;
-    mergedEnd = span.endDate;
+    if (beforeSnap && shouldTreatAsReschedule(beforeSnap.startDate, ev.startDate)) {
+      mergedStart = ev.startDate;
+      mergedEnd = ev.endDate ?? ev.startDate;
+    } else {
+      const span = mergeDateSpan(
+        { startDate: existingRow.start_date, endDate: existingRow.end_date },
+        { startDate: ev.startDate, endDate: ev.endDate ?? ev.startDate },
+      );
+      mergedStart = span.startDate;
+      mergedEnd = span.endDate;
+    }
     mergedName = preferEventName(existingRow.name || ev.name, ev.name);
     mergedLevel = preferLevel(
       {
@@ -1715,11 +1743,25 @@ async function upsertParsedEvent(
     payload.event_type = "training";
   }
 
+  if (beforeSnap && isCancelledRaceName(mergedName) && !lockedFields.includes("status")) {
+    payload.status = "cancelled";
+  }
+
   // Only write website/registration when we have a real race URL (never wipe with aggregator)
   if (website) payload.website_url = website;
   else if (!existingId) payload.website_url = null;
   if (registration) payload.registration_url = registration;
   else if (!existingId) payload.registration_url = null;
+  else if (incomingWebsite?.includes("enduroserie.cz")) {
+    const { data: cur } = await supabase
+      .from("events")
+      .select("registration_url")
+      .eq("id", existingId)
+      .maybeSingle();
+    if (isStartListUrl(cur?.registration_url as string | null)) {
+      payload.registration_url = null;
+    }
+  }
   if (incomingRegulations) {
     let existingRegulations: string | null = null;
     if (existingId) {
@@ -1773,6 +1815,25 @@ async function upsertParsedEvent(
   }
 
   if (!eventId) return null;
+
+  if (beforeSnap) {
+    try {
+      const { recordEventPlanChanges } = await import("@/lib/plan-changes-db");
+      await recordEventPlanChanges(supabase, eventId, beforeSnap, {
+        name: mergedName,
+        startDate: mergedStart,
+        endDate: mergedEnd,
+        status: typeof payload.status === "string" ? payload.status : beforeSnap.status,
+        disciplines: classified.disciplines.length ? classified.disciplines : beforeSnap.disciplines,
+        registrationUrl:
+          typeof payload.registration_url === "string"
+            ? payload.registration_url
+            : beforeSnap.registrationUrl,
+      });
+    } catch (err) {
+      console.error("recordEventPlanChanges", err);
+    }
+  }
 
   await supabase.from("event_sources").upsert(
     {

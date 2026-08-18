@@ -18,7 +18,7 @@ export function BrandMark({
       className={cn(
         "font-black italic leading-none tracking-[-0.08em]",
         tone === "inverse" ? "text-white" : "text-brand",
-        size === "sm" ? "text-[1.5rem]" : "text-[2rem]",
+        size === "sm" ? "text-[1.5rem]" : "text-[1.75rem]",
         className,
       )}
     >

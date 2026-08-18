@@ -42,7 +42,10 @@ export function isSeriesRegistrationHubUrl(url: string | null | undefined): bool
     const u = new URL(url);
     const host = u.hostname.replace(/^www\./i, "").toLowerCase();
     const path = u.pathname.replace(/\/+$/, "") || "/";
-    return host === "iprimacup.cz" && path === "/prihlaseni";
+    return (
+      (host === "iprimacup.cz" && path === "/prihlaseni") ||
+      (host === "enduroserie.cz" && path === "/registrace")
+    );
   } catch {
     return false;
   }
@@ -57,8 +60,14 @@ export function hostOfUrl(url: string | null | undefined): string | null {
   }
 }
 
+/** Start lists / bib PDFs — not an enter link. */
+export function isStartListUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return /startovk|startlist|startovn[ií][\s_-]?cas/i.test(url);
+}
+
 export function isRegistrationPlatformUrl(url: string | null | undefined): boolean {
-  if (isSeriesRegistrationHubUrl(url)) return false;
+  if (isSeriesRegistrationHubUrl(url) || isStartListUrl(url)) return false;
   const host = hostOfUrl(url);
   if (!host) return false;
   if (REGISTRATION_HOSTS.some((h) => host === h || host.endsWith(`.${h}`) || host.includes(h))) {
@@ -81,7 +90,7 @@ export function pickRegistrationUrl(
   const candidates = [explicit, ...sources]
     .map((u) => (u || "").trim())
     .filter((u) => /^https?:\/\//i.test(u))
-    .filter((u) => !isSeriesRegistrationHubUrl(u));
+    .filter((u) => !isSeriesRegistrationHubUrl(u) && !isStartListUrl(u));
   for (const u of candidates) {
     if (isRegistrationPlatformUrl(u)) return u;
   }

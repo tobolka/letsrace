@@ -76,13 +76,13 @@ export const PUBLIC_COUNTRY_CODES = PUBLIC_MAP_CODES;
 /** Prefer coverage markets at the top of admin / filter country pickers. */
 const PREFERRED_COUNTRY_CODES = pickerCountryCodes();
 
-/** Europe ISO-2 codes with CZ / neighbouring countries first. */
+/** Europe ISO-2 codes with CZ / neighbouring countries first. Never offer RU. */
 export function europeCountryOptions(current?: string | null): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   const push = (code: string) => {
     const cc = code.trim().toUpperCase();
-    if (!cc || seen.has(cc)) return;
+    if (!cc || seen.has(cc) || cc === "RU") return;
     seen.add(cc);
     out.push(cc);
   };
@@ -90,6 +90,11 @@ export function europeCountryOptions(current?: string | null): string[] {
   for (const c of EUROPE_COUNTRY_CODES) push(c);
   if (current) push(current);
   return out;
+}
+
+/** Basemap / search must not name this country. */
+export function isOmittedMapCountry(code: string | null | undefined): boolean {
+  return (code || "").trim().toUpperCase() === "RU";
 }
 
 const EUROPE_SET = new Set<string>(EUROPE_COUNTRY_CODES);
@@ -160,7 +165,7 @@ export function isRoughlyInEurope(lat: number, lng: number): boolean {
 
 /**
  * Camera cage for the map (SW → NE). Tighter than ingest on the east
- * so zooming out does not reveal the Middle East / Central Asia.
+ * so zooming out does not reveal the Middle East / Central Asia / Russia.
  */
 export const EUROPE_MAP_BOUNDS: [[number, number], [number, number]] = [
   [-26, 34.2],
@@ -173,7 +178,7 @@ export const EUROPE_MAP_BOUNDS: [[number, number], [number, number]] = [
  */
 export const EUROPE_CAMERA_BOUNDS: [[number, number], [number, number]] = [
   [-40, 28],
-  [58, 75.5],
+  [42, 75.5],
 ];
 
 export function isInEuropeMap(lat: number, lng: number): boolean {

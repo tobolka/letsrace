@@ -1,11 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { isListedCountry, shouldIngestByCountry } from "@/lib/geo/europe";
+import {
+  europeCountryOptions,
+  isListedCountry,
+  isOmittedMapCountry,
+  shouldIngestByCountry,
+} from "@/lib/geo/europe";
 
 describe("public country gate", () => {
   it("never lists Russia", () => {
     expect(isListedCountry("RU")).toBe(false);
     expect(isListedCountry("ru")).toBe(false);
     expect(shouldIngestByCountry("RU")).toBe(false);
+    expect(isOmittedMapCountry("RU")).toBe(true);
+    expect(isOmittedMapCountry("ru")).toBe(true);
+    expect(europeCountryOptions()).not.toContain("RU");
+    expect(europeCountryOptions("RU")).not.toContain("RU");
   });
 
   it("keeps Kosovo off the public map", () => {

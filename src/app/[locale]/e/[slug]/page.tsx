@@ -14,7 +14,7 @@ import {
 } from "@/lib/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { BrandMark } from "@/components/brand-mark";
-import { absoluteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
@@ -206,18 +206,6 @@ export default async function EventPage({ params }: Props) {
 
         <p className="mt-10 hidden text-sm text-muted-foreground sm:mt-12 sm:block">
           {t.tagline}
-          <span className="mx-1.5" aria-hidden>
-            ·
-          </span>
-          {t.madeBy}{" "}
-          <a
-            href={SITE_AUTHOR.url}
-            target="_blank"
-            rel="noreferrer"
-            className="underline-offset-2 hover:text-foreground hover:underline"
-          >
-            {SITE_AUTHOR.name}
-          </a>
         </p>
       </div>
 

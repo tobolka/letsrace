@@ -1,0 +1,71 @@
+import { describe, expect, it } from "vitest";
+import { hasCscPublicGrid, parseCscDate, parseCscPublicGrid } from "@/lib/watcher/extractors/csc";
+
+const GRID = `
+<table class="b-table b-datagrid">
+  <tr class="table-row-selectable">
+    <td data-caption="RaceDto.YearStart">2026</td>
+    <td data-caption="Race"><a href="/RaceDetail/Race/797">HSF SYSTEM CUP - MČR OSTRAVA</a></td>
+    <td data-caption="Start Date">1/10/2026</td>
+    <td data-caption="End Date">1/10/2026</td>
+    <td data-caption="RaceDto.RaceClassId">MČR</td>
+    <td data-caption="Organizer">TACYKLISTIKA, z.s.</td>
+    <td data-caption="Region">Moravskoslezský</td>
+    <td data-caption="RaceDto">Ostrava</td>
+    <td data-caption="Discipline">Cyklokros</td>
+  </tr>
+  <tr class="table-row-selectable">
+    <td data-caption="Race"><a href="/RaceDetail/Race/1304">Krasojízda - Český pohár</a></td>
+    <td data-caption="Start Date">2/28/2026</td>
+    <td data-caption="End Date">2/28/2026</td>
+    <td data-caption="RaceDto.RaceClassId">ČP</td>
+    <td data-caption="RaceDto">Němčice</td>
+    <td data-caption="Discipline">Sálová cyklistika</td>
+  </tr>
+  <tr class="table-row-selectable">
+    <td data-caption="Race"><a href="/RaceDetail/Race/1711">Ostravský MTB Pohár</a></td>
+    <td data-caption="Start Date">3/29/2026</td>
+    <td data-caption="End Date">3/29/2026</td>
+    <td data-caption="RaceDto.RaceClassId">KRAJ</td>
+    <td data-caption="RaceDto">Ostrava</td>
+    <td data-caption="Discipline">MTB</td>
+  </tr>
+  <tr class="table-row-selectable">
+    <td data-caption="Race"><a href="/RaceDetail/Race/1346">ŠKODA CUP - Brno - Velká Bíteš - Brno</a></td>
+    <td data-caption="Start Date">3/29/2026</td>
+    <td data-caption="End Date">3/29/2026</td>
+    <td data-caption="RaceDto.RaceClassId">ČP</td>
+    <td data-caption="RaceDto">Velká Bíteš</td>
+    <td data-caption="Discipline">Silnice</td>
+  </tr>
+</table>
+`;
+
+describe("ČSC portal grid", () => {
+  it("parses US dates from the English Blazor UI", () => {
+    expect(parseCscDate("1/10/2026")).toBe("2026-01-10");
+    expect(parseCscDate("2/28/2026")).toBe("2026-02-28");
+    expect(parseCscDate("28. 2. 2026")).toBe("2026-02-28");
+  });
+
+  it("keeps outdoor races and skips indoor cycling", () => {
+    const events = parseCscPublicGrid(
+      "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+      GRID,
+    );
+    expect(hasCscPublicGrid(GRID)).toBe(true);
+    expect(events.map((e) => `${e.startDate} ${e.name}`)).toEqual([
+      "2026-01-10 HSF SYSTEM CUP - MČR OSTRAVA",
+      "2026-03-29 Ostravský MTB Pohár",
+      "2026-03-29 ŠKODA CUP - Brno - Velká Bíteš - Brno",
+    ]);
+    expect(events[0]?.discipline).toEqual(["cx"]);
+    expect(events[0]?.sourceUrl).toBe(
+      "https://portal.czechcyclingfederation.com/RaceDetail/Race/797",
+    );
+    expect(events[0]?.externalId).toBe("csc-797");
+    expect(events[1]?.discipline).toEqual(["mtb"]);
+    expect(events[2]?.discipline).toEqual(["road"]);
+    expect(events.some((e) => /krasoj/i.test(e.name))).toBe(false);
+  });
+});

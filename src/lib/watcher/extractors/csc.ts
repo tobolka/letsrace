@@ -1,90 +1,165 @@
 import * as cheerio from "cheerio";
-import type { ParsedEvent } from "@/lib/domain";
+import type { AnyNode } from "domhandler";
+import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
-import { inferRaceLevel } from "@/lib/race-level";
+import { inferDisciplines } from "@/lib/taxonomy";
+import { renderCscPublicCalendar } from "@/lib/watcher/extractors/csc-render";
+
+const PORTAL_ORIGIN = "https://portal.czechcyclingfederation.com";
+
+const INDOOR_DISC =
+  /sálov|salov|krasoj|kolov|cycle[\s-]?ball|indoor|artistic/i;
+
+const DISC_MAP: Record<string, Discipline | "skip"> = {
+  cyklokros: "cx",
+  cyclocross: "cx",
+  "horska kola": "mtb",
+  horske: "mtb",
+  mtb: "mtb",
+  silnice: "road",
+  silnicni: "road",
+  road: "road",
+  gravel: "gravel",
+  draha: "track",
+  track: "track",
+  bikros: "bmx",
+  bmx: "bmx",
+  handicap: "para",
+  trial: "other",
+};
+
+export function isCscPortalHost(host: string): boolean {
+  return host.replace(/^www\./, "").includes("portal.czechcyclingfederation.com");
+}
+
+export function hasCscPublicGrid(html: string): boolean {
+  return /table-row-selectable/i.test(html) && /\/RaceDetail\/Race\/\d+/i.test(html);
+}
 
 /**
- * ČSC public calendar sources.
- * portal.czechcyclingfederation.com is Blazor (no stable public list API) —
- * we watch it for discovery and parse data.ceskysvazcyklistiky.cz when available.
+ * ČSC public calendar at portal.czechcyclingfederation.com/Races/Race/Pub.
+ * The page is Blazor Server (empty HTML shell) — when the grid is missing we
+ * render it, then parse the Blazorise table.
  */
-export function parseCscCalendar(url: string, html: string): ParsedEvent[] {
+export async function parseCscCalendar(url: string, html: string): Promise<ParsedEvent[]> {
+  let pageHtml = html;
+  if (!hasCscPublicGrid(pageHtml)) {
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, "");
+      if (isCscPortalHost(host)) {
+        pageHtml = await renderCscPublicCalendar(url);
+      }
+    } catch {
+      /* keep original html */
+    }
+  }
+  return parseCscPublicGrid(url, pageHtml);
+}
+
+export function parseCscPublicGrid(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
+  const origin = originOf(url);
 
-  // Table rows / cards with dates
-  $("tr, .race-item, .calendar-item, article, li").each((_, el) => {
-    const text = $(el).text().replace(/\s+/g, " ").trim();
-    if (text.length < 10 || text.length > 400) return;
+  $("tr.table-row-selectable").each((_, el) => {
+    const name = cell($, el, "Race");
+    const startDate = parseCscDate(cell($, el, "Start Date"));
+    if (!name || name.length < 3 || !startDate) return;
 
-    const iso = text.match(/(20\d{2})-(\d{2})-(\d{2})/);
-    const cs = text.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/);
-    let startDate = "";
-    if (iso) startDate = `${iso[1]}-${iso[2]}-${iso[3]}`;
-    else if (cs) {
-      startDate = `${cs[3]}-${cs[2].padStart(2, "0")}-${cs[1].padStart(2, "0")}`;
-    }
-    if (!startDate) return;
+    const disciplineLabel = cell($, el, "Discipline");
+    if (INDOOR_DISC.test(disciplineLabel) || INDOOR_DISC.test(name)) return;
 
-    const link = $(el).find("a[href]").first().attr("href");
-    const name =
-      $(el).find("a, strong, .name, .title").first().text().replace(/\s+/g, " ").trim() ||
-      text.replace(iso?.[0] || cs?.[0] || "", "").trim().slice(0, 120);
-    if (name.length < 4) return;
+    const href = $(el).find('a[href*="/RaceDetail/Race/"]').first().attr("href");
+    const raceId = href?.match(/\/RaceDetail\/Race\/(\d+)/i)?.[1];
+    const endDate = parseCscDate(cell($, el, "End Date"));
+    const place = cell($, el, "RaceDto") || cell($, el, "Location");
+    const klass = cell($, el, "RaceDto.RaceClassId");
+    const sourceUrl = href
+      ? href.startsWith("http")
+        ? href
+        : new URL(href, origin).toString()
+      : url;
 
-    const level = inferRaceLevel(text + " " + name);
-    const categories: ParsedEvent["categories"] = [];
-    if (/mlž|mladší žák/i.test(text)) categories.push({ name: "MLŽ", ageMin: 8, ageMax: 10 });
-    if (/stž|starší žák/i.test(text)) categories.push({ name: "STŽ", ageMin: 11, ageMax: 12 });
-    if (/\bkadeti\b|\bk\b/i.test(text)) categories.push({ name: "Kadeti", ageMin: 13, ageMax: 14 });
-    if (/junior/i.test(text)) categories.push({ name: "Junior", ageMin: 15, ageMax: 16 });
+    const mapped = mapCscDiscipline(disciplineLabel, name);
+    if (!mapped) return;
 
     events.push({
-      externalId: `csc-${normalizeName(name)}-${startDate}`,
-      name,
+      externalId: raceId ? `csc-${raceId}` : `csc-${normalizeName(name)}-${startDate}`,
+      name: name.slice(0, 160),
       startDate,
-      placeText: guessPlace(text) || "Czechia",
+      endDate: endDate && endDate !== startDate ? endDate : undefined,
+      placeText: place || "Czechia",
       countryHint: "CZ",
-      discipline: guessDisc(text),
-      audience: /žák|junior|kadet|děti|mládež/i.test(text) ? "kids" : "mixed",
-      categories: categories.length ? categories : undefined,
-      sourceUrl: link
-        ? link.startsWith("http")
-          ? link
-          : new URL(link, url).toString()
-        : url,
-      confidence: 0.65,
-      // stash level in name path via confidence metadata — callers read inferRaceLevel again
+      discipline: mapped,
+      audience: /žák|junior|kadet|děti|mládež|u1[123]|mlž|stž/i.test(`${name} ${klass}`)
+        ? "kids"
+        : "mixed",
+      sourceUrl,
+      confidence: 0.9,
     });
   });
 
-  return dedupe(events).slice(0, 80);
+  return dedupe(events);
 }
 
-function guessPlace(text: string): string | null {
-  const m = text.match(
-    /\b(Praha|Brno|Ostrava|Plzeň|Liberec|Olomouc|Pardubice|Hradec Králové|České Budějovice|Karlovy Vary|Jihlava|Zlín|Ústí nad Labem)\b/,
+function cell($: cheerio.CheerioAPI, el: AnyNode, caption: string): string {
+  return $(el)
+    .find(`td[data-caption="${caption}"]`)
+    .first()
+    .text()
+    .replace(/\u00a0/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function mapCscDiscipline(label: string, name: string): Discipline[] | null {
+  const key = fold(label);
+  if (INDOOR_DISC.test(label)) return null;
+  const mapped = key ? DISC_MAP[key] : undefined;
+  if (mapped === "skip") return null;
+  const inferred = inferDisciplines(
+    `${name} ${label}`,
+    mapped && mapped !== "other" ? [mapped] : mapped === "other" ? ["other"] : undefined,
   );
-  return m?.[1] ?? null;
+  return inferred.length ? inferred : null;
 }
 
-function guessDisc(text: string): ParsedEvent["discipline"] {
-  const out: NonNullable<ParsedEvent["discipline"]> = [];
-  if (/silnic|road/i.test(text)) out.push("road");
-  if (/\bxcm\b|maraton/i.test(text)) out.push("xcm");
-  if (/\bxcc\b/i.test(text)) out.push("xcc");
-  if (/\bxco\b|\bxc\b|horské/i.test(text)) out.push("xco");
-  if (/cyklokros|\bcx\b/i.test(text)) out.push("cx");
-  if (/gravel/i.test(text)) out.push("gravel");
-  if (/dráha|track/i.test(text)) out.push("track");
-  if (/\bbmx\b/i.test(text)) out.push("bmx");
-  return out.length ? out : undefined;
+function fold(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** English UI is M/D/YYYY; Czech UI is D.M.YYYY. */
+export function parseCscDate(raw: string): string | null {
+  const t = raw.replace(/\u00a0/g, " ").trim();
+  const us = t.match(/^(\d{1,2})\/(\d{1,2})\/(20\d{2})/);
+  if (us) {
+    return `${us[3]}-${us[1]!.padStart(2, "0")}-${us[2]!.padStart(2, "0")}`;
+  }
+  const cs = t.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/);
+  if (cs) {
+    return `${cs[3]}-${cs[2]!.padStart(2, "0")}-${cs[1]!.padStart(2, "0")}`;
+  }
+  const iso = t.match(/^(20\d{2})-(\d{2})-(\d{2})/);
+  return iso ? iso[0] : null;
+}
+
+function originOf(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return PORTAL_ORIGIN;
+  }
 }
 
 function dedupe(events: ParsedEvent[]): ParsedEvent[] {
   const seen = new Set<string>();
   return events.filter((e) => {
-    const k = `${e.startDate}:${normalizeName(e.name)}`;
+    const k = e.externalId;
     if (seen.has(k)) return false;
     seen.add(k);
     return true;

@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthForm } from "@/components/account/auth-form";
+import { messagesFor } from "@/lib/i18n/messages";
 import {
   Dialog,
   DialogContent,
@@ -22,14 +23,15 @@ export function AuthDialog({
   locale: string;
   reason?: string;
 }) {
+  const t = messagesFor(locale);
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Sign in</DialogTitle>
+          <DialogTitle>{t.signIn}</DialogTitle>
           {reason ? <DialogDescription>{reason}</DialogDescription> : (
             <DialogDescription className="sr-only">
-              Sign in to save races and use your calendar.
+              {t.planAuthGoing}
             </DialogDescription>
           )}
         </DialogHeader>

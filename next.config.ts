@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["@sparticuz/chromium"],
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
   },

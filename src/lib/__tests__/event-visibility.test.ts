@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isHomeMapCountry, isPublicMapWorthy, PUBLIC_EVENT_STATUSES } from "@/lib/event-visibility";
+import { isHomeMapCountry, isNonRaceEventName, isPublicMapWorthy, PUBLIC_EVENT_STATUSES, shouldHideFromMap } from "@/lib/event-visibility";
 
 describe("public map quality gate", () => {
   it("keeps home-country races without an enter link", () => {
@@ -79,5 +79,21 @@ describe("public map quality gate", () => {
     expect(PUBLIC_EVENT_STATUSES).not.toContain("tbc");
     expect(PUBLIC_EVENT_STATUSES).toContain("scheduled");
     expect(PUBLIC_EVENT_STATUSES).toContain("postponed");
+  });
+});
+
+describe("non-race listings", () => {
+  it("hides awards nights and ceremonies", () => {
+    expect(isNonRaceEventName("Slavnostní večer")).toBe(true);
+    expect(isNonRaceEventName("Slavnostní vyhlášení")).toBe(true);
+    expect(shouldHideFromMap("Slavnostní večer", "scheduled", "public")).toBe(true);
+    expect(isNonRaceEventName("Siegerehrung Pražský pohár MTB")).toBe(true);
+  });
+
+  it("keeps real races", () => {
+    expect(isNonRaceEventName("Van Gillern Cup 2026")).toBe(false);
+    expect(isNonRaceEventName("Přestavlcký Vlk MTB 2026")).toBe(false);
+    expect(isNonRaceEventName("Campionato Italiano XCO")).toBe(false);
+    expect(shouldHideFromMap("Van Gillern Cup 2026", "scheduled", "public")).toBe(false);
   });
 });

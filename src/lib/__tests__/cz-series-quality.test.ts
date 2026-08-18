@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseDetskyMtbCup,
   parseEnduroSerie,
+  enduroRacePageLinks,
   parsePoharMtb,
   parsePrahaMtb,
   parseZal,
@@ -104,22 +105,33 @@ describe("Czech Enduro Series listing", () => {
   const html = `
     <ul>
       <li><a href="https://www.enduroserie.cz/zavody/enduro-race-moravka/">Enduro Race Morávka 30.8.</a></li>
+      <li><a href="https://www.enduroserie.cz/zavody/enduro-race-moravka/">Enduro Race Morávka MČR 30.8.</a></li>
       <li><a href="https://www.enduroserie.cz/zavody/enduro-race-kralicak/">Enduro Race Kraličák 20.9.</a></li>
-      <li><a href="https://www.enduroserie.cz/zavody/enduro-race-tba/">Enduro Race TBA 1.10.</a></li>
-      <li><a href="https://www.enduroserie.cz/zavody/enduro-race-czarna/">Enduro Race Czarna Gora 28.6.</a></li>
+      <li><a href="https://www.enduroserie.cz/zavody/enduro-race-placeholder/">Enduro Race TBA 1.10.</a></li>
+      <li><a href="https://www.enduroserie.cz/zavody/enduro-race-tba/">Enduro Race Czarna Gora 28.6.</a></li>
     </ul>
   `;
 
-  it("uses the race page as sourceUrl and skips TBA", () => {
+  it("uses the race page as sourceUrl, keeps Czarna behind a tba slug, skips TBA names", () => {
     const events = parseEnduroSerie("https://www.enduroserie.cz/zavody/", html);
-    expect(events.map((e) => e.websiteUrl)).toEqual([
-      "https://www.enduroserie.cz/zavody/enduro-race-moravka/",
-      "https://www.enduroserie.cz/zavody/enduro-race-kralicak/",
-      "https://www.enduroserie.cz/zavody/enduro-race-czarna/",
+    expect(events.map((e) => `${e.startDate} ${e.name}`)).toEqual([
+      "2026-08-30 Enduro Race Morávka MČR",
+      "2026-09-20 Enduro Race Kraličák",
+      "2026-06-28 Enduro Race Czarna Gora",
     ]);
-    expect(events[0]?.sourceUrl).toBe(events[0]?.websiteUrl);
+    expect(events[0]?.websiteUrl).toBe("https://www.enduroserie.cz/zavody/enduro-race-moravka/");
+    expect(events[2]?.websiteUrl).toBe("https://www.enduroserie.cz/zavody/enduro-race-tba/");
     expect(events[2]?.countryHint).toBe("PL");
     expect(events.every((e) => e.sourceUrl !== "https://www.enduroserie.cz/zavody/")).toBe(true);
+  });
+
+  it("keeps Njuko enter links and ignores start lists / series hub", () => {
+    const links = enduroRacePageLinks("https://www.enduroserie.cz/zavody/enduro-race-kouty/", `
+      <a href="https://cdn.sportsoft.cz/data/pdf/872/5611/SL/20260523_startovka_es_kouty-zmeny.pdf">STARTOVNÍ ČASY A ČÍSLA</a>
+      <a href="https://www.enduroserie.cz/registrace/">Registrace</a>
+      <a href="https://in.njuko.com/enduro-race-moravka-mcr?id=abc&token=secret">REGISTRUJ SE</a>
+    `);
+    expect(links.registrationUrl).toBe("https://in.njuko.com/enduro-race-moravka-mcr?id=abc");
   });
 });
 

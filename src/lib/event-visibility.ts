@@ -31,7 +31,7 @@ export type PublicEventStatus = (typeof PUBLIC_EVENT_STATUSES)[number];
 export const PUBLIC_VISIBILITY = "public" as const;
 
 /**
- * Camps / training camps — not races.
+ * Camps, awards nights, prize-givings — not races.
  * Avoids Italian/Spanish "campionato/campeonato" (championship) false positives.
  */
 export function isNonRaceEventName(name: string): boolean {
@@ -50,7 +50,15 @@ export function isNonRaceEventName(name: string): boolean {
     /(^|[^a-z])camps?([^a-z]|$)/.test(t) ||
     /soustreden/.test(t) ||
     /training\s*camp|bike\s*camp|cycling\s*camp|mtb\s*camp|gravel\s*camp|ebike\s*camp/.test(t) ||
-    /\bdirectors?\s*meeting\b/.test(t)
+    /\bdirectors?\s*meeting\b/.test(t) ||
+    /\bslavnostn/.test(t) ||
+    /\bvyhlasen/.test(t) ||
+    /\bsiegerehrung\b/.test(t) ||
+    /\bpreisverleihung\b/.test(t) ||
+    /\bpremiazione\b/.test(t) ||
+    /\b(prize[\s-]?giv|awards?\s+(ceremon|night|dinner|evening|gala))\b/.test(t) ||
+    /\bgala\s*(night|dinner|evening|abend)\b/.test(t) ||
+    /\b(vecirek|after[\s-]?part[yi])\b/.test(t)
   );
 }
 

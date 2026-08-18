@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { isNonRaceEventName } from "@/lib/event-visibility";
 
 /** Czech month names as used on Hynek Musil series sites (talentcup, pkk-hk, mtb-biatlon, …). */
 const CS_MONTHS: Record<string, string> = {
@@ -208,6 +209,7 @@ export function parseHynekSeriesCalendar(url: string, html: string): ParsedEvent
     if (/článek|clanek|pozvánka|pozvanka|stránky převedeny/i.test(nameCell)) return;
 
     const name = nameCell.replace(/\s+/g, " ").trim();
+    if (isNonRaceEventName(name)) return;
     const externalId = `${series.slug}-${dates.start}-${normalizeName(name)}`.slice(0, 120);
     if (seen.has(externalId)) return;
     seen.add(externalId);
