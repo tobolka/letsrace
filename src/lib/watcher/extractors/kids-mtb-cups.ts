@@ -1806,19 +1806,97 @@ const SK_MONTHS: Record<string, string> = {
   januar: "01",
   februar: "02",
   marec: "03",
+  marca: "03",
   april: "04",
+  aprila: "04",
   maj: "05",
+  maja: "05",
   jun: "06",
+  juna: "06",
   jul: "07",
+  jula: "07",
   august: "08",
+  augusta: "08",
   september: "09",
+  septembra: "09",
   oktober: "10",
+  oktobra: "10",
   november: "11",
+  novembra: "11",
   december: "12",
+  decembra: "12",
 };
 
 const SK_MONTH_ALT =
   "janu[aá]r|febru[aá]r|marec|apr[ií]l|m[aá]j|j[uú]n|j[uú]l|august|september|okt[oó]ber|november|december";
+
+const DTPS_HOME = "https://detskatour.sk/";
+const DTPS_PROPOZICIE = "https://detskatour.sk/category/propozicie/";
+const DTPS_ENTRY = "https://dtps.mtbiker.sk";
+
+function dtpsPlace(raw: string): string {
+  const t = raw.replace(/\s+/g, " ").replace(/\(.*?\)/g, "").trim();
+  if (/šamorín|samorin/i.test(t)) return "Šamorín";
+  if (/žilina|zilina/i.test(t)) return "Žilina";
+  if (/levo[cč]a/i.test(t)) return "Levoča";
+  if (/\bmartin\b/i.test(t)) return "Martin";
+  if (/myjava/i.test(t)) return "Myjava";
+  if (/\bnitra\b/i.test(t)) return "Nitra";
+  if (/demänová|demanova/i.test(t)) return "Demänová";
+  return t.split(/\s*[-–]\s*/).pop()!.trim();
+}
+
+function dtpsMonth(raw: string): string | undefined {
+  const f = fold(raw);
+  return SK_MONTHS[f] || SK_MONTHS[f.replace(/a$/, "")];
+}
+
+function dtpsDate(text: string): string | null {
+  const m = text.match(
+    /(\d{1,2})\.\s*([A-Za-záäéíóúôďťňžščľúÁÄÉÍÓÚÔĎŤŇŽŠČĽ]+)\s*(20\d{2})/,
+  );
+  if (!m) return null;
+  const mo = dtpsMonth(m[2]!);
+  if (!mo) return null;
+  return `${m[3]}-${mo}-${m[1]!.padStart(2, "0")}`;
+}
+
+function dtpsCoords(text: string): { lat: number; lng: number } | undefined {
+  const m = text.match(/(\d{2}\.\d{4,})\s*,\s*(\d{2}\.\d{4,})/);
+  if (!m) return undefined;
+  const lat = Number(m[1]);
+  const lng = Number(m[2]);
+  if (lat < 47 || lat > 50 || lng < 16 || lng > 23) return undefined;
+  return { lat, lng };
+}
+
+function dtpsEvent(
+  url: string,
+  place: string,
+  startDate: string,
+  extra?: { lat?: number; lng?: number; pageUrl?: string },
+): ParsedEvent {
+  const page = extra?.pageUrl || url.split("?")[0]!;
+  return {
+    externalId: `dtps-${startDate}-${normalizeName(place)}`,
+    name: `DTPS — ${place}`,
+    startDate,
+    placeText: place,
+    countryHint: "SK",
+    discipline: ["xco"],
+    audience: "kids",
+    seriesName: "Detská Tour Petra Sagana",
+    seriesSlug: "detska-tour-petra-sagana",
+    seriesWebsite: DTPS_HOME,
+    sourceUrl: page,
+    websiteUrl: page,
+    registrationUrl: DTPS_ENTRY,
+    regulationsUrl: /propozic|kolo/i.test(page) && !/category/i.test(page) ? page : undefined,
+    lat: extra?.lat,
+    lng: extra?.lng,
+    confidence: extra?.lat ? 0.92 : 0.9,
+  };
+}
 
 /** Official homepage round list: "4. Apríl | 2026Šamorín" (year glued to town). */
 export function parseDetskaTour(url: string, html: string): ParsedEvent[] {
@@ -1841,23 +1919,65 @@ export function parseDetskaTour(url: string, html: string): ParsedEvent[] {
     const mo = SK_MONTHS[fold(m[2]!)] || SK_MONTHS[m[2]!.toLowerCase()];
     if (!mo) continue;
     const startDate = `${m[3]}-${mo}-${m[1]!.padStart(2, "0")}`;
-    const place = m[4]!.trim();
+    const place = dtpsPlace(m[4]!);
     if (place.length < 3) continue;
-    push(events, seen, {
-      externalId: `dtps-${startDate}-${normalizeName(place)}`,
-      name: `DTPS — ${place}`,
-      startDate,
-      placeText: place,
-      countryHint: "SK",
-      discipline: ["xco"],
-      audience: "kids",
-      seriesName: "Detská Tour Petra Sagana",
-      seriesSlug: "detska-tour-petra-sagana",
-      seriesWebsite: "https://detskatour.sk/",
-      sourceUrl: url.split("?")[0]!,
-      websiteUrl: url.split("?")[0]!,
-      confidence: 0.9,
-    });
+    push(events, seen, dtpsEvent(url, place, startDate));
+  }
+  if (events[0]) {
+    events[0] = {
+      ...events[0],
+      childUrls: [...new Set([...(events[0].childUrls ?? []), DTPS_PROPOZICIE])],
+    };
+  }
+  return events;
+}
+
+/**
+ * DTPS round propozície — category listing and individual posts.
+ * Posts carry the race date, venue GPS and the official regulations page.
+ */
+export function parseDetskaTourPropozicie(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  const listing = url.split("?")[0]!;
+  const articles = $("article").toArray();
+  const blocks = articles.length ? articles : [$("body").get(0)!].filter(Boolean);
+
+  for (const el of blocks) {
+    const $el = $(el);
+    const $a = $el.find("h1 a[href], h2 a[href], .entry-title a[href]").first();
+    const hrefRaw = $a.attr("href") || (articles.length ? undefined : listing);
+    const title = ($a.text() || $el.find("h1, h2").first().text()).replace(/\s+/g, " ").trim();
+    if (!/dtps|dpts|detská tour|kolo/i.test(title + " " + (hrefRaw || ""))) continue;
+    if (/ohodno[tť]te|fotogal|výsledk|vysledk/i.test(title)) continue;
+    let page = listing;
+    if (hrefRaw) {
+      try {
+        page = new URL(hrefRaw, url).toString().split("#")[0]!;
+      } catch {
+        /* keep */
+      }
+    }
+    if (/\/category\/|\/feed\/?/i.test(page)) continue;
+    const blob = $el.text().replace(/\s+/g, " ");
+    const startDate = dtpsDate(blob);
+    const place = dtpsPlace(
+      title.replace(/^\d+\.\s*kolo\s*(DTPS|DPTS)\s*20\d{2}\s*[-–]\s*/i, "") || title,
+    );
+    if (!startDate || place.length < 3) continue;
+    const gps = dtpsCoords(blob);
+    push(events, seen, dtpsEvent(listing, place, startDate, { ...gps, pageUrl: page }));
+  }
+
+  const childUrls = events
+    .map((e) => e.websiteUrl)
+    .filter((u): u is string => Boolean(u && u !== listing && /\/20\d{2}\//.test(u)));
+  if (childUrls.length && events[0] && /\/category\/propozicie/i.test(listing)) {
+    events[0] = {
+      ...events[0],
+      childUrls: [...new Set([...(events[0].childUrls ?? []), ...childUrls])],
+    };
   }
   return events;
 }

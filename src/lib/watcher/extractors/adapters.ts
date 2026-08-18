@@ -20,6 +20,7 @@ import {
   parseAllgaeuKidsCup,
   parseBayerwaldCup,
   parseDetskaTour,
+  parseDetskaTourPropozicie,
   parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
@@ -970,8 +971,24 @@ export async function extractWithAdapter(
     return { events: parseHaervejsloebet(url, html), strategy: "adapter:haervej" };
   }
   if (host.includes("detskatour.sk")) {
-    if (!isBareHome(url)) return { events: [], strategy: "adapter:dtps-skip" };
-    return { events: parseDetskaTour(url, html), strategy: "adapter:dtps" };
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (path === "/") {
+        return { events: parseDetskaTour(url, html), strategy: "adapter:dtps" };
+      }
+      if (
+        /\/category\/propozicie/i.test(path) ||
+        (/\/20\d{2}\//.test(path) && /kolo|propoz|dtps|dpts/i.test(path))
+      ) {
+        return {
+          events: parseDetskaTourPropozicie(url, html),
+          strategy: "adapter:dtps-propozicie",
+        };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:dtps-skip" };
+    }
+    return { events: [], strategy: "adapter:dtps-skip" };
   }
   if (host.includes("czechtour.com")) {
     if (!isBareHome(url)) return { events: [], strategy: "adapter:czechtour-skip" };

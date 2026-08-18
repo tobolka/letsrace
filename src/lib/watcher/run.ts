@@ -433,6 +433,19 @@ export async function watchOne(row: {
             }
           }
           if (hostnameOf(child).includes("mso.swiss")) continue;
+          if (hostnameOf(child).includes("detskatour.sk")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (path !== "/" && !/\/category\/propozicie/i.test(path)) {
+                if (!(/\/20\d{2}\//.test(path) && /kolo|propoz|dtps|dpts/i.test(path))) {
+                  continue;
+                }
+              }
+              if (/ohodno|fotogal|feed|wp-content/i.test(path)) continue;
+            } catch {
+              continue;
+            }
+          }
           if (hostnameOf(child).includes("detskymtbcup.cz")) {
             try {
               const path = new URL(child).pathname.replace(/\/$/, "") || "/";

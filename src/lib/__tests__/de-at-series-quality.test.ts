@@ -14,6 +14,7 @@ import {
   parseSaarlandliga,
   parseSchwarzwalderCup,
   parseSoofSk,
+  parseDetskaTourPropozicie,
 } from "@/lib/watcher/extractors/kids-mtb-cups";
 import { parseXcoNrw } from "@/lib/watcher/extractors/more-kids";
 
@@ -288,6 +289,54 @@ describe("Cyclo-Cross Bundesliga", () => {
     expect(events[0]?.placeText).toBe("Bad Salzdetfurth");
     expect(events.at(-1)?.placeText).toBe("Vechta");
     expect(events.every((e) => e.seriesSlug === "cx-bundesliga")).toBe(true);
+  });
+});
+
+describe("Detská Tour Petra Sagana propozície", () => {
+  it("reads the category listing and points each round at its post", () => {
+    const html = `
+      <article>
+        <h2><a href="https://detskatour.sk/2026/6-kolo-dtps-2026-nitra-propozicie/">6. kolo DTPS 2026 – Nitra (propozície)</a></h2>
+        <p>Dátum konania súťaže 29. august 2026 /sobota/</p>
+      </article>
+      <article>
+        <h2><a href="https://detskatour.sk/2026/5-kolo-dtps-2026-myjava-propozicie/">5. kolo DTPS 2026 – Myjava (propozície)</a></h2>
+        <p>Dátum konania súťaže 28.júna 2026 /nedeľa/</p>
+      </article>
+    `;
+    const events = parseDetskaTourPropozicie(
+      "https://detskatour.sk/category/propozicie/",
+      html,
+    );
+    expect(events.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-08-29 Nitra",
+      "2026-06-28 Myjava",
+    ]);
+    expect(events[0]?.regulationsUrl).toContain("nitra-propozicie");
+    expect(events[0]?.registrationUrl).toBe("https://dtps.mtbiker.sk");
+    expect(events[0]?.childUrls).toEqual(
+      expect.arrayContaining([
+        "https://detskatour.sk/2026/6-kolo-dtps-2026-nitra-propozicie/",
+      ]),
+    );
+  });
+
+  it("reads GPS from a round post", () => {
+    const html = `
+      <article>
+        <h1>6. kolo DTPS 2026 – Nitra (propozície)</h1>
+        <p>Dátum konania súťaže 29. august 2026 /sobota/</p>
+        <p>Nový Park Nitra <u>48.316133, 18.080973</u></p>
+      </article>
+    `;
+    const events = parseDetskaTourPropozicie(
+      "https://detskatour.sk/2026/6-kolo-dtps-2026-nitra-propozicie/",
+      html,
+    );
+    expect(events).toHaveLength(1);
+    expect(events[0]?.lat).toBeCloseTo(48.316133);
+    expect(events[0]?.lng).toBeCloseTo(18.080973);
+    expect(events[0]?.regulationsUrl).toContain("nitra-propozicie");
   });
 });
 
