@@ -57,6 +57,7 @@ import {
   parseVelkyHaj,
   parseVanGillern,
   parseKonarovickyKoren,
+  parseJesenickySnek,
   parseZal,
   parseUstiMtbCup,
 } from "@/lib/watcher/extractors/cz-calendars";
@@ -296,6 +297,17 @@ export async function extractWithAdapter(
       return { events: [], strategy: "adapter:van-gillern-skip" };
     }
     return { events: parseVanGillern(url, html), strategy: "adapter:van-gillern" };
+  }
+  if (host.includes("jesenickysnek.cz")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (path !== "/" && !/^\/event\/\d+$/.test(path)) {
+        return { events: [], strategy: "adapter:jesenicky-snek-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:jesenicky-snek-skip" };
+    }
+    return { events: parseJesenickySnek(url, html), strategy: "adapter:jesenicky-snek" };
   }
   if (host.includes("k-koren.cz")) {
     try {

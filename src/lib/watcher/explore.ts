@@ -92,7 +92,7 @@ const COUNTRY_PACKS: CountryPack[] = [
 ];
 
 const RACE_HOST =
-  /cup|coppa|puchar|race|rennen|gara|wyscig|wyścig|pretek|mtb|xco|xcm|xcc|\bxc\b|gravel|kolo|bike|velo|maraton|marathon|cyclo|cyklo|enduro|downhill|criterium|kritérium|granfondo|bikemaraton|tour|radsport|k-koren/i;
+  /cup|coppa|puchar|race|rennen|gara|wyscig|wyścig|pretek|mtb|xco|xcm|xcc|\bxc\b|gravel|kolo|bike|velo|maraton|marathon|cyclo|cyklo|enduro|downhill|criterium|kritérium|granfondo|bikemaraton|tour|radsport|k-koren|snek|šnek/i;
 
 const RACE_PATH =
   /zavod|závod|zavody|pretek|preteky|race|rennen|gara|wyscig|wyścig|zawody|cup|kalendar|kalendář|kalender|calendario|kalendarz|propozic|registrac|prihlas|anmeldung|ausschreibung|nennung|iscriz|regolamento|zapisy|regulamin|trat|termine/i;

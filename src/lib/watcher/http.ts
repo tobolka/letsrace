@@ -5,7 +5,7 @@ export const BOT_UA =
   "StartlineBot/0.2 (+https://startline.app; race calendar aggregator; polite)";
 
 /** Hosts whose WAF rejects the bot UA. */
-const BROWSER_UA_HOSTS = new Set(["detskatour.sk"]);
+const BROWSER_UA_HOSTS = new Set(["detskatour.sk", "jesenickysnek.cz"]);
 const BROWSER_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 

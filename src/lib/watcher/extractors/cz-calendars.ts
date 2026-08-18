@@ -973,6 +973,164 @@ export async function parsePekloSeveru(url: string, html: string): Promise<Parse
   });
 }
 
+const JESENICKY_SNEK_SITE = "https://jesenickysnek.cz";
+const JESENICKY_SNEK_REGS =
+  "https://api.xathlo.com/storage/v1/object/public/org-1/snek2026.pdf";
+
+function snekAbsUrl(href: string, origin: string): string | undefined {
+  try {
+    return new URL(href, origin).toString();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Jesenický šnek — Jeseníky club MTB (XC + kids šneček). Homepage cards are
+ * MUI `<a href="/event/N">` with a date-only `<time datetime="YYYY-MM-DD">`.
+ * News posts use ISO datetimes with a clock — skip those.
+ */
+export function parseJesenickySnek(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  let origin = JESENICKY_SNEK_SITE;
+  try {
+    origin = new URL(url).origin;
+  } catch {
+    /* keep default */
+  }
+  const onEventPage = /\/event\/\d+\/?$/.test(url.split("?")[0] || "");
+
+  $("a[href*='/event/']").each((_, link) => {
+    const $link = $(link);
+    const href = $link.attr("href") || "";
+    if (!/\/event\/\d+/.test(href)) return;
+
+    const name = $link.find("h1, h2, h3, h4, h5").first().text().replace(/\s+/g, " ").trim();
+    if (!name || name.length < 3) return;
+    if (/^(aktuality|závody|zavody|jesenický šnek)$/i.test(name)) return;
+
+    const $time = $link
+      .find("time")
+      .filter((_, el) => /^\d{4}-\d{2}-\d{2}$/.test(($(el).attr("datetime") || "").trim()))
+      .first();
+    const startDate = ($time.attr("datetime") || "").trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return;
+
+    let placeText = "";
+    $time.nextAll("span").each((_, span) => {
+      const t = $(span).text().replace(/[,\s]+/g, " ").trim();
+      if (t.length > 2 && !placeText) placeText = t;
+    });
+    if (!placeText) {
+      const blob = $link.text().replace(/\s+/g, " ");
+      placeText = blob.match(/20\d{2}-\d{2}-\d{2},\s*([^,]+)/)?.[1]?.trim() ?? "";
+    }
+    if (!placeText) return;
+
+    const websiteUrl =
+      snekAbsUrl(href, origin)?.replace(/\/$/, "") ||
+      (onEventPage ? url.split("?")[0] : JESENICKY_SNEK_SITE);
+
+    let registrationUrl: string | undefined;
+    $link.find("a[href]").each((_, a) => {
+      const h = $(a).attr("href") || "";
+      if (/docs\.google\.com\/forms|powerofmotion\.cz|nazavody\.cz/i.test(h)) {
+        registrationUrl = snekAbsUrl(h, origin) ?? h;
+      }
+    });
+    if (!registrationUrl && onEventPage) {
+      $("a[href]").each((_, a) => {
+        const h = $(a).attr("href") || "";
+        if (/docs\.google\.com\/forms|powerofmotion\.cz|nazavody\.cz/i.test(h)) {
+          registrationUrl = snekAbsUrl(h, origin) ?? h;
+        }
+      });
+    }
+
+    const externalId = `jesenicky-snek-${startDate}-${normalizeName(name)}`;
+    if (seen.has(externalId)) return;
+    seen.add(externalId);
+
+    events.push({
+      externalId,
+      name,
+      startDate,
+      placeText,
+      countryHint: "CZ",
+      discipline: ["xco"],
+      audience: "mixed",
+      seriesName: "Jesenický šnek",
+      seriesSlug: "jesenicky-snek",
+      seriesWebsite: JESENICKY_SNEK_SITE,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl,
+      registrationUrl,
+      regulationsUrl: JESENICKY_SNEK_REGS,
+      confidence: 0.9,
+    });
+  });
+
+  if (!events.length && onEventPage) {
+    $("h1, h3, h4").each((_, heading) => {
+      const name = $(heading).text().replace(/\s+/g, " ").trim();
+      if (!name || name.length < 3) return;
+      if (/^(aktuality|závody|zavody|jesenický šnek)$/i.test(name)) return;
+
+      const $scope = $(heading).parent();
+      const $time = $("time")
+        .filter((_, el) => /^\d{4}-\d{2}-\d{2}$/.test(($(el).attr("datetime") || "").trim()))
+        .first();
+      const startDate = ($time.attr("datetime") || "").trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return;
+
+      let placeText = "";
+      $time.nextAll("span").each((_, span) => {
+        const t = $(span).text().replace(/[,\s]+/g, " ").trim();
+        if (t.length > 2 && !placeText) placeText = t;
+      });
+      if (!placeText) {
+        const blob = $("body").text().replace(/\s+/g, " ");
+        placeText = blob.match(/20\d{2}-\d{2}-\d{2},\s*([^,]+)/)?.[1]?.trim() ?? "";
+      }
+      if (!placeText) return;
+
+      let registrationUrl: string | undefined;
+      $("a[href]").each((_, a) => {
+        const h = $(a).attr("href") || "";
+        if (/docs\.google\.com\/forms|powerofmotion\.cz|nazavody\.cz/i.test(h)) {
+          registrationUrl = snekAbsUrl(h, origin) ?? h;
+        }
+      });
+
+      const externalId = `jesenicky-snek-${startDate}-${normalizeName(name)}`;
+      if (seen.has(externalId)) return;
+      seen.add(externalId);
+
+      events.push({
+        externalId,
+        name,
+        startDate,
+        placeText,
+        countryHint: "CZ",
+        discipline: ["xco"],
+        audience: "mixed",
+        seriesName: "Jesenický šnek",
+        seriesSlug: "jesenicky-snek",
+        seriesWebsite: JESENICKY_SNEK_SITE,
+        sourceUrl: url.split("?")[0]!,
+        websiteUrl: url.split("?")[0],
+        registrationUrl,
+        regulationsUrl: JESENICKY_SNEK_REGS,
+        confidence: 0.9,
+      });
+    });
+  }
+
+  return events;
+}
+
 /**
  * Pohár Plzeňského kraje MTB XCO — dates live in `ppk-races.js` (homepage grid is JS-rendered).
  */

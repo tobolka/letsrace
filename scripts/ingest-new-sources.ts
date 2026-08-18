@@ -45,6 +45,7 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://www.detskymtbcup.cz/", kind: "series" },
   { url: "https://skvelopraha.cz/velky-haj/", kind: "series" },
   { url: "http://vangillerncup.cz", kind: "race" },
+  { url: "https://jesenickysnek.cz/", kind: "series" },
   { url: "https://ppkbike.cz/", kind: "series" },
   { url: "https://ppkbike.cz/ppk-races.js", kind: "series" },
   { url: "https://www.cyklistikaszc.sk/sk/mtb-cross-country/kalendar", kind: "federation" },
@@ -226,7 +227,9 @@ async function main() {
             ? "O Pohár MČ Praha 4 — off-season watch for next year"
             : t.url.includes("gillern")
               ? "Kamenice family MTB — adults + kids"
-              : null,
+              : t.url.includes("jesenicky")
+                ? "Jesenický šnek — Jeseníky XC + šneček"
+                : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })

@@ -6,7 +6,7 @@ import {
   scoreRacePage,
   shouldAutoWatch,
 } from "@/lib/watcher/explore";
-import { parseVanGillern, parseKonarovickyKoren } from "@/lib/watcher/extractors/cz-calendars";
+import { parseVanGillern, parseKonarovickyKoren, parseJesenickySnek } from "@/lib/watcher/extractors/cz-calendars";
 
 describe("race website explorer", () => {
   it("canonicalizes WordPress homes to the origin", () => {
@@ -25,6 +25,7 @@ describe("race website explorer", () => {
     expect(looksLikeIndependentRaceUrl("https://puchar-beskid.pl/zapisy")).toBe(true);
     expect(looksLikeIndependentRaceUrl("https://granfondo-lago.it/iscrizioni")).toBe(true);
     expect(looksLikeIndependentRaceUrl("https://www.k-koren.cz")).toBe(true);
+    expect(looksLikeIndependentRaceUrl("https://jesenickysnek.cz")).toBe(true);
     expect(looksLikeIndependentRaceUrl("https://hynekmusil.cz/?serialosss=tc")).toBe(false);
     expect(looksLikeIndependentRaceUrl("https://federciclismo.it/calendario")).toBe(false);
     expect(looksLikeIndependentRaceUrl("https://facebook.com/some-race")).toBe(false);
@@ -101,6 +102,54 @@ describe("race website explorer", () => {
     expect(events[0]?.registrationUrl).toContain("online-prihlasky");
     expect(events[0]?.regulationsUrl).toContain("kategorie");
     expect(events[0]?.lat).toBeCloseTo(50.041, 2);
+  });
+
+  it("parses Jesenický šnek homepage cards and skips news timestamps", () => {
+    const html = `
+      <html><body>
+        <h3>Aktuality</h3>
+        <time dateTime="2026-08-11T13:32:31+00:00">2026-08-11</time>
+        <p>O cenu Rapotína - předběžné výsledky</p>
+        <a href="/event/149">
+          <h3>XC Hynčice</h3>
+          <h5><time dateTime="2026-08-22">2026-08-22</time><span>, </span><span>Hynčice pod Sušinou</span></h5>
+          <p>MTB, Jesenický šneček</p>
+        </a>
+        <a href="/event/152">
+          <h4>Českopetrovická koolna</h4>
+          <h5><time dateTime="2026-09-05">2026-09-05</time><span>, </span><span>České Petrovice</span></h5>
+        </a>
+        <a href="/event/153">
+          <h4>XC Loko Krnov</h4>
+          <h5><time dateTime="2026-09-12">2026-09-12</time><span>, </span><span>Krnov</span></h5>
+        </a>
+      </body></html>
+    `;
+    const events = parseJesenickySnek("https://jesenickysnek.cz/", html);
+    expect(events.map((e) => `${e.startDate} ${e.name}`)).toEqual([
+      "2026-08-22 XC Hynčice",
+      "2026-09-05 Českopetrovická koolna",
+      "2026-09-12 XC Loko Krnov",
+    ]);
+    expect(events[0]?.websiteUrl).toBe("https://jesenickysnek.cz/event/149");
+    expect(events[0]?.seriesSlug).toBe("jesenicky-snek");
+    expect(events[0]?.regulationsUrl).toContain("snek2026.pdf");
+  });
+
+  it("parses a Jesenický šnek event page registration form", () => {
+    const html = `
+      <html><body>
+        <h3>XC Hynčice</h3>
+        <p>2026-08-22, Hynčice pod Sušinou</p>
+        <time dateTime="2026-08-22">2026-08-22</time>
+        <span>Hynčice pod Sušinou</span>
+        <a href="https://docs.google.com/forms/d/e/abc/viewform">PŘIHLÁŠKY</a>
+      </body></html>
+    `;
+    const events = parseJesenickySnek("https://jesenickysnek.cz/event/149", html);
+    expect(events).toHaveLength(1);
+    expect(events[0]?.registrationUrl).toContain("docs.google.com/forms");
+    expect(events[0]?.websiteUrl).toContain("/event/149");
   });
 
   it("weights explorer packs toward home markets and sniffs Italy every third window", () => {
