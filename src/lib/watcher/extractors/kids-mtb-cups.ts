@@ -2187,6 +2187,165 @@ export function parseSportklasseCup(url: string, html: string): ParsedEvent[] {
   });
 }
 
+const AGS_SITE = "http://www.downhill-cup.at/";
+const AGS_LIVE = "https://www.lines-mag.at/austrian-gravity-series/";
+export const AT_GRAVITY_PDF =
+  "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austrian%20Gravity%20Series%202026.pdf";
+
+/**
+ * auner Austrian Gravity Series 2026 — the live Austrian Downhill Cup.
+ * downhill-cup.at Termine is still 2023; LINES + Cycling Austria PDF are the calendar.
+ */
+const AT_GRAVITY_2026: {
+  date: string;
+  name: string;
+  place: string;
+  lat: number;
+  lng: number;
+  website?: string;
+  regs?: string;
+  registration?: string;
+}[] = [
+  {
+    date: "2026-05-02",
+    name: "aAGS #1 — Schöckl Trail Area",
+    place: "St. Radegund bei Graz / Schöckl, Steiermark",
+    lat: 47.191,
+    lng: 15.466,
+    website: "https://www.lines-mag.at/trail/schoeckl-trail-area",
+    regs: "https://www.lines-mag.at/austria/wp-content/uploads/2026/04/aAGS-Ausschreibung_Schoeckl2026.pdf",
+    registration: "https://my.raceresult.com/392292/",
+  },
+  {
+    date: "2026-05-14",
+    name: "aAGS #2 — Weissensee",
+    place: "Weissensee, Kärnten",
+    lat: 46.718,
+    lng: 13.292,
+    website: "https://www.lines-mag.at/trail/weissensee",
+    regs: "https://www.lines-mag.at/austria/wp-content/uploads/2026/04/aAGS-Ausschreibung_Weissensee2026.pdf",
+  },
+  {
+    date: "2026-07-04",
+    name: "aAGS #3 — Bikepark Lienz",
+    place: "Lienz, Tirol",
+    lat: 46.837,
+    lng: 12.769,
+    website: "https://www.lines-mag.at/trail/lienz",
+    regs: "https://www.lines-mag.at/austria/wp-content/uploads/2026/05/aAGS-Ausschreibung_Lienz2026.pdf",
+    registration: "https://my.raceresult.com/376438/",
+  },
+  {
+    date: "2026-07-18",
+    name: "aAGS #4 — Lermoos",
+    place: "Lermoos, Tirol",
+    lat: 47.401,
+    lng: 10.881,
+    website: "https://www.lines-mag.at/trail/zugspitz-arena",
+    regs: "https://www.lines-mag.at/austria/wp-content/uploads/2026/04/aAGS-Ausschreibung_Lermoos2026.pdf",
+    registration: "https://my.raceresult.com/376440/",
+  },
+  {
+    date: "2026-09-05",
+    name: "aAGS #5 — Bikepark Semmering",
+    place: "Semmering, Niederösterreich",
+    lat: 47.631,
+    lng: 15.83,
+    website: "https://www.lines-mag.at/trail/bikepark-semmering/",
+    regs: "https://www.lines-mag.at/austria/wp-content/uploads/2026/04/aAGS-Ausschreibung_Semmering2026.pdf",
+    registration: "https://my.raceresult.com/376441/",
+  },
+  {
+    date: "2026-10-04",
+    name: "aAGS #6 — Bikepark Leogang",
+    place: "Leogang, Salzburg",
+    lat: 47.44,
+    lng: 12.76,
+    website: "https://www.lines-mag.at/trail/saalfelden-leogang",
+    regs: "https://www.lines-mag.at/austria/wp-content/uploads/2026/05/aAGS-Ausschreibung_Leogang2026.pdf",
+    registration: "https://my.raceresult.com/376439/",
+  },
+];
+
+const AT_GRAVITY_BY_DATE = new Map(AT_GRAVITY_2026.map((row) => [row.date, row]));
+
+function agsEvent(
+  sourceUrl: string,
+  row: (typeof AT_GRAVITY_2026)[number],
+): ParsedEvent {
+  return {
+    externalId: `ags-${row.date}-${normalizeName(row.place)}`,
+    name: row.name,
+    startDate: row.date,
+    placeText: row.place,
+    countryHint: "AT",
+    discipline: ["dh"],
+    audience: "mixed",
+    categories: [...categoriesFromUBands("U13–U17"), { name: "Elite" }],
+    seriesName: "Austrian Gravity Series",
+    seriesSlug: "austrian-gravity-series",
+    seriesWebsite: AGS_LIVE,
+    sourceUrl,
+    websiteUrl: row.website,
+    registrationUrl: row.registration,
+    regulationsUrl: row.regs || AT_GRAVITY_PDF,
+    lat: row.lat,
+    lng: row.lng,
+    confidence: 0.93,
+  };
+}
+
+function parseAgsLiveDates(html: string): { date: string; place: string }[] {
+  const $ = cheerio.load(html);
+  const text = $("body").text().replace(/\s+/g, " ");
+  const found: { date: string; place: string }[] = [];
+  const seen = new Set<string>();
+  const re =
+    /(\d{1,2})\.(\d{1,2})\.(20\d{2})\s+aAGS\s*#?\d*\s*[–—-]\s*([^|]+?)(?=\s+\d{1,2}\.\d{1,2}\.20\d{2}|\s+Attraktive|\s+Sechs Rennen|$)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const date = `${m[3]}-${m[2]!.padStart(2, "0")}-${m[1]!.padStart(2, "0")}`;
+    if (date < "2026-01-01" || seen.has(date)) continue;
+    const place = m[4]!.replace(/\s+/g, " ").replace(/–.*/, "").trim();
+    if (!place || place.length < 3) continue;
+    seen.add(date);
+    found.push({ date, place });
+  }
+  return found;
+}
+
+/** Live auner Gravity Series / Austrian Downhill Cup 2026. */
+export function parseAustrianGravitySeries(url: string, html: string): ParsedEvent[] {
+  const live = parseAgsLiveDates(html);
+  if (live.length >= 4) {
+    return live.map((row) => {
+      const extra = AT_GRAVITY_BY_DATE.get(row.date);
+      if (extra) return agsEvent(url, extra);
+      return {
+        externalId: `ags-${row.date}-${normalizeName(row.place)}`,
+        name: `aAGS — ${row.place}`,
+        startDate: row.date,
+        placeText: row.place,
+        countryHint: "AT",
+        discipline: ["dh"] as Discipline[],
+        audience: "mixed" as Audience,
+        seriesName: "Austrian Gravity Series",
+        seriesSlug: "austrian-gravity-series",
+        seriesWebsite: AGS_LIVE,
+        sourceUrl: url,
+        websiteUrl: AGS_LIVE,
+        confidence: 0.86,
+      };
+    });
+  }
+  return AT_GRAVITY_2026.map((row) => agsEvent(url.split("#")[0] || AGS_SITE, row));
+}
+
+/** downhill-cup.at — skip stale 2023 Termine, emit the 2026 Gravity Series. */
+export function parseDownhillCup(url: string, html: string): ParsedEvent[] {
+  return parseAustrianGravitySeries(url, html);
+}
+
 /** Berg & Bike / MPDV Cup — 2026 menu dates. */
 export function parseMpdvCup(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);

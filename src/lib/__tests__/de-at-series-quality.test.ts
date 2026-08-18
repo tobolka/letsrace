@@ -11,6 +11,8 @@ import {
   parseYoungstersCup,
   parseMtbLiga,
   parseSportklasseCup,
+  parseAustrianGravitySeries,
+  parseDownhillCup,
   parseGermanCxBundesliga,
   parseJuniorBikeCup,
   parseOberschwabenCup,
@@ -389,6 +391,53 @@ describe("Sportklasse Cup", () => {
     expect(events[1]?.websiteUrl).toContain("sportklasse-cup.at");
     expect(events[3]?.websiteUrl).toContain("eisenwadl.com");
     expect(events.every((e) => e.seriesSlug === "sportklasse-cup")).toBe(true);
+  });
+});
+
+describe("Austrian Gravity Series / Downhill Cup", () => {
+  it("emits the six 2026 DH rounds and ignores stale 2023 Termine", () => {
+    const html = `
+      <div class="block block-termine"><h2>Termine</h2><ul>
+        <li><a href="http://www.downhill-cup.at/13_mai__oem_wurbauerkogel-pid677" title="13. Mai - ÖM Wurbauerkogel">13. Mai</a></li>
+        <li><a href="http://www.downhill-cup.at/26280523_koenigsberg_noe-pid653" title="26.-28.05.23 Königsberg (NÖ)">26.-28.05.23</a></li>
+        <li><a href="http://www.downhill-cup.at/21230923_schladming_st-pid529" title="21.-23.09.23 Schladming (ST)">21.-23.09.23</a></li>
+        <li><a href="http://www.downhill-cup.at/-pid607" title="(vorbehaltlich der Zustimmung der Veranstalter zu den Cupbedingungen!)">Vorbehaltlich</a></li>
+      </ul></div>
+      <p>Coming Soon!!! AAGS DHI Schöckl - 02. Mai 2026</p>
+    `;
+    const events = parseDownhillCup("http://www.downhill-cup.at/", html);
+    expect(events).toHaveLength(6);
+    expect(events.map((e) => e.startDate)).toEqual([
+      "2026-05-02",
+      "2026-05-14",
+      "2026-07-04",
+      "2026-07-18",
+      "2026-09-05",
+      "2026-10-04",
+    ]);
+    expect(events.every((e) => e.discipline?.includes("dh"))).toBe(true);
+    expect(events.every((e) => e.seriesSlug === "austrian-gravity-series")).toBe(true);
+    expect(events.some((e) => /2023/.test(e.startDate))).toBe(false);
+  });
+
+  it("reads the LINES 2026 table", () => {
+    const html = `
+      <table>
+        <tr><td>2.5.2026</td><td>aAGS #1 – Schöckl Trail Area</td></tr>
+        <tr><td>14.5.2026</td><td>aAGS #2 – Weissensee</td></tr>
+        <tr><td>4.7.2026</td><td>aAGS #3 – Bikepark Lienz</td></tr>
+        <tr><td>18.7.2026</td><td>aAGS #4 – Lermoos</td></tr>
+        <tr><td>5.9.2026</td><td>aAGS #5 – Bikepark Semmering</td></tr>
+        <tr><td>4.10.2026</td><td>aAGS #6 – Bikepark Leogang</td></tr>
+      </table>
+    `;
+    const events = parseAustrianGravitySeries(
+      "https://www.lines-mag.at/austrian-gravity-series/",
+      html,
+    );
+    expect(events).toHaveLength(6);
+    expect(events[4]?.registrationUrl).toContain("376441");
+    expect(events[5]?.startDate).toBe("2026-10-04");
   });
 });
 

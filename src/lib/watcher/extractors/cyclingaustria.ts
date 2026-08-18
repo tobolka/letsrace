@@ -54,7 +54,7 @@ function caSeries(
     return {
       seriesName: "Austrian Gravity Series",
       seriesSlug: "austrian-gravity-series",
-      seriesWebsite: site,
+      seriesWebsite: "https://www.lines-mag.at/austrian-gravity-series/",
     };
   }
   if (/youngsters cup|grazer youngsters/.test(t)) {

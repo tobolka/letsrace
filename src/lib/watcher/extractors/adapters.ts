@@ -25,6 +25,8 @@ import {
   parseYoungstersCup,
   parseMtbLiga,
   parseSportklasseCup,
+  parseAustrianGravitySeries,
+  parseDownhillCup,
   parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
@@ -416,6 +418,24 @@ export async function extractWithAdapter(
       strategy: "adapter:skc",
     };
   }
+  if (host.includes("downhill-cup.at")) {
+    if (/ergebnisse|impressum|kontakt|termine_2023/i.test(url)) {
+      return { events: [], strategy: "adapter:ags-skip" };
+    }
+    return {
+      events: parseDownhillCup(url, html),
+      strategy: "adapter:ags-dhc",
+    };
+  }
+  if (host.includes("lines-mag.at")) {
+    if (!/austrian-gravity-series/i.test(url) || /2025|reglement/i.test(url)) {
+      return { events: [], strategy: "adapter:ags-lines-skip" };
+    }
+    return {
+      events: parseAustrianGravitySeries(url, html),
+      strategy: "adapter:ags-lines",
+    };
+  }
   if (host.includes("cyclingaustria.at")) {
     let decoded = url;
     try {
@@ -427,6 +447,12 @@ export async function extractWithAdapter(
       return {
         events: parseAustriaKidsXc2026(url, html),
         strategy: "adapter:at-kids-xc",
+      };
+    }
+    if (/austria.?n.?gravity.?series|auner.?gravity|austrian.?gravity/i.test(decoded)) {
+      return {
+        events: parseAustrianGravitySeries(url, html),
+        strategy: "adapter:at-ags",
       };
     }
     if (!/kalender/i.test(url)) {

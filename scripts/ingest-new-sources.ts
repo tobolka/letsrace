@@ -47,6 +47,12 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "http://www.mtb-liga.at/termine_2026-pid443", kind: "series" },
   { url: "http://www.sportklasse-cup.at/", kind: "series" },
   { url: "http://www.sportklasse-cup.at/termine_2026-pid439", kind: "series" },
+  { url: "http://www.downhill-cup.at/", kind: "series" },
+  { url: "https://www.lines-mag.at/austrian-gravity-series/", kind: "series" },
+  {
+    url: "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austrian%20Gravity%20Series%202026.pdf",
+    kind: "series",
+  },
   { url: "https://www.ucimtbworldseries.com/calendar", kind: "series" },
   {
     url: "https://www.swiss-cycling.ch/de/veranstaltungen/kalender/?discipline=mtb&save=true",
@@ -249,6 +255,8 @@ async function main() {
                     ? "JANEV Cup 2026 — Czech UCI cyclocross"
                     : t.url.includes("sportklasse-cup")
                       ? "Sportklasse / Amateur Cup Austria — adult XCO, keep separate from AYC + MLA"
+                      : t.url.includes("downhill-cup") || t.url.includes("austrian-gravity")
+                        ? "auner Austrian Gravity Series / Downhill Cup — DH U13–Elite"
                       : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
