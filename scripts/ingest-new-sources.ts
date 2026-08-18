@@ -229,11 +229,22 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://velkacenaklatov.cz/", kind: "race" },
   { url: "https://www.rad-bundesliga.net/männer/termine.html", kind: "series" },
   { url: "https://www.rad-bundesliga.net/junioren/termine.html", kind: "series" },
+  { url: "https://www.rad-bundesliga.net/juniorinnen/termine.html", kind: "series" },
   { url: "https://www.rad-bundesliga.net/frauen/termine2.html", kind: "series" },
   { url: "https://www.cyklistikaszc.sk/sk/cestna-cyklistika/kalendar", kind: "federation" },
+  { url: "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar", kind: "federation" },
+  { url: "https://www.cyklistikaszc.sk/sk/bmx-racing/kalendar", kind: "federation" },
+  { url: "https://www.cyklistikaszc.sk/sk/bmx-freestyle/kalendar", kind: "federation" },
+  { url: "https://www.cyklistikaszc.sk/sk/mtb-downhill-fourcross/kalendar", kind: "federation" },
+  { url: "https://www.cyklistikaszc.sk/sk/cyklotrial/kalendar", kind: "federation" },
+  { url: "https://www.cyklistikaszc.sk/sk/drahova-cyklistika/kalendar", kind: "federation" },
   { url: "https://pucharmtb.pl/kalendarz-2026/", kind: "series" },
   {
     url: "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events",
+    kind: "federation",
+  },
+  {
+    url: "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events",
     kind: "federation",
   },
   {
@@ -242,8 +253,13 @@ const TARGETS: { url: string; kind: string }[] = [
   },
   { url: "https://www.czechcyclingfederation.com/events/mnd-cup/", kind: "series" },
   { url: "https://www.czechcyclingfederation.com/en/events/skoda-cup/", kind: "series" },
+  { url: "https://www.czechcyclingfederation.com/en/events/cesky-pohar-bmx/", kind: "series" },
   { url: "https://zavodmiru.com/", kind: "race" },
   { url: "https://www.deutschland-tour.com/", kind: "race" },
+  {
+    url: "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+    kind: "series",
+  },
 ];
 
 async function main() {
@@ -291,19 +307,37 @@ async function main() {
                     : t.url.includes("kalendar.sportsoft")
                       ? "SportSoft timing calendar — CZ/SK cycling only"
                     : t.url.includes("rad-bundesliga.net")
-                      ? "German road Rad-Bundesliga — Männer / Junioren / Frauen"
+                      ? "German road Rad-Bundesliga — Männer / Junioren / Juniorinnen / Frauen"
                     : t.url.includes("cestna-cyklistika")
                       ? "SZC road calendar — SP CC, Okolo Slovenska, V4"
+                    : t.url.includes("cyklokros/kalendar")
+                      ? "SZC cyclocross calendar — NoLimited CX cup"
+                    : t.url.includes("bmx-racing")
+                      ? "SZC BMX Racing cup"
+                    : t.url.includes("bmx-freestyle")
+                      ? "SZC BMX Freestyle cup"
+                    : t.url.includes("mtb-downhill-fourcross")
+                      ? "SZC downhill + enduro cups — SPDH / SPEN"
+                    : t.url.includes("cyklotrial")
+                      ? "SZC trial cup"
+                    : t.url.includes("drahova-cyklistika")
+                      ? "SZC track cup"
                     : t.url.includes("pucharmtb.pl")
                       ? "Puchar Polski MTB XCO"
                     : t.url.includes("cycling-austria-cups")
-                      ? "Cycling Austria 2026 cups — Road League + Junior Series"
+                      ? "Cycling Austria 2026 cups — Road League + Junior Series + BMX Racing League"
                     : t.url.includes("sparten=strasse")
                       ? "Cycling Austria road calendar — Road League + Junior Series"
+                    : t.url.includes("sparten=cyclocross")
+                      ? "Cycling Austria cyclocross calendar"
                     : t.url.includes("events/mnd-cup")
                       ? "ČSC MND CUP road youth"
                     : t.url.includes("events/skoda-cup")
                       ? "ČSC ŠKODA CUP road elite"
+                    : t.url.includes("cesky-pohar-bmx")
+                      ? "ČSC Český pohár BMX Racing"
+                    : t.url.includes("ga-bl-cyclo-cross")
+                      ? "German Cyclo-Cross Bundesliga 2026/27"
                     : t.url.includes("zavodmiru")
                       ? "Závod míru — official Peace Race"
                     : t.url.includes("deutschland-tour")

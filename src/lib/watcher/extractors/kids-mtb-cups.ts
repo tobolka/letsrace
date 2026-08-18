@@ -565,6 +565,148 @@ export function parseSzcRoad(url: string, html: string): ParsedEvent[] {
   return events;
 }
 
+const SZC_DISC_KALENDAR =
+  /\/(cyklokros|bmx-racing|bmx-freestyle|mtb-downhill-fourcross|cyklotrial|drahova-cyklistika)\/kalendar/i;
+
+function szcCountryHint(place: string): "SK" | "CZ" | "HU" {
+  if (/\bhun\)|\bhun\b/i.test(place)) return "HU";
+  if (/\bcze\)|\bcze\b/i.test(place)) return "CZ";
+  return "SK";
+}
+
+function szcDiscName(raw: string): string {
+  return raw
+    .replace(/\s+/g, " ")
+    .replace(
+      /\s*(Cyklokros|BMX Racing|BMX Freestyle|MTB Downhill\/Fourcross|Cyklotrial|Dráhová cyklistika)\s*$/i,
+      "",
+    )
+    .trim();
+}
+
+function szcDiscSeries(
+  url: string,
+  name: string,
+): {
+  seriesName: string;
+  seriesSlug: string;
+  audience: Audience;
+  discipline: Discipline[];
+} | null {
+  const t = fold(name);
+  if (/priebezne poradie|priebežné poradie|pumptrack|pumpcup|salov/.test(t)) {
+    return null;
+  }
+  const youth = /junior|kadet|ziak|žiak|u1[13579]|mladez/.test(t) ? "youth" : "mixed";
+  if (/cyklokros\/kalendar/i.test(url)) {
+    return {
+      seriesName: "Slovenský pohár cyklokros",
+      seriesSlug: "slovensky-pohar-cx",
+      audience: youth,
+      discipline: ["cx"],
+    };
+  }
+  if (/bmx-racing\/kalendar/i.test(url)) {
+    return {
+      seriesName: "Slovenský pohár BMX Racing",
+      seriesSlug: "slovensky-pohar-bmx-racing",
+      audience: youth,
+      discipline: ["bmx"],
+    };
+  }
+  if (/bmx-freestyle\/kalendar/i.test(url)) {
+    return {
+      seriesName: "Slovenský pohár BMX Freestyle",
+      seriesSlug: "slovensky-pohar-bmx-fs",
+      audience: youth,
+      discipline: ["bmx"],
+    };
+  }
+  if (/mtb-downhill-fourcross\/kalendar/i.test(url)) {
+    if (/\bspen\b/.test(t)) {
+      return {
+        seriesName: "Slovenský pohár Enduro",
+        seriesSlug: "spen",
+        audience: youth,
+        discipline: ["enduro"],
+      };
+    }
+    return {
+      seriesName: "SPDH",
+      seriesSlug: "spdh",
+      audience: youth,
+      discipline: ["dh"],
+    };
+  }
+  if (/cyklotrial\/kalendar/i.test(url)) {
+    return {
+      seriesName: "Slovenský pohár Trial",
+      seriesSlug: "slovensky-pohar-trial",
+      audience: youth,
+      discipline: ["other"],
+    };
+  }
+  if (/drahova-cyklistika\/kalendar/i.test(url)) {
+    return {
+      seriesName: "Slovenský pohár dráha",
+      seriesSlug: "slovensky-pohar-draha",
+      audience: youth,
+      discipline: ["track"],
+    };
+  }
+  return null;
+}
+
+/** SZC discipline calendars — CX, BMX, DH/enduro, trial, track. Not the noisy all-sport hub. */
+export function parseSzcDiscipline(url: string, html: string): ParsedEvent[] {
+  if (!SZC_DISC_KALENDAR.test(url)) return [];
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  const seriesWebsite = url.split("?")[0]!.replace(/\/$/, "");
+
+  $("table.table_events tr").each((_, tr) => {
+    const $tds = $(tr).find("td");
+    if ($tds.length < 3) return;
+    const dates = dmy($tds.eq(0).text());
+    if (!dates || dates.start.endsWith("-01-01")) return;
+    const name = szcDiscName($tds.eq(1).text());
+    const placeRaw = $tds.eq(2).text().replace(/\s+/g, " ").trim();
+    if (!name || name.length < 4 || !placeRaw) return;
+    const meta = szcDiscSeries(url, name);
+    if (!meta) return;
+    const pdf =
+      $tds.eq(5).find("a[href$='.pdf']").attr("href") ||
+      $tds.find("a[href$='.pdf']").first().attr("href");
+    let regulationsUrl: string | undefined;
+    if (pdf) {
+      try {
+        regulationsUrl = new URL(pdf, url).toString();
+      } catch {
+        /* keep */
+      }
+    }
+    const place = placeRaw.replace(/\s*\((CZE|HUN)\)\s*/i, "").trim();
+    push(events, seen, {
+      externalId: `szc-${meta.seriesSlug}-${dates.start}-${normalizeName(name)}`,
+      name,
+      startDate: dates.start,
+      endDate: dates.end,
+      placeText: place.slice(0, 80),
+      countryHint: szcCountryHint(placeRaw),
+      discipline: meta.discipline,
+      audience: meta.audience,
+      seriesName: meta.seriesName,
+      seriesSlug: meta.seriesSlug,
+      seriesWebsite,
+      sourceUrl: `${seriesWebsite}#${dates.start}-${normalizeName(name)}`,
+      regulationsUrl,
+      confidence: 0.88,
+    });
+  });
+  return events;
+}
+
 /** ALB-GOLD Juniors Cup — The Events Calendar REST. */
 export async function parseAlbGoldJuniors(
   url: string,
@@ -2091,7 +2233,7 @@ export function parseRadBundesliga(url: string, html: string): ParsedEvent[] {
         placeText: place,
         countryHint: radBlCountry(placeRaw, name),
         discipline: radBlDisc(name),
-        audience: /junioren/i.test(url) ? "youth" : "mixed",
+        audience: /junioren|juniorinnen/i.test(url) ? "youth" : "mixed",
         seriesName: "Rad-Bundesliga",
         seriesSlug: "rad-bundesliga",
         seriesWebsite: RAD_BL_SITE,
@@ -2105,6 +2247,7 @@ export function parseRadBundesliga(url: string, html: string): ParsedEvent[] {
   const siblings = [
     "https://www.rad-bundesliga.net/männer/termine.html",
     "https://www.rad-bundesliga.net/junioren/termine.html",
+    "https://www.rad-bundesliga.net/juniorinnen/termine.html",
     "https://www.rad-bundesliga.net/frauen/termine2.html",
   ].filter((u) => u.replace(/\/$/, "") !== url.split("?")[0]!.replace(/\/$/, ""));
   if (events[0] && siblings.length) {

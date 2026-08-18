@@ -17,6 +17,7 @@ import {
   parsePucharPolskiXco,
   parseRadBundesliga,
   parseSzcRoad,
+  parseSzcDiscipline,
   parsePolandBike,
   parsePolandBikeJunior,
   parseSportklasseCup,
@@ -257,7 +258,9 @@ describe("Cycling Austria", () => {
 describe("Cycling Austria cups 2026", () => {
   it("reads Road League and Junior Series and skips Bahn", () => {
     const html = `
-      <p>Road Cycling League Austria Frauen 22.03. 65. Radsaison-Eröffnungsrennen Leonding OÖ
+      <p>BMX Racing League Austria 06.06. Vösendorf NÖ 07.06. Vösendorf NÖ 04.07. Baierdorf STMK
+      Mountainbike League Austria 29.03. Langenlois NÖ
+      Road Cycling League Austria Frauen 22.03. 65. Radsaison-Eröffnungsrennen Leonding OÖ
       12.04. Straßenrennen St. Marein – Feistritz STMK 26.04. 64. Kirschblütenrennen Wels OÖ
       Road Cycling League Austria Herren 01.05. 14. GP Vorarlberg p/b RadHaus Rankweil UCI 1.2 VBG
       ARBÖ ASKÖ Austrian Junior Series 22.03. Leonding OÖ Einzel 19.04. Ernst Feuchtner Gedenkrennen Söll T Einzel
@@ -276,6 +279,14 @@ describe("Cycling Austria cups 2026", () => {
     const junior = events.filter((e) => e.seriesSlug === "austrian-junior-series");
     expect(junior.some((e) => e.placeText === "Leonding")).toBe(true);
     expect(junior.some((e) => /Söll|Soll/.test(e.placeText || ""))).toBe(true);
+    const bmx = events.filter((e) => e.seriesSlug === "at-bmx-league");
+    expect(bmx.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-06-06 Vösendorf",
+      "2026-06-07 Vösendorf",
+      "2026-07-04 Baierdorf",
+    ]);
+    expect(bmx.every((e) => e.discipline?.[0] === "bmx")).toBe(true);
+    expect(events.some((e) => e.seriesSlug === "mountainbike-liga-austria")).toBe(false);
   });
 });
 
@@ -716,6 +727,7 @@ describe("Rad-Bundesliga road", () => {
     expect(events[0]?.seriesSlug).toBe("rad-bundesliga");
     expect(events[1]?.countryHint).toBe("CH");
     expect(events[0]?.childUrls?.some((u) => /junioren\/termine/.test(u))).toBe(true);
+    expect(events[0]?.childUrls?.some((u) => /juniorinnen\/termine/.test(u))).toBe(true);
   });
 });
 
@@ -742,6 +754,58 @@ describe("SZC road calendar", () => {
     expect(events[2]?.name).toMatch(/Okolo Slovenska/i);
     expect(events[2]?.endDate).toBe("2026-09-20");
     expect(events[2]?.placeText).toBe("Slovensko");
+  });
+});
+
+describe("SZC discipline calendars", () => {
+  it("reads CX, glued BMX FS dates, SPDH/SPEN, and skips track rankings", () => {
+    const cx = parseSzcDiscipline(
+      "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+      `<table class="table_events">
+        <tr><td>27.9.2026</td><td>1. kolo: NoLimited cup v CX (UCI C2) Cyklokros</td><td>Levoča</td></tr>
+        <tr><td>5.12.2026</td><td>MSR v cyklokrose (9. kolo) Cyklokros</td><td>Selce</td></tr>
+      </table>`,
+    );
+    expect(cx.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-09-27 Levoča",
+      "2026-12-05 Selce",
+    ]);
+    expect(cx.every((e) => e.discipline?.[0] === "cx")).toBe(true);
+
+    const fs = parseSzcDiscipline(
+      "https://www.cyklistikaszc.sk/sk/bmx-freestyle/kalendar",
+      `<table class="table_events">
+        <tr><td>27.6.202628.6.2026</td><td>2. &amp; 3. kolo SP BMX Freestyle: SHRED FEST BMX Freestyle</td><td>Žilina</td></tr>
+      </table>`,
+    );
+    expect(fs[0]?.startDate).toBe("2026-06-27");
+    expect(fs[0]?.endDate).toBe("2026-06-28");
+    expect(fs[0]?.seriesSlug).toBe("slovensky-pohar-bmx-fs");
+
+    const dh = parseSzcDiscipline(
+      "https://www.cyklistikaszc.sk/sk/mtb-downhill-fourcross/kalendar",
+      `<table class="table_events">
+        <tr><td>26.4.2026</td><td>SPDH#1 MTB Downhill/Fourcross</td><td>Košútka</td></tr>
+        <tr><td>9.5.202610.5.2026</td><td>SPEN#1 MTB Downhill/Fourcross</td><td>Mokrá Lúka</td></tr>
+      </table>`,
+    );
+    expect(dh[0]?.seriesSlug).toBe("spdh");
+    expect(dh[0]?.discipline).toEqual(["dh"]);
+    expect(dh[1]?.seriesSlug).toBe("spen");
+    expect(dh[1]?.endDate).toBe("2026-05-10");
+
+    const track = parseSzcDiscipline(
+      "https://www.cyklistikaszc.sk/sk/drahova-cyklistika/kalendar",
+      `<table class="table_events">
+        <tr><td>30.4.2026</td><td>Priebežné poradie slovenského pohára na dráhe 2025 Dráhová cyklistika</td><td></td></tr>
+        <tr><td>1.5.20263.5.2026</td><td>Slovenský pohár na dráhe 2026 Dráhová cyklistika</td><td>Prešov</td></tr>
+        <tr><td>24.10.202625.10.2026</td><td>Slovenský pohár na dráhe 2026/2027 Dráhová cyklistika</td><td>Budapešť (HUN)</td></tr>
+      </table>`,
+    );
+    expect(track.map((e) => `${e.startDate} ${e.placeText} ${e.countryHint}`)).toEqual([
+      "2026-05-01 Prešov SK",
+      "2026-10-24 Budapešť HU",
+    ]);
   });
 });
 

@@ -179,17 +179,24 @@ function cscSeriesFromName(name: string): Partial<ParsedEvent> {
       seriesWebsite: "https://www.czechcyclingfederation.com/en/events/skoda-cup/",
     };
   }
+  if (/\bcesky\s*pohar\s*bmx|\bcp\s*bmx\b/.test(t)) {
+    return {
+      seriesName: "Český pohár BMX Racing",
+      seriesSlug: "cesky-pohar-bmx",
+      seriesWebsite: "https://www.czechcyclingfederation.com/en/events/cesky-pohar-bmx/",
+    };
+  }
   return {};
 }
 
 /**
- * ČSC marketing cup pages (`/events/mnd-cup/`, `/en/events/skoda-cup/`)
- * publish the live 2026 road calendars as a date/place table.
+ * ČSC marketing cup pages (`/events/mnd-cup/`, `/en/events/skoda-cup/`,
+ * `/en/events/cesky-pohar-bmx/`) publish the live 2026 calendars as a table.
  */
 export function parseCscCupListing(
   url: string,
   html: string,
-  kind: "mnd" | "skoda",
+  kind: "mnd" | "skoda" | "bmx",
 ): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
@@ -199,15 +206,24 @@ export function parseCscCupListing(
     const cells = $tr
       .find("td")
       .map((__, td) => $(td).text().replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim())
-      .get();
+      .get()
+      .filter(Boolean);
     if (cells.length < 3) return;
     const startDate = parseCscDate(cells[0]!);
     if (!startDate) return;
-    const place = cells[1]!.slice(0, 80);
-    const title = cells[2]!.replace(/&#8211;/g, "–").replace(/\s+/g, " ").trim();
+    const titleRaw = kind === "bmx" ? cells[1]! : cells[2]!;
+    const placeRaw = kind === "bmx" ? cells[2]! : cells[1]!;
+    const place = placeRaw.replace(/&#8211;/g, "–").replace(/\s+/g, " ").trim().slice(0, 80);
+    const title = titleRaw.replace(/&#8211;/g, "–").replace(/\s+/g, " ").trim();
     if (!place || place.length < 2) return;
     const name =
-      kind === "mnd" ? `MND CUP — ${title || place}` : `ŠKODA CUP — ${title || place}`;
+      kind === "bmx"
+        ? /m[čc]r/i.test(title)
+          ? `MČR BMX — ${place}`
+          : `Český pohár BMX — ${place}`
+        : kind === "mnd"
+          ? `MND CUP — ${title || place}`
+          : `ŠKODA CUP — ${title || place}`;
     const id = `${kind}-${startDate}-${normalizeName(place)}`;
     if (seen.has(id)) return;
     seen.add(id);
@@ -226,10 +242,16 @@ export function parseCscCupListing(
       startDate,
       placeText: place,
       countryHint: "CZ",
-      discipline: /časovka|casovka|ezf/i.test(`${title} ${place}`) ? ["tt"] : ["road"],
+      discipline:
+        kind === "bmx"
+          ? ["bmx"]
+          : /časovka|casovka|ezf/i.test(`${title} ${place}`)
+            ? ["tt"]
+            : ["road"],
       audience: kind === "mnd" ? "youth" : "mixed",
-      seriesName: kind === "mnd" ? "MND CUP" : "ŠKODA CUP",
-      seriesSlug: kind === "mnd" ? "mnd-cup" : "skoda-cup",
+      seriesName:
+        kind === "bmx" ? "Český pohár BMX Racing" : kind === "mnd" ? "MND CUP" : "ŠKODA CUP",
+      seriesSlug: kind === "bmx" ? "cesky-pohar-bmx" : kind === "mnd" ? "mnd-cup" : "skoda-cup",
       seriesWebsite: url.split("?")[0]!,
       sourceUrl: url.split("?")[0]!,
       websiteUrl: url.split("?")[0]!,

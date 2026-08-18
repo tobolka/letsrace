@@ -93,4 +93,27 @@ describe("ČSC portal grid", () => {
     expect(events[1]?.discipline).toEqual(["tt"]);
     expect(events.every((e) => e.seriesSlug === "mnd-cup")).toBe(true);
   });
+
+  it("reads ČP BMX Racing with date / round / place columns", () => {
+    const html = `
+      <table>
+        <tr><td>11. 4. 2026</td><td>1. Český pohár</td><td>Pardubice</td></tr>
+        <tr><td>2. 5. 2026</td><td>3. Český pohár</td><td>Praha – Bohnice</td></tr>
+        <tr><td>29. 8. 2026</td><td>MČR</td><td>Benátky nad Jizerou</td></tr>
+      </table>
+    `;
+    const events = parseCscCupListing(
+      "https://www.czechcyclingfederation.com/en/events/cesky-pohar-bmx/",
+      html,
+      "bmx",
+    );
+    expect(events.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-04-11 Pardubice",
+      "2026-05-02 Praha – Bohnice",
+      "2026-08-29 Benátky nad Jizerou",
+    ]);
+    expect(events[2]?.name).toMatch(/MČR BMX/);
+    expect(events.every((e) => e.discipline?.[0] === "bmx")).toBe(true);
+    expect(events.every((e) => e.seriesSlug === "cesky-pohar-bmx")).toBe(true);
+  });
 });

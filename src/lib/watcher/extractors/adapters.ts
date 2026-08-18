@@ -55,6 +55,7 @@ import {
   parseSumavskyPohar,
   enrichSumavskyPohar,
   parseSoofSk,
+  parseSzcDiscipline,
   parseSzcMtb,
   parseWerdenfelserCup,
   parseWiesbadenStadtmeisterschaft,
@@ -217,6 +218,12 @@ export async function extractWithAdapter(
       return {
         events: parseCscCupListing(url, html, "skoda"),
         strategy: "adapter:csc-skoda",
+      };
+    }
+    if (/\/events\/cesky-pohar-bmx/i.test(url)) {
+      return {
+        events: parseCscCupListing(url, html, "bmx"),
+        strategy: "adapter:csc-bmx",
       };
     }
     // Other WP pages are marketing / 2021 snapshots, not the live IS.
@@ -628,10 +635,17 @@ export async function extractWithAdapter(
     if (/cestna-cyklistika\/kalendar/i.test(url)) {
       return { events: parseSzcRoad(url, html), strategy: "adapter:szc-road" };
     }
-    if (!/mtb-cross-country\/kalendar/i.test(url)) {
-      return { events: [], strategy: "adapter:szc-skip" };
+    if (/mtb-cross-country\/kalendar/i.test(url)) {
+      return { events: parseSzcMtb(url, html), strategy: "adapter:szc-mtb" };
     }
-    return { events: parseSzcMtb(url, html), strategy: "adapter:szc-mtb" };
+    if (
+      /\/(cyklokros|bmx-racing|bmx-freestyle|mtb-downhill-fourcross|cyklotrial|drahova-cyklistika)\/kalendar/i.test(
+        url,
+      )
+    ) {
+      return { events: parseSzcDiscipline(url, html), strategy: "adapter:szc-disc" };
+    }
+    return { events: [], strategy: "adapter:szc-skip" };
   }
   if (host.includes("albgold-juniorscup.de")) {
     return {

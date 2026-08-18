@@ -64,6 +64,20 @@ function caSeries(
       seriesWebsite: site,
     };
   }
+  if (/bmx racing league/.test(t)) {
+    return {
+      seriesName: "BMX Racing League Austria",
+      seriesSlug: "at-bmx-league",
+      seriesWebsite: site,
+    };
+  }
+  if (/cyclocross cup|querfeldein.?cup/.test(t)) {
+    return {
+      seriesName: "Austrian Cyclocross Cup",
+      seriesSlug: "at-cx-cup",
+      seriesWebsite: site,
+    };
+  }
   if (/junior bike cup|\bjbc\b/.test(t)) {
     return {
       seriesName: "Junior Bike Cup",
@@ -234,7 +248,7 @@ function atCupsPlace(raw: string): string {
     .trim();
   if (/ostm\s*ezf/i.test(t)) return "Weißenbach am Attersee";
   const known = t.match(
-    /(Leonding|Wels|Rankweil|Königswiesen|Konigswiesen|Marein|Walding|Söll|Soll|Wieselburg|Kindberg|Großhartmannsdorf|Grosshartmannsdorf|Donauinsel|Großenzersdorf|Grossenzersdorf|Neckenmarkt|Pernitz|Eberstalzell|Loosdorf|Steinhaus|Graz|Feistritz)/i,
+    /(Leonding|Wels|Rankweil|Königswiesen|Konigswiesen|Marein|Walding|Söll|Soll|Wieselburg|Kindberg|Großhartmannsdorf|Grosshartmannsdorf|Donauinsel|Großenzersdorf|Grossenzersdorf|Neckenmarkt|Pernitz|Eberstalzell|Loosdorf|Steinhaus|Graz|Feistritz|Vösendorf|Vosendorf|Baierdorf|Mühlen|Muhlen|Veitsch)/i,
   );
   return (known?.[1] || t.split(/\s+/).slice(-2).join(" ")).trim();
 }
@@ -253,6 +267,7 @@ function parseAtCupsBlock(
   seriesName: string,
   seriesSlug: string,
   audience: Audience,
+  discipline?: Discipline[],
 ): ParsedEvent[] {
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
@@ -266,11 +281,13 @@ function parseAtCupsBlock(
   while ((m = re.exec(cleaned))) {
     const name = m[3]!.replace(/\s+/g, " ").trim();
     if (!name || name.length < 3) continue;
-    if (/bahn|pumptrack|tbc\.|amateur cup/i.test(name)) continue;
+    if (/bahn|pumptrack|tbc\.|amateur cup|mountainbike league|youngsters cup|gravity/i.test(name)) {
+      continue;
+    }
     const startDate = `${year}-${m[2]}-${m[1]!.padStart(2, "0")}`;
     const place = atCupsPlace(name);
     const display =
-      seriesSlug === "austrian-junior-series"
+      seriesSlug === "austrian-junior-series" || seriesSlug === "at-bmx-league"
         ? `${seriesName} — ${place}`
         : `${seriesName} — ${name.replace(AT_STATE, "").replace(/\s+\*?(Einzel|Omnium|Kombi)\b.*$/i, "").trim()}`;
     const id = `${seriesSlug}-${startDate}-${normalizeName(place || name)}`;
@@ -282,7 +299,7 @@ function parseAtCupsBlock(
       startDate,
       placeText: place || "Austria",
       countryHint: "AT",
-      discipline: atCupsDisc(name),
+      discipline: discipline ?? atCupsDisc(name),
       audience,
       seriesName,
       seriesSlug,
@@ -295,14 +312,20 @@ function parseAtCupsBlock(
   return events;
 }
 
-/** Season cup overview — Road League + ARBÖ ASKÖ Junior Series (full year, not upcoming-only). */
+/** Season cup overview — Road League + Junior Series + BMX Racing League (full year). */
 export function parseCyclingAustriaCups(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const text = $("body").text().replace(/\s+/g, " ");
   const year = Number(url.match(/20\d{2}/)?.[0] ?? 2026);
+  const bmxStart = text.search(/BMX Racing League Austria/i);
+  const mlaStart = text.search(/Mountainbike League Austria/i);
   const leagueStart = text.search(/Road Cycling League Austria/i);
   const juniorStart = text.search(/ARBÖ\s+ASKÖ\s+Austrian Junior Series|Austrian Junior Series/i);
   const amateur = text.search(/Cycling Austria Amateur Cup/i);
+  const bmxBlock =
+    bmxStart >= 0
+      ? text.slice(bmxStart, mlaStart > bmxStart ? mlaStart : bmxStart + 600)
+      : "";
   const leagueBlock =
     leagueStart >= 0
       ? text.slice(leagueStart, juniorStart > leagueStart ? juniorStart : amateur > 0 ? amateur : undefined)
@@ -311,6 +334,14 @@ export function parseCyclingAustriaCups(url: string, html: string): ParsedEvent[
     juniorStart >= 0
       ? text.slice(juniorStart, amateur > juniorStart ? amateur : undefined)
       : "";
+  const bmx = parseAtCupsBlock(
+    bmxBlock,
+    year,
+    "BMX Racing League Austria",
+    "at-bmx-league",
+    "mixed",
+    ["bmx"],
+  );
   const league = parseAtCupsBlock(
     leagueBlock,
     year,
@@ -325,5 +356,5 @@ export function parseCyclingAustriaCups(url: string, html: string): ParsedEvent[
     "austrian-junior-series",
     "youth",
   );
-  return [...league, ...junior];
+  return [...bmx, ...league, ...junior];
 }
