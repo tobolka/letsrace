@@ -301,15 +301,16 @@ export function parseTourOfAustria(url: string, html: string): ParsedEvent[] {
   return [
     {
       externalId: `tour-of-austria-${startDate}`,
-      name: "Tour of Austria",
+      name: "Lidl Tour of Austria",
       startDate,
       endDate,
       placeText: "Graz",
       countryHint: "AT",
       discipline: ["road"],
       audience: "mixed",
+      categories: [{ name: "UCI 2.1" }],
       sourceUrl: url.split("?")[0]!,
-      websiteUrl: "https://oesterreich-rundfahrt.at/",
+      websiteUrl: "https://tourofaustria.com/",
       confidence: 0.9,
     },
   ];

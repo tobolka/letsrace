@@ -79,6 +79,13 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://www.juniorbikecup.at/termine/", kind: "series" },
   { url: "https://on-offteam.cz/on-off-mtb-pohar-2026/", kind: "series" },
   { url: "https://polandbike.pl/kalendarz-wydarzen/", kind: "series" },
+  { url: "https://polandbike.pl/junior-race/", kind: "series" },
+  { url: "https://www.mtb-bundesliga.net/rennen/", kind: "series" },
+  {
+    url: "https://www.mtb-bundesliga.net/nachwuchs-bl/veranstaltungen.html",
+    kind: "series",
+  },
+  { url: "https://tourofaustria.com/", kind: "race" },
   { url: "https://www.salzkammergut-trophy.at/", kind: "series" },
   { url: "https://www.pekloseveru.cz/cz/registrace/", kind: "series" },
   {
@@ -255,6 +262,12 @@ async function main() {
                   ? "Šumavský pohár MTB — South Bohemia XC + Waldkirchen"
                   : t.url.includes("janev-cup")
                     ? "JANEV Cup 2026 — Czech UCI cyclocross"
+                    : t.url.includes("mtb-bundesliga.net/nachwuchs")
+                      ? "German MTB Nachwuchsbundesliga U15/U17"
+                    : t.url.includes("mtb-bundesliga.net")
+                      ? "German MTB XCO Bundesliga elite/U19"
+                    : t.url.includes("junior-race")
+                      ? "PKO Junior Race — Poland Bike kids series"
                     : t.url.includes("kamptaltrophy")
                       ? "KTM Kamptal Trophy — official UCI C1 + Saturday youngsters, results hub"
                     : t.url.includes("raceresult.com/events")

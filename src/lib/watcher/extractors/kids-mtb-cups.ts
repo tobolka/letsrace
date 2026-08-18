@@ -58,6 +58,17 @@ function deNamed(raw: string, year: number): string | null {
 
 function dmy(raw: string): { start: string; end?: string } | null {
   const t = raw.replace(/\s+/g, " ").trim();
+  const compact = t.replace(/\s+/g, "").match(
+    /^(\d{1,2})\.\/(\d{1,2})\.(\d{1,2})\.(20\d{2})/,
+  );
+  if (compact) {
+    const y = compact[4]!;
+    const mo = compact[3]!.padStart(2, "0");
+    return {
+      start: `${y}-${mo}-${compact[1]!.padStart(2, "0")}`,
+      end: `${y}-${mo}-${compact[2]!.padStart(2, "0")}`,
+    };
+  }
   const range = t.match(
     /(\d{1,2})\.(\d{1,2})\.(20\d{2})\D+(\d{1,2})\.(\d{1,2})\.(20\d{2})/,
   );
@@ -778,54 +789,135 @@ export function parseOnOffMtb(url: string, html: string): ParsedEvent[] {
 }
 
 export function parsePolandBike(url: string, html: string): ParsedEvent[] {
+  return polandCalendarRows(url, html)
+    .filter((row) => row.kind === "mtb")
+    .map((row) => polandAdultEvent(url, row));
+}
+
+/** PKO Ubezpieczenia Junior Race — kids categories at Poland Bike dates. */
+export function parsePolandBikeJunior(url: string, html: string): ParsedEvent[] {
+  return polandCalendarRows(url, html)
+    .filter((row) => row.kind !== "skip")
+    .map((row) => polandJuniorEvent(url, row));
+}
+
+type PolandCalRow = {
+  startDate: string;
+  place: string;
+  href?: string;
+  kind: "mtb" | "road" | "skip";
+};
+
+function decodeHtmlEntities(raw: string): string {
+  return raw
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;/gi, "'")
+    .replace(/&amp;/gi, "&");
+}
+
+function polandCalendarRows(url: string, html: string): PolandCalRow[] {
   const $ = cheerio.load(html);
   const year = Number(html.match(/POLAND BIKE MARATHON\s*(20\d{2})/i)?.[1] ?? 2026);
-  const values: string[] = [];
+  const cells: { text: string; href?: string }[] = [];
   $("td[data-original-value]").each((_, td) => {
-    const raw = ($(td).attr("data-original-value") || $(td).text())
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
+    const raw = decodeHtmlEntities($(td).attr("data-original-value") || "");
     if (!raw || /\.png/i.test(raw)) return;
-    values.push(raw);
+    const inner = cheerio.load(`<div>${raw}</div>`);
+    const text = inner("div").text().replace(/\s+/g, " ").trim();
+    const href = inner("a[href]").attr("href")?.trim();
+    if (!text) return;
+    cells.push({
+      text,
+      href: href && href !== "#" ? deAtAbs(href, "https://polandbike.pl/") : undefined,
+    });
   });
-  const events: ParsedEvent[] = [];
+  const rows: PolandCalRow[] = [];
   const seen = new Set<string>();
-  for (let i = 0; i < values.length - 1; i++) {
-    const dm = values[i]!.match(
+  for (let i = 0; i < cells.length; i++) {
+    const dm = cells[i]!.text.match(
       /^(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|wrze[sś]nia|pa[zź]dziernika|listopada|grudnia)\b/i,
     );
     if (!dm) continue;
-    const label = values[i + 1]!;
-    if (/^\d{1,2}\s+/.test(label)) continue;
+    let next: { text: string; href?: string } | undefined;
+    for (let j = i + 1; j < Math.min(i + 3, cells.length); j++) {
+      if (/^\d{1,2}\s+/.test(cells[j]!.text)) break;
+      next = cells[j]!;
+      if (next.text.length >= 3) break;
+    }
+    if (!next) continue;
     const mo = PL_MONTHS[dm[2]!.toLowerCase()] || PL_MONTHS[fold(dm[2]!)];
     if (!mo) continue;
     const startDate = `${year}-${mo}-${dm[1]!.padStart(2, "0")}`;
-    const place = label
-      .replace(/^(INAUGURACJA|FINA[ŁL])\s*[-–]\s*/i, "")
-      .replace(/^[IVXLCDM]+\s*ETAP\s*[-–]\s*/i, "")
-      .replace(/^GMINA\s+/i, "")
-      .replace(/\s+/g, " ")
-      .trim();
-    if (!place || place.length < 3) continue;
-    push(events, seen, {
-      externalId: `polandbike-${startDate}-${normalizeName(place)}`,
-      name: `Poland Bike — ${place}`,
-      startDate,
-      placeText: place.replace(/\s*\(.*\)\s*$/, "").trim(),
-      countryHint: "PL",
-      discipline: ["xcm"],
-      audience: "mixed",
-      seriesName: "LOTTO Poland Bike Marathon",
-      seriesSlug: "poland-bike",
-      seriesWebsite: "https://polandbike.pl/",
-      sourceUrl: `${url.replace(/\/$/, "")}#${startDate}-${normalizeName(place)}`,
-      websiteUrl: "https://polandbike.pl/",
-      confidence: 0.84,
-    });
-    i += 1;
+    const place = polandPlace(next.text);
+    if (!place) continue;
+    const kind = polandKind(place, next.href);
+    const key = `${startDate}:${normalizeName(place)}:${kind}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    rows.push({ startDate, place, href: next.href, kind });
   }
-  return events;
+  return rows;
+}
+
+function polandPlace(label: string): string {
+  const place = label
+    .replace(/^(INAUGURACJA|FINA[ŁL])\s*[-–]\s*/i, "")
+    .replace(/^[IVXLCDM]+\s*ETAP\s*[-–]\s*/i, "")
+    .replace(/^\d+\.\s*etap\s*[-–]\s*/i, "")
+    .replace(/^GMINA\s+/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!place || place.length < 3) return "";
+  return place.replace(/\s*\(.*\)\s*$/, "").trim();
+}
+
+function polandKind(place: string, href?: string): "mtb" | "road" | "skip" {
+  if (/gala|muzeum\s*sportu/i.test(place)) return "skip";
+  if (href && /polandbikeroad\.pl|\/junior-race\//i.test(href)) return "road";
+  if (/memoria[łl]|strza[łl]a|natur[ąa]|starachowick|zabia\s*wola/i.test(place)) {
+    return "road";
+  }
+  return "mtb";
+}
+
+function polandAdultEvent(url: string, row: PolandCalRow): ParsedEvent {
+  const raceUrl = row.href || "https://polandbike.pl/";
+  return {
+    externalId: `polandbike-${row.startDate}-${normalizeName(row.place)}`,
+    name: `Poland Bike — ${row.place}`,
+    startDate: row.startDate,
+    placeText: row.place,
+    countryHint: "PL",
+    discipline: row.kind === "road" ? ["road"] : ["xcm"],
+    audience: "mixed",
+    seriesName: "LOTTO Poland Bike Marathon",
+    seriesSlug: "poland-bike",
+    seriesWebsite: "https://polandbike.pl/",
+    sourceUrl: `${url.replace(/\/$/, "")}#${row.startDate}-${normalizeName(row.place)}`,
+    websiteUrl: raceUrl,
+    confidence: 0.86,
+  };
+}
+
+function polandJuniorEvent(url: string, row: PolandCalRow): ParsedEvent {
+  return {
+    externalId: `pko-junior-${row.startDate}-${normalizeName(row.place)}`,
+    name: `PKO Junior Race — ${row.place}`,
+    startDate: row.startDate,
+    placeText: row.place,
+    countryHint: "PL",
+    discipline: row.kind === "road" ? ["road"] : ["xcm"],
+    audience: "kids",
+    categories: [{ name: "U7" }, { name: "U9" }, { name: "U11" }, { name: "U13" }, { name: "U15" }],
+    seriesName: "PKO Junior Race",
+    seriesSlug: "pko-junior-race",
+    seriesWebsite: "https://polandbike.pl/junior-race/",
+    sourceUrl: `${url.replace(/\/$/, "")}#junior-${row.startDate}-${normalizeName(row.place)}`,
+    websiteUrl: row.href || "https://polandbike.pl/junior-race/",
+    confidence: 0.85,
+  };
 }
 
 export function parseSalzkammergutTrophy(url: string, html: string): ParsedEvent[] {
@@ -1635,6 +1727,123 @@ export function parseGermanCxBundesliga(url: string, _html: string): ParsedEvent
     regulationsUrl: CX_BL_SITE,
     confidence: 0.9,
   }));
+}
+
+const MTB_BL_SITE = "https://www.mtb-bundesliga.net/rennen/";
+const MTB_NBL_SITE = "https://www.mtb-bundesliga.net/nachwuchs-bl/veranstaltungen.html";
+
+function blUciClass(klass: string): string | undefined {
+  const t = klass.replace(/\s+/g, "");
+  if (/\bHC\b/i.test(t)) return "UCI HC";
+  if (/\bC1\b/i.test(t)) return "UCI C1";
+  if (/\bC2\b/i.test(t)) return "UCI C2";
+  if (/\bC3\b/i.test(t)) return "UCI C3";
+  return undefined;
+}
+
+function blPlace(raw: string): { place: string; country: "DE" | "CZ" | "AT" } {
+  const t = raw.replace(/\s+/g, " ").replace(/\(.*?\)/g, " ").trim();
+  if (/asch|as\b/i.test(raw) && /cze/i.test(raw)) return { place: "Aš", country: "CZ" };
+  if (/haiming/i.test(t)) return { place: "Haiming", country: "AT" };
+  return { place: t.replace(/\s*\/\s*(BAY|BAD|HES|WTB|AUT|CZE)\b.*/i, "").trim(), country: "DE" };
+}
+
+/** Elite / U19 German MTB XCO Bundesliga — official rennen table. */
+export function parseMtbBundesliga(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  $("table.bigtable").first().find("tr").each((_, tr) => {
+    const $tr = $(tr);
+    const dates = dmy($tr.find("th").text());
+    const $tds = $tr.find("td");
+    if (!dates || $tds.length < 2) return;
+    const name = $tds.eq(0).text().replace(/\s+/g, " ").trim();
+    const placeRaw = $tds.eq(1).text().replace(/\s+/g, " ").trim();
+    const klass = $tds.eq(2).text().replace(/\s+/g, " ").trim();
+    if (!name || name.length < 4 || /nachwuchs|einzelzeitfahren|\bu15\b|\bu17\b/i.test(name)) {
+      return;
+    }
+    const { place, country } = blPlace(placeRaw || name);
+    const href = deAtAbs($tds.eq(0).find("a[href]").attr("href"), url);
+    const uci = blUciClass(klass);
+    push(events, seen, {
+      externalId: `mtb-bl-${dates.start}-${normalizeName(place)}`,
+      name,
+      startDate: dates.start,
+      endDate: dates.end,
+      placeText: place,
+      countryHint: country,
+      discipline: ["xco"],
+      audience: "mixed",
+      categories: [
+        { name: "U19" },
+        { name: "U23" },
+        { name: "Elite" },
+        ...(uci ? [{ name: uci }] : []),
+      ],
+      seriesName: "MTB Bundesliga",
+      seriesSlug: "bundesliga",
+      seriesWebsite: MTB_BL_SITE,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: href || MTB_BL_SITE,
+      confidence: 0.93,
+    });
+  });
+  return events;
+}
+
+/** U15/U17 Nachwuchsbundesliga — one pin per venue weekend, not every slalom module. */
+export function parseNachwuchsBundesliga(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const byPlace = new Map<
+    string,
+    { start: string; end: string; place: string; country: "DE" | "CZ" | "AT" }
+  >();
+  $("table.bigtable tr").each((_, tr) => {
+    const $tr = $(tr);
+    const dates = dmy($tr.find("th").text());
+    const label = $tr.find("td").text().replace(/\s+/g, " ").trim();
+    if (!dates || !label || /athletik/i.test(label)) return;
+    let { place, country } = blPlace(label);
+    place = place.replace(/\bAlbsadt\b/i, "Albstadt").replace(/\s*[-–].*$/, "").trim();
+    if (/^as$/i.test(place) || /^asch$/i.test(place)) {
+      place = "Aš";
+      country = "CZ";
+    }
+    if (place.length < 2) return;
+    const key = normalizeName(place);
+    const prev = byPlace.get(key);
+    if (!prev) {
+      byPlace.set(key, { start: dates.start, end: dates.end || dates.start, place, country });
+      return;
+    }
+    prev.start = prev.start < dates.start ? prev.start : dates.start;
+    const end = dates.end || dates.start;
+    prev.end = prev.end > end ? prev.end : end;
+  });
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  for (const row of byPlace.values()) {
+    push(events, seen, {
+      externalId: `mtb-nbl-${row.start}-${normalizeName(row.place)}`,
+      name: `Nachwuchsbundesliga — ${row.place}`,
+      startDate: row.start,
+      endDate: row.end !== row.start ? row.end : undefined,
+      placeText: row.place,
+      countryHint: row.country,
+      discipline: ["xco"],
+      audience: "mixed",
+      categories: categoriesFromUBands("U15–U17"),
+      seriesName: "MTB Nachwuchsbundesliga",
+      seriesSlug: "mtb-nachwuchsbundesliga",
+      seriesWebsite: MTB_NBL_SITE,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: MTB_NBL_SITE,
+      confidence: 0.91,
+    });
+  }
+  return events.sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
 /** Official series site — Termine sidebar is the live calendar. */

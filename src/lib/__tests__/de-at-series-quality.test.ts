@@ -11,6 +11,10 @@ import {
   parseYoungstersCup,
   parseMtbLiga,
   parseKamptalTrophy,
+  parseMtbBundesliga,
+  parseNachwuchsBundesliga,
+  parsePolandBike,
+  parsePolandBikeJunior,
   parseSportklasseCup,
   parseAustrianGravitySeries,
   parseDownhillCup,
@@ -547,5 +551,104 @@ describe("XCO-NRW", () => {
     expect(events[0]?.sourceUrl).toBe("https://www.xco-nrw-cup.de/rennen/wuppertal");
     expect(events[0]?.registrationUrl).toContain("time-and-voice.com");
     expect(events[0]?.regulationsUrl).toContain("generalausschreibung");
+  });
+});
+
+describe("MTB Bundesliga", () => {
+  it("reads the five 2026 elite rounds from the rennen table", () => {
+    const html = `
+      <table class="bigtable">
+        <tr><th>28./29.03.2026</th><td><a href="https://www.fullgazrace.de/">14. Fullgaz Race 2026</a></td><td>Obergessertshausen</td><td>XCO/CS</td><td>U19/U23/Elite</td></tr>
+        <tr><th>16./17.05.2026</th><td><a href="https://www.heubach.de/">Bike the Rock</a></td><td>Heubach</td><td>XCO/HC</td><td>U19/U23/Elite</td></tr>
+        <tr><th>09.08.2026</th><td><a href="https://winterberg-xco.de/">Majlen Sunshine Race</a></td><td>Winterberg</td><td>XCO/C1</td><td>U19/U23/Elite</td></tr>
+      </table>
+    `;
+    const events = parseMtbBundesliga("https://www.mtb-bundesliga.net/rennen/", html);
+    expect(events).toHaveLength(3);
+    expect(events[0]?.startDate).toBe("2026-03-28");
+    expect(events[0]?.endDate).toBe("2026-03-29");
+    expect(events[1]?.categories?.some((c) => /HC/i.test(c.name))).toBe(true);
+    expect(events.every((e) => e.seriesSlug === "bundesliga")).toBe(true);
+    expect(events[2]?.websiteUrl).toContain("winterberg-xco.de");
+    expect(events.every((e) => !/u15|einzelzeitfahren/i.test(e.name))).toBe(true);
+  });
+});
+
+describe("Nachwuchsbundesliga", () => {
+  it("merges U15/U17 modules into one pin per venue weekend", () => {
+    const html = `
+      <p>U15</p>
+      <table class="bigtable">
+        <tr><th>-</th><td>Athletiküberprüfung in den LVs</td></tr>
+        <tr><th>28.03.2026</th><td>Obergessertshausen / BAY - Modul Slalom</td></tr>
+        <tr><th>29.03.2026</th><td>Obergessertshausen / BAY - Modul XCO</td></tr>
+        <tr><th>11.04.2026</th><td>Hausach / BAD - Modul Slalom</td></tr>
+        <tr><th>12.04.2026</th><td>Hausach / BAD - Modul XCO</td></tr>
+      </table>
+      <p>U17</p>
+      <table class="bigtable">
+        <tr><th>25./26.04.2026</th><td>Haiming / AUT - Modul XCO</td></tr>
+        <tr><th>27./28.06.2026</th><td>As / CZE - Modul XCO</td></tr>
+        <tr><th>28.03.2026</th><td>Obergessertshausen / BAY - Modul XCO</td></tr>
+      </table>
+    `;
+    const events = parseNachwuchsBundesliga(
+      "https://www.mtb-bundesliga.net/nachwuchs-bl/veranstaltungen.html",
+      html,
+    );
+    expect(events.map((e) => e.placeText).sort()).toEqual([
+      "Aš",
+      "Haiming",
+      "Hausach",
+      "Obergessertshausen",
+    ]);
+    const og = events.find((e) => e.placeText === "Obergessertshausen");
+    expect(og?.startDate).toBe("2026-03-28");
+    expect(og?.endDate).toBe("2026-03-29");
+    expect(events.find((e) => e.placeText === "Haiming")?.countryHint).toBe("AT");
+    expect(events.find((e) => e.placeText === "Aš")?.countryHint).toBe("CZ");
+  });
+});
+
+describe("PKO Junior Race", () => {
+  it("emits kids pins next to adult Poland Bike stages and skips the gala", () => {
+    const cell = (v: string) => `<td data-original-value="${v.replace(/"/g, "&quot;")}"></td>`;
+    const html = `
+      POLAND BIKE MARATHON 2026
+      <table>
+        <tr>
+          ${cell("29 marca (niedziela)")}
+          ${cell("&lt;a href=&quot;//polandbike.pl/event-pro/serock/&quot;&gt;INAUGURACJA - I ETAP - SEROCK&lt;/a&gt;")}
+          ${cell("25 października (niedziela)")}
+          ${cell("&lt;a href=&quot;#&quot;&gt;Gala Finałowa – Wawerskie Centrum Kultury – Warszawa&lt;/a&gt;")}
+        </tr>
+      </table>
+    `;
+    const adults = parsePolandBike("https://polandbike.pl/kalendarz-wydarzen/", html);
+    const kids = parsePolandBikeJunior("https://polandbike.pl/kalendarz-wydarzen/", html);
+    expect(adults.map((e) => e.startDate)).toEqual(["2026-03-29"]);
+    expect(adults[0]?.websiteUrl).toContain("/event-pro/serock");
+    expect(kids).toHaveLength(1);
+    expect(kids[0]?.name).toMatch(/Junior Race/);
+    expect(kids[0]?.seriesSlug).toBe("pko-junior-race");
+    expect(kids[0]?.audience).toBe("kids");
+  });
+
+  it("keeps road memorials on Junior Race only, not the adult marathon", () => {
+    const cell = (v: string) => `<td data-original-value="${v.replace(/"/g, "&quot;")}"></td>`;
+    const html = `
+      POLAND BIKE MARATHON 2026
+      <table>
+        <tr>
+          ${cell("1 maja (piątek)")}
+          ${cell("&lt;a href=&quot;https://polandbikeroad.pl/memorial-stanislawa-krolaka/&quot;&gt;XVII Memoriał Stanisława Królaka – Warszawa&lt;/a&gt;")}
+        </tr>
+      </table>
+    `;
+    const adults = parsePolandBike("https://polandbike.pl/kalendarz-wydarzen/", html);
+    const kids = parsePolandBikeJunior("https://polandbike.pl/kalendarz-wydarzen/", html);
+    expect(adults).toHaveLength(0);
+    expect(kids).toHaveLength(1);
+    expect(kids[0]?.websiteUrl).toContain("polandbikeroad.pl");
   });
 });

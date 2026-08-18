@@ -38,6 +38,9 @@ import {
   parseOnOffMtb,
   parsePodkrkonosskyMaraton,
   parsePolandBike,
+  parsePolandBikeJunior,
+  parseMtbBundesliga,
+  parseNachwuchsBundesliga,
   parseKamptalTrophy,
   parseRheinEifelCup,
   parseRheinMainCup,
@@ -485,6 +488,21 @@ export async function extractWithAdapter(
       strategy: "adapter:cx-bundesliga",
     };
   }
+  if (host.includes("mtb-bundesliga.net")) {
+    if (/nachwuchs/i.test(url)) {
+      return {
+        events: parseNachwuchsBundesliga(url, html),
+        strategy: "adapter:mtb-nbl",
+      };
+    }
+    if (/impressum|datenschutz|kontakt/i.test(url)) {
+      return { events: [], strategy: "adapter:mtb-bl-skip" };
+    }
+    return {
+      events: parseMtbBundesliga(url, html),
+      strategy: "adapter:mtb-bl",
+    };
+  }
   if (host.includes("ucimtbworldseries.com")) {
     return { events: parseUciMtbWorldSeries(url, html), strategy: "adapter:uciws" };
   }
@@ -599,10 +617,20 @@ export async function extractWithAdapter(
     return { events: parseOnOffMtb(url, html), strategy: "adapter:on-off" };
   }
   if (host.includes("polandbike.pl")) {
+    if (/junior-race/i.test(url)) {
+      const junior = parsePolandBikeJunior(url, html);
+      return {
+        events: junior,
+        strategy: junior.length ? "adapter:pko-junior" : "adapter:pko-junior-empty",
+      };
+    }
     if (!/kalendarz/i.test(url)) {
       return { events: [], strategy: "adapter:polandbike-skip" };
     }
-    return { events: parsePolandBike(url, html), strategy: "adapter:polandbike" };
+    return {
+      events: [...parsePolandBike(url, html), ...parsePolandBikeJunior(url, html)],
+      strategy: "adapter:polandbike+junior",
+    };
   }
   if (host.includes("salzkammergut-trophy.at") || host.includes("trophy.at")) {
     return { events: parseSalzkammergutTrophy(url, html), strategy: "adapter:skgtrophy" };
