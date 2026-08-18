@@ -82,6 +82,7 @@ import {
   parseJesenickySnek,
   parseZal,
   parseUstiMtbCup,
+  parseBratislavaMtbMaraton,
 } from "@/lib/watcher/extractors/cz-calendars";
 import {
   parseCyclingAustria,
@@ -384,6 +385,20 @@ export async function extractWithAdapter(
     return {
       events: await enrichDetskyMtbCup(parseDetskyMtbCup(url, html)),
       strategy: "adapter:detsky-mtb",
+    };
+  }
+  if (host.includes("bratislavskymtbmaraton.biker.sk")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (!/\/preteky\/(maraton|detske-preteky|kids-zone|bikefest-marathon)/i.test(path)) {
+        return { events: [], strategy: "adapter:bmtb-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:bmtb-skip" };
+    }
+    return {
+      events: parseBratislavaMtbMaraton(url, html),
+      strategy: "adapter:bmtb",
     };
   }
   if (host.includes("vangillerncup.cz")) {

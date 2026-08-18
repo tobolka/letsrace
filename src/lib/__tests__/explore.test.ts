@@ -6,7 +6,7 @@ import {
   scoreRacePage,
   shouldAutoWatch,
 } from "@/lib/watcher/explore";
-import { parseVanGillern, parseKonarovickyKoren, parseJesenickySnek } from "@/lib/watcher/extractors/cz-calendars";
+import { parseVanGillern, parseKonarovickyKoren, parseJesenickySnek, parseBratislavaMtbMaraton } from "@/lib/watcher/extractors/cz-calendars";
 
 describe("race website explorer", () => {
   it("canonicalizes WordPress homes to the origin", () => {
@@ -150,6 +150,25 @@ describe("race website explorer", () => {
     expect(events).toHaveLength(1);
     expect(events[0]?.registrationUrl).toContain("docs.google.com/forms");
     expect(events[0]?.websiteUrl).toContain("/event/149");
+  });
+
+  it("keeps Bratislava MTB marathon and kids loop as separate pins", () => {
+    const stamp = `<span class="date-display-single">nedeľa, 27.09.2026, 10:00</span>`;
+    const kids = parseBratislavaMtbMaraton(
+      "https://bratislavskymtbmaraton.biker.sk/preteky/detske-preteky-2026",
+      `<html><body>${stamp}<p>Letného kúpaliska v Knižkovej doline</p></body></html>`,
+    );
+    const marathon = parseBratislavaMtbMaraton(
+      "https://bratislavskymtbmaraton.biker.sk/preteky/maraton",
+      `<html><body>${stamp}<p>Bratislava Rača - Amfiteáter</p></body></html>`,
+    );
+    expect(kids[0]?.startDate).toBe("2026-09-27");
+    expect(kids[0]?.audience).toBe("kids");
+    expect(kids[0]?.discipline).toEqual(["xco"]);
+    expect(marathon[0]?.discipline).toEqual(["xcm"]);
+    expect(kids[0]?.externalId).not.toBe(marathon[0]?.externalId);
+    expect(kids[0]?.childUrls?.some((u) => /\/maraton$/.test(u))).toBe(true);
+    expect(marathon[0]?.childUrls?.some((u) => /detske-preteky/.test(u))).toBe(true);
   });
 
   it("weights explorer packs toward home markets and sniffs Italy every third window", () => {

@@ -51,6 +51,14 @@ const SERIES_ALIAS_RULES: { re: RegExp; token: string }[] = [
   { re: /\bz[aá]vod\s*m[ií]ru\b|\bpeace\s*race\b/i, token: "series:zavod_miru" },
   { re: /\broad\s*cycling\s*league\b/i, token: "series:at_road_league" },
   { re: /\baustrian\s*junior\s*series\b|\barbo\s*asko\b/i, token: "series:at_junior_series" },
+  {
+    re: /\bdetske\s*preteky\b.{0,48}bratislavsk|\bbratislavsk[yý]\s*mtb\s*maraton\b.{0,40}\b(detske|kids)\b/i,
+    token: "series:bratislava_mtb_kids",
+  },
+  {
+    re: /^(?!.*\bdetske\b).*\bbratislavsk[yý]\s*mtb\s*maraton\b/i,
+    token: "series:bratislava_mtb",
+  },
   { re: /\bbmx\s*racing\s*league\b/i, token: "series:at_bmx_league" },
   { re: /\bcyclo-?cross\s*bundesliga|\bcx\s*bundesliga\b/i, token: "series:cx_bundesliga" },
   { re: /\bspdh\b/i, token: "series:spdh" },

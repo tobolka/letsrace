@@ -436,6 +436,16 @@ export async function watchOne(row: {
             }
           }
           if (hostnameOf(child).includes("mso.swiss")) continue;
+          if (hostnameOf(child).includes("bratislavskymtbmaraton.biker.sk")) {
+            try {
+              const path = new URL(child).pathname.replace(/\/$/, "") || "/";
+              if (!/\/preteky\/(maraton|detske-preteky|kids-zone|bikefest-marathon)/i.test(path)) {
+                continue;
+              }
+            } catch {
+              continue;
+            }
+          }
           if (hostnameOf(child).includes("detskatour.sk")) {
             try {
               const path = new URL(child).pathname.replace(/\/$/, "") || "/";

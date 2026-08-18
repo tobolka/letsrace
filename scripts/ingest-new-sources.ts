@@ -260,6 +260,8 @@ const TARGETS: { url: string; kind: string }[] = [
     url: "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
     kind: "series",
   },
+  { url: "https://bratislavskymtbmaraton.biker.sk/preteky/maraton", kind: "race" },
+  { url: "https://bratislavskymtbmaraton.biker.sk/preteky/detske-preteky-2026", kind: "race" },
 ];
 
 async function main() {
@@ -348,6 +350,8 @@ async function main() {
                       ? "Sportklasse / Amateur Cup Austria — adult XCO, keep separate from AYC + MLA"
                       : t.url.includes("downhill-cup") || t.url.includes("austrian-gravity")
                         ? "auner Austrian Gravity Series / Downhill Cup — DH U13–Elite"
+                      : t.url.includes("bratislavskymtbmaraton")
+                        ? "GARMIN Bratislavský MTB maratón — adult XCM + kids loop, keep pins separate"
                       : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

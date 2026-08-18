@@ -1506,3 +1506,86 @@ export async function parsePpkBike(url: string, html: string): Promise<ParsedEve
   if (!fetched.ok || !fetched.text) return [];
   return parsePpkRacesJs(url, fetched.text);
 }
+
+const BMTB_SITE = "https://bratislavskymtbmaraton.biker.sk";
+const BMTB_MARATHON = `${BMTB_SITE}/preteky/maraton`;
+const BMTB_KIDS = `${BMTB_SITE}/preteky/detske-preteky-2026`;
+const BMTB_RESULTS = `${BMTB_SITE}/vysledky`;
+/** Amfiteáter Knižková dolina, Bratislava-Rača. */
+const BMTB_AMPHI = { lat: 48.2205, lng: 17.1558 };
+/** Letné kúpalisko under the amphitheatre. */
+const BMTB_POOL = { lat: 48.2218, lng: 17.1542 };
+
+function bmtbKind(url: string): "kids" | "marathon" | null {
+  try {
+    const path = new URL(url).pathname;
+    if (/detske-preteky|kids-zone/i.test(path)) return "kids";
+    if (/\/preteky\/maraton|bikefest-marathon/i.test(path)) return "marathon";
+  } catch {
+    /* keep */
+  }
+  return null;
+}
+
+function bmtbDate(html: string): string | null {
+  const $ = cheerio.load(html);
+  const stamp = $(".date-display-single").first().text();
+  return parseCzIso(stamp)?.start ?? parseCzIso($("body").text())?.start ?? null;
+}
+
+/**
+ * GARMIN Bratislavský MTB maratón — adult XCM at the Rača amphitheatre
+ * and the kids loop at the pool below it. Keep the two pins separate.
+ */
+export function parseBratislavaMtbMaraton(url: string, html: string): ParsedEvent[] {
+  const kind = bmtbKind(url);
+  if (!kind) return [];
+  const startDate = bmtbDate(html);
+  if (!startDate) return [];
+  const sourceUrl = url.split("?")[0]!;
+  const sibling = kind === "kids" ? BMTB_MARATHON : BMTB_KIDS;
+  if (kind === "kids") {
+    return [
+      {
+        externalId: `bratislava-mtb-kids-${startDate}`,
+        name: "Detské preteky — Bratislavský MTB maratón",
+        startDate,
+        placeText: "Knižková dolina — kúpalisko, Bratislava-Rača",
+        countryHint: "SK",
+        discipline: ["xco"],
+        audience: "kids",
+        seriesName: "Detské preteky Bratislavský MTB maratón",
+        seriesSlug: "bratislava-mtb-kids",
+        seriesWebsite: BMTB_KIDS,
+        sourceUrl,
+        websiteUrl: BMTB_KIDS,
+        resultsUrl: BMTB_RESULTS,
+        lat: BMTB_POOL.lat,
+        lng: BMTB_POOL.lng,
+        confidence: 0.92,
+        childUrls: [sibling],
+      },
+    ];
+  }
+  return [
+    {
+      externalId: `bratislava-mtb-maraton-${startDate}`,
+      name: "GARMIN Bratislavský MTB maratón",
+      startDate,
+      placeText: "Bratislava-Rača — Amfiteáter Knižková dolina",
+      countryHint: "SK",
+      discipline: ["xcm"],
+      audience: "mixed",
+      seriesName: "GARMIN Bratislavský MTB maratón",
+      seriesSlug: "bratislava-mtb-maraton",
+      seriesWebsite: BMTB_MARATHON,
+      sourceUrl,
+      websiteUrl: BMTB_MARATHON,
+      resultsUrl: BMTB_RESULTS,
+      lat: BMTB_AMPHI.lat,
+      lng: BMTB_AMPHI.lng,
+      confidence: 0.92,
+      childUrls: [sibling],
+    },
+  ];
+}
