@@ -24,6 +24,7 @@ import {
   parseAustriaKidsXc2026,
   parseYoungstersCup,
   parseMtbLiga,
+  parseSportklasseCup,
   parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
@@ -404,6 +405,15 @@ export async function extractWithAdapter(
     return {
       events: parseMtbLiga(url, html),
       strategy: "adapter:mla",
+    };
+  }
+  if (host.includes("sportklasse-cup.at")) {
+    if (/ergebnisse|impressum|kontakt/i.test(url)) {
+      return { events: [], strategy: "adapter:skc-skip" };
+    }
+    return {
+      events: parseSportklasseCup(url, html),
+      strategy: "adapter:skc",
     };
   }
   if (host.includes("cyclingaustria.at")) {

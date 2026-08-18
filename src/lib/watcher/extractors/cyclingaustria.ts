@@ -71,11 +71,11 @@ function caSeries(
       seriesWebsite: "https://www.juniorbikecup.at/",
     };
   }
-  if (/amateur cup|amateur mtb/.test(t)) {
+  if (/amateur cup|amateur mtb|sportklasse/.test(t)) {
     return {
-      seriesName: "MTB Austria Amateur Cup",
-      seriesSlug: "mtb-austria-amateur-cup",
-      seriesWebsite: site,
+      seriesName: "Sportklasse Cup",
+      seriesSlug: "sportklasse-cup",
+      seriesWebsite: "http://www.sportklasse-cup.at/",
     };
   }
   if (/ktm junior/.test(t)) {

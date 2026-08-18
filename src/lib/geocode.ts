@@ -990,6 +990,8 @@ const GAZETTEER: Record<string, { lat: number; lng: number; cc: string }> = {
   zobing: { lat: 48.495, lng: 15.7, cc: "AT" },
   "zöbing": { lat: 48.495, lng: 15.7, cc: "AT" },
   mollbrucke: { lat: 46.838, lng: 13.375, cc: "AT" },
+  moellbrucke: { lat: 46.838, lng: 13.375, cc: "AT" },
+  moellbruecke: { lat: 46.838, lng: 13.375, cc: "AT" },
   "möllbrücke": { lat: 46.838, lng: 13.375, cc: "AT" },
   konigswiesen: { lat: 48.405, lng: 14.838, cc: "AT" },
   "königswiesen": { lat: 48.405, lng: 14.838, cc: "AT" },

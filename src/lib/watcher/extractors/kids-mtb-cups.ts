@@ -2055,6 +2055,138 @@ export function parseMtbLiga(url: string, html: string): ParsedEvent[] {
   });
 }
 
+const SKC_SITE = "http://www.sportklasse-cup.at/";
+
+/** Sportklasse / Amateur Cup 2026 — official termine at sportklasse-cup.at. */
+const SPORTKLASSE_2026: {
+  date: string;
+  name: string;
+  place: string;
+  lat: number;
+  lng: number;
+  website?: string;
+  regs?: string;
+  registration?: string;
+}[] = [
+  {
+    date: "2026-03-29",
+    name: "KTM Kamptal Trophy — Sportklasse",
+    place: "Langenlois / Zöbing, Niederösterreich",
+    lat: 48.495,
+    lng: 15.7,
+    website: "http://www.sportklasse-cup.at/29032026__langenlois_zoebing-pid441",
+  },
+  {
+    date: "2026-04-26",
+    name: "Ötztaler Mountainbike Festival — Sportklasse",
+    place: "Haiming, Tirol",
+    lat: 47.248,
+    lng: 10.885,
+    website: "http://www.sportklasse-cup.at/26042026__haiming-pid442",
+  },
+  {
+    date: "2026-07-12",
+    name: "Kirchschlager Schlossberg XC",
+    place: "Kirchschlag in der Buckligen Welt, Niederösterreich",
+    lat: 47.496,
+    lng: 16.308,
+    website: "https://mtb-team-bucklige-welt.at/termine-events/schlossberg-xc/",
+  },
+  {
+    date: "2026-08-22",
+    name: "Lurnfelder Eisenwadl",
+    place: "Möllbrücke, Kärnten",
+    lat: 46.838,
+    lng: 13.375,
+    website: "https://www.eisenwadl.com/",
+    registration: "https://my.raceresult.com/280531/",
+  },
+  {
+    date: "2026-09-13",
+    name: "Petzen Trophy XCO — Sportklasse",
+    place: "St. Michael ob Bleiburg, Kärnten",
+    lat: 46.523,
+    lng: 14.763,
+    website: "http://www.sportklasse-cup.at/13092026__petzen-pid680",
+    registration: "https://my.raceresult.com/403440/",
+  },
+  {
+    date: "2026-09-19",
+    name: "Rund um den Roadlberg — Sportklasse",
+    place: "Ottenschlag im Mühlkreis, Oberösterreich",
+    lat: 48.47,
+    lng: 14.05,
+    website: "http://www.sportklasse-cup.at/19092026__ottenschlag-pid496",
+  },
+];
+
+const SPORTKLASSE_BY_DATE = new Map(SPORTKLASSE_2026.map((row) => [row.date, row]));
+
+function skcEvent(
+  sourceUrl: string,
+  row: (typeof SPORTKLASSE_2026)[number],
+  racePage?: string,
+): ParsedEvent {
+  return {
+    externalId: `skc-${row.date}-${normalizeName(row.place)}`,
+    name: row.name,
+    startDate: row.date,
+    placeText: row.place,
+    countryHint: "AT",
+    discipline: ["xco"],
+    audience: "adults",
+    categories: [{ name: "Amateur" }],
+    seriesName: "Sportklasse Cup",
+    seriesSlug: "sportklasse-cup",
+    seriesWebsite: SKC_SITE,
+    sourceUrl: racePage || sourceUrl,
+    websiteUrl: row.website || racePage,
+    registrationUrl: row.registration,
+    regulationsUrl: row.regs,
+    lat: row.lat,
+    lng: row.lng,
+    confidence: 0.93,
+  };
+}
+
+/** Live calendar from http://www.sportklasse-cup.at (Termine sidebar). */
+export function parseSportklasseCup(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const found: { date: string; place: string; href: string }[] = [];
+  const seen = new Set<string>();
+  $(".block-termine a[href]").each((_, a) => {
+    const title = ($(a).attr("title") || $(a).text()).replace(/\s+/g, " ").trim();
+    const parsed = parseMlaTermineTitle(title);
+    if (!parsed || seen.has(parsed.date)) return;
+    const href = deAtAbs($(a).attr("href"), url);
+    if (!href || /_{3,}|-pid549|-pid601|-pid685/i.test(href)) return;
+    seen.add(parsed.date);
+    found.push({ date: parsed.date, place: parsed.place, href });
+  });
+  if (!found.length) {
+    return SPORTKLASSE_2026.map((row) => skcEvent(url.split("#")[0] || SKC_SITE, row));
+  }
+  return found.map((row) => {
+    const extra = SPORTKLASSE_BY_DATE.get(row.date);
+    if (extra) return skcEvent(url, extra, row.href);
+    return {
+      externalId: `skc-${row.date}-${normalizeName(row.place)}`,
+      name: `Sportklasse Cup — ${row.place}`,
+      startDate: row.date,
+      placeText: row.place,
+      countryHint: "AT",
+      discipline: ["xco"] as Discipline[],
+      audience: "adults" as Audience,
+      seriesName: "Sportklasse Cup",
+      seriesSlug: "sportklasse-cup",
+      seriesWebsite: SKC_SITE,
+      sourceUrl: row.href,
+      websiteUrl: row.href,
+      confidence: 0.86,
+    };
+  });
+}
+
 /** Berg & Bike / MPDV Cup — 2026 menu dates. */
 export function parseMpdvCup(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);

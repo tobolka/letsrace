@@ -45,6 +45,8 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "http://www.youngsters-cup.at/termine_2026-pid444", kind: "series" },
   { url: "http://www.mtb-liga.at/", kind: "series" },
   { url: "http://www.mtb-liga.at/termine_2026-pid443", kind: "series" },
+  { url: "http://www.sportklasse-cup.at/", kind: "series" },
+  { url: "http://www.sportklasse-cup.at/termine_2026-pid439", kind: "series" },
   { url: "https://www.ucimtbworldseries.com/calendar", kind: "series" },
   {
     url: "https://www.swiss-cycling.ch/de/veranstaltungen/kalender/?discipline=mtb&save=true",
@@ -245,7 +247,9 @@ async function main() {
                   ? "Šumavský pohár MTB — South Bohemia XC + Waldkirchen"
                   : t.url.includes("janev-cup")
                     ? "JANEV Cup 2026 — Czech UCI cyclocross"
-                    : null,
+                    : t.url.includes("sportklasse-cup")
+                      ? "Sportklasse / Amateur Cup Austria — adult XCO, keep separate from AYC + MLA"
+                      : null,
           next_poll_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })

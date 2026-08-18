@@ -10,6 +10,7 @@ import {
   parseAustriaKidsXc2026,
   parseYoungstersCup,
   parseMtbLiga,
+  parseSportklasseCup,
   parseGermanCxBundesliga,
   parseJuniorBikeCup,
   parseOberschwabenCup,
@@ -357,6 +358,37 @@ describe("Mountainbike Liga Austria", () => {
     expect(events[1]?.endDate).toBe("2026-04-26");
     expect(events[0]?.websiteUrl).toContain("kamptaltrophy.at");
     expect(events.every((e) => e.seriesSlug === "mountainbike-liga")).toBe(true);
+  });
+});
+
+describe("Sportklasse Cup", () => {
+  it("reads the six 2026 amateur rounds and skips placeholder Termine rows", () => {
+    const html = `
+      <div class="block block-termine"><h2>Termine</h2><ul>
+        <li><a href="http://www.sportklasse-cup.at/29032026__langenlois_zoebing-pid441" title="29.03.2026 - Langenlois/Zöbing">29.03.2026 - Langenlois/Zöbing</a></li>
+        <li><a href="http://www.sportklasse-cup.at/26042026__haiming-pid442" title="26.04.2026 - Haiming">26.04.2026 - Haiming</a></li>
+        <li><a href="http://www.sportklasse-cup.at/12072026__kirchschlag-pid537" title="12.07.2026 - Kirchschlag">12.07.2026 - Kirchschlag</a></li>
+        <li><a href="http://www.sportklasse-cup.at/22082026__moellbruecke-pid633" title="22.08.2026 - Möllbrücke">22.08.2026 - Möllbrücke</a></li>
+        <li><a href="http://www.sportklasse-cup.at/13092026__petzen-pid680" title="13.09.2026 - Petzen">13.09.2026 - Petzen</a></li>
+        <li><a href="http://www.sportklasse-cup.at/19092026__ottenschlag-pid496" title="19.09.2026 - Ottenschlag">19.09.2026 - Ottenschlag</a></li>
+        <li><a href="http://www.sportklasse-cup.at/____________________-pid549" title="----------------------------------------">------</a></li>
+        <li><a href="http://www.sportklasse-cup.at/-pid601" title="(vorbehaltlich der Zustimmung der Veranstalter:innen zu den Cupbedingungen!)">Vorbehaltlich</a></li>
+      </ul></div>
+    `;
+    const events = parseSportklasseCup("http://www.sportklasse-cup.at/", html);
+    expect(events).toHaveLength(6);
+    expect(events.map((e) => e.startDate)).toEqual([
+      "2026-03-29",
+      "2026-04-26",
+      "2026-07-12",
+      "2026-08-22",
+      "2026-09-13",
+      "2026-09-19",
+    ]);
+    expect(events[0]?.websiteUrl).toContain("sportklasse-cup.at");
+    expect(events[1]?.websiteUrl).toContain("sportklasse-cup.at");
+    expect(events[3]?.websiteUrl).toContain("eisenwadl.com");
+    expect(events.every((e) => e.seriesSlug === "sportklasse-cup")).toBe(true);
   });
 });
 
