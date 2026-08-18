@@ -38,6 +38,7 @@ import {
   parseOnOffMtb,
   parsePodkrkonosskyMaraton,
   parsePolandBike,
+  parseKamptalTrophy,
   parseRheinEifelCup,
   parseRheinMainCup,
   parseRookiesOstbayern,
@@ -399,6 +400,15 @@ export async function extractWithAdapter(
     return {
       events: parseYoungstersCup(url, html),
       strategy: "adapter:ayc",
+    };
+  }
+  if (host.includes("kamptaltrophy.at")) {
+    if (/impressum|datenschutz|unterkuenfte|unterkünfte|sponsoren|faq|wall-of-fame|anmeldung-geschlossen/i.test(url)) {
+      return { events: [], strategy: "adapter:kamptal-skip" };
+    }
+    return {
+      events: parseKamptalTrophy(url, html),
+      strategy: "adapter:kamptal",
     };
   }
   if (host.includes("mtb-liga.at")) {

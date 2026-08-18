@@ -10,6 +10,7 @@ import {
   parseAustriaKidsXc2026,
   parseYoungstersCup,
   parseMtbLiga,
+  parseKamptalTrophy,
   parseSportklasseCup,
   parseAustrianGravitySeries,
   parseDownhillCup,
@@ -350,15 +351,17 @@ describe("Mountainbike Liga Austria", () => {
     const events = parseMtbLiga("http://www.mtb-liga.at/", html);
     expect(events).toHaveLength(6);
     expect(events.map((e) => e.startDate)).toEqual([
-      "2026-03-29",
+      "2026-03-28",
       "2026-04-25",
       "2026-05-10",
       "2026-05-30",
       "2026-06-27",
       "2026-09-20",
     ]);
+    expect(events[0]?.endDate).toBe("2026-03-29");
     expect(events[1]?.endDate).toBe("2026-04-26");
     expect(events[0]?.websiteUrl).toContain("kamptaltrophy.at");
+    expect(events[0]?.resultsUrl).toContain("/de/ergebnisse");
     expect(events.every((e) => e.seriesSlug === "mountainbike-liga")).toBe(true);
   });
 });
@@ -388,9 +391,33 @@ describe("Sportklasse Cup", () => {
       "2026-09-19",
     ]);
     expect(events[0]?.websiteUrl).toContain("sportklasse-cup.at");
+    expect(events[0]?.resultsUrl).toContain("kamptaltrophy.at/de/ergebnisse");
     expect(events[1]?.websiteUrl).toContain("sportklasse-cup.at");
     expect(events[3]?.websiteUrl).toContain("eisenwadl.com");
     expect(events.every((e) => e.seriesSlug === "sportklasse-cup")).toBe(true);
+  });
+});
+
+describe("KTM Kamptal Trophy", () => {
+  it("reads the UCI weekend and Saturday youngsters from the results page", () => {
+    const html = `
+      <h4>34. KTM Kamptal Trophy (28./29. März 2026)</h4>
+      <a href="/de/ergebnisse">Ergebnisse</a>
+      <p>U17 m/w Youngster · SPORTUNION Kids Race U9 U11 · XCC C3 · XCO C1</p>
+    `;
+    const events = parseKamptalTrophy("https://kamptaltrophy.at/de/ergebnisse", html);
+    expect(events).toHaveLength(2);
+    expect(events[0]?.name).toContain("Kamptal Trophy");
+    expect(events[0]?.startDate).toBe("2026-03-28");
+    expect(events[0]?.endDate).toBe("2026-03-29");
+    expect(events[0]?.seriesSlug).toBe("mountainbike-liga");
+    expect(events[0]?.resultsUrl).toBe("https://kamptaltrophy.at/de/ergebnisse");
+    expect(events[0]?.discipline).toEqual(expect.arrayContaining(["xco", "xcc"]));
+    expect(events[1]?.name).toMatch(/Youngsters/i);
+    expect(events[1]?.startDate).toBe("2026-03-28");
+    expect(events[1]?.websiteUrl).toContain("kategorien-strecke");
+    expect(events[1]?.resultsUrl).toBe("https://kamptaltrophy.at/de/ergebnisse");
+    expect(events[1]?.seriesSlug).toBeUndefined();
   });
 });
 

@@ -1889,6 +1889,7 @@ const MLA_SITE = "http://www.mtb-liga.at/";
 /** Mountainbike Liga Austria 2026 — official termine at mtb-liga.at. */
 const MTB_LIGA_2026: {
   date: string;
+  start?: string;
   end?: string;
   name: string;
   place: string;
@@ -1897,15 +1898,20 @@ const MTB_LIGA_2026: {
   website?: string;
   regs?: string;
   registration?: string;
+  results?: string;
 }[] = [
   {
     date: "2026-03-29",
+    start: "2026-03-28",
+    end: "2026-03-29",
     name: "34. Internationale KTM Kamptal Trophy",
     place: "Langenlois / Zöbing, Niederösterreich",
     lat: 48.495,
     lng: 15.7,
     website: "https://kamptaltrophy.at/",
     registration: "https://kamptaltrophy.at/anmeldung",
+    regs: "https://kamptaltrophy.at/images/kamptaltrophy/Technical_Guide/Technical_Guide_KTM_Trophy_2026_UCI_Races_DE_v1.1.pdf",
+    results: "https://kamptaltrophy.at/de/ergebnisse",
   },
   {
     date: "2026-04-25",
@@ -1963,7 +1969,7 @@ function mlaEvent(
   return {
     externalId: `mla-${row.date}-${normalizeName(row.place)}`,
     name: row.name,
-    startDate: row.date,
+    startDate: row.start || row.date,
     endDate: row.end,
     placeText: row.place,
     countryHint: "AT",
@@ -1977,6 +1983,7 @@ function mlaEvent(
     websiteUrl: row.website || racePage,
     registrationUrl: row.registration,
     regulationsUrl: row.regs,
+    resultsUrl: row.results,
     lat: row.lat,
     lng: row.lng,
     confidence: 0.93,
@@ -2055,6 +2062,82 @@ export function parseMtbLiga(url: string, html: string): ParsedEvent[] {
   });
 }
 
+const KAMPTAL_SITE = "https://kamptaltrophy.at/";
+const KAMPTAL_RESULTS = "https://kamptaltrophy.at/de/ergebnisse";
+const KAMPTAL_KIDS_PAGE = "https://kamptaltrophy.at/de/das-rennen/kategorien-strecke";
+const KAMPTAL_UCI_GUIDE =
+  "https://kamptaltrophy.at/images/kamptaltrophy/Technical_Guide/Technical_Guide_KTM_Trophy_2026_UCI_Races_DE_v1.1.pdf";
+const KAMPTAL_YOUTH_GUIDE =
+  "https://kamptaltrophy.at/images/kamptaltrophy/Technical_Guide/Technical_Guide_KTM_Trophy_2026_Youngsters_Races_DE_v1.1.pdf";
+
+function kamptalWeekend(html: string): { start: string; end: string } {
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  const de = text.match(/(\d{1,2})\.\/(\d{1,2})\.\s*(?:M(?:ä|ae)rz|March)\s+(20\d{2})/i);
+  if (de) {
+    const year = de[3]!;
+    return {
+      start: `${year}-03-${de[1]!.padStart(2, "0")}`,
+      end: `${year}-03-${de[2]!.padStart(2, "0")}`,
+    };
+  }
+  return { start: "2026-03-28", end: "2026-03-29" };
+}
+
+/** Official KTM Kamptal Trophy site — UCI weekend + Saturday youngsters, not Sportklasse. */
+export function parseKamptalTrophy(url: string, html: string): ParsedEvent[] {
+  const { start, end } = kamptalWeekend(html);
+  const place = "Langenlois / Zöbing, Niederösterreich";
+  const lat = 48.495;
+  const lng = 15.7;
+  return [
+    {
+      externalId: `kamptal-uci-${start}`,
+      name: "34. Internationale KTM Kamptal Trophy",
+      startDate: start,
+      endDate: end,
+      placeText: place,
+      countryHint: "AT",
+      discipline: ["xco", "xcc"],
+      audience: "mixed",
+      categories: [
+        { name: "UCI C1" },
+        { name: "XCC C3" },
+        { name: "Elite" },
+        { name: "Junior" },
+        { name: "Masters" },
+      ],
+      seriesName: "Mountainbike Liga",
+      seriesSlug: "mountainbike-liga",
+      seriesWebsite: MLA_SITE,
+      sourceUrl: url,
+      websiteUrl: KAMPTAL_SITE,
+      registrationUrl: `${KAMPTAL_SITE}anmeldung`,
+      regulationsUrl: KAMPTAL_UCI_GUIDE,
+      resultsUrl: KAMPTAL_RESULTS,
+      lat,
+      lng,
+      confidence: 0.94,
+    },
+    {
+      externalId: `kamptal-kids-${start}`,
+      name: "KTM Kamptal Trophy — Youngsters",
+      startDate: start,
+      placeText: place,
+      countryHint: "AT",
+      discipline: ["xco"],
+      audience: "mixed",
+      categories: categoriesFromUBands("U9–U17"),
+      sourceUrl: url,
+      websiteUrl: KAMPTAL_KIDS_PAGE,
+      regulationsUrl: KAMPTAL_YOUTH_GUIDE,
+      resultsUrl: KAMPTAL_RESULTS,
+      lat,
+      lng,
+      confidence: 0.92,
+    },
+  ];
+}
+
 const SKC_SITE = "http://www.sportklasse-cup.at/";
 
 /** Sportklasse / Amateur Cup 2026 — official termine at sportklasse-cup.at. */
@@ -2067,6 +2150,7 @@ const SPORTKLASSE_2026: {
   website?: string;
   regs?: string;
   registration?: string;
+  results?: string;
 }[] = [
   {
     date: "2026-03-29",
@@ -2075,6 +2159,7 @@ const SPORTKLASSE_2026: {
     lat: 48.495,
     lng: 15.7,
     website: "http://www.sportklasse-cup.at/29032026__langenlois_zoebing-pid441",
+    results: "https://kamptaltrophy.at/de/ergebnisse",
   },
   {
     date: "2026-04-26",
@@ -2143,6 +2228,7 @@ function skcEvent(
     websiteUrl: row.website || racePage,
     registrationUrl: row.registration,
     regulationsUrl: row.regs,
+    resultsUrl: row.results,
     lat: row.lat,
     lng: row.lng,
     confidence: 0.93,

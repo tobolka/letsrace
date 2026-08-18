@@ -37,6 +37,7 @@ const SERIES_ALIAS_RULES: { re: RegExp; token: string }[] = [
   { re: /\byoungsters\s*cup\b|\bayc\b/i, token: "series:youngsters_cup" },
   { re: /\bmountainbike\s*liga\b|\bml-?austria\b/i, token: "series:mountainbike_liga" },
   { re: /\bsportklasse\s*cup\b|\baustria\s*amateur\s*cup\b|\bmtb\s*amateur\s*cup\b|\bamateur\s*cup\b/i, token: "series:sportklasse_cup" },
+  { re: /\bkamptal\s*trophy\b.{0,24}\b(kids|youngsters)\b/i, token: "series:kamptal_kids" },
   { re: /\bnachwuchscup\b|\bmtb\s*nachwuchs/i, token: "series:at_nachwuchscup" },
   { re: /\bauner\s*gravity\b|\baustria(?:n)?\s*(?:auner\s*)?gravity\s*series\b|\baags\b|\baustria(?:n)?\s*downhill\s*cup\b/i, token: "series:at_gravity" },
   { re: /\b(vpace\s*)?kids\s*cup\b/i, token: "series:kids_cup" },

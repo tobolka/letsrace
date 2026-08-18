@@ -36,6 +36,8 @@ export type ParsedEvent = {
   registrationUrl?: string;
   /** Official race info / propozice (HTML page or PDF). */
   regulationsUrl?: string;
+  /** Official results hub (HTML page or timing provider). */
+  resultsUrl?: string;
   /** Link event into a series (Talent Cup, KPŽ, …) */
   seriesName?: string;
   seriesSlug?: string;

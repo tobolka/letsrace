@@ -28,6 +28,7 @@ export type EventListItem = {
   websiteUrl: string | null;
   registrationUrl: string | null;
   regulationsUrl: string | null;
+  resultsUrl: string | null;
   listingUrl: string | null;
   sourceKind: string;
   level: string;
@@ -73,7 +74,7 @@ export type EventFilters = {
   polygon?: [number, number][];
 };
 
-const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
 
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
   const supabase = createServerSupabase();
@@ -504,6 +505,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     websiteUrl: row.website_url as string | null,
     registrationUrl: row.registration_url as string | null,
     regulationsUrl: row.regulations_url as string | null,
+    resultsUrl: row.results_url as string | null,
     seriesWebsiteUrl: series?.website_url as string | null,
     sourceUrls: sourceUrlsFromRow(row),
   });
@@ -529,6 +531,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     websiteUrl: outbound.websiteUrl,
     registrationUrl: outbound.registrationUrl,
     regulationsUrl: outbound.regulationsUrl,
+    resultsUrl: outbound.resultsUrl,
     listingUrl: outbound.listingUrl,
     sourceKind: String(row.source_kind ?? "scraped"),
     level: String(row.level ?? "local"),

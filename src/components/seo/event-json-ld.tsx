@@ -11,9 +11,12 @@ export function EventJsonLd({
   const placeName =
     event.location?.municipality || event.location?.name || undefined;
   const pageUrl = absoluteUrl(`/${locale}/e/${event.slug}`);
-  const sameAs = [event.websiteUrl, event.registrationUrl, event.regulationsUrl].filter(
-    (u): u is string => Boolean(u),
-  );
+  const sameAs = [
+    event.websiteUrl,
+    event.registrationUrl,
+    event.regulationsUrl,
+    event.resultsUrl,
+  ].filter((u): u is string => Boolean(u));
 
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",

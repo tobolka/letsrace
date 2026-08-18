@@ -202,6 +202,18 @@ export default async function EventPage({ params }: Props) {
               {t.regulations}
             </OutboundTrackLink>
           ) : null}
+          {event.resultsUrl &&
+          event.resultsUrl !== enterUrl &&
+          event.resultsUrl !== event.regulationsUrl ? (
+            <OutboundTrackLink
+              href={event.resultsUrl}
+              eventName="outbound_enter"
+              eventProps={{ slug: event.slug, kind: "results" }}
+            >
+              <ExternalLink data-icon="inline-start" />
+              {t.results}
+            </OutboundTrackLink>
+          ) : null}
         </div>
 
         <p className="mt-10 hidden text-sm text-muted-foreground sm:mt-12 sm:block">
@@ -237,6 +249,15 @@ export default async function EventPage({ params }: Props) {
             <Button asChild variant="link">
               <a href={event.regulationsUrl} target="_blank" rel="noopener noreferrer">
                 {t.regulations}
+              </a>
+            </Button>
+          ) : null}
+          {event.resultsUrl &&
+          event.resultsUrl !== enterUrl &&
+          event.resultsUrl !== event.regulationsUrl ? (
+            <Button asChild variant="link">
+              <a href={event.resultsUrl} target="_blank" rel="noopener noreferrer">
+                {t.results}
               </a>
             </Button>
           ) : null}

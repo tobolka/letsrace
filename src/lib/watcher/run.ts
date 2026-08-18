@@ -1323,6 +1323,7 @@ async function upsertParsedEvent(
       ? ev.regulationsUrl.trim()
       : null) ||
     (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
+  const incomingResults = publicRaceUrl(ev.resultsUrl) || ev.resultsUrl?.trim() || null;
   const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(Boolean);
 
   // 1) exact fingerprint
@@ -1798,6 +1799,8 @@ async function upsertParsedEvent(
     const regulations = preferRegulationsUrl(incomingRegulations, existingRegulations);
     if (regulations) payload.regulations_url = regulations;
   }
+
+  if (incomingResults) payload.results_url = incomingResults;
 
   if (!lockedFields.includes("location_id") && locationId) {
     payload.location_id = locationId;

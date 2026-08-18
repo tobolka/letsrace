@@ -155,6 +155,7 @@ export function resolveEventOutboundUrls(input: {
   websiteUrl?: string | null;
   registrationUrl?: string | null;
   regulationsUrl?: string | null;
+  resultsUrl?: string | null;
   seriesWebsiteUrl?: string | null;
   sourceUrls?: (string | null | undefined)[];
 }): {
@@ -162,10 +163,12 @@ export function resolveEventOutboundUrls(input: {
   registrationUrl: string | null;
   listingUrl: string | null;
   regulationsUrl: string | null;
+  resultsUrl: string | null;
 } {
   const sources = input.sourceUrls ?? [];
   let websiteUrl = publicRaceUrl(input.websiteUrl);
   for (const c of sources) {
+    if (/\/(ergebnisse|results|vysledk|výsled)/i.test(c || "")) continue;
     const u = publicRaceUrl(c);
     if (!u) continue;
     websiteUrl = preferDeeperOfficialUrl(u, websiteUrl);
@@ -173,6 +176,7 @@ export function resolveEventOutboundUrls(input: {
   if (!websiteUrl) websiteUrl = publicRaceUrl(input.seriesWebsiteUrl);
   const registrationUrl = pickRegistrationUrl(input.registrationUrl, ...sources);
   let regulationsUrl = publicRaceUrl(input.regulationsUrl);
+  const resultsUrl = publicRaceUrl(input.resultsUrl);
 
   if (websiteUrl && registrationUrl && websiteUrl === registrationUrl) {
     websiteUrl = null;
@@ -195,5 +199,5 @@ export function resolveEventOutboundUrls(input: {
   const listingUrl =
     websiteClean || registrationUrl ? null : calendarListingUrl(...sources);
   if (regulationsUrl && regulationsUrl === listingUrl) regulationsUrl = null;
-  return { websiteUrl: websiteClean, registrationUrl, listingUrl, regulationsUrl };
+  return { websiteUrl: websiteClean, registrationUrl, listingUrl, regulationsUrl, resultsUrl };
 }

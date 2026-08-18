@@ -334,6 +334,19 @@ export function EventDetailPanel({
       kind: "regulations",
     });
   }
+  if (
+    event.resultsUrl &&
+    event.resultsUrl !== registerUrl &&
+    event.resultsUrl !== websiteUrl &&
+    event.resultsUrl !== listingUrl &&
+    event.resultsUrl !== event.regulationsUrl
+  ) {
+    extraLinks.push({
+      href: event.resultsUrl,
+      label: t.results,
+      kind: "results",
+    });
+  }
 
   const trust = eventTrustLevel(event);
   const trustText = trustLabel(trust, t);

@@ -227,6 +227,35 @@ describe("golden races — dedup", () => {
     expect(score).toBe(0);
   });
 
+  it("Kamptal youngsters stay separate from MLA and Sportklasse", () => {
+    const kids = {
+      startDate: "2026-03-28",
+      name: "KTM Kamptal Trophy — Youngsters",
+      lat: 48.495,
+      lng: 15.7,
+      placeText: "Langenlois / Zöbing",
+    };
+    const liga = {
+      startDate: "2026-03-29",
+      name: "34. Internationale KTM Kamptal Trophy",
+      seriesName: "Mountainbike Liga",
+      lat: 48.495,
+      lng: 15.7,
+      placeText: "Langenlois / Zöbing",
+    };
+    const sportklasse = {
+      startDate: "2026-03-29",
+      name: "KTM Kamptal Trophy — Sportklasse",
+      seriesName: "Sportklasse Cup",
+      lat: 48.495,
+      lng: 15.7,
+      placeText: "Langenlois / Zöbing",
+    };
+    expect(scoreDuplicate(kids, liga).reasons).toContain("series_conflict");
+    expect(scoreDuplicate(kids, sportklasse).reasons).toContain("series_conflict");
+    expect(scoreDuplicate(liga, sportklasse).reasons).toContain("series_conflict");
+  });
+
   it("XCO vs XCM same venue weekend does not merge", () => {
     const { score, reasons } = scoreDuplicate(
       {

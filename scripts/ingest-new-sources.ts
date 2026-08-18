@@ -98,6 +98,8 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://schulsportverein.de/stadtmeisterschaft/", kind: "series" },
   { url: "https://globmetalxc.pl/", kind: "race" },
   { url: "https://my.raceresult.com/events/", kind: "aggregator" },
+  { url: "https://kamptaltrophy.at/", kind: "race" },
+  { url: "https://kamptaltrophy.at/de/ergebnisse", kind: "race" },
   { url: "https://www.datasport.de/anmeldeservice/mtbwildpoldsried2026", kind: "race" },
   { url: "https://www.swissbikecup.ch/", kind: "series" },
   { url: "https://mtb-cup.ch/en/race", kind: "series" },
@@ -253,6 +255,8 @@ async function main() {
                   ? "Šumavský pohár MTB — South Bohemia XC + Waldkirchen"
                   : t.url.includes("janev-cup")
                     ? "JANEV Cup 2026 — Czech UCI cyclocross"
+                    : t.url.includes("kamptaltrophy")
+                      ? "KTM Kamptal Trophy — official UCI C1 + Saturday youngsters, results hub"
                     : t.url.includes("raceresult.com/events")
                       ? "RaceResult cycling listing — CZ/DE/SK/AT/PL"
                     : t.url.includes("sportklasse-cup")
