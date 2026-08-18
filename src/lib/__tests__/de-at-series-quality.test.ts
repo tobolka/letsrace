@@ -7,6 +7,7 @@ import {
 import {
   deAtPageLinks,
   parseBayerwaldCup,
+  parseAustriaKidsXc2026,
   parseGermanCxBundesliga,
   parseJuniorBikeCup,
   parseOberschwabenCup,
@@ -275,6 +276,36 @@ describe("SooF.sk series", () => {
     expect(events.find((e) => e.placeText === "Donovaly")?.endDate).toBe("2026-09-13");
     expect(events.find((e) => e.placeText === "Komárno")?.discipline).toEqual(["gravel"]);
     expect(events.find((e) => e.placeText === "Mlynčeky")?.discipline).toEqual(["road"]);
+  });
+});
+
+describe("Austria kids XC 2026 CSV", () => {
+  it("emits every remaining AYC / Nachwuchs round from the calendar", () => {
+    const events = parseAustriaKidsXc2026(
+      "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austria%20Youngsters%20Cup%202026.pdf",
+      "",
+    );
+    expect(events).toHaveLength(5);
+    expect(events.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-08-29 Krumbach, Niederösterreich",
+      "2026-09-13 St. Michael ob Bleiburg, Kärnten",
+      "2026-09-19 Ottenschlag im Mühlkreis, Oberösterreich",
+      "2026-09-26 Fusch an der Großglocknerstraße, Salzburg",
+      "2026-10-03 Stattegg, Steiermark",
+    ]);
+    expect(events.every((e) => e.seriesSlug === "austrian-youngsters-cup")).toBe(true);
+    expect(events[0]?.websiteUrl).toBe("https://www.bikethebugles.at/");
+    expect(events[3]?.regulationsUrl).toContain("Youngsters");
+    expect(events[4]?.discipline).toEqual(["xcc"]);
+    expect(events[0]?.categories?.map((c) => c.name)).toEqual([
+      "U5",
+      "U7",
+      "U9",
+      "U11",
+      "U13",
+      "U15",
+      "U17",
+    ]);
   });
 });
 

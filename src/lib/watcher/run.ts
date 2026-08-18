@@ -1316,6 +1316,9 @@ async function upsertParsedEvent(
   const { isStartListUrl } = await import("@/lib/watcher/registration-url");
   const incomingRegulations =
     publicRaceUrl(ev.regulationsUrl) ||
+    (ev.regulationsUrl && isRegulationsUrl(ev.regulationsUrl)
+      ? ev.regulationsUrl.trim()
+      : null) ||
     (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
   const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(Boolean);
 

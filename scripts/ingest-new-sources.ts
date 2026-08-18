@@ -37,6 +37,10 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://www.enduroserie.cz/zavody/", kind: "series" },
   { url: "https://www.jihoceskymtbpohar.cz/", kind: "series" },
   { url: "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events", kind: "federation" },
+  {
+    url: "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austria%20Youngsters%20Cup%202026.pdf",
+    kind: "series",
+  },
   { url: "https://www.ucimtbworldseries.com/calendar", kind: "series" },
   {
     url: "https://www.swiss-cycling.ch/de/veranstaltungen/kalender/?discipline=mtb&save=true",

@@ -1637,6 +1637,121 @@ export function parseGermanCxBundesliga(url: string, _html: string): ParsedEvent
   }));
 }
 
+/** Official AYC 2026 Ausschreibung — also used as the Fusch regulations link. */
+export const AT_KIDS_XC_AYC_PDF =
+  "https://cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/MTB%20Austria%20Youngsters%20Cup%202026.pdf";
+
+/**
+ * Remaining 2026 Austrian MTB XC kids/youth rounds (user calendar CSV).
+ * Hardcoded like the CX Bundesliga GA — the federation listing drops
+ * Nachwuchs/AYC dates that are not on page 1.
+ */
+const AT_KIDS_XC_2026: {
+  date: string;
+  name: string;
+  place: string;
+  lat: number;
+  lng: number;
+  disc: Discipline[];
+  cats: string;
+  website?: string;
+  regs?: string;
+}[] = [
+  {
+    date: "2026-08-29",
+    name: "bike the bugles Junior Race",
+    place: "Krumbach, Niederösterreich",
+    lat: 47.523,
+    lng: 16.195,
+    disc: ["xco"],
+    cats: "U5–U17",
+    website: "https://www.bikethebugles.at/",
+  },
+  {
+    date: "2026-09-13",
+    name: "XCO Petzen Trophy",
+    place: "St. Michael ob Bleiburg, Kärnten",
+    lat: 46.523,
+    lng: 14.763,
+    disc: ["xco"],
+    cats: "U7–U17",
+    website: "https://mtbzone-bikepark.com/petzen/oeffnungszeiten",
+  },
+  {
+    date: "2026-09-19",
+    name: "29. MTB Nachwuchs XCO Rund um den Roadlberg",
+    place: "Ottenschlag im Mühlkreis, Oberösterreich",
+    lat: 48.47,
+    lng: 14.05,
+    disc: ["xco"],
+    cats: "U9–U17",
+    website: "https://ooe-radsportverband.at/veranstaltungen/",
+  },
+  {
+    date: "2026-09-26",
+    name: "AYC Fusch an der Großglocknerstraße XCO",
+    place: "Fusch an der Großglocknerstraße, Salzburg",
+    lat: 47.212,
+    lng: 12.838,
+    disc: ["xco"],
+    cats: "U13–U17",
+    regs: AT_KIDS_XC_AYC_PDF,
+  },
+  {
+    date: "2026-10-03",
+    name: "Pumpiläum / Grazer Youngsters Cup Stattegg",
+    place: "Stattegg, Steiermark",
+    lat: 47.137,
+    lng: 15.418,
+    disc: ["xcc"],
+    cats: "U9–U15; AYC U13–U17",
+    website: "https://www.bike09.at/3_pumpilaeum-pid885",
+    regs: "https://www.bike09.at/3_pumpilaeum-pid885",
+  },
+];
+
+function categoriesFromUBands(raw: string): { name: string }[] {
+  const ages = [5, 7, 9, 11, 13, 15, 17];
+  const found = new Set<number>();
+  for (const part of raw.split(/[;+,]/)) {
+    const nums = [...part.matchAll(/U\s*(\d+)/gi)].map((m) => Number(m[1]));
+    if (nums.length >= 2 && /[–-]/.test(part)) {
+      const min = Math.min(...nums);
+      const max = Math.max(...nums);
+      for (const a of ages) {
+        if (a >= min && a <= max) found.add(a);
+      }
+    } else {
+      for (const n of nums) found.add(n);
+    }
+  }
+  if (!found.size) return [{ name: raw.trim() }];
+  return [...found].sort((a, b) => a - b).map((n) => ({ name: `U${n}` }));
+}
+
+export function parseAustriaKidsXc2026(url: string, _html?: string): ParsedEvent[] {
+  const sourceUrl = url.split("#")[0] || AT_KIDS_XC_AYC_PDF;
+  return AT_KIDS_XC_2026.map((row) => ({
+    externalId: `at-kids-xc-${row.date}-${normalizeName(row.place)}`,
+    name: row.name,
+    startDate: row.date,
+    placeText: row.place,
+    countryHint: "AT",
+    discipline: row.disc,
+    audience: "mixed" as Audience,
+    categories: categoriesFromUBands(row.cats),
+    seriesName: "Austrian Youngsters Cup",
+    seriesSlug: "austrian-youngsters-cup",
+    seriesWebsite: "https://cyclingaustria.at/news/allgemein/cycling-austria-cups-2026",
+    sourceUrl,
+    websiteUrl: row.website,
+    regulationsUrl: row.regs,
+    lat: row.lat,
+    lng: row.lng,
+    confidence: 0.92,
+  }));
+}
+
 /** Berg & Bike / MPDV Cup — 2026 menu dates. */
 export function parseMpdvCup(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);

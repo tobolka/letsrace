@@ -21,6 +21,7 @@ import {
   parseBayerwaldCup,
   parseDetskaTour,
   parseDetskaTourPropozicie,
+  parseAustriaKidsXc2026,
   parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
@@ -386,12 +387,26 @@ export async function extractWithAdapter(
     return { events: parseUstiMtbCup(url, html), strategy: "adapter:usti-mtb" };
   }
   if (host.includes("cyclingaustria.at")) {
+    let decoded = url;
+    try {
+      decoded = decodeURIComponent(url);
+    } catch {
+      /* keep raw */
+    }
+    if (/austria.?youngsters.?cup/i.test(decoded)) {
+      return {
+        events: parseAustriaKidsXc2026(url, html),
+        strategy: "adapter:at-kids-xc",
+      };
+    }
     if (!/kalender/i.test(url)) {
       return { events: [], strategy: "adapter:oerv-skip" };
     }
+    const ca = await enrichDeAtRacePages(parseCyclingAustria(url, html));
+    const kids = /cyclocross/i.test(url) ? [] : parseAustriaKidsXc2026(url, html);
     return {
-      events: await enrichDeAtRacePages(parseCyclingAustria(url, html)),
-      strategy: "adapter:oerv",
+      events: [...kids, ...ca],
+      strategy: kids.length ? "adapter:oerv+at-kids-xc" : "adapter:oerv",
     };
   }
   if (host.includes("rad-net.de")) {
