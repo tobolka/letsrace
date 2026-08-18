@@ -105,6 +105,16 @@ describe("golden races — age categories", () => {
     );
   });
 
+  it("generic road GP is adult amateur, not unknown", () => {
+    const c = inferClassification({
+      name: "GP Lucien Van Impe",
+      disciplines: ["road"],
+    });
+    expect(c.ageCategories).toEqual(expect.arrayContaining(["amateur", "masters"]));
+    expect(c.ageCategories).not.toContain("kids");
+    expect(c.audience).toBe("adults");
+  });
+
   it("empty mixed never matches Kids filter", () => {
     expect(
       matchesAgeCategoryFilter({ audience: "mixed", ageCategories: [] }, ["kids"]),

@@ -4,6 +4,7 @@ import {
   coldStartCenter,
   explorerWeight,
   isPlaceSearchStopword,
+  isPublicMapMarket,
   pickerCountryCodes,
   resolveCoveragePlace,
 } from "@/lib/coverage";
@@ -46,5 +47,14 @@ describe("coverage markets", () => {
     expect(explorerWeight("cz")).toBe("home");
     expect(explorerWeight("it")).toBe("expanding");
     expect(explorerWeight("fr")).toBe("other");
+  });
+
+  it("offers core, neighbours and expanding Italy — listed Europe stays a reservation", () => {
+    expect(isPublicMapMarket("CZ")).toBe(true);
+    expect(isPublicMapMarket("SK")).toBe(true);
+    expect(isPublicMapMarket("IT")).toBe(true);
+    expect(isPublicMapMarket("FR")).toBe(false);
+    expect(isPublicMapMarket("GB")).toBe(false);
+    expect(isPublicMapMarket("SI")).toBe(false);
   });
 });

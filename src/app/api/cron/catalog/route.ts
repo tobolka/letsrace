@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { geocodePendingLocations } from "@/lib/geocode";
+import { runCatalogHygiene } from "@/lib/catalog/hygiene";
 
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 export async function GET(req: NextRequest) {
   const secret = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const limit = Number(req.nextUrl.searchParams.get("limit") || 80);
-  const gazetteerOnly = req.nextUrl.searchParams.get("mode") === "gazetteer";
-  const result = await geocodePendingLocations(Math.min(limit, 120), { gazetteerOnly });
+  const result = await runCatalogHygiene({ maxAgeFills: 400, maxMerges: 40 });
   return NextResponse.json({ ok: true, ...result });
 }
 

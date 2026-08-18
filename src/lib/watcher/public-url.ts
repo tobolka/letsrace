@@ -15,6 +15,29 @@ const AGGREGATOR_HOSTS = [
   "mso.swiss",
 ];
 
+/** Federation / media dumps — a pin, not an official race page. */
+const DUMP_HOSTS = [
+  ...AGGREGATOR_HOSTS,
+  "cyclingaustria.at",
+  "portal.cyclingaustria.at",
+  "bikeguideaustria.at",
+  "swiss-cycling.ch",
+  "cyklistikaszc.sk",
+  "federciclismo.it",
+  "uci.org",
+  "uec.ch",
+  "granfondoguide.com",
+  "velowire.com",
+  "cyclinghero.cc",
+  "cyclingstage.com",
+  "sportivebreaks.com",
+  "domestiquecycling.com",
+  "finishers.com",
+  "soof.sk",
+];
+
+const SOCIAL_HOSTS = ["facebook.com", "instagram.com", "twitter.com", "x.com", "youtube.com"];
+
 const HUB_OR_LOGIN =
   /members\.federciclismo\.it|uci\.org\/competition-details|mijn\.knwu\.nl|kenniscentrum\.knwu\.nl|swiss-cycling\.ch\/.*\/kalender|cyclingaustria\.at\/.*kalender/i;
 
@@ -28,9 +51,19 @@ export function hostOf(url: string | null | undefined): string | null {
 }
 
 export function isAggregatorUrl(url: string | null | undefined): boolean {
+  return hostMatches(url, AGGREGATOR_HOSTS);
+}
+
+export function isDumpListingUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  if (HUB_OR_LOGIN.test(url)) return true;
+  return hostMatches(url, DUMP_HOSTS) || hostMatches(url, SOCIAL_HOSTS);
+}
+
+function hostMatches(url: string | null | undefined, hosts: string[]): boolean {
   const host = hostOf(url);
   if (!host) return false;
-  return AGGREGATOR_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+  return hosts.some((h) => host === h || host.endsWith(`.${h}`));
 }
 
 function isHttpUrl(url: string): boolean {
@@ -44,8 +77,7 @@ export function publicRaceUrl(
   for (const c of candidates) {
     const u = (c || "").trim();
     if (!u || !isHttpUrl(u)) continue;
-    if (isAggregatorUrl(u)) continue;
-    if (HUB_OR_LOGIN.test(u)) continue;
+    if (isDumpListingUrl(u)) continue;
     return u;
   }
   return null;

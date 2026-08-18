@@ -24,6 +24,21 @@ describe("deAtPageLinks", () => {
     expect(links.registrationUrl).toBe("https://my.raceresult.com/379367/registration");
     expect(links.regulationsUrl).toContain("generalausschreibung");
   });
+
+  it("reads Zur Website as the official race site, not the federation page", () => {
+    const html = `
+      <a href="https://www.eisenwadl.com">zur Website</a>
+      <a href="https://my.raceresult.com/379367/registration">Anmeldung</a>
+      <a href="/components/com_events/src/functions/download_pdf.php?id=BEE6092">PDF</a>
+    `;
+    const links = deAtPageLinks(
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=BEE6092",
+      html,
+    );
+    expect(links.websiteUrl).toBe("https://www.eisenwadl.com/");
+    expect(links.registrationUrl).toContain("raceresult.com");
+    expect(links.regulationsUrl).toContain("download_pdf.php");
+  });
 });
 
 describe("Rookies Cup Ostbayern", () => {

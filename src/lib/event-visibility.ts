@@ -1,7 +1,8 @@
 import { allowsUnlinkedPublicListing, UNLINKED_LISTING_CODES } from "@/lib/coverage";
+import { publicRaceUrl } from "@/lib/watcher/public-url";
 
-/** Statuses shown on the public map / explore list. */
-export const PUBLIC_EVENT_STATUSES = ["scheduled", "tbc", "postponed", "registration_open"] as const;
+/** Statuses shown on the public map / explore list. TBC stays in admin until confirmed. */
+export const PUBLIC_EVENT_STATUSES = ["scheduled", "postponed", "registration_open"] as const;
 
 /**
  * Home map: keep listing even without an official enter link.
@@ -22,7 +23,7 @@ export function isPublicMapWorthy(event: {
   location?: { countryCode?: string | null } | null;
 }): boolean {
   if (isHomeMapCountry(event.location?.countryCode)) return true;
-  return Boolean(event.websiteUrl?.trim() || event.registrationUrl?.trim());
+  return Boolean(publicRaceUrl(event.websiteUrl) || publicRaceUrl(event.registrationUrl));
 }
 
 export type PublicEventStatus = (typeof PUBLIC_EVENT_STATUSES)[number];

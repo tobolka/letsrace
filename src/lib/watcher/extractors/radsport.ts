@@ -84,8 +84,7 @@ function toParsed(ev: ApiEvent): ParsedEvent | null {
       : "mixed",
     categories: cats.length ? cats : undefined,
     sourceUrl: detailUrl,
-    // Prefer organizer site as the public website; fall back to Radsport detail page
-    websiteUrl: organizer || detailUrl,
+    websiteUrl: organizer,
     registrationUrl: organizer,
     lat: ev.latitude ?? undefined,
     lng: ev.longitude ?? undefined,

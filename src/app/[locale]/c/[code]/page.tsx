@@ -12,6 +12,7 @@ import {
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
 import { eventMapPath } from "@/lib/event-url";
+import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isListedCountry(code)) return { title: "Country", robots: { index: false } };
   const name = countryDisplayName(code, locale);
   const title = `${name} · ${SITE_NAME}`;
-  const description = `Cycling races in ${name} — map calendar on Startline.`;
+  const description = `Cycling races in ${name} — map calendar on ${SITE_NAME}.`;
   const url = absoluteUrl(`/${locale}/c/${code.toLowerCase()}`);
   return {
     title: name,
@@ -80,7 +81,8 @@ export default async function CountryHubPage({ params }: Props) {
         <Button asChild variant="ghost" size="sm" className="-ml-2">
           <Link href={`/${locale}`}>{SITE_NAME}</Link>
         </Button>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight">{name}</h1>
+        <BrandMark href={`/${locale}`} size="sm" className="mt-5 block" />
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{name}</h1>
         <p className="mt-2 text-muted-foreground">
           {events.length} {t.racesCount} · {t.thisWeekend}+
         </p>

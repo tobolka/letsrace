@@ -33,6 +33,7 @@ export type EventListItem = {
   level: string;
   classLabel: string | null;
   uciClass: string | null;
+  lastSeenAt: string | null;
   location: {
     id: string;
     name: string;
@@ -72,6 +73,8 @@ export type EventFilters = {
   polygon?: [number, number][];
 };
 
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
   const supabase = createServerSupabase();
   const { expandDisciplineFilter, matchesDisciplineFilter } = await import("@/lib/taxonomy");
@@ -93,7 +96,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   let query = supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class,
+      `${EVENT_LIST_COLUMNS},
        ${locationSelect},
        series:series(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -372,7 +375,7 @@ export async function getSeriesBySlug(
   const { data: eventRows, error: eventError } = await supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class,
+      `${EVENT_LIST_COLUMNS},
        location:locations!inner(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -430,7 +433,7 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
   const { data, error } = await supabase
     .from("events")
     .select(
-      `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, source_kind, level, class_label, uci_class,
+      `${EVENT_LIST_COLUMNS},
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -443,6 +446,9 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
   if (!data) return null;
   const event = mapEventRow(data as Record<string, unknown>);
   if (shouldHideFromMap(event.name, event.status, event.visibility)) return null;
+  const { isListedCountry } = await import("@/lib/geo/europe");
+  const cc = event.location?.countryCode;
+  if (cc && !isListedCountry(cc)) return null;
   return event;
 });
 
@@ -453,6 +459,7 @@ export async function listSitemapEvents(limit = 4000): Promise<
   const supabase = createServerSupabase();
   const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy } =
     await import("@/lib/event-visibility");
+  const { isListedCountry } = await import("@/lib/geo/europe");
   const today = new Date().toISOString().slice(0, 10);
   const { data, error } = await supabase
     .from("events")
@@ -469,6 +476,7 @@ export async function listSitemapEvents(limit = 4000): Promise<
     .filter((row) => {
       const loc = row.location as { country_code?: string } | { country_code?: string }[] | null;
       const countryCode = Array.isArray(loc) ? loc[0]?.country_code : loc?.country_code;
+      if (countryCode && !isListedCountry(countryCode)) return false;
       return isPublicMapWorthy({
         websiteUrl: row.website_url as string | null,
         registrationUrl: row.registration_url as string | null,
@@ -526,6 +534,11 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     level: String(row.level ?? "local"),
     classLabel: (row.class_label as string) ?? null,
     uciClass: (row.uci_class as string) ?? null,
+    lastSeenAt: row.last_seen_at
+      ? String(row.last_seen_at)
+      : row.updated_at
+        ? String(row.updated_at)
+        : null,
     location: location
       ? {
           id: String(location.id),

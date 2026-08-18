@@ -148,6 +148,7 @@ function deAtRegsScore(href: string, text: string): number {
   if (/\/reglement(\.php|\/|$)/i.test(href)) return 5;
   if (/raceresult\.com\/\d+\/info/i.test(href)) return 5;
   if (/runtix\.com\/sts\/10021/i.test(href)) return 5;
+  if (/download_pdf\.php/i.test(href) && /cyclingaustria\.at/i.test(href)) return 5;
   if (DE_AT_REGS.test(blob) && /\.pdf(\?|#|$)/i.test(href)) return 5;
   if (DE_AT_REGS.test(blob)) return 3;
   return 0;
@@ -166,14 +167,15 @@ function isSeriesHubHref(href: string): boolean {
   );
 }
 
-/** Anmeldung / Ausschreibung links on a DE/AT race or series page. */
+/** Anmeldung / Ausschreibung / official site on a DE/AT/CH race or series page. */
 export function deAtPageLinks(
   pageUrl: string,
   html: string,
-): { registrationUrl?: string; regulationsUrl?: string } {
+): { registrationUrl?: string; regulationsUrl?: string; websiteUrl?: string } {
   const $ = cheerio.load(html);
   let bestReg: { href: string; score: number } | undefined;
   let bestRegs: { href: string; score: number } | undefined;
+  let websiteUrl: string | undefined;
   $("a[href]").each((_, a) => {
     const href = deAtAbs($(a).attr("href"), pageUrl);
     if (!href) return;
@@ -184,8 +186,29 @@ export function deAtPageLinks(
     if (regsScore && (!bestRegs || regsScore > bestRegs.score)) {
       bestRegs = { href, score: regsScore };
     }
+    if (!websiteUrl && /zur website|offizielle website|homepage des|webseite des/i.test(text)) {
+      if (!isAggregatorUrl(href) && !isDumpHostHref(href) && !/mailto:/i.test(href)) {
+        websiteUrl = href;
+      }
+    }
   });
-  return { registrationUrl: bestReg?.href, regulationsUrl: bestRegs?.href };
+  return { registrationUrl: bestReg?.href, regulationsUrl: bestRegs?.href, websiteUrl };
+}
+
+function isDumpHostHref(href: string): boolean {
+  try {
+    const host = new URL(href).hostname.replace(/^www\./, "").toLowerCase();
+    return (
+      host.includes("cyclingaustria.at") ||
+      host.includes("swiss-cycling.ch") ||
+      host.includes("facebook.com") ||
+      host.includes("instagram.com") ||
+      host.includes("uci.org") ||
+      host.includes("uec.ch")
+    );
+  } catch {
+    return true;
+  }
 }
 
 function placeKey(place: string): string {
@@ -251,7 +274,7 @@ export async function enrichDeAtRacePages(events: ParsedEvent[]): Promise<Parsed
     }
   });
   if (!pages.length) return events;
-  const extras = await mapPool(pages.slice(0, 16), 4, async (ev) => {
+  const extras = await mapPool(pages.slice(0, 48), 5, async (ev) => {
     try {
       const page = await fetchText(ev.websiteUrl!, { timeoutMs: 12_000 });
       if (!page.ok || !page.text) return { id: ev.externalId };
@@ -264,8 +287,11 @@ export async function enrichDeAtRacePages(events: ParsedEvent[]): Promise<Parsed
   return events.map((ev) => {
     const extra = byId.get(ev.externalId);
     if (!extra) return ev;
+    const official =
+      extra.websiteUrl && extra.websiteUrl !== ev.websiteUrl ? extra.websiteUrl : undefined;
     return {
       ...ev,
+      websiteUrl: official || ev.websiteUrl,
       registrationUrl: extra.registrationUrl || ev.registrationUrl,
       regulationsUrl: extra.regulationsUrl || ev.regulationsUrl,
     };
@@ -360,15 +386,18 @@ export function parseSzcMtb(url: string, html: string): ParsedEvent[] {
     const meta = szcSeries(name);
     if (!meta) return;
 
-    const pdf = $tds.find("a[href$='.pdf']").attr("href");
-    let websiteUrl = url;
+    const pdf =
+      $tds.eq(5).find("a[href$='.pdf']").attr("href") ||
+      $tds.find("a[href$='.pdf']").first().attr("href");
+    let regulationsUrl: string | undefined;
     if (pdf) {
       try {
-        websiteUrl = new URL(pdf, url).toString();
+        regulationsUrl = new URL(pdf, url).toString();
       } catch {
         /* keep */
       }
     }
+    const sourceUrl = `${url.replace(/\/$/, "")}#${dates.start}-${normalizeName(name)}`;
 
     push(events, seen, {
       externalId: `szc-${dates.start}-${normalizeName(name)}`,
@@ -382,8 +411,8 @@ export function parseSzcMtb(url: string, html: string): ParsedEvent[] {
       seriesName: meta.seriesName,
       seriesSlug: meta.seriesSlug,
       seriesWebsite: "https://www.cyklistikaszc.sk/sk/mtb-cross-country/kalendar",
-      sourceUrl: url,
-      websiteUrl,
+      sourceUrl,
+      regulationsUrl,
       confidence: 0.88,
     });
   });
@@ -790,8 +819,8 @@ export function parsePolandBike(url: string, html: string): ParsedEvent[] {
       seriesName: "LOTTO Poland Bike Marathon",
       seriesSlug: "poland-bike",
       seriesWebsite: "https://polandbike.pl/",
-      sourceUrl: url,
-      websiteUrl: "https://polandbike.pl/junior-race/",
+      sourceUrl: `${url.replace(/\/$/, "")}#${startDate}-${normalizeName(place)}`,
+      websiteUrl: "https://polandbike.pl/",
       confidence: 0.84,
     });
     i += 1;

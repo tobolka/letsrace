@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import "@/lib/maplibre-worker";
 import {
   Map as MapLibreMap,
   Marker,

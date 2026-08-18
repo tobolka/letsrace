@@ -1,4 +1,4 @@
-import { pickerCountryCodes } from "@/lib/coverage";
+import { pickerCountryCodes, PUBLIC_MAP_CODES } from "@/lib/coverage";
 
 /**
  * ISO 3166-1 alpha-2 codes we treat as Europe for Startline.
@@ -63,17 +63,15 @@ export const EUROPE_COUNTRY_CODES = [
 export type EuropeCountryCode = (typeof EUROPE_COUNTRY_CODES)[number];
 
 /**
- * Temporarily off the public map / ingest to keep payloads smaller.
- * Still treated as Europe (admin, geocode) — just not listed.
+ * Off the public map and ingest. Still known as Europe for admin/geocode.
+ * RU is never listed. XK is outside coverage (UCI dumps like Tour of Kosovo).
  */
-export const PAUSED_COUNTRY_CODES = [] as const;
+export const PAUSED_COUNTRY_CODES = ["RU", "XK"] as const;
 
 const PAUSED_SET = new Set<string>(PAUSED_COUNTRY_CODES);
 
-/** Countries shown on the public explore map. */
-export const PUBLIC_COUNTRY_CODES = EUROPE_COUNTRY_CODES.filter(
-  (c) => !PAUSED_SET.has(c),
-);
+/** Countries shown on the public explore map: core, neighbours, expanding. */
+export const PUBLIC_COUNTRY_CODES = PUBLIC_MAP_CODES;
 
 /** Prefer coverage markets at the top of admin / filter country pickers. */
 const PREFERRED_COUNTRY_CODES = pickerCountryCodes();
@@ -95,6 +93,7 @@ export function europeCountryOptions(current?: string | null): string[] {
 }
 
 const EUROPE_SET = new Set<string>(EUROPE_COUNTRY_CODES);
+const PUBLIC_SET = new Set<string>(PUBLIC_COUNTRY_CODES);
 
 /** True when code is a known European ISO-2 (case-insensitive). */
 export function isEuropeanCountry(code: string | null | undefined): boolean {
@@ -108,7 +107,7 @@ export function isEuropeanCountry(code: string | null | undefined): boolean {
 export function isListedCountry(code: string | null | undefined): boolean {
   if (!code) return false;
   const cc = code.trim().toUpperCase();
-  return EUROPE_SET.has(cc) && !PAUSED_SET.has(cc);
+  return PUBLIC_SET.has(cc);
 }
 
 const displayNamesCache = new Map<string, Intl.DisplayNames>();

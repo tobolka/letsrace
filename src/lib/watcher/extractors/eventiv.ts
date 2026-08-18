@@ -1,6 +1,6 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
-import { shouldIngestByCountry } from "@/lib/geo/europe";
+import { isListedCountry } from "@/lib/geo/europe";
 
 type MapFeature = {
   type: string;
@@ -435,7 +435,7 @@ function toParsed(f: MapFeature): ParsedEvent | null {
     : "https://eventivsport.com/map";
   const websiteUrl = p.website_url || undefined;
   const cc = countryCode(p.country) || countryCode(place);
-  if (cc && !shouldIngestByCountry(cc)) return null;
+  if (cc && !isListedCountry(cc)) return null;
   // No country but clearly outside Europe (Eventiv is global)
   if (
     !cc &&

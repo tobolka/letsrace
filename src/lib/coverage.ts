@@ -360,3 +360,13 @@ export function explorerWeight(packId: string): ExplorerWeight {
   if (m.stage === "expanding") return "expanding";
   return "other";
 }
+
+/** Countries the public map actually offers — listed markets stay on the roadmap. */
+export function isPublicMapMarket(code: string | null | undefined): boolean {
+  const stage = marketByCode(code)?.stage;
+  return stage === "core" || stage === "neighbor" || stage === "expanding";
+}
+
+export const PUBLIC_MAP_CODES = MARKETS.filter((m) =>
+  m.stage === "core" || m.stage === "neighbor" || m.stage === "expanding",
+).map((m) => m.code);

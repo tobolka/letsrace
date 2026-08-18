@@ -583,6 +583,13 @@ function addAgeDefaults(
     found.add("amateur");
     found.add("masters");
   }
+  if (found.size) return;
+  // Generic road / gravel / marathon without age tokens → adult amateur, not "unknown".
+  // Leave unnamed local MTB empty — kids vs adults is often unstated.
+  if (hasRoadFamily || hasGravel || discs.includes("xcm")) {
+    found.add("amateur");
+    found.add("masters");
+  }
 }
 
 export function audienceFromAgeCategories(cats: AgeCategory[]): Audience {

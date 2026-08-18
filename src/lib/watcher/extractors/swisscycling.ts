@@ -94,6 +94,7 @@ export function parseSwissCycling(url: string, html: string): ParsedEvent[] {
     seen.add(externalId);
 
     const series = swissSeriesFields(name);
+    const raceUrl = websiteUrl;
     events.push({
       externalId,
       name,
@@ -103,8 +104,8 @@ export function parseSwissCycling(url: string, html: string): ParsedEvent[] {
       countryHint: "CH",
       discipline: mapDisc(discRaw + " " + name),
       audience: series.audience ?? (/kids|u9|u11|u13|jugend/i.test(name + discRaw) ? "kids" : "mixed"),
-      sourceUrl: url,
-      websiteUrl,
+      sourceUrl: raceUrl,
+      websiteUrl: raceUrl,
       confidence: 0.86,
       ...series,
     });

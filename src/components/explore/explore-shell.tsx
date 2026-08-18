@@ -17,12 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  Card,
-  CardAction,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,7 +67,66 @@ import { MoreHorizontal, Flag } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { SITE_AUTHOR } from "@/lib/seo";
+import { BrandMark } from "@/components/brand-mark";
 import { cn } from "@/lib/utils";
+
+const WEEKEND_DEFAULT = thisWeekendRange();
+const exploreSearchParams = {
+  q: parseAsString.withDefault(""),
+  categories: parseAsArrayOf(parseAsString).withDefault([]),
+  disciplines: parseAsArrayOf(parseAsString).withDefault([]),
+  levels: parseAsArrayOf(parseAsString).withDefault([]),
+  series: parseAsString.withDefault(""),
+  country: parseAsString.withDefault(""),
+  dateFrom: parseAsString.withDefault(WEEKEND_DEFAULT.from),
+  dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
+  e: parseAsString.withDefault(""),
+  sort: parseAsString.withDefault("date"),
+  west: parseAsString,
+  south: parseAsString,
+  east: parseAsString,
+  north: parseAsString,
+};
+
+function seriesListQuery(filters: {
+  dateFrom: string;
+  dateTo: string;
+  categories: string[];
+  disciplines: string[];
+  levels: string[];
+}) {
+  const params = new URLSearchParams();
+  if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
+  if (filters.dateTo) params.set("dateTo", filters.dateTo);
+  for (const a of filters.categories) params.append("categories", a);
+  for (const d of filters.disciplines) params.append("disciplines", d);
+  for (const l of filters.levels) params.append("levels", l);
+  return params.toString();
+}
+
+const seriesResultCache = new Map<string, SeriesOption[]>();
+const seriesInflight = new Map<string, Promise<SeriesOption[]>>();
+
+function loadSeriesList(qs: string): Promise<SeriesOption[]> {
+  const cached = seriesResultCache.get(qs);
+  if (cached) return Promise.resolve(cached);
+  const pending = seriesInflight.get(qs);
+  if (pending) return pending;
+  const p = fetch(`/api/series${qs ? `?${qs}` : ""}`)
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`series ${res.status}`);
+      return res.json() as Promise<SeriesOption[]>;
+    })
+    .then((data) => {
+      seriesResultCache.set(qs, data);
+      return data;
+    })
+    .finally(() => {
+      seriesInflight.delete(qs);
+    });
+  seriesInflight.set(qs, p);
+  return p;
+}
 
 type Props = {
   initialEvents: EventListItem[];
@@ -115,23 +169,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     return [c.lng, c.lat] as [number, number];
   }, [locale]);
 
-  const weekend = thisWeekendRange();
-  const [filters, setFilters] = useQueryStates({
-    q: parseAsString.withDefault(""),
-    categories: parseAsArrayOf(parseAsString).withDefault([]),
-    disciplines: parseAsArrayOf(parseAsString).withDefault([]),
-    levels: parseAsArrayOf(parseAsString).withDefault([]),
-    series: parseAsString.withDefault(""),
-    country: parseAsString.withDefault(""),
-    dateFrom: parseAsString.withDefault(weekend.from),
-    dateTo: parseAsString.withDefault(weekend.to),
-    e: parseAsString.withDefault(""),
-    sort: parseAsString.withDefault("date"),
-    west: parseAsString,
-    south: parseAsString,
-    east: parseAsString,
-    north: parseAsString,
-  });
+  const [filters, setFilters] = useQueryStates(exploreSearchParams);
 
   function selectEvent(id: string | null) {
     setSelectedId(id);
@@ -145,19 +183,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     if (hit && hit.id !== selectedId) setSelectedId(hit.id);
   }, [filters.e, events, selectedId]);
 
+  const seriesQuery = seriesListQuery(filters);
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
-    if (filters.dateTo) params.set("dateTo", filters.dateTo);
-    filters.categories.forEach((a) => params.append("categories", a));
-    filters.disciplines.forEach((d) => params.append("disciplines", d));
-    filters.levels.forEach((l) => params.append("levels", l));
-    const qs = params.toString();
-    void fetch(`/api/series${qs ? `?${qs}` : ""}`)
-      .then((r) => r.json())
-      .then((data: SeriesOption[]) => setSeriesList(data))
+    let alive = true;
+    void loadSeriesList(seriesQuery)
+      .then((data) => {
+        if (alive) setSeriesList(data);
+      })
       .catch(() => undefined);
-  }, [filters.dateFrom, filters.dateTo, filters.categories, filters.disciplines, filters.levels]);
+    return () => {
+      alive = false;
+    };
+  }, [seriesQuery]);
 
   const selected = useMemo(
     () => events.find((e) => e.id === selectedId) ?? null,
@@ -633,7 +670,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onFeedback={() => setFeedbackOpen(true)}
             onSignIn={() => setAuthOpen(true)}
           />
-          <div className="relative z-30 shrink-0 px-3 py-2.5">
+          <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
             {renderFilterBar()}
           </div>
           <Separator />
@@ -761,16 +798,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </span>
             </button>
           ) : (
-            <div className="px-3 pb-2">
-              <Header
-                messages={messages}
-                locale={locale}
-                onSubmitRace={() => setSubmitOpen(true)}
-                onFeedback={() => setFeedbackOpen(true)}
-                onSignIn={() => setAuthOpen(true)}
-                compact
-              />
-            </div>
+            <Header
+              messages={messages}
+              locale={locale}
+              onSubmitRace={() => setSubmitOpen(true)}
+              onFeedback={() => setFeedbackOpen(true)}
+              onSignIn={() => setAuthOpen(true)}
+              compact
+            />
           )}
 
           {mobileOpen && selected ? (
@@ -787,7 +822,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
           {mobileOpen && !selected ? (
             <>
-              <div className="relative z-30 shrink-0 px-3 pb-2">
+              <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
                 {renderFilterBar()}
               </div>
               <Separator />
@@ -945,38 +980,25 @@ function Header({
   compact?: boolean;
 }) {
   return (
-    <CardHeader
+    <div
       className={cn(
-        "items-center",
-        compact ? "gap-0 px-0 py-0" : "border-b px-4 py-3 [.border-b]:pb-3",
+        "flex shrink-0 items-center justify-between px-3",
+        compact ? "h-11" : "h-12",
       )}
     >
-      <CardTitle
-        className={cn(
-          "font-semibold tracking-tight",
-          compact ? "text-lg" : "text-[1.375rem]",
-        )}
-      >
-        <Link
-          href={`/${locale}`}
-          className="rounded-sm text-brand outline-offset-2 focus-visible:outline-2"
-        >
-          {messages.appName}
-        </Link>
-      </CardTitle>
-      <CardAction className="self-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={messages.more}
-              className="[@media(pointer:coarse)]:size-11"
-            >
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
+      <BrandMark href={`/${locale}`} size={compact ? "sm" : "md"} />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={messages.more}
+            className="size-8"
+          >
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
               <DropdownMenuLabel>{messages.language}</DropdownMenuLabel>
@@ -1018,9 +1040,8 @@ function Header({
               <Link href="/admin">{messages.admin}</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
-      </CardAction>
-    </CardHeader>
+      </DropdownMenu>
+    </div>
   );
 }
 

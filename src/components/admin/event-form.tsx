@@ -266,7 +266,7 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
                   <SelectContent>
                     <SelectGroup>
                       <SelectItem value="scheduled">Scheduled (on map)</SelectItem>
-                      <SelectItem value="tbc">TBC (on map)</SelectItem>
+                      <SelectItem value="tbc">TBC (off map until confirmed)</SelectItem>
                       <SelectItem value="postponed">Postponed (on map)</SelectItem>
                       <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectGroup>

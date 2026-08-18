@@ -13,12 +13,14 @@ import {
   type RaceLevel,
 } from "@/lib/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
+import { BrandMark } from "@/components/brand-mark";
 import { absoluteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { eventMapPath } from "@/lib/event-url";
+import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -41,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
     .filter(Boolean)
     .join(", ");
-  const description = [date, place, disc, "Find this race on Startline."]
+  const description = [date, place, disc, `Find this race on ${SITE_NAME}.`]
     .filter(Boolean)
     .join(" · ");
   const url = absoluteUrl(`/${locale}/e/${event.slug}`);
@@ -106,6 +108,8 @@ export default async function EventPage({ params }: Props) {
         : null;
   const from = disciplineColor(event.disciplines);
   const to = disciplineColorDark(event.disciplines);
+  const trustText = trustLabel(eventTrustLevel(event), t);
+  const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
 
   return (
     <main className="relative min-h-[100dvh] bg-background">
@@ -127,9 +131,7 @@ export default async function EventPage({ params }: Props) {
         </Button>
 
         <header className="mt-5 scroll-mt-24 sm:mt-6">
-          <p className="font-mono text-[11px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-            {SITE_NAME}
-          </p>
+          <BrandMark href={`/${locale}`} size="sm" />
           <h1 className="mt-2 text-balance text-[1.75rem] font-semibold leading-tight tracking-tight sm:text-4xl sm:leading-tight">
             {event.name}
           </h1>
@@ -157,6 +159,18 @@ export default async function EventPage({ params }: Props) {
             </dl>
           </CardContent>
         </Card>
+
+        <p className="mt-3 text-sm text-muted-foreground">
+          {trustText}
+          {checkedText && event.lastSeenAt ? (
+            <>
+              <span aria-hidden> · </span>
+              <time className="tabular-nums" dateTime={event.lastSeenAt}>
+                {checkedText}
+              </time>
+            </>
+          ) : null}
+        </p>
 
         <div className="mt-8 hidden flex-wrap gap-3 sm:flex">
           <Button asChild size="lg">

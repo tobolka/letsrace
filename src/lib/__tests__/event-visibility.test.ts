@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isHomeMapCountry, isPublicMapWorthy } from "@/lib/event-visibility";
+import { isHomeMapCountry, isPublicMapWorthy, PUBLIC_EVENT_STATUSES } from "@/lib/event-visibility";
 
 describe("public map quality gate", () => {
   it("keeps home-country races without an enter link", () => {
@@ -49,5 +49,35 @@ describe("public map quality gate", () => {
         location: { countryCode: "IT" },
       }),
     ).toBe(true);
+  });
+
+  it("does not treat federation dumps as an official enter link", () => {
+    expect(
+      isPublicMapWorthy({
+        websiteUrl: "https://www.federciclismo.it/it/event/123",
+        registrationUrl: null,
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(false);
+    expect(
+      isPublicMapWorthy({
+        websiteUrl: "https://www.uci.org/competition-details/123",
+        registrationUrl: null,
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(false);
+    expect(
+      isPublicMapWorthy({
+        websiteUrl: null,
+        registrationUrl: "https://my.raceresult.com/379367/registration",
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps unconfirmed TBC dates off the public map", () => {
+    expect(PUBLIC_EVENT_STATUSES).not.toContain("tbc");
+    expect(PUBLIC_EVENT_STATUSES).toContain("scheduled");
+    expect(PUBLIC_EVENT_STATUSES).toContain("postponed");
   });
 });

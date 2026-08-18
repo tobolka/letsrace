@@ -1,24 +1,14 @@
 {
   "crons": [
-    {
-      "path": "/api/cron/watch",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/cron/watch",
-      "schedule": "0 17 * * *"
-    },
-    {
-      "path": "/api/cron/geocode",
-      "schedule": "30 5 * * *"
-    },
-    {
-      "path": "/api/cron/geocode",
-      "schedule": "30 17 * * *"
-    },
-    {
-      "path": "/api/cron/explore",
-      "schedule": "0 6 * * *"
-    }
+    { "path": "/api/cron/watch", "schedule": "0 5 * * *" },
+    { "path": "/api/cron/watch", "schedule": "0 11 * * *" },
+    { "path": "/api/cron/watch", "schedule": "0 17 * * *" },
+    { "path": "/api/cron/geocode", "schedule": "30 5 * * *" },
+    { "path": "/api/cron/geocode", "schedule": "30 11 * * *" },
+    { "path": "/api/cron/geocode", "schedule": "30 17 * * *" },
+    { "path": "/api/cron/explore", "schedule": "0 6 * * *" },
+    { "path": "/api/cron/catalog", "schedule": "15 5 * * *" },
+    { "path": "/api/cron/catalog", "schedule": "15 11 * * *" },
+    { "path": "/api/cron/catalog", "schedule": "15 17 * * *" }
   ]
 }

@@ -45,7 +45,7 @@ import {
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
-import { eventTrustLevel, trustLabel } from "@/lib/trust";
+import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
 
 type Member = {
@@ -303,6 +303,7 @@ export function EventDetailPanel({
 
   const trust = eventTrustLevel(event);
   const trustText = trustLabel(trust, t);
+  const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
   const accent = disciplineColor(event.disciplines);
   const selfMember = members.find((m) => m.is_self) ?? members[0];
   const going = Boolean(
@@ -461,11 +462,19 @@ export function EventDetailPanel({
         </p>
         <p
           className={cn(
-            "min-w-0 truncate text-xs",
+            "min-w-0 flex-1 text-xs leading-snug",
             trust === "low" ? "text-destructive" : "text-muted-foreground",
           )}
         >
           {trustText}
+          {checkedText && event.lastSeenAt ? (
+            <>
+              <span aria-hidden> · </span>
+              <time className="tabular-nums" dateTime={event.lastSeenAt}>
+                {checkedText}
+              </time>
+            </>
+          ) : null}
         </p>
         <div className="ml-auto flex items-center gap-0.5">
           <Toggle

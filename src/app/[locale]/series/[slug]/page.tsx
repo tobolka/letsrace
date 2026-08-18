@@ -6,6 +6,7 @@ import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
 import { eventMapPath } from "@/lib/event-url";
+import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${data.series.name} · ${SITE_NAME}`;
   const description =
     data.series.description ||
-    `${data.events.length} races in ${data.series.name} on Startline.`;
+    `${data.events.length} races in ${data.series.name} on ${SITE_NAME}.`;
   const url = absoluteUrl(`/${locale}/series/${slug}`);
   return {
     title: data.series.name,
@@ -51,7 +52,8 @@ export default async function SeriesPage({ params }: Props) {
         <Button asChild variant="ghost" size="sm" className="-ml-2">
           <Link href={`/${locale}`}>{SITE_NAME}</Link>
         </Button>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight">{data.series.name}</h1>
+        <BrandMark href={`/${locale}`} size="sm" className="mt-5 block" />
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{data.series.name}</h1>
         {data.series.description ? (
           <p className="mt-2 text-muted-foreground">{data.series.description}</p>
         ) : null}

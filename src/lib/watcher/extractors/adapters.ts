@@ -392,7 +392,10 @@ export async function extractWithAdapter(
     if (!/\/kalender/i.test(url)) {
       return { events: [], strategy: "adapter:swiss-skip" };
     }
-    return { events: parseSwissCycling(url, html), strategy: "adapter:swiss-cycling" };
+    return {
+      events: await enrichDeAtRacePages(parseSwissCycling(url, html)),
+      strategy: "adapter:swiss-cycling",
+    };
   }
   if (host.includes("swissbikecup.ch")) {
     try {

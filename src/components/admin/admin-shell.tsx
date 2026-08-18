@@ -71,7 +71,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <SidebarMenuButton size="lg" asChild>
                 <Link href="/admin">
                   <Flag />
-                  <span>Startline Admin</span>
+                  <span className="font-black italic tracking-[-0.06em]">RACEGRID</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

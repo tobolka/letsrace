@@ -4,7 +4,7 @@ export const defaultLocale: Locale = "en";
 
 export const messages = {
   en: {
-    appName: "Cyklo Map",
+    appName: "RACEGRID",
     tagline: "Find cycling races near you",
     searchPlaceholder: "Races, towns, Italy…",
     search: "Search",
@@ -66,6 +66,7 @@ export const messages = {
     trustSeries: "Official site",
     trustCalendar: "Calendar listing",
     trustLow: "Unverified",
+    trustChecked: "Checked {when}",
     clearFilters: "Clear filters",
     shareRace: "Share",
     saveRace: "Save",
@@ -87,7 +88,7 @@ export const messages = {
     madeBy: "Made by",
   },
   cs: {
-    appName: "Cyklo Map",
+    appName: "RACEGRID",
     tagline: "Najděte cyklistické závody kolem sebe",
     searchPlaceholder: "Závody, města, Itálie…",
     search: "Hledat",
@@ -149,6 +150,7 @@ export const messages = {
     trustSeries: "Oficiální web",
     trustCalendar: "Zdroj v kalendáři",
     trustLow: "Neověřeno",
+    trustChecked: "Zkontrolováno {when}",
     clearFilters: "Zrušit filtry",
     shareRace: "Sdílet",
     saveRace: "Uložit",
@@ -170,7 +172,7 @@ export const messages = {
     madeBy: "Autor",
   },
   pl: {
-    appName: "Cyklo Map",
+    appName: "RACEGRID",
     tagline: "Znajdź wyścigi kolarskie w okolicy",
     searchPlaceholder: "Wyścigi, miasta, Włochy…",
     search: "Szukaj",
@@ -232,6 +234,7 @@ export const messages = {
     trustSeries: "Oficjalna strona",
     trustCalendar: "Wpis w kalendarzu",
     trustLow: "Niezweryfikowane",
+    trustChecked: "Sprawdzone {when}",
     clearFilters: "Wyczyść filtry",
     shareRace: "Udostępnij",
     saveRace: "Zapisz",
@@ -253,7 +256,7 @@ export const messages = {
     madeBy: "Autor",
   },
   sk: {
-    appName: "Cyklo Map",
+    appName: "RACEGRID",
     tagline: "Nájdite cyklistické preteky okolo seba",
     searchPlaceholder: "Preteky, mestá, Taliansko…",
     search: "Hľadať",
@@ -315,6 +318,7 @@ export const messages = {
     trustSeries: "Oficiálny web",
     trustCalendar: "Zdroj v kalendári",
     trustLow: "Neoverené",
+    trustChecked: "Skontrolované {when}",
     clearFilters: "Zrušiť filtre",
     shareRace: "Zdieľať",
     saveRace: "Uložiť",

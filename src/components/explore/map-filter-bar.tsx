@@ -519,6 +519,7 @@ export function MapFilterBar({
               variant="secondary"
               size="sm"
               aria-pressed={dateOpen}
+              className="h-8 leading-none tabular-nums [@media(pointer:coarse)]:h-11"
             >
               <Calendar />
               {dateLabel}
@@ -579,7 +580,7 @@ export function MapFilterBar({
         {visible.map((id) => {
           const Icon = FILTER_ICONS[id];
           return (
-            <div key={id} className="inline-flex max-w-full shrink-0 items-stretch">
+            <div key={id} className="inline-flex h-full max-w-full shrink-0 items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -629,6 +630,7 @@ export function MapFilterBar({
                 variant="ghost"
                 size="icon-sm"
                 aria-label={messages.addFilter}
+                className="size-8 [@media(pointer:coarse)]:size-11"
               >
                 <ListFilter />
               </Button>
@@ -661,7 +663,7 @@ export function MapFilterBar({
       </div>
 
       {q.trim() ? (
-        <div className="inline-flex max-w-[min(100%,12rem)] shrink-0 items-stretch">
+        <div className="inline-flex h-full max-w-[min(100%,12rem)] shrink-0 items-center">
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -701,7 +703,13 @@ export function MapFilterBar({
       ) : (
         <Popover open={searchOpen} onOpenChange={setSearchOpen}>
           <PopoverTrigger asChild>
-            <Button type="button" variant="ghost" size="icon-sm" aria-label={messages.search}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={messages.search}
+              className="size-8 [@media(pointer:coarse)]:size-11"
+            >
               <Search />
             </Button>
           </PopoverTrigger>

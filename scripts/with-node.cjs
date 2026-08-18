@@ -4,6 +4,8 @@
  */
 const { spawn } = require("node:child_process");
 const { existsSync, readdirSync } = require("node:fs");
+
+require("./copy-maplibre-worker.cjs");
 const { homedir } = require("node:os");
 const { delimiter, dirname, join } = require("node:path");
 

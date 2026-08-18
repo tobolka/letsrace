@@ -25,6 +25,7 @@ export type WatchOutcome = {
   unchanged?: boolean;
   eventsUpserted: number;
   linksDiscovered: number;
+  droppedHidden?: number;
   strategy?: string;
   error?: string;
   httpStatus?: number;
@@ -33,16 +34,16 @@ export type WatchOutcome = {
 
 const MAX_NEW_PER_RUN = 200;
 const MAX_NEW_PER_RUN_FCI = 400;
-const MAX_REFRESH_PER_RUN = 40;
+const MAX_REFRESH_PER_RUN = 250;
 /** Soft claim window so overlapping crons don't double-process the same row. */
-const CLAIM_MS = 12 * 60 * 1000;
-/** Stay under typical serverless caps. */
-const DEFAULT_BUDGET_MS = 52_000;
-const DEFAULT_CONCURRENCY = 4;
+const CLAIM_MS = 20 * 60 * 1000;
+/** Stay under Fluid Compute's 300s cap with room for geocode. */
+const DEFAULT_BUDGET_MS = 200_000;
+const DEFAULT_CONCURRENCY = 5;
 const CALENDAR_KINDS = ["series", "federation", "aggregator", "calendar"] as const;
 
 export async function runDueWatches(
-  limit = 40,
+  limit = 120,
   opts?: { concurrency?: number; budgetMs?: number },
 ): Promise<WatchOutcome[]> {
   const supabase = createServerSupabase();
@@ -58,10 +59,14 @@ export async function runDueWatches(
       .in("kind", [...kinds])
       .lte("next_poll_at", nowIso)
       .order("next_poll_at", { ascending: true })
-      .limit(take);
+      .limit(Math.max(take * 3, 40));
     if (error) throw new Error(error.message);
+    const dumpHost = /federciclismo\.it|eventivsport\.com|ffc\.fr|ffvelo\.fr/i;
+    const rest = (due ?? []).filter((row) => !dumpHost.test(row.url as string));
+    const dumps = (due ?? []).filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
+    const ranked = [...rest, ...dumps].slice(0, take);
     const claimed: NonNullable<typeof due> = [];
-    for (const row of due ?? []) {
+    for (const row of ranked) {
       const { data: won } = await supabase
         .from("watched_urls")
         .update({
@@ -203,6 +208,8 @@ export async function watchOne(row: {
           updated_at: new Date().toISOString(),
         })
         .eq("id", row.id);
+      const { touchLastSeenForWatchedUrl } = await import("@/lib/catalog/freshness");
+      await touchLastSeenForWatchedUrl(row.id);
       await finishRun(runInsert.data?.id, { ok: true, httpStatus: fetched.status });
       return {
         watchedUrlId: row.id,
@@ -948,6 +955,22 @@ export async function watchOne(row: {
     const offSeasonEmpty = calendarKind && extracted.events.length === 0;
     const needsReview =
       !offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4);
+
+    let droppedHidden = 0;
+    if (calendarKind && !needsReview && !offSeasonEmpty) {
+      const { hideDroppedCalendarEvents } = await import("@/lib/catalog/freshness");
+      const extractedIds = new Set(
+        candidates
+          .map((ev) => ev.externalId)
+          .filter((id): id is string => Boolean(id)),
+      );
+      droppedHidden = await hideDroppedCalendarEvents({
+        watchedUrlId: row.id,
+        extractedExternalIds: extractedIds,
+        extractedCount: candidates.length,
+      });
+    }
+
     await supabase
       .from("watched_urls")
       .update({
@@ -996,6 +1019,7 @@ export async function watchOne(row: {
       ok: true,
       eventsUpserted: upserted,
       linksDiscovered,
+      droppedHidden,
       strategy: extracted.strategy,
       httpStatus: fetched.status,
       preview: extracted.events.slice(0, 5),
