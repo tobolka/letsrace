@@ -20,7 +20,7 @@ import {
   parseAllgaeuKidsCup,
   parseBayerwaldCup,
   parseDetskaTour,
-  parseDetskaVrl,
+  parseGermanCxBundesliga,
   parseEldoradoKidsCup,
   parseGlobmetalXc,
   parseJuniorBikeCup,
@@ -38,6 +38,7 @@ import {
   parseSchwarzwalderCup,
   parseSumavskyPohar,
   enrichSumavskyPohar,
+  parseSoofSk,
   parseSzcMtb,
   parseWerdenfelserCup,
   parseWiesbadenStadtmeisterschaft,
@@ -384,9 +385,21 @@ export async function extractWithAdapter(
     return { events: parseUstiMtbCup(url, html), strategy: "adapter:usti-mtb" };
   }
   if (host.includes("cyclingaustria.at")) {
+    if (!/kalender/i.test(url)) {
+      return { events: [], strategy: "adapter:oerv-skip" };
+    }
     return {
       events: await enrichDeAtRacePages(parseCyclingAustria(url, html)),
       strategy: "adapter:oerv",
+    };
+  }
+  if (host.includes("rad-net.de")) {
+    if (!/cyclo-cross/i.test(url)) {
+      return { events: [], strategy: "adapter:radnet-skip" };
+    }
+    return {
+      events: parseGermanCxBundesliga(url, html),
+      strategy: "adapter:cx-bundesliga",
     };
   }
   if (host.includes("ucimtbworldseries.com")) {
@@ -578,7 +591,7 @@ export async function extractWithAdapter(
     if (!/podujatia-a-akcie/i.test(url)) {
       return { events: [], strategy: "adapter:soof-skip" };
     }
-    return { events: parseDetskaVrl(url, html), strategy: "adapter:detska-vrl" };
+    return { events: parseSoofSk(url, html), strategy: "adapter:soof-sk" };
   }
   if (host.includes("mpdv-cup.de")) {
     try {

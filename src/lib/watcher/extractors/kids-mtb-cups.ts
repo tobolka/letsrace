@@ -1320,40 +1320,321 @@ function vrlPlace(raw: string): string {
   return t.split(/\s+[-–]\s+/)[0]!.replace(/\s+\d+\.kolo.*$/i, "").trim();
 }
 
-/** Detská VRL Adriána Babiča — SooF.sk event calendar lines. */
-export function parseDetskaVrl(url: string, html: string): ParsedEvent[] {
-  const text = html
+function flattenCalendarHtml(html: string): string {
+  return html
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/gi, " ")
     .replace(/&[a-z]+;/gi, " ")
     .replace(/\s+/g, " ");
+}
+
+/** SooF lists SK series first, then a world-tour dump under SVET. */
+function soofSlovensko(html: string): string {
+  const text = flattenCalendarHtml(html);
+  const start = text.search(/\bSLOVENSKO\b/);
+  const sliced = start >= 0 ? text.slice(start) : text;
+  const svet = sliced.search(/\bSVET\b/);
+  return svet > 0 ? sliced.slice(0, svet) : sliced;
+}
+
+function soofSection(text: string, start: RegExp, end: RegExp): string {
+  const s = text.search(start);
+  if (s < 0) return "";
+  const rest = text.slice(s);
+  const cut = rest.slice(1).search(end);
+  return cut >= 0 ? rest.slice(0, cut + 1) : rest;
+}
+
+function soofIso(day: string, month: string, year: string): string {
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+}
+
+function spdhPlace(raw: string): string {
+  const t = raw.replace(/\s+/g, " ").replace(/\+\s*MSR/gi, "").trim();
+  if (/košútka|kosutka/i.test(t)) return "Košútka";
+  if (/malinô|malino/i.test(t)) return "Malinô Brdo";
+  if (/rača|raca/i.test(t)) return "Veľká Rača";
+  if (/mýto|myto|dumbier/i.test(t)) return "Mýto pod Ďumbierom";
+  return t.replace(/\s+\d+$/, "").trim();
+}
+
+function nynaPlace(raw: string): string {
+  const t = raw.replace(/\s+/g, " ").replace(/majstrovstvá\s*sr/gi, "").trim();
+  if (/sudoměřice|sudomerice/i.test(t)) return "Sudoměřice";
+  if (/rajecké teplice|rajecke teplice/i.test(t)) return "Rajecké Teplice";
+  if (/šarišské|sarisske/i.test(t)) return "Šarišské Bohdanovce";
+  if (/topoľníky|topolniky/i.test(t)) return "Topoľníky";
+  if (/komárno|komarno/i.test(t)) return "Komárno";
+  if (/gajary/i.test(t)) return "Gajary";
+  return t.split(/\s*[-–]\s*/).pop()!.trim();
+}
+
+function presovLigaPlace(raw: string): string {
+  const t = raw.replace(/\s+/g, " ").trim();
+  if (/sigord/i.test(t)) return "Sigord";
+  if (/hubková|hubkova/i.test(t)) return "Hubková";
+  if (/stropkov/i.test(t)) return "Stropkov";
+  if (/raslavice/i.test(t)) return "Raslavice";
+  if (/brezovica/i.test(t)) return "Brezovica";
+  if (/podhorany/i.test(t)) return "Podhorany";
+  return t.split(/\s*[-–]\s*/).pop()!.trim();
+}
+
+function vychodRoadPlace(raw: string): string {
+  const t = raw.replace(/\s+/g, " ").replace(/majstrovstvá.*$/i, "").trim();
+  if (/bardejov/i.test(t)) return "Bardejov";
+  if (/spišská belá|spisska bela/i.test(t)) return "Spišská Belá";
+  if (/svidník|svidnik/i.test(t)) return "Svidník";
+  if (/lučivná|lucivna/i.test(t)) return "Lučivná";
+  if (/ruskov/i.test(t)) return "Ruskov";
+  if (/sabinov/i.test(t)) return "Sabinov";
+  if (/uloža|uloza|hrhov/i.test(t)) return "Spišský Hrhov";
+  if (/mlynčeky|mlynceky/i.test(t)) return "Mlynčeky";
+  if (/košice|kosice/i.test(t)) return "Košice";
+  return t.split(/\s*[-–,]\s*/)[0]!.trim();
+}
+
+const SOOF_LISTING = "https://www.soof.sk/podujatia-a-akcie";
+
+function soofEvent(
+  listing: string,
+  opts: {
+    id: string;
+    name: string;
+    startDate: string;
+    endDate?: string;
+    place: string;
+    discipline: Discipline[];
+    audience: Audience;
+    seriesName: string;
+    seriesSlug: string;
+    confidence?: number;
+  },
+): ParsedEvent {
+  return {
+    externalId: opts.id,
+    name: opts.name,
+    startDate: opts.startDate,
+    endDate: opts.endDate && opts.endDate !== opts.startDate ? opts.endDate : undefined,
+    placeText: opts.place,
+    countryHint: "SK",
+    discipline: opts.discipline,
+    audience: opts.audience,
+    seriesName: opts.seriesName,
+    seriesSlug: opts.seriesSlug,
+    seriesWebsite: SOOF_LISTING,
+    sourceUrl: listing,
+    websiteUrl: listing,
+    confidence: opts.confidence ?? 0.86,
+  };
+}
+
+/** Detská VRL Adriána Babiča — SooF.sk event calendar lines. */
+export function parseDetskaVrl(url: string, html: string): ParsedEvent[] {
+  const text = flattenCalendarHtml(html);
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
   const re =
     /(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]\s*\d+[.\-]?kolo\s*[-–]\s*(?:Detská VRL Adriána Babiča|Memoriál A\.\s*Babiča)\s*[-–]\s*([^0-9]{3,80}?)(?=\s+\d{1,2}\.\d{1,2}\.20\d{2}|\s+VÝCHOD|$)/gi;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
-    const startDate = `${m[3]}-${m[2]!.padStart(2, "0")}-${m[1]!.padStart(2, "0")}`;
+    const startDate = soofIso(m[1]!, m[2]!, m[3]!);
     const place = vrlPlace(m[4]!);
     if (!place) continue;
-    push(events, seen, {
-      externalId: `detska-vrl-${startDate}-${normalizeName(place)}`,
-      name: `Detská VRL — ${place}`,
-      startDate,
-      placeText: place,
-      countryHint: "SK",
-      discipline: ["xco"],
-      audience: "kids",
-      seriesName: "Detská VRL Adriána Babiča",
-      seriesSlug: "detska-vrl",
-      seriesWebsite: "https://www.soof.sk/podujatia-a-akcie",
-      sourceUrl: url.split("?")[0]!,
-      websiteUrl: url.split("?")[0]!,
-      confidence: 0.86,
-    });
+    push(
+      events,
+      seen,
+      soofEvent(url.split("?")[0]!, {
+        id: `detska-vrl-${startDate}-${normalizeName(place)}`,
+        name: `Detská VRL — ${place}`,
+        startDate,
+        place,
+        discipline: ["xco"],
+        audience: "kids",
+        seriesName: "Detská VRL Adriána Babiča",
+        seriesSlug: "detska-vrl",
+      }),
+    );
   }
   return events;
+}
+
+/** SPDH, Hornonitrianska Enduro, NyNa Gravel, Prešov MTB liga, Východ Road Liga + VRL. */
+export function parseSoofSk(url: string, html: string): ParsedEvent[] {
+  const listing = url.split("?")[0]!;
+  const text = soofSlovensko(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  for (const ev of parseDetskaVrl(url, html)) push(events, seen, ev);
+
+  const spdh = soofSection(text, /Downhill 20\d{2}|SPDH-/i, /Hornonitrianska|Čergovská|SP XCO/i);
+  const spdhRe = /(\d{1,2})\.(\d{1,2})\.(20\d{2})\s+SPDH-(\d+)\s*(?:\+\s*MSR)?\s*(.+?)(?=\s+\d{1,2}\.\d{1,2}\.20\d{2}|\s+Hornonitrianska|$)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = spdhRe.exec(spdh || text))) {
+    const startDate = soofIso(m[1]!, m[2]!, m[3]!);
+    const place = spdhPlace(m[5]!);
+    if (!place) continue;
+    push(
+      events,
+      seen,
+      soofEvent(listing, {
+        id: `spdh-${m[4]}-${startDate}-${normalizeName(place)}`,
+        name: `SPDH ${m[4]} — ${place}`,
+        startDate,
+        place,
+        discipline: ["dh"],
+        audience: "mixed",
+        seriesName: "Slovenský pohár downhill",
+        seriesSlug: "spdh",
+      }),
+    );
+  }
+
+  const enduro = soofSection(
+    text,
+    /Hornonitrianska Enduro/i,
+    /Čergovská|SP XCO|ŠKODA/i,
+  );
+  const enduroRe =
+    /(\d{1,2})\.(\d{1,2})\.\s*[-–]\s*(\d{1,2})\.(\d{1,2})\.(20\d{2})\s+([^0-9]{3,48}?)(?=\s+\d{1,2}\.\d{1,2}|$)/g;
+  while ((m = enduroRe.exec(enduro))) {
+    const startDate = soofIso(m[1]!, m[2]!, m[5]!);
+    const endDate = soofIso(m[3]!, m[4]!, m[5]!);
+    const place = m[6]!.replace(/\(.*?\)/g, "").trim();
+    if (!place || /čergovská|reťaz/i.test(place)) continue;
+    push(
+      events,
+      seen,
+      soofEvent(listing, {
+        id: `hn-enduro-${startDate}-${normalizeName(place)}`,
+        name: `Hornonitrianska Enduro — ${place}`,
+        startDate,
+        endDate,
+        place,
+        discipline: ["enduro"],
+        audience: "mixed",
+        seriesName: "Hornonitrianska Enduro Séria",
+        seriesSlug: "hornonitrianska-enduro",
+      }),
+    );
+  }
+
+  const nyna = soofSection(text, /NyNa Gravel/i, /Detská VRL|VÝCHOD ROAD/i);
+  const nynaRe =
+    /(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]\s*\d+[.\-]?kolo\s*[-–]\s*(?:SP\s*)?NyNa Gravel[\s\S]{0,80}?[-–]\s*([^0-9]{3,60}?)(?=\s+\d{1,2}\.\d{1,2}\.20\d{2}|$)/gi;
+  while ((m = nynaRe.exec(nyna || text))) {
+    const startDate = soofIso(m[1]!, m[2]!, m[3]!);
+    const place = nynaPlace(m[4]!);
+    if (!place) continue;
+    push(
+      events,
+      seen,
+      soofEvent(listing, {
+        id: `nyna-gravel-${startDate}-${normalizeName(place)}`,
+        name: `NyNa Gravel Cup — ${place}`,
+        startDate,
+        place,
+        discipline: ["gravel"],
+        audience: "mixed",
+        seriesName: "NyNa Gravel Cup",
+        seriesSlug: "nyna-gravel-cup",
+      }),
+    );
+  }
+
+  const liga = soofSection(
+    text,
+    /MTB LIGA Prešovského/i,
+    /Prešovský cyklomaratón|SVET/i,
+  );
+  const ligaRe =
+    /(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]\s*\d+[.\-]?kolo\s*[-–]\s*(.+?)\s*[-–]\s*([^0-9]{3,40}?)(?=\s+\d{1,2}\.\d{1,2}\.20\d{2}|$)/gi;
+  while ((m = ligaRe.exec(liga))) {
+    const startDate = soofIso(m[1]!, m[2]!, m[3]!);
+    const place = presovLigaPlace(m[5]!);
+    if (!place) continue;
+    push(
+      events,
+      seen,
+      soofEvent(listing, {
+        id: `mtb-liga-po-${startDate}-${normalizeName(place)}`,
+        name: `MTB liga Prešov — ${place}`,
+        startDate,
+        place,
+        discipline: ["xcm"],
+        audience: "mixed",
+        seriesName: "MTB liga Prešovského kraja",
+        seriesSlug: "mtb-liga-presov",
+      }),
+    );
+  }
+
+  const road = soofSection(text, /VÝCHOD ROAD LIGA/i, /BikeFest|ŽABOKREKY|SKALY MTB/i);
+  const roadRe =
+    /(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]\s*\d+[.\-]?kolo\s*[-–]\s*VÝCHOD ROAD LIGA\s*[-–]\s*(.+?)(?=\s+\d{1,2}\.\d{1,2}\.20\d{2}|$)/gi;
+  while ((m = roadRe.exec(road || text))) {
+    const startDate = soofIso(m[1]!, m[2]!, m[3]!);
+    const place = vychodRoadPlace(m[4]!);
+    if (!place) continue;
+    push(
+      events,
+      seen,
+      soofEvent(listing, {
+        id: `vychod-road-${startDate}-${normalizeName(place)}`,
+        name: `Východ Road Liga — ${place}`,
+        startDate,
+        place,
+        discipline: ["road"],
+        audience: "mixed",
+        seriesName: "Východ Road Liga",
+        seriesSlug: "vychod-road-liga",
+      }),
+    );
+  }
+
+  return events;
+}
+
+/** German Cycling Cyclo-Cross Bundesliga 2026/27 — official GA table. */
+const CX_BUNDESLIGA_2026_27: { date: string; place: string; round: number }[] = [
+  { date: "2026-09-19", place: "Bad Salzdetfurth", round: 1 },
+  { date: "2026-09-20", place: "Bad Salzdetfurth", round: 2 },
+  { date: "2026-10-03", place: "Perl", round: 3 },
+  { date: "2026-10-04", place: "Perl", round: 4 },
+  { date: "2026-10-10", place: "Bremen", round: 5 },
+  { date: "2026-10-11", place: "Lohne", round: 6 },
+  { date: "2026-10-24", place: "München", round: 7 },
+  { date: "2026-10-25", place: "München", round: 8 },
+  { date: "2026-11-01", place: "Chemnitz", round: 9 },
+  { date: "2026-11-07", place: "Vaihingen", round: 10 },
+  { date: "2026-11-08", place: "Magstadt", round: 11 },
+  { date: "2026-11-14", place: "Stahnsdorf", round: 12 },
+  { date: "2026-11-15", place: "Stahnsdorf", round: 13 },
+  { date: "2027-01-03", place: "Vechta", round: 16 },
+];
+
+const CX_BL_SITE =
+  "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf";
+
+export function parseGermanCxBundesliga(url: string, _html: string): ParsedEvent[] {
+  const sourceUrl = url.split("?")[0] || CX_BL_SITE;
+  return CX_BUNDESLIGA_2026_27.map((row) => ({
+    externalId: `cx-bundesliga-${row.round}-${row.date}-${normalizeName(row.place)}`,
+    name: `CX Bundesliga ${row.round} — ${row.place}`,
+    startDate: row.date,
+    placeText: row.place,
+    countryHint: "DE",
+    discipline: ["cx"] as Discipline[],
+    audience: "mixed" as Audience,
+    seriesName: "Cyclo-Cross Bundesliga",
+    seriesSlug: "cx-bundesliga",
+    seriesWebsite: CX_BL_SITE,
+    sourceUrl,
+    websiteUrl: sourceUrl,
+    regulationsUrl: CX_BL_SITE,
+    confidence: 0.9,
+  }));
 }
 
 /** Berg & Bike / MPDV Cup — 2026 menu dates. */

@@ -486,10 +486,14 @@ export async function watchOne(row: {
           if (hostnameOf(child).includes("cyclingaustria.at")) {
             try {
               const u = new URL(child);
-              if (!/kalender/i.test(u.pathname + u.search)) continue;
+              if (!/kalender/i.test(u.pathname)) continue;
+              if (/[?&]kalender\?/i.test(u.search)) continue;
             } catch {
               continue;
             }
+          }
+          if (hostnameOf(child).includes("rad-net.de")) {
+            if (!/ga-bl-cyclo-cross/i.test(child)) continue;
           }
           // CUBE Cup homepage lists all races — skip news/detail/anmeldung noise
           if (hostnameOf(child).includes("cup.cube.eu")) {

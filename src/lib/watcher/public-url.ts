@@ -37,6 +37,8 @@ const DUMP_HOSTS = [
   "domestiquecycling.com",
   "finishers.com",
   "soof.sk",
+  "rad-net.de",
+  "static.rad-net.de",
 ];
 
 const SOCIAL_HOSTS = ["facebook.com", "instagram.com", "twitter.com", "x.com", "youtube.com"];

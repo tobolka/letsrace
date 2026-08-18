@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { parseCubeCup } from "@/lib/watcher/extractors/cubecup";
-import { parseCyclingAustria } from "@/lib/watcher/extractors/cyclingaustria";
+import {
+  cyclingAustriaPageUrls,
+  parseCyclingAustria,
+} from "@/lib/watcher/extractors/cyclingaustria";
 import {
   deAtPageLinks,
   parseBayerwaldCup,
+  parseGermanCxBundesliga,
   parseJuniorBikeCup,
   parseOberschwabenCup,
   parseRookiesOstbayern,
   parseSaarlandliga,
   parseSchwarzwalderCup,
+  parseSoofSk,
 } from "@/lib/watcher/extractors/kids-mtb-cups";
 import { parseXcoNrw } from "@/lib/watcher/extractors/more-kids";
 
@@ -188,6 +193,101 @@ describe("Cycling Austria", () => {
     expect(events[0]?.sourceUrl).toContain("id=ABC123");
     expect(events[0]?.websiteUrl).toBe(events[0]?.sourceUrl);
     expect(events[0]?.sourceUrl).not.toContain("sparten=mtb");
+    expect(events[0]?.childUrls?.some((u) => /page=2/.test(u))).toBe(true);
+    expect(events[0]?.childUrls?.some((u) => /sparten=cyclocross/.test(u))).toBe(true);
+    expect(events[0]?.childUrls?.every((u) => !/kalender\?/.test(new URL(u).search))).toBe(
+      true,
+    );
+  });
+
+  it("tags cup series and skips track/pumptrack", () => {
+    const html = `
+      <div data-date="2026-09-05" data-disziplin="Downhill" class="Niederösterreich">
+        <div class="uk-heading-small">Sa, 5. September 2026</div>
+        <a class="om_card" href="/kalender/event?id=GRAV1"><h3>auner Gravity Series Semmering</h3></a>
+      </div>
+      <div data-date="2026-09-12" data-disziplin="Bahn">
+        <a class="om_card" href="/kalender/event?id=BAHN1"><h3>ÖM Bahn Linz</h3></a>
+      </div>
+      <div data-date="2026-10-03" data-disziplin="Cyclocross" class="Wien">
+        <div class="uk-heading-small">Sa, 3. Oktober 2026</div>
+        <a class="om_card" href="/kalender/event?id=CX1"><h3>Wienenergie Cyclocross</h3></a>
+      </div>
+    `;
+    const events = parseCyclingAustria(
+      "https://www.cyclingaustria.at/kalender?view=events",
+      html,
+    );
+    expect(events.map((e) => e.name)).toEqual([
+      "auner Gravity Series Semmering",
+      "Wienenergie Cyclocross",
+    ]);
+    expect(events[0]?.seriesSlug).toBe("austrian-gravity-series");
+    expect(events[1]?.discipline).toEqual(["cx"]);
+    expect(cyclingAustriaPageUrls("https://www.cyclingaustria.at/kalender?view=events")).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("page=2"),
+        expect.stringContaining("sparten=cyclocross"),
+      ]),
+    );
+  });
+});
+
+describe("SooF.sk series", () => {
+  const html = `
+    SLOVENSKO
+    Downhill 2026
+    06.09.2026 SPDH-4 Veľká Rača
+    04.10.2026 SPDH-5 Košútka 2
+    Hornonitrianska Enduro Séria 2026
+    12.09. - 13.09.2026 Donovaly
+    10.10. - 11.10.2026 Bojnice
+    Slovenský pohár NyNa Gravel 2026
+    13.09.2026 - 5.kolo - NYNA Gravel Cup 2026 - Komárno
+    19.09.2026 - 6.kolo - NYNA Gravel Cup - Gajary
+    Detská VRL Adriána Babiča 2026
+    05.09.2026 - 10.kolo - Detská VRL Adriána Babiča - Košice
+    VÝCHOD ROAD LIGA 2026
+    27.09.2026 - 8.kolo - VÝCHOD ROAD LIGA - Mlynčeky
+    MTB LIGA Prešovského kraja
+    22.08.2026 - 5.kolo - Čarnohurec - Brezovica
+    13.09.2026 - 6.kolo - Podhoranský stupák - Podhorany
+    SVET
+    04.07.2026 - Tour de France
+  `;
+
+  it("reads remaining SK series and ignores the world-tour dump", () => {
+    const events = parseSoofSk("https://www.soof.sk/podujatia-a-akcie", html);
+    const slugs = [...new Set(events.map((e) => e.seriesSlug))];
+    expect(slugs).toEqual(
+      expect.arrayContaining([
+        "detska-vrl",
+        "spdh",
+        "hornonitrianska-enduro",
+        "nyna-gravel-cup",
+        "mtb-liga-presov",
+        "vychod-road-liga",
+      ]),
+    );
+    expect(events.map((e) => e.name).join(" ")).not.toMatch(/Tour de France/);
+    expect(events.find((e) => e.placeText === "Veľká Rača")?.discipline).toEqual(["dh"]);
+    expect(events.find((e) => e.placeText === "Donovaly")?.endDate).toBe("2026-09-13");
+    expect(events.find((e) => e.placeText === "Komárno")?.discipline).toEqual(["gravel"]);
+    expect(events.find((e) => e.placeText === "Mlynčeky")?.discipline).toEqual(["road"]);
+  });
+});
+
+describe("Cyclo-Cross Bundesliga", () => {
+  it("emits the 2026/27 city rounds from the official GA", () => {
+    const events = parseGermanCxBundesliga(
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "",
+    );
+    expect(events).toHaveLength(14);
+    expect(events[0]?.startDate).toBe("2026-09-19");
+    expect(events[0]?.placeText).toBe("Bad Salzdetfurth");
+    expect(events.at(-1)?.placeText).toBe("Vechta");
+    expect(events.every((e) => e.seriesSlug === "cx-bundesliga")).toBe(true);
   });
 });
 

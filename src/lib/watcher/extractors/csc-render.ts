@@ -14,6 +14,8 @@ type CdpResponse = { id?: number; method?: string; result?: unknown; error?: { m
  * page size to 500 so one snapshot covers the season.
  */
 export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
+  // Never launch Chrome while Next is prerendering pages (Turbopack traces spawn).
+  if (process.env.NEXT_PHASE === "phase-production-build") return "";
   const chrome = await resolveChrome();
   if (!chrome) return "";
 

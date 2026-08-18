@@ -3,7 +3,6 @@ import type { AnyNode } from "domhandler";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { inferDisciplines } from "@/lib/taxonomy";
-import { renderCscPublicCalendar } from "@/lib/watcher/extractors/csc-render";
 
 const PORTAL_ORIGIN = "https://portal.czechcyclingfederation.com";
 
@@ -47,6 +46,9 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
     try {
       const host = new URL(url).hostname.replace(/^www\./, "");
       if (isCscPortalHost(host)) {
+        const { renderCscPublicCalendar } = await import(
+          "@/lib/watcher/extractors/csc-render"
+        );
         pageHtml = await renderCscPublicCalendar(url);
       }
     } catch {

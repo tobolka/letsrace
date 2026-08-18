@@ -1,5 +1,7 @@
 import { AppShell } from "@/components/account/app-shell";
 
+export const dynamic = "force-dynamic";
+
 export default async function AppLayout({
   children,
   params,
