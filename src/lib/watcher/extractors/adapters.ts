@@ -8,6 +8,7 @@ import { parseFederciclismo } from "@/lib/watcher/extractors/federciclismo";
 import { parseVelokal } from "@/lib/watcher/extractors/velokal";
 import { parseRadsportEvents } from "@/lib/watcher/extractors/radsport";
 import { parseEventiv } from "@/lib/watcher/extractors/eventiv";
+import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { isRacementHost, parseRacement } from "@/lib/watcher/extractors/racement";
 import {
   isHynekSeriesCalendarHost,
@@ -692,11 +693,24 @@ export async function extractWithAdapter(
     }
     return { events: parseGlobmetalXc(url, html), strategy: "adapter:globmetal" };
   }
-  if (host.includes("raceresult.com") && /\/387659\b/.test(url)) {
-    return { events: parseZanzenbergOem(url, html), strategy: "adapter:zanzenberg" };
-  }
-  if (host.includes("raceresult.com") && /\/377510\b/.test(url)) {
-    return { events: parseLillelundsCup(url, html), strategy: "adapter:lillelunds" };
+  if (host.includes("raceresult.com")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/+$/, "") || "/";
+      if (path === "/events" || path === "/RREvents/list") {
+        return {
+          events: await parseRaceresultEvents(url, html),
+          strategy: "adapter:raceresult",
+        };
+      }
+    } catch {
+      /* fall through to event-id adapters */
+    }
+    if (/\/387659\b/.test(url)) {
+      return { events: parseZanzenbergOem(url, html), strategy: "adapter:zanzenberg" };
+    }
+    if (/\/377510\b/.test(url)) {
+      return { events: parseLillelundsCup(url, html), strategy: "adapter:lillelunds" };
+    }
   }
   if (host.includes("datasport.de") && /mtbwildpoldsried2026/i.test(url)) {
     return { events: parseAllgaeuKidsCup(url, html), strategy: "adapter:allgaeu-kids" };

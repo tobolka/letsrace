@@ -97,7 +97,7 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://www.mpdv-cup.de/", kind: "series" },
   { url: "https://schulsportverein.de/stadtmeisterschaft/", kind: "series" },
   { url: "https://globmetalxc.pl/", kind: "race" },
-  { url: "https://my.raceresult.com/387659/info", kind: "race" },
+  { url: "https://my.raceresult.com/events/", kind: "aggregator" },
   { url: "https://www.datasport.de/anmeldeservice/mtbwildpoldsried2026", kind: "race" },
   { url: "https://www.swissbikecup.ch/", kind: "series" },
   { url: "https://mtb-cup.ch/en/race", kind: "series" },
@@ -253,6 +253,8 @@ async function main() {
                   ? "Šumavský pohár MTB — South Bohemia XC + Waldkirchen"
                   : t.url.includes("janev-cup")
                     ? "JANEV Cup 2026 — Czech UCI cyclocross"
+                    : t.url.includes("raceresult.com/events")
+                      ? "RaceResult cycling listing — CZ/DE/SK/AT/PL"
                     : t.url.includes("sportklasse-cup")
                       ? "Sportklasse / Amateur Cup Austria — adult XCO, keep separate from AYC + MLA"
                       : t.url.includes("downhill-cup") || t.url.includes("austrian-gravity")

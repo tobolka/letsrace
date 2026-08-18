@@ -34,6 +34,7 @@ export type WatchOutcome = {
 
 const MAX_NEW_PER_RUN = 200;
 const MAX_NEW_PER_RUN_FCI = 400;
+const MAX_NEW_PER_RUN_RR = 400;
 const MAX_REFRESH_PER_RUN = 250;
 /** Soft claim window so overlapping crons don't double-process the same row. */
 const CLAIM_MS = 20 * 60 * 1000;
@@ -240,7 +241,9 @@ export async function watchOne(row: {
     const maxNew =
       extracted.strategy?.includes("fci") || row.url.includes("federciclismo")
         ? MAX_NEW_PER_RUN_FCI
-        : MAX_NEW_PER_RUN;
+        : extracted.strategy?.includes("raceresult") || /raceresult\.com\/events/.test(row.url)
+          ? MAX_NEW_PER_RUN_RR
+          : MAX_NEW_PER_RUN;
     const fresh = candidates
       .filter((ev) => !ev.externalId || !known.has(ev.externalId))
       .slice(0, maxNew);
