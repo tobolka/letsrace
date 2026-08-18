@@ -36,6 +36,7 @@ const DUMP_HOSTS = [
   "sportivebreaks.com",
   "domestiquecycling.com",
   "finishers.com",
+  "kalendar.sportsoft.cz",
   "soof.sk",
   "rad-net.de",
   "static.rad-net.de",

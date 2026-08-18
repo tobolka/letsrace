@@ -9,6 +9,7 @@ import { parseVelokal } from "@/lib/watcher/extractors/velokal";
 import { parseRadsportEvents } from "@/lib/watcher/extractors/radsport";
 import { parseEventiv } from "@/lib/watcher/extractors/eventiv";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
+import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
 import { isRacementHost, parseRacement } from "@/lib/watcher/extractors/racement";
 import {
   isHynekSeriesCalendarHost,
@@ -322,6 +323,20 @@ export async function extractWithAdapter(
     return {
       events: await enrichEnduroSerie(parseEnduroSerie(url, html)),
       strategy: "adapter:enduroserie",
+    };
+  }
+  if (host.includes("kalendar.sportsoft.cz")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (path !== "/") {
+        return { events: [], strategy: "adapter:sportsoft-kalendar-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:sportsoft-kalendar-skip" };
+    }
+    return {
+      events: parseKalendarSportsoft(url, html),
+      strategy: "adapter:sportsoft-kalendar",
     };
   }
   if (host.includes("enduro.sportsoft.cz")) {
