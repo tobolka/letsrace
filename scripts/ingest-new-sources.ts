@@ -227,6 +227,23 @@ const TARGETS: { url: string; kind: string }[] = [
   { url: "https://houffagravel.be/nl/", kind: "race" },
   { url: "https://alsovka.cz/wh/", kind: "race" },
   { url: "https://velkacenaklatov.cz/", kind: "race" },
+  { url: "https://www.rad-bundesliga.net/männer/termine.html", kind: "series" },
+  { url: "https://www.rad-bundesliga.net/junioren/termine.html", kind: "series" },
+  { url: "https://www.rad-bundesliga.net/frauen/termine2.html", kind: "series" },
+  { url: "https://www.cyklistikaszc.sk/sk/cestna-cyklistika/kalendar", kind: "federation" },
+  { url: "https://pucharmtb.pl/kalendarz-2026/", kind: "series" },
+  {
+    url: "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events",
+    kind: "federation",
+  },
+  {
+    url: "https://cyclingaustria.at/news/allgemein/cycling-austria-cups-2026",
+    kind: "series",
+  },
+  { url: "https://www.czechcyclingfederation.com/events/mnd-cup/", kind: "series" },
+  { url: "https://www.czechcyclingfederation.com/en/events/skoda-cup/", kind: "series" },
+  { url: "https://zavodmiru.com/", kind: "race" },
+  { url: "https://www.deutschland-tour.com/", kind: "race" },
 ];
 
 async function main() {
@@ -273,6 +290,24 @@ async function main() {
                       ? "KTM Kamptal Trophy — official UCI C1 + Saturday youngsters, results hub"
                     : t.url.includes("kalendar.sportsoft")
                       ? "SportSoft timing calendar — CZ/SK cycling only"
+                    : t.url.includes("rad-bundesliga.net")
+                      ? "German road Rad-Bundesliga — Männer / Junioren / Frauen"
+                    : t.url.includes("cestna-cyklistika")
+                      ? "SZC road calendar — SP CC, Okolo Slovenska, V4"
+                    : t.url.includes("pucharmtb.pl")
+                      ? "Puchar Polski MTB XCO"
+                    : t.url.includes("cycling-austria-cups")
+                      ? "Cycling Austria 2026 cups — Road League + Junior Series"
+                    : t.url.includes("sparten=strasse")
+                      ? "Cycling Austria road calendar — Road League + Junior Series"
+                    : t.url.includes("events/mnd-cup")
+                      ? "ČSC MND CUP road youth"
+                    : t.url.includes("events/skoda-cup")
+                      ? "ČSC ŠKODA CUP road elite"
+                    : t.url.includes("zavodmiru")
+                      ? "Závod míru — official Peace Race"
+                    : t.url.includes("deutschland-tour")
+                      ? "Lidl Deutschland Tour"
                     : t.url.includes("raceresult.com/events")
                       ? "RaceResult cycling listing — CZ/DE/SK/AT/PL"
                     : t.url.includes("sportklasse-cup")

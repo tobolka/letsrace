@@ -532,7 +532,7 @@ export async function watchOne(row: {
           if (hostnameOf(child).includes("cyklistikaszc.sk")) {
             try {
               const path = new URL(child).pathname;
-              if (!/\/mtb-cross-country\/kalendar\/?$/i.test(path)) continue;
+              if (!/\/(mtb-cross-country|cestna-cyklistika)\/kalendar\/?$/i.test(path)) continue;
             } catch {
               continue;
             }

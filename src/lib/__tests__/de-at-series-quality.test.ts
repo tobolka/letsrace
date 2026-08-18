@@ -3,6 +3,7 @@ import { parseCubeCup } from "@/lib/watcher/extractors/cubecup";
 import {
   cyclingAustriaPageUrls,
   parseCyclingAustria,
+  parseCyclingAustriaCups,
 } from "@/lib/watcher/extractors/cyclingaustria";
 import {
   deAtPageLinks,
@@ -13,6 +14,9 @@ import {
   parseKamptalTrophy,
   parseMtbBundesliga,
   parseNachwuchsBundesliga,
+  parsePucharPolskiXco,
+  parseRadBundesliga,
+  parseSzcRoad,
   parsePolandBike,
   parsePolandBikeJunior,
   parseSportklasseCup,
@@ -28,6 +32,10 @@ import {
   parseDetskaTourPropozicie,
 } from "@/lib/watcher/extractors/kids-mtb-cups";
 import { parseXcoNrw } from "@/lib/watcher/extractors/more-kids";
+import {
+  parseDeutschlandTour,
+  parseZavodMiru,
+} from "@/lib/watcher/extractors/road-cx-gravel";
 
 describe("deAtPageLinks", () => {
   it("prefers RaceResult registration and Generalausschreibung over leftover pages", () => {
@@ -207,6 +215,7 @@ describe("Cycling Austria", () => {
     expect(events[0]?.sourceUrl).not.toContain("sparten=mtb");
     expect(events[0]?.childUrls?.some((u) => /page=2/.test(u))).toBe(true);
     expect(events[0]?.childUrls?.some((u) => /sparten=cyclocross/.test(u))).toBe(true);
+    expect(events[0]?.childUrls?.some((u) => /sparten=strasse/.test(u))).toBe(true);
     expect(events[0]?.childUrls?.every((u) => !/kalender\?/.test(new URL(u).search))).toBe(
       true,
     );
@@ -242,6 +251,31 @@ describe("Cycling Austria", () => {
         expect.stringContaining("sparten=cyclocross"),
       ]),
     );
+  });
+});
+
+describe("Cycling Austria cups 2026", () => {
+  it("reads Road League and Junior Series and skips Bahn", () => {
+    const html = `
+      <p>Road Cycling League Austria Frauen 22.03. 65. Radsaison-Eröffnungsrennen Leonding OÖ
+      12.04. Straßenrennen St. Marein – Feistritz STMK 26.04. 64. Kirschblütenrennen Wels OÖ
+      Road Cycling League Austria Herren 01.05. 14. GP Vorarlberg p/b RadHaus Rankweil UCI 1.2 VBG
+      ARBÖ ASKÖ Austrian Junior Series 22.03. Leonding OÖ Einzel 19.04. Ernst Feuchtner Gedenkrennen Söll T Einzel
+      04.–05.08. ÖM Bahn Linz OÖ Omnium 20.09. Straßenrennen Steinhaus bei Wels OÖ Einzel
+      Cycling Austria Amateur Cup Herren</p>
+    `;
+    const events = parseCyclingAustriaCups(
+      "https://cyclingaustria.at/news/allgemein/cycling-austria-cups-2026",
+      html,
+    );
+    expect(events.find((e) => /Leonding/.test(e.name) && e.seriesSlug === "at-road-league")?.startDate).toBe(
+      "2026-03-22",
+    );
+    expect(events.find((e) => e.placeText === "Rankweil")?.startDate).toBe("2026-05-01");
+    expect(events.some((e) => /bahn/i.test(e.name))).toBe(false);
+    const junior = events.filter((e) => e.seriesSlug === "austrian-junior-series");
+    expect(junior.some((e) => e.placeText === "Leonding")).toBe(true);
+    expect(junior.some((e) => /Söll|Soll/.test(e.placeText || ""))).toBe(true);
   });
 });
 
@@ -650,5 +684,111 @@ describe("PKO Junior Race", () => {
     expect(adults).toHaveLength(0);
     expect(kids).toHaveLength(1);
     expect(kids[0]?.websiteUrl).toContain("polandbikeroad.pl");
+  });
+});
+
+describe("Rad-Bundesliga road", () => {
+  it("reads termine rows and keeps event_id identity across ligas", () => {
+    const html = `
+      <table>
+        <tr><th>Datum</th><th>Name</th><th>Ort</th><th>Infos</th></tr>
+        <tr>
+          <td>04.04.2026</td>
+          <td>Westsachsenklassiker - 86. Sachsenringradrennen</td>
+          <td>Sachsenring</td>
+          <td><a href="http://www.rad-bundesliga.net/startliste.html?liga_id=4&event_id=326">Startliste</a></td>
+        </tr>
+        <tr>
+          <td>13.06.2026</td>
+          <td>Gippinger Radsporttage (SUI)</td>
+          <td>Gippingen</td>
+          <td><a href="http://www.rad-bundesliga.net/startliste.html?liga_id=4&event_id=322">Startliste</a></td>
+        </tr>
+      </table>
+    `;
+    const events = parseRadBundesliga(
+      "https://www.rad-bundesliga.net/männer/termine.html",
+      html,
+    );
+    expect(events).toHaveLength(2);
+    expect(events[0]?.startDate).toBe("2026-04-04");
+    expect(events[0]?.externalId).toBe("rad-bl-326");
+    expect(events[0]?.seriesSlug).toBe("rad-bundesliga");
+    expect(events[1]?.countryHint).toBe("CH");
+    expect(events[0]?.childUrls?.some((u) => /junioren\/termine/.test(u))).toBe(true);
+  });
+});
+
+describe("SZC road calendar", () => {
+  it("parses SP CC, glued stage-race dates, and Okolo Slovenska", () => {
+    const html = `
+      <table class="table_events">
+        <tr><td>11.4.2026</td><td>SP CC 2026 kritérium; všetky kategórie Cestná cyklistika</td><td>Trnava</td></tr>
+        <tr><td>19.6.202621.6.2026</td><td>Medzinárodné dni Cyklistiky; 2.Ncup - UCI Class Nations' Cup Cestná cyklistika</td><td>Podhájska</td></tr>
+        <tr><td>16.9.202620.9.2026</td><td>Okolo Slovenska Cestná cyklistika</td><td></td></tr>
+      </table>
+    `;
+    const events = parseSzcRoad(
+      "https://www.cyklistikaszc.sk/sk/cestna-cyklistika/kalendar",
+      html,
+    );
+    expect(events.map((e) => e.startDate)).toEqual([
+      "2026-04-11",
+      "2026-06-19",
+      "2026-09-16",
+    ]);
+    expect(events[0]?.discipline).toEqual(["criterium"]);
+    expect(events[1]?.endDate).toBe("2026-06-21");
+    expect(events[2]?.name).toMatch(/Okolo Slovenska/i);
+    expect(events[2]?.endDate).toBe("2026-09-20");
+    expect(events[2]?.placeText).toBe("Slovensko");
+  });
+});
+
+describe("Puchar Polski MTB XCO", () => {
+  it("reads the hashed 2026 calendar lines", () => {
+    const html = `
+      <p>Harmonogram Wyścigów Pucharu Polski MTB XCO 2026:
+      # 1 | 28 Marca | Ogrodniczki to inauguracja sezonu Pucharu Polski
+      # 2 | 11 kwietnia | Rząśnik 11 kwietnia 2026 roku Rząśnik zadebiutuje
+      # 3 | 23 maja | Nędzerzew Kolejna odsłona
+      # 4 | 30 Maja | Krynica-Zdrój kalendarza UCI
+      # 5 | 21 czerwca | Rabka-Zdrój
+      # 6 | 5 lipca | Sobótka
+      # 7 | 27 września | Boguszów-Gorce finałowa edycja</p>
+    `;
+    const events = parsePucharPolskiXco("https://pucharmtb.pl/kalendarz-2026/", html);
+    expect(events.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-03-28 Ogrodniczki",
+      "2026-04-11 Rząśnik",
+      "2026-05-23 Nędzerzew",
+      "2026-05-30 Krynica-Zdrój",
+      "2026-06-21 Rabka-Zdrój",
+      "2026-07-05 Sobótka",
+      "2026-09-27 Boguszów-Gorce",
+    ]);
+    expect(events.every((e) => e.seriesSlug === "puchar-polski-xco")).toBe(true);
+  });
+});
+
+describe("Závod míru and Deutschland Tour", () => {
+  it("reads the Peace Race stage window from the official homepage", () => {
+    const events = parseZavodMiru(
+      "https://zavodmiru.com/",
+      `<p>28.–31. 5. 2026 Závod míru Peace Race 2026</p><p>Start Jeseník</p>`,
+    );
+    expect(events).toHaveLength(1);
+    expect(events[0]?.startDate).toBe("2026-05-28");
+    expect(events[0]?.endDate).toBe("2026-05-31");
+    expect(events[0]?.placeText).toBe("Jeseník");
+  });
+
+  it("reads Lidl Deutschland Tour dates", () => {
+    const events = parseDeutschlandTour(
+      "https://www.deutschland-tour.com/",
+      `<p>19/08 > 23/08/2026 Lidl Deutschland Tour 2026 Von Bad Orb nach Heilbronn</p>`,
+    );
+    expect(events[0]?.startDate).toBe("2026-08-19");
+    expect(events[0]?.endDate).toBe("2026-08-23");
   });
 });

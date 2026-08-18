@@ -78,6 +78,15 @@ function dmy(raw: string): { start: string; end?: string } | null {
       end: `${range[6]}-${range[5]!.padStart(2, "0")}-${range[4]!.padStart(2, "0")}`,
     };
   }
+  const glued = t.replace(/\s+/g, "").match(
+    /^(\d{1,2})\.(\d{1,2})\.(20\d{2})(\d{1,2})\.(\d{1,2})\.(20\d{2})$/,
+  );
+  if (glued) {
+    return {
+      start: `${glued[3]}-${glued[2]!.padStart(2, "0")}-${glued[1]!.padStart(2, "0")}`,
+      end: `${glued[6]}-${glued[5]!.padStart(2, "0")}-${glued[4]!.padStart(2, "0")}`,
+    };
+  }
   const one = t.match(/(\d{1,2})\.(\d{1,2})\.(20\d{2})/);
   if (!one) return null;
   return {
@@ -422,6 +431,132 @@ export function parseSzcMtb(url: string, html: string): ParsedEvent[] {
       seriesName: meta.seriesName,
       seriesSlug: meta.seriesSlug,
       seriesWebsite: "https://www.cyklistikaszc.sk/sk/mtb-cross-country/kalendar",
+      sourceUrl,
+      regulationsUrl,
+      confidence: 0.88,
+    });
+  });
+  return events;
+}
+
+function szcRoadSeries(name: string): {
+  seriesName: string;
+  seriesSlug: string;
+  audience: Audience;
+  discipline: Discipline[];
+} {
+  const t = fold(name);
+  const discipline: Discipline[] = /casovka|časovka|\bezf\b|\bitt\b/.test(t)
+    ? ["tt"]
+    : /kriterium|kritérium/.test(t)
+      ? ["criterium"]
+      : ["road"];
+  if (/okolo\s*slovenska/.test(t)) {
+    return {
+      seriesName: "Okolo Slovenska",
+      seriesSlug: "okolo-slovenska",
+      audience: "mixed",
+      discipline: ["road"],
+    };
+  }
+  if (/respect\s*ladies/.test(t)) {
+    return {
+      seriesName: "Respect Ladies Race Slovakia",
+      seriesSlug: "respect-ladies",
+      audience: "mixed",
+      discipline,
+    };
+  }
+  if (/visegrad|\bv4\b|gp\s*slovakia/.test(t)) {
+    return {
+      seriesName: "Visegrad 4 Bicycle Race",
+      seriesSlug: "visegrad-4",
+      audience: "mixed",
+      discipline,
+    };
+  }
+  if (/nations'?\.?\s*cup|medzinarodne\s*dni/.test(t)) {
+    return {
+      seriesName: "UCI Nations' Cup Slovakia",
+      seriesSlug: "nations-cup-sk",
+      audience: "mixed",
+      discipline: ["road"],
+    };
+  }
+  if (/\bm\s*sr\b|\bm\s*cr\b|\bmcr\b/.test(t)) {
+    return {
+      seriesName: "M SR cestná cyklistika",
+      seriesSlug: "msr-cesta",
+      audience: /mladez|junior|kadet|u23/.test(t) ? "youth" : "mixed",
+      discipline,
+    };
+  }
+  if (/\bsp\s*cc\b|slovensky\s*pohar/.test(t)) {
+    return {
+      seriesName: "Slovenský pohár cestná cyklistika",
+      seriesSlug: "slovensky-pohar-cc",
+      audience: "mixed",
+      discipline,
+    };
+  }
+  return {
+    seriesName: "SZC cestná cyklistika",
+    seriesSlug: "szc-cesta",
+    audience: "mixed",
+    discipline,
+  };
+}
+
+function szcRoadName(raw: string): string {
+  let name = raw
+    .replace(/\s+/g, " ")
+    .replace(/\s*Cestná cyklistika\s*$/i, "")
+    .replace(/;\s*všetky kategórie[^;]*/gi, "")
+    .replace(/;\s+/g, " — ")
+    .trim();
+  return name.replace(/^SP CC 2026 — /i, "SP CC 2026 ").slice(0, 160);
+}
+
+/** Slovak Cycling Federation road calendar — SP CC, Okolo Slovenska, V4. */
+export function parseSzcRoad(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+
+  $("table.table_events tr").each((_, tr) => {
+    const $tds = $(tr).find("td");
+    if ($tds.length < 3) return;
+    const dates = dmy($tds.eq(0).text());
+    if (!dates) return;
+    const name = szcRoadName($tds.eq(1).text());
+    const place = $tds.eq(2).text().replace(/\s+/g, " ").trim();
+    if (!name || name.length < 4) return;
+    if (dates.start.endsWith("-01-01")) return;
+    const meta = szcRoadSeries(name);
+    const pdf =
+      $tds.eq(5).find("a[href$='.pdf']").attr("href") ||
+      $tds.find("a[href$='.pdf']").first().attr("href");
+    let regulationsUrl: string | undefined;
+    if (pdf) {
+      try {
+        regulationsUrl = new URL(pdf, url).toString();
+      } catch {
+        /* keep */
+      }
+    }
+    const sourceUrl = `${url.replace(/\/$/, "")}#${dates.start}-${normalizeName(name)}`;
+    push(events, seen, {
+      externalId: `szc-road-${dates.start}-${normalizeName(name || place || "sk")}`,
+      name,
+      startDate: dates.start,
+      endDate: dates.end,
+      placeText: (place.replace(/\s*\(CZE\)\s*/i, "").trim() || "Slovensko").slice(0, 80),
+      countryHint: /cze\)|\bcze\b/i.test(place) ? "CZ" : "SK",
+      discipline: meta.discipline,
+      audience: meta.audience,
+      seriesName: meta.seriesName,
+      seriesSlug: meta.seriesSlug,
+      seriesWebsite: "https://www.cyklistikaszc.sk/sk/cestna-cyklistika/kalendar",
       sourceUrl,
       regulationsUrl,
       confidence: 0.88,
@@ -799,6 +934,58 @@ export function parsePolandBikeJunior(url: string, html: string): ParsedEvent[] 
   return polandCalendarRows(url, html)
     .filter((row) => row.kind !== "skip")
     .map((row) => polandJuniorEvent(url, row));
+}
+
+const PUCHAR_MTB_SITE = "https://pucharmtb.pl/kalendarz-2026/";
+
+function pucharPlace(raw: string): string {
+  return raw
+    .replace(/&#8211;|&ndash;/gi, "-")
+    .replace(/\s*[–-]\s*/g, "-")
+    .replace(/\bgm\.\s*supra[sś]l\b/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function pucharIso(day: string, monthRaw: string, year: number): string | null {
+  const mo =
+    PL_MONTHS[fold(monthRaw)] ||
+    (/^\d{1,2}$/.test(monthRaw) ? monthRaw.padStart(2, "0") : undefined);
+  if (!mo) return null;
+  return `${year}-${mo}-${day.padStart(2, "0")}`;
+}
+
+/** Puchar Polski MTB XCO — official pucharmtb.pl calendar. */
+export function parsePucharPolskiXco(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const text = $("body").text().replace(/\s+/g, " ");
+  const year = Number(url.match(/20\d{2}/)?.[0] ?? text.match(/sezon\s*(20\d{2})/i)?.[1] ?? 2026);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  const re =
+    /#\s*(\d+)\s*\|\s*(\d{1,2})\s+([A-Za-zÀ-ž\-]+)\s*\|\s*([A-ZÀ-Ž][\p{L}'’]+(?:\s*[–-]\s*[A-Za-zÀ-ž]+)?)/gu;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const startDate = pucharIso(m[2]!, m[3]!, year);
+    const place = pucharPlace(m[4]!);
+    if (!startDate || !place) continue;
+    push(events, seen, {
+      externalId: `pp-xco-${m[1]}-${startDate}`,
+      name: `Puchar Polski MTB XCO #${m[1]} — ${place}`,
+      startDate,
+      placeText: place,
+      countryHint: "PL",
+      discipline: ["xco"],
+      audience: "mixed",
+      seriesName: "Puchar Polski MTB XCO",
+      seriesSlug: "puchar-polski-xco",
+      seriesWebsite: PUCHAR_MTB_SITE,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: PUCHAR_MTB_SITE,
+      confidence: 0.9,
+    });
+  }
+  return events;
 }
 
 type PolandCalRow = {
@@ -1844,6 +2031,89 @@ export function parseNachwuchsBundesliga(url: string, html: string): ParsedEvent
     });
   }
   return events.sort((a, b) => a.startDate.localeCompare(b.startDate));
+}
+
+const RAD_BL_SITE = "https://www.rad-bundesliga.net/";
+
+function radBlDisc(name: string): Discipline[] {
+  const t = fold(name);
+  if (/zeitfahren|\bezf\b|einzelzeit/.test(t)) return ["tt"];
+  if (/kriterium/.test(t)) return ["criterium"];
+  return ["road"];
+}
+
+function radBlCountry(place: string, name: string): "DE" | "CH" | "AT" {
+  const t = `${place} ${name}`;
+  if (/\bSUI\b|\bSUI\)|\bCH\b|gippingen/i.test(t)) return "CH";
+  if (/\bAUT\b|\bÖsterreich/i.test(t)) return "AT";
+  return "DE";
+}
+
+/** German road Rad-Bundesliga — Männer / Junioren / Frauen termine tables. */
+export function parseRadBundesliga(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  $("table").each((_, table) => {
+    const $table = $(table);
+    const header = $table.find("tr").first().text();
+    if (!/datum/i.test(header) || !/ort/i.test(header)) return;
+    $table.find("tr").each((i, tr) => {
+      if (i === 0) return;
+      const $tds = $(tr).find("td");
+      if ($tds.length < 3) return;
+      const dates = dmy($tds.eq(0).text());
+      const name = $tds.eq(1).text().replace(/\s+/g, " ").trim();
+      const placeRaw = $tds.eq(2).text().replace(/\s+/g, " ").trim();
+      if (!dates || !name || name.length < 4) return;
+      const place = placeRaw.replace(/\s*\((SUI|AUT|CZE|GER)\)\s*/i, "").trim() || name;
+      const href =
+        $tds.find("a[href*='event_id=']").first().attr("href") ||
+        $tds.find("a[href$='.pdf']").first().attr("href");
+      const abs = deAtAbs(href, url);
+      const eventId = abs?.match(/event_id=(\d+)/i)?.[1];
+      const pdf = $tds.find("a[href$='.pdf']").first().attr("href");
+      let regulationsUrl: string | undefined;
+      if (pdf) {
+        try {
+          regulationsUrl = new URL(pdf, url).toString();
+        } catch {
+          /* keep */
+        }
+      }
+      push(events, seen, {
+        externalId: eventId
+          ? `rad-bl-${eventId}`
+          : `rad-bl-${dates.start}-${normalizeName(place)}`,
+        name,
+        startDate: dates.start,
+        endDate: dates.end,
+        placeText: place,
+        countryHint: radBlCountry(placeRaw, name),
+        discipline: radBlDisc(name),
+        audience: /junioren/i.test(url) ? "youth" : "mixed",
+        seriesName: "Rad-Bundesliga",
+        seriesSlug: "rad-bundesliga",
+        seriesWebsite: RAD_BL_SITE,
+        sourceUrl: url.split("?")[0]!,
+        websiteUrl: abs && /event_id=/i.test(abs) ? abs : RAD_BL_SITE,
+        regulationsUrl,
+        confidence: 0.92,
+      });
+    });
+  });
+  const siblings = [
+    "https://www.rad-bundesliga.net/männer/termine.html",
+    "https://www.rad-bundesliga.net/junioren/termine.html",
+    "https://www.rad-bundesliga.net/frauen/termine2.html",
+  ].filter((u) => u.replace(/\/$/, "") !== url.split("?")[0]!.replace(/\/$/, ""));
+  if (events[0] && siblings.length) {
+    events[0] = {
+      ...events[0],
+      childUrls: [...new Set([...(events[0].childUrls ?? []), ...siblings])],
+    };
+  }
+  return events;
 }
 
 /** Official series site — Termine sidebar is the live calendar. */

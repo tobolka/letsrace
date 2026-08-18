@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasCscPublicGrid, parseCscDate, parseCscPublicGrid } from "@/lib/watcher/extractors/csc";
+import { hasCscPublicGrid, parseCscCupListing, parseCscDate, parseCscPublicGrid } from "@/lib/watcher/extractors/csc";
 
 const GRID = `
 <table class="b-table b-datagrid">
@@ -46,6 +46,7 @@ describe("ČSC portal grid", () => {
     expect(parseCscDate("1/10/2026")).toBe("2026-01-10");
     expect(parseCscDate("2/28/2026")).toBe("2026-02-28");
     expect(parseCscDate("28. 2. 2026")).toBe("2026-02-28");
+    expect(parseCscDate("29 3. 2026")).toBe("2026-03-29");
   });
 
   it("keeps outdoor races and skips indoor cycling", () => {
@@ -66,6 +67,30 @@ describe("ČSC portal grid", () => {
     expect(events[0]?.externalId).toBe("csc-797");
     expect(events[1]?.discipline).toEqual(["mtb"]);
     expect(events[2]?.discipline).toEqual(["road"]);
+    expect(events[2]?.seriesSlug).toBe("skoda-cup");
     expect(events.some((e) => /krasoj/i.test(e.name))).toBe(false);
+  });
+
+  it("reads MND CUP dates from the ČSC marketing table", () => {
+    const html = `
+      <table>
+        <tr><td>Datum</td><td>Místo</td><td>Název</td></tr>
+        <tr><td>11. 4. 2026</td><td>Bratronice</td><td>ČP Bratronice</td></tr>
+        <tr><td>21. 6. 2026</td><td>Mladá Boleslav</td><td>ČP Mladá Boleslav – časovka jednotlivců</td></tr>
+        <tr><td>13. 9. 2026</td><td>Prostějov</td><td>ČP Prostějov</td></tr>
+      </table>
+    `;
+    const events = parseCscCupListing(
+      "https://www.czechcyclingfederation.com/events/mnd-cup/",
+      html,
+      "mnd",
+    );
+    expect(events.map((e) => `${e.startDate} ${e.placeText}`)).toEqual([
+      "2026-04-11 Bratronice",
+      "2026-06-21 Mladá Boleslav",
+      "2026-09-13 Prostějov",
+    ]);
+    expect(events[1]?.discipline).toEqual(["tt"]);
+    expect(events.every((e) => e.seriesSlug === "mnd-cup")).toBe(true);
   });
 });

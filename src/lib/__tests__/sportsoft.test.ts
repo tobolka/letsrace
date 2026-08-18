@@ -97,4 +97,15 @@ describe("SportSoft registration URLs are per-event", () => {
     );
     expect(normalizeUrlForDedup("https://csc.sportsoft.cz/startreg.aspx?m=466")).toBe("");
   });
+
+  it("keeps Rad-Bundesliga event_id and blanks the termine hub", () => {
+    expect(
+      normalizeUrlForDedup(
+        "http://www.rad-bundesliga.net/startliste.html?liga_id=4&event_id=326",
+      ),
+    ).toBe("rad-bundesliga.net?event_id=326");
+    expect(
+      normalizeUrlForDedup("https://www.rad-bundesliga.net/männer/termine.html"),
+    ).toBe("");
+  });
 });

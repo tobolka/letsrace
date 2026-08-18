@@ -98,6 +98,7 @@ export function parseCscPublicGrid(url: string, html: string): ParsedEvent[] {
         : "mixed",
       sourceUrl,
       confidence: 0.9,
+      ...cscSeriesFromName(name),
     });
   });
 
@@ -146,6 +147,10 @@ export function parseCscDate(raw: string): string | null {
   if (cs) {
     return `${cs[3]}-${cs[2]!.padStart(2, "0")}-${cs[1]!.padStart(2, "0")}`;
   }
+  const loose = t.match(/^(\d{1,2})\s+(\d{1,2})\.\s*(20\d{2})/);
+  if (loose) {
+    return `${loose[3]}-${loose[2]!.padStart(2, "0")}-${loose[1]!.padStart(2, "0")}`;
+  }
   const iso = t.match(/^(20\d{2})-(\d{2})-(\d{2})/);
   return iso ? iso[0] : null;
 }
@@ -156,6 +161,83 @@ function originOf(url: string): string {
   } catch {
     return PORTAL_ORIGIN;
   }
+}
+
+function cscSeriesFromName(name: string): Partial<ParsedEvent> {
+  const t = fold(name);
+  if (/\bmnd\s*cup\b/.test(t)) {
+    return {
+      seriesName: "MND CUP",
+      seriesSlug: "mnd-cup",
+      seriesWebsite: "https://www.czechcyclingfederation.com/events/mnd-cup/",
+    };
+  }
+  if (/\bskoda\s*cup\b/.test(t)) {
+    return {
+      seriesName: "ŠKODA CUP",
+      seriesSlug: "skoda-cup",
+      seriesWebsite: "https://www.czechcyclingfederation.com/en/events/skoda-cup/",
+    };
+  }
+  return {};
+}
+
+/**
+ * ČSC marketing cup pages (`/events/mnd-cup/`, `/en/events/skoda-cup/`)
+ * publish the live 2026 road calendars as a date/place table.
+ */
+export function parseCscCupListing(
+  url: string,
+  html: string,
+  kind: "mnd" | "skoda",
+): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  $("table tr").each((_, tr) => {
+    const $tr = $(tr);
+    const cells = $tr
+      .find("td")
+      .map((__, td) => $(td).text().replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim())
+      .get();
+    if (cells.length < 3) return;
+    const startDate = parseCscDate(cells[0]!);
+    if (!startDate) return;
+    const place = cells[1]!.slice(0, 80);
+    const title = cells[2]!.replace(/&#8211;/g, "–").replace(/\s+/g, " ").trim();
+    if (!place || place.length < 2) return;
+    const name =
+      kind === "mnd" ? `MND CUP — ${title || place}` : `ŠKODA CUP — ${title || place}`;
+    const id = `${kind}-${startDate}-${normalizeName(place)}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    const pdf = $tr.find("a[href$='.pdf']").first().attr("href");
+    let regulationsUrl: string | undefined;
+    if (pdf) {
+      try {
+        regulationsUrl = new URL(pdf, url).toString();
+      } catch {
+        /* keep */
+      }
+    }
+    events.push({
+      externalId: `csc-cup-${id}`,
+      name: name.slice(0, 160),
+      startDate,
+      placeText: place,
+      countryHint: "CZ",
+      discipline: /časovka|casovka|ezf/i.test(`${title} ${place}`) ? ["tt"] : ["road"],
+      audience: kind === "mnd" ? "youth" : "mixed",
+      seriesName: kind === "mnd" ? "MND CUP" : "ŠKODA CUP",
+      seriesSlug: kind === "mnd" ? "mnd-cup" : "skoda-cup",
+      seriesWebsite: url.split("?")[0]!,
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: url.split("?")[0]!,
+      regulationsUrl,
+      confidence: 0.9,
+    });
+  });
+  return events;
 }
 
 function dedupe(events: ParsedEvent[]): ParsedEvent[] {

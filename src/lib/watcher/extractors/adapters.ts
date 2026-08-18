@@ -1,6 +1,6 @@
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
-import { parseCscCalendar } from "@/lib/watcher/extractors/csc";
+import { parseCscCalendar, parseCscCupListing } from "@/lib/watcher/extractors/csc";
 import { isSumatorHost, parseSumator } from "@/lib/watcher/extractors/sumator";
 import { parseMtbs } from "@/lib/watcher/extractors/mtbs";
 import { parseHynekMusil } from "@/lib/watcher/extractors/hynek";
@@ -40,8 +40,11 @@ import {
   parsePodkrkonosskyMaraton,
   parsePolandBike,
   parsePolandBikeJunior,
+  parsePucharPolskiXco,
   parseMtbBundesliga,
   parseNachwuchsBundesliga,
+  parseRadBundesliga,
+  parseSzcRoad,
   parseKamptalTrophy,
   parseRheinEifelCup,
   parseRheinMainCup,
@@ -79,7 +82,10 @@ import {
   parseZal,
   parseUstiMtbCup,
 } from "@/lib/watcher/extractors/cz-calendars";
-import { parseCyclingAustria } from "@/lib/watcher/extractors/cyclingaustria";
+import {
+  parseCyclingAustria,
+  parseCyclingAustriaCups,
+} from "@/lib/watcher/extractors/cyclingaustria";
 import { parseUciMtbWorldSeries } from "@/lib/watcher/extractors/uciws";
 import { parseSwissCycling } from "@/lib/watcher/extractors/swisscycling";
 import {
@@ -148,6 +154,8 @@ import { parseHbsCalendar, parseHbsMtb, parseKultainenKampi } from "@/lib/watche
 import {
   parseAlsovkaWh,
   parseCzechTour,
+  parseDeutschlandTour,
+  parseZavodMiru,
   parseFaustoCoppi,
   parseGravelChallengeDk,
   parseHaervejsloebet,
@@ -199,7 +207,19 @@ export async function extractWithAdapter(
     return { events: await parseCscCalendar(url, html), strategy: "adapter:csc" };
   }
   if (host.includes("czechcyclingfederation.com")) {
-    // Marketing WP site — calendar there is a 2021 snapshot, not the live IS.
+    if (/\/events\/mnd-cup/i.test(url)) {
+      return {
+        events: parseCscCupListing(url, html, "mnd"),
+        strategy: "adapter:csc-mnd",
+      };
+    }
+    if (/\/events\/skoda-cup/i.test(url)) {
+      return {
+        events: parseCscCupListing(url, html, "skoda"),
+        strategy: "adapter:csc-skoda",
+      };
+    }
+    // Other WP pages are marketing / 2021 snapshots, not the live IS.
     return { events: [], strategy: "adapter:csc-skip-marketing" };
   }
   if (host.includes("ceskysvazcyklistiky.cz")) {
@@ -472,6 +492,12 @@ export async function extractWithAdapter(
     } catch {
       /* keep raw */
     }
+    if (/cycling-austria-cups-20\d{2}/i.test(decoded)) {
+      return {
+        events: parseCyclingAustriaCups(url, html),
+        strategy: "adapter:oerv-cups",
+      };
+    }
     if (/austria.?youngsters.?cup/i.test(decoded)) {
       return {
         events: parseAustriaKidsXc2026(url, html),
@@ -488,7 +514,7 @@ export async function extractWithAdapter(
       return { events: [], strategy: "adapter:oerv-skip" };
     }
     const ca = await enrichDeAtRacePages(parseCyclingAustria(url, html));
-    const kids = /cyclocross/i.test(url) ? [] : parseAustriaKidsXc2026(url, html);
+    const kids = /cyclocross|strasse/i.test(url) ? [] : parseAustriaKidsXc2026(url, html);
     return {
       events: [...kids, ...ca],
       strategy: kids.length ? "adapter:oerv+at-kids-xc" : "adapter:oerv",
@@ -516,6 +542,15 @@ export async function extractWithAdapter(
     return {
       events: parseMtbBundesliga(url, html),
       strategy: "adapter:mtb-bl",
+    };
+  }
+  if (host.includes("rad-bundesliga.net")) {
+    if (!/termine/i.test(url)) {
+      return { events: [], strategy: "adapter:rad-bl-skip" };
+    }
+    return {
+      events: parseRadBundesliga(url, html),
+      strategy: "adapter:rad-bl",
     };
   }
   if (host.includes("ucimtbworldseries.com")) {
@@ -590,6 +625,9 @@ export async function extractWithAdapter(
     return { events: parseBundiKidsCup(url, html), strategy: "adapter:bundi-kids" };
   }
   if (host.includes("cyklistikaszc.sk")) {
+    if (/cestna-cyklistika\/kalendar/i.test(url)) {
+      return { events: parseSzcRoad(url, html), strategy: "adapter:szc-road" };
+    }
     if (!/mtb-cross-country\/kalendar/i.test(url)) {
       return { events: [], strategy: "adapter:szc-skip" };
     }
@@ -645,6 +683,15 @@ export async function extractWithAdapter(
     return {
       events: [...parsePolandBike(url, html), ...parsePolandBikeJunior(url, html)],
       strategy: "adapter:polandbike+junior",
+    };
+  }
+  if (host.includes("pucharmtb.pl")) {
+    if (!/kalendarz/i.test(url)) {
+      return { events: [], strategy: "adapter:puchar-skip" };
+    }
+    return {
+      events: parsePucharPolskiXco(url, html),
+      strategy: "adapter:puchar-xco",
     };
   }
   if (host.includes("salzkammergut-trophy.at") || host.includes("trophy.at")) {
@@ -1131,6 +1178,31 @@ export async function extractWithAdapter(
   if (host.includes("czechtour.com")) {
     if (!isBareHome(url)) return { events: [], strategy: "adapter:czechtour-skip" };
     return { events: parseCzechTour(url, html), strategy: "adapter:czech-tour" };
+  }
+  if (host.includes("zavodmiru.com")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (!/^\/(en)?$/.test(path)) {
+        return { events: [], strategy: "adapter:zavod-miru-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:zavod-miru-skip" };
+    }
+    return { events: parseZavodMiru(url, html), strategy: "adapter:zavod-miru" };
+  }
+  if (host.includes("deutschland-tour.com")) {
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, "") || "/";
+      if (!/^\/(en|de)?$/.test(path)) {
+        return { events: [], strategy: "adapter:deutschland-tour-skip" };
+      }
+    } catch {
+      return { events: [], strategy: "adapter:deutschland-tour-skip" };
+    }
+    return {
+      events: parseDeutschlandTour(url, html),
+      strategy: "adapter:deutschland-tour",
+    };
   }
   if (host.includes("letapeczech.cz")) {
     if (!isBareHome(url)) return { events: [], strategy: "adapter:letape-skip" };

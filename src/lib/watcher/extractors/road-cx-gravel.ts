@@ -516,6 +516,64 @@ export function parseCzechTour(url: string, html: string): ParsedEvent[] {
   ];
 }
 
+export function parseZavodMiru(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const text = $("body").text().replace(/\s+/g, " ");
+  const range = text.match(
+    /(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/,
+  );
+  if (!range) return [];
+  const startDate = dmy(range[1]!, range[3]!, range[4]!);
+  const endDate = dmy(range[2]!, range[3]!, range[4]!);
+  return [
+    {
+      externalId: `zavod-miru-${startDate}`,
+      name: "Závod míru",
+      startDate,
+      endDate,
+      placeText: "Jeseník",
+      countryHint: "CZ",
+      discipline: ["road"],
+      audience: "mixed",
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: "https://zavodmiru.com/",
+      confidence: 0.9,
+    },
+  ];
+}
+
+export function parseDeutschlandTour(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const text = $("body").text().replace(/\s+/g, " ");
+  const m =
+    text.match(/(\d{1,2})\s*[/.]\s*(\d{1,2})\s*[>–-]+\s*(\d{1,2})\s*[/.]\s*(\d{1,2})\s*[/.]\s*(20\d{2})/) ||
+    text.match(/(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*August\s+(20\d{2})/i);
+  if (!m) return [];
+  const startDate =
+    m[4] && m[5]
+      ? dmy(m[1]!, m[2]!, m[5]!)
+      : dmy(m[1]!, "08", m[3]!);
+  const endDate =
+    m[4] && m[5]
+      ? dmy(m[3]!, m[4]!, m[5]!)
+      : dmy(m[2]!, "08", m[3]!);
+  return [
+    {
+      externalId: `deutschland-tour-${startDate}`,
+      name: "Lidl Deutschland Tour",
+      startDate,
+      endDate,
+      placeText: "Bad Orb",
+      countryHint: "DE",
+      discipline: ["road"],
+      audience: "mixed",
+      sourceUrl: url.split("?")[0]!,
+      websiteUrl: "https://www.deutschland-tour.com/",
+      confidence: 0.9,
+    },
+  ];
+}
+
 export function parseLetapeCzech(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const text = $("body").text().replace(/\s+/g, " ");

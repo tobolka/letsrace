@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import type { Discipline, ParsedEvent } from "@/lib/domain";
+import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 
 const DE_MONTHS: Record<string, string> = {
@@ -117,6 +117,10 @@ export function cyclingAustriaPageUrls(url: string): string[] {
       out.push(cx.toString());
     }
     if (sparten === "mtb") {
+      const strasse = new URL("https://www.cyclingaustria.at/kalender");
+      strasse.searchParams.set("sparten", "strasse");
+      strasse.searchParams.set("view", "events");
+      out.push(strasse.toString());
       const all = new URL("https://www.cyclingaustria.at/kalender");
       all.searchParams.set("view", "events");
       out.push(all.toString());
@@ -213,4 +217,113 @@ export function parseCyclingAustria(url: string, html: string): ParsedEvent[] {
   }
 
   return events;
+}
+
+const CA_CUPS_SITE =
+  "https://cyclingaustria.at/news/allgemein/cycling-austria-cups-2026";
+const AT_STATE =
+  /\s+(OÖ|OOE|STMK|Stmk|NÖ|NOE|VBG|Wien|T|S|K|W|B)(?=\s+(Einzel|Omnium|Kombi)|$)/i;
+
+function atCupsPlace(raw: string): string {
+  let t = raw
+    .replace(/\s*Road Cycling League Austria\s+(Frauen|Herren)\s*/gi, " ")
+    .replace(AT_STATE, "")
+    .replace(/\s+\*?(Einzel|Omnium|Kombi)\b.*$/i, "")
+    .replace(/\s+UCI\b.*$/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (/ostm\s*ezf/i.test(t)) return "Weißenbach am Attersee";
+  const known = t.match(
+    /(Leonding|Wels|Rankweil|Königswiesen|Konigswiesen|Marein|Walding|Söll|Soll|Wieselburg|Kindberg|Großhartmannsdorf|Grosshartmannsdorf|Donauinsel|Großenzersdorf|Grossenzersdorf|Neckenmarkt|Pernitz|Eberstalzell|Loosdorf|Steinhaus|Graz|Feistritz)/i,
+  );
+  return (known?.[1] || t.split(/\s+/).slice(-2).join(" ")).trim();
+}
+
+function atCupsDisc(name: string): Discipline[] {
+  const t = name.toLowerCase();
+  if (/ezf|zeitfahr|mzf|pzf/.test(t)) return ["tt"];
+  if (/kriterium/.test(t)) return ["criterium"];
+  if (/berg\b|hügelwelt|hugelwelt/.test(t)) return ["hill_climb"];
+  return ["road"];
+}
+
+function parseAtCupsBlock(
+  block: string,
+  year: number,
+  seriesName: string,
+  seriesSlug: string,
+  audience: Audience,
+): ParsedEvent[] {
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  const cleaned = block.replace(
+    /\d{1,2}\.\s*[–-]\s*\d{1,2}\.\d{2}\.\s+[^0-9]{3,120}?(?=\s+\d{1,2}\.\d{2}\.|\s+\d{1,2}\.\s*[–-]|$)/g,
+    " ",
+  );
+  const re =
+    /(\d{1,2})\.(?:\/\d{1,2}\.)?(\d{2})\.\s+(.+?)(?=\s+\d{1,2}\.(?:\/\d{1,2}\.)?\d{2}\.|\s+\d{1,2}\.\s*[–-]\s*\d{1,2}\.\d{2}\.|$)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(cleaned))) {
+    const name = m[3]!.replace(/\s+/g, " ").trim();
+    if (!name || name.length < 3) continue;
+    if (/bahn|pumptrack|tbc\.|amateur cup/i.test(name)) continue;
+    const startDate = `${year}-${m[2]}-${m[1]!.padStart(2, "0")}`;
+    const place = atCupsPlace(name);
+    const display =
+      seriesSlug === "austrian-junior-series"
+        ? `${seriesName} — ${place}`
+        : `${seriesName} — ${name.replace(AT_STATE, "").replace(/\s+\*?(Einzel|Omnium|Kombi)\b.*$/i, "").trim()}`;
+    const id = `${seriesSlug}-${startDate}-${normalizeName(place || name)}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    events.push({
+      externalId: `ca-cups-${id}`,
+      name: display.slice(0, 160),
+      startDate,
+      placeText: place || "Austria",
+      countryHint: "AT",
+      discipline: atCupsDisc(name),
+      audience,
+      seriesName,
+      seriesSlug,
+      seriesWebsite: CA_CUPS_SITE,
+      sourceUrl: CA_CUPS_SITE,
+      websiteUrl: CA_CUPS_SITE,
+      confidence: 0.86,
+    });
+  }
+  return events;
+}
+
+/** Season cup overview — Road League + ARBÖ ASKÖ Junior Series (full year, not upcoming-only). */
+export function parseCyclingAustriaCups(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const text = $("body").text().replace(/\s+/g, " ");
+  const year = Number(url.match(/20\d{2}/)?.[0] ?? 2026);
+  const leagueStart = text.search(/Road Cycling League Austria/i);
+  const juniorStart = text.search(/ARBÖ\s+ASKÖ\s+Austrian Junior Series|Austrian Junior Series/i);
+  const amateur = text.search(/Cycling Austria Amateur Cup/i);
+  const leagueBlock =
+    leagueStart >= 0
+      ? text.slice(leagueStart, juniorStart > leagueStart ? juniorStart : amateur > 0 ? amateur : undefined)
+      : "";
+  const juniorBlock =
+    juniorStart >= 0
+      ? text.slice(juniorStart, amateur > juniorStart ? amateur : undefined)
+      : "";
+  const league = parseAtCupsBlock(
+    leagueBlock,
+    year,
+    "Road Cycling League Austria",
+    "at-road-league",
+    "mixed",
+  );
+  const junior = parseAtCupsBlock(
+    juniorBlock,
+    year,
+    "ARBÖ ASKÖ Austrian Junior Series",
+    "austrian-junior-series",
+    "youth",
+  );
+  return [...league, ...junior];
 }
