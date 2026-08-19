@@ -1575,6 +1575,7 @@ async function upsertParsedEvent(
 
   const { shouldIngestByCountry, isRoughlyInEurope } = await import("@/lib/geo/europe");
   const { timezoneForCountry } = await import("@/lib/geo/timezones");
+  let ingestCountry = (ev.countryHint || "").trim().toUpperCase() || null;
   // Drop explicit non-European races early (before locations / geocode queue)
   if (ev.countryHint && !shouldIngestByCountry(ev.countryHint)) {
     return null;
@@ -1617,6 +1618,7 @@ async function upsertParsedEvent(
       }
     }
 
+    ingestCountry = country;
     if (!shouldIngestByCountry(country)) {
       return null;
     }
@@ -1788,9 +1790,21 @@ async function upsertParsedEvent(
     updated_at: new Date().toISOString(),
   };
 
+  const { shouldSkipUnlinkedDumpInsert } = await import("@/lib/event-visibility");
+  const skipDump = shouldSkipUnlinkedDumpInsert({
+    websiteUrl: website,
+    registrationUrl: registration,
+    location: { countryCode: ingestCountry },
+  });
+  if (skipDump && !existingId) {
+    return null;
+  }
+
   if (hideAsNonRace && !lockedFields.includes("visibility")) {
     payload.visibility = "hidden";
     payload.event_type = "training";
+  } else if (skipDump && !lockedFields.includes("visibility")) {
+    payload.visibility = "hidden";
   } else if (
     existingRow?.visibility === "hidden" &&
     audience === "kids" &&

@@ -26,6 +26,21 @@ export function isPublicMapWorthy(event: {
   return Boolean(publicRaceUrl(event.websiteUrl) || publicRaceUrl(event.registrationUrl));
 }
 
+/**
+ * FCI / UCI dumps outside home markets. Skip inserting new rows so the catalog
+ * does not grow with pins the map already refuses. Missing country stays
+ * ingestible (many CZ sources omit a hint).
+ */
+export function shouldSkipUnlinkedDumpInsert(event: {
+  websiteUrl?: string | null;
+  registrationUrl?: string | null;
+  location?: { countryCode?: string | null } | null;
+}): boolean {
+  const cc = event.location?.countryCode?.trim();
+  if (!cc) return false;
+  return !isPublicMapWorthy(event);
+}
+
 export type PublicEventStatus = (typeof PUBLIC_EVENT_STATUSES)[number];
 
 export const PUBLIC_VISIBILITY = "public" as const;

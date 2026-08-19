@@ -1207,6 +1207,33 @@ const GAZETTEER: Record<string, { lat: number; lng: number; cc: string }> = {
   "brno liskovec": { lat: 49.168, lng: 16.563, cc: "CZ" },
   "praha repy": { lat: 50.067, lng: 14.311, cc: "CZ" },
   "brno favorit": { lat: 49.178, lng: 16.57, cc: "CZ" },
+  innsbruck: { lat: 47.2692, lng: 11.4041, cc: "AT" },
+  innsbrucker: { lat: 47.2692, lng: 11.4041, cc: "AT" },
+  linz: { lat: 48.3069, lng: 14.2858, cc: "AT" },
+  klagenfurt: { lat: 46.6247, lng: 14.3053, cc: "AT" },
+  "st polten": { lat: 48.2058, lng: 15.6232, cc: "AT" },
+  "st. polten": { lat: 48.2058, lng: 15.6232, cc: "AT" },
+  "sankt polten": { lat: 48.2058, lng: 15.6232, cc: "AT" },
+  "st pölten": { lat: 48.2058, lng: 15.6232, cc: "AT" },
+  wolfsberg: { lat: 46.839, lng: 14.845, cc: "AT" },
+  lambach: { lat: 48.094, lng: 13.875, cc: "AT" },
+  purgstall: { lat: 48.056, lng: 15.135, cc: "AT" },
+  boheimkirchen: { lat: 48.197, lng: 15.762, cc: "AT" },
+  "böheimkirchen": { lat: 48.197, lng: 15.762, cc: "AT" },
+  "bad ischl": { lat: 47.711, lng: 13.625, cc: "AT" },
+  hinterbruhl: { lat: 48.086, lng: 16.248, cc: "AT" },
+  "hinterbrühl": { lat: 48.086, lng: 16.248, cc: "AT" },
+  zauberberg: { lat: 47.641, lng: 15.831, cc: "AT" },
+  arlberg: { lat: 47.132, lng: 10.269, cc: "AT" },
+  attersee: { lat: 47.916, lng: 13.55, cc: "AT" },
+  atterbiker: { lat: 47.916, lng: 13.55, cc: "AT" },
+  kurnberg: { lat: 48.321, lng: 14.166, cc: "AT" },
+  "kürnberg": { lat: 48.321, lng: 14.166, cc: "AT" },
+  wolomin: { lat: 52.351, lng: 21.237, cc: "PL" },
+  "wołomin": { lat: 52.351, lng: 21.237, cc: "PL" },
+  "powiat wolominski": { lat: 52.351, lng: 21.237, cc: "PL" },
+  langenweisbach: { lat: 50.599, lng: 12.582, cc: "DE" },
+  "langenweißbach": { lat: 50.599, lng: 12.582, cc: "DE" },
 };
 
 function fold(s: string): string {
@@ -1293,7 +1320,10 @@ export function cleanGeocodeQuery(
   // Italian comune + province: "CAPANNORI (LU)", "PIEVE VERGONTE VB"
   text = text.replace(/\s*\([a-z]{2}\)\s*/gi, " ");
   text = text.replace(/\bfraz\.?\s+/gi, " ");
-  text = text.replace(/\s+[–-]\s+(tirol|tyrol|k[aä]rnten|salzburg|valais|wallis|sardinia|steiermark)\s*$/i, "");
+  text = text.replace(
+    /\s+[–-]\s+(tirol|tyrol|tyrolsko|k[aä]rnten|carinthia|salzburg|steiermark|styria|vorarlberg|wien|vienna|burgenland|ober((o|ö)sterreich)?|nieder((o|ö)sterreich)?|valais|wallis|sardinia)\s*$/i,
+    "",
+  );
   if (cc === "CH") {
     text = text.replace(
       /\s+\b(ag|ai|ar|be|bl|bs|fr|ge|gl|gr|ju|lu|ne|nw|ow|sg|sh|so|sz|tg|ti|ur|vd|vs|zg|zh)\s*$/i,

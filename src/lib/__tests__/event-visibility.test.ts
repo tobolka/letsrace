@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isHomeMapCountry, isNonRaceEventName, isPublicMapWorthy, PUBLIC_EVENT_STATUSES, shouldHideFromMap } from "@/lib/event-visibility";
+import { isHomeMapCountry, isNonRaceEventName, isPublicMapWorthy, PUBLIC_EVENT_STATUSES, shouldHideFromMap, shouldSkipUnlinkedDumpInsert } from "@/lib/event-visibility";
 
 describe("public map quality gate", () => {
   it("keeps home-country races without an enter link", () => {
@@ -73,6 +73,44 @@ describe("public map quality gate", () => {
         location: { countryCode: "IT" },
       }),
     ).toBe(true);
+  });
+
+  it("skips inserting unlinked dumps when the country is known", () => {
+    expect(
+      shouldSkipUnlinkedDumpInsert({
+        websiteUrl: null,
+        registrationUrl: null,
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(true);
+    expect(
+      shouldSkipUnlinkedDumpInsert({
+        websiteUrl: "https://www.federciclismo.it/it/event/123",
+        registrationUrl: null,
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(true);
+    expect(
+      shouldSkipUnlinkedDumpInsert({
+        websiteUrl: null,
+        registrationUrl: null,
+        location: { countryCode: "CZ" },
+      }),
+    ).toBe(false);
+    expect(
+      shouldSkipUnlinkedDumpInsert({
+        websiteUrl: null,
+        registrationUrl: null,
+        location: { countryCode: null },
+      }),
+    ).toBe(false);
+    expect(
+      shouldSkipUnlinkedDumpInsert({
+        websiteUrl: "https://maratona.it",
+        registrationUrl: null,
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(false);
   });
 
   it("keeps unconfirmed TBC dates off the public map", () => {

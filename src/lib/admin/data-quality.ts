@@ -1,3 +1,5 @@
+import { isPublicMapWorthy } from "@/lib/event-visibility";
+import { isListedCountry } from "@/lib/geo/europe";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export type MissingFlag =
@@ -71,6 +73,20 @@ export function computeMissing(row: {
   return missing;
 }
 
+/** Completeness queue: races that can actually appear on the public map. */
+export function isWorkQueueEvent(event: {
+  websiteUrl?: string | null;
+  registrationUrl?: string | null;
+  countryCode?: string | null;
+}): boolean {
+  if (event.countryCode && !isListedCountry(event.countryCode)) return false;
+  return isPublicMapWorthy({
+    websiteUrl: event.websiteUrl,
+    registrationUrl: event.registrationUrl,
+    location: { countryCode: event.countryCode },
+  });
+}
+
 export async function listIncompleteEvents(opts?: {
   upcomingOnly?: boolean;
   limit?: number;
@@ -78,28 +94,61 @@ export async function listIncompleteEvents(opts?: {
   const supabase = createServerSupabase();
   const upcomingOnly = opts?.upcomingOnly ?? true;
   const limit = opts?.limit ?? 400;
+  const today = new Date().toISOString().slice(0, 10);
 
-  let query = supabase
-    .from("events")
-    .select(
-      `id, name, start_date, audience, disciplines, website_url, registration_url, level, location_id,
-       location:locations(id, name, municipality, country_code, lat, lng, geocode_status)`,
-    )
-    .eq("visibility", "public")
-    .neq("status", "cancelled")
-    .order("start_date", { ascending: true })
-    .limit(limit);
+  const rows: {
+    id: string;
+    name: string;
+    start_date: string;
+    audience: string;
+    disciplines: string[] | null;
+    website_url: string | null;
+    registration_url: string | null;
+    level: string | null;
+    location_id: string | null;
+    location:
+      | {
+          id: string;
+          name: string | null;
+          municipality: string | null;
+          country_code: string | null;
+          lat: number | null;
+          lng: number | null;
+          geocode_status: string | null;
+        }
+      | {
+          id: string;
+          name: string | null;
+          municipality: string | null;
+          country_code: string | null;
+          lat: number | null;
+          lng: number | null;
+          geocode_status: string | null;
+        }[]
+      | null;
+  }[] = [];
 
-  if (upcomingOnly) {
-    const today = new Date().toISOString().slice(0, 10);
-    query = query.gte("start_date", today);
+  for (let from = 0; from < 6000; from += 1000) {
+    let query = supabase
+      .from("events")
+      .select(
+        `id, name, start_date, audience, disciplines, website_url, registration_url, level, location_id,
+         location:locations(id, name, municipality, country_code, lat, lng, geocode_status)`,
+      )
+      .eq("visibility", "public")
+      .neq("status", "cancelled")
+      .order("start_date", { ascending: true })
+      .range(from, from + 999);
+    if (upcomingOnly) query = query.gte("start_date", today);
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    const page = data ?? [];
+    rows.push(...page);
+    if (page.length < 1000) break;
   }
 
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
-
   const summary: DataQualitySummary = {
-    total: data?.length ?? 0,
+    total: 0,
     incomplete: 0,
     coords: 0,
     place: 0,
@@ -111,8 +160,19 @@ export async function listIncompleteEvents(opts?: {
 
   const events: IncompleteEvent[] = [];
 
-  for (const row of data ?? []) {
+  for (const row of rows) {
     const loc = Array.isArray(row.location) ? row.location[0] : row.location;
+    if (
+      !isWorkQueueEvent({
+        websiteUrl: row.website_url,
+        registrationUrl: row.registration_url,
+        countryCode: loc?.country_code,
+      })
+    ) {
+      continue;
+    }
+    summary.total += 1;
+
     const missing = computeMissing({
       location_id: row.location_id,
       website_url: row.website_url,
@@ -168,7 +228,7 @@ export async function listIncompleteEvents(opts?: {
     return a.startDate.localeCompare(b.startDate);
   });
 
-  return { summary, events };
+  return { summary, events: events.slice(0, limit) };
 }
 
 export const MISSING_LABELS: Record<MissingFlag, string> = {
