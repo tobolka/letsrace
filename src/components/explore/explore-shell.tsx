@@ -83,7 +83,7 @@ const exploreSearchParams = {
   dateFrom: parseAsString.withDefault(WEEKEND_DEFAULT.from),
   dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
   e: parseAsString.withDefault(""),
-  sort: parseAsString.withDefault("date"),
+  sort: parseAsString.withDefault(""),
   west: parseAsString,
   south: parseAsString,
   east: parseAsString,
@@ -205,7 +205,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const distanceEnabled = userOrigin != null;
   const listSort: EventSort =
-    filters.sort === "distance" && distanceEnabled ? "distance" : "date";
+    filters.sort === "date" || !distanceEnabled ? "date" : "distance";
 
   const sortedEvents = useMemo(
     () => sortEvents(events, listSort, userOrigin),
@@ -222,7 +222,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   function setListSort(next: EventSort) {
     if (next === "distance" && !distanceEnabled) return;
-    void setFilters({ sort: next === "date" ? null : "distance" });
+    void setFilters({ sort: next });
   }
 
   const initialFocus = useMemo(() => {
