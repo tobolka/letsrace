@@ -1164,7 +1164,7 @@ function EventCard({
       asChild
       size="sm"
       variant={active ? "muted" : "default"}
-      className="rounded-none border-x-0 border-t-0 hover:bg-accent/50"
+      className="rounded-none border-0 shadow-[inset_0_-1px_0_0_var(--border)] last:shadow-none hover:bg-accent/50"
     >
       <button
         type="button"

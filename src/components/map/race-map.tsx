@@ -16,7 +16,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
-import { disciplineColor } from "@/lib/map-visuals";
+import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 
 export type MapBounds = {
@@ -106,6 +106,7 @@ function makePinElement(event: EventListItem, selected: boolean) {
   wrap.dataset.eventId = event.id;
   wrap.dataset.level = event.level || "local";
   wrap.dataset.discipline = event.disciplines?.[0] || "other";
+  if (selected) wrap.dataset.selected = "true";
 
   wrap.style.cssText = [
     "display:flex",
@@ -124,22 +125,31 @@ function makePinElement(event: EventListItem, selected: boolean) {
     "touch-action:manipulation",
   ].join(";");
 
-  const dot = document.createElement("span");
-  const size = selected ? 20 : 16;
   const color = disciplineColor(event.disciplines);
+  const colorDark = disciplineColorDark(event.disciplines);
+  const dot = document.createElement("span");
   dot.setAttribute("aria-hidden", "true");
-  dot.style.cssText = [
-    `width:${size}px`,
-    `height:${size}px`,
-    "border-radius:9999px",
-    `background:${color}`,
-    "border:2px solid #fff",
-    "box-shadow:0 1px 3px rgba(0,0,0,.32)",
-    selected ? "transform:scale(1.25)" : "",
-    "transition:transform 120ms ease",
-    "pointer-events:none",
-    "flex:0 0 auto",
-  ].join(";");
+  dot.style.cssText = selected
+    ? [
+        "width:16px",
+        "height:16px",
+        "border-radius:9999px",
+        `background:${colorDark}`,
+        "border:2.5px solid #fff",
+        `box-shadow:0 0 0 3px ${color}, 0 0 0 5px rgba(255,255,255,.92), 0 2px 10px ${color}`,
+        "pointer-events:none",
+        "flex:0 0 auto",
+      ].join(";")
+    : [
+        "width:16px",
+        "height:16px",
+        "border-radius:9999px",
+        `background:${color}`,
+        "border:2px solid #fff",
+        "box-shadow:0 1px 3px rgba(0,0,0,.32)",
+        "pointer-events:none",
+        "flex:0 0 auto",
+      ].join(";");
   wrap.appendChild(dot);
 
   return wrap;
@@ -420,6 +430,9 @@ export function RaceMap({
         .maplibregl-marker:has(.startline-map-pin:hover) {
           z-index: 20 !important;
         }
+        .maplibregl-marker:has(.startline-map-pin[data-selected="true"]) {
+          z-index: 25 !important;
+        }
         .startline-pin-tip {
           pointer-events: none;
           z-index: 30 !important;
@@ -659,7 +672,6 @@ export function RaceMap({
     if (ev?.location?.lat == null || ev.location.lng == null) return;
     map.easeTo({
       center: [Number(ev.location.lng), Number(ev.location.lat)],
-      zoom: Math.max(map.getZoom(), 9),
       padding,
       duration: 550,
     });
