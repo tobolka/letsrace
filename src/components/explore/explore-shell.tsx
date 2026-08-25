@@ -77,6 +77,8 @@ import { thisWeekendRange } from "@/lib/date-presets";
 import { BrandMark } from "@/components/brand-mark";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
+import { MobileFiltersSheet } from "@/components/explore/mobile-filters-sheet";
+import { MobileSearchSheet } from "@/components/explore/mobile-search-sheet";
 
 const WEEKEND_DEFAULT = thisWeekendRange();
 const exploreSearchParams = {
@@ -170,6 +172,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const searchViewportRef = useRef<(b: MapBounds) => void>(() => {});
   const [filterBarReset, setFilterBarReset] = useState(0);
   const [mobileSheetReady, setMobileSheetReady] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [listSnap, setListSnap] = useState<number>(0.5);
 
   const fallbackCenter = useMemo(() => {
     const c = coldStartCenter(locale);
@@ -535,9 +540,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
       const peek = selected ? 176 : 108;
-      const open = Math.round(Math.min(viewportH * 0.72, 640));
+      const open =
+        mobilePanel === "detail"
+          ? Math.round(Math.min(viewportH * 0.92, 720))
+          : Math.round(Math.min(viewportH * (typeof listSnap === "number" ? listSnap : 0.5), 640));
       return {
-        top: 124,
+        top: 72,
         right: 12,
         bottom: (mobilePanel === "closed" ? peek : open) + 12,
         left: 12,
@@ -551,7 +559,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, mobilePanel, viewportH]);
+  }, [selected, isDesktop, mobilePanel, viewportH, listSnap]);
 
   function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean }) {
     return (
@@ -594,8 +602,27 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         .join(" · ")
     : "";
   const peekSnap = selected ? "176px" : "108px";
-  const openSnap = 0.72;
-  const sheetSnap = mobilePanel === "closed" ? peekSnap : openSnap;
+  const midSnap = 0.5;
+  const fullSnap = 0.92;
+  const sheetSnap =
+    mobilePanel === "closed" ? peekSnap : mobilePanel === "detail" ? fullSnap : listSnap;
+
+  const weekend = thisWeekendRange();
+  const isThisWeekend = filters.dateFrom === weekend.from && filters.dateTo === weekend.to;
+  const weekendLabel = isThisWeekend
+    ? messages.thisWeekend
+    : filters.dateFrom && filters.dateTo
+      ? `${format(parseISO(filters.dateFrom), "d MMM")} – ${format(parseISO(filters.dateTo), "d MMM")}`
+      : filters.dateFrom
+        ? format(parseISO(filters.dateFrom), "d MMM")
+        : messages.date;
+  const filterCount =
+    (filters.disciplines.length ? 1 : 0) +
+    (filters.categories.length ? 1 : 0) +
+    (filters.levels.length ? 1 : 0) +
+    (filters.country ? 1 : 0) +
+    (filters.series ? 1 : 0) +
+    (isThisWeekend ? 0 : 1);
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
@@ -741,7 +768,22 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
         <MobileTopBar
-          locale={locale}
+          weekendLabel={weekendLabel}
+          weekendActive={isThisWeekend}
+          onWeekend={() => {
+            if (isThisWeekend) {
+              setFiltersOpen(true);
+              return;
+            }
+            const w = thisWeekendRange();
+            setDateRange(w.from, w.to);
+          }}
+          filtersLabel={messages.addFilter}
+          filterCount={filterCount}
+          onFilters={() => setFiltersOpen(true)}
+          searchLabel={messages.search}
+          searchActive={Boolean(filters.q.trim())}
+          onSearch={() => setSearchOpen(true)}
           menu={
             <ExploreMenu
               messages={messages}
@@ -751,7 +793,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               onSignIn={() => setAuthOpen(true)}
             />
           }
-          filters={renderFilterBar({ allFilters: true })}
         />
       </div>
 
@@ -765,15 +806,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         noBodyStyles
         repositionInputs={false}
         snapToSequentialPoint
-        snapPoints={[peekSnap, openSnap]}
-        fadeFromIndex={1}
+        snapPoints={[peekSnap, midSnap, fullSnap]}
+        fadeFromIndex={2}
         activeSnapPoint={sheetSnap}
         setActiveSnapPoint={(point) => {
           if (point == null || point === peekSnap) {
             setMobilePanel("closed");
             return;
           }
-          setMobilePanel((panel) => (panel === "closed" ? "list" : panel));
+          if (point === midSnap || point === fullSnap) {
+            setListSnap(point);
+            setMobilePanel((panel) => (panel === "detail" ? "detail" : "list"));
+          }
         }}
       >
         <DrawerContent
@@ -838,7 +882,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             <button
               type="button"
               className="flex min-h-12 w-full items-center justify-between gap-3 px-4 pb-3 text-left touch-manipulation"
-              onClick={() => setMobilePanel("list")}
+              onClick={() => {
+                setListSnap(midSnap);
+                setMobilePanel("list");
+              }}
             >
               <span className="text-base font-medium tabular-nums">
                 {events.length} {messages.racesCount}
@@ -851,31 +898,39 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           ) : null}
 
           {mobilePanel === "detail" && selected ? (
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-1">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
               <EventDetailPanel
                 event={selected}
                 locale={locale}
                 embedded
-                onClose={() => setMobilePanel("list")}
+                onClose={() => {
+                  setListSnap(midSnap);
+                  setMobilePanel("list");
+                }}
                 onSelectSeries={(slug) => {
                   applySeries(slug);
+                  setListSnap(midSnap);
                   setMobilePanel("list");
                 }}
               />
             </div>
           ) : null}
 
-          {mobilePanel === "list" ? (
+          {mobilePanel !== "detail" ? (
             <>
-              <ListToolbar
-                count={events.length}
-                pending={listLoading}
-                sort={listSort}
-                distanceEnabled={distanceEnabled}
-                messages={messages}
-                onSort={setListSort}
-              />
-              <Separator />
+              {mobilePanel !== "closed" ? (
+                <>
+                  <ListToolbar
+                    count={events.length}
+                    pending={listLoading}
+                    sort={listSort}
+                    distanceEnabled={distanceEnabled}
+                    messages={messages}
+                    onSort={setListSort}
+                  />
+                  <Separator />
+                </>
+              ) : null}
               <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 {events.length === 0 ? (
                   <Empty className="border-0 p-6">
@@ -904,6 +959,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         locale={locale}
                         distanceKm={eventDistanceKm(event, userOrigin)}
                         active={event.id === selectedId}
+                        compact
                         onClick={() => {
                           selectEvent(event.id);
                           setMobilePanel("detail");
@@ -918,6 +974,39 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </DrawerContent>
       </Drawer>
       ) : null}
+
+      <MobileFiltersSheet
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        messages={messages}
+        locale={locale}
+        dateFrom={filters.dateFrom}
+        dateTo={filters.dateTo}
+        categories={filters.categories}
+        disciplines={filters.disciplines}
+        levels={filters.levels}
+        series={filters.series}
+        country={filters.country}
+        seriesList={seriesList}
+        onPreset={setDateRange}
+        onCategory={toggleCategory}
+        onDiscipline={setDiscipline}
+        onLevel={toggleLevel}
+        onClearDisciplines={clearDisciplines}
+        onClearLevels={clearLevels}
+        onClearCategories={clearCategories}
+        onSeries={setSeries}
+        onCountry={setCountry}
+        onReset={() => resetExploreFilters()}
+      />
+      <MobileSearchSheet
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        messages={messages}
+        q={filters.q}
+        onQ={handleSearchChange}
+        onSubmit={handleSearchSubmit}
+      />
 
       <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} messages={messages} />
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
@@ -1117,6 +1206,7 @@ function EventCard({
   locale,
   distanceKm: km,
   active,
+  compact,
   onClick,
 }: {
   event: EventListItem;
@@ -1124,6 +1214,7 @@ function EventCard({
   locale: string;
   distanceKm?: number | null;
   active: boolean;
+  compact?: boolean;
   onClick: () => void;
 }) {
   const level =
@@ -1158,6 +1249,14 @@ function EventCard({
     .filter(Boolean)
     .join(" · ");
 
+  const compactPlace = [
+    format(parseISO(event.startDate), "d MMM"),
+    event.location?.municipality || event.location?.name,
+    distanceLabel,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <Item
       asChild
@@ -1172,19 +1271,30 @@ function EventCard({
         className="w-full min-h-12 scroll-my-2 text-left touch-manipulation md:min-h-11"
       >
         <ItemContent>
-          <ItemHeader>
-            <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+          {compact ? null : (
+            <ItemHeader>
+              <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+                <span
+                  className="size-2 shrink-0 rounded-full"
+                  style={{ background: disciplineColor(event.disciplines) }}
+                  aria-hidden
+                />
+                {meta}
+              </span>
+            </ItemHeader>
+          )}
+          <ItemTitle className={cn("text-[15px]", compact && "flex items-center gap-1.5")}>
+            {compact ? (
               <span
                 className="size-2 shrink-0 rounded-full"
                 style={{ background: disciplineColor(event.disciplines) }}
                 aria-hidden
               />
-              {meta}
-            </span>
-          </ItemHeader>
-          <ItemTitle className="text-[15px]">{event.name}</ItemTitle>
+            ) : null}
+            {event.name}
+          </ItemTitle>
           <span className="line-clamp-1 text-sm leading-normal text-muted-foreground">
-            {place}
+            {compact ? compactPlace : place}
           </span>
         </ItemContent>
       </button>

@@ -204,6 +204,7 @@ export const messages = {
     close: "Close",
     sheetExpand: "Show race list",
     sheetCollapse: "Show map",
+    filtersDone: "Done",
     submit: "Submit",
   },
   cs: {
@@ -407,6 +408,7 @@ export const messages = {
     close: "Zavřít",
     sheetExpand: "Zobrazit seznam",
     sheetCollapse: "Zobrazit mapu",
+    filtersDone: "Hotovo",
     submit: "Odeslat",
   },
   pl: {
@@ -610,6 +612,7 @@ export const messages = {
     close: "Zamknij",
     sheetExpand: "Pokaż listę",
     sheetCollapse: "Pokaż mapę",
+    filtersDone: "Gotowe",
     submit: "Wyślij",
   },
   sk: {
@@ -813,6 +816,7 @@ export const messages = {
     close: "Zavrieť",
     sheetExpand: "Zobraziť zoznam",
     sheetCollapse: "Zobraziť mapu",
+    filtersDone: "Hotovo",
     submit: "Odoslať",
   },
 } as const;

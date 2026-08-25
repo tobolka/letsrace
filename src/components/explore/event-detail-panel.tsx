@@ -519,7 +519,7 @@ export function EventDetailPanel({
           </button>
         ) : null}
 
-        {actionLinks.length > 0 ? (
+        {actionLinks.length > 0 && !embedded ? (
           <ButtonGroup orientation="vertical" className="mt-4 w-full">
             {actionLinks.map((link, index) => (
               <Button
@@ -540,50 +540,83 @@ export function EventDetailPanel({
               </Button>
             ))}
           </ButtonGroup>
-        ) : (
+        ) : actionLinks.length === 0 ? (
           <p className="mt-4 text-sm text-muted-foreground">{t.noOnlineEntry}</p>
+        ) : (
+          <ButtonGroup orientation="vertical" className="mt-4 w-full">
+            {secondaryLinks.map((link) => (
+              <Button key={link.href} asChild variant="outline" className="w-full">
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEnter(link.kind)}
+                >
+                  <ExternalLink data-icon="inline-start" />
+                  {link.label}
+                </a>
+              </Button>
+            ))}
+          </ButtonGroup>
         )}
       </CardContent>
 
       <CardFooter
         className={cn(
-          "shrink-0 justify-between gap-2 border-t px-2 py-2 [.border-t]:pt-2",
-          embedded ? "" : "pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2",
+          "shrink-0 gap-2 border-t px-2 py-2 [.border-t]:pt-2",
+          embedded
+            ? "flex-col items-stretch pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+            : "justify-between pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2",
         )}
         inert={dragging || undefined}
       >
-        <p className="sr-only" aria-live="polite">
-          {linkCopied ? t.linkCopied : ""}
-        </p>
-        <p
-          className={cn(
-            "min-w-0 flex-1 text-xs leading-snug",
-            trust === "low" ? "text-destructive" : "text-muted-foreground",
-          )}
-        >
-          {trustText}
-          {checkedText && event.lastSeenAt ? (
-            <>
-              <span aria-hidden> · </span>
-              <time className="tabular-nums" dateTime={event.lastSeenAt}>
-                {checkedText}
-              </time>
-            </>
-          ) : null}
-        </p>
-        <div className="ml-auto flex items-center gap-0.5">
-          <Toggle
-            pressed={linkCopied}
-            size="lg"
-            aria-label={linkCopied ? t.linkCopied : t.shareRace}
-            title={linkCopied ? t.linkCopied : t.shareRace}
-            className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            onPressedChange={() => {
-              if (!linkCopied) void copyShareLink();
-            }}
+        {embedded && primaryHref && primaryLabel ? (
+          <Button asChild size="lg" className="h-12 w-full text-base">
+            <a
+              href={primaryHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEnter(primaryKind)}
+            >
+              <ExternalLink data-icon="inline-start" />
+              {primaryLabel}
+            </a>
+          </Button>
+        ) : null}
+        <div className={cn("flex w-full items-center gap-2", embedded && "px-1")}>
+          <p className="sr-only" aria-live="polite">
+            {linkCopied ? t.linkCopied : ""}
+          </p>
+          <p
+            className={cn(
+              "min-w-0 flex-1 text-xs leading-snug",
+              trust === "low" ? "text-destructive" : "text-muted-foreground",
+            )}
           >
-            <Share2 />
-          </Toggle>
+            {trustText}
+            {checkedText && event.lastSeenAt ? (
+              <>
+                <span aria-hidden> · </span>
+                <time className="tabular-nums" dateTime={event.lastSeenAt}>
+                  {checkedText}
+                </time>
+              </>
+            ) : null}
+          </p>
+          <div className="ml-auto flex items-center gap-0.5">
+            <Toggle
+              pressed={linkCopied}
+              size="lg"
+              aria-label={linkCopied ? t.linkCopied : t.shareRace}
+              title={linkCopied ? t.linkCopied : t.shareRace}
+              className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              onPressedChange={() => {
+                if (!linkCopied) void copyShareLink();
+              }}
+            >
+              <Share2 />
+            </Toggle>
+          </div>
         </div>
       </CardFooter>
 
