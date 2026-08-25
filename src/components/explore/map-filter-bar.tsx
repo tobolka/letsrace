@@ -172,6 +172,7 @@ export function MapFilterBar({
   onQ,
   onSearchSubmit,
   hideSearch = false,
+  allFilters = false,
 }: {
   messages: Messages;
   locale: string;
@@ -196,6 +197,8 @@ export function MapFilterBar({
   onQ: (q: string) => void;
   onSearchSubmit: () => void;
   hideSearch?: boolean;
+  /** Mobile chip row: pin every extra filter, not only active ones. */
+  allFilters?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
@@ -313,8 +316,9 @@ export function MapFilterBar({
   const visible = EXTRA_ORDER.filter(hasValue);
   // Mobile: every extra filter is a chip (horizontal scroll). Nested
   // submenus behind “+ Filtr” are unusable on a phone.
-  const shownExtras = hideSearch ? EXTRA_ORDER : visible;
-  const availableToAdd = hideSearch
+  const pinAll = allFilters || hideSearch;
+  const shownExtras = pinAll ? EXTRA_ORDER : visible;
+  const availableToAdd = pinAll
     ? []
     : EXTRA_ORDER.filter((id) => {
         if (visible.includes(id)) return false;
@@ -511,13 +515,13 @@ export function MapFilterBar({
     <div
       className={cn(
         "pointer-events-auto flex items-center gap-1.5",
-        hideSearch ? "w-max" : "w-full",
+        pinAll ? "w-max" : "w-full",
       )}
     >
       <div
         className={cn(
           "flex items-center gap-1.5",
-          hideSearch
+          pinAll
             ? "flex-nowrap"
             : "min-w-0 flex-1 flex-wrap max-md:flex-nowrap max-md:overflow-x-auto",
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect, type CSSProperties, type PointerEvent } from "react";
+import { Suspense, useMemo, useRef, useState, useEffect, type CSSProperties } from "react";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
@@ -18,6 +18,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Card } from "@/components/ui/card";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHandle,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -141,8 +147,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("closed");
-  const sheetDragY = useRef<number | null>(null);
-  const sheetSwiped = useRef(false);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -165,6 +169,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const areaTimerRef = useRef(0);
   const searchViewportRef = useRef<(b: MapBounds) => void>(() => {});
   const [filterBarReset, setFilterBarReset] = useState(0);
+  const [mobileSheetReady, setMobileSheetReady] = useState(false);
 
   const fallbackCenter = useMemo(() => {
     const c = coldStartCenter(locale);
@@ -518,6 +523,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       setViewportH(window.innerHeight);
     };
     apply();
+    setMobileSheetReady(true);
     mq.addEventListener("change", apply);
     window.addEventListener("resize", apply);
     return () => {
@@ -528,10 +534,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const peek = selected ? 176 : 96;
+      const peek = selected ? 176 : 108;
       const open = Math.round(Math.min(viewportH * 0.72, 640));
       return {
-        top: 136,
+        top: 124,
         right: 12,
         bottom: (mobilePanel === "closed" ? peek : open) + 12,
         left: 12,
@@ -547,7 +553,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     };
   }, [selected, isDesktop, mobilePanel, viewportH]);
 
-  function renderFilterBar(opts?: { hideSearch?: boolean }) {
+  function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean }) {
     return (
       <MapFilterBar
         key={filterBarReset}
@@ -562,6 +568,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         country={filters.country}
         seriesList={seriesList}
         hideSearch={opts?.hideSearch}
+        allFilters={opts?.allFilters}
         onPreset={setDateRange}
         onCategory={toggleCategory}
         onDiscipline={setDiscipline}
@@ -578,29 +585,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     );
   }
 
-  function onSheetHandlePointerDown(e: PointerEvent<HTMLButtonElement>) {
-    sheetSwiped.current = false;
-    sheetDragY.current = e.clientY;
-  }
-
-  function onSheetHandlePointerUp(e: PointerEvent<HTMLButtonElement>) {
-    if (sheetDragY.current == null) return;
-    const dy = e.clientY - sheetDragY.current;
-    sheetDragY.current = null;
-    if (Math.abs(dy) < 24) return;
-    sheetSwiped.current = true;
-    if (dy < 0) setMobilePanel(selected ? "detail" : "list");
-    else setMobilePanel("closed");
-  }
-
-  function onSheetHandleClick() {
-    if (sheetSwiped.current) {
-      sheetSwiped.current = false;
-      return;
-    }
-    setMobilePanel((panel) => (panel === "closed" ? "list" : "closed"));
-  }
-
   const selectedPeekMeta = selected
     ? [
         format(parseISO(selected.startDate), "d MMM"),
@@ -609,6 +593,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         .filter(Boolean)
         .join(" · ")
     : "";
+  const peekSnap = selected ? "176px" : "108px";
+  const openSnap = 0.72;
+  const sheetSnap = mobilePanel === "closed" ? peekSnap : openSnap;
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
@@ -616,59 +603,67 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         className="absolute inset-0"
         style={{ "--map-sheet-inset": `${mapPadding.bottom}px` } as CSSProperties}
       >
-        <RaceMap
-          events={events}
-          selectedId={selectedId}
-          padding={mapPadding}
-          fitSeq={fitSeq}
-          destination={destination}
-          destinationSeq={destinationSeq}
-          fallbackCenter={fallbackCenter}
-          initialFocus={initialFocus}
-          skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
-          onUserLocation={handleUserLocation}
-          onSelect={(id) => {
-            selectEvent(id);
-            setMobilePanel("closed");
-          }}
-          onBackgroundClick={() => {
-            if (!isDesktop) setMobilePanel("closed");
-          }}
-          onBoundsChange={(b, reason) => {
-            setBounds(b);
-            // First camera settle → load races for this viewport (padded query box)
-            if (!initialBoundsFetchDone.current) {
-              initialBoundsFetchDone.current = true;
-              if (filters.q.trim().length >= 3) {
-                void runSearch(filters.q);
+        <Suspense
+          fallback={
+            <div className="flex h-full w-full items-center justify-center bg-stone-200 text-sm text-stone-500">
+              Loading map…
+            </div>
+          }
+        >
+          <RaceMap
+            events={events}
+            selectedId={selectedId}
+            padding={mapPadding}
+            fitSeq={fitSeq}
+            destination={destination}
+            destinationSeq={destinationSeq}
+            fallbackCenter={fallbackCenter}
+            initialFocus={initialFocus}
+            skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
+            onUserLocation={handleUserLocation}
+            onSelect={(id) => {
+              selectEvent(id);
+              setMobilePanel("closed");
+            }}
+            onBackgroundClick={() => {
+              if (!isDesktop) setMobilePanel("closed");
+            }}
+            onBoundsChange={(b, reason) => {
+              setBounds(b);
+              // First camera settle → load races for this viewport (padded query box)
+              if (!initialBoundsFetchDone.current) {
+                initialBoundsFetchDone.current = true;
+                if (filters.q.trim().length >= 3) {
+                  void runSearch(filters.q);
+                  return;
+                }
+                if (filters.series || filters.country) {
+                  lastAreaRef.current = expandViewport(b);
+                  refetch({ skipBounds: true, fitMap: true });
+                } else {
+                  const query = expandViewport(b);
+                  lastAreaRef.current = query;
+                  refetch({ bounds: query, forceBounds: true });
+                }
                 return;
               }
-              if (filters.series || filters.country) {
+              if (destFlyingRef.current) {
+                destFlyingRef.current = false;
                 lastAreaRef.current = expandViewport(b);
-                refetch({ skipBounds: true, fitMap: true });
-              } else {
-                const query = expandViewport(b);
-                lastAreaRef.current = query;
-                refetch({ bounds: query, forceBounds: true });
+                return;
               }
-              return;
-            }
-            if (destFlyingRef.current) {
-              destFlyingRef.current = false;
-              lastAreaRef.current = expandViewport(b);
-              return;
-            }
-            if (reason === "user" || reason === "sync") {
-              scheduleSearchViewport(b);
-              return;
-            }
-            if (reason === "gps" || reason === "locate") {
-              scheduleSearchViewport(b, true);
-            }
-          }}
-          myLocationLabel={messages.myLocation}
-          locationDeniedLabel={messages.locationDenied}
-        />
+              if (reason === "user" || reason === "sync") {
+                scheduleSearchViewport(b);
+                return;
+              }
+              if (reason === "gps" || reason === "locate") {
+                scheduleSearchViewport(b, true);
+              }
+            }}
+            myLocationLabel={messages.myLocation}
+            locationDeniedLabel={messages.locationDenied}
+          />
+        </Suspense>
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
@@ -746,10 +741,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
         <MobileTopBar
-          messages={messages}
-          q={filters.q}
-          onQ={handleSearchChange}
-          onSearchSubmit={handleSearchSubmit}
+          locale={locale}
           menu={
             <ExploreMenu
               messages={messages}
@@ -759,32 +751,38 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               onSignIn={() => setAuthOpen(true)}
             />
           }
-          filters={renderFilterBar({ hideSearch: true })}
+          filters={renderFilterBar({ allFilters: true })}
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 md:hidden">
-        <Card
-          className={cn(
-            "pointer-events-auto flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-t-2xl rounded-b-none py-0 shadow-[0_-8px_32px_rgba(28,25,23,.12)]",
-            mobilePanel === "closed" ? "h-auto" : "h-[min(72dvh,40rem)]",
-          )}
-          style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+      {mobileSheetReady ? (
+      <Drawer
+        open
+        dismissible={false}
+        modal={false}
+        shouldScaleBackground={false}
+        setBackgroundColorOnScale={false}
+        noBodyStyles
+        repositionInputs={false}
+        snapToSequentialPoint
+        snapPoints={[peekSnap, openSnap]}
+        fadeFromIndex={1}
+        activeSnapPoint={sheetSnap}
+        setActiveSnapPoint={(point) => {
+          if (point == null || point === peekSnap) {
+            setMobilePanel("closed");
+            return;
+          }
+          setMobilePanel((panel) => (panel === "closed" ? "list" : panel));
+        }}
+      >
+        <DrawerContent
+          showOverlay={false}
+          style={{ height: "100dvh", maxHeight: "100dvh" }}
+          className="z-20 overflow-hidden rounded-t-2xl border-0 bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(28,25,23,.12)] data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh] md:hidden"
         >
-          <button
-            type="button"
-            className="flex min-h-11 w-full shrink-0 touch-manipulation flex-col items-center justify-center pt-1.5"
-            onClick={onSheetHandleClick}
-            onPointerDown={onSheetHandlePointerDown}
-            onPointerUp={onSheetHandlePointerUp}
-            onPointerCancel={() => {
-              sheetDragY.current = null;
-            }}
-            aria-expanded={mobilePanel !== "closed"}
-            aria-label={mobilePanel === "closed" ? messages.sheetExpand : messages.sheetCollapse}
-          >
-            <span className="h-1 w-10 rounded-full bg-muted-foreground/40" />
-          </button>
+          <DrawerHandle aria-label={mobilePanel === "closed" ? messages.sheetExpand : messages.sheetCollapse} />
+          <DrawerTitle className="sr-only">{messages.racesCount}</DrawerTitle>
 
           {mobilePanel === "closed" && selected ? (
             <div className="flex items-start gap-3 px-4 pb-3">
@@ -917,8 +915,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </div>
             </>
           ) : null}
-        </Card>
-      </div>
+        </DrawerContent>
+      </Drawer>
+      ) : null}
 
       <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} messages={messages} />
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
