@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect, type PointerEvent } from "react";
+import { useMemo, useRef, useState, useEffect, type CSSProperties, type PointerEvent } from "react";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import { EventDetailPanel } from "@/components/explore/event-detail-panel";
@@ -40,7 +40,6 @@ import {
 import {
   Item,
   ItemContent,
-  ItemDescription,
   ItemGroup,
   ItemHeader,
   ItemTitle,
@@ -66,11 +65,12 @@ import {
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { MoreHorizontal, Flag, Check } from "lucide-react";
+import { MoreHorizontal, Flag, Check, ExternalLink, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { BrandMark } from "@/components/brand-mark";
 import { cn } from "@/lib/utils";
+import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 
 const WEEKEND_DEFAULT = thisWeekendRange();
 const exploreSearchParams = {
@@ -140,7 +140,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("closed");
   const sheetDragY = useRef<number | null>(null);
   const sheetSwiped = useRef(false);
   const [submitOpen, setSubmitOpen] = useState(false);
@@ -528,12 +528,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const peek = selected ? 148 : 132;
-      const open = Math.round(Math.min(viewportH * 0.5, 560));
+      const peek = selected ? 176 : 96;
+      const open = Math.round(Math.min(viewportH * 0.72, 640));
       return {
-        top: 56,
-        right: 48,
-        bottom: (mobileOpen ? open : peek) + 12,
+        top: 136,
+        right: 12,
+        bottom: (mobilePanel === "closed" ? peek : open) + 12,
         left: 12,
       };
     }
@@ -545,9 +545,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, mobileOpen, viewportH]);
+  }, [selected, isDesktop, mobilePanel, viewportH]);
 
-  function renderFilterBar() {
+  function renderFilterBar(opts?: { hideSearch?: boolean }) {
     return (
       <MapFilterBar
         key={filterBarReset}
@@ -561,6 +561,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         series={filters.series}
         country={filters.country}
         seriesList={seriesList}
+        hideSearch={opts?.hideSearch}
         onPreset={setDateRange}
         onCategory={toggleCategory}
         onDiscipline={setDiscipline}
@@ -588,7 +589,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     sheetDragY.current = null;
     if (Math.abs(dy) < 24) return;
     sheetSwiped.current = true;
-    setMobileOpen(dy < 0);
+    if (dy < 0) setMobilePanel(selected ? "detail" : "list");
+    else setMobilePanel("closed");
   }
 
   function onSheetHandleClick() {
@@ -596,7 +598,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       sheetSwiped.current = false;
       return;
     }
-    setMobileOpen((open) => !open);
+    setMobilePanel((panel) => (panel === "closed" ? "list" : "closed"));
   }
 
   const selectedPeekMeta = selected
@@ -610,7 +612,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
-      <div className="absolute inset-0">
+      <div
+        className="absolute inset-0"
+        style={{ "--map-sheet-inset": `${mapPadding.bottom}px` } as CSSProperties}
+      >
         <RaceMap
           events={events}
           selectedId={selectedId}
@@ -624,7 +629,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onUserLocation={handleUserLocation}
           onSelect={(id) => {
             selectEvent(id);
-            setMobileOpen(true);
+            setMobilePanel("closed");
+          }}
+          onBackgroundClick={() => {
+            if (!isDesktop) setMobilePanel("closed");
           }}
           onBoundsChange={(b, reason) => {
             setBounds(b);
@@ -736,11 +744,30 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         )}
       </div>
 
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
+        <MobileTopBar
+          messages={messages}
+          q={filters.q}
+          onQ={handleSearchChange}
+          onSearchSubmit={handleSearchSubmit}
+          menu={
+            <ExploreMenu
+              messages={messages}
+              locale={locale}
+              onSubmitRace={() => setSubmitOpen(true)}
+              onFeedback={() => setFeedbackOpen(true)}
+              onSignIn={() => setAuthOpen(true)}
+            />
+          }
+          filters={renderFilterBar({ hideSearch: true })}
+        />
+      </div>
+
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 md:hidden">
         <Card
           className={cn(
             "pointer-events-auto flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-t-2xl rounded-b-none py-0 shadow-[0_-8px_32px_rgba(28,25,23,.12)]",
-            mobileOpen ? "h-[min(50dvh,34rem)]" : "h-auto",
+            mobilePanel === "closed" ? "h-auto" : "h-[min(72dvh,40rem)]",
           )}
           style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
         >
@@ -753,63 +780,95 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onPointerCancel={() => {
               sheetDragY.current = null;
             }}
-            aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? messages.sheetCollapse : messages.sheetExpand}
+            aria-expanded={mobilePanel !== "closed"}
+            aria-label={mobilePanel === "closed" ? messages.sheetExpand : messages.sheetCollapse}
           >
             <span className="h-1 w-10 rounded-full bg-muted-foreground/40" />
           </button>
 
-          {selected && !mobileOpen ? (
+          {mobilePanel === "closed" && selected ? (
+            <div className="flex items-start gap-3 px-4 pb-3">
+              <button
+                type="button"
+                className="flex min-h-11 min-w-0 flex-1 items-start gap-2 text-left touch-manipulation"
+                onClick={() => setMobilePanel("detail")}
+              >
+                <span
+                  className="mt-2 size-2.5 shrink-0 rounded-full"
+                  style={{ background: disciplineColor(selected.disciplines) }}
+                  aria-hidden
+                />
+                <span className="min-w-0">
+                  <span className="block truncate text-base font-semibold leading-snug">
+                    {selected.name}
+                  </span>
+                  {selectedPeekMeta ? (
+                    <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+                      {selectedPeekMeta}
+                    </span>
+                  ) : null}
+                </span>
+              </button>
+              {selected.registrationUrl || selected.websiteUrl || selected.listingUrl ? (
+                <Button asChild size="sm" className="mt-0.5 h-11 shrink-0 px-3">
+                  <a
+                    href={
+                      selected.registrationUrl || selected.websiteUrl || selected.listingUrl || "#"
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink data-icon="inline-start" />
+                    {selected.registrationUrl ? messages.register : messages.openWebsite}
+                  </a>
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="mt-0.5 h-11 shrink-0"
+                  onClick={() => setMobilePanel("detail")}
+                >
+                  {messages.sheetExpand}
+                </Button>
+              )}
+            </div>
+          ) : null}
+
+          {mobilePanel === "closed" && !selected ? (
             <button
               type="button"
-              className="flex min-h-11 w-full items-start gap-2 px-4 pb-3 text-left touch-manipulation"
-              onClick={() => setMobileOpen(true)}
+              className="flex min-h-12 w-full items-center justify-between gap-3 px-4 pb-3 text-left touch-manipulation"
+              onClick={() => setMobilePanel("list")}
             >
-              <span
-                className="mt-2 size-2.5 shrink-0 rounded-full"
-                style={{ background: disciplineColor(selected.disciplines) }}
-                aria-hidden
-              />
-              <span className="min-w-0">
-                <span className="block truncate text-[15px] font-semibold leading-snug">
-                  {selected.name}
-                </span>
-                {selectedPeekMeta ? (
-                  <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                    {selectedPeekMeta}
-                  </span>
-                ) : null}
+              <span className="text-base font-medium tabular-nums">
+                {events.length} {messages.racesCount}
+              </span>
+              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                {messages.sheetExpand}
+                <ChevronUp className="size-4" aria-hidden />
               </span>
             </button>
-          ) : (
-            <Header
-              messages={messages}
-              locale={locale}
-              onSubmitRace={() => setSubmitOpen(true)}
-              onFeedback={() => setFeedbackOpen(true)}
-              onSignIn={() => setAuthOpen(true)}
-              compact
-            />
-          )}
+          ) : null}
 
-          {mobileOpen && selected ? (
+          {mobilePanel === "detail" && selected ? (
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-1">
               <EventDetailPanel
                 event={selected}
                 locale={locale}
                 embedded
-                onClose={() => selectEvent(null)}
-                onSelectSeries={applySeries}
+                onClose={() => setMobilePanel("list")}
+                onSelectSeries={(slug) => {
+                  applySeries(slug);
+                  setMobilePanel("list");
+                }}
               />
             </div>
           ) : null}
 
-          {mobileOpen && !selected ? (
+          {mobilePanel === "list" ? (
             <>
-              <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
-                {renderFilterBar()}
-              </div>
-              <Separator />
               <ListToolbar
                 count={events.length}
                 pending={listLoading}
@@ -847,19 +906,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         locale={locale}
                         distanceKm={eventDistanceKm(event, userOrigin)}
                         active={event.id === selectedId}
-                        onClick={() => selectEvent(event.id)}
+                        onClick={() => {
+                          selectEvent(event.id);
+                          setMobilePanel("detail");
+                        }}
                       />
                     ))}
                   </ItemGroup>
                 )}
               </div>
             </>
-          ) : null}
-
-          {!mobileOpen && !selected ? (
-            <p className="px-4 pb-2 text-xs text-muted-foreground tabular-nums">
-              {events.length} {messages.racesCount}
-            </p>
           ) : null}
         </Card>
       </div>
@@ -971,61 +1027,88 @@ function Header({
       )}
     >
       <BrandMark href={`/${locale}`} size={compact ? "sm" : "md"} />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={messages.more}
-            className="size-8"
-          >
-            <MoreHorizontal />
-          </Button>
-        </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  {messages.language}
-                  <span className="ml-auto text-xs text-muted-foreground">{locale.toUpperCase()}</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    {locales.map((l) => (
-                      <DropdownMenuItem key={l} asChild>
-                        <Link href={`/${l}`} aria-current={l === locale ? "page" : undefined}>
-                          <Check aria-hidden className={l === locale ? undefined : "opacity-0"} />
-                          {l.toUpperCase()}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem onSelect={onSignIn}>{messages.signIn}</DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/${locale}/account`}>{messages.account}</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/${locale}/calendar`}>{messages.myCalendar}</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onSubmitRace}>
-                <Flag />
-                {messages.missingRace}
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/admin">{messages.admin}</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-      </DropdownMenu>
+      <ExploreMenu
+        messages={messages}
+        locale={locale}
+        onSubmitRace={onSubmitRace}
+        onFeedback={onFeedback}
+        onSignIn={onSignIn}
+        compact
+      />
     </div>
+  );
+}
+
+function ExploreMenu({
+  messages,
+  locale,
+  onSubmitRace,
+  onFeedback,
+  onSignIn,
+  compact,
+}: {
+  messages: Messages;
+  locale: string;
+  onSubmitRace: () => void;
+  onFeedback: () => void;
+  onSignIn: () => void;
+  compact?: boolean;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size={compact ? "icon-sm" : "icon"}
+          aria-label={messages.more}
+          className={compact ? "size-8" : "size-11 shrink-0 rounded-full"}
+        >
+          <MoreHorizontal />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align={compact ? "end" : "start"} className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              {messages.language}
+              <span className="ml-auto text-xs text-muted-foreground">{locale.toUpperCase()}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                {locales.map((l) => (
+                  <DropdownMenuItem key={l} asChild>
+                    <Link href={`/${l}`} aria-current={l === locale ? "page" : undefined}>
+                      <Check aria-hidden className={l === locale ? undefined : "opacity-0"} />
+                      {l.toUpperCase()}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onSelect={onSignIn}>{messages.signIn}</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={`/${locale}/account`}>{messages.account}</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={`/${locale}/calendar`}>{messages.myCalendar}</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={onSubmitRace}>
+            <Flag />
+            {messages.missingRace}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/admin">{messages.admin}</Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -1087,7 +1170,7 @@ function EventCard({
         type="button"
         data-event-id={event.id}
         onClick={onClick}
-        className="w-full min-h-11 scroll-my-2 text-left touch-manipulation"
+        className="w-full min-h-12 scroll-my-2 text-left touch-manipulation md:min-h-11"
       >
         <ItemContent>
           <ItemHeader>
@@ -1101,7 +1184,9 @@ function EventCard({
             </span>
           </ItemHeader>
           <ItemTitle className="text-[15px]">{event.name}</ItemTitle>
-          <ItemDescription className="line-clamp-1">{place}</ItemDescription>
+          <span className="line-clamp-1 text-sm leading-normal text-muted-foreground">
+            {place}
+          </span>
         </ItemContent>
       </button>
     </Item>

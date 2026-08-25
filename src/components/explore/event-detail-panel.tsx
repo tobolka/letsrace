@@ -413,7 +413,14 @@ export function EventDetailPanel({
           <span className="min-w-0">{event.name}</span>
         </CardTitle>
         <CardAction className="self-center">
-          <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label={t.close}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={embedded ? "size-11" : undefined}
+            onClick={onClose}
+            aria-label={t.close}
+          >
             <X />
           </Button>
         </CardAction>

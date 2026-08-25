@@ -33,6 +33,8 @@ type Props = {
   events: EventListItem[];
   selectedId?: string | null;
   onSelect: (id: string) => void;
+  /** Map canvas tap (not a pin) — used to collapse the mobile sheet. */
+  onBackgroundClick?: () => void;
   onBoundsChange: (b: MapBounds, reason: BoundsChangeReason) => void;
   myLocationLabel?: string;
   locationDeniedLabel?: string;
@@ -109,8 +111,9 @@ function makePinElement(event: EventListItem, selected: boolean) {
     "display:flex",
     "align-items:center",
     "justify-content:center",
-    "width:32px",
-    "height:32px",
+    typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+      ? "width:44px;height:44px"
+      : "width:32px;height:32px",
     "padding:0",
     "margin:0",
     "border:0",
@@ -279,6 +282,7 @@ export function RaceMap({
   events,
   selectedId,
   onSelect,
+  onBackgroundClick,
   onBoundsChange,
   myLocationLabel = "My location",
   locationDeniedLabel = "Location permission denied",
@@ -303,6 +307,7 @@ export function RaceMap({
   const userMovedRef = useRef(false);
   const userGestureRef = useRef(false);
   const onSelectRef = useRef(onSelect);
+  const onBackgroundClickRef = useRef(onBackgroundClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onUserLocationRef = useRef(onUserLocation);
   const paddingRef = useRef(padding);
@@ -319,6 +324,7 @@ export function RaceMap({
   const [locError, setLocError] = useState<string | null>(null);
 
   onSelectRef.current = onSelect;
+  onBackgroundClickRef.current = onBackgroundClick;
   onBoundsChangeRef.current = onBoundsChange;
   onUserLocationRef.current = onUserLocation;
   paddingRef.current = padding;
@@ -389,19 +395,17 @@ export function RaceMap({
         }
         @media (max-width: 767px) {
           .maplibregl-ctrl-top-right {
-            top: max(8px, env(safe-area-inset-top));
-            right: 8px;
-          }
-          .maplibregl-ctrl-top-right .maplibregl-ctrl {
-            margin: 0 0 8px 0 !important;
+            display: none;
           }
           .maplibregl-ctrl-bottom-right {
-            bottom: calc(7.5rem + env(safe-area-inset-bottom));
+            bottom: calc(var(--map-sheet-inset, 7.5rem) + 8px);
             right: 8px;
             margin: 0 !important;
           }
           .maplibregl-ctrl-zoom-in,
-          .maplibregl-ctrl-zoom-out,
+          .maplibregl-ctrl-zoom-out {
+            display: none !important;
+          }
           .startline-locate-ctrl {
             width: 44px !important;
             height: 44px !important;
@@ -459,12 +463,10 @@ export function RaceMap({
     initialViewDoneRef.current = false;
     (window as unknown as { __startlineMap?: Map }).__startlineMap = map;
 
-    // Zoom + locate stacked in the same MapLibre corner (no overlap)
-    const controlCorner = window.matchMedia("(min-width: 768px)").matches
-      ? "bottom-right"
-      : "top-right";
-    map.addControl(new NavigationControl({ showCompass: false }), controlCorner);
-
+    const isDesktopMap = window.matchMedia("(min-width: 768px)").matches;
+    if (isDesktopMap) {
+      map.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
+    }
     const locateCtrl = {
       onAdd() {
         const container = document.createElement("div");
@@ -491,7 +493,7 @@ export function RaceMap({
         locateBtnRef.current = null;
       },
     };
-    map.addControl(locateCtrl, controlCorner);
+    map.addControl(locateCtrl, "bottom-right");
     setMapEpoch((n) => n + 1);
 
     // Fallback view: locale market ~200 km until GPS arrives (or a shared race focus)
@@ -516,6 +518,13 @@ export function RaceMap({
       }
     });
 
+    map.on("click", (e) => {
+      const target = e.originalEvent.target;
+      if (target instanceof Element && target.closest(".startline-map-pin, .startline-locate-ctrl, .maplibregl-ctrl")) {
+        return;
+      }
+      onBackgroundClickRef.current?.();
+    });
     map.on("dragstart", () => {
       userMovedRef.current = true;
       userGestureRef.current = true;

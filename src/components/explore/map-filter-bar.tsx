@@ -171,6 +171,7 @@ export function MapFilterBar({
   q,
   onQ,
   onSearchSubmit,
+  hideSearch = false,
 }: {
   messages: Messages;
   locale: string;
@@ -194,6 +195,7 @@ export function MapFilterBar({
   q: string;
   onQ: (q: string) => void;
   onSearchSubmit: () => void;
+  hideSearch?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
@@ -309,12 +311,17 @@ export function MapFilterBar({
   }
 
   const visible = EXTRA_ORDER.filter(hasValue);
-  const availableToAdd = EXTRA_ORDER.filter((id) => {
-    if (visible.includes(id)) return false;
-    if (id === "series" && visibleSeries.length === 0) return false;
-    if (id === "country" && countryCodes.length === 0) return false;
-    return true;
-  });
+  // Mobile: every extra filter is a chip (horizontal scroll). Nested
+  // submenus behind “+ Filtr” are unusable on a phone.
+  const shownExtras = hideSearch ? EXTRA_ORDER : visible;
+  const availableToAdd = hideSearch
+    ? []
+    : EXTRA_ORDER.filter((id) => {
+        if (visible.includes(id)) return false;
+        if (id === "series" && visibleSeries.length === 0) return false;
+        if (id === "country" && countryCodes.length === 0) return false;
+        return true;
+      });
 
   function applyPreset(from: string, to: string) {
     setCustomPicked(false);
@@ -501,8 +508,20 @@ export function MapFilterBar({
   }
 
   return (
-    <div className="pointer-events-auto flex w-full items-center gap-1.5">
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 max-md:flex-nowrap max-md:overflow-x-auto">
+    <div
+      className={cn(
+        "pointer-events-auto flex items-center gap-1.5",
+        hideSearch ? "w-max" : "w-full",
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center gap-1.5",
+          hideSearch
+            ? "flex-nowrap"
+            : "min-w-0 flex-1 flex-wrap max-md:flex-nowrap max-md:overflow-x-auto",
+        )}
+      >
         <Popover
           open={dateOpen}
           onOpenChange={(next) => {
@@ -519,7 +538,7 @@ export function MapFilterBar({
               variant="secondary"
               size="sm"
               aria-pressed={dateOpen}
-              className="h-8 leading-none tabular-nums [@media(pointer:coarse)]:h-11"
+              className="h-8 shrink-0 leading-none tabular-nums max-md:h-11 [@media(pointer:coarse)]:h-11"
             >
               <Calendar />
               {dateLabel}
@@ -528,7 +547,7 @@ export function MapFilterBar({
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-auto max-h-[min(70dvh,36rem)] overflow-y-auto overscroll-contain p-0"
+            className="w-auto max-h-[min(70dvh,36rem)] max-w-[calc(100vw-1.5rem)] overflow-y-auto overscroll-contain p-0"
             collisionPadding={12}
           >
             <div className="flex w-full flex-col overflow-hidden md:flex-row">
@@ -577,8 +596,9 @@ export function MapFilterBar({
           </PopoverContent>
         </Popover>
 
-        {visible.map((id) => {
+        {shownExtras.map((id) => {
           const Icon = FILTER_ICONS[id];
+          const active = hasValue(id);
           return (
             <div key={id} className="inline-flex h-full max-w-full shrink-0 items-center">
               <DropdownMenu>
@@ -588,7 +608,10 @@ export function MapFilterBar({
                     variant="secondary"
                     size="sm"
                     aria-label={`${extraMeta[id].label} ${extraMeta[id].value ?? ""}`.trim()}
-                    className="rounded-r-none"
+                    className={cn(
+                      "max-md:h-11 [@media(pointer:coarse)]:h-11",
+                      active && "rounded-r-none",
+                    )}
                   >
                     <Icon />
                     <span className="max-w-[12rem] truncate">
@@ -598,22 +621,27 @@ export function MapFilterBar({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className={cn("max-h-80", id === "series" ? "w-72" : "w-56")}
+                  className={cn(
+                    "max-h-[min(60dvh,20rem)] overflow-y-auto",
+                    id === "series" ? "w-72 max-w-[calc(100vw-1.5rem)]" : "w-56",
+                  )}
                   collisionPadding={12}
                 >
                   {renderValues(id)}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon-sm"
-                aria-label={`${messages.clearFilter} ${extraMeta[id].label}`}
-                className="rounded-l-none"
-                onClick={() => unpin(id)}
-              >
-                <X />
-              </Button>
+              {active ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon-sm"
+                  aria-label={`${messages.clearFilter} ${extraMeta[id].label}`}
+                  className="rounded-l-none max-md:size-11 [@media(pointer:coarse)]:size-11"
+                  onClick={() => unpin(id)}
+                >
+                  <X />
+                </Button>
+              ) : null}
             </div>
           );
         })}
@@ -662,7 +690,7 @@ export function MapFilterBar({
         ) : null}
       </div>
 
-      {q.trim() ? (
+      {hideSearch ? null : q.trim() ? (
         <div className="inline-flex h-full max-w-[min(100%,12rem)] shrink-0 items-center">
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger asChild>
@@ -769,4 +797,4 @@ function PlaceSearchForm({
   );
 }
 
-const itemClass = "[@media(pointer:coarse)]:min-h-11";
+const itemClass = "max-md:min-h-11 [@media(pointer:coarse)]:min-h-11";
