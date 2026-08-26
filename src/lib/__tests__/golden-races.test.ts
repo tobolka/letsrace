@@ -276,6 +276,60 @@ describe("golden races — dedup", () => {
     expect(score).toBe(0);
     expect(reasons).toContain("format_conflict");
   });
+
+  it("Kolo pro život Ralsko sponsor title merges with short listing", () => {
+    const { score, reasons } = scoreDuplicate(
+      {
+        startDate: "2026-09-26",
+        name: "RALSKO MTB TOUR ŠKODA AUTO",
+        lat: 50.61,
+        lng: 14.8,
+        placeText: "Ralsko",
+        seriesName: "Kolo pro život",
+      },
+      {
+        startDate: "2026-09-26",
+        name: "Ralsko MTB Tour",
+        lat: 50.61,
+        lng: 14.8,
+        placeText: "Ralsko",
+        seriesName: "Kolo pro život",
+      },
+    );
+    expect(score).toBeGreaterThanOrEqual(50);
+    expect(reasons).toEqual(
+      expect.arrayContaining(["same_day", "same_place"]),
+    );
+    expect(
+      reasons.includes("same_canonical_name") ||
+        reasons.includes("name_sim_mid") ||
+        reasons.includes("name_sim_high"),
+    ).toBe(true);
+  });
+
+  it("Kolo pro život Znojmo multi-day listing merges with Sunday mirror", () => {
+    const { score, reasons } = scoreDuplicate(
+      {
+        startDate: "2026-09-05",
+        endDate: "2026-09-06",
+        name: "DIRECT ZNOJMO BURČÁK TOUR",
+        lat: 48.83,
+        lng: 16.06,
+        placeText: "Znojmo",
+        seriesName: "Kolo pro život",
+      },
+      {
+        startDate: "2026-09-06",
+        name: "ZNOJMO BURČÁK TOUR",
+        lat: 48.83,
+        lng: 16.06,
+        placeText: "Znojmo",
+        seriesName: "Kolo pro život",
+      },
+    );
+    expect(score).toBeGreaterThanOrEqual(50);
+    expect(reasons).toEqual(expect.arrayContaining(["same_place", "weekend"]));
+  });
 });
 
 describe("golden races — display honesty", () => {

@@ -202,6 +202,10 @@ const SERIES_ALIAS_RULES: { re: RegExp; token: string }[] = [
 const NOISE_WORDS =
   /\b(zavod|race|open|memorial|memoria|uci|c1|c2|c3|hc|xco|xcc|xcm|dh|enduro|gravel|road|mtb|cx|bmx|elite|junior|u23|masters|kids|deti|mladez|vpace)\b/gi;
 
+/** Sponsor / marketing fluff that differs between official and calendar titles. */
+const SPONSOR_NOISE =
+  /\b(skoda\s*auto|škoda\s*auto|direct|ozp|galaxy|ceska\s*sporitelna|ceska\s*sporitelna|generali|uniqa|kooperativa|slavia|tipsport)\b/gi;
+
 /** Calendar roots that must not count as “same URL”. */
 const GENERIC_HOST_PATH =
   /^(hynekmusil\.cz|sumator\.cz|mtbs\.cz|radsport-events\.de|eventivsport\.com|velokal\.de|jiskra\.potocky\.cz|jihoceskymtbpohar\.cz|maraton\.cz|mso\.swiss)(\/(kalendar|sekce\/kalendar|map|race\/?|terminovka)?)?$/i;
@@ -271,6 +275,8 @@ export function canonicalizeForDedup(name: string): string {
   s = s
     .replace(/\b\d{1,2}\.\s*/g, " ")
     .replace(/\b20\d{2}\b/g, " ")
+    .replace(/\b\d{1,2}\s*[-–/]\s*\d{1,2}\s*\/\s*\d{1,2}\b/g, " ")
+    .replace(SPONSOR_NOISE, " ")
     .replace(NOISE_WORDS, " ")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
@@ -510,23 +516,39 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   if (ca && cb && ca === cb) {
     score += 28;
     reasons.push("same_canonical_name");
-  } else if (sharedAlias && near && sameDay) {
-    // Same series + venue + day (Hynek listing vs official calendar).
-    // Consecutive cup rounds share branding — do not merge across the weekend.
-    score += 24;
-    reasons.push("series_alias");
-  } else if (sharedAlias) {
-    score += 8;
-    reasons.push("series_alias_weak");
-  } else if (sim >= 0.88) {
-    score += 26;
-    reasons.push("name_sim_high");
-  } else if (sim >= 0.55) {
-    score += 14;
-    reasons.push("name_sim_mid");
-  } else if (sim >= 0.35) {
-    score += 6;
-    reasons.push("name_sim_low");
+  } else {
+    if (sharedAlias && near && sameDay) {
+      // Same series + venue + day (Hynek listing vs official calendar).
+      // Consecutive cup rounds share branding — do not merge across the weekend.
+      score += 24;
+      reasons.push("series_alias");
+    } else if (sharedAlias && near && datesOk) {
+      // Multi-day listing (Fri–Sat) vs Sunday-only mirror of the same race.
+      score += 16;
+      reasons.push("series_alias");
+    } else if (sharedAlias) {
+      score += 8;
+      reasons.push("series_alias_weak");
+    }
+
+    // Always record similarity for merge gates — series_alias must not hide it.
+    if (sim >= 0.88) {
+      if (!reasons.includes("series_alias")) score += 26;
+      else score += 4;
+      reasons.push("name_sim_high");
+    } else if (sim >= 0.55) {
+      if (!reasons.includes("series_alias") && !reasons.includes("series_alias_weak")) {
+        score += 14;
+      } else {
+        score += 4;
+      }
+      reasons.push("name_sim_mid");
+    } else if (sim >= 0.35) {
+      if (!reasons.includes("series_alias") && !reasons.includes("series_alias_weak")) {
+        score += 6;
+      }
+      reasons.push("name_sim_low");
+    }
   }
 
   // Weak title ("UCI C1") absorbed into richer title at same place/weekend

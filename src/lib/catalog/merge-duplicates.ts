@@ -3,6 +3,7 @@ import {
   distanceKm,
   preferEventName,
   scoreDuplicate,
+  canonicalizeForDedup,
   type DedupEvent,
 } from "@/lib/dedup";
 
@@ -17,7 +18,7 @@ export type MergeDuplicateRow = {
   fingerprint: string | null;
   location: { lat?: number; lng?: number; name?: string; municipality?: string } | null;
   series: { name?: string } | null;
-  sources: { id: string; watched_url_id: string | null; external_id: string | null }[] | null;
+  sources?: { id: string; watched_url_id: string | null; external_id: string | null }[] | null;
 };
 
 function asDedup(row: MergeDuplicateRow): DedupEvent {
@@ -45,6 +46,33 @@ const FORMAT_TAG = /\b(xco|xcc|xcm|dhi|dh|enduro|cx|road|gravel|mtbo?)\b/i;
 
 const MTB_FORMATS = new Set(["xco", "xcc", "xcm", "dhi", "dh", "enduro", "mtb"]);
 
+function foldName(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+const ORDINAL_CONFLICT =
+  /\b(prvni|druh[yý]|tret[ií]|ctvrt[yý]|pate|n[°º]?\s*\d+|no\.?\s*\d+)\b/gi;
+
+function ordinalConflict(a: string, b: string): boolean {
+  const nums = (s: string) => {
+    const out = new Set<string>();
+    for (const m of foldName(s).matchAll(ORDINAL_CONFLICT)) {
+      out.add(m[0]!.replace(/\s+/g, ""));
+    }
+    // Also catch "1.kolo" / "2. kolo" style already handled by roundConflict;
+    // pick bare "první/třetí" series listings.
+    return out;
+  };
+  const aa = nums(a);
+  const bb = nums(b);
+  if (!aa.size || !bb.size) return false;
+  for (const n of aa) if (bb.has(n)) return false;
+  return true;
+}
+
 function formatTagConflict(a: string, b: string): boolean {
   const ta = a.match(FORMAT_TAG)?.[1]?.toLowerCase();
   const tb = b.match(FORMAT_TAG)?.[1]?.toLowerCase();
@@ -55,14 +83,14 @@ function formatTagConflict(a: string, b: string): boolean {
 }
 
 function hasRoundNumber(name: string): boolean {
-  return /(?:^|\s)(?:#|rd\.?|round|kolo|etapa|stage|leg)\s*\d{1,2}\b|\d{1,2}\.\s*(?:kolo|etapa|round|čp|cp)\b/i.test(
+  return /(?:^|\s)(?:#|rd\.?|round|kolo|etapa|stage|leg)\s*\d{1,2}\b|\d{1,2}\.?\s*(?:kolo|etapa|round|čp|cp)\b/i.test(
     name,
   );
 }
 
 function roundConflict(a: string, b: string): boolean {
   const roundRe =
-    /(?:^|\s)(?:#|rd\.?|round|kolo|etapa|stage|leg)\s*(\d{1,2})\b|(\d{1,2})\.\s*(?:kolo|etapa|round|čp|cp)\b/gi;
+    /(?:^|\s)(?:#|rd\.?|round|kolo|etapa|stage|leg)\s*(\d{1,2})\b|(\d{1,2})\.?\s*(?:kolo|etapa|round|čp|cp)\b/gi;
   const nums = (s: string) => {
     const out = new Set<string>();
     for (const m of s.matchAll(roundRe)) {
@@ -77,6 +105,22 @@ function roundConflict(a: string, b: string): boolean {
   return true;
 }
 
+function dateSpansOverlap(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
+  const day = (iso: string) => {
+    const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+    return Date.UTC(y!, m! - 1, d!) / 86_400_000;
+  };
+  const a0 = day(a.start_date);
+  const a1 = day(a.end_date || a.start_date);
+  const b0 = day(b.start_date);
+  const b1 = day(b.end_date || b.start_date);
+  const lo = Math.min(a0, a1);
+  const hi = Math.max(a0, a1);
+  const lo2 = Math.min(b0, b1);
+  const hi2 = Math.max(b0, b1);
+  return !(hi < lo2 || hi2 < lo);
+}
+
 function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   if (JUNK_LISTING.test(a.name) || JUNK_LISTING.test(b.name)) return true;
   const kidsA = /\bkids\b/i.test(a.name);
@@ -86,7 +130,11 @@ function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   const ttB = /časovka|\btt\b|time.?trial/i.test(b.name);
   if (ttA !== ttB) return true;
   if (roundConflict(a.name, b.name)) return true;
+  if (ordinalConflict(a.name, b.name)) return true;
   if (formatTagConflict(a.name, b.name)) return true;
+  const roadA = /\broad\b|silni[cč]/i.test(a.name);
+  const roadB = /\broad\b|silni[cč]/i.test(b.name);
+  if (roadA !== roadB) return true;
   const tagA = a.name.match(FORMAT_TAG)?.[1]?.toLowerCase();
   const tagB = b.name.match(FORMAT_TAG)?.[1]?.toLowerCase();
   if (a.start_date !== b.start_date && tagA && tagB && tagA !== tagB) return true;
@@ -96,6 +144,22 @@ function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   if (
     a.start_date !== b.start_date &&
     (STAGE_RACE.test(a.name) || STAGE_RACE.test(b.name))
+  ) {
+    return true;
+  }
+  // Adjacent single-day listings of the same cup (Sat + Sun rounds) — only merge
+  // when one row's date span covers the other (true multi-day listing mirror).
+  if (a.start_date !== b.start_date && !dateSpansOverlap(a, b)) return true;
+  // Overlapping end_dates on consecutive starts with identical titles are usually
+  // stage-race days (e.g. RiderMan Sat+Sun), not a duplicate listing.
+  if (
+    a.start_date !== b.start_date &&
+    dateSpansOverlap(a, b) &&
+    canonicalizeForDedup(a.name) === canonicalizeForDedup(b.name) &&
+    a.end_date &&
+    b.end_date &&
+    a.end_date !== a.start_date &&
+    b.end_date !== b.start_date
   ) {
     return true;
   }
@@ -110,8 +174,20 @@ function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
 }
 
 function winner(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDuplicateRow {
+  const urlScore = (url: string | null) => {
+    if (!url) return 0;
+    try {
+      const u = new URL(url);
+      const path = u.pathname.replace(/\/+$/, "");
+      if (!path || path === "/") return 10;
+      return 50 + Math.min(40, path.split("/").filter(Boolean).length * 10);
+    } catch {
+      return 10;
+    }
+  };
   const score = (r: MergeDuplicateRow) =>
-    (r.website_url ? 50 : 0) +
+    urlScore(r.website_url) +
+    (r.registration_url ? 40 : 0) +
     (r.series_id ? 30 : 0) +
     (r.sources?.length ?? 0) * 5 +
     (preferEventName(r.name, a.name === r.name ? b.name : a.name) === r.name ? 8 : 0);
@@ -139,7 +215,7 @@ export async function mergePublicDuplicates(opts?: {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, location:locations(lat, lng, name, municipality), series:series(name), sources:event_sources(id, watched_url_id, external_id)",
+        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, location:locations(lat, lng, name, municipality), series:series(name)",
       )
       .eq("visibility", "public")
       .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
@@ -174,21 +250,59 @@ export async function mergePublicDuplicates(opts?: {
     byDay.set(d, list);
   }
 
-  for (const here of byDay.values()) {
+  const considerPair = (a: MergeDuplicateRow, b: MergeDuplicateRow) => {
+    if (a.id === b.id) return;
+    const left = a.id < b.id ? a : b;
+    const right = a.id < b.id ? b : a;
+    const { score, reasons } = scoreDuplicate(asDedup(left), asDedup(right));
+    if (score < 50) return;
+    const dayOk = reasons.includes("same_day") || reasons.includes("weekend");
+    const nameOk =
+      reasons.includes("same_canonical_name") ||
+      reasons.includes("name_sim_high") ||
+      (reasons.includes("name_substring") && reasons.includes("name_sim_mid")) ||
+      reasons.includes("weak_name_absorbed");
+    // Weekend mirrors need a strong title match — series alone is too loose.
+    if (
+      reasons.includes("weekend") &&
+      !reasons.includes("same_day") &&
+      !reasons.includes("same_canonical_name") &&
+      !reasons.includes("name_sim_high")
+    ) {
+      return;
+    }
+    // Same-series + mid similarity without a shared title core is too loose
+    // (e.g. two Bahno venues, Bedřichov vs NMNM with bad coords).
+    if (
+      reasons.includes("series_alias") &&
+      !reasons.includes("same_canonical_name") &&
+      !reasons.includes("name_sim_high") &&
+      !(reasons.includes("name_substring") && reasons.includes("name_sim_mid"))
+    ) {
+      return;
+    }
+    if (!dayOk || !reasons.includes("same_place") || !nameOk) return;
+    if (isJunkPair(left, right)) return;
+    unite(left.id, right.id);
+  };
+
+  const days = [...byDay.keys()].sort();
+  for (let i = 0; i < days.length; i++) {
+    const day = days[i]!;
+    const here = byDay.get(day) ?? [];
     for (const a of here) {
-      for (const b of here) {
-        if (a.id >= b.id) continue;
-        const { score, reasons } = scoreDuplicate(asDedup(a), asDedup(b));
-        if (score < 50) continue;
-        const nameOk =
-          reasons.includes("same_canonical_name") ||
-          reasons.includes("name_sim_high") ||
-          (reasons.includes("name_substring") && reasons.includes("name_sim_mid")) ||
-          reasons.includes("weak_name_absorbed");
-        if (!reasons.includes("same_day") || !reasons.includes("same_place") || !nameOk) continue;
-        if (isJunkPair(a, b)) continue;
-        unite(a.id, b.id);
-      }
+      for (const b of here) considerPair(a, b);
+    }
+    // Adjacent start days (multi-day race listed as Fri–Sat vs Sat-only).
+    const next = days[i + 1];
+    if (!next) continue;
+    const gap =
+      (Date.parse(`${next}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) /
+      (24 * 60 * 60 * 1000);
+    if (gap > 1) continue;
+    const there = byDay.get(next) ?? [];
+    for (const a of here) {
+      for (const b of there) considerPair(a, b);
     }
   }
 
@@ -209,7 +323,8 @@ export async function mergePublicDuplicates(opts?: {
     const keep = uniq.reduce((a, b) => winner(a, b));
     for (const drop of uniq) {
       if (drop.id === keep.id) continue;
-      const { reasons } = scoreDuplicate(asDedup(keep), asDedup(drop));
+      const { score, reasons } = scoreDuplicate(asDedup(keep), asDedup(drop));
+      if (score < 50 || isJunkPair(keep, drop)) continue;
       merges.push({ keep, drop, reasons });
     }
   }
@@ -234,12 +349,11 @@ export async function mergePublicDuplicates(opts?: {
         const days = Math.abs(
           (Date.parse(a.start_date) - Date.parse(b.start_date)) / (24 * 60 * 60 * 1000),
         );
-        if (days > 21) continue;
+        if (days > 2) continue;
         const { reasons } = scoreDuplicate(asDedup(a), asDedup(b));
         const nameClose =
           reasons.includes("same_canonical_name") ||
-          reasons.includes("name_sim_high") ||
-          (reasons.includes("name_substring") && reasons.includes("series_alias"));
+          reasons.includes("name_sim_high");
         if (!nameClose) continue;
         if (isJunkPair(a, b)) continue;
         const keep = winner(a, b);
