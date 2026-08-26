@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { geocodePublicPlace } from "@/lib/geocode";
+import { clientIp, rateLimit } from "@/lib/security";
 
 export async function GET(req: NextRequest) {
+  const ip = clientIp(req);
+  if (!rateLimit(`places:${ip}`, 30, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const q = (req.nextUrl.searchParams.get("q") || "").trim();
   if (q.length < 3) {
     return NextResponse.json({ error: "query too short" }, { status: 400 });

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-auth";
 import { runExplore } from "@/lib/watcher/explore";
 
 export const maxDuration = 120;
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  if (!requireCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const result = await runExplore({ budgetMs: 90_000, maxFetch: 20 });

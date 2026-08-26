@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-auth";
 import { geocodePendingLocations } from "@/lib/geocode";
 
 export const maxDuration = 120;
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  if (!requireCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const limit = Number(req.nextUrl.searchParams.get("limit") || 80);

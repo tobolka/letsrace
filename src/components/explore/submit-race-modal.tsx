@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
 import type { Messages } from "@/lib/i18n/messages";
 
 export function SubmitRaceModal({
@@ -34,15 +33,12 @@ export function SubmitRaceModal({
     e.preventDefault();
     setBusy(true);
     setStatus("");
-    const supabase = createBrowserSupabase();
-    const { data: auth } = await supabase.auth.getUser();
     const res = await fetch("/api/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         url: url.trim(),
         note: note.trim(),
-        userId: auth.user?.id ?? null,
       }),
     });
     setBusy(false);

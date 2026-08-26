@@ -97,13 +97,11 @@ export function AuthForm({
         return;
       }
       const uid = data.user?.id;
-      if (uid) {
+      if (uid && data.session) {
         await fetch("/api/account/bootstrap", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: uid,
-            email: emailValue,
             displayName: name.trim() || emailValue.split("@")[0],
           }),
         });

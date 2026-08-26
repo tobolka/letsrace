@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-auth";
 import { runDueWatches } from "@/lib/watcher/run";
 import { geocodePendingLocations } from "@/lib/geocode";
 import { sendOpsAlert } from "@/lib/ops/alerts";
@@ -6,8 +7,7 @@ import { sendOpsAlert } from "@/lib/ops/alerts";
 export const maxDuration = 300;
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  if (!requireCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const outcomes = await runDueWatches(120, { concurrency: 5, budgetMs: 200_000 });

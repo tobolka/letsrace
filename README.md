@@ -13,7 +13,7 @@ Map-first cycling race finder for kids and adults across Central Europe (CZ, DE,
 ## Setup
 
 1. Copy `.env.example` → `.env.local` (a working `.env.local` is already prepared for the `startline` Supabase project).
-2. Set `ADMIN_PASSWORD` (default in local env: `startline-admin`).
+2. Set `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` (both required — no defaults).
 3. Optional: add `SUPABASE_SERVICE_ROLE_KEY` from Supabase → Project Settings → API.
 4. Install and run:
 

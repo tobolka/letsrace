@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 type Kind = "feature" | "feedback" | "bug";
 
@@ -34,8 +33,6 @@ export function FeedbackModal({
     e.preventDefault();
     setBusy(true);
     setStatus("");
-    const supabase = createBrowserSupabase();
-    const { data: auth } = await supabase.auth.getUser();
     const res = await fetch("/api/feedback", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,7 +40,6 @@ export function FeedbackModal({
         kind,
         message,
         email: email || null,
-        userId: auth.user?.id ?? null,
       }),
     });
     setBusy(false);

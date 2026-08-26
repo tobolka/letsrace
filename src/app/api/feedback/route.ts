@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { requireSessionUser } from "@/lib/supabase/user-server";
+import { clientIp, rateLimit } from "@/lib/security";
 
 const KINDS = new Set(["feature", "feedback", "bug"]);
 
 export async function POST(req: NextRequest) {
+  const ip = clientIp(req);
+  if (!rateLimit(`feedback:${ip}`, 10, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const body = await req.json().catch(() => ({}));
   const message = String(body.message || "").trim();
   const kind = String(body.kind || "feedback").trim().toLowerCase();
@@ -18,15 +25,19 @@ export async function POST(req: NextRequest) {
   if (message.length > 4000) {
     return NextResponse.json({ error: "message too long" }, { status: 400 });
   }
+  if (email && email.length > 320) {
+    return NextResponse.json({ error: "email too long" }, { status: 400 });
+  }
 
+  const user = await requireSessionUser();
   const supabase = createServerSupabase();
   const { data: row, error } = await supabase
     .from("feedback_requests")
     .insert({
       kind,
       message,
-      email,
-      user_id: body.userId || null,
+      email: email || user?.email || null,
+      user_id: user?.id ?? null,
       status: "pending",
     })
     .select("id")
@@ -47,8 +58,8 @@ export async function POST(req: NextRequest) {
     payload: {
       feedbackId: row.id,
       kind,
-      email,
-      userId: body.userId || null,
+      email: email || user?.email || null,
+      userId: user?.id ?? null,
     },
   });
 
