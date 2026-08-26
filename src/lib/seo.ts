@@ -9,7 +9,7 @@ export function getSiteUrl(): string {
   return "https://startline-lovat.vercel.app";
 }
 
-export const SITE_NAME = "RACEGRID";
+export const SITE_NAME = "Let's Race";
 
 export const SITE_AUTHOR = {
   name: "Radek Tobolka",
@@ -22,25 +22,25 @@ export const seoCopy: Record<
   { title: string; description: string; ogLocale: string }
 > = {
   en: {
-    title: "RACEGRID — cycling races on the map",
+    title: "Let's Race — cycling races on the map",
     description:
       "Map-first calendar of cycling races across Central Europe — road, gravel, MTB, CX, and kids races.",
     ogLocale: "en_GB",
   },
   cs: {
-    title: "RACEGRID — cyklistické závody na mapě",
+    title: "Let's Race — cyklistické závody na mapě",
     description:
       "Mapový kalendář cyklistických závodů ve střední Evropě — silnice, gravel, MTB, CX i dětské závody.",
     ogLocale: "cs_CZ",
   },
   pl: {
-    title: "RACEGRID — wyścigi rowerowe na mapie",
+    title: "Let's Race — wyścigi rowerowe na mapie",
     description:
       "Kalendarz wyścigów rowerowych na mapie Europy Środkowej — szosa, gravel, MTB, CX i wyścigi dla dzieci.",
     ogLocale: "pl_PL",
   },
   sk: {
-    title: "RACEGRID — cyklistické preteky na mape",
+    title: "Let's Race — cyklistické preteky na mape",
     description:
       "Mapový kalendár cyklistických pretekov v strednej Európe — cesta, gravel, MTB, CX aj detské preteky.",
     ogLocale: "sk_SK",

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "RACEGRID — cycling races on the map";
+export const alt = "Let's Race — cycling races on the map";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -23,15 +23,15 @@ export default function OpenGraphImage() {
         <div
           style={{
             display: "flex",
-            fontSize: 72,
-            letterSpacing: "-0.08em",
+            fontSize: 64,
+            letterSpacing: "-0.04em",
             fontWeight: 900,
             fontStyle: "italic",
             color: "#c81d25",
             lineHeight: 0.9,
           }}
         >
-          RACEGRID
+          Let&apos;s Race
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.05, maxWidth: 920, letterSpacing: "-0.03em" }}>

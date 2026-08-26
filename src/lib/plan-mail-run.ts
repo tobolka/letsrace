@@ -99,7 +99,7 @@ function toCandidate(row: EventRow): AlertCandidate {
 
 function brandWrap(body: string, footer: string): string {
   return `<div style="font-family:ui-sans-serif,system-ui,sans-serif;max-width:520px;color:#1c1917;">
-    <p style="font-weight:800;font-style:italic;letter-spacing:-0.06em;color:#c81d25;font-size:22px;margin:0 0 12px;">${SITE_NAME}</p>
+    <p style="font-weight:800;font-style:italic;letter-spacing:-0.04em;color:#c81d25;font-size:22px;margin:0 0 12px;">${SITE_NAME}</p>
     ${body}
     <p style="margin:20px 0 0;font-size:12px;color:#a8a29e;">${escapeHtml(footer)}</p>
   </div>`;

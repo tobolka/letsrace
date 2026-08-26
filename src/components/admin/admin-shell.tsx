@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SITE_NAME } from "@/lib/seo";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -72,7 +73,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <SidebarMenuButton size="lg" asChild>
                 <Link href="/admin">
                   <Flag />
-                  <span className="font-black italic tracking-[-0.06em]">RACEGRID</span>
+                  <span className="font-black italic tracking-[-0.04em]">{SITE_NAME}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

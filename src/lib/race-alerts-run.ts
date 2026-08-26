@@ -118,7 +118,7 @@ function emailHtml(
     })
     .join("");
   const html = `<div style="font-family:ui-sans-serif,system-ui,sans-serif;max-width:520px;color:#1c1917;">
-    <p style="font-weight:800;font-style:italic;letter-spacing:-0.06em;color:#c81d25;font-size:22px;margin:0 0 12px;">${SITE_NAME}</p>
+    <p style="font-weight:800;font-style:italic;letter-spacing:-0.04em;color:#c81d25;font-size:22px;margin:0 0 12px;">${SITE_NAME}</p>
     <p style="margin:0 0 16px;color:#57534d;">${escapeHtml(t.alertEmailIntro.replace("{place}", place).replace("{km}", String(alert.radiusKm)))}</p>
     <table style="width:100%;border-collapse:collapse;">${rows}</table>
     <p style="margin:20px 0 0;font-size:12px;color:#a8a29e;">${escapeHtml(t.alertEmailFooter)}</p>

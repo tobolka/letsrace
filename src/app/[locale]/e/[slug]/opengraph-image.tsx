@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getPublicEventBySlug } from "@/lib/events";
 
-export const alt = "RACEGRID race";
+export const alt = "Let's Race race";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -38,15 +38,15 @@ export default async function EventOgImage({
         <div
           style={{
             display: "flex",
-            fontSize: 64,
-            letterSpacing: "-0.08em",
+            fontSize: 56,
+            letterSpacing: "-0.04em",
             fontWeight: 900,
             fontStyle: "italic",
             color: "#c81d25",
             lineHeight: 0.9,
           }}
         >
-          RACEGRID
+          Let&apos;s Race
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 980 }}>
           <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.03em" }}>{title}</div>

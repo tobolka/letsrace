@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const failRate = outcomes.length ? fails.length / outcomes.length : 0;
   if (fails.length >= 3 || failRate >= 0.35) {
     await sendOpsAlert({
-      title: "Startline ingest: elevated failures",
+      title: "Let's Race ingest: elevated failures",
       body: `${fails.length}/${outcomes.length} watches failed in this cron run.`,
       meta: {
         failRate: Number(failRate.toFixed(2)),

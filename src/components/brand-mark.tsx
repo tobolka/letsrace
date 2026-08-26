@@ -16,9 +16,9 @@ export function BrandMark({
   const word = (
     <span
       className={cn(
-        "font-black italic leading-none tracking-[-0.08em]",
+        "font-black italic leading-none tracking-[-0.04em]",
         tone === "inverse" ? "text-white" : "text-brand",
-        size === "sm" ? "text-[1.5rem]" : "text-[1.75rem]",
+        size === "sm" ? "text-[1.35rem]" : "text-[1.6rem]",
         className,
       )}
     >
