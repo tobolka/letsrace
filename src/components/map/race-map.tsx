@@ -7,7 +7,7 @@ import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
-import { disciplineColor, disciplineColorDark, eventDisciplineFamily, eventFamilyGlyph } from "@/lib/map-visuals";
+import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 
 let maplibre: MapLibreModule;
@@ -97,13 +97,10 @@ function makePinElement(event: EventListItem, selected: boolean) {
   const wrap = document.createElement("button");
   wrap.type = "button";
   wrap.className = "startline-map-pin";
-  const family = eventDisciplineFamily(event.disciplines);
-  const familyLabel = DISCIPLINE_LABELS[family] || family;
-  wrap.setAttribute("aria-label", `${event.name}, ${familyLabel}`);
+  wrap.setAttribute("aria-label", event.name);
   wrap.dataset.eventId = event.id;
   wrap.dataset.level = event.level || "local";
   wrap.dataset.discipline = event.disciplines?.[0] || "other";
-  wrap.dataset.family = family;
   if (selected) wrap.dataset.selected = "true";
 
   wrap.style.cssText = [
@@ -125,47 +122,30 @@ function makePinElement(event: EventListItem, selected: boolean) {
 
   const color = disciplineColor(event.disciplines);
   const colorDark = disciplineColorDark(event.disciplines);
-  const disc = document.createElement("span");
-  disc.setAttribute("aria-hidden", "true");
-  disc.style.cssText = selected
+  const dot = document.createElement("span");
+  dot.setAttribute("aria-hidden", "true");
+  dot.style.cssText = selected
     ? [
-        "width:22px",
-        "height:22px",
+        "width:16px",
+        "height:16px",
         "border-radius:9999px",
         `background:${colorDark}`,
         "border:2.5px solid #fff",
         `box-shadow:0 0 0 3px ${color}, 0 0 0 5px rgba(255,255,255,.92), 0 2px 10px ${color}`,
         "pointer-events:none",
         "flex:0 0 auto",
-        "display:flex",
-        "align-items:center",
-        "justify-content:center",
-        "color:#fff",
       ].join(";")
     : [
-        "width:22px",
-        "height:22px",
+        "width:16px",
+        "height:16px",
         "border-radius:9999px",
         `background:${color}`,
         "border:2px solid #fff",
         "box-shadow:0 1px 3px rgba(0,0,0,.32)",
         "pointer-events:none",
         "flex:0 0 auto",
-        "display:flex",
-        "align-items:center",
-        "justify-content:center",
-        "color:#fff",
       ].join(";");
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", "0 0 16 16");
-  svg.setAttribute("width", "13");
-  svg.setAttribute("height", "13");
-  svg.setAttribute("aria-hidden", "true");
-  svg.style.display = "block";
-  svg.innerHTML = eventFamilyGlyph(event.disciplines);
-  disc.appendChild(svg);
-  wrap.appendChild(disc);
+  wrap.appendChild(dot);
 
   return wrap;
 }
@@ -246,6 +226,33 @@ const GEO_OPTS_PRECISE: PositionOptions = {
   maximumAge: 10_000,
   timeout: 20_000,
 };
+
+const LOCATE_ARROW_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.72 3.05a1.2 1.2 0 0 1 1.23 1.54L16.4 21.48a1.15 1.15 0 0 1-2.18.1l-3.22-7.9-7.9-3.22A1.15 1.15 0 0 1 3.2 8.28L19.4 2.82c.42-.14.88-.04 1.32.23Z"/></svg>';
+const ZOOM_IN_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const ZOOM_OUT_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>';
+
+function appleCtrlButton(opts: {
+  className: string;
+  label: string;
+  html: string;
+  onClick: () => void;
+}) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = opts.className;
+  btn.setAttribute("aria-label", opts.label);
+  btn.title = opts.label;
+  btn.innerHTML = opts.html;
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    opts.onClick();
+  });
+  return btn;
+}
 
 const DEFAULT_PADDING: PaddingOptions = { top: 72, bottom: 56, left: 56, right: 56 };
 /** Default map view: user location with ~200 km radius. */
@@ -412,14 +419,74 @@ export function RaceMap({
           display: flex;
           flex-direction: column;
           align-items: flex-end;
-          gap: 8px;
-          margin: 0 10px 10px 0 !important;
+          gap: 10px;
+          margin: 0 12px 12px 0 !important;
         }
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl {
+          float: none !important;
+          clear: none !important;
           margin: 0 !important;
         }
-        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
-          order: 1;
+        .maplibregl-ctrl-bottom-right .startline-locate-group { order: 1; }
+        .maplibregl-ctrl-bottom-right .startline-zoom-ctrl { order: 2; }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib { order: 3; }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group,
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group:not(:empty) {
+          overflow: hidden !important;
+          border: 0 !important;
+          border-radius: 9999px !important;
+          background: rgba(255, 255, 255, 0.78) !important;
+          -webkit-backdrop-filter: blur(24px) saturate(1.6);
+          backdrop-filter: blur(24px) saturate(1.6);
+          box-shadow:
+            0 0 0 0.5px rgba(0, 0, 0, 0.08),
+            0 1px 2px rgba(0, 0, 0, 0.06),
+            0 10px 24px rgba(0, 0, 0, 0.12) !important;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
+          width: 44px !important;
+          height: 44px !important;
+          min-width: 44px;
+          min-height: 44px;
+          padding: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          color: #1d1d1f;
+          display: flex !important;
+          align-items: center;
+          justify-content: center;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
+          border-top: 0 !important;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover,
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:not(:disabled):hover,
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:not(:disabled):active {
+          background: rgba(0, 0, 0, 0.06) !important;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:focus,
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:focus:focus-visible {
+          box-shadow: none !important;
+          outline: 2px solid #007aff;
+          outline-offset: -2px;
+        }
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:focus:first-child,
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:focus:last-child,
+        .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:focus:only-child {
+          border-radius: 0 !important;
+        }
+        .startline-locate-ctrl,
+        .startline-locate-ctrl[data-active="true"] {
+          color: #007aff !important;
+        }
+        .startline-locate-ctrl svg,
+        .startline-zoom-in svg,
+        .startline-zoom-out svg {
+          display: block;
+          width: 18px;
+          height: 18px;
         }
         @media (max-width: 767px) {
           .maplibregl-ctrl-top-right {
@@ -430,15 +497,12 @@ export function RaceMap({
             right: 8px;
             margin: 0 !important;
           }
-          .maplibregl-ctrl-zoom-in,
-          .maplibregl-ctrl-zoom-out {
+          .startline-zoom-ctrl {
             display: none !important;
           }
           .startline-locate-ctrl {
             width: 44px !important;
             height: 44px !important;
-            min-width: 44px;
-            min-height: 44px;
           }
         }
         .maplibregl-marker.startline-user-marker {
@@ -508,29 +572,17 @@ export function RaceMap({
     initialViewDoneRef.current = false;
     (window as unknown as { __startlineMap?: Map }).__startlineMap = map;
 
-    const isDesktopMap = window.matchMedia("(min-width: 768px)").matches;
-    if (isDesktopMap) {
-      map.addControl(new maplibre.NavigationControl({ showCompass: false }), "bottom-right");
-    }
     const locateCtrl = {
       onAdd() {
         const container = document.createElement("div");
-        container.className = "maplibregl-ctrl maplibregl-ctrl-group";
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "startline-locate-ctrl";
-        btn.setAttribute("aria-label", myLocationLabel);
-        btn.title = myLocationLabel;
-        btn.style.cssText =
-          "display:flex;align-items:center;justify-content:center;width:29px;height:29px;cursor:pointer;background:#fff;border:0;padding:0;";
-        btn.innerHTML =
-          '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
-        locateBtnRef.current = btn;
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          goToMyLocationRef.current();
+        container.className = "maplibregl-ctrl maplibregl-ctrl-group startline-locate-group";
+        const btn = appleCtrlButton({
+          className: "startline-locate-ctrl",
+          label: myLocationLabel,
+          html: LOCATE_ARROW_SVG,
+          onClick: () => goToMyLocationRef.current(),
         });
+        locateBtnRef.current = btn;
         container.appendChild(btn);
         return container;
       },
@@ -538,7 +590,30 @@ export function RaceMap({
         locateBtnRef.current = null;
       },
     };
+    const zoomCtrl = {
+      onAdd() {
+        const container = document.createElement("div");
+        container.className = "maplibregl-ctrl maplibregl-ctrl-group startline-zoom-ctrl";
+        container.append(
+          appleCtrlButton({
+            className: "startline-zoom-in maplibregl-ctrl-zoom-in",
+            label: "Zoom in",
+            html: ZOOM_IN_SVG,
+            onClick: () => map.zoomIn({ duration: 280 }),
+          }),
+          appleCtrlButton({
+            className: "startline-zoom-out maplibregl-ctrl-zoom-out",
+            label: "Zoom out",
+            html: ZOOM_OUT_SVG,
+            onClick: () => map.zoomOut({ duration: 280 }),
+          }),
+        );
+        return container;
+      },
+      onRemove() {},
+    };
     map.addControl(locateCtrl, "bottom-right");
+    map.addControl(zoomCtrl, "bottom-right");
     setMapEpoch((n) => n + 1);
 
     map.on("style.load", () => hideMarineNames(map));
@@ -781,7 +856,7 @@ export function RaceMap({
     onUserLocationRef.current?.({ lat: userPos.lat, lng: userPos.lng });
 
     const btn = locateBtnRef.current;
-    if (btn) btn.style.color = "#171717";
+    if (btn) btn.dataset.active = userPos ? "true" : "";
   }, [userPos, mapEpoch]);
 
   // Resolve location: fast network position first, then optional precise watch
@@ -897,8 +972,8 @@ export function RaceMap({
   useEffect(() => {
     const btn = locateBtnRef.current;
     if (!btn) return;
-    btn.style.opacity = locating ? "0.55" : "1";
-    btn.style.color = userPos ? "#171717" : "#334155";
+    btn.style.opacity = locating ? "0.7" : "1";
+    btn.dataset.active = userPos ? "true" : "";
     btn.disabled = locating;
   }, [locating, userPos, mapEpoch]);
 

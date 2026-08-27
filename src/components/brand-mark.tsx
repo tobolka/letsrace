@@ -6,11 +6,14 @@ export function BrandMark({
   href,
   size = "md",
   tone = "brand",
+  mark = "full",
   className,
 }: {
   href?: string;
   size?: "sm" | "md";
   tone?: "brand" | "inverse";
+  /** `lr` = compact red initials for tight chrome (mobile sheet). */
+  mark?: "full" | "lr";
   className?: string;
 }) {
   const word = (
@@ -18,11 +21,17 @@ export function BrandMark({
       className={cn(
         "font-black italic leading-none tracking-[-0.04em]",
         tone === "inverse" ? "text-white" : "text-brand",
-        size === "sm" ? "text-[1.35rem]" : "text-[1.6rem]",
+        mark === "lr"
+          ? size === "sm"
+            ? "text-[1.05rem]"
+            : "text-[1.2rem]"
+          : size === "sm"
+            ? "text-[1.35rem]"
+            : "text-[1.6rem]",
         className,
       )}
     >
-      {SITE_NAME}
+      {mark === "lr" ? "LR" : SITE_NAME}
     </span>
   );
 
@@ -31,8 +40,9 @@ export function BrandMark({
   return (
     <Link
       href={href}
+      aria-label={SITE_NAME}
       className={cn(
-        "inline-flex items-center rounded-sm outline-offset-4 focus-visible:outline-2",
+        "inline-flex shrink-0 items-center rounded-sm outline-offset-4 focus-visible:outline-2",
         tone === "inverse" && "focus-visible:outline-white",
       )}
     >

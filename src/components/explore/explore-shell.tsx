@@ -60,8 +60,8 @@ import {
   type Discipline,
   type RaceLevel,
 } from "@/lib/taxonomy";
-import { DisciplineMark } from "@/components/discipline-mark";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
+import { disciplineColor } from "@/lib/map-visuals";
 import {
   eventDistanceKm,
   formatDistanceKm,
@@ -71,7 +71,7 @@ import {
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { MoreHorizontal, Flag, Check, ExternalLink, ChevronUp } from "lucide-react";
+import { MoreHorizontal, Check, ExternalLink, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { BrandMark } from "@/components/brand-mark";
@@ -539,13 +539,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const peek = selected ? 176 : 108;
+      const peek = selected ? 220 : 148;
       const open =
         mobilePanel === "detail"
           ? Math.round(Math.min(viewportH * 0.92, 720))
           : Math.round(Math.min(viewportH * (typeof listSnap === "number" ? listSnap : 0.5), 640));
       return {
-        top: 72,
+        top: 16,
         right: 12,
         bottom: (mobilePanel === "closed" ? peek : open) + 12,
         left: 12,
@@ -601,7 +601,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         .filter(Boolean)
         .join(" · ")
     : "";
-  const peekSnap = selected ? "176px" : "108px";
+  const peekSnap = selected ? "220px" : "148px";
   const midSnap = 0.5;
   const fullSnap = 0.92;
   const sheetSnap =
@@ -766,36 +766,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         )}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-3 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
-        <MobileTopBar
-          weekendLabel={weekendLabel}
-          weekendActive={isThisWeekend}
-          onWeekend={() => {
-            if (isThisWeekend) {
-              setFiltersOpen(true);
-              return;
-            }
-            const w = thisWeekendRange();
-            setDateRange(w.from, w.to);
-          }}
-          filtersLabel={messages.addFilter}
-          filterCount={filterCount}
-          onFilters={() => setFiltersOpen(true)}
-          searchLabel={messages.search}
-          searchActive={Boolean(filters.q.trim())}
-          onSearch={() => setSearchOpen(true)}
-          menu={
-            <ExploreMenu
-              messages={messages}
-              locale={locale}
-              onSubmitRace={() => setSubmitOpen(true)}
-              onFeedback={() => setFeedbackOpen(true)}
-              onSignIn={() => setAuthOpen(true)}
-            />
-          }
-        />
-      </div>
-
       {mobileSheetReady ? (
       <Drawer
         open
@@ -827,6 +797,35 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         >
           <DrawerHandle aria-label={mobilePanel === "closed" ? messages.sheetExpand : messages.sheetCollapse} />
           <DrawerTitle className="sr-only">{messages.racesCount}</DrawerTitle>
+          <MobileTopBar
+            homeHref={`/${locale}`}
+            weekendLabel={weekendLabel}
+            weekendActive={isThisWeekend}
+            onWeekend={() => {
+              if (isThisWeekend) {
+                setFiltersOpen(true);
+                return;
+              }
+              const w = thisWeekendRange();
+              setDateRange(w.from, w.to);
+            }}
+            filtersLabel={messages.addFilter}
+            filterCount={filterCount}
+            onFilters={() => setFiltersOpen(true)}
+            searchLabel={messages.search}
+            searchActive={Boolean(filters.q.trim())}
+            onSearch={() => setSearchOpen(true)}
+            menu={
+              <ExploreMenu
+                messages={messages}
+                locale={locale}
+                onSubmitRace={() => setSubmitOpen(true)}
+                onFeedback={() => setFeedbackOpen(true)}
+                onSignIn={() => setAuthOpen(true)}
+                compact
+              />
+            }
+          />
 
           {mobilePanel === "closed" && selected ? (
             <div className="flex items-start gap-3 px-4 pb-3">
@@ -835,7 +834,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 className="flex min-h-11 min-w-0 flex-1 items-start gap-2 text-left touch-manipulation"
                 onClick={() => setMobilePanel("detail")}
               >
-                <DisciplineMark disciplines={selected.disciplines} className="mt-1.5 size-4" />
+                <span
+                  className="mt-2 size-2.5 shrink-0 rounded-full"
+                  style={{ background: disciplineColor(selected.disciplines) }}
+                  aria-hidden
+                />
                 <span className="min-w-0">
                   <span className="block truncate text-base font-semibold leading-snug">
                     {selected.name}
@@ -1181,10 +1184,7 @@ function ExploreMenu({
           <DropdownMenuItem asChild>
             <Link href={`/${locale}/calendar`}>{messages.myCalendar}</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onSubmitRace}>
-            <Flag />
-            {messages.missingRace}
-          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={onSubmitRace}>{messages.missingRace}</DropdownMenuItem>
           <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -1270,14 +1270,22 @@ function EventCard({
           {compact ? null : (
             <ItemHeader>
               <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                <DisciplineMark disciplines={event.disciplines} className="size-3.5" />
+                <span
+                  className="size-2 shrink-0 rounded-full"
+                  style={{ background: disciplineColor(event.disciplines) }}
+                  aria-hidden
+                />
                 {meta}
               </span>
             </ItemHeader>
           )}
           <ItemTitle className={cn("text-[15px]", compact && "flex items-center gap-1.5")}>
             {compact ? (
-              <DisciplineMark disciplines={event.disciplines} className="size-3.5" />
+              <span
+                className="size-2 shrink-0 rounded-full"
+                style={{ background: disciplineColor(event.disciplines) }}
+                aria-hidden
+              />
             ) : null}
             {event.name}
           </ItemTitle>

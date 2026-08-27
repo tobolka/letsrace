@@ -9,7 +9,7 @@ import {
   Calendar,
   Bike,
   ExternalLink,
-  Share2,
+  Share,
   UserRound,
   ChartNoAxesColumnIncreasing,
 } from "lucide-react";
@@ -24,7 +24,7 @@ import {
   type RaceLevel,
   type UciClass,
 } from "@/lib/taxonomy";
-import { DisciplineMark } from "@/components/discipline-mark";
+import { disciplineColor } from "@/lib/map-visuals";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
 import { RacePlanControls } from "@/components/account/race-plan-controls";
@@ -404,7 +404,11 @@ export function EventDetailPanel({
           id="race-detail-title"
           className="flex min-w-0 items-center gap-2 text-base leading-snug"
         >
-          <DisciplineMark disciplines={event.disciplines} />
+          <span
+            className="size-2 shrink-0 rounded-full"
+            style={{ background: disciplineColor(event.disciplines) }}
+            aria-hidden
+          />
           <span className="min-w-0">{event.name}</span>
         </CardTitle>
         <CardAction className="self-center">
@@ -609,7 +613,7 @@ export function EventDetailPanel({
                 if (!linkCopied) void copyShareLink();
               }}
             >
-              <Share2 />
+              <Share />
             </Toggle>
           </div>
         </div>

@@ -54,14 +54,14 @@ function DrawerHandle({
       data-slot="drawer-handle"
       aria-hidden={false}
       className={cn(
-        // Vaul injects 5×32px handle styles; keep a full-width 44px drag target for iOS.
-        "mx-auto mt-1 mb-0 flex h-11 w-full max-w-none items-center justify-center bg-transparent",
+        // Compact grabber; hit area via padding, not a tall empty block.
+        "mx-auto mt-1.5 mb-1 flex w-full max-w-none items-center justify-center bg-transparent py-1.5",
         className
       )}
-      style={{ height: 44, width: "100%", background: "transparent" }}
+      style={{ width: "100%", background: "transparent" }}
       {...props}
     >
-      <span className="pointer-events-none h-1.5 w-12 rounded-full bg-muted-foreground/40" />
+      <span className="pointer-events-none block h-1 w-10 shrink-0 rounded-full bg-muted-foreground/45" />
     </DrawerPrimitive.Handle>
   )
 }
