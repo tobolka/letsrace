@@ -1,10 +1,21 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Calendar, ListFilter, Search } from "lucide-react";
+import { ChevronDown, ListFilter, Search } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { EventSort } from "@/lib/geo/distance";
 import { cn } from "@/lib/utils";
+
+const pillClass =
+  "h-9 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3 text-sm font-medium text-foreground shadow-none hover:bg-muted/80";
 
 export function MobileTopBar({
   homeHref,
@@ -17,6 +28,13 @@ export function MobileTopBar({
   searchLabel,
   searchActive,
   onSearch,
+  sort,
+  sortByLabel,
+  sortDateLabel,
+  sortDistanceLabel,
+  sortNeedsLocationLabel,
+  distanceEnabled,
+  onSort,
   menu,
 }: {
   homeHref: string;
@@ -29,58 +47,91 @@ export function MobileTopBar({
   searchLabel: string;
   searchActive: boolean;
   onSearch: () => void;
+  sort: EventSort;
+  sortByLabel: string;
+  sortDateLabel: string;
+  sortDistanceLabel: string;
+  sortNeedsLocationLabel: string;
+  distanceEnabled: boolean;
+  onSort: (sort: EventSort) => void;
   menu: ReactNode;
 }) {
+  const sortLabel = sort === "distance" ? sortDistanceLabel : sortDateLabel;
+
   return (
-    <div className="flex w-full items-center gap-1 px-3 pb-2">
-      <BrandMark href={homeHref} mark="lr" size="sm" className="px-1.5" />
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        className={cn(
-          "h-11 min-w-0 shrink gap-1.5 rounded-full px-3",
-          weekendActive && "bg-muted text-foreground",
-        )}
-        aria-pressed={weekendActive}
-        onClick={onWeekend}
-      >
-        <Calendar className="size-4 shrink-0" aria-hidden />
-        <span className="truncate">{weekendLabel}</span>
-      </Button>
-      <Button
-        type="button"
-        variant={filterCount > 0 ? "secondary" : "ghost"}
-        size="sm"
-        className="h-11 shrink-0 gap-1.5 rounded-full px-3"
-        aria-label={filtersLabel}
-        onClick={onFilters}
-      >
-        <ListFilter className="size-4" aria-hidden />
-        <span className="max-sm:hidden">{filtersLabel}</span>
-        {filterCount > 0 ? (
-          <span
-            className={cn(
-              "inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
-              "bg-foreground text-background",
-            )}
-          >
-            {filterCount}
-          </span>
-        ) : null}
-      </Button>
-      <Button
-        type="button"
-        variant={searchActive ? "secondary" : "ghost"}
-        size="icon"
-        className="size-11 shrink-0 rounded-full"
-        aria-label={searchLabel}
-        aria-pressed={searchActive}
-        onClick={onSearch}
-      >
-        <Search className="size-4" aria-hidden />
-      </Button>
-      <div className="ml-auto shrink-0">{menu}</div>
+    <div className="flex items-center gap-2 px-3 pb-2">
+      <BrandMark href={homeHref} mark="lr" size="sm" className="shrink-0 px-0.5" />
+      <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(pillClass, weekendActive && "bg-muted")}
+          aria-pressed={weekendActive}
+          onClick={onWeekend}
+        >
+          <span className="truncate">{weekendLabel}</span>
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={pillClass}
+          aria-label={filtersLabel}
+          onClick={onFilters}
+        >
+          <ListFilter className="size-3.5" aria-hidden />
+          <span>{filtersLabel}</span>
+          {filterCount > 0 ? (
+            <span className="inline-flex min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-semibold text-background tabular-nums">
+              {filterCount}
+            </span>
+          ) : null}
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className={pillClass}
+              aria-label={sortByLabel}
+            >
+              <span className="truncate">{sortLabel}</span>
+              <ChevronDown className="size-3.5 opacity-60" aria-hidden />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuRadioGroup
+              value={sort}
+              onValueChange={(value) => {
+                if (value === "date" || value === "distance") onSort(value);
+              }}
+            >
+              <DropdownMenuRadioItem value="date">{sortDateLabel}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem
+                value="distance"
+                disabled={!distanceEnabled}
+                title={distanceEnabled ? undefined : sortNeedsLocationLabel}
+              >
+                {sortDistanceLabel}
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          type="button"
+          variant={searchActive ? "secondary" : "outline"}
+          size="icon"
+          className="size-9 shrink-0 rounded-full border-border/80"
+          aria-label={searchLabel}
+          aria-pressed={searchActive}
+          onClick={onSearch}
+        >
+          <Search className="size-4" aria-hidden />
+        </Button>
+      </div>
+      <div className="shrink-0">{menu}</div>
     </div>
   );
 }

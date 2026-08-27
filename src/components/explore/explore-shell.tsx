@@ -71,7 +71,7 @@ import {
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { MoreHorizontal, Check, ExternalLink, ChevronUp } from "lucide-react";
+import { MoreHorizontal, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { BrandMark } from "@/components/brand-mark";
@@ -148,7 +148,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("closed");
+  const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("list");
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -539,7 +539,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const peek = selected ? 220 : 148;
+      const peek = selected ? 220 : 112;
       const open =
         mobilePanel === "detail"
           ? Math.round(Math.min(viewportH * 0.92, 720))
@@ -601,7 +601,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         .filter(Boolean)
         .join(" · ")
     : "";
-  const peekSnap = selected ? "220px" : "148px";
+  const peekSnap = selected ? "220px" : "112px";
   const midSnap = 0.5;
   const fullSnap = 0.92;
   const sheetSnap =
@@ -815,6 +815,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             searchLabel={messages.search}
             searchActive={Boolean(filters.q.trim())}
             onSearch={() => setSearchOpen(true)}
+            sort={listSort}
+            sortByLabel={messages.sortBy}
+            sortDateLabel={messages.sortByDate}
+            sortDistanceLabel={messages.sortByDistance}
+            sortNeedsLocationLabel={messages.sortNeedsLocation}
+            distanceEnabled={distanceEnabled}
+            onSort={setListSort}
             menu={
               <ExploreMenu
                 messages={messages}
@@ -877,24 +884,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             </div>
           ) : null}
 
-          {mobilePanel === "closed" && !selected ? (
-            <button
-              type="button"
-              className="flex min-h-12 w-full items-center justify-between gap-3 px-4 pb-3 text-left touch-manipulation"
-              onClick={() => {
-                setListSnap(midSnap);
-                setMobilePanel("list");
-              }}
-            >
-              <span className="text-base font-medium tabular-nums">
-                {events.length} {messages.racesCount}
-              </span>
-              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                {messages.sheetExpand}
-                <ChevronUp className="size-4" aria-hidden />
-              </span>
-            </button>
-          ) : null}
 
           {mobilePanel === "detail" && selected ? (
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
@@ -916,21 +905,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           ) : null}
 
           {mobilePanel !== "detail" ? (
-            <>
-              {mobilePanel !== "closed" ? (
-                <>
-                  <ListToolbar
-                    count={events.length}
-                    pending={listLoading}
-                    sort={listSort}
-                    distanceEnabled={distanceEnabled}
-                    messages={messages}
-                    onSort={setListSort}
-                  />
-                  <Separator />
-                </>
-              ) : null}
-              <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 {events.length === 0 ? (
                   <Empty className="border-0 p-6">
                     <EmptyHeader>
@@ -967,8 +942,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     ))}
                   </ItemGroup>
                 )}
-              </div>
-            </>
+            </div>
           ) : null}
         </DrawerContent>
       </Drawer>
