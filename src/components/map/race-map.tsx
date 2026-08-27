@@ -1,23 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import "@/lib/maplibre-worker";
-import {
-  Map as MapLibreMap,
-  Marker,
-  NavigationControl,
-  Popup,
-  LngLatBounds,
-  type Map,
-  type StyleSpecification,
-  type PaddingOptions,
-} from "maplibre-gl";
+import type { Map, Marker, PaddingOptions, Popup } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
-import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
+import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
+import { disciplineColor, disciplineColorDark, eventDisciplineFamily, eventFamilyGlyph } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
+
+let maplibre: MapLibreModule;
 
 export type MapBounds = {
   west: number;
@@ -56,23 +49,25 @@ type Props = {
   onUserLocation?: (pos: { lat: number; lng: number }) => void;
 };
 
-const RASTER_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    carto: {
-      type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-        "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-        "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-      ],
-      tileSize: 256,
-      attribution: "© OpenStreetMap © CARTO",
-      maxzoom: 20,
-    },
-  },
-  layers: [{ id: "carto", type: "raster", source: "carto" }],
-};
+const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
+const MAP_STYLE = cartoKey
+  ? `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=${encodeURIComponent(cartoKey)}`
+  : "https://tiles.openfreemap.org/styles/liberty";
+
+function hideMarineNames(map: Map) {
+  for (const id of ["watername_ocean", "watername_sea"]) {
+    if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
+  }
+  // Carto's lake-line layer matches every named water LineString, including seas.
+  if (map.getLayer("watername_lake_line")) {
+    map.setFilter("watername_lake_line", [
+      "all",
+      ["has", "name"],
+      ["==", "$type", "LineString"],
+      ["==", "class", "lake"],
+    ]);
+  }
+}
 
 let lastPinTipAt = 0;
 
@@ -102,10 +97,13 @@ function makePinElement(event: EventListItem, selected: boolean) {
   const wrap = document.createElement("button");
   wrap.type = "button";
   wrap.className = "startline-map-pin";
-  wrap.setAttribute("aria-label", event.name);
+  const family = eventDisciplineFamily(event.disciplines);
+  const familyLabel = DISCIPLINE_LABELS[family] || family;
+  wrap.setAttribute("aria-label", `${event.name}, ${familyLabel}`);
   wrap.dataset.eventId = event.id;
   wrap.dataset.level = event.level || "local";
   wrap.dataset.discipline = event.disciplines?.[0] || "other";
+  wrap.dataset.family = family;
   if (selected) wrap.dataset.selected = "true";
 
   wrap.style.cssText = [
@@ -127,30 +125,47 @@ function makePinElement(event: EventListItem, selected: boolean) {
 
   const color = disciplineColor(event.disciplines);
   const colorDark = disciplineColorDark(event.disciplines);
-  const dot = document.createElement("span");
-  dot.setAttribute("aria-hidden", "true");
-  dot.style.cssText = selected
+  const disc = document.createElement("span");
+  disc.setAttribute("aria-hidden", "true");
+  disc.style.cssText = selected
     ? [
-        "width:16px",
-        "height:16px",
+        "width:22px",
+        "height:22px",
         "border-radius:9999px",
         `background:${colorDark}`,
         "border:2.5px solid #fff",
         `box-shadow:0 0 0 3px ${color}, 0 0 0 5px rgba(255,255,255,.92), 0 2px 10px ${color}`,
         "pointer-events:none",
         "flex:0 0 auto",
+        "display:flex",
+        "align-items:center",
+        "justify-content:center",
+        "color:#fff",
       ].join(";")
     : [
-        "width:16px",
-        "height:16px",
+        "width:22px",
+        "height:22px",
         "border-radius:9999px",
         `background:${color}`,
         "border:2px solid #fff",
         "box-shadow:0 1px 3px rgba(0,0,0,.32)",
         "pointer-events:none",
         "flex:0 0 auto",
+        "display:flex",
+        "align-items:center",
+        "justify-content:center",
+        "color:#fff",
       ].join(";");
-  wrap.appendChild(dot);
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("width", "13");
+  svg.setAttribute("height", "13");
+  svg.setAttribute("aria-hidden", "true");
+  svg.style.display = "block";
+  svg.innerHTML = eventFamilyGlyph(event.disciplines);
+  disc.appendChild(svg);
+  wrap.appendChild(disc);
 
   return wrap;
 }
@@ -206,7 +221,7 @@ function upsertUserMarker(
   pos: { lng: number; lat: number },
 ) {
   if (!markerRef.current) {
-    markerRef.current = new Marker({
+    markerRef.current = new maplibre.Marker({
       element: makeUserLocationElement(),
       anchor: "center",
       className: "startline-user-marker",
@@ -237,11 +252,11 @@ const DEFAULT_PADDING: PaddingOptions = { top: 72, bottom: 56, left: 56, right: 
 const DEFAULT_RADIUS_KM = 200;
 const CZECHIA_CENTER: [number, number] = [15.5, 49.75];
 
-function boundsAround(lng: number, lat: number, radiusKm: number): LngLatBounds {
+function boundsAround(lng: number, lat: number, radiusKm: number) {
   const dLat = radiusKm / 111;
   const cos = Math.cos((lat * Math.PI) / 180);
   const dLng = radiusKm / (111 * Math.max(cos, 0.2));
-  return new LngLatBounds([lng - dLng, lat - dLat], [lng + dLng, lat + dLat]);
+  return new maplibre.LngLatBounds([lng - dLng, lat - dLat], [lng + dLng, lat + dLat]);
 }
 
 function fitRadius(
@@ -375,6 +390,9 @@ export function RaceMap({
     const el = containerRef.current;
     if (!el) return;
 
+    let cancelled = false;
+    let teardown: (() => void) | undefined;
+
     let mapCtrlStyle = document.getElementById("startline-loc-pulse-style") as HTMLStyleElement | null;
     if (!mapCtrlStyle) {
       mapCtrlStyle = document.createElement("style");
@@ -463,14 +481,28 @@ export function RaceMap({
         }
       `;
 
-    const map = new MapLibreMap({
+    void loadMapLibre().then((ml) => {
+    if (cancelled || !containerRef.current) return;
+    maplibre = ml;
+
+    const map = new maplibre.Map({
       container: el,
-      style: RASTER_STYLE,
+      style: MAP_STYLE,
       center: fallbackCenterRef.current,
       zoom: 7,
       maxBounds: EUROPE_CAMERA_BOUNDS,
       renderWorldCopies: false,
       attributionControl: { compact: true },
+      transformRequest: cartoKey
+        ? (url) => {
+            if (!url.includes("basemaps.cartocdn.com") || /[?&]key=/.test(url)) {
+              return { url };
+            }
+            return {
+              url: `${url}${url.includes("?") ? "&" : "?"}key=${encodeURIComponent(cartoKey)}`,
+            };
+          }
+        : undefined,
     });
     mapRef.current = map;
     initialViewDoneRef.current = false;
@@ -478,7 +510,7 @@ export function RaceMap({
 
     const isDesktopMap = window.matchMedia("(min-width: 768px)").matches;
     if (isDesktopMap) {
-      map.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
+      map.addControl(new maplibre.NavigationControl({ showCompass: false }), "bottom-right");
     }
     const locateCtrl = {
       onAdd() {
@@ -509,7 +541,8 @@ export function RaceMap({
     map.addControl(locateCtrl, "bottom-right");
     setMapEpoch((n) => n + 1);
 
-    // Fallback view: locale market ~200 km until GPS arrives (or a shared race focus)
+    map.on("style.load", () => hideMarineNames(map));
+
     map.once("load", () => {
       const focus = initialFocusRef.current;
       const home = fallbackCenterRef.current;
@@ -526,7 +559,6 @@ export function RaceMap({
       }
       if (!initialViewDoneRef.current) {
         fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
-        // Don't lock initialViewDone yet — GPS can still refine once
         emitBoundsWhenIdle(map, "gps");
       }
     });
@@ -569,7 +601,7 @@ export function RaceMap({
     const t1 = window.setTimeout(resize, 50);
     const t2 = window.setTimeout(resize, 400);
 
-    return () => {
+    teardown = () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.clearTimeout(resizeSyncTimer);
@@ -589,6 +621,14 @@ export function RaceMap({
       map.remove();
       mapRef.current = null;
     };
+    }).catch((err) => {
+      console.error(err);
+    });
+
+    return () => {
+      cancelled = true;
+      teardown?.();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -602,7 +642,7 @@ export function RaceMap({
     hoverPopupRef.current?.remove();
 
     if (!hoverPopupRef.current) {
-      hoverPopupRef.current = new Popup({
+      hoverPopupRef.current = new maplibre.Popup({
         closeButton: false,
         closeOnClick: false,
         closeOnMove: false,
@@ -648,7 +688,7 @@ export function RaceMap({
       });
 
       markersRef.current.push(
-        new Marker({ element: pin, anchor: "center" }).setLngLat(lngLat).addTo(map),
+        new maplibre.Marker({ element: pin, anchor: "center" }).setLngLat(lngLat).addTo(map),
       );
     }
 
@@ -699,7 +739,7 @@ export function RaceMap({
         Number.isFinite(Number(e.location.lng)),
     );
     if (coords.length === 0) return;
-    const b = new LngLatBounds();
+    const b = new maplibre.LngLatBounds();
     for (const e of coords) {
       b.extend([Number(e.location!.lng), Number(e.location!.lat)]);
     }
@@ -717,7 +757,7 @@ export function RaceMap({
     destSeqRef.current = destinationSeq;
     userMovedRef.current = true;
     initialViewDoneRef.current = true;
-    const b = new LngLatBounds(
+    const b = new maplibre.LngLatBounds(
       [destination.west, destination.south],
       [destination.east, destination.north],
     );

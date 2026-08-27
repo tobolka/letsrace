@@ -60,7 +60,7 @@ import {
   type Discipline,
   type RaceLevel,
 } from "@/lib/taxonomy";
-import { disciplineColor } from "@/lib/map-visuals";
+import { DisciplineMark } from "@/components/discipline-mark";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import {
   eventDistanceKm,
@@ -835,11 +835,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 className="flex min-h-11 min-w-0 flex-1 items-start gap-2 text-left touch-manipulation"
                 onClick={() => setMobilePanel("detail")}
               >
-                <span
-                  className="mt-2 size-2.5 shrink-0 rounded-full"
-                  style={{ background: disciplineColor(selected.disciplines) }}
-                  aria-hidden
-                />
+                <DisciplineMark disciplines={selected.disciplines} className="mt-1.5 size-4" />
                 <span className="min-w-0">
                   <span className="block truncate text-base font-semibold leading-snug">
                     {selected.name}
@@ -1274,22 +1270,14 @@ function EventCard({
           {compact ? null : (
             <ItemHeader>
               <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: disciplineColor(event.disciplines) }}
-                  aria-hidden
-                />
+                <DisciplineMark disciplines={event.disciplines} className="size-3.5" />
                 {meta}
               </span>
             </ItemHeader>
           )}
           <ItemTitle className={cn("text-[15px]", compact && "flex items-center gap-1.5")}>
             {compact ? (
-              <span
-                className="size-2 shrink-0 rounded-full"
-                style={{ background: disciplineColor(event.disciplines) }}
-                aria-hidden
-              />
+              <DisciplineMark disciplines={event.disciplines} className="size-3.5" />
             ) : null}
             {event.name}
           </ItemTitle>

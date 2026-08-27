@@ -24,7 +24,7 @@ import {
   type RaceLevel,
   type UciClass,
 } from "@/lib/taxonomy";
-import { disciplineColor } from "@/lib/map-visuals";
+import { DisciplineMark } from "@/components/discipline-mark";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
 import { RacePlanControls } from "@/components/account/race-plan-controls";
@@ -351,7 +351,6 @@ export function EventDetailPanel({
   const trust = eventTrustLevel(event);
   const trustText = trustLabel(trust, t);
   const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
-  const accent = disciplineColor(event.disciplines);
   const placeLabel = [
     event.location?.municipality || event.location?.name,
     event.location?.countryCode,
@@ -405,11 +404,7 @@ export function EventDetailPanel({
           id="race-detail-title"
           className="flex min-w-0 items-center gap-2 text-base leading-snug"
         >
-          <span
-            className="size-2 shrink-0 rounded-full"
-            style={{ background: accent }}
-            aria-hidden
-          />
+          <DisciplineMark disciplines={event.disciplines} />
           <span className="min-w-0">{event.name}</span>
         </CardTitle>
         <CardAction className="self-center">

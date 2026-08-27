@@ -53,7 +53,7 @@ import {
 } from "@/lib/date-presets";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
-import { familyColor } from "@/lib/map-visuals";
+import { DisciplineMark } from "@/components/discipline-mark";
 import {
   AGE_CATEGORY_FILTERS,
   AGE_CATEGORY_LABELS,
@@ -393,11 +393,7 @@ export function MapFilterBar({
                 value={opt.id}
                 className={itemClass}
               >
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: familyColor(opt.id) }}
-                  aria-hidden
-                />
+                <DisciplineMark family={opt.id} />
                 {opt.label}
               </DropdownMenuRadioItem>
               {opt.children?.map((child) => (
@@ -406,11 +402,7 @@ export function MapFilterBar({
                   value={child.id}
                   className={cn(itemClass, "pl-12 [&>span]:left-6")}
                 >
-                  <span
-                    className="size-2 shrink-0 rounded-full"
-                    style={{ background: familyColor(child.id) }}
-                    aria-hidden
-                  />
+                  <DisciplineMark family={child.id} />
                   {child.label}
                 </DropdownMenuRadioItem>
               ))}
