@@ -1,6 +1,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
   fingerprint,
+  fingerprintVariants,
   normalizeName,
   slugifyEvent,
   type ParsedEvent,
@@ -1305,6 +1306,16 @@ async function upsertParsedEvent(
   );
   if (!isIngestibleDate(ev.startDate)) return null;
 
+  // A bracketed IOC code in the title names the *venue's* country; a calendar's
+  // own hint often names the organiser's. Prefer the title — that mismatch is
+  // how a Czech downhill round ended up pinned in Thuringia. Do this before the
+  // classifier runs, so the country also disambiguates SP / národný vs světový.
+  const { countryCodeFromName } = await import("@/lib/geo/europe");
+  const titleCountry = countryCodeFromName(ev.name);
+  if (titleCountry && titleCountry !== ev.countryHint) {
+    ev = { ...ev, countryHint: titleCountry };
+  }
+
   const supabase = createServerSupabase();
   const fp = fingerprint({
     startDate: ev.startDate,
@@ -1312,7 +1323,7 @@ async function upsertParsedEvent(
     lat: ev.lat,
     lng: ev.lng,
   });
-  const { isLikelyDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
+  const { pickBestDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
     await import("@/lib/dedup");
   const { publicRaceUrl, preferDeeperOfficialUrl } = await import("@/lib/watcher/public-url");
   const classified = inferClassification({
@@ -1324,6 +1335,7 @@ async function upsertParsedEvent(
     categoryNames: (ev.categories ?? []).map((c) => c.name),
     existingAudience: ev.audience,
     startDate: ev.startDate,
+    countryHint: ev.countryHint,
   });
   const levelInfo = {
     level: classified.level,
@@ -1350,73 +1362,105 @@ async function upsertParsedEvent(
   const incomingResults = publicRaceUrl(ev.resultsUrl) || ev.resultsUrl?.trim() || null;
   const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(Boolean);
 
-  // 1) exact fingerprint
+  const incomingDedup = {
+    startDate: ev.startDate,
+    endDate: ev.endDate ?? ev.startDate,
+    name: ev.name,
+    lat: ev.lat,
+    lng: ev.lng,
+    placeText: ev.placeText,
+    seriesName: ev.seriesName,
+    fingerprint: fp,
+    urls: incomingUrls,
+  };
+
+  type LocRow = { lat?: number; lng?: number; name?: string; municipality?: string } | null;
+  type CandidateRow = {
+    id: string;
+    name: string;
+    start_date: string;
+    end_date?: string | null;
+    fingerprint?: string | null;
+    website_url?: string | null;
+    registration_url?: string | null;
+    location?: LocRow;
+    series?: { name?: string } | { name?: string }[] | null;
+    sources?: { source_url?: string }[] | null;
+  };
+  const asCandidate = (row: CandidateRow, extraUrls: (string | null | undefined)[] = []) => {
+    const loc = (Array.isArray(row.location) ? row.location[0] : row.location) as LocRow;
+    const series = Array.isArray(row.series) ? row.series[0] : row.series;
+    return {
+      row,
+      event: {
+        startDate: row.start_date,
+        endDate: row.end_date,
+        name: row.name,
+        lat: loc?.lat,
+        lng: loc?.lng,
+        placeText: loc?.municipality || loc?.name,
+        seriesName: series?.name,
+        fingerprint: row.fingerprint ?? undefined,
+        urls: [
+          row.website_url,
+          row.registration_url,
+          ...(row.sources ?? []).map((x) => x.source_url),
+          ...extraUrls,
+        ],
+      },
+    };
+  };
+
+  // 1) fingerprint — exact cell first, then the neighbouring geohash cells and the
+  // "nogps" variant, which only count once the scorer confirms them.
   let existingId: string | undefined;
-  const { data: byFp } = await supabase
+  const fpCols =
+    "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality), overrides:event_overrides(locked_fields)";
+  const { data: fpRows } = await supabase
     .from("events")
-    .select(
-      "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality), overrides:event_overrides(locked_fields)",
-    )
-    .eq("fingerprint", fp)
-    .maybeSingle();
+    .select(fpCols)
+    .in("fingerprint", fingerprintVariants(ev))
+    .limit(20);
+  const fpCandidates = (fpRows ?? []) as unknown as (CandidateRow & { status?: string })[];
+  // The exact fingerprint still wins outright, cancelled rows included — that is
+  // how a cancelled race gets updated rather than resurrected as a new row.
+  let byFp = fpCandidates.find((r) => r.fingerprint === fp) ?? null;
+  if (!byFp) {
+    const best = pickBestDuplicate(
+      incomingDedup,
+      fpCandidates.filter((r) => r.status !== "cancelled").map((r) => asCandidate(r)),
+    );
+    byFp = (best?.row as CandidateRow | undefined) ?? null;
+  }
   existingId = byFp?.id;
 
   // 1b) same specific website / race-detail URL (strong signal)
   if (!existingId) {
+    const urlCols =
+      "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality)";
     const exactUrls = [incomingWebsite, incomingRegistration].filter(
       (u): u is string => Boolean(u && normalizeUrlForDedup(u)),
     );
+    const urlCandidates: CandidateRow[] = [];
     for (const url of exactUrls) {
       const { data: bySite } = await supabase
         .from("events")
-        .select(
-          "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality)",
-        )
+        .select(urlCols)
         .eq("website_url", url)
         .limit(8);
       const { data: byReg } = await supabase
         .from("events")
-        .select(
-          "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality)",
-        )
+        .select(urlCols)
         .eq("registration_url", url)
         .limit(8);
-      for (const row of [...(bySite ?? []), ...(byReg ?? [])]) {
-        const loc = row.location as {
-          lat?: number;
-          lng?: number;
-          name?: string;
-          municipality?: string;
-        } | null;
-        if (
-          isLikelyDuplicate(
-            {
-              startDate: ev.startDate,
-              endDate: ev.endDate ?? ev.startDate,
-              name: ev.name,
-              lat: ev.lat,
-              lng: ev.lng,
-              placeText: ev.placeText,
-              seriesName: ev.seriesName,
-              urls: incomingUrls,
-            },
-            {
-              startDate: row.start_date,
-              endDate: row.end_date,
-              name: row.name,
-              lat: loc?.lat,
-              lng: loc?.lng,
-              placeText: loc?.municipality || loc?.name,
-              urls: [row.website_url, row.registration_url],
-            },
-          )
-        ) {
-          existingId = row.id;
-          break;
-        }
-      }
-      if (existingId) break;
+      urlCandidates.push(...((bySite ?? []) as unknown as CandidateRow[]));
+      urlCandidates.push(...((byReg ?? []) as unknown as CandidateRow[]));
     }
+    const bestByUrl = pickBestDuplicate(
+      incomingDedup,
+      urlCandidates.map((r) => asCandidate(r)),
+    );
+    existingId = bestByUrl?.row.id;
 
     if (!existingId && ev.sourceUrl && normalizeUrlForDedup(ev.sourceUrl)) {
       const { data: bySrc } = await supabase
@@ -1426,45 +1470,15 @@ async function upsertParsedEvent(
         )
         .eq("source_url", ev.sourceUrl)
         .limit(5);
+      const srcCandidates: { row: CandidateRow; event: ReturnType<typeof asCandidate>["event"] }[] =
+        [];
       for (const row of bySrc ?? []) {
         const rawEvent = row.event as unknown;
-        const evRow = (Array.isArray(rawEvent) ? rawEvent[0] : rawEvent) as {
-          id: string;
-          name: string;
-          start_date: string;
-          end_date?: string;
-          website_url?: string;
-          registration_url?: string;
-          location?: { lat?: number; lng?: number; name?: string; municipality?: string } | null;
-        } | null;
+        const evRow = (Array.isArray(rawEvent) ? rawEvent[0] : rawEvent) as CandidateRow | null;
         if (!evRow?.id) continue;
-        if (
-          isLikelyDuplicate(
-            {
-              startDate: ev.startDate,
-              endDate: ev.endDate ?? ev.startDate,
-              name: ev.name,
-              lat: ev.lat,
-              lng: ev.lng,
-              placeText: ev.placeText,
-              seriesName: ev.seriesName,
-              urls: incomingUrls,
-            },
-            {
-              startDate: evRow.start_date,
-              endDate: evRow.end_date,
-              name: evRow.name,
-              lat: evRow.location?.lat,
-              lng: evRow.location?.lng,
-              placeText: evRow.location?.municipality || evRow.location?.name,
-              urls: [evRow.website_url, evRow.registration_url, row.source_url],
-            },
-          )
-        ) {
-          existingId = evRow.id;
-          break;
-        }
+        srcCandidates.push(asCandidate(evRow, [row.source_url]));
       }
+      existingId = pickBestDuplicate(incomingDedup, srcCandidates)?.row.id;
     }
   }
 
@@ -1477,6 +1491,7 @@ async function upsertParsedEvent(
     next.setUTCDate(next.getUTCDate() + 1);
     const from = prev.toISOString().slice(0, 10);
     const to = next.toISOString().slice(0, 10);
+    const spanEnd = (ev.endDate ?? ev.startDate).slice(0, 10);
 
     const eventCols =
       "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series(name), location:locations(lat, lng, name, municipality), sources:event_sources(source_url)";
@@ -1489,7 +1504,21 @@ async function upsertParsedEvent(
       .neq("status", "cancelled")
       .limit(400);
 
-    const byId = new Map((nearbyDays ?? []).map((r) => [r.id as string, r]));
+    const byId = new Map<string, CandidateRow>(
+      ((nearbyDays ?? []) as unknown as CandidateRow[]).map((r) => [r.id, r]),
+    );
+
+    // Multi-day races (stage races, Fri–Sun cups) start before our window but
+    // still cover this day — a single-day mirror must find them.
+    const { data: spanning } = await supabase
+      .from("events")
+      .select(eventCols)
+      .lt("start_date", from)
+      .gte("end_date", from)
+      .lte("start_date", spanEnd)
+      .neq("status", "cancelled")
+      .limit(120);
+    for (const row of (spanning ?? []) as unknown as CandidateRow[]) byId.set(row.id, row);
 
     if (ev.lat != null && ev.lng != null) {
       const { data: nearLocs } = await supabase
@@ -1510,50 +1539,15 @@ async function upsertParsedEvent(
           .neq("status", "cancelled")
           .in("location_id", locIds)
           .limit(80);
-        for (const row of nearbyGeo ?? []) byId.set(row.id as string, row);
+        for (const row of (nearbyGeo ?? []) as unknown as CandidateRow[]) byId.set(row.id, row);
       }
     }
 
-    for (const row of byId.values()) {
-      const loc = row.location as {
-        lat?: number;
-        lng?: number;
-        name?: string;
-        municipality?: string;
-      } | null;
-      const series = row.series as { name?: string } | { name?: string }[] | null;
-      const seriesName = Array.isArray(series) ? series[0]?.name : series?.name;
-      const srcs = (row.sources as { source_url?: string }[] | null) ?? [];
-      if (
-        isLikelyDuplicate(
-          {
-            startDate: ev.startDate,
-            endDate: ev.endDate ?? ev.startDate,
-            name: ev.name,
-            lat: ev.lat,
-            lng: ev.lng,
-            placeText: ev.placeText,
-            seriesName: ev.seriesName,
-            fingerprint: fp,
-            urls: incomingUrls,
-          },
-          {
-            startDate: row.start_date,
-            endDate: row.end_date,
-            name: row.name,
-            lat: loc?.lat,
-            lng: loc?.lng,
-            placeText: loc?.municipality || loc?.name,
-            seriesName,
-            fingerprint: row.fingerprint,
-            urls: [row.website_url, row.registration_url, ...srcs.map((s) => s.source_url)],
-          },
-        )
-      ) {
-        existingId = row.id;
-        break;
-      }
-    }
+    const best = pickBestDuplicate(
+      incomingDedup,
+      [...byId.values()].map((r) => asCandidate(r)),
+    );
+    existingId = best?.row.id;
   }
 
   const { data: existingFull } = existingId
@@ -1678,7 +1672,15 @@ async function upsertParsedEvent(
   }
 
   const { isNonRaceEventName } = await import("@/lib/event-visibility");
-  const hideAsNonRace = isNonRaceEventName(ev.name);
+  const { isNonCyclingEventName } = await import("@/lib/sport-gate");
+  // Regional calendars mix club triathlons and charity runs in with the road
+  // races. Judge on the source's own words only — our inferred disciplines
+  // cannot vouch for an entry, since a wrong discipline is what we are catching.
+  const nonCycling = isNonCyclingEventName(
+    ev.name,
+    (ev.categories ?? []).map((c) => c.name).join(" "),
+  );
+  const hideAsNonRace = isNonRaceEventName(ev.name) || nonCycling;
 
   const existingRow = existingFull as {
     id?: string;
@@ -1753,10 +1755,21 @@ async function upsertParsedEvent(
         uciClass: levelInfo.uciClass,
         classLabel: levelInfo.classLabel,
       },
+      classified.levelReason !== "default",
     );
   }
 
-  const mergedAgeCategories = unionText(existingRow?.age_categories, classified.ageCategories);
+  /**
+   * Ages used to be unioned on every pass, so one source's guess stuck to the
+   * row forever — a UCI World Championship carried "kids" for a season because
+   * a kids-cup adapter had seen the same weekend. Evidence from the name or
+   * category list now replaces the stored set; a level/discipline default only
+   * fills a row that has nothing.
+   */
+  const mergedAgeCategories =
+    classified.ageConfidence === "explicit"
+      ? classified.ageCategories
+      : unionText(existingRow?.age_categories, classified.ageCategories);
   const mergedAudience = mergedAgeCategories.length
     ? audienceFromAgeCategories(
         mergedAgeCategories as import("@/lib/taxonomy").AgeCategory[],
@@ -1789,6 +1802,10 @@ async function upsertParsedEvent(
     last_seen_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
+
+  // Never let another sport into the catalog in the first place. Rows that are
+  // already here get hidden below instead, so a manual unhide still sticks.
+  if (nonCycling && !existingId) return null;
 
   const { shouldSkipUnlinkedDumpInsert } = await import("@/lib/event-visibility");
   const skipDump = shouldSkipUnlinkedDumpInsert({

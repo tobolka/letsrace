@@ -185,3 +185,27 @@ export function isInEuropeMap(lat: number, lng: number): boolean {
   const [[west, south], [east, north]] = EUROPE_MAP_BOUNDS;
   return lat >= south && lat <= north && lng >= west && lng <= east;
 }
+
+/**
+ * IOC / FIFA three-letter codes → ISO-3166 alpha-2.
+ *
+ * Gravity and UCI calendars label rounds with the host nation in the title —
+ * "iXS DHC #4 - Špičák (CZE)". When the calendar's own country hint is the
+ * organiser's rather than the venue's, that suffix is the more reliable of the
+ * two, and it is how a Czech downhill round ended up pinned in Thuringia.
+ */
+const IOC_TO_ISO: Record<string, string> = {
+  AUT: "AT", BEL: "BE", BUL: "BG", CRO: "HR", CZE: "CZ", DEN: "DK", ESP: "ES",
+  EST: "EE", FIN: "FI", FRA: "FR", GBR: "GB", GER: "DE", GRE: "GR", HUN: "HU",
+  IRL: "IE", ITA: "IT", LAT: "LV", LTU: "LT", LUX: "LU", NED: "NL", NOR: "NO",
+  POL: "PL", POR: "PT", ROU: "RO", SLO: "SI", SRB: "RS", SUI: "CH", SVK: "SK",
+  SWE: "SE", UKR: "UA",
+};
+
+/** Country code stated in a race title as a bracketed IOC code, if any. */
+export function countryCodeFromName(name: string | null | undefined): string | null {
+  if (!name) return null;
+  const m = name.match(/[([]\s*([A-Z]{3})\s*[)\]]/);
+  if (!m) return null;
+  return IOC_TO_ISO[m[1]!.toUpperCase()] ?? null;
+}

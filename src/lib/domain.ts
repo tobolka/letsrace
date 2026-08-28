@@ -72,6 +72,32 @@ export function fingerprint(opts: {
   return `${opts.startDate}:${hash}:${normalizeName(opts.name)}`;
 }
 
+/**
+ * Fingerprints that should be treated as the same race when looking an event up.
+ *
+ * The plain {@link fingerprint} pins the event to one geohash-5 cell, so two
+ * sources that geocode the same start line a few hundred metres apart (or land
+ * on opposite sides of a cell border) never match. We therefore also accept the
+ * eight neighbouring cells, plus the "nogps" variant emitted by sources that
+ * ship no coordinates at all. Non-exact hits must still be confirmed by the
+ * multi-signal scorer before they are treated as duplicates.
+ */
+export function fingerprintVariants(opts: {
+  startDate: string;
+  name: string;
+  lat?: number | null;
+  lng?: number | null;
+}): string[] {
+  const norm = normalizeName(opts.name);
+  const cells = new Set<string>(["nogps"]);
+  if (opts.lat != null && opts.lng != null) {
+    const base = ngeohash.encode(opts.lat, opts.lng, 5);
+    cells.add(base);
+    for (const n of ngeohash.neighbors(base)) cells.add(n);
+  }
+  return [...cells].map((cell) => `${opts.startDate}:${cell}:${norm}`);
+}
+
 export function slugifyEvent(name: string, startDate: string): string {
   const base = normalizeName(name).replace(/\s+/g, "-").slice(0, 60);
   return `${base}-${startDate}`.replace(/-+/g, "-");

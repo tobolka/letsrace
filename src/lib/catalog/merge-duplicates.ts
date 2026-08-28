@@ -1,8 +1,10 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
+  DEDUP_THRESHOLD,
   distanceKm,
   preferEventName,
   scoreDuplicate,
+  spanDays,
   canonicalizeForDedup,
   isGarbagePlace,
   type DedupEvent,
@@ -194,7 +196,7 @@ function winner(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDuplicateRow {
     (r.registration_url ? 40 : 0) +
     (r.series_id ? 30 : 0) +
     (r.sources?.length ?? 0) * 5 +
-    (preferEventName(r.name, a.name === r.name ? b.name : a.name) === r.name ? 8 : 0);
+    (preferEventName(r.name, r === a ? b.name : a.name) === r.name ? 8 : 0);
   return score(a) >= score(b) ? a : b;
 }
 
@@ -232,6 +234,23 @@ export async function mergePublicDuplicates(opts?: {
     if (chunk.length < 1000) break;
   }
 
+  // Multi-day races that began before the window but still run into it: their
+  // single-day mirrors are inside the window, so both halves have to be present.
+  const { data: ongoing } = await supabase
+    .from("events")
+    .select(
+      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, location:locations(lat, lng, name, municipality), series:series(name)",
+    )
+    .eq("visibility", "public")
+    .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+    .lt("start_date", fromDate)
+    .gte("end_date", fromDate)
+    .limit(500);
+  const seen = new Set(rows.map((r) => r.id));
+  for (const row of (ongoing ?? []) as unknown as MergeDuplicateRow[]) {
+    if (!seen.has(row.id)) rows.push(row);
+  }
+
   const parent = new Map<string, string>();
   const find = (id: string): string => {
     const p = parent.get(id);
@@ -246,12 +265,16 @@ export async function mergePublicDuplicates(opts?: {
     if (pa !== pb) parent.set(pa, pb);
   };
 
+  // Index each row under every day it occupies. A Fri–Sun stage listing has to
+  // meet the Sunday-only mirror of the same race, which a start_date-only bucket
+  // (plus one adjacent day) never reaches.
   const byDay = new Map<string, MergeDuplicateRow[]>();
   for (const row of rows) {
-    const d = row.start_date.slice(0, 10);
-    const list = byDay.get(d) ?? [];
-    list.push(row);
-    byDay.set(d, list);
+    for (const d of spanDays({ startDate: row.start_date, endDate: row.end_date })) {
+      const list = byDay.get(d) ?? [];
+      list.push(row);
+      byDay.set(d, list);
+    }
   }
 
   const considerPair = (a: MergeDuplicateRow, b: MergeDuplicateRow) => {
@@ -323,14 +346,24 @@ export async function mergePublicDuplicates(opts?: {
 
   const merges: { keep: MergeDuplicateRow; drop: MergeDuplicateRow; reasons: string[] }[] = [];
   for (const list of clusters.values()) {
-    const uniq = [...new Map(list.map((r) => [r.id, r])).values()];
-    if (uniq.length < 2) continue;
-    const keep = uniq.reduce((a, b) => winner(a, b));
-    for (const drop of uniq) {
-      if (drop.id === keep.id) continue;
-      const { score, reasons } = scoreDuplicate(asDedup(keep), asDedup(drop));
-      if (score < 50 || isJunkPair(keep, drop)) continue;
-      merges.push({ keep, drop, reasons });
+    // Union-find is transitive, the scorer is not: A~B and B~C does not make A~C.
+    // Members that fail the direct re-check against the keeper used to be dropped
+    // on the floor and stayed duplicates forever — re-cluster them instead, so a
+    // chain resolves into as many merges as the scorer actually supports.
+    let pool = [...new Map(list.map((r) => [r.id, r])).values()];
+    while (pool.length > 1) {
+      const keep = pool.reduce((a, b) => winner(a, b));
+      const rest: MergeDuplicateRow[] = [];
+      for (const drop of pool) {
+        if (drop.id === keep.id) continue;
+        const { score, reasons } = scoreDuplicate(asDedup(keep), asDedup(drop));
+        if (score < DEDUP_THRESHOLD || isJunkPair(keep, drop)) {
+          rest.push(drop);
+          continue;
+        }
+        merges.push({ keep, drop, reasons });
+      }
+      pool = rest;
     }
   }
 
@@ -387,43 +420,131 @@ export async function mergePublicDuplicates(opts?: {
 
   let merged = 0;
   for (const m of toApply) {
-    const { data: dropSources } = await supabase
-      .from("event_sources")
-      .select("id, watched_url_id, external_id, source_url, kind")
-      .eq("event_id", m.drop.id);
-
-    for (const src of dropSources ?? []) {
-      const { error: moveErr } = await supabase
-        .from("event_sources")
-        .update({ event_id: m.keep.id })
-        .eq("id", src.id);
-      if (moveErr) {
-        await supabase.from("event_sources").delete().eq("id", src.id);
-      }
-    }
-
-    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-    if (!m.keep.website_url && m.drop.website_url) patch.website_url = m.drop.website_url;
-    if (!m.keep.registration_url && m.drop.registration_url) {
-      patch.registration_url = m.drop.registration_url;
-    }
-    if (!m.keep.series_id && m.drop.series_id) patch.series_id = m.drop.series_id;
-    const better = preferEventName(m.keep.name, m.drop.name);
-    if (better !== m.keep.name) patch.name = better;
-    if (Object.keys(patch).length > 1) {
-      await supabase.from("events").update(patch).eq("id", m.keep.id);
-    }
-
-    await supabase
-      .from("events")
-      .update({
-        visibility: "hidden",
-        status: "hidden",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", m.drop.id);
+    await applyMerge(supabase, m.keep, m.drop);
     merged += 1;
   }
 
   return { events: rows.length, pairs: merges.length, merged, dry: false, preview };
+}
+
+type MergeSide = Pick<
+  MergeDuplicateRow,
+  "id" | "name" | "website_url" | "registration_url" | "series_id"
+>;
+
+/** Fold `drop` into `keep`: move its sources and links across, then hide it. */
+async function applyMerge(
+  supabase: ReturnType<typeof createServerSupabase>,
+  keep: MergeSide,
+  drop: MergeSide,
+) {
+  const { data: dropSources } = await supabase
+    .from("event_sources")
+    .select("id, watched_url_id, external_id, source_url, kind")
+    .eq("event_id", drop.id);
+
+  for (const src of dropSources ?? []) {
+    const { error: moveErr } = await supabase
+      .from("event_sources")
+      .update({ event_id: keep.id })
+      .eq("id", src.id);
+    if (moveErr) {
+      // Unique (watched_url_id, external_id) already points at the keeper.
+      await supabase.from("event_sources").delete().eq("id", src.id);
+    }
+  }
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (!keep.website_url && drop.website_url) patch.website_url = drop.website_url;
+  if (!keep.registration_url && drop.registration_url) {
+    patch.registration_url = drop.registration_url;
+  }
+  if (!keep.series_id && drop.series_id) patch.series_id = drop.series_id;
+  const better = preferEventName(keep.name, drop.name);
+  if (better !== keep.name) patch.name = better;
+  if (Object.keys(patch).length > 1) {
+    await supabase.from("events").update(patch).eq("id", keep.id);
+  }
+
+  // Retire the loser's fingerprint. It is the watcher's identity key, so leaving
+  // it intact would let a later fetch re-match onto the hidden row and resurrect
+  // the duplicate — and it is what blocks the unique index on `events`.
+  // The column is NOT NULL, so we mark it rather than clear it.
+  await supabase
+    .from("events")
+    .update({
+      visibility: "hidden",
+      status: "hidden",
+      fingerprint: `merged:${drop.id}`,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", drop.id);
+}
+
+/**
+ * Collapse rows that share an exact fingerprint.
+ *
+ * A fingerprint is date + geohash-5 + normalized name, so a collision is the
+ * same race by construction — the upsert's own identity check. Rows still get
+ * in behind it because the watcher runs several sources concurrently and two
+ * inserts can both miss each other's row. The scorer never cleans them up: it
+ * only looks at upcoming dates, and it re-derives a similarity it does not need
+ * when the identity key already matches.
+ *
+ * Runs across the whole catalog, not just the upcoming window.
+ */
+export async function collapseFingerprintCollisions(opts?: {
+  dry?: boolean;
+}): Promise<{ collisions: number; merged: number; dry: boolean; preview: string[] }> {
+  const supabase = createServerSupabase();
+  const dry = opts?.dry ?? false;
+
+  type FpRow = MergeSide & {
+    fingerprint: string | null;
+    start_date: string;
+    visibility: string | null;
+  };
+  const rows: FpRow[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase
+      .from("events")
+      .select("id, name, start_date, fingerprint, visibility, website_url, registration_url, series_id")
+      .order("start_date")
+      .range(from, from + 999);
+    if (error) throw error;
+    rows.push(...((data ?? []) as unknown as FpRow[]));
+    if (!data || data.length < 1000) break;
+  }
+
+  const byFingerprint = new Map<string, FpRow[]>();
+  for (const row of rows) {
+    if (!row.fingerprint) continue;
+    const list = byFingerprint.get(row.fingerprint) ?? [];
+    list.push(row);
+    byFingerprint.set(row.fingerprint, list);
+  }
+
+  const preview: string[] = [];
+  let collisions = 0;
+  let merged = 0;
+  for (const [fp, group] of byFingerprint) {
+    if (group.length < 2) continue;
+    collisions += 1;
+    // Keep the row with the most to offer; a visible row always beats a hidden one.
+    const rank = (r: FpRow) =>
+      (r.visibility === "public" ? 1000 : 0) +
+      (r.website_url ? 100 : 0) +
+      (r.registration_url ? 100 : 0) +
+      (r.series_id ? 50 : 0);
+    const keep = group.reduce((a, b) => (rank(a) >= rank(b) ? a : b));
+    for (const drop of group) {
+      if (drop.id === keep.id) continue;
+      preview.push(`${fp.slice(0, 56)} — keep "${keep.name.slice(0, 40)}" drop ${drop.id.slice(0, 8)}`);
+      if (dry) continue;
+      await applyMerge(supabase, keep, drop);
+      merged += 1;
+    }
+  }
+
+  return { collisions, merged, dry, preview };
 }

@@ -214,6 +214,22 @@ const GENERIC_HOST_PATH =
 const CALENDAR_URL_PATH =
   /kidscup\.bike\/(en\/)?(race-calendar|rennkalender)|rookiescup\.bike\/(en\/)?(race-calendar|rennkalender)|ixsdownhillcup\.com\/(en\/)?(race-calendar|rennkalender)|cup\.cube\.eu\/?(anmeldung)?\/?$|kolopro\.cz\/zavody\/?$|juniorcup\.net\/?$|iprimacup\.cz\/zavody-20\d{2}|poharmtb\.cz\/(cross-country|enduro|downhill)|zapadoceskaamaterskaliga\.cz\/kalendare|prahamtb\.cz|enduroserie\.cz\/zavody|enduro\.sportsoft\.cz|cyklokros\.cz\/kalendar|ucimtbworldseries\.com\/calendar|swiss-cycling\.ch\/.*kalender|cyclingaustria\.at\/kalender|detskymtbcup\.cz\/?$|skvelopraha\.cz\/velky-haj|ppkbike\.cz|ppk-hk\.cz|cyklistikaszc\.sk\/.*kalendar|albgold-juniorscup\.de|rookiescup-ostbayern\.de\/rennen|xco-bikecup\.de|schwarzwaelder-mtb-cup\.de|rhein-eifel-mtb-cup\.de|mtb-oberschwaben-cup\.de|mtbsaarlandliga\.de\/rennen|juniorbikecup\.at\/termine|polandbike\.pl\/kalendarz|salzkammergut-trophy\.at|pekloseveru\.cz\/(cz\/)?registrace|pekloseveru\.cz\/en\/registration|pekloseveru\.cz\/.*propozice-serialu|pekloseveru\.cz\/.*series-regulations|ustimtbcup\.cz\/?$|jcp-mtb\.cz\/?$|bayerwald-mtb-cup\.com\/?$|skiclub-bb\.com\/werdenfelscup|mtb-rhein-main-cup\.de\/?$|mtb-kidscup\.de\/start\/termine-2|mountainbike-challenge\.at\/?$|soof\.sk\/podujatia-a-akcie|mpdv-cup\.de\/?$|swissbikecup\.ch(\/(en|de|fr))?\/?$|mtb-cup\.ch\/(en\/)?race\/?$|valais-cycling\.ch\/.*kids-bike-cup-valais|bikekingdom\.ch\/.*kids-cup|eigerbike\.ch\/.*kids-race|eigerbike\.ch\/.*race\/informations|marathon-man\.eu\/?$|mtbpomerania\.pl\/?$|silesia\.bike\/?$|sloenduro\.com\/.*sloenduro-calendar|sloxcup\.com\/dirke-2026|sloveniadownhillcup\.si\/(en\/)?(races|dirke)-2026|belgiancycling\.be\/.*3-nations-cup\/kalender|cycling\.vlaanderen\/competitie\/mtb\/(xco|kids)-series|mtbcompetitieoostnederland\.nl\/.*agenda-mbt-cup|knwu\.nl\/kampioenschappen\/nk-mountainbike|knwu\.nl\/nieuws\/klaar-voor-mtb-streetrace|federciclismo\.it\/.*circuiti-mtb\/(italia-bike-cup|coppa-italia-giovanile)|ciclisme\.cat\/campionat\/btt\/copa-catal|hbs\.hr\/kalendar|pyoraily\.fi\/.*kultainen-kampi|esmtb\.com\/calendario-de-las-copas-de-espana|bikeclub-engelberg\.ch\/wp\/valiant-gp|brvinfo\.ch\/bundicycling-kidscup|xco-nrw-cup\.de\/?$|schwarzwald-bike-marathon\.de\/.*rena-kids-cup|albstadt-bike-marathon\.de\/?$|rsv-bad-griesbach\.de\/?$|bahno\.ambike\.com\/?$|mtbraceseries\.ch\/egg|bikeside\.ch(\/kategorien)?\/?$|fmciclismo\.com\/.*ESCUELAS|superprestigecyclocross\.be\/.+\/kalender\/?$|ucicyclocrossworldcup\.com\/.+\/calendar\/?$|uec\.ch\/.+\/calendar|detskatour\.sk\/?$|lines-mag\.at\/austrian-gravity-series\/?$|raceresult\.com\/events\/?$|mtb-bundesliga\.net\/(rennen\/)?$|mtb-bundesliga\.net\/nachwuchs-bl|polandbike\.pl\/junior-race|kalendar\.sportsoft\.cz\/?$|pucharmtb\.pl\/kalendarz|czechcyclingfederation\.com\/(en\/)?events\/(mnd-cup|skoda-cup)|cyclingaustria\.at\/news\/.*cycling-austria-cups|sport-base\.eu\/competitions\/?$/i;
 
+/** Leading locale segment: /en/race, /de/rennen, /cs/zavod — same page, other language. */
+const LOCALE_SEGMENT =
+  /^\/(en|de|cs|cz|sk|pl|fr|it|es|nl|hu|hr|sl|si|ru|uk|at|ch|dk|fi|no|se|pt|ro|bg|gr|el|tr|eng|deu|ger)(?:-[a-z]{2})?(?=\/|$)/i;
+
+/** Directory-index leaves that carry no identity. */
+const INDEX_LEAF = /\/(index|default|home)\.(html?|php|aspx?)$/i;
+
+/** Same page reached in another language / via a directory index → one identity. */
+function canonicalPath(path: string): string {
+  let p = path.replace(INDEX_LEAF, "");
+  // Locales can be nested (/en/de/ never happens, but /en//race does) — loop once.
+  const stripped = p.replace(LOCALE_SEGMENT, "");
+  if (stripped !== p) p = stripped;
+  return p.replace(/\/+/g, "/").replace(/\/+$/, "");
+}
+
 /**
  * Strip tracking noise; hostname + pathname only.
  * Returns empty string for unusable / generic calendar URLs.
@@ -230,6 +246,14 @@ export function normalizeUrlForDedup(raw: string | null | undefined): string {
     if (CALENDAR_URL_PATH.test(key)) return "";
     // Bare domain with no meaningful path → ignore
     if (!path || path === "/") return "";
+    // Language-neutral identity, but only after the calendar filters have seen
+    // the original path — the hub patterns are written with locale prefixes.
+    const slimPath = canonicalPath(path);
+    const slimKey = `${host}${slimPath}`.toLowerCase();
+    if (slimKey !== key) {
+      if (GENERIC_HOST_PATH.test(slimKey) || CALENDAR_URL_PATH.test(slimKey)) return "";
+      if (!slimPath || slimPath === "/") return "";
+    }
     const sportsoftEvent = host.endsWith("sportsoft.cz") ? u.searchParams.get("e") : null;
     if (host.endsWith("sportsoft.cz") && /startreg\.aspx$/i.test(path) && !sportsoftEvent) {
       return "";
@@ -240,7 +264,7 @@ export function normalizeUrlForDedup(raw: string | null | undefined): string {
     if (host.endsWith("rad-bundesliga.net")) {
       return radBlEvent ? `${host}?event_id=${radBlEvent}` : "";
     }
-    return sportsoftEvent ? `${key}?e=${sportsoftEvent}` : key;
+    return sportsoftEvent ? `${slimKey}?e=${sportsoftEvent}` : slimKey;
   } catch {
     return "";
   }
@@ -648,6 +672,40 @@ export function isLikelyDuplicate(a: DedupEvent, b: DedupEvent): boolean {
   return scoreDuplicate(a, b).score >= DEDUP_THRESHOLD;
 }
 
+/**
+ * Highest-scoring duplicate among candidates, or null.
+ *
+ * Taking the *best* match instead of the first one above the threshold matters:
+ * when a new listing weakly matches an old row while a better row exists, the
+ * first-match behaviour welds it to the wrong event and leaves the good pair
+ * behind as a permanent duplicate.
+ */
+export function pickBestDuplicate<T>(
+  incoming: DedupEvent,
+  candidates: { row: T; event: DedupEvent }[],
+): { row: T; score: number; reasons: string[] } | null {
+  let best: { row: T; score: number; reasons: string[] } | null = null;
+  for (const c of candidates) {
+    const { score, reasons } = scoreDuplicate(incoming, c.event);
+    if (score < DEDUP_THRESHOLD) continue;
+    if (!best || score > best.score) best = { row: c.row, score, reasons };
+  }
+  return best;
+}
+
+/** Every ISO day an event occupies, capped so broken end_dates cannot explode. */
+export function spanDays(span: DateSpan, maxDays = 12): string[] {
+  const start = parseDay(span.startDate);
+  const end = parseDay(span.endDate || span.startDate);
+  const lo = Math.min(start, end);
+  const hi = Math.min(Math.max(start, end), lo + maxDays - 1);
+  const out: string[] = [];
+  for (let d = lo; d <= hi; d++) {
+    out.push(new Date(d * 86_400_000).toISOString().slice(0, 10));
+  }
+  return out;
+}
+
 /** Conflicting race-format tokens → not the same event even at one venue. */
 const FORMAT_TOKENS = [
   "biatlon",
@@ -715,13 +773,23 @@ const LEVEL_RANK: Record<string, number> = {
   world_championship: 8,
 };
 
+/**
+ * Merge the stored level with a freshly classified one.
+ *
+ * Highest rank normally wins, because one source often knows a round is a World
+ * Cup while another lists it as a local race. That is wrong in one direction:
+ * a level the classifier inflated by mistake could never be corrected, since the
+ * bad value always outranked the good one. Pass `bIsConfident` when the incoming
+ * level came from an unambiguous marker — then it wins outright, downward too.
+ */
 export function preferLevel(
   a: { level?: string | null; uciClass?: string | null; classLabel?: string | null },
   b: { level?: string | null; uciClass?: string | null; classLabel?: string | null },
+  bIsConfident = false,
 ): { level: string; uciClass: string | null; classLabel: string | null } {
   const ra = LEVEL_RANK[a.level || ""] ?? 0;
   const rb = LEVEL_RANK[b.level || ""] ?? 0;
-  const winner = ra >= rb ? a : b;
+  const winner = bIsConfident ? b : ra >= rb ? a : b;
   return {
     level: winner.level || "local",
     uciClass: a.uciClass || b.uciClass || null,

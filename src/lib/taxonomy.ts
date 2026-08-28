@@ -1,4 +1,5 @@
 import type { Audience } from "@/lib/domain";
+import { resolveLevel, isGranFondoWorldSeries } from "@/lib/classify-level";
 
 /**
  * Controlled vocabulary for Startline.
@@ -471,9 +472,13 @@ export function isKidsPrimarySeries(text: string | null | undefined): boolean {
 const NATIONAL_MTB_ALL_AGES =
   /česk[ýy]\s*poh[áa]r(\s*mtb|\s*xc|\s*xco)?|cesky\s*pohar(\s*mtb|\s*xc|\s*xco)?|slovensk[ýy]\s*poh[áa]r(\s*mtb|\s*xc|\s*xco)?|poh[áa]r\s*mtb\s*xc|\bčp\s*xco\b|\bcp\s*xco\b|\bčp\s*mtb\b/i;
 
-/** UCI World Cup / World Series / Superprestige — junior–elite, not kids. */
+/**
+ * UCI World Cup / World Series / Superprestige — junior–elite, not kids.
+ * Excludes the Gran Fondo World Series, which is amateur mass participation
+ * wearing the same words.
+ */
 const UCI_JUNIOR_TO_ELITE =
-  /world[\s-]?cup|world[\s-]?series|superprestige|world[\s-]?tour|uci\s+mtb\s+world/i;
+  /world[\s-]?cup|superprestige|world[\s-]?tour|uci\s+(mtb|bmx|cyclo\s?cross|track)\s+world/i;
 
 /** UCI class races (C1–C3, HC, 1.x / 2.x) — typically junior–elite. */
 const UCI_CLASS_RACE =
@@ -497,6 +502,7 @@ function addAgeDefaults(
     existingAudience?: string | null;
     level?: string | null;
     disciplines?: string[] | null;
+    granFondoWorldSeries?: boolean;
   },
 ) {
   const t = opts.text;
@@ -507,6 +513,11 @@ function addAgeDefaults(
       ["road", "road_race", "tt", "criterium", "hill_climb", "gran_fondo"].includes(d),
     ) || /\broad\b|silnic|gran[\s-]?fondo/.test(t);
 
+  if (opts.granFondoWorldSeries) {
+    found.add("amateur");
+    found.add("masters");
+    return;
+  }
   if (opts.kidsPrimary) {
     found.add("kids");
     found.add("youth");
@@ -906,6 +917,16 @@ export function isIngestibleDate(startDate: string, now = new Date()): boolean {
 
 export type InferredClassification = {
   disciplines: Discipline[];
+  /**
+   * How `ageCategories` was reached. `explicit` means a token in the name,
+   * series or category list said so; `default` means the level/discipline
+   * heuristic filled it in; `none` means we genuinely do not know. Callers
+   * merging into an existing row must not let a `default` overwrite an
+   * `explicit` one, and must not accumulate defaults across sources.
+   */
+  ageConfidence: "explicit" | "default" | "none";
+  /** Which level marker fired — kept for the admin preview and audit script. */
+  levelReason: string;
   formats: Format[];
   ageCategories: AgeCategory[];
   audience: Audience;
@@ -928,6 +949,7 @@ export function inferClassification(opts: {
   existingClassLabel?: string | null;
   existingAudience?: string | null;
   startDate?: string | null;
+  countryHint?: string | null;
   isNonRace?: boolean;
 }): InferredClassification {
   const seriesBlob = `${opts.seriesName ?? ""} ${opts.seriesSlug ?? ""}`;
@@ -961,39 +983,23 @@ export function inferClassification(opts: {
     if ((UCI_CLASSES as readonly string[]).includes(cl)) uciClass = cl as UciClass;
   }
 
-  let level: RaceLevel = "local";
-  if (/world\s*championship|mistrovství světa|mistrovstvi sveta|\bmw\b|\bwch\b|\bms\b/.test(t)) {
-    level = "world_championship";
-  } else if (
-    /european\s*championship|mistrovství evropy|mistrovstvi evropy|\bech\b|\bme\b/.test(t)
-  ) {
-    level = "european_championship";
-  } else if (/world\s*cup|světový pohár|svetovy pohar|\bwc\b|\bsp\b|world[\s-]?series/.test(t)) {
-    level = "world_cup";
-  } else if (/continental[\s-]?cup|evropský pohár|evropsky pohar/.test(t)) {
-    level = "continental";
-  } else if (/international|mezinárodní|mezinarodni|\buci\b/.test(t) || uciClass) {
-    level = uciClass ? "national" : "international";
-    if (/\buci\b/.test(t) && !uciClass) level = "international";
-    if (uciClass && /international|mezinárodní|mezinarodni|\buci\b/.test(t)) level = "international";
-  } else if (
-    /\bmčr\b|mistrovství|cesky pohar|český pohár|\bčp\b|čp\b|\bcp\b|national|slovenský pohár|slovensky pohar|bundesliga|kolo\s*pro\s*(život|zivot)|prima\s*cup|cube\s*cup|czech\s+enduro|swiss bike cup|vittoria/.test(
-      t,
-    )
-  ) {
-    level = "national";
-  } else if (
-    /krajsk|regionál|regional|přebor kraje|prebor kraje|okres|district|schwarzw(ae|ä|a)lder|rhein-eifel|oberschwaben|saarlandliga|úst[ií]\s*mtb|usti\s*mtb\s*cup|šumavsk|sumavsk|bayerwald|werdenfels|rhein-main|eldorado|berg\s*&\s*bike|mpdv|detská\s*vrl|allgäu|valais|bundicycling|bike kingdom|valiant gp|xco-nrw|jarn[ií]\s*bahno|copa madrid/.test(
-      t,
-    )
-  ) {
-    level = "regional";
-  } else if (opts.existingLevel && LEGACY_LEVEL[opts.existingLevel]) {
+  const levelEvidence = resolveLevel({
+    name: opts.name,
+    seriesName: opts.seriesName,
+    seriesSlug: opts.seriesSlug,
+    placeText: opts.placeText,
+    categoryNames: opts.categoryNames,
+    uciClass,
+    countryHint: opts.countryHint,
+  });
+  let level: RaceLevel = levelEvidence.level;
+  if (level === "local" && opts.existingLevel && LEGACY_LEVEL[opts.existingLevel]) {
     level = LEGACY_LEVEL[opts.existingLevel];
   }
 
   if (uciClass && level === "local") level = "national";
 
+  const explicitAges = ageCategories.size > 0;
   addAgeDefaults(ageCategories, {
     text: t,
     familySeries,
@@ -1001,7 +1007,13 @@ export function inferClassification(opts: {
     existingAudience: opts.existingAudience,
     level,
     disciplines,
+    granFondoWorldSeries: isGranFondoWorldSeries(text),
   });
+  const ageConfidence: InferredClassification["ageConfidence"] = explicitAges
+    ? "explicit"
+    : ageCategories.size > 0
+      ? "default"
+      : "none";
 
   const ageList = AGE_CATEGORIES.filter((c) => ageCategories.has(c));
   let audience = ageList.length
@@ -1030,6 +1042,8 @@ export function inferClassification(opts: {
   return {
     disciplines,
     formats,
+    ageConfidence,
+    levelReason: levelEvidence.reason,
     ageCategories: ageList,
     audience: ageList.length
       ? audience
