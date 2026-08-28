@@ -351,6 +351,41 @@ function placeTokens(...places: (string | null | undefined)[]): string[] {
   return [...out];
 }
 
+const VENUE_FORMAT_WORDS =
+  /\b(cyklokros|cyclocross|\bcx\b|gravel|maraton|marathon|xco|xcm|xcc|enduro|downhill|\bdh\b|silnic|road|mtb|casovka|casovka)\b/i;
+
+function titlePlaceWords(name: string): string[] {
+  return canonicalizeForDedup(name)
+    .split(/\s+/)
+    .filter((w) => !w.startsWith("series:"));
+}
+
+function isPlaceOnlyTitle(name: string, placeText?: string | null): boolean {
+  const words = titlePlaceWords(name);
+  if (!words.length) return isWeakRaceName(name);
+  const ptoks = placeTokens(placeText, name);
+  return words.every((w) => ptoks.some((t) => t.includes(w) || w.includes(t)));
+}
+
+function hasVenueFormatHint(ev: DedupEvent): boolean {
+  const blob = `${ev.name} ${ev.seriesName ?? ""}`;
+  if (VENUE_FORMAT_WORDS.test(fold(blob))) return true;
+  return seriesAliasTokens(blob).some((t) => t.includes("cx") || t.includes("cyclo"));
+}
+
+function sharedPlaceTitleToken(a: DedupEvent, b: DedupEvent): string | null {
+  const venueTokens = placeTokens(a.placeText, b.placeText);
+  if (!venueTokens.length) return null;
+  const wordsA = titlePlaceWords(a.name);
+  const wordsB = titlePlaceWords(b.name);
+  for (const t of venueTokens) {
+    const inA = wordsA.some((w) => w.includes(t) || t.includes(w));
+    const inB = wordsB.some((w) => w.includes(t) || t.includes(w));
+    if (inA && inB) return t;
+  }
+  return null;
+}
+
 /** Canonical title with venue words stripped so "Blovice - DÚŠA KAP" ≈ "5. TalentCUP: DÚŠA KAP". */
 function coreCanonical(ev: DedupEvent, other: DedupEvent): string {
   let s = fold(ev.name);
@@ -392,7 +427,13 @@ export function isGarbagePlace(place?: string | null): boolean {
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-  return !p || /^(uci\s*(c[123]|cn|hc)|unknown|silnice)$/.test(p);
+  return (
+    !p ||
+    /^(uci\s*(c[123]|cn|hc)|unknown|silnice)$/.test(p) ||
+    /^(czechia|czech republic|cesko|ceska republika|poland|polsko|slovakia|slovensko|austria|rakousko|germany|nemecko|italy|italie|hungary|madarsko)$/.test(
+      p,
+    )
+  );
 }
 
 export function placesNearby(
@@ -561,6 +602,21 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
     ) {
       score += 18;
       reasons.push("weak_name_absorbed");
+    }
+  }
+
+  // Place-only title vs "Cyklokros Litvínovice" / "TBC — Litvínovice" at same venue
+  if (near && sameDay && !reasons.includes("same_canonical_name")) {
+    const placeTok = sharedPlaceTitleToken(a, b);
+    if (placeTok) {
+      const placeOnlyA = isPlaceOnlyTitle(a.name, a.placeText);
+      const placeOnlyB = isPlaceOnlyTitle(b.name, b.placeText);
+      const formatA = hasVenueFormatHint(a);
+      const formatB = hasVenueFormatHint(b);
+      if ((placeOnlyA && formatB) || (placeOnlyB && formatA)) {
+        score += 14;
+        reasons.push("venue_format_mirror");
+      }
     }
   }
 

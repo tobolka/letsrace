@@ -307,6 +307,45 @@ describe("golden races — dedup", () => {
     ).toBe(true);
   });
 
+  it("TBC Litvínovice CX mirrors merge (place-only + cyklokros title)", () => {
+    const base = {
+      startDate: "2026-10-18",
+      lat: 48.962,
+      lng: 14.451,
+      placeText: "Litvínovice",
+    };
+    const placeOnly = { ...base, name: "LITVÍNOVICE", seriesName: "TBC SÉRIE" };
+    const tbc = {
+      ...base,
+      name: "TBC — LITVÍNOVICE",
+      seriesName: "TBC SÉRIE CYKLOKROS",
+    };
+    const cx = { ...base, name: "Cyklokros Litvínovice" };
+    const czechia = { ...base, name: "LITVÍNOVICE", placeText: "Czechia" };
+
+    for (const [left, right] of [
+      [placeOnly, tbc],
+      [placeOnly, cx],
+      [tbc, cx],
+      [czechia, tbc],
+      [czechia, cx],
+    ] as const) {
+      const { score, reasons } = scoreDuplicate(left, right);
+      expect(score, `${left.name} vs ${right.name}`).toBeGreaterThanOrEqual(50);
+      expect(reasons).toEqual(expect.arrayContaining(["same_day"]));
+    }
+
+    const badCoords = {
+      ...base,
+      name: "LITVÍNOVICE",
+      lat: 49.74,
+      lng: 15.33,
+      placeText: "Czechia",
+      seriesName: "TBC SÉRIE",
+    };
+    expect(scoreDuplicate(badCoords, tbc).score).toBeGreaterThanOrEqual(50);
+  });
+
   it("Kolo pro život Znojmo multi-day listing merges with Sunday mirror", () => {
     const { score, reasons } = scoreDuplicate(
       {

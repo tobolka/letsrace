@@ -50,9 +50,5 @@ export default async function LocaleLayout({
   const { locale: raw } = await params;
   if (!locales.includes(raw as Locale)) notFound();
 
-  return (
-    <div lang={raw} className="contents">
-      {children}
-    </div>
-  );
+  return children;
 }

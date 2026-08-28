@@ -4,6 +4,7 @@ import {
   preferEventName,
   scoreDuplicate,
   canonicalizeForDedup,
+  isGarbagePlace,
   type DedupEvent,
 } from "@/lib/dedup";
 
@@ -167,7 +168,10 @@ function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   const ln = a.location?.lng;
   const lb = b.location?.lat;
   const lo = b.location?.lng;
-  if (la != null && ln != null && lb != null && lo != null) {
+  const garbagePlace =
+    isGarbagePlace(a.location?.municipality || a.location?.name) ||
+    isGarbagePlace(b.location?.municipality || b.location?.name);
+  if (!garbagePlace && la != null && ln != null && lb != null && lo != null) {
     if (distanceKm({ lat: la, lng: ln }, { lat: lb, lng: lo }) > 10) return true;
   }
   return false;
@@ -261,7 +265,8 @@ export async function mergePublicDuplicates(opts?: {
       reasons.includes("same_canonical_name") ||
       reasons.includes("name_sim_high") ||
       (reasons.includes("name_substring") && reasons.includes("name_sim_mid")) ||
-      reasons.includes("weak_name_absorbed");
+      reasons.includes("weak_name_absorbed") ||
+      reasons.includes("venue_format_mirror");
     // Weekend mirrors need a strong title match — series alone is too loose.
     if (
       reasons.includes("weekend") &&
