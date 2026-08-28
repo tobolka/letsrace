@@ -30,6 +30,7 @@ import {
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 
 function thisMonthRange() {
   const now = new Date();
@@ -228,8 +229,8 @@ export function MobileFiltersSheet({
                 >
                   {isCustom && dateFrom
                     ? dateTo
-                      ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
-                      : format(parseISO(dateFrom), "d MMM")
+                      ? `${format(parseISO(dateFrom), "d MMM", { locale: dateFnsLocale(locale) })} – ${format(parseISO(dateTo), "d MMM", { locale: dateFnsLocale(locale) })}`
+                      : format(parseISO(dateFrom), "d MMM", { locale: dateFnsLocale(locale) })
                     : messages.customDate}
                 </Chip>
               </div>

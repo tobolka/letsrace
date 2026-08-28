@@ -1,6 +1,18 @@
 import type { EventListItem } from "@/lib/events";
 import { absoluteUrl } from "@/lib/seo";
 
+/**
+ * Race names come from scraped third-party pages, so a name containing
+ * `</script>` would break out of the JSON-LD block. JSON.stringify does not
+ * escape `<`; escape it (plus the JS-invalid line separators) before inlining.
+ */
+function serializeJsonLd(data: Record<string, unknown>): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 export function EventJsonLd({
   event,
   locale,
@@ -58,7 +70,7 @@ export function EventJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
     />
   );
 }

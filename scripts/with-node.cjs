@@ -8,6 +8,7 @@ const { existsSync, readdirSync } = require("node:fs");
 require("./copy-maplibre-worker.cjs");
 const { homedir } = require("node:os");
 const { delimiter, dirname, join } = require("node:path");
+const root = join(__dirname, "..");
 
 function major(version) {
   return Number(String(version).replace(/^v/, "").split(".")[0]);
@@ -39,8 +40,15 @@ if (!cmd) {
   process.exit(1);
 }
 
-const resolved =
-  cmd === "next" ? require.resolve("next/dist/bin/next") : cmd;
+/** Resolve `next`, a local node_modules bin, or a plain path to a runnable file. */
+function resolveCommand(name) {
+  if (name === "next") return require.resolve("next/dist/bin/next");
+  const localBin = join(root, "node_modules", ".bin", name);
+  if (existsSync(localBin)) return localBin;
+  return name;
+}
+
+const resolved = resolveCommand(cmd);
 const env = {
   ...process.env,
   PATH: `${dirname(node)}${delimiter}${process.env.PATH ?? ""}`,

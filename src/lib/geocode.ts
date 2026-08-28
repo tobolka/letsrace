@@ -1587,7 +1587,17 @@ function hitToResult(hit: NominatimHit, countryCode?: string): GeocodeResult | n
 }
 
 const publicPlaceCache = new Map<string, GeocodeResult | null>();
+/** Bounded LRU-ish cache — a long-lived instance must not grow without limit. */
+const PUBLIC_PLACE_CACHE_MAX = 2_000;
 let lastNominatimAt = 0;
+
+function cachePublicPlace(key: string, hit: GeocodeResult | null) {
+  if (publicPlaceCache.size >= PUBLIC_PLACE_CACHE_MAX) {
+    const oldest = publicPlaceCache.keys().next().value;
+    if (oldest !== undefined) publicPlaceCache.delete(oldest);
+  }
+  publicPlaceCache.set(key, hit);
+}
 
 async function nominatimPublicSearch(query: string): Promise<GeocodeResult | null> {
   const wait = 1100 - (Date.now() - lastNominatimAt);
@@ -1640,7 +1650,7 @@ export async function geocodePublicPlace(raw: string): Promise<GeocodeResult | n
       displayName: coverage.displayName,
       bounds: coverage.bounds,
     };
-    publicPlaceCache.set(cacheKey, hit);
+    cachePublicPlace(cacheKey, hit);
     return hit;
   }
 
@@ -1650,12 +1660,12 @@ export async function geocodePublicPlace(raw: string): Promise<GeocodeResult | n
       ...local,
       bounds: boundsFromRadiusKm(local.lng, local.lat, 80),
     };
-    publicPlaceCache.set(cacheKey, hit);
+    cachePublicPlace(cacheKey, hit);
     return hit;
   }
 
   const remote = await nominatimPublicSearch(q);
-  publicPlaceCache.set(cacheKey, remote);
+  cachePublicPlace(cacheKey, remote);
   return remote;
 }
 

@@ -14,17 +14,10 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  const response = NextResponse.next();
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
-  );
-  return response;
+  // Security headers for every route are set in next.config.ts `headers()`.
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/((?!_next/static|_next/image|favicon.ico|maplibre/).*)"],
+  matcher: ["/admin/:path*"],
 };

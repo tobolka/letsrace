@@ -17,10 +17,26 @@ export function safeEqual(a: string, b: string): boolean {
 type Bucket = { count: number; resetAt: number };
 
 const buckets = new Map<string, Bucket>();
+/** Drop expired buckets periodically so a long-lived instance cannot leak keys. */
+const SWEEP_EVERY_MS = 60_000;
+let lastSweepAt = 0;
 
-/** Simple in-process rate limit. Returns true when the request is allowed. */
+function sweep(now: number) {
+  if (now - lastSweepAt < SWEEP_EVERY_MS) return;
+  lastSweepAt = now;
+  for (const [key, bucket] of buckets) {
+    if (now >= bucket.resetAt) buckets.delete(key);
+  }
+}
+
+/**
+ * Simple in-process rate limit. Returns true when the request is allowed.
+ * Per-instance only — serverless runs several instances, so treat this as
+ * abuse damping, not a hard quota.
+ */
 export function rateLimit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
+  sweep(now);
   const bucket = buckets.get(key);
   if (!bucket || now >= bucket.resetAt) {
     buckets.set(key, { count: 1, resetAt: now + windowMs });

@@ -106,7 +106,7 @@ function retryable(status: number): boolean {
 }
 
 /**
- * Polite fetch with per-host gating, retries, and Retry-After / exponential backoff.
+ * Polite fetch with per-host gating, retries, and exponential backoff.
  */
 export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<FetchResult> {
   const host = hostnameOf(url);
@@ -124,15 +124,10 @@ export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<Fetc
         lastErr = new Error(`HTTP ${result.status}`);
         if (attempt === retries) return result;
 
-        const retryAfter = Number(
-          // rawFetch doesn't expose headers on error path for 429 body responses —
-          // use exponential backoff with jitter
-          0,
-        );
+        // rawFetch doesn't surface response headers, so we can't honour
+        // Retry-After here — exponential backoff with jitter instead.
         const backoff =
-          retryAfter > 0
-            ? retryAfter * 1000
-            : Math.min(12_000, 400 * 2 ** attempt) + Math.floor(Math.random() * 250);
+          Math.min(12_000, 400 * 2 ** attempt) + Math.floor(Math.random() * 250);
         await sleep(backoff);
       } catch (e) {
         lastErr = e;

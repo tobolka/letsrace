@@ -9,6 +9,7 @@ import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 
 let maplibre: MapLibreModule;
 
@@ -17,6 +18,14 @@ export type MapBounds = {
   south: number;
   east: number;
   north: number;
+};
+
+/** A rendered race pin, kept so selection can re-style it in place. */
+type PinEntry = {
+  id: string;
+  event: EventListItem;
+  el: HTMLElement;
+  marker: Marker;
 };
 
 /** Why the camera settled — parent auto-searches only on user/gps/locate. */
@@ -47,6 +56,8 @@ type Props = {
   skipInitialLocate?: boolean;
   /** GPS fix for sorting the race list by distance. */
   onUserLocation?: (pos: { lat: number; lng: number }) => void;
+  /** UI locale — dates in pin tooltips follow it. */
+  locale?: string;
 };
 
 const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
@@ -71,7 +82,7 @@ function hideMarineNames(map: Map) {
 
 let lastPinTipAt = 0;
 
-function pinTipContent(event: EventListItem) {
+function pinTipContent(event: EventListItem, locale: string) {
   const root = document.createElement("div");
   const name = document.createElement("p");
   name.textContent = event.name;
@@ -79,7 +90,9 @@ function pinTipContent(event: EventListItem) {
     "margin:0;font-size:13px;font-weight:600;line-height:1.3;color:#1c1917;letter-spacing:-0.01em";
 
   const meta = document.createElement("p");
-  const date = format(parseISO(event.startDate), "d MMM yyyy");
+  const date = format(parseISO(event.startDate), "d MMM yyyy", {
+    locale: dateFnsLocale(locale),
+  });
   const discs = event.disciplines
     .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
     .filter(Boolean)
@@ -93,38 +106,10 @@ function pinTipContent(event: EventListItem) {
   return root;
 }
 
-function makePinElement(event: EventListItem, selected: boolean) {
-  const wrap = document.createElement("button");
-  wrap.type = "button";
-  wrap.className = "startline-map-pin";
-  wrap.setAttribute("aria-label", event.name);
-  wrap.dataset.eventId = event.id;
-  wrap.dataset.level = event.level || "local";
-  wrap.dataset.discipline = event.disciplines?.[0] || "other";
-  if (selected) wrap.dataset.selected = "true";
-
-  wrap.style.cssText = [
-    "display:flex",
-    "align-items:center",
-    "justify-content:center",
-    typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
-      ? "width:44px;height:44px"
-      : "width:32px;height:32px",
-    "padding:0",
-    "margin:0",
-    "border:0",
-    "background:transparent",
-    "cursor:pointer",
-    "appearance:none",
-    "-webkit-appearance:none",
-    "touch-action:manipulation",
-  ].join(";");
-
+function pinDotCss(event: EventListItem, selected: boolean) {
   const color = disciplineColor(event.disciplines);
   const colorDark = disciplineColorDark(event.disciplines);
-  const dot = document.createElement("span");
-  dot.setAttribute("aria-hidden", "true");
-  dot.style.cssText = selected
+  return selected
     ? [
         "width:16px",
         "height:16px",
@@ -145,7 +130,46 @@ function makePinElement(event: EventListItem, selected: boolean) {
         "pointer-events:none",
         "flex:0 0 auto",
       ].join(";");
+}
+
+/** Re-style an existing pin without recreating it. */
+function applyPinSelected(wrap: HTMLElement, event: EventListItem, selected: boolean) {
+  if (selected) wrap.dataset.selected = "true";
+  else delete wrap.dataset.selected;
+  const dot = wrap.firstElementChild as HTMLElement | null;
+  if (dot) dot.style.cssText = pinDotCss(event, selected);
+}
+
+function makePinElement(event: EventListItem, selected: boolean) {
+  const wrap = document.createElement("button");
+  wrap.type = "button";
+  wrap.className = "startline-map-pin";
+  wrap.setAttribute("aria-label", event.name);
+  wrap.dataset.eventId = event.id;
+  wrap.dataset.level = event.level || "local";
+  wrap.dataset.discipline = event.disciplines?.[0] || "other";
+
+  wrap.style.cssText = [
+    "display:flex",
+    "align-items:center",
+    "justify-content:center",
+    typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+      ? "width:44px;height:44px"
+      : "width:32px;height:32px",
+    "padding:0",
+    "margin:0",
+    "border:0",
+    "background:transparent",
+    "cursor:pointer",
+    "appearance:none",
+    "-webkit-appearance:none",
+    "touch-action:manipulation",
+  ].join(";");
+
+  const dot = document.createElement("span");
+  dot.setAttribute("aria-hidden", "true");
   wrap.appendChild(dot);
+  applyPinSelected(wrap, event, selected);
 
   return wrap;
 }
@@ -326,10 +350,12 @@ export function RaceMap({
   initialFocus = null,
   skipInitialLocate = false,
   onUserLocation,
+  locale = "en",
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
-  const markersRef = useRef<Marker[]>([]);
+  const markersRef = useRef<PinEntry[]>([]);
+  const selectedIdRef = useRef(selectedId);
   const userMarkerRef = useRef<Marker | null>(null);
   const hoverPopupRef = useRef<Popup | null>(null);
   const hoverTimerRef = useRef<number>(0);
@@ -346,6 +372,8 @@ export function RaceMap({
   const initialFocusRef = useRef(initialFocus);
   const skipInitialLocateRef = useRef(skipInitialLocate);
   const fallbackCenterRef = useRef(fallbackCenter);
+  const localeRef = useRef(locale);
+  selectedIdRef.current = selectedId;
   const fitSeqRef = useRef(0);
   const destSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
@@ -363,6 +391,7 @@ export function RaceMap({
   initialFocusRef.current = initialFocus;
   skipInitialLocateRef.current = skipInitialLocate;
   fallbackCenterRef.current = fallbackCenter;
+  localeRef.current = locale;
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
@@ -691,7 +720,7 @@ export function RaceMap({
       window.clearTimeout(hoverTimerRef.current);
       hoverPopupRef.current?.remove();
       hoverPopupRef.current = null;
-      markersRef.current.forEach((m) => m.remove());
+      markersRef.current.forEach((entry) => entry.marker.remove());
       markersRef.current = [];
       map.remove();
       mapRef.current = null;
@@ -711,7 +740,7 @@ export function RaceMap({
     const map = mapRef.current;
     if (!map || mapEpoch === 0) return;
 
-    markersRef.current.forEach((m) => m.remove());
+    markersRef.current.forEach((entry) => entry.marker.remove());
     markersRef.current = [];
     window.clearTimeout(hoverTimerRef.current);
     hoverPopupRef.current?.remove();
@@ -738,7 +767,7 @@ export function RaceMap({
     );
 
     for (const event of withCoords) {
-      const selected = event.id === selectedId;
+      const selected = event.id === selectedIdRef.current;
       const pin = makePinElement(event, selected);
       const lngLat: [number, number] = [Number(event.location!.lng), Number(event.location!.lat)];
 
@@ -753,7 +782,7 @@ export function RaceMap({
         window.clearTimeout(hoverTimerRef.current);
         const delay = Date.now() - lastPinTipAt < 500 ? 0 : 280;
         hoverTimerRef.current = window.setTimeout(() => {
-          popup.setLngLat(lngLat).setDOMContent(pinTipContent(event)).addTo(map);
+          popup.setLngLat(lngLat).setDOMContent(pinTipContent(event, localeRef.current)).addTo(map);
           lastPinTipAt = Date.now();
         }, delay);
       });
@@ -762,20 +791,33 @@ export function RaceMap({
         popup.remove();
       });
 
-      markersRef.current.push(
-        new maplibre.Marker({ element: pin, anchor: "center" }).setLngLat(lngLat).addTo(map),
-      );
+      markersRef.current.push({
+        id: event.id,
+        event,
+        el: pin,
+        marker: new maplibre.Marker({ element: pin, anchor: "center" })
+          .setLngLat(lngLat)
+          .addTo(map),
+      });
     }
 
     (window as unknown as { __startlineMarkerCount?: number }).__startlineMarkerCount =
       markersRef.current.length;
 
-    if (userPos) {
-      upsertUserMarker(map, userMarkerRef, userPos);
-    }
-
     requestAnimationFrame(() => map.resize());
-  }, [events, selectedId, mapEpoch, userPos]);
+    // `selectedId` is read through a ref and re-applied by the effect below, so
+    // selecting a pin re-styles two elements instead of rebuilding every marker.
+    // The user dot has its own effect and is not part of `markersRef`.
+  }, [events, mapEpoch]);
+
+  // Selection: re-style only the pins whose state actually changed.
+  useEffect(() => {
+    for (const entry of markersRef.current) {
+      const next = entry.id === selectedId;
+      if (next === (entry.el.dataset.selected === "true")) continue;
+      applyPinSelected(entry.el, entry.event, next);
+    }
+  }, [selectedId]);
 
   const prevSelectedIdRef = useRef(selectedId);
   useEffect(() => {

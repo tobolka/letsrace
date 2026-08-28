@@ -66,6 +66,7 @@ import {
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 
 export const INT_COUNTRY = "INT";
 
@@ -222,17 +223,18 @@ export function MapFilterBar({
     isThisWeekend || isNextWeekend || isThisMonth || isNextMonth || anyDate || isUpcoming;
   const isCustom = customPicked || (dateActive && !isPreset);
 
-  const draftFrom = dateDraft?.from ? format(dateDraft.from, "d MMM") : null;
-  const draftTo = dateDraft?.to ? format(dateDraft.to, "d MMM") : null;
+  const df = dateFnsLocale(locale);
+  const draftFrom = dateDraft?.from ? format(dateDraft.from, "d MMM", { locale: df }) : null;
+  const draftTo = dateDraft?.to ? format(dateDraft.to, "d MMM", { locale: df }) : null;
   const dateLabel = isCustom
     ? draftFrom && draftTo
       ? `${draftFrom} – ${draftTo}`
       : draftFrom
         ? `${draftFrom} – …`
         : dateFrom && dateTo
-          ? `${format(parseISO(dateFrom), "d MMM")} – ${format(parseISO(dateTo), "d MMM")}`
+          ? `${format(parseISO(dateFrom), "d MMM", { locale: df })} – ${format(parseISO(dateTo), "d MMM", { locale: df })}`
           : dateFrom
-            ? `${messages.from} ${format(parseISO(dateFrom), "d MMM")}`
+            ? `${messages.from} ${format(parseISO(dateFrom), "d MMM", { locale: df })}`
             : messages.customDate
     : isThisWeekend
       ? messages.thisWeekend

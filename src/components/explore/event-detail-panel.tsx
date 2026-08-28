@@ -45,6 +45,7 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 import { type PlanMemberStatus } from "@/lib/planner";
 import {
   setMemberPlanStatus,
@@ -433,9 +434,11 @@ export function EventDetailPanel({
           <p className="flex items-center gap-2 text-base font-medium">
             <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             <time className="tabular" dateTime={event.startDate}>
-              {format(parseISO(event.startDate), "EEE d MMM yyyy")}
+              {format(parseISO(event.startDate), "EEE d MMM yyyy", {
+                locale: dateFnsLocale(locale),
+              })}
               {event.endDate && event.endDate !== event.startDate
-                ? ` – ${format(parseISO(event.endDate), "d MMM")}`
+                ? ` – ${format(parseISO(event.endDate), "d MMM", { locale: dateFnsLocale(locale) })}`
                 : ""}
             </time>
           </p>

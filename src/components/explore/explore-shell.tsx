@@ -74,6 +74,7 @@ import { format, parseISO } from "date-fns";
 import { MoreHorizontal, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
@@ -593,9 +594,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     );
   }
 
+  const df = dateFnsLocale(locale);
   const selectedPeekMeta = selected
     ? [
-        format(parseISO(selected.startDate), "d MMM"),
+        format(parseISO(selected.startDate), "d MMM", { locale: df }),
         selected.location?.municipality || selected.location?.name,
       ]
         .filter(Boolean)
@@ -612,9 +614,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const weekendLabel = isThisWeekend
     ? messages.thisWeekend
     : filters.dateFrom && filters.dateTo
-      ? `${format(parseISO(filters.dateFrom), "d MMM")} – ${format(parseISO(filters.dateTo), "d MMM")}`
+      ? `${format(parseISO(filters.dateFrom), "d MMM", { locale: df })} – ${format(parseISO(filters.dateTo), "d MMM", { locale: df })}`
       : filters.dateFrom
-        ? format(parseISO(filters.dateFrom), "d MMM")
+        ? format(parseISO(filters.dateFrom), "d MMM", { locale: df })
         : messages.date;
   const filterCount =
     (filters.disciplines.length ? 1 : 0) +
@@ -687,6 +689,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 scheduleSearchViewport(b, true);
               }
             }}
+            locale={locale}
             myLocationLabel={messages.myLocation}
             locationDeniedLabel={messages.locationDenied}
           />
@@ -1199,10 +1202,11 @@ function EventCard({
   });
   const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
+  const df = dateFnsLocale(locale);
   const meta = [
-    format(parseISO(event.startDate), "d MMM yyyy") +
+    format(parseISO(event.startDate), "d MMM yyyy", { locale: df }) +
       (event.endDate && event.endDate !== event.startDate
-        ? `–${format(parseISO(event.endDate), "d MMM")}`
+        ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
         : ""),
     level,
     event.series?.name,
@@ -1220,7 +1224,7 @@ function EventCard({
     .join(" · ");
 
   const compactPlace = [
-    format(parseISO(event.startDate), "d MMM"),
+    format(parseISO(event.startDate), "d MMM", { locale: df }),
     event.location?.municipality || event.location?.name,
     distanceLabel,
   ]
