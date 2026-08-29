@@ -61,6 +61,23 @@ export function hostOfUrl(url: string | null | undefined): string | null {
 }
 
 /** Start lists / bib PDFs — not an enter link. */
+/**
+ * Account and mailing-list pages dressed up as an entry link.
+ *
+ * A sign-in form is not a race entry: seven iXS Downhill Cup rounds pointed at
+ * `/en/login`, and nine Austrian races at the federation's
+ * `#newsletter-anmeldung` anchor. Both render as a working "Register" button on
+ * the card and send the rider nowhere. Missing is better than misleading.
+ */
+const ACCOUNT_OR_NEWSLETTER =
+  /\/(login|signin|sign-in|anmelden|prihlaseni|prihlasenie|logowanie|accedi|connexion|account|my-?account|user\/login|wp-login)(\/|\?|$)|newsletter|mailchimp\.com|\/subscribe(\/|\?|$)/i;
+
+/** True for sign-in and mailing-list URLs, which are never a race's own link. */
+export function isAccountOrNewsletterUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return ACCOUNT_OR_NEWSLETTER.test(url);
+}
+
 export function isStartListUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   return /startovk|startlist|startovn[ií][\s_-]?cas/i.test(url);
@@ -90,7 +107,12 @@ export function pickRegistrationUrl(
   const candidates = [explicit, ...sources]
     .map((u) => (u || "").trim())
     .filter((u) => /^https?:\/\//i.test(u))
-    .filter((u) => !isSeriesRegistrationHubUrl(u) && !isStartListUrl(u));
+    .filter(
+      (u) =>
+        !isSeriesRegistrationHubUrl(u) &&
+        !isStartListUrl(u) &&
+        !isAccountOrNewsletterUrl(u),
+    );
   for (const u of candidates) {
     if (isRegistrationPlatformUrl(u)) return u;
   }

@@ -1895,12 +1895,32 @@ async function upsertParsedEvent(
       .select("id")
       .single();
     if (error) {
-      const { data: d2 } = await supabase
+      /**
+       * `events_fingerprint_key` is what stops two concurrent source fetches
+       * from both creating the same race — but it surfaces here as an insert
+       * error, and the row the other run just wrote is the one we wanted. Adopt
+       * it instead of failing the watch or minting a second slug.
+       */
+      const { data: raced } = await supabase
         .from("events")
-        .insert({ ...payload, slug: `${slug}-${Date.now().toString(36)}` })
         .select("id")
-        .single();
-      eventId = d2?.id;
+        .eq("fingerprint", fp)
+        .maybeSingle();
+      if (raced?.id) {
+        eventId = raced.id;
+        await supabase
+          .from("events")
+          .update({ last_seen_at: new Date().toISOString() })
+          .eq("id", raced.id);
+      } else {
+        // Not a fingerprint clash — a slug collision with an unrelated race.
+        const { data: d2 } = await supabase
+          .from("events")
+          .insert({ ...payload, slug: `${slug}-${Date.now().toString(36)}` })
+          .select("id")
+          .single();
+        eventId = d2?.id;
+      }
     } else {
       eventId = data.id;
     }

@@ -1,5 +1,6 @@
 import type { Audience } from "@/lib/domain";
 import { resolveLevel, isGranFondoWorldSeries } from "@/lib/classify-level";
+import { fold } from "@/lib/text-match";
 
 /**
  * Controlled vocabulary for Startline.
@@ -841,6 +842,13 @@ const LEGACY_LEVEL: Record<string, RaceLevel> = {
   other: "local",
 };
 
+/**
+ * Rides, tours and youth skills events — cycling, but not racing.
+ * Mostly Italian because FCI publishes them in the same calendar as the races.
+ */
+const NON_COMPETITIVE_RIDE =
+  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevetto\b|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b/;
+
 export function inferEventType(opts: {
   name: string;
   seriesName?: string | null;
@@ -849,7 +857,12 @@ export function inferEventType(opts: {
   isNonRace?: boolean;
 }): EventType {
   if (opts.isNonRace) return "training";
-  const t = `${opts.name} ${opts.seriesName ?? ""}`.toLowerCase();
+  const t = fold(`${opts.name} ${opts.seriesName ?? ""}`);
+  // Non-competitive events, checked before every competitive pattern so a
+  // "Granfondo escursionistica" or a "Randonnée" is not filed as a race. Italy's
+  // federation calendar lists these alongside real races; they belong on the map,
+  // labelled for what they are.
+  if (NON_COMPETITIVE_RIDE.test(t)) return "ride";
   if (opts.level === "world_championship" || opts.level === "european_championship") {
     return "championship";
   }

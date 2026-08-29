@@ -1,4 +1,4 @@
-import { pickRegistrationUrl } from "@/lib/watcher/registration-url";
+import { pickRegistrationUrl, isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
 import { isRegulationsUrl } from "@/lib/watcher/regulations-url";
 
 /** Aggregator calendars — never show these as the race “Website” link. */
@@ -63,6 +63,7 @@ export function isAggregatorUrl(url: string | null | undefined): boolean {
 export function isDumpListingUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   if (HUB_OR_LOGIN.test(url)) return true;
+  if (isAccountOrNewsletterUrl(url)) return true;
   return hostMatches(url, DUMP_HOSTS) || hostMatches(url, SOCIAL_HOSTS);
 }
 
@@ -132,12 +133,29 @@ export function preferDeeperOfficialUrl(
 }
 
 /** Last-resort outbound link (aggregator calendar listing) when no official site exists. */
+/**
+ * Per-race pages on a federation's own portal.
+ *
+ * `HUB_OR_LOGIN` blocks the whole `members.federciclismo.it` host, which is
+ * right for the "Website" slot — it is not the organiser's page. It also meant
+ * an Italian race with no organiser link got *no* link at all, when the FCI's
+ * own race page is public and carries the date, venue, class, admitted
+ * categories and organiser. A detail page is a listing, so let it be one.
+ */
+const FEDERATION_RACE_PAGE =
+  /members\.federciclismo\.it\/race\/detail\/\d+|federciclismo\.it\/.*\/gara\//i;
+
+/** True for a federation's public page about one specific race. */
+export function isFederationRacePage(url: string | null | undefined): boolean {
+  return Boolean(url && FEDERATION_RACE_PAGE.test(url));
+}
+
 export function calendarListingUrl(
   ...candidates: (string | null | undefined)[]
 ): string | null {
   const urls = candidates
     .map((c) => (c || "").trim())
-    .filter((u) => u && isHttpUrl(u) && !HUB_OR_LOGIN.test(u));
+    .filter((u) => u && isHttpUrl(u) && (isFederationRacePage(u) || !HUB_OR_LOGIN.test(u)));
   if (!urls.length) return null;
   urls.sort((a, b) => scoreListing(b) - scoreListing(a));
   return urls[0] ?? null;

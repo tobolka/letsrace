@@ -15,6 +15,7 @@ import { resolve } from "node:path";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { inferClassification } from "../src/lib/taxonomy";
 import { isNonCyclingEventName } from "../src/lib/sport-gate";
+import { resolveEventOutboundUrls } from "../src/lib/watcher/public-url";
 
 function loadEnv() {
   try {
@@ -41,7 +42,7 @@ type Row = {
   website_url: string | null;
   registration_url: string | null;
   fingerprint: string | null;
-  series: { name?: string; slug?: string } | null;
+  series: { name?: string; slug?: string; website_url?: string } | null;
   locations: { municipality?: string; country_code?: string; geocode_status?: string } | null;
   categories: { name: string }[] | null;
 };
@@ -56,7 +57,7 @@ async function main() {
       .from("events")
       .select(
         "id,name,start_date,disciplines,age_categories,level,visibility,website_url,registration_url,fingerprint," +
-          "series(name,slug),locations(municipality,country_code,geocode_status),categories:event_categories(name)",
+          "series(name,slug,website_url),locations(municipality,country_code,geocode_status),categories:event_categories(name)",
       )
       .order("start_date")
       .range(from, from + 999);
@@ -68,6 +69,23 @@ async function main() {
   const today = new Date().toISOString().slice(0, 10);
   const pub = rows.filter((r) => r.visibility === "public");
   const upcoming = pub.filter((r) => r.start_date >= today);
+
+  // Source URLs only for the rows that need one — joining event_sources across
+  // the whole catalog exceeds the statement timeout.
+  const needSources = upcoming.filter((r) => !r.website_url && !r.registration_url);
+  const sourcesById = new Map<string, string[]>();
+  for (let i = 0; i < needSources.length; i += 200) {
+    const ids = needSources.slice(i, i + 200).map((r) => r.id);
+    const { data } = await supabase
+      .from("event_sources")
+      .select("event_id,source_url")
+      .in("event_id", ids);
+    for (const row of data ?? []) {
+      const list = sourcesById.get(row.event_id as string) ?? [];
+      list.push(row.source_url as string);
+      sourcesById.set(row.event_id as string, list);
+    }
+  }
 
   console.log(`\n═══ catalog ═══`);
   console.log(`  events            ${rows.length}`);
@@ -129,14 +147,24 @@ async function main() {
   console.log(`  public rows sharing a name and date      ${nameDupes}`);
 
   console.log(`\n═══ links (upcoming public) ═══`);
-  const byCountry = new Map<string, { n: number; web: number; reg: number; none: number }>();
+  // Count the listing link too. A federation's own race page is what an Italian
+  // pin points at, so ignoring it reported 573 Italian races as linkless when
+  // every one of them leads somewhere.
+  const byCountry = new Map<string, { n: number; web: number; reg: number; listing: number; none: number }>();
   for (const r of upcoming) {
     const cc = r.locations?.country_code ?? "??";
-    const v = byCountry.get(cc) ?? { n: 0, web: 0, reg: 0, none: 0 };
+    const v = byCountry.get(cc) ?? { n: 0, web: 0, reg: 0, listing: 0, none: 0 };
+    const outbound = resolveEventOutboundUrls({
+      websiteUrl: r.website_url,
+      registrationUrl: r.registration_url,
+      seriesWebsiteUrl: r.series?.website_url,
+      sourceUrls: sourcesById.get(r.id) ?? [],
+    });
     v.n += 1;
     if (r.website_url) v.web += 1;
     if (r.registration_url) v.reg += 1;
-    if (!r.website_url && !r.registration_url) v.none += 1;
+    if (outbound.listingUrl) v.listing += 1;
+    if (!r.website_url && !r.registration_url && !outbound.listingUrl) v.none += 1;
     byCountry.set(cc, v);
   }
   [...byCountry.entries()]
@@ -144,7 +172,7 @@ async function main() {
     .slice(0, 12)
     .forEach(([cc, v]) =>
       console.log(
-        `  ${cc}  n=${String(v.n).padStart(4)}  website=${pct(v.web, v.n).padStart(6)}  registration=${pct(v.reg, v.n).padStart(6)}  no link=${String(v.none).padStart(3)}`,
+        `  ${cc}  n=${String(v.n).padStart(4)}  website=${pct(v.web, v.n).padStart(6)}  registration=${pct(v.reg, v.n).padStart(6)}  listing=${pct(v.listing, v.n).padStart(6)}  nikam=${String(v.none).padStart(3)}`,
       ),
     );
 

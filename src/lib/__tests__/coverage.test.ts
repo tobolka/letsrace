@@ -10,11 +10,13 @@ import {
 } from "@/lib/coverage";
 
 describe("coverage markets", () => {
-  it("lets home calendars list without an enter link, not Italy", () => {
+  it("lets covered markets list without an enter link — the roadmap ones may not", () => {
     expect(allowsUnlinkedPublicListing("CZ")).toBe(true);
     expect(allowsUnlinkedPublicListing("de")).toBe(true);
     expect(allowsUnlinkedPublicListing("CH")).toBe(true);
-    expect(allowsUnlinkedPublicListing("IT")).toBe(false);
+    // Italy joined them: FCI's own public race page stands in as the listing
+    // link, so a pin without an organiser URL still leads somewhere.
+    expect(allowsUnlinkedPublicListing("IT")).toBe(true);
     expect(allowsUnlinkedPublicListing("FR")).toBe(false);
   });
 

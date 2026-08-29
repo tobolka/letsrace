@@ -24,7 +24,9 @@ export type Market = {
   stage: MarketStage;
   /**
    * Local calendars are trusted enough to show a pin without a website /
-   * registration URL. Keep false for thin federation dumps (Italy/FCI).
+   * registration URL. The pin still needs somewhere to point: either the
+   * market's calendars carry organiser links, or the source exposes a public
+   * per-race page that `calendarListingUrl` can use.
    */
   allowUnlinkedListing: boolean;
   /** Camera when GPS is unavailable. */
@@ -158,8 +160,13 @@ export const MARKETS: readonly Market[] = [
   },
   {
     code: "IT",
+    // FCI publishes the national calendar without organiser links, but every
+    // entry carries a real name, date, venue and discipline, and its own public
+    // race page stands in as the listing link. Suppressing them cost ~600
+    // upcoming races against 32 shown — the same trade the neighbours already
+    // make, so Italy makes it too.
     stage: "expanding",
-    allowUnlinkedListing: false,
+    allowUnlinkedListing: true,
     center: { lng: 12.5, lat: 42.5 },
     bbox: { west: 6.63, south: 36.64, east: 18.52, north: 47.09 },
     aliases: ["italie", "italy", "italia", "italien", "italsko"],

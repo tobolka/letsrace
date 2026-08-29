@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { isJunkListingName } from "@/lib/event-visibility";
+import { fold } from "@/lib/text-match";
 
 const MONTHS_CS: Record<string, string> = {
   ledna: "01",
@@ -52,23 +53,23 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
   const name = title.replace(/\s*[|\-–].*$/, "").trim().slice(0, 140);
   if (!startDate || !name) return [];
   if (isJunkListingName(name)) return [];
+  if (isSiteIdentityName(name, url)) return [];
+  if (isStaleDate(startDate)) return [];
 
-  const audience = /junior|žák|deti|děti|kids|mládež|talent/i.test(title + text)
-    ? "kids"
-    : /gravel|silnic|road|maraton|xcm|xc\b/i.test(title + text)
-      ? "mixed"
-      : "mixed";
-
+  // Disciplines from the title only. Scanning the whole body made a club
+  // homepage that lists its season inherit every discipline on the page —
+  // one "Sportchallenge" row came out tagged road+xcm+xco+tt+enduro+track.
   const disciplines: ParsedEvent["discipline"] = [];
-  if (/gravel/i.test(title + text)) disciplines?.push("gravel");
-  if (/silnic|road|kritérium/i.test(title + text)) disciplines?.push("road");
-  if (/\bxcm\b|maraton/i.test(title + text)) disciplines?.push("xcm");
-  if (/\bxc\b|cross.?country|xco/i.test(title + text)) disciplines?.push("xco");
-  if (/časovka|time.?trial|\btt\b/i.test(title + text)) disciplines?.push("tt");
-  if (/enduro/i.test(title + text)) disciplines?.push("enduro");
-  if (/biatlon/i.test(title + text)) disciplines?.push("other");
-  if (/dráha|track/i.test(title + text)) disciplines?.push("track");
-  if (/\bbmx\b/i.test(title + text)) disciplines?.push("bmx");
+  if (/gravel/i.test(title)) disciplines?.push("gravel");
+  if (/silnic|road|kritérium/i.test(title)) disciplines?.push("road");
+  if (/\bxcm\b|maraton/i.test(title)) disciplines?.push("xcm");
+  if (/\bxc\b|cross.?country|xco/i.test(title)) disciplines?.push("xco");
+  if (/časovka|time.?trial|\btt\b/i.test(title)) disciplines?.push("tt");
+  if (/enduro/i.test(title)) disciplines?.push("enduro");
+  if (/dráha|track/i.test(title)) disciplines?.push("track");
+  if (/\bbmx\b/i.test(title)) disciplines?.push("bmx");
+
+  const audience = /junior|žák|deti|děti|kids|mládež|talent/i.test(title) ? "kids" : "mixed";
 
   return [
     {
@@ -83,6 +84,59 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
       confidence: 0.35,
     },
   ];
+}
+
+/** Navigation labels and section headings — a page's chrome, not a race. */
+const NAV_LABEL =
+  /^(domu|home|homepage|novinky|news|aktuality|aktuell|uvod|start|startseite|kontakt|kontakty|contact|o nas|about|about us|onas|clanky|blog|galerie|gallery|fotogalerie|vysledky|results|kalendar|program|informace|info|menu|prihlaseni|registrace|obchod|shop|eshop|e shop|partneri|sponzori|dokumenty|ke stazeni|historie|clenove|vitejte|welcome|test)$/;
+
+/** Legal-entity suffixes, stripped before comparing a title to its domain. */
+const ORG_SUFFIX =
+  /\b(s\s?r\s?o|spol|z\s?s|gmbh|mbh|ohg|kg|sp\s?z\s?o\s?o|srl|ltd|llc|inc|e\s?v|tj|tk|sk|sc|rsv|rc|kct)\b/g;
+
+const squash = (s: string) => s.replace(/[^a-z0-9]/g, "");
+
+/**
+ * True when the title names the site itself rather than an event on it.
+ *
+ * The generic strategy is the last resort — it fires on pages no adapter
+ * claimed, which in practice are club and single-race homepages, and it builds
+ * an "event" from the `<title>` plus the first date anywhere in the body. That
+ * produced rows called "Domů", "nizinacup" and "CYKLOŠVEC s.r.o.".
+ *
+ * The test is deliberately narrow: a navigation label, or a title that is just
+ * the site's own domain. Broader rules (one-word titles, club suffixes) looked
+ * tempting and were wrong — "Glocknerkönig", "Quebrantahuesos" and "Nieuwjaars-
+ * cross" are one-word races, and "Kriterium des RSV Speiche e.V. Leipzig" is a
+ * real criterium that a club happens to run. Rejecting a single-race homepage
+ * costs little either way: a race with its own site is almost always already in
+ * the catalog from a calendar that describes it properly.
+ */
+export function isSiteIdentityName(name: string, url?: string): boolean {
+  const t = fold(name).replace(/[^a-z0-9]+/g, " ").trim();
+  if (!t) return true;
+  if (NAV_LABEL.test(t)) return true;
+  if (!url) return false;
+
+  let host = "";
+  try {
+    host = squash(fold(new URL(url).hostname).replace(/^www\./, ""));
+  } catch {
+    return false;
+  }
+  const bare = squash(t.replace(ORG_SUFFIX, ""));
+  if (bare.length < 4) return true;
+  return host.includes(bare);
+}
+
+/**
+ * Generic date-grabbing picks the first date anywhere in the body, which on an
+ * archive page is often years old. Anything already past is not a listing worth
+ * creating from a guess.
+ */
+function isStaleDate(startDate: string, now = new Date()): boolean {
+  const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return startDate < cutoff;
 }
 
 function guessPlace(text: string): string | null {

@@ -1437,6 +1437,26 @@ function gazetteerLookup(query: string): GeocodeResult | null {
   return null;
 }
 
+/**
+ * Thrown when Nominatim could not be asked — a 429, a 5xx, a timeout.
+ *
+ * This has to be distinguishable from "no such place". Both used to return
+ * null, and the caller wrote `geocode_status = "failed"` either way, so a
+ * throttled batch permanently marked real towns as unlocatable: Reggio Emilia,
+ * Maranello and 80-odd others ended up with no pin and were never retried.
+ */
+export class GeocodeUnavailableError extends Error {
+  constructor(readonly reason: string) {
+    super(`geocoder unavailable: ${reason}`);
+    this.name = "GeocodeUnavailableError";
+  }
+}
+
+/** True for statuses that mean "ask again later", not "not found". */
+function isTransientStatus(status: number): boolean {
+  return status === 429 || status === 408 || status >= 500;
+}
+
 async function nominatimSearch(query: string, countryCode: string): Promise<GeocodeResult | null> {
   const params = new URLSearchParams({
     q: query,
@@ -1447,26 +1467,40 @@ async function nominatimSearch(query: string, countryCode: string): Promise<Geoc
   if (countryCode && countryCode.length === 2) {
     params.set("countrycodes", countryCode.toLowerCase());
   }
-  const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
-    headers: {
-      "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
-      Accept: "application/json",
-    },
-    signal: AbortSignal.timeout(8000),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+      headers: {
+        "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
+        Accept: "application/json",
+      },
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (e) {
+    throw new GeocodeUnavailableError(e instanceof Error ? e.message : "network");
+  }
+  if (isTransientStatus(res.status)) throw new GeocodeUnavailableError(`HTTP ${res.status}`);
   if (!res.ok) return null;
   const data = (await res.json()) as { lat: string; lon: string; display_name?: string }[];
   if (!data?.[0]) {
     // retry without country restriction (once)
     if (countryCode) {
       const p2 = new URLSearchParams({ q: query, format: "json", limit: "1" });
-      const res2 = await fetch(`https://nominatim.openstreetmap.org/search?${p2}`, {
-        headers: {
-          "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
-          Accept: "application/json",
-        },
-        signal: AbortSignal.timeout(8000),
-      });
+      let res2: Response;
+      try {
+        res2 = await fetch(`https://nominatim.openstreetmap.org/search?${p2}`, {
+          headers: {
+            "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
+            Accept: "application/json",
+          },
+          signal: AbortSignal.timeout(8000),
+        });
+      } catch (e) {
+        throw new GeocodeUnavailableError(e instanceof Error ? e.message : "network");
+      }
+      if (isTransientStatus(res2.status)) {
+        throw new GeocodeUnavailableError(`HTTP ${res2.status}`);
+      }
       if (!res2.ok) return null;
       const data2 = (await res2.json()) as { lat: string; lon: string; display_name?: string }[];
       if (!data2?.[0]) return null;
@@ -1673,6 +1707,8 @@ export type GeocodeBatchResult = {
   attempted: number;
   updated: number;
   failed: number;
+  /** Set when the geocoder stopped early because the upstream was unavailable. */
+  unavailable?: string;
   skipped: number;
 };
 
@@ -1852,7 +1888,18 @@ export async function geocodePendingLocations(
       geo = gazetteerLookup(query);
       if (!geo) {
         if (nominatimCalls > 0) await new Promise((r) => setTimeout(r, 1100));
-        geo = await nominatimSearch(query, countryCode);
+        try {
+          geo = await nominatimSearch(query, countryCode);
+        } catch (e) {
+          if (e instanceof GeocodeUnavailableError) {
+            // Throttled or down. Leave every remaining row `pending` so the next
+            // run retries them — marking them `failed` here is what stranded
+            // real towns without a pin for a season.
+            result.unavailable = e.reason;
+            break;
+          }
+          throw e;
+        }
         nominatimCalls += 1;
       }
       seen.set(cacheKey, geo ?? null);

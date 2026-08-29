@@ -34,17 +34,25 @@ describe("public map quality gate", () => {
     ).toBe(false);
   });
 
-  it("parks thin Italy/FCI rows without a website or registration URL", () => {
+  it("parks thin rows from roadmap markets without a website or registration URL", () => {
+    // France is still listing-only; Italy now carries its own FCI race pages.
     expect(
       isPublicMapWorthy({
         websiteUrl: null,
         registrationUrl: null,
-        location: { countryCode: "IT" },
+        location: { countryCode: "FR" },
       }),
     ).toBe(false);
     expect(
       isPublicMapWorthy({
         websiteUrl: "https://vangillerncup.cz",
+        registrationUrl: null,
+        location: { countryCode: "FR" },
+      }),
+    ).toBe(true);
+    expect(
+      isPublicMapWorthy({
+        websiteUrl: null,
         registrationUrl: null,
         location: { countryCode: "IT" },
       }),
@@ -56,14 +64,14 @@ describe("public map quality gate", () => {
       isPublicMapWorthy({
         websiteUrl: "https://www.federciclismo.it/it/event/123",
         registrationUrl: null,
-        location: { countryCode: "IT" },
+        location: { countryCode: "FR" },
       }),
     ).toBe(false);
     expect(
       isPublicMapWorthy({
         websiteUrl: "https://www.uci.org/competition-details/123",
         registrationUrl: null,
-        location: { countryCode: "IT" },
+        location: { countryCode: "FR" },
       }),
     ).toBe(false);
     expect(
@@ -80,16 +88,24 @@ describe("public map quality gate", () => {
       shouldSkipUnlinkedDumpInsert({
         websiteUrl: null,
         registrationUrl: null,
-        location: { countryCode: "IT" },
+        location: { countryCode: "FR" },
       }),
     ).toBe(true);
     expect(
       shouldSkipUnlinkedDumpInsert({
         websiteUrl: "https://www.federciclismo.it/it/event/123",
         registrationUrl: null,
-        location: { countryCode: "IT" },
+        location: { countryCode: "FR" },
       }),
     ).toBe(true);
+    // Italy is a listing market now — its rows are inserted, not skipped.
+    expect(
+      shouldSkipUnlinkedDumpInsert({
+        websiteUrl: null,
+        registrationUrl: null,
+        location: { countryCode: "IT" },
+      }),
+    ).toBe(false);
     expect(
       shouldSkipUnlinkedDumpInsert({
         websiteUrl: null,

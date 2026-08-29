@@ -33,6 +33,15 @@ loadEnv();
 
 const DRY = process.argv.includes("--dry");
 
+/**
+ * FCI lists a race as "Giovanile - TROFEO X": a discipline/category label glued
+ * to the name. The extractor strips it now, but rows ingested before that keep
+ * it, and `preferEventName` never rewrites a name it already has. The label is
+ * not lost — the classifier reads the same words for ages and discipline.
+ */
+const FCI_PREFIX =
+  /^\s*(Pista|Strada|Fuoristrada|Giovanile|Amatoriale|Ciclocross|Cicloturismo|Paraciclismo|BMX|Trial)\s*[-–]\s*/i;
+
 type Row = {
   id: string;
   name: string;
@@ -71,7 +80,7 @@ async function main() {
   }
   console.log(`loaded ${rows.length} events${DRY ? " (dry run)" : ""}`);
 
-  const stats = { hidden: 0, level: 0, ages: 0, disciplines: 0, skippedLocked: 0, errors: 0 };
+  const stats = { hidden: 0, level: 0, ages: 0, names: 0, types: 0, disciplines: 0, skippedLocked: 0, errors: 0 };
   const levelMoves: string[] = [];
 
   for (const row of rows) {
@@ -99,6 +108,14 @@ async function main() {
 
     const patch: Record<string, unknown> = {};
 
+    if (FCI_PREFIX.test(row.name) && !locked.has("name")) {
+      const cleaned = row.name.replace(FCI_PREFIX, "").trim();
+      if (cleaned.length >= 4) {
+        patch.name = cleaned;
+        stats.names += 1;
+      }
+    }
+
     if (nonCycling && row.visibility !== "hidden" && !locked.has("visibility")) {
       patch.visibility = "hidden";
       stats.hidden += 1;
@@ -113,6 +130,18 @@ async function main() {
       patch.class_label = classified.classLabel;
       levelMoves.push(`${row.level} -> ${classified.level} [${classified.levelReason}] ${row.name.slice(0, 50)}`);
       stats.level += 1;
+    }
+
+    // Rides, tours and youth skills events read as races until the classifier
+    // learns the words for them. Never downgrade a row an admin marked as
+    // something specific, and never touch `training` — that is the hide marker.
+    if (
+      classified.eventType === "ride" &&
+      row.event_type === "race" &&
+      !locked.has("event_type")
+    ) {
+      patch.event_type = "ride";
+      stats.types += 1;
     }
 
     // Only evidence replaces stored ages; a default must not overwrite anything.

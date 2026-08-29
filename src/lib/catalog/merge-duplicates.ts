@@ -57,7 +57,7 @@ function foldName(s: string): string {
 }
 
 const ORDINAL_CONFLICT =
-  /\b(prvni|druh[yý]|tret[ií]|ctvrt[yý]|pate|n[°º]?\s*\d+|no\.?\s*\d+)\b/gi;
+  /\b(prvn[ií]|druh[yýeé]|tret[ií]|ctvrt[yýeé]|pat[eé]|sest[yýeé]|n[°º]?\s*\d+|no\.?\s*\d+)\b/gi;
 
 function ordinalConflict(a: string, b: string): boolean {
   const nums = (s: string) => {
@@ -124,8 +124,45 @@ function dateSpansOverlap(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   return !(hi < lo2 || hi2 < lo);
 }
 
+/**
+ * An e-bike heat is its own race, run on the same course on the same day as the
+ * analogue one. The scorer sees one extra word and calls them the same event.
+ */
+const EBIKE = /\be-?\s?bike\b|\bebike\b|\be-?mtb\b|\bpedelec\b/i;
+
+/**
+ * Non-competitive rides share a venue and a date with the race they accompany —
+ * FCI lists "MYTHOS PRIMIERO PEDALATA ECOLOGICA" beside the Masters World
+ * Championship XCM at the same place. Merging them loses the championship.
+ */
+const RIDE_NOT_RACE =
+  /\bpedalata|ciclopedalata|cicloturistic|cicloraduno|biciclettata|randonn|escursionistic|gioco\s+ciclismo|gi?[mn]kana/i;
+
+/**
+ * FCI appends the age/gender class to the race name, so one memorial appears as
+ * several races on one day — "18° MEMORIAL PARMALIANA" and the same memorial
+ * "-ALLIEVI". They share a venue and a date and are still different races.
+ */
+const IT_CATEGORY =
+  /\b(allievi|esordienti|giovanissimi|juniores?|donne|master|amatori|elite\s?sport|open)\b/i;
+
+/**
+ * Two titles that name different races even at one venue on one day.
+ *
+ * Each marker below cost a real race before it was added: an e-bike heat, a
+ * recreational ride beside the Masters World Championship, an FCI category
+ * variant of the same memorial.
+ */
+export function isSeparateRace(a: string, b: string): boolean {
+  if (EBIKE.test(a) !== EBIKE.test(b)) return true;
+  if (IT_CATEGORY.test(a) !== IT_CATEGORY.test(b)) return true;
+  if (RIDE_NOT_RACE.test(a) !== RIDE_NOT_RACE.test(b)) return true;
+  return false;
+}
+
 function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   if (JUNK_LISTING.test(a.name) || JUNK_LISTING.test(b.name)) return true;
+  if (isSeparateRace(a.name, b.name)) return true;
   const kidsA = /\bkids\b/i.test(a.name);
   const kidsB = /\bkids\b/i.test(b.name);
   if (kidsA !== kidsB) return true;
