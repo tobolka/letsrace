@@ -38,6 +38,9 @@ export type ParsedEvent = {
   regulationsUrl?: string;
   /** Official results hub (HTML page or timing provider). */
   resultsUrl?: string;
+  /** ISO date the entry list opens / closes, when the source states it. */
+  registrationOpensAt?: string;
+  registrationClosesAt?: string;
   /** Link event into a series (Talent Cup, KPŽ, …) */
   seriesName?: string;
   seriesSlug?: string;

@@ -92,6 +92,29 @@ async function main() {
   console.log(`  public            ${pub.length}`);
   console.log(`  public upcoming   ${upcoming.length}`);
 
+  /**
+   * The number that decides whether the app is worth opening in December.
+   * A race finder lives on races people can still enter; a catalogue that only
+   * fills in weeks before each event is a record, not a plan.
+   */
+  console.log(`\n═══ forward calendar ═══`);
+  const horizon = (days: number) => {
+    const until = new Date(Date.now() + days * 864e5).toISOString().slice(0, 10);
+    return upcoming.filter((r) => r.start_date <= until).length;
+  };
+  console.log(`  within 30 days   ${horizon(30)}`);
+  console.log(`  within 90 days   ${horizon(90)}`);
+  console.log(`  beyond 90 days   ${upcoming.length - horizon(90)}`);
+  const byMonth = new Map<string, number>();
+  for (const r of upcoming) {
+    const k = r.start_date.slice(0, 7);
+    byMonth.set(k, (byMonth.get(k) ?? 0) + 1);
+  }
+  [...byMonth.entries()]
+    .sort()
+    .slice(0, 10)
+    .forEach(([m, n]) => console.log(`  ${m}  ${"█".repeat(Math.min(40, Math.ceil(n / 25)))} ${n}`));
+
   console.log(`\n═══ accuracy ═══`);
   const notCycling = pub.filter((r) => isNonCyclingEventName(r.name, (r.categories ?? []).map((c) => c.name).join(" ")));
   console.log(`  public rows that read as another sport   ${notCycling.length} (${pct(notCycling.length, pub.length)})`);

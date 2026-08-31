@@ -15,6 +15,7 @@ import {
   sourcePollAt,
   nextSeasonUrl,
   isPendingSeasonUrl,
+  seasonGuessLanded,
 } from "@/lib/watcher/core";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
@@ -238,19 +239,64 @@ export async function watchOne(row: {
       (knownRows ?? []).map((r) => r.external_id).filter((id): id is string => Boolean(id)),
     );
 
-    const candidates = extracted.events.filter((ev) => ev.confidence >= 0.35);
+    // A next-season URL that answers with another season's races is a wrong
+    // guess, not a calendar. Ingesting it re-imports the current season under a
+    // future address and buries the forward calendar in races already past.
+    const seasonMismatch = !seasonGuessLanded(row.url, extracted.events);
+    const candidates = seasonMismatch
+      ? []
+      : extracted.events.filter((ev) => ev.confidence >= 0.35);
     const maxNew =
       extracted.strategy?.includes("fci") || row.url.includes("federciclismo")
         ? MAX_NEW_PER_RUN_FCI
         : extracted.strategy?.includes("raceresult") || /raceresult\.com\/events/.test(row.url)
           ? MAX_NEW_PER_RUN_RR
           : MAX_NEW_PER_RUN;
+    /**
+     * Spend the per-run budget on races people can still enter.
+     *
+     * A season calendar lists chronologically, and the caps below take the first
+     * N in that order — so on a page covering a whole year the past months ate
+     * the allowance before the upcoming ones were reached. 69% of newly created
+     * rows were races that had already happened, while the forward calendar
+     * stayed thin. Sort upcoming first, nearest first; past races still get in,
+     * they just stop going first.
+     */
+    const today = new Date().toISOString().slice(0, 10);
+    const forwardFirst = (a: ParsedEvent, b: ParsedEvent) => {
+      const aPast = a.startDate < today;
+      const bPast = b.startDate < today;
+      if (aPast !== bPast) return aPast ? 1 : -1;
+      return aPast ? b.startDate.localeCompare(a.startDate) : a.startDate.localeCompare(b.startDate);
+    };
+    /**
+     * Read the entry deadline off the page we already have.
+     *
+     * Only for a page describing one race. On a calendar listing 150 races a
+     * single "Přihlášky do…" belongs to one of them, and copying it onto all of
+     * them would be the same bleed that put one club's propozice on 39
+     * unrelated races.
+     */
+    if (candidates.length === 1) {
+      const { parseRegistrationWindow, visibleText } = await import(
+        "@/lib/watcher/registration-deadline"
+      );
+      const only = candidates[0]!;
+      if (!only.registrationClosesAt) {
+        const window = parseRegistrationWindow(visibleText(fetched.html), only.startDate);
+        if (window.closesAt) only.registrationClosesAt = window.closesAt;
+        if (window.opensAt) only.registrationOpensAt = window.opensAt;
+      }
+    }
+
     const fresh = candidates
       .filter((ev) => !ev.externalId || !known.has(ev.externalId))
+      .sort(forwardFirst)
       .slice(0, maxNew);
     // When page changed, refresh a sample of known races so updates land
     const refresh = candidates
       .filter((ev) => ev.externalId && known.has(ev.externalId))
+      .sort(forwardFirst)
       .slice(0, MAX_REFRESH_PER_RUN);
     const toUpsert = dedupeByExternalId([...fresh, ...refresh]);
 
@@ -997,7 +1043,8 @@ export async function watchOne(row: {
       row.kind === "federation" ||
       row.kind === "aggregator" ||
       row.kind === "calendar";
-    const offSeasonEmpty = calendarKind && extracted.events.length === 0;
+    const offSeasonEmpty =
+      (calendarKind && extracted.events.length === 0) || seasonMismatch;
     const needsReview =
       !offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4);
 
@@ -1811,6 +1858,8 @@ async function upsertParsedEvent(
       lat: resolvedLat,
       lng: resolvedLng,
     }),
+    ...(ev.registrationOpensAt ? { registration_opens_at: ev.registrationOpensAt } : {}),
+    ...(ev.registrationClosesAt ? { registration_closes_at: ev.registrationClosesAt } : {}),
     source_kind: "scraped",
     level: mergedLevel.level,
     class_label: mergedLevel.classLabel ?? null,
