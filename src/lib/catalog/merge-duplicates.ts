@@ -143,6 +143,10 @@ const RIDE_NOT_RACE =
  * several races on one day — "18° MEMORIAL PARMALIANA" and the same memorial
  * "-ALLIEVI". They share a venue and a date and are still different races.
  */
+/** "Kids" across the covered markets — a youth race is its own race. */
+const KIDS_RACE =
+  /\bkids?\b|\bd[eě]tsk|\bdetsk|\bd[eě]ti\b|\bdeti\b|\bkinder|\bnachwuchs|\bsch[uü]ler|\bjugend|\bmini\b|\bmlad[eé][zž]|\bziaci\b|\b[zž][aá]ci\b|\bgiovanissimi\b|\besordienti\b|\bdzieci\b|\bmlodzik/i;
+
 const IT_CATEGORY =
   /\b(allievi|esordienti|giovanissimi|juniores?|donne|master|amatori|elite\s?sport|open)\b/i;
 
@@ -192,6 +196,9 @@ const CHAMPIONSHIP =
   /\bmistrovstv|majstrovstv[aá]|\bm[cč]r\b|\bmsr\b|national\s+champ|championship|meisterschaft|campionato\s+italiano|mistrzostwa/i;
 
 export function isSeparateRace(a: string, b: string): boolean {
+  // A kids' race shares the venue and the day with the adult one it runs
+  // alongside — that is the whole point of a family event.
+  if (KIDS_RACE.test(a) !== KIDS_RACE.test(b)) return true;
   if (EBIKE.test(a) !== EBIKE.test(b)) return true;
   if (CHAMPIONSHIP.test(a) !== CHAMPIONSHIP.test(b)) return true;
   if (distinctSuffixAfterSharedPrefix(a, b)) return true;
@@ -203,9 +210,6 @@ export function isSeparateRace(a: string, b: string): boolean {
 function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   if (JUNK_LISTING.test(a.name) || JUNK_LISTING.test(b.name)) return true;
   if (isSeparateRace(a.name, b.name)) return true;
-  const kidsA = /\bkids\b/i.test(a.name);
-  const kidsB = /\bkids\b/i.test(b.name);
-  if (kidsA !== kidsB) return true;
   const ttA = /časovka|\btt\b|time.?trial/i.test(a.name);
   const ttB = /časovka|\btt\b|time.?trial/i.test(b.name);
   if (ttA !== ttB) return true;
