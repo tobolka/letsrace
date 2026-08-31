@@ -22,8 +22,10 @@ export const viewport: Viewport = {
   themeColor: "#f5f5f4",
 };
 
-/** Google Search Console ownership for letsrace.cz. */
+/** Search-console ownership for letsrace.cz. Public by design — these ship in
+ *  the page's meta tags on every request. */
 const GOOGLE_VERIFICATION = "aVohYf51HhFqN0skaqmxz-Lqs9RbFrujEihdbuZ9YEI";
+const SEZNAM_VERIFICATION = "5ixYWYYeiOTVCgKPzlpbV8K9oBN2TEJD";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site),
@@ -68,13 +70,11 @@ export const metadata: Metadata = {
    * a tenth of Czech search, and Czechia is the home market.
    */
   verification: {
-    // The token is public by design — it ships in the page's meta tag — so it
-    // lives here rather than in an env var somebody has to remember to set.
     google: process.env.GOOGLE_SITE_VERIFICATION || GOOGLE_VERIFICATION,
     other: {
-      ...(process.env.SEZNAM_WMT_VERIFICATION
-        ? { "seznam-wmt": process.env.SEZNAM_WMT_VERIFICATION }
-        : {}),
+      // Seznam carries roughly a tenth of Czech search, and Czechia is the
+      // home market — worth as much here as Google's own token.
+      "seznam-wmt": process.env.SEZNAM_WMT_VERIFICATION || SEZNAM_VERIFICATION,
       ...(process.env.BING_SITE_VERIFICATION
         ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
         : {}),
