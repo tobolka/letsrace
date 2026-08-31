@@ -1,247 +1,206 @@
 import Link from "next/link";
+import {
+  CalendarRange,
+  Flag,
+  Inbox,
+  MapPin,
+  Play,
+  Plus,
+  Radar,
+  TrendingDown,
+} from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
-import { createServerSupabase } from "@/lib/supabase/server";
-import { listIncompleteEvents } from "@/lib/admin/data-quality";
-import { getIngestHealth, pct } from "@/lib/admin/ingest-health";
-import { CompletenessDashboard } from "@/components/admin/completeness-dashboard";
-import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getAdminOverview } from "@/lib/admin/overview";
+import { StalledSources } from "@/components/admin/stalled-sources";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { TriangleAlert } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 
-export default async function AdminHomePage() {
-  await requireAdminPage();
-  const supabase = createServerSupabase();
+export const dynamic = "force-dynamic";
 
-  const [{ count: sourceCount }, { count: pendingCount }, { data: recentRuns }, quality, health] =
-    await Promise.all([
-      supabase.from("watched_urls").select("*", { count: "exact", head: true }),
-      supabase
-        .from("discovered_links")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "pending"),
-      supabase
-        .from("ingest_runs")
-        .select("id, ok, events_upserted, error, started_at, strategy")
-        .order("started_at", { ascending: false })
-        .limit(6),
-      listIncompleteEvents({ upcomingOnly: true, limit: 500 }),
-      getIngestHealth(),
-    ]);
+function pct(n: number, d: number) {
+  return d ? Math.round((n / d) * 100) : 0;
+}
 
-  const { data: needsReview } = await supabase
-    .from("watched_urls")
-    .select("id, url, last_error, last_extract_status")
-    .eq("status", "needs_review")
-    .limit(8);
-
-  const c = health.completeness;
-
+/** A thing waiting for a person, with somewhere to go and do it. */
+function Queue({
+  href,
+  icon: Icon,
+  label,
+  count,
+  hint,
+}: {
+  href: string;
+  icon: typeof Inbox;
+  label: string;
+  count: number;
+  hint: string;
+}) {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Fill missing race data — pin, place, website, discipline
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild>
-            <Link href="/admin/events/new">Add event</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/admin/events">All events</Link>
-          </Button>
-          <form action="/api/admin/watch-now" method="post">
-            <Button type="submit" variant="outline">
-              Run watcher
-            </Button>
-          </form>
-          <form action="/api/admin/geocode" method="post">
-            <Button type="submit" variant="outline">
-              Geocode pending
-            </Button>
-          </form>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Catalog health</CardTitle>
-          <CardDescription>Upcoming public races — ages · format · link · pin</CardDescription>
-          <CardAction>
-            <p className="text-xs text-muted-foreground tabular-nums">
-              7d ingest fail rate{" "}
-              <span className="font-medium text-foreground">
-                {pct(health.recentFails, health.recentRuns)}
-              </span>{" "}
-              ({health.recentFails}/{health.recentRuns})
-            </p>
-          </CardAction>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            <HealthStat
-              label="Ages known"
-              value={pct(c.withAges, c.total)}
-              sub={`${c.withAges}/${c.total}`}
-            />
-            <HealthStat
-              label="Discipline"
-              value={pct(c.withDisciplines, c.total)}
-              sub={`${c.withDisciplines}/${c.total}`}
-            />
-            <HealthStat
-              label="Website / reg"
-              value={pct(c.withWebsiteOrReg, c.total)}
-              sub={`${c.withWebsiteOrReg}/${c.total}`}
-            />
-            <HealthStat
-              label="Registration URL"
-              value={pct(c.withRegistration, c.total)}
-              sub={`${c.withRegistration}/${c.total}`}
-            />
-            <HealthStat
-              label="Map pin"
-              value={pct(c.withCoords, c.total)}
-              sub={`${c.withCoords}/${c.total}`}
-            />
-            <HealthStat
-              label="Complete core"
-              value={pct(c.completeCore, c.total)}
-              sub={`${c.completeCore}/${c.total}`}
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-4">
-            <HealthStat label="Sources active" value={String(health.sourceHealth.active)} />
-            <HealthStat label="Needs review" value={String(health.sourceHealth.needsReview)} />
-            <HealthStat label="Paused" value={String(health.sourceHealth.paused)} />
-            <HealthStat label="With last error" value={String(health.sourceHealth.withError)} />
-          </div>
-          {health.adapterFailures.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Adapter</TableHead>
-                  <TableHead>Fails (7d)</TableHead>
-                  <TableHead>Last error</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {health.adapterFailures.map((f) => (
-                  <TableRow key={`${f.strategy ?? "unknown"}-${f.lastAt}`}>
-                    <TableCell className="font-medium">{f.strategy || "unknown"}</TableCell>
-                    <TableCell className="tabular-nums">{f.fails}×</TableCell>
-                    <TableCell className="text-destructive">{f.lastError || "—"}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      <CompletenessDashboard initialSummary={quality.summary} initialEvents={quality.events} />
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/admin/discovery">
-          <Card className="h-full transition-colors hover:bg-muted/50">
-            <CardHeader>
-              <CardDescription>Discovery queue</CardDescription>
-              <CardTitle className="tabular-nums">{pendingCount ?? 0}</CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Card>
-          <CardHeader>
-            <CardDescription>Watched URLs</CardDescription>
-            <CardTitle className="tabular-nums">{sourceCount ?? 0}</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-
-      {(needsReview?.length ?? 0) > 0 ? (
-        <Alert>
-          <TriangleAlert />
-          <AlertTitle>Sources need review</AlertTitle>
-          <AlertDescription>
-            <ul className="flex flex-col gap-2">
-              {needsReview!.map((w) => (
-                <li key={w.id} className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary">{w.last_extract_status}</Badge>
-                  <span className="min-w-0 break-all">{w.url}</span>
-                  <OpenUrlButton href={firstOpenableUrl(w.url)} label="Open source URL" />
-                  <span>{w.last_error}</span>
-                </li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent ingest</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>When</TableHead>
-                <TableHead>OK</TableHead>
-                <TableHead>Upserts</TableHead>
-                <TableHead>Strategy</TableHead>
-                <TableHead>Error</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(recentRuns ?? []).map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="tabular-nums">
-                    {new Date(r.started_at).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={r.ok ? "secondary" : "destructive"}>{r.ok ? "OK" : "Fail"}</Badge>
-                  </TableCell>
-                  <TableCell className="tabular-nums">{r.events_upserted}</TableCell>
-                  <TableCell>{r.strategy ?? "—"}</TableCell>
-                  <TableCell className="text-destructive">{r.error ?? ""}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+    <Link
+      href={href}
+      className="group flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-accent"
+    >
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
+        <Icon className="size-4" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-baseline gap-2">
+          <span className="text-2xl font-semibold tabular-nums">{count}</span>
+          <span className="text-sm font-medium">{label}</span>
+        </span>
+        <span className="block truncate text-xs text-muted-foreground">{hint}</span>
+      </span>
+    </Link>
   );
 }
 
-function HealthStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+export default async function AdminHomePage() {
+  await requireAdminPage();
+  const o = await getAdminOverview();
+
+  const monthMax = Math.max(1, ...o.forward.map((f) => f.races));
+  const cliff = o.beyond90 < o.totals.publicUpcoming * 0.15;
+
   return (
-    <Card className="py-4">
-      <CardHeader className="px-4">
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="tabular-nums">{value}</CardTitle>
-        {sub ? <CardDescription className="tabular-nums">{sub}</CardDescription> : null}
-      </CardHeader>
-    </Card>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Control room</h1>
+          <p className="text-sm text-muted-foreground">
+            {o.totals.publicUpcoming.toLocaleString()} upcoming races ·{" "}
+            {o.totals.activeSources} active sources ·{" "}
+            {o.failRate7d.runs > 0
+              ? `${pct(o.failRate7d.fails, o.failRate7d.runs)}% run failures this week`
+              : "no runs this week"}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild size="sm">
+            <Link href="/admin/events/new">
+              <Plus /> Add race
+            </Link>
+          </Button>
+          <form action="/api/admin/watch-now" method="post">
+            <Button type="submit" size="sm" variant="outline">
+              <Play /> Run watcher
+            </Button>
+          </form>
+          <form action="/api/admin/geocode" method="post">
+            <Button type="submit" size="sm" variant="outline">
+              <MapPin /> Geocode
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      {/* Silent failures first — everything else is visible on its own page. */}
+      <StalledSources initial={o.stalled} />
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Queue
+          href="/admin/discovery"
+          icon={Radar}
+          label="to triage"
+          count={o.pendingDiscovery}
+          hint="Discovered links awaiting a verdict"
+        />
+        <Queue
+          href="/admin/inbox"
+          icon={Inbox}
+          label="from riders"
+          count={o.openFeedback}
+          hint="Corrections and submissions"
+        />
+        <Queue
+          href="/admin/events?filter=incomplete"
+          icon={Flag}
+          label="incomplete"
+          count={o.incompleteUpcoming}
+          hint="Upcoming races missing a link or a pin"
+        />
+        <Queue
+          href="/admin/sources"
+          icon={CalendarRange}
+          label="sources"
+          count={o.totals.sources}
+          hint={`${o.totals.activeSources} active`}
+        />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-5">
+        <Card className="lg:col-span-3">
+          <CardHeader className="border-b">
+            <CardTitle className="flex items-center gap-2">
+              Forward calendar
+              {cliff && (
+                <Badge variant="secondary" className="gap-1">
+                  <TrendingDown className="size-3" /> thin beyond 90 days
+                </Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              {o.beyond90} of {o.totals.publicUpcoming} races are more than 90 days out — this is
+              what someone planning next season sees.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2 pt-6">
+            {o.forward.map((f) => (
+              <div key={f.month} className="flex items-center gap-3">
+                <span className="w-16 shrink-0 text-xs tabular-nums text-muted-foreground">
+                  {f.month}
+                </span>
+                <div className="h-5 flex-1 overflow-hidden rounded-sm bg-muted">
+                  <div
+                    className="h-full rounded-sm bg-primary/80"
+                    style={{ width: `${Math.max(2, (f.races / monthMax) * 100)}%` }}
+                  />
+                </div>
+                <span className="w-12 shrink-0 text-right text-xs tabular-nums">{f.races}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader className="border-b">
+            <CardTitle>Coverage by market</CardTitle>
+            <CardDescription>Upcoming races with a usable link and a map pin.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4 pt-6">
+            {o.coverage.map((c) => (
+              <div key={c.code} className="flex flex-col gap-1.5">
+                <div className="flex items-baseline justify-between text-sm">
+                  <span className="font-medium">{c.code}</span>
+                  <span className="tabular-nums text-muted-foreground">
+                    {c.upcoming} races · {pct(c.withLink, c.upcoming)}% linked ·{" "}
+                    {pct(c.withPin, c.upcoming)}% pinned
+                  </span>
+                </div>
+                <Progress value={pct(c.withPin, c.upcoming)} className="h-1.5" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {o.lastRun?.at && (
+        <>
+          <Separator />
+          <p className="text-xs text-muted-foreground">
+            Last ingest run {new Date(o.lastRun.at).toLocaleString()} —{" "}
+            {o.lastRun.ok === false ? "failed" : `${o.lastRun.upserted} races upserted`}
+          </p>
+        </>
+      )}
+    </div>
   );
 }
