@@ -6,7 +6,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
-import { distanceKm } from "@/lib/geo/distance";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
@@ -283,20 +282,6 @@ const DEFAULT_PADDING: PaddingOptions = { top: 72, bottom: 56, left: 56, right: 
 /** Default map view: user location with ~200 km radius. */
 const DEFAULT_RADIUS_KM = 200;
 const CZECHIA_CENTER: [number, number] = [15.5, 49.75];
-/** Skip a GPS camera fly when the map is already near the user. */
-const GPS_CAMERA_SKIP_KM = 35;
-
-function eventCoords(event: EventListItem): [number, number] | null {
-  if (
-    event.location?.lat == null ||
-    event.location?.lng == null ||
-    !Number.isFinite(Number(event.location.lat)) ||
-    !Number.isFinite(Number(event.location.lng))
-  ) {
-    return null;
-  }
-  return [Number(event.location.lng), Number(event.location.lat)];
-}
 
 function boundsAround(lng: number, lat: number, radiusKm: number) {
   const dLat = radiusKm / 111;
@@ -432,11 +417,6 @@ export function RaceMap({
   function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
     if (skipInitialLocateRef.current) return;
     if (initialViewDoneRef.current || userMovedRef.current) return;
-    const center = map.getCenter();
-    if (distanceKm({ lat: center.lat, lng: center.lng }, { lat, lng }) < GPS_CAMERA_SKIP_KM) {
-      initialViewDoneRef.current = true;
-      return;
-    }
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
     initialViewDoneRef.current = true;
     emitBoundsWhenIdle(map, "gps");
@@ -760,6 +740,11 @@ export function RaceMap({
     const map = mapRef.current;
     if (!map || mapEpoch === 0) return;
 
+    markersRef.current.forEach((entry) => entry.marker.remove());
+    markersRef.current = [];
+    window.clearTimeout(hoverTimerRef.current);
+    hoverPopupRef.current?.remove();
+
     if (!hoverPopupRef.current) {
       hoverPopupRef.current = new maplibre.Popup({
         closeButton: false,
@@ -773,33 +758,19 @@ export function RaceMap({
     }
     const popup = hoverPopupRef.current;
 
-    const withCoords = events
-      .map((event) => ({ event, lngLat: eventCoords(event) }))
-      .filter(
-        (row): row is { event: EventListItem; lngLat: [number, number] } => row.lngLat != null,
-      );
+    const withCoords = events.filter(
+      (e) =>
+        e.location?.lat != null &&
+        e.location?.lng != null &&
+        Number.isFinite(Number(e.location.lat)) &&
+        Number.isFinite(Number(e.location.lng)),
+    );
 
-    const nextIds = new Set(withCoords.map(({ event }) => event.id));
-    markersRef.current = markersRef.current.filter((entry) => {
-      if (nextIds.has(entry.id)) return true;
-      entry.marker.remove();
-      return false;
-    });
-
-    const markerById = new globalThis.Map(markersRef.current.map((entry) => [entry.id, entry]));
-    const hadMarkers = markersRef.current.length > 0;
-
-    for (const { event, lngLat } of withCoords) {
+    for (const event of withCoords) {
       const selected = event.id === selectedIdRef.current;
-      const existing = markerById.get(event.id);
-      if (existing) {
-        existing.event = event;
-        existing.marker.setLngLat(lngLat);
-        applyPinSelected(existing.el, event, selected);
-        continue;
-      }
-
       const pin = makePinElement(event, selected);
+      const lngLat: [number, number] = [Number(event.location!.lng), Number(event.location!.lat)];
+
       pin.addEventListener("click", (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
@@ -833,9 +804,7 @@ export function RaceMap({
     (window as unknown as { __letsraceMarkerCount?: number }).__letsraceMarkerCount =
       markersRef.current.length;
 
-    if (!hadMarkers && markersRef.current.length > 0) {
-      requestAnimationFrame(() => map.resize());
-    }
+    requestAnimationFrame(() => map.resize());
     // `selectedId` is read through a ref and re-applied by the effect below, so
     // selecting a pin re-styles two elements instead of rebuilding every marker.
     // The user dot has its own effect and is not part of `markersRef`.
@@ -932,13 +901,12 @@ export function RaceMap({
     if (btn) btn.dataset.active = userPos ? "true" : "";
   }, [userPos, mapEpoch]);
 
-  // Resolve location after the map has painted — fast network position first, then watch.
+  // Resolve location: fast network position first, then optional precise watch
   useEffect(() => {
     if (mapEpoch === 0 || !navigator.geolocation) return;
 
     let cancelled = false;
     let watchId: number | null = null;
-    let startTimer = 0;
 
     const onFix = (pos: GeolocationPosition) => {
       if (cancelled) return;
@@ -969,34 +937,32 @@ export function RaceMap({
       }
     };
 
-    startTimer = window.setTimeout(() => {
-      if (cancelled) return;
-      setLocating(true);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          onFix(pos);
-          watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_FAST);
-          watchIdRef.current = watchId;
-        },
-        (err) => {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              onFix(pos);
-              watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_PRECISE);
-              watchIdRef.current = watchId;
-            },
-            onFail,
-            GEO_OPTS_PRECISE,
-          );
-          if (err.code === err.PERMISSION_DENIED) onFail(err);
-        },
-        GEO_OPTS_FAST,
-      );
-    }, 180);
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        onFix(pos);
+        // Keep updating in the background (wifi/cell is enough)
+        watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_FAST);
+        watchIdRef.current = watchId;
+      },
+      (err) => {
+        // Retry once with high accuracy (phones)
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            onFix(pos);
+            watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_PRECISE);
+            watchIdRef.current = watchId;
+          },
+          onFail,
+          GEO_OPTS_PRECISE,
+        );
+        if (err.code === err.PERMISSION_DENIED) onFail(err);
+      },
+      GEO_OPTS_FAST,
+    );
 
     return () => {
       cancelled = true;
-      window.clearTimeout(startTimer);
       if (watchId != null) navigator.geolocation.clearWatch(watchId);
       if (watchIdRef.current != null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
@@ -1054,7 +1020,7 @@ export function RaceMap({
   }, [locating, userPos, mapEpoch]);
 
   return (
-    <div className="relative h-full w-full bg-stone-100">
+    <div className="relative h-full w-full bg-stone-200">
       <div ref={containerRef} className="absolute inset-0 h-full w-full" />
 
       {locError ? (

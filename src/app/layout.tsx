@@ -102,8 +102,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
-        <link rel="preconnect" href="https://basemaps.cartocdn.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://tiles.openfreemap.org" crossOrigin="anonymous" />
       </head>
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <TooltipProvider>
