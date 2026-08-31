@@ -10,11 +10,9 @@ import {
   seriesCountryKey,
   type SeriesOption,
 } from "@/components/explore/map-filter-bar";
-import {
-  AuthDialogLazy as AuthDialog,
-  FeedbackModalLazy as FeedbackModal,
-  SubmitRaceModalLazy as SubmitRaceModal,
-} from "@/components/explore/lazy-dialogs";
+import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
+import { FeedbackModal } from "@/components/explore/feedback-modal";
+import { AuthDialog } from "@/components/account/auth-dialog";
 import { MapAccountButton } from "@/components/explore/map-account-button";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
@@ -157,15 +155,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  // These three only ever appear on a click. Mounting them on first open keeps
-  // their code off the first load; keeping them mounted after that preserves
-  // the closing animation, which unmounting on close would cut short.
-  const submitMounted = useRef(false);
-  const feedbackMounted = useRef(false);
-  const authMounted = useRef(false);
-  if (submitOpen) submitMounted.current = true;
-  if (feedbackOpen) feedbackMounted.current = true;
-  if (authOpen) authMounted.current = true;
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
   const [listLoading, setListLoading] = useState(false);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
@@ -1007,20 +996,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onSubmit={handleSearchSubmit}
       />
 
-      {submitMounted.current ? (
-        <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} messages={messages} />
-      ) : null}
-      {feedbackMounted.current ? (
-        <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-      ) : null}
-      {authMounted.current ? (
-        <AuthDialog
-          open={authOpen}
-          onClose={() => setAuthOpen(false)}
-          onSuccess={() => setAuthOpen(false)}
-          locale={locale}
-        />
-      ) : null}
+      <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} messages={messages} />
+      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <AuthDialog
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onSuccess={() => setAuthOpen(false)}
+        locale={locale}
+      />
       <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
     </div>
   );
