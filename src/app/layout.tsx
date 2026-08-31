@@ -22,9 +22,15 @@ export const viewport: Viewport = {
   themeColor: "#f5f5f4",
 };
 
-/** Search-console ownership for letsrace.cz. Public by design — these ship in
- *  the page's meta tags on every request. */
-const GOOGLE_VERIFICATION = "aVohYf51HhFqN0skaqmxz-Lqs9RbFrujEihdbuZ9YEI";
+/**
+ * Search-console ownership. Public by design — it ships in the page's meta tag
+ * on every request.
+ *
+ * Google is verified by DNS TXT instead: the site is registered as a Domain
+ * property, which accepts nothing else, and the root path 307s to /en so a tag
+ * there would never be read anyway. The env override below still works if that
+ * ever changes.
+ */
 const SEZNAM_VERIFICATION = "5ixYWYYeiOTVCgKPzlpbV8K9oBN2TEJD";
 
 export const metadata: Metadata = {
@@ -70,7 +76,9 @@ export const metadata: Metadata = {
    * a tenth of Czech search, and Czechia is the home market.
    */
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION || GOOGLE_VERIFICATION,
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
     other: {
       // Seznam carries roughly a tenth of Czech search, and Czechia is the
       // home market — worth as much here as Google's own token.
