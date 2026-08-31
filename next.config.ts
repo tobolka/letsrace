@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "date-fns"],
+    optimizePackageImports: ["lucide-react", "date-fns", "radix-ui"],
   },
   async headers() {
     return [
@@ -54,7 +54,11 @@ const nextConfig: NextConfig = {
         source: "/maplibre/:path*",
         headers: [
           { key: "Content-Type", value: "text/javascript; charset=utf-8" },
-          { key: "Cache-Control", value: "no-store" },
+          // Versioned under /maplibre/<semver>/ — safe to cache hard.
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
     ];

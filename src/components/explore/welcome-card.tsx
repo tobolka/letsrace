@@ -40,8 +40,9 @@ export function WelcomeCard({
       seen = false;
     }
     if (seen) return;
-    const t = window.setTimeout(() => setShow(true), 900);
-    return () => window.clearTimeout(t);
+    // Show on next frame so LCP is the card itself, not a delayed mount.
+    const t = window.requestAnimationFrame(() => setShow(true));
+    return () => window.cancelAnimationFrame(t);
   }, []);
 
   function dismiss() {

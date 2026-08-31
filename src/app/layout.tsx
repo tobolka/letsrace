@@ -1,16 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { DeferredChrome } from "@/components/deferred-chrome";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
-import { WebMcpTools } from "@/components/agent/webmcp-tools";
+import { defaultLocale } from "@/lib/i18n/messages";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 import "./globals.css";
+
+/** optional = no late swap CLS if the file misses the first paint window. */
+const GeistSans = localFont({
+  src: "../../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+  display: "optional",
+  adjustFontFallback: "Arial",
+});
 
 const site = getSiteUrl();
 const en = seoCopy.en;
@@ -90,27 +95,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const h = await headers();
-  const raw = h.get("x-locale") ?? defaultLocale;
-  const lang = locales.includes(raw as Locale) ? raw : defaultLocale;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang={lang}
-      className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable} h-full`}
+      lang={defaultLocale}
+      className={`${GeistSans.className} ${GeistSans.variable} h-full`}
     >
       <head>
         <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+        <link rel="preconnect" href="https://basemaps.cartocdn.com" crossOrigin="" />
+        <link rel="preconnect" href="https://tiles.basemaps.cartocdn.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
       </head>
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <TooltipProvider>
           <NuqsAdapter>{children}</NuqsAdapter>
         </TooltipProvider>
-        <WebMcpTools />
         <Toaster />
-        <Analytics />
-        <SpeedInsights />
+        <DeferredChrome />
       </body>
     </html>
   );
