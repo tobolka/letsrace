@@ -13,6 +13,8 @@ import {
 import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
 import { FeedbackModal } from "@/components/explore/feedback-modal";
 import { AuthDialog } from "@/components/account/auth-dialog";
+import { MapAccountButton } from "@/components/explore/map-account-button";
+import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -696,6 +698,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </Suspense>
       </div>
 
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3">
+        <MapAccountButton
+          locale={locale}
+          messages={messages}
+          onSignIn={() => setAuthOpen(true)}
+        />
+      </div>
+
       <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
         <Card className="pointer-events-auto flex h-full w-[400px] flex-col gap-0 overflow-hidden py-0 shadow-lg">
           <Header
@@ -822,6 +832,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             sortByLabel={messages.sortBy}
             sortDateLabel={messages.sortByDate}
             sortDistanceLabel={messages.sortByDistance}
+            sortDateShort={messages.date}
+            sortDistanceShort={messages.sortDistance}
             sortNeedsLocationLabel={messages.sortNeedsLocation}
             distanceEnabled={distanceEnabled}
             onSort={setListSort}
@@ -992,6 +1004,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onSuccess={() => setAuthOpen(false)}
         locale={locale}
       />
+      <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
     </div>
   );
 }

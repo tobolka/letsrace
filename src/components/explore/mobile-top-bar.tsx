@@ -32,6 +32,8 @@ export function MobileTopBar({
   sortByLabel,
   sortDateLabel,
   sortDistanceLabel,
+  sortDateShort,
+  sortDistanceShort,
   sortNeedsLocationLabel,
   distanceEnabled,
   onSort,
@@ -51,17 +53,33 @@ export function MobileTopBar({
   sortByLabel: string;
   sortDateLabel: string;
   sortDistanceLabel: string;
+  /** Short forms for the pill; the menu keeps the full wording. */
+  sortDateShort: string;
+  sortDistanceShort: string;
   sortNeedsLocationLabel: string;
   distanceEnabled: boolean;
   onSort: (sort: EventSort) => void;
   menu: ReactNode;
 }) {
-  const sortLabel = sort === "distance" ? sortDistanceLabel : sortDateLabel;
+  // "Řadit dle vzdálenosti" does not fit a pill on a 375px screen — it was
+  // clipped mid-word, and the search button behind it sat off-screen.
+  const sortLabel = sort === "distance" ? sortDistanceShort : sortDateShort;
 
   return (
     <div className="flex items-center gap-2 px-3 pb-2">
       <BrandMark href={homeHref} mark="lr" size="sm" className="shrink-0 px-0.5" />
-      <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/*
+        The strip scrolls, and a pill cut dead at the container edge reads as a
+        broken layout rather than as more content. Fade the last few pixels so
+        the clip is legible as "keep scrolling".
+      */}
+      <div
+        className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{
+          maskImage: "linear-gradient(to right, black calc(100% - 20px), transparent)",
+          WebkitMaskImage: "linear-gradient(to right, black calc(100% - 20px), transparent)",
+        }}
+      >
         <Button
           type="button"
           variant="outline"
@@ -119,18 +137,18 @@ export function MobileTopBar({
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button
-          type="button"
-          variant={searchActive ? "secondary" : "outline"}
-          size="icon"
-          className="size-9 shrink-0 rounded-full border-border/80"
-          aria-label={searchLabel}
-          aria-pressed={searchActive}
-          onClick={onSearch}
-        >
-          <Search className="size-4" aria-hidden />
-        </Button>
       </div>
+      <Button
+        type="button"
+        variant={searchActive ? "secondary" : "outline"}
+        size="icon"
+        className="size-9 shrink-0 rounded-full border-border/80"
+        aria-label={searchLabel}
+        aria-pressed={searchActive}
+        onClick={onSearch}
+      >
+        <Search className="size-4" aria-hidden />
+      </Button>
       <div className="shrink-0">{menu}</div>
     </div>
   );
