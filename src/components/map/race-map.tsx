@@ -6,7 +6,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
-import { distanceKm } from "@/lib/geo/distance";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
@@ -418,13 +417,6 @@ export function RaceMap({
   function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
     if (skipInitialLocateRef.current) return;
     if (initialViewDoneRef.current || userMovedRef.current) return;
-    const [homeLng, homeLat] = fallbackCenterRef.current;
-    // Already looking at roughly this area (SSR / cold-start) — keep the camera still.
-    if (distanceKm({ lat: homeLat, lng: homeLng }, { lat, lng }) < 35) {
-      initialViewDoneRef.current = true;
-      emitBoundsWhenIdle(map, "gps");
-      return;
-    }
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
     initialViewDoneRef.current = true;
     emitBoundsWhenIdle(map, "gps");

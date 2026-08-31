@@ -1,16 +1,12 @@
 import { Suspense } from "react";
 import { ExploreShell } from "@/components/explore/explore-shell";
-import { listEvents } from "@/lib/events";
-import { coldStartCenter } from "@/lib/coverage";
+import { listEvents, getPublicEventBySlug } from "@/lib/events";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-/** ISR — avoid searchParams/headers so the document can be cached at the edge. */
+/** Cache the explore shell briefly; client refetch handles bbox. */
 export const revalidate = 120;
-
-/** Degrees around cold-start centre — enough for first paint, small HTML. */
-const SSR_VIEWPORT_DEG = 1.6;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -18,22 +14,56 @@ export function generateStaticParams() {
 
 export default async function LocalePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale: raw } = await params;
   if (!locales.includes(raw as Locale)) notFound();
   const locale = (raw as Locale) || defaultLocale;
+  const sp = await searchParams;
+  const one = (key: string) => {
+    const v = sp[key];
+    return typeof v === "string" && v ? v : undefined;
+  };
+  const many = (key: string) => {
+    const v = sp[key];
+    if (Array.isArray(v)) return v.filter(Boolean);
+    return typeof v === "string" && v ? [v] : [];
+  };
   const weekend = thisWeekendRange();
-  const center = coldStartCenter(locale);
+  const slug = one("e");
+  const focused = slug ? await getPublicEventBySlug(slug) : null;
+  if (focused && (!one("dateFrom") || !one("dateTo"))) {
+    const next = new URLSearchParams();
+    for (const [key, value] of Object.entries(sp)) {
+      if (typeof value === "string" && value) next.set(key, value);
+      else if (Array.isArray(value)) {
+        for (const item of value) {
+          if (item) next.append(key, item);
+        }
+      }
+    }
+    next.set("e", focused.slug);
+    if (!one("dateFrom")) next.set("dateFrom", focused.startDate);
+    if (!one("dateTo")) next.set("dateTo", focused.endDate || focused.startDate);
+    redirect(`/${locale}?${next.toString()}`);
+  }
+  const dateFrom = one("dateFrom") || weekend.from;
+  const dateTo = one("dateTo") || (one("dateFrom") ? undefined : weekend.to);
   const events = await listEvents({
-    dateFrom: weekend.from,
-    dateTo: weekend.to,
-    west: center.lng - SSR_VIEWPORT_DEG,
-    south: center.lat - SSR_VIEWPORT_DEG,
-    east: center.lng + SSR_VIEWPORT_DEG,
-    north: center.lat + SSR_VIEWPORT_DEG,
+    dateFrom,
+    dateTo,
+    seriesSlug: one("series"),
+    countryCodes: many("country"),
+    ageCategories: many("categories"),
+    disciplines: many("disciplines"),
+    levels: many("levels"),
+    q: one("q"),
   });
+  const initialEvents =
+    focused && !events.some((e) => e.id === focused.id) ? [focused, ...events] : events;
 
   return (
     <Suspense
@@ -43,7 +73,7 @@ export default async function LocalePage({
         </div>
       }
     >
-      <ExploreShell initialEvents={events} messages={messages[locale]} locale={locale} />
+      <ExploreShell initialEvents={initialEvents} messages={messages[locale]} locale={locale} />
     </Suspense>
   );
 }
