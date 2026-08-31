@@ -54,7 +54,10 @@ const nextConfig: NextConfig = {
         source: "/maplibre/:path*",
         headers: [
           { key: "Content-Type", value: "text/javascript; charset=utf-8" },
-          { key: "Cache-Control", value: "no-store" },
+          // Versioned under /maplibre/<semver>/, so the bytes at a URL never
+          // change. `no-store` here meant every visit re-fetched a megabyte of
+          // map library that the browser already had.
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
     ];
