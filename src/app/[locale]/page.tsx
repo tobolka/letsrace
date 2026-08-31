@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { ExploreShell } from "@/components/explore/explore-shell";
-import { listEvents, getPublicEventBySlug } from "@/lib/events";
-import { thisWeekendRange } from "@/lib/date-presets";
+import { getPublicEventBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { notFound, redirect } from "next/navigation";
 
@@ -27,12 +26,6 @@ export default async function LocalePage({
     const v = sp[key];
     return typeof v === "string" && v ? v : undefined;
   };
-  const many = (key: string) => {
-    const v = sp[key];
-    if (Array.isArray(v)) return v.filter(Boolean);
-    return typeof v === "string" && v ? [v] : [];
-  };
-  const weekend = thisWeekendRange();
   const slug = one("e");
   const focused = slug ? await getPublicEventBySlug(slug) : null;
   if (focused && (!one("dateFrom") || !one("dateTo"))) {
@@ -50,30 +43,9 @@ export default async function LocalePage({
     if (!one("dateTo")) next.set("dateTo", focused.endDate || focused.startDate);
     redirect(`/${locale}?${next.toString()}`);
   }
-  const dateFrom = one("dateFrom") || weekend.from;
-  const dateTo = one("dateTo") || (one("dateFrom") ? undefined : weekend.to);
-  const events = await listEvents({
-    dateFrom,
-    dateTo,
-    seriesSlug: one("series"),
-    countryCodes: many("country"),
-    ageCategories: many("categories"),
-    disciplines: many("disciplines"),
-    levels: many("levels"),
-    q: one("q"),
-  });
-  const initialEvents =
-    focused && !events.some((e) => e.id === focused.id) ? [focused, ...events] : events;
-
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-[100dvh] items-center justify-center text-sm text-stone-500">
-          Loading map…
-        </div>
-      }
-    >
-      <ExploreShell initialEvents={initialEvents} messages={messages[locale]} locale={locale} />
+    <Suspense fallback={<div className="h-[100dvh] bg-stone-100" aria-hidden />}>
+      <ExploreShell messages={messages[locale]} locale={locale} />
     </Suspense>
   );
 }

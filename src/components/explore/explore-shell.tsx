@@ -142,13 +142,18 @@ function loadSeriesList(qs: string): Promise<SeriesOption[]> {
 }
 
 type Props = {
-  initialEvents: EventListItem[];
   messages: Messages;
   locale: string;
 };
 
-export function ExploreShell({ initialEvents, messages, locale }: Props) {
-  const [events, setEvents] = useState(initialEvents);
+/** Max wait for GPS before showing the list (keeps distance sort stable on first paint). */
+const GPS_READY_MS = 1200;
+
+export function ExploreShell({ messages, locale }: Props) {
+  const [events, setEvents] = useState<EventListItem[]>([]);
+  const [exploreReady, setExploreReady] = useState(false);
+  const viewportFetchDone = useRef(false);
+  const gpsReady = useRef(false);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("list");
@@ -185,6 +190,27 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }, [locale]);
 
   const [filters, setFilters] = useQueryStates(exploreSearchParams);
+
+  const preferDistanceSort = filters.sort !== "date";
+
+  function tryRevealExplore() {
+    if (!viewportFetchDone.current) return;
+    if (preferDistanceSort && !gpsReady.current) return;
+    setExploreReady(true);
+  }
+
+  useEffect(() => {
+    if (!preferDistanceSort) {
+      gpsReady.current = true;
+      tryRevealExplore();
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      gpsReady.current = true;
+      tryRevealExplore();
+    }, GPS_READY_MS);
+    return () => window.clearTimeout(timer);
+  }, [preferDistanceSort]);
 
   function selectEvent(id: string | null) {
     setSelectedId(id);
@@ -231,6 +257,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (distanceKm(prev, pos) < 0.3) return prev;
       return pos;
     });
+    if (!gpsReady.current) {
+      gpsReady.current = true;
+      tryRevealExplore();
+    }
   }
 
   function setListSort(next: EventSort) {
@@ -414,7 +444,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         });
         if (overrides.fitMap) setFitSeq((n) => n + 1);
       } finally {
-        if (gen === eventsFetchGen.current) setListLoading(false);
+        if (gen === eventsFetchGen.current) {
+          setListLoading(false);
+          if (!viewportFetchDone.current) {
+            viewportFetchDone.current = true;
+            tryRevealExplore();
+          }
+        }
       }
     })();
   }
@@ -634,15 +670,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         className="absolute inset-0"
         style={{ "--map-sheet-inset": `${mapPadding.bottom}px` } as CSSProperties}
       >
-        <Suspense
-          fallback={
-            <div className="flex h-full w-full items-center justify-center bg-stone-200 text-sm text-stone-500">
-              Loading map…
-            </div>
-          }
-        >
+        <Suspense fallback={<div className="h-full w-full bg-stone-100" aria-hidden />}>
           <RaceMap
-            events={events}
+            events={exploreReady ? events : []}
             selectedId={selectedId}
             padding={mapPadding}
             fitSeq={fitSeq}
@@ -688,6 +718,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 return;
               }
               if (reason === "gps" || reason === "locate") {
+                if (lastAreaRef.current && !viewportNeedsFetch(lastAreaRef.current, b)) return;
                 scheduleSearchViewport(b, true);
               }
             }}
@@ -729,7 +760,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           />
           <Separator />
           <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
-            {events.length === 0 ? (
+            {!exploreReady ? (
+              <div className="flex items-center justify-center p-10" aria-busy="true" aria-live="polite">
+                <Spinner />
+              </div>
+            ) : events.length === 0 ? (
               <Empty className="border-0 p-6 md:p-8">
                 <EmptyHeader>
                   <EmptyTitle>{messages.noResults}</EmptyTitle>
@@ -921,7 +956,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
           {mobilePanel !== "detail" ? (
             <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                {events.length === 0 ? (
+                {!exploreReady ? (
+                  <div className="flex items-center justify-center p-10" aria-busy="true" aria-live="polite">
+                    <Spinner />
+                  </div>
+                ) : events.length === 0 ? (
                   <Empty className="border-0 p-6">
                     <EmptyHeader>
                       <EmptyTitle>{messages.noResults}</EmptyTitle>
