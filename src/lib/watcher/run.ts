@@ -1584,6 +1584,15 @@ async function upsertParsedEvent(
   }
 
   let locationId: string | null = null;
+  /**
+   * Coordinates as finally resolved — from the parser, the gazetteer, or a
+   * reused location row. The fingerprint has to be built from these, not from
+   * `ev.lat`: the parser rarely ships coordinates, so the key was written as
+   * "nogps" and never revisited, leaving 48% of the catalog invisible to the
+   * geohash half of duplicate detection.
+   */
+  let resolvedLat: number | null = ev.lat ?? null;
+  let resolvedLng: number | null = ev.lng ?? null;
   if (ev.placeText) {
     let lat = ev.lat ?? null;
     let lng = ev.lng ?? null;
@@ -1629,6 +1638,10 @@ async function upsertParsedEvent(
 
     if (reused?.id) {
       locationId = reused.id;
+      if (reused.lat != null && reused.lng != null) {
+        lat = reused.lat;
+        lng = reused.lng;
+      }
       if (reused.lat == null && lat != null && lng != null) {
         await supabase
           .from("locations")
@@ -1669,6 +1682,9 @@ async function upsertParsedEvent(
         });
       }
     }
+
+    resolvedLat = lat;
+    resolvedLng = lng;
   }
 
   const { isNonRaceEventName } = await import("@/lib/event-visibility");
@@ -1743,7 +1759,7 @@ async function upsertParsedEvent(
       mergedStart = span.startDate;
       mergedEnd = span.endDate;
     }
-    mergedName = preferEventName(existingRow.name || ev.name, ev.name);
+    mergedName = preferEventName(existingRow.name || ev.name, ev.name, ev.placeText);
     mergedLevel = preferLevel(
       {
         level: existingRow.level,
@@ -1792,8 +1808,8 @@ async function upsertParsedEvent(
     fingerprint: fingerprint({
       startDate: mergedStart,
       name: mergedName,
-      lat: ev.lat,
-      lng: ev.lng,
+      lat: resolvedLat,
+      lng: resolvedLng,
     }),
     source_kind: "scraped",
     level: mergedLevel.level,

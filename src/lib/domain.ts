@@ -48,15 +48,29 @@ export type ParsedEvent = {
   childUrls?: string[];
 };
 
+/** Words that vary between sources for the same race and carry no identity. */
+const GENERIC_NAME_TOKENS = /\b(20\d{2}|pdv|jal|cp|xco|xcm|mtb|cup|serie|serié)\b/gi;
+
+/**
+ * Comparable form of a race name, and the name half of {@link fingerprint}.
+ *
+ * Dropping the generic tokens lets "XCO Cup Praha 2026" meet "Praha", but on a
+ * name built only from them it left nothing: "ČP MTB" and "XCO Cup 2026" both
+ * normalised to the empty string. That was harmless while duplicates were only
+ * scored — with a unique index on `fingerprint` it means two unrelated races on
+ * one day collide and the second silently adopts the first. Keep the stripped
+ * form only when something identifying survives.
+ */
 export function normalizeName(name: string): string {
-  return name
+  const base = name
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/\b(20\d{2}|pdv|jal|cp|xco|xcm|mtb|cup|serie|série)\b/gi, " ")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+  const stripped = base.replace(GENERIC_NAME_TOKENS, " ").replace(/\s+/g, " ").trim();
+  return stripped.length >= 3 ? stripped : base;
 }
 
 export function fingerprint(opts: {

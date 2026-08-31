@@ -57,7 +57,7 @@ function foldName(s: string): string {
 }
 
 const ORDINAL_CONFLICT =
-  /\b(prvn[ií]|druh[yýeé]|tret[ií]|ctvrt[yýeé]|pat[eé]|sest[yýeé]|n[°º]?\s*\d+|no\.?\s*\d+)\b/gi;
+  /\b(prvn[ií]|druh[yýeé]|tret[ií]|ctvrt[yýeé]|pat[eé]|sest[yýeé]|n[°º]?\s*\d+|no\.?\s*\d+|i{1,3}v?|vi{0,3})\.(?=\s|$)/gi;
 
 function ordinalConflict(a: string, b: string): boolean {
   const nums = (s: string) => {
@@ -153,8 +153,48 @@ const IT_CATEGORY =
  * recreational ride beside the Masters World Championship, an FCI category
  * variant of the same memorial.
  */
+/**
+ * A shared series prefix followed by two different specifics.
+ *
+ * "Jarní Bahno — Goethovka" and "Jarní Bahno — Linhart" run on one day, in one
+ * series, and geocode to the same town — everything the same-round rule looks
+ * at agrees, and they are still two races at two venues. When both titles
+ * continue past their common prefix and continue differently, that difference
+ * is the race, not noise. One title merely being shorter is not a conflict:
+ * "NMNM" is "ČP MTB — NMNM — Vysočina aréna" with less said.
+ */
+function distinctSuffixAfterSharedPrefix(a: string, b: string): boolean {
+  const split = (s: string) =>
+    foldName(s)
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .split(" ")
+      .filter(Boolean);
+  const ta = split(a);
+  const tb = split(b);
+  let i = 0;
+  while (i < ta.length && i < tb.length && ta[i] === tb[i]) i += 1;
+  if (i < 2) return false;
+  const restA = ta.slice(i);
+  const restB = tb.slice(i);
+  if (!restA.length || !restB.length) return false;
+  return restA[0] !== restB[0];
+}
+
+/**
+ * A national championship co-located with an ordinary round of the same series.
+ *
+ * Slovak and Czech organisers run "Majstrovstvá Slovenska" on the same day and
+ * course as a UCI C1/C2 GP. They share a venue, a date and a series and are
+ * still two races with two results sheets.
+ */
+const CHAMPIONSHIP =
+  /\bmistrovstv|majstrovstv[aá]|\bm[cč]r\b|\bmsr\b|national\s+champ|championship|meisterschaft|campionato\s+italiano|mistrzostwa/i;
+
 export function isSeparateRace(a: string, b: string): boolean {
   if (EBIKE.test(a) !== EBIKE.test(b)) return true;
+  if (CHAMPIONSHIP.test(a) !== CHAMPIONSHIP.test(b)) return true;
+  if (distinctSuffixAfterSharedPrefix(a, b)) return true;
   if (IT_CATEGORY.test(a) !== IT_CATEGORY.test(b)) return true;
   if (RIDE_NOT_RACE.test(a) !== RIDE_NOT_RACE.test(b)) return true;
   return false;
@@ -175,9 +215,10 @@ function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   const roadA = /\broad\b|silni[cč]/i.test(a.name);
   const roadB = /\broad\b|silni[cč]/i.test(b.name);
   if (roadA !== roadB) return true;
-  const tagA = a.name.match(FORMAT_TAG)?.[1]?.toLowerCase();
-  const tagB = b.name.match(FORMAT_TAG)?.[1]?.toLowerCase();
-  if (a.start_date !== b.start_date && tagA && tagB && tagA !== tagB) return true;
+  // Use the same comparison as above: `mtb` is the parent of `xco`, so a title
+  // saying "ČP MTB" and one saying "Český pohár XCO" name one race, not two.
+  // Comparing the raw tags here kept a Nové Město round split in half.
+  if (a.start_date !== b.start_date && formatTagConflict(a.name, b.name)) return true;
   if (a.start_date !== b.start_date && hasRoundNumber(a.name) !== hasRoundNumber(b.name)) {
     return true;
   }
@@ -321,18 +362,45 @@ export async function mergePublicDuplicates(opts?: {
     const { score, reasons } = scoreDuplicate(asDedup(left), asDedup(right));
     if (score < 50) return;
     const dayOk = reasons.includes("same_day") || reasons.includes("weekend");
+
+    /**
+     * One venue, one series, one weekend — the same race, whatever the titles say.
+     *
+     * Sources name a cup round after the series, the venue, the arena or nothing
+     * at all: "ČP MTB — NMNM — Vysočina aréna", "Czech MTB Cup", "NMNM" and
+     * "Český pohár XCO Bedřichov" were four listings of one Nové Město round,
+     * and the name gate below rejected every pairing because none of them looks
+     * like any other. Title similarity cannot resolve that; the series and the
+     * start line can.
+     *
+     * The junk guards still run underneath. They are what keeps this from
+     * eating the cases that genuinely share a venue and a day — an e-bike heat,
+     * a category variant, a recreational ride beside a championship.
+     */
+    const sameSeriesRound =
+      Boolean(a.series_id) &&
+      a.series_id === b.series_id &&
+      reasons.includes("same_place") &&
+      // Overlapping spans, not identical start dates: a two-day cup round meets
+      // the single-day listing of its Sunday. Adjacent-but-separate days stay
+      // apart, which is what keeps two Skočice races on the 25th and 26th
+      // from collapsing into one.
+      dateSpansOverlap(a, b);
+
     const nameOk =
       reasons.includes("same_canonical_name") ||
       reasons.includes("name_sim_high") ||
       (reasons.includes("name_substring") && reasons.includes("name_sim_mid")) ||
       reasons.includes("weak_name_absorbed") ||
-      reasons.includes("venue_format_mirror");
+      reasons.includes("venue_format_mirror") ||
+      sameSeriesRound;
     // Weekend mirrors need a strong title match — series alone is too loose.
     if (
       reasons.includes("weekend") &&
       !reasons.includes("same_day") &&
       !reasons.includes("same_canonical_name") &&
-      !reasons.includes("name_sim_high")
+      !reasons.includes("name_sim_high") &&
+      !sameSeriesRound
     ) {
       return;
     }
@@ -342,7 +410,8 @@ export async function mergePublicDuplicates(opts?: {
       reasons.includes("series_alias") &&
       !reasons.includes("same_canonical_name") &&
       !reasons.includes("name_sim_high") &&
-      !(reasons.includes("name_substring") && reasons.includes("name_sim_mid"))
+      !(reasons.includes("name_substring") && reasons.includes("name_sim_mid")) &&
+      !sameSeriesRound
     ) {
       return;
     }
@@ -425,6 +494,11 @@ export async function mergePublicDuplicates(opts?: {
           (Date.parse(a.start_date) - Date.parse(b.start_date)) / (24 * 60 * 60 * 1000),
         );
         if (days > 2) continue;
+        // A shared website is how a series links all its rounds, so on different
+        // days it says nothing: "XCO Knínice" and "Pohár Drahanské vrchoviny —
+        // Benešov" are two villages one round apart. Only identical titles may
+        // span days here.
+        if (days > 0 && a.name.trim().toLowerCase() !== b.name.trim().toLowerCase()) continue;
         const { reasons } = scoreDuplicate(asDedup(a), asDedup(b));
         const nameClose =
           reasons.includes("same_canonical_name") ||
@@ -467,7 +541,7 @@ export async function mergePublicDuplicates(opts?: {
 type MergeSide = Pick<
   MergeDuplicateRow,
   "id" | "name" | "website_url" | "registration_url" | "series_id"
->;
+> & { location?: { name?: string; municipality?: string } | null };
 
 /** Fold `drop` into `keep`: move its sources and links across, then hide it. */
 async function applyMerge(
@@ -497,7 +571,8 @@ async function applyMerge(
     patch.registration_url = drop.registration_url;
   }
   if (!keep.series_id && drop.series_id) patch.series_id = drop.series_id;
-  const better = preferEventName(keep.name, drop.name);
+  const place = keep.location?.municipality || keep.location?.name || null;
+  const better = preferEventName(keep.name, drop.name, place);
   if (better !== keep.name) patch.name = better;
   if (Object.keys(patch).length > 1) {
     await supabase.from("events").update(patch).eq("id", keep.id);

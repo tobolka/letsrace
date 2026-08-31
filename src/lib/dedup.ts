@@ -740,7 +740,20 @@ function genderConflict(aName: string, bName: string): boolean {
 }
 
 /** Prefer a human-useful title over class-only or English stub. */
-export function preferEventName(a: string, b: string): string {
+/**
+ * Pick the better of two titles for the same race.
+ *
+ * `placeText` matters more than it looks. Merges used to choose on length and
+ * series tokens alone, so a round could inherit a title naming a different
+ * venue: the Nové Město round of the Czech Cup ended up called "Český pohár XCO
+ * Bedřichov" — a real round, 300 km and three months away. A title that names
+ * where the race actually is beats one that names somewhere else.
+ */
+export function preferEventName(a: string, b: string, placeText?: string | null): string {
+  const place = fold(placeText ?? "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length >= 4);
   const score = (n: string) => {
     let s = n.trim().length;
     if (isWeakRaceName(n)) s -= 40;
@@ -748,6 +761,10 @@ export function preferEventName(a: string, b: string): string {
     if (seriesAliasTokens(n).length) s += 25;
     if (/[áčďéěíňóřšťúůýž]/i.test(n) || /\bčp\b/i.test(n)) s += 8;
     if (/\bostrava|praha|brno|plzen|liberec\b/i.test(n)) s += 10;
+    if (place.length) {
+      const folded = fold(n);
+      s += place.some((t) => folded.includes(t)) ? 60 : 0;
+    }
     return s;
   };
   return score(a) >= score(b) ? a : b;

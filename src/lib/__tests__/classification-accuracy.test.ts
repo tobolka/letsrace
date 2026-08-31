@@ -7,6 +7,8 @@ import { isSiteIdentityName } from "@/lib/watcher/extractors/generic";
 import { isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
 import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 import { isSeparateRace } from "@/lib/catalog/merge-duplicates";
+import { fingerprint, normalizeName } from "@/lib/domain";
+import { preferEventName } from "@/lib/dedup";
 
 /**
  * Every case below is a row that was actually wrong in the live catalog.
@@ -288,5 +290,64 @@ describe("duplicate guards", () => {
       "Povltavský bikerský pohár - Třetí letní kritérium horských kol",
     );
     expect(isSeparateRace(a.name, b.name)).toBe(false);
+  });
+});
+
+describe("fingerprint identity", () => {
+  it("uses the coordinates the event actually has", () => {
+    // Written before geocoding resolved, the key said "nogps" for 48% of the
+    // catalog — blinding the geohash half of duplicate detection.
+    const located = fingerprint({
+      startDate: "2026-09-05",
+      name: "ČP MTB — NMNM",
+      lat: 49.5615,
+      lng: 16.0742,
+    });
+    expect(located).not.toContain(":nogps:");
+    expect(fingerprint({ startDate: "2026-09-05", name: "ČP MTB — NMNM" })).toContain(":nogps:");
+  });
+
+  it("never reduces a name to nothing", () => {
+    // "ČP MTB" is entirely generic tokens. Emptying it made every such race on
+    // one day share a key — harmless while scoring, a silent merge under the
+    // unique index.
+    for (const name of ["ČP MTB", "XCO Cup 2026", "MTB", "Cup"]) {
+      expect(normalizeName(name).length, name).toBeGreaterThan(0);
+    }
+    expect(normalizeName("ČP MTB")).toBe("cp mtb");
+    // Names with something identifying left still drop the generic words.
+    expect(normalizeName("MTB Cup Praha")).toBe("praha");
+  });
+});
+
+describe("name choice on merge", () => {
+  it("prefers the title that names where the race is", () => {
+    // The Nové Město round was left called "Český pohár XCO Bedřichov" — a real
+    // round of the same cup, 300 km and three months away.
+    expect(
+      preferEventName("Český pohár XCO Bedřichov", "ČP MTB — NMNM — Vysočina aréna", "NMNM"),
+    ).toBe("ČP MTB — NMNM — Vysočina aréna");
+  });
+
+  it("falls back to the old scoring when the venue is unknown", () => {
+    expect(preferEventName("Velká cena Klatov", "VC")).toBe("Velká cena Klatov");
+  });
+});
+
+describe("same-series round", () => {
+  it("keeps two venues of one series apart on a shared day", () => {
+    // Same day, same series, same town — two races at two places.
+    expect(isSeparateRace("Jarní Bahno — Goethovka", "Jarní Bahno — Linhart")).toBe(true);
+  });
+
+  it("does not treat a shorter title as a different race", () => {
+    expect(isSeparateRace("ČP MTB — NMNM — Vysočina aréna", "NMNM")).toBe(false);
+    expect(isSeparateRace("ČP MTB — NMNM — Vysočina aréna", "Czech MTB Cup")).toBe(false);
+  });
+
+  it("keeps a national championship separate from a co-located round", () => {
+    expect(
+      isSeparateRace("Majstrovstvá Slovenska Elite a Kadeti 2026", "GP Slovak Cycling Federation I. UCI C2"),
+    ).toBe(true);
   });
 });
