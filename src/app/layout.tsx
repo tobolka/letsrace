@@ -59,6 +59,24 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  /**
+   * Search-console ownership, supplied by env so a code can be pasted into
+   * Vercel without a deploy of its own. Seznam is not optional here: it carries
+   * a tenth of Czech search, and Czechia is the home market.
+   */
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+    other: {
+      ...(process.env.SEZNAM_WMT_VERIFICATION
+        ? { "seznam-wmt": process.env.SEZNAM_WMT_VERIFICATION }
+        : {}),
+      ...(process.env.BING_SITE_VERIFICATION
+        ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+        : {}),
+    },
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
