@@ -22,6 +22,9 @@ export const viewport: Viewport = {
   themeColor: "#f5f5f4",
 };
 
+/** Google Search Console ownership for letsrace.cz. */
+const GOOGLE_VERIFICATION = "aVohYf51HhFqN0skaqmxz-Lqs9RbFrujEihdbuZ9YEI";
+
 export const metadata: Metadata = {
   metadataBase: new URL(site),
   title: {
@@ -65,9 +68,9 @@ export const metadata: Metadata = {
    * a tenth of Czech search, and Czechia is the home market.
    */
   verification: {
-    ...(process.env.GOOGLE_SITE_VERIFICATION
-      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
-      : {}),
+    // The token is public by design — it ships in the page's meta tag — so it
+    // lives here rather than in an env var somebody has to remember to set.
+    google: process.env.GOOGLE_SITE_VERIFICATION || GOOGLE_VERIFICATION,
     other: {
       ...(process.env.SEZNAM_WMT_VERIFICATION
         ? { "seznam-wmt": process.env.SEZNAM_WMT_VERIFICATION }
