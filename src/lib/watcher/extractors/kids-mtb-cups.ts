@@ -1818,6 +1818,51 @@ function vychodRoadPlace(raw: string): string {
 
 const SOOF_LISTING = "https://www.soof.sk/podujatia-a-akcie";
 
+/**
+ * Organiser sites linked from the SooF listing, keyed by the series they name.
+ *
+ * Every SooF-sourced race pointed at the listing page as its website, and
+ * `soof.sk` is a dump host — so the link was dropped and Slovak races were left
+ * with the worst coverage of any covered market (40% with a website). The page
+ * does carry the organisers: each series heading is an anchor to spdh.sk,
+ * vychodroadliga.eu, detskatour.sk and the rest. Read those instead.
+ */
+function soofSeriesSites(html: string, base: string): Map<string, string> {
+  const $ = cheerio.load(html);
+  const out = new Map<string, string>();
+  $("a[href]").each((_, a) => {
+    const href = $(a).attr("href") ?? "";
+    const label = $(a).text().replace(/\s+/g, " ").trim();
+    if (!label || label.length < 6) return;
+    let url: URL;
+    try {
+      url = new URL(href, base);
+    } catch {
+      return;
+    }
+    if (!/^https?:$/.test(url.protocol)) return;
+    const host = url.hostname.replace(/^www\./, "");
+    // The listing's own pages and social profiles are not the organiser's site.
+    if (host.endsWith("soof.sk")) return;
+    if (/facebook\.com|instagram\.com|strava\.com|youtube\.com/.test(host)) return;
+    const key = normalizeName(label);
+    if (key.length < 4 || out.has(key)) return;
+    out.set(key, url.toString());
+  });
+  return out;
+}
+
+/** Best organiser link for a series name, matched on the listing's own labels. */
+function soofSiteFor(sites: Map<string, string>, seriesName: string): string | undefined {
+  const want = normalizeName(seriesName);
+  if (!want) return undefined;
+  if (sites.has(want)) return sites.get(want);
+  for (const [key, url] of sites) {
+    if (key.includes(want) || want.includes(key)) return url;
+  }
+  return undefined;
+}
+
 function soofEvent(
   listing: string,
   opts: {
@@ -1830,6 +1875,7 @@ function soofEvent(
     audience: Audience;
     seriesName: string;
     seriesSlug: string;
+    seriesWebsite?: string;
     confidence?: number;
   },
 ): ParsedEvent {
@@ -1844,9 +1890,9 @@ function soofEvent(
     audience: opts.audience,
     seriesName: opts.seriesName,
     seriesSlug: opts.seriesSlug,
-    seriesWebsite: SOOF_LISTING,
+    seriesWebsite: opts.seriesWebsite ?? SOOF_LISTING,
     sourceUrl: listing,
-    websiteUrl: listing,
+    websiteUrl: opts.seriesWebsite,
     confidence: opts.confidence ?? 0.86,
   };
 }
@@ -2012,6 +2058,17 @@ export function parseSoofSk(url: string, html: string): ParsedEvent[] {
         seriesSlug: "vychod-road-liga",
       }),
     );
+  }
+
+  // Attach the organiser site the listing itself links for each series, so a
+  // SooF race carries a real website instead of the aggregator it came from.
+  const sites = soofSeriesSites(html, listing);
+  for (const ev of events) {
+    if (!ev.seriesName) continue;
+    const site = soofSiteFor(sites, ev.seriesName);
+    if (!site) continue;
+    ev.seriesWebsite = site;
+    if (!ev.websiteUrl) ev.websiteUrl = site;
   }
 
   return events;

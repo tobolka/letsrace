@@ -351,3 +351,23 @@ describe("same-series round", () => {
     ).toBe(true);
   });
 });
+
+describe("SooF organiser links", () => {
+  it("uses the organiser site the listing links, not the listing", async () => {
+    const { parseSoofSk } = await import("@/lib/watcher/extractors/kids-mtb-cups");
+    // Slovak races had the worst website coverage of any covered market because
+    // every SooF row pointed at soof.sk, which is a dump host and gets dropped.
+    const html = `<body>
+      <a href="https://spdh.sk/">Downhill 2026</a>
+      <a href="https://www.facebook.com/x">Hornonitrianska Enduro Séria 2026</a>
+      <p>13.9.2026 - 1.kolo - Slovenský pohár downhill - Košútka</p>
+      <p>26.4.2026 SPDH 1 Košútka</p>
+    </body>`;
+    const events = parseSoofSk("https://www.soof.sk/podujatia-a-akcie", html);
+    for (const e of events) {
+      expect(e.websiteUrl ?? "").not.toContain("soof.sk");
+      // A Facebook page is not the organiser's site.
+      expect(e.websiteUrl ?? "").not.toContain("facebook.com");
+    }
+  });
+});
