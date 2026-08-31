@@ -161,9 +161,7 @@ type Props = {
 
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
-  // SSR already seeds a cold-start viewport. Skipping the first map-driven
-  // refetch avoids a late list rewrite (big CLS) when MapLibre boots.
-  const initialBoundsFetchDone = useRef(true);
+  const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("list");
   const [submitOpen, setSubmitOpen] = useState(false);
@@ -754,22 +752,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 lastAreaRef.current = expandViewport(b);
                 return;
               }
-              if (reason === "user") {
+              if (reason === "user" || reason === "sync") {
                 scheduleSearchViewport(b);
                 return;
               }
-              if (reason === "sync") {
-                // Padding/resize — remember area, but don't replace the SSR
-                // list (that rewrite was the intermittent CLS spike).
-                lastAreaRef.current = expandViewport(b);
-                return;
-              }
-              if (reason === "locate") {
+              if (reason === "gps" || reason === "locate") {
                 scheduleSearchViewport(b, true);
-                return;
-              }
-              if (reason === "gps") {
-                lastAreaRef.current = expandViewport(b);
               }
             }}
             locale={locale}
