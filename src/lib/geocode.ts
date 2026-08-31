@@ -1288,6 +1288,20 @@ function getGazetteerKeys(): string[] {
 }
 
 /** Strip junk prefixes like "XCE Skočice" / "UCI CN" and detect country. */
+/**
+ * Does this read like a place at all?
+ *
+ * Nominatim answers almost anything with something. Asked for "5.9" — the date
+ * left over after a calendar put "5.9.2026" where the town belongs — it
+ * returned a confident point near Zlín, and Krkonošská 70 was pinned 200 km
+ * from the Giant Mountains. A place name has letters; a date, a distance and a
+ * stray comma do not, and an unlocated race is better than a misplaced one.
+ */
+export function hasPlaceLikeText(query: string): boolean {
+  const letters = query.replace(/[^\p{L}]/gu, "");
+  return letters.length >= 2;
+}
+
 export function cleanGeocodeQuery(
   raw: string,
   countryHint?: string | null,
@@ -1380,7 +1394,8 @@ export function cleanGeocodeQuery(
       primary,
     ) ||
     /^[a-z]$/i.test(primary) ||
-    /^https?:/i.test(primary)
+    /^https?:/i.test(primary) ||
+    !hasPlaceLikeText(primary)
   ) {
     return { query: "", countryCode: cc };
   }

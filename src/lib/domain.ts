@@ -41,6 +41,11 @@ export type ParsedEvent = {
   /** ISO date the entry list opens / closes, when the source states it. */
   registrationOpensAt?: string;
   registrationClosesAt?: string;
+  /**
+   * Set only when the source names the kind of event outright — a calendar that
+   * distinguishes an RTF from a race knows better than a guess from the title.
+   */
+  eventType?: import("@/lib/taxonomy").EventType;
   /** Link event into a series (Talent Cup, KPŽ, …) */
   seriesName?: string;
   seriesSlug?: string;

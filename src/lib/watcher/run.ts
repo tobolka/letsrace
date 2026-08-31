@@ -37,6 +37,8 @@ export type WatchOutcome = {
 const MAX_NEW_PER_RUN = 200;
 const MAX_NEW_PER_RUN_FCI = 400;
 const MAX_NEW_PER_RUN_RR = 400;
+/** radsport-events serves its whole calendar in one API crawl — 640 races. */
+const MAX_NEW_PER_RUN_RSE = 700;
 const MAX_REFRESH_PER_RUN = 250;
 /** Soft claim window so overlapping crons don't double-process the same row. */
 const CLAIM_MS = 20 * 60 * 1000;
@@ -251,7 +253,9 @@ export async function watchOne(row: {
         ? MAX_NEW_PER_RUN_FCI
         : extracted.strategy?.includes("raceresult") || /raceresult\.com\/events/.test(row.url)
           ? MAX_NEW_PER_RUN_RR
-          : MAX_NEW_PER_RUN;
+          : /radsport-events\.de/.test(row.url)
+            ? MAX_NEW_PER_RUN_RSE
+            : MAX_NEW_PER_RUN;
     /**
      * Spend the per-run budget on races people can still enter.
      *
@@ -1848,7 +1852,9 @@ async function upsertParsedEvent(
     formats: classified.formats,
     audience: mergedAudience,
     age_categories: mergedAgeCategories,
-    event_type: classified.eventType,
+    // A source that distinguishes an RTF from a race knows better than a guess
+    // from the title; only fall back to the classifier when it says nothing.
+    event_type: ev.eventType ?? classified.eventType,
     competition_type: classified.competitionType,
     season: classified.season || mergedStart.slice(0, 4),
     timezone: timezoneForCountry(ev.countryHint),
