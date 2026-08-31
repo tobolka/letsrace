@@ -10,6 +10,13 @@ import { parseRadsportEvents } from "@/lib/watcher/extractors/radsport";
 import { parseEventiv } from "@/lib/watcher/extractors/eventiv";
 import { isPzkolHost, parsePzkolSeasons } from "@/lib/watcher/extractors/pzkol";
 import { isDostartuHost, parseDostartu } from "@/lib/watcher/extractors/dostartu";
+import { isBikeboardHost, parseBikeboardCalendar } from "@/lib/watcher/extractors/bikeboard";
+import { isTurboSportHost, parseTurboSport } from "@/lib/watcher/extractors/turbosport";
+import {
+  isKalendarzRowerowyHost,
+  parseKalendarzRowerowy,
+} from "@/lib/watcher/extractors/kalendarzrowerowy";
+import { isOdjazdHost, parseOdjazd } from "@/lib/watcher/extractors/odjazd";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
@@ -554,6 +561,24 @@ export async function extractWithAdapter(
     return {
       events: [...kids, ...ca],
       strategy: kids.length ? "adapter:oerv+at-kids-xc" : "adapter:oerv",
+    };
+  }
+  if (isOdjazdHost(host)) {
+    return { events: await parseOdjazd(), strategy: "adapter:odjazd" };
+  }
+  if (isKalendarzRowerowyHost(host)) {
+    return {
+      events: await parseKalendarzRowerowy(url, html),
+      strategy: "adapter:kalendarz-rowerowy",
+    };
+  }
+  if (isTurboSportHost(host)) {
+    return { events: parseTurboSport(url, html), strategy: "adapter:turbo-sport" };
+  }
+  if (isBikeboardHost(host)) {
+    return {
+      events: await parseBikeboardCalendar(url, html),
+      strategy: "adapter:bikeboard",
     };
   }
   if (isDostartuHost(host)) {

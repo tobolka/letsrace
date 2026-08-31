@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { inferClassification } from "@/lib/taxonomy";
+import { inferClassification, inferDisciplines, inferEventType } from "@/lib/taxonomy";
 import { resolveLevel } from "@/lib/classify-level";
 import { fold, hasToken, hasTokenFollowedBy } from "@/lib/text-match";
 import { isNonCyclingEventName, hasCyclingSignal, looksLikeRunningEvent } from "@/lib/sport-gate";
@@ -380,5 +380,43 @@ describe("kids races", () => {
     expect(isSeparateRace("NyNa Gravel Cup — Šarišské Bohdanovce", "Detská VRL — Šarišské Bohdanovce")).toBe(true);
     expect(isSeparateRace("Kamptal Trophy", "Kamptal Trophy Nachwuchs")).toBe(true);
     expect(isSeparateRace("Bikemaraton Beroun", "Bikemaraton Beroun dětský závod")).toBe(true);
+  });
+});
+
+describe("a coached session is not a race", () => {
+  it("files a skills course or a safety training as training", () => {
+    expect(inferEventType({ name: 'MTB-Fahrtechnikkurs "Allround", Nürnberg' })).toBe("training");
+    expect(inferEventType({ name: "E-Bike Fahrsicherheitstraining" })).toBe("training");
+    expect(inferEventType({ name: "Szkolenie kolarskie dla dzieci" })).toBe("training");
+  });
+
+  it("does not read the German for a circuit as a course", () => {
+    expect(inferEventType({ name: "18. Neuöttinger Rundstreckenrennen" })).not.toBe("training");
+  });
+});
+
+describe("Polish race vocabulary", () => {
+  it("reads the discipline out of a Polish name", () => {
+    expect(inferDisciplines("Puchar Polski w Kolarstwie Przełajowym")).toEqual(["cx"]);
+    expect(inferDisciplines("55 Ogólnopolskie Kryterium Kolarskie")).toEqual(["criterium"]);
+    expect(inferDisciplines("XV Jubileuszowa Czasówka Kaczawska")).toEqual(["tt"]);
+    expect(inferDisciplines("Mistrzostwa Polski w kolarstwie gravelowym")).toEqual(["gravel"]);
+    expect(inferDisciplines("Mistrzostwa Polski w kolarstwie torowym")).toEqual(["track"]);
+  });
+
+  it("files pumptrack under BMX and four-cross under MTB", () => {
+    expect(inferDisciplines("Puchar Polski #5 Pumptrack")).toEqual(["bmx"]);
+    expect(inferDisciplines("Mistrzostwa Polski 4X")).toEqual(["mtb"]);
+  });
+
+  it("marks a touring ride and a brevet as a ride, not a race", () => {
+    expect(inferEventType({ name: "Letni rajd rowerowy - Dąbrowa Górnicza" })).toBe("ride");
+    expect(inferEventType({ name: "Brevet 200 / Velo Days on Tour" })).toBe("ride");
+    expect(inferEventType({ name: "9 UltraGryfus Turystyczny Ultramaraton" })).toBe("ride");
+  });
+
+  it("leaves a real Polish race alone", () => {
+    expect(inferEventType({ name: "4. Szutry Śląskie 2026 Rybnik - Kamień" })).not.toBe("ride");
+    expect(inferEventType({ name: "32 Puchar Tarnowa MTB XCO" })).not.toBe("ride");
   });
 });

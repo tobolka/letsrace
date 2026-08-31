@@ -861,8 +861,11 @@ const LEGACY_LEVEL: Record<string, RaceLevel> = {
  * Rides, tours and youth skills events — cycling, but not racing.
  * Mostly Italian because FCI publishes them in the same calendar as the races.
  */
+const COACHED_SESSION =
+  /fahrtechnik|fahrsicherheit|technikkurs|\bkurs\b|\bworkshop\b|szkolenie|skoleni|trainingslager|fahrtechnikkurs/;
+
 const NON_COMPETITIVE_RIDE =
-  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevetto\b|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b|rajd\s+rowerow|\bturystyczn|wycieczka\s+rowerow|przejazd\s+rowerow/;
+  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevet|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b|rajd\s+rowerow|\bturystyczn|wycieczka\s+rowerow|przejazd\s+rowerow/;
 
 export function inferEventType(opts: {
   name: string;
@@ -878,6 +881,9 @@ export function inferEventType(opts: {
   // federation calendar lists these alongside real races; they belong on the map,
   // labelled for what they are.
   if (NON_COMPETITIVE_RIDE.test(t)) return "ride";
+  // A skills course or a training camp is taught, not raced. Calendars list them
+  // beside real races, and "Rundkurs" must not be mistaken for one.
+  if (COACHED_SESSION.test(t)) return "training";
   if (opts.level === "world_championship" || opts.level === "european_championship") {
     return "championship";
   }
