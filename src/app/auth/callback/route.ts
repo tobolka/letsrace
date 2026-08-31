@@ -51,13 +51,39 @@ function redirectBase(request: NextRequest, origin: string): string {
   }
 }
 
+const ERROR_CODE = /^[a-z0-9_-]{1,64}$/;
+
+/**
+ * Reduce a failed sign-in to a short code the page can translate.
+ *
+ * Only the code travels back in the URL, never the provider's own prose: the
+ * destination renders whatever it finds, and a crafted link must not be able
+ * to put arbitrary text in front of a visitor.
+ */
+function failureCode(searchParams: URLSearchParams): string | null {
+  const raw = searchParams.get("error_code") ?? searchParams.get("error");
+  if (!raw) return null;
+  return ERROR_CODE.test(raw) ? raw : "unknown";
+}
+
+function destination(base: string, next: string, failure: string | null): string {
+  const url = new URL(`${base}${next}`);
+  if (failure) url.searchParams.set("auth_error", failure);
+  return url.toString();
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = safeNextPath(searchParams.get("next"));
   const base = redirectBase(request, origin);
-  const dest = `${base}${next}`;
-  const response = NextResponse.redirect(dest);
+
+  // Google and Supabase report a refusal by sending the visitor back here with
+  // an error instead of a code. Carry it through so the page can say so.
+  const refused = failureCode(searchParams);
+  if (refused) return NextResponse.redirect(destination(base, next, refused));
+
+  const response = NextResponse.redirect(destination(base, next, null));
 
   if (!code) return response;
 
@@ -80,7 +106,7 @@ export async function GET(request: NextRequest) {
   );
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) return response;
+  if (error) return NextResponse.redirect(destination(base, next, "exchange_failed"));
 
   const {
     data: { user },

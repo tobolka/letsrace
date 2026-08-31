@@ -14,6 +14,7 @@ import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/l
 import { eventPagePath } from "@/lib/event-url";
 import { BrandMark } from "@/components/brand-mark";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { disciplineCopy, listQualifyingHubs } from "@/lib/discipline-hubs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -82,6 +83,9 @@ export default async function CountryHubPage({ params }: Props) {
 
   const copy = hubCopy[locale];
   const heading = fillCopy(copy.countryTitle, { name });
+  // "Gravel races in Czechia" is what people search; the country page is where
+  // they can be reached from.
+  const disciplineHubs = await listQualifyingHubs([code]);
 
   return (
     <main className="min-h-[100dvh] bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
@@ -113,6 +117,19 @@ export default async function CountryHubPage({ params }: Props) {
             </Link>
           </Button>
         </div>
+        {disciplineHubs.length > 0 && (
+          <nav aria-label={heading} className="mt-6 flex flex-wrap gap-2">
+            {disciplineHubs.map((h) => (
+              <Button key={h.discipline} asChild variant="outline" size="sm">
+                <Link href={`/${locale}/c/${code.toLowerCase()}/${h.discipline}`}>
+                  {fillCopy(disciplineCopy(locale, h.discipline).title, { name })}
+                  <span className="ml-1 text-muted-foreground tabular-nums">{h.races}</span>
+                </Link>
+              </Button>
+            ))}
+          </nav>
+        )}
+
         {events.length ? (
           <Card className="mt-8 gap-0 overflow-hidden py-0">
             <ItemGroup>

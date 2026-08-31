@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { defaultLocale, locales } from "@/lib/i18n/messages";
 import { listSitemapEvents, listSitemapSeries } from "@/lib/events";
+import { listQualifyingHubs } from "@/lib/discipline-hubs";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { absoluteUrl, getSiteUrl } from "@/lib/seo";
 
@@ -42,6 +43,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ),
       },
     });
+  }
+
+  try {
+    // Only combinations that clear the race threshold — a thin hub in the
+    // sitemap asks Google to index a page competing with its own parent.
+    for (const hub of await listQualifyingHubs([...PUBLIC_COUNTRY_CODES])) {
+      const path = `c/${hub.countryCode.toLowerCase()}/${hub.discipline}`;
+      entries.push({
+        url: absoluteUrl(`/${defaultLocale}/${path}`),
+        lastModified: now,
+        changeFrequency: "daily",
+        priority: 0.7,
+        alternates: {
+          languages: Object.fromEntries(locales.map((l) => [l, absoluteUrl(`/${l}/${path}`)])),
+        },
+      });
+    }
+  } catch {
+    // Hub outage must not take the rest of the sitemap down.
   }
 
   try {

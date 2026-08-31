@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { AuthErrorToast } from "@/components/account/auth-error-toast";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, localeAlternates, seoCopy, SITE_NAME } from "@/lib/seo";
 
@@ -50,5 +51,10 @@ export default async function LocaleLayout({
   const { locale: raw } = await params;
   if (!locales.includes(raw as Locale)) notFound();
 
-  return children;
+  return (
+    <>
+      <AuthErrorToast locale={raw} />
+      {children}
+    </>
+  );
 }
