@@ -40,6 +40,6 @@ writeFileSync(
   join(dest, "boot.mjs"),
   `import * as maplibre from "./maplibre-gl.mjs";
 maplibre.setWorkerUrl(new URL("./maplibre-gl-worker.mjs", import.meta.url).href);
-globalThis.__startlineMapLibre = maplibre;
+globalThis.__letsraceMapLibre = maplibre;
 `,
 );

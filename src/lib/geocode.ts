@@ -1471,7 +1471,7 @@ async function nominatimSearch(query: string, countryCode: string): Promise<Geoc
   try {
     res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
       headers: {
-        "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
+        "User-Agent": "LetsRaceBot/0.1 (race calendar; contact@letsrace.cz)",
         Accept: "application/json",
       },
       signal: AbortSignal.timeout(8000),
@@ -1490,7 +1490,7 @@ async function nominatimSearch(query: string, countryCode: string): Promise<Geoc
       try {
         res2 = await fetch(`https://nominatim.openstreetmap.org/search?${p2}`, {
           headers: {
-            "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
+            "User-Agent": "LetsRaceBot/0.1 (race calendar; contact@letsrace.cz)",
             Accept: "application/json",
           },
           signal: AbortSignal.timeout(8000),
@@ -1646,7 +1646,7 @@ async function nominatimPublicSearch(query: string): Promise<GeocodeResult | nul
   });
   const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
     headers: {
-      "User-Agent": "StartlineBot/0.1 (race calendar; contact@startline.app)",
+      "User-Agent": "LetsRaceBot/0.1 (race calendar; contact@letsrace.cz)",
       Accept: "application/json",
     },
     signal: AbortSignal.timeout(8000),

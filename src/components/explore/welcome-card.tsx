@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { MapPin, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const SEEN_KEY = "startline.welcome.seen";
+const SEEN_KEY = "letsrace.welcome.seen";
 
 /**
  * What this app is, said once.

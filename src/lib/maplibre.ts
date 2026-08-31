@@ -5,7 +5,7 @@ export type MapLibreModule = typeof MapLibreNS;
 /** Must match `scripts/copy-maplibre-worker.cjs` (maplibre-gl package version). */
 export const MAPLIBRE_ASSET_DIR = "/maplibre/6.6.0";
 
-type MapLibreWindow = Window & { __startlineMapLibre?: MapLibreModule };
+type MapLibreWindow = Window & { __letsraceMapLibre?: MapLibreModule };
 
 let pending: Promise<MapLibreModule> | null = null;
 
@@ -19,7 +19,7 @@ export function loadMapLibre(): Promise<MapLibreModule> {
     return Promise.reject(new Error("MapLibre is browser-only"));
   }
   const w = window as MapLibreWindow;
-  if (w.__startlineMapLibre) return Promise.resolve(w.__startlineMapLibre);
+  if (w.__letsraceMapLibre) return Promise.resolve(w.__letsraceMapLibre);
   if (pending) return pending;
 
   pending = new Promise<MapLibreModule>((resolve, reject) => {
@@ -32,7 +32,7 @@ export function loadMapLibre(): Promise<MapLibreModule> {
     script.type = "module";
     script.src = src;
     script.addEventListener("load", () => {
-      const ml = w.__startlineMapLibre;
+      const ml = w.__letsraceMapLibre;
       if (ml) resolve(ml);
       else fail(new Error("MapLibre boot module did not initialize"));
     });

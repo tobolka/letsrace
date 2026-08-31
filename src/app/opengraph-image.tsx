@@ -1,8 +1,20 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const alt = "Let's Race — cycling races on the map";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+/**
+ * Satori resolves every element against the faces it is given, so registering
+ * only the wordmark's black italic set the whole card in italic. Give it the
+ * upright faces too and name the family per element.
+ */
+const fontDir = join(process.cwd(), "src/app/_fonts");
+const geistBlackItalic = readFileSync(join(fontDir, "Geist-BlackItalic.ttf"));
+const geistBold = readFileSync(join(fontDir, "Geist-Bold.ttf"));
+const geistRegular = readFileSync(join(fontDir, "Geist-Regular.ttf"));
 
 /**
  * The share card has to answer "what is this?" in the second before someone
@@ -41,7 +53,7 @@ export default function OpenGraphImage() {
           display: "flex",
           background: "#1c1917",
           color: "#fafaf9",
-          fontFamily: "ui-sans-serif, system-ui, sans-serif",
+          fontFamily: "Geist",
         }}
       >
         <div
@@ -56,9 +68,11 @@ export default function OpenGraphImage() {
           <div
             style={{
               display: "flex",
-              fontSize: 46,
+              fontSize: 50,
               letterSpacing: "-0.04em",
-              fontWeight: 700,
+              fontFamily: "GeistItalic",
+              fontWeight: 900,
+              fontStyle: "italic",
               color: "#e11d2e",
             }}
           >
@@ -109,6 +123,13 @@ export default function OpenGraphImage() {
         </div>
       </div>
     ),
-    { ...size },
+    {
+      ...size,
+      fonts: [
+        { name: "Geist", data: geistRegular, weight: 400, style: "normal" },
+        { name: "Geist", data: geistBold, weight: 700, style: "normal" },
+        { name: "GeistItalic", data: geistBlackItalic, weight: 900, style: "italic" },
+      ],
+    },
   );
 }

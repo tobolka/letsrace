@@ -105,7 +105,7 @@ time,
   font-size: 10px;
 }
 
-.startline-date-cal .rdp-root {
+.letsrace-date-cal .rdp-root {
   --rdp-accent-color: var(--foreground);
   --rdp-accent-background-color: var(--accent);
   --rdp-day-height: 32px;
@@ -123,13 +123,13 @@ time,
   font-size: 13px;
   font-weight: 500;
 }
-.startline-date-cal .rdp-months {
+.letsrace-date-cal .rdp-months {
   max-width: none;
 }
-.startline-date-cal .rdp-month {
+.letsrace-date-cal .rdp-month {
   width: fit-content;
 }
-.startline-date-cal .rdp-weekday {
+.letsrace-date-cal .rdp-weekday {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -138,42 +138,42 @@ time,
   opacity: 1;
   padding: 0.25rem 0;
 }
-.startline-date-cal .rdp-month_caption {
+.letsrace-date-cal .rdp-month_caption {
   font-size: 13px;
   font-weight: 600;
 }
-.startline-date-cal .rdp-caption_label {
+.letsrace-date-cal .rdp-caption_label {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--foreground);
 }
-.startline-date-cal .rdp-day,
-.startline-date-cal .rdp-day_button {
+.letsrace-date-cal .rdp-day,
+.letsrace-date-cal .rdp-day_button {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
 }
-.startline-date-cal .rdp-selected,
-.startline-date-cal .rdp-selected .rdp-day_button {
+.letsrace-date-cal .rdp-selected,
+.letsrace-date-cal .rdp-selected .rdp-day_button {
   font-size: 13px;
   font-weight: 500;
 }
-.startline-date-cal .rdp-button_previous,
-.startline-date-cal .rdp-button_next {
+.letsrace-date-cal .rdp-button_previous,
+.letsrace-date-cal .rdp-button_next {
   border-radius: 9999px;
   color: var(--foreground);
 }
-.startline-date-cal .rdp-button_previous:focus-visible,
-.startline-date-cal .rdp-button_next:focus-visible,
-.startline-date-cal .rdp-day_button:focus-visible {
+.letsrace-date-cal .rdp-button_previous:focus-visible,
+.letsrace-date-cal .rdp-button_next:focus-visible,
+.letsrace-date-cal .rdp-day_button:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 @media (pointer: coarse) {
-  .startline-date-cal .rdp-root {
+  .letsrace-date-cal .rdp-root {
     --rdp-day-height: 44px;
     --rdp-day-width: 44px;
     --rdp-day_button-height: 42px;
@@ -181,13 +181,13 @@ time,
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .startline-date-cal .rdp-root {
+  .letsrace-date-cal .rdp-root {
     --rdp-animation_duration: 0s;
   }
 }
 
 /* MapLibre markers — keep above canvas, immune to form resets */
-.startline-map-pin {
+.letsrace-map-pin {
   z-index: 2;
   pointer-events: auto !important;
 }

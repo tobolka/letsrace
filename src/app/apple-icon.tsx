@@ -1,7 +1,13 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
+
+const geistBlackItalic = readFileSync(
+  join(process.cwd(), "src/app/_fonts/Geist-BlackItalic.ttf"),
+);
 
 /** Home-screen mark — same LR, sized for iOS and without the rounding iOS adds. */
 export default function AppleIcon() {
@@ -16,16 +22,20 @@ export default function AppleIcon() {
           justifyContent: "center",
           background: "#1c1917",
           color: "#e11d2e",
-          fontSize: 96,
+          fontSize: 92,
+          fontFamily: "Geist",
           fontWeight: 900,
           fontStyle: "italic",
-          letterSpacing: "-0.06em",
-          fontFamily: "ui-sans-serif, system-ui, sans-serif",
+          letterSpacing: "-0.04em",
+          paddingRight: 8,
         }}
       >
         LR
       </div>
     ),
-    { ...size },
+    {
+      ...size,
+      fonts: [{ name: "Geist", data: geistBlackItalic, weight: 900, style: "italic" }],
+    },
   );
 }

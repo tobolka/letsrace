@@ -6,7 +6,7 @@ export function getSiteUrl(): string {
   if (explicit) return explicit;
   const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/\/$/, "");
   if (vercel) return `https://${vercel}`;
-  return "https://startline-lovat.vercel.app";
+  return "https://letsrace.cz";
 }
 
 export const SITE_NAME = "Let's Race";

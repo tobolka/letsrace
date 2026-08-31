@@ -116,7 +116,7 @@ async function fetchMtbsPage(offset: number, dates: string): Promise<string> {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "X-Requested-With": "XMLHttpRequest",
-      "User-Agent": "StartlineBot/0.1 (+https://startline.app; race calendar aggregator)",
+      "User-Agent": "LetsRaceBot/0.1 (+https://letsrace.cz; race calendar aggregator)",
       Accept: "text/html",
     },
     body,

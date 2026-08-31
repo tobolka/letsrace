@@ -3,7 +3,7 @@ import { resolveLevel, isGranFondoWorldSeries } from "@/lib/classify-level";
 import { fold } from "@/lib/text-match";
 
 /**
- * Controlled vocabulary for Startline.
+ * Controlled vocabulary for Let's Race.
  *
  * `disciplines` on an event is a text[] of these ids (parents + leaves).
  * Filters expand a parent (mtb, road) to its leaves. Do not introduce a

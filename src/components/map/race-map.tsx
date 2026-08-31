@@ -143,7 +143,7 @@ function applyPinSelected(wrap: HTMLElement, event: EventListItem, selected: boo
 function makePinElement(event: EventListItem, selected: boolean) {
   const wrap = document.createElement("button");
   wrap.type = "button";
-  wrap.className = "startline-map-pin";
+  wrap.className = "letsrace-map-pin";
   wrap.setAttribute("aria-label", event.name);
   wrap.dataset.eventId = event.id;
   wrap.dataset.level = event.level || "local";
@@ -176,7 +176,7 @@ function makePinElement(event: EventListItem, selected: boolean) {
 
 function makeUserLocationElement() {
   const wrap = document.createElement("div");
-  wrap.className = "startline-user-location";
+  wrap.className = "letsrace-user-location";
   wrap.setAttribute("aria-label", "Your location");
   wrap.style.cssText = [
     "width:18px",
@@ -191,7 +191,7 @@ function makeUserLocationElement() {
     "inset:-14px",
     "border-radius:9999px",
     "background:rgba(23,23,23,.22)",
-    "animation:startline-loc-pulse 2.2s ease-out infinite",
+    "animation:letsrace-loc-pulse 2.2s ease-out infinite",
   ].join(";");
 
   const ring = document.createElement("span");
@@ -228,7 +228,7 @@ function upsertUserMarker(
     markerRef.current = new maplibre.Marker({
       element: makeUserLocationElement(),
       anchor: "center",
-      className: "startline-user-marker",
+      className: "letsrace-user-marker",
     })
       .setLngLat([pos.lng, pos.lat])
       .addTo(map);
@@ -429,20 +429,20 @@ export function RaceMap({
     let cancelled = false;
     let teardown: (() => void) | undefined;
 
-    let mapCtrlStyle = document.getElementById("startline-loc-pulse-style") as HTMLStyleElement | null;
+    let mapCtrlStyle = document.getElementById("letsrace-loc-pulse-style") as HTMLStyleElement | null;
     if (!mapCtrlStyle) {
       mapCtrlStyle = document.createElement("style");
-      mapCtrlStyle.id = "startline-loc-pulse-style";
+      mapCtrlStyle.id = "letsrace-loc-pulse-style";
       document.head.appendChild(mapCtrlStyle);
     }
     mapCtrlStyle.textContent = `
-        @keyframes startline-loc-pulse {
+        @keyframes letsrace-loc-pulse {
           0% { transform: scale(0.55); opacity: 0.85; }
           70% { transform: scale(1.35); opacity: 0; }
           100% { transform: scale(1.35); opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .startline-user-location span:first-child { animation: none !important; opacity: 0.35; }
+          .letsrace-user-location span:first-child { animation: none !important; opacity: 0.35; }
         }
         .maplibregl-ctrl-bottom-right {
           display: flex;
@@ -456,8 +456,8 @@ export function RaceMap({
           clear: none !important;
           margin: 0 !important;
         }
-        .maplibregl-ctrl-bottom-right .startline-locate-group { order: 1; }
-        .maplibregl-ctrl-bottom-right .startline-zoom-ctrl { order: 2; }
+        .maplibregl-ctrl-bottom-right .letsrace-locate-group { order: 1; }
+        .maplibregl-ctrl-bottom-right .letsrace-zoom-ctrl { order: 2; }
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib { order: 3; }
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group,
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group:not(:empty) {
@@ -506,13 +506,13 @@ export function RaceMap({
         .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:focus:only-child {
           border-radius: 0 !important;
         }
-        .startline-locate-ctrl,
-        .startline-locate-ctrl[data-active="true"] {
+        .letsrace-locate-ctrl,
+        .letsrace-locate-ctrl[data-active="true"] {
           color: #007aff !important;
         }
-        .startline-locate-ctrl svg,
-        .startline-zoom-in svg,
-        .startline-zoom-out svg {
+        .letsrace-locate-ctrl svg,
+        .letsrace-zoom-in svg,
+        .letsrace-zoom-out svg {
           display: block;
           width: 18px;
           height: 18px;
@@ -526,29 +526,29 @@ export function RaceMap({
             right: 8px;
             margin: 0 !important;
           }
-          .startline-zoom-ctrl {
+          .letsrace-zoom-ctrl {
             display: none !important;
           }
-          .startline-locate-ctrl {
+          .letsrace-locate-ctrl {
             width: 44px !important;
             height: 44px !important;
           }
         }
-        .maplibregl-marker.startline-user-marker {
+        .maplibregl-marker.letsrace-user-marker {
           z-index: 5 !important;
           overflow: visible !important;
         }
-        .maplibregl-marker:has(.startline-map-pin:hover) {
+        .maplibregl-marker:has(.letsrace-map-pin:hover) {
           z-index: 20 !important;
         }
-        .maplibregl-marker:has(.startline-map-pin[data-selected="true"]) {
+        .maplibregl-marker:has(.letsrace-map-pin[data-selected="true"]) {
           z-index: 25 !important;
         }
-        .startline-pin-tip {
+        .letsrace-pin-tip {
           pointer-events: none;
           z-index: 30 !important;
         }
-        .startline-pin-tip .maplibregl-popup-content {
+        .letsrace-pin-tip .maplibregl-popup-content {
           padding: 8px 10px;
           border-radius: 10px;
           background: #fff;
@@ -557,20 +557,20 @@ export function RaceMap({
           overflow: visible;
           font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
         }
-        .startline-pin-tip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+        .letsrace-pin-tip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
           border-top-color: #fff;
           margin-top: -1px;
           z-index: 2;
           filter: drop-shadow(0 1px 0 rgba(28,25,23,.08));
         }
-        .startline-pin-tip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+        .letsrace-pin-tip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
           border-bottom-color: #fff;
           margin-bottom: -1px;
           z-index: 2;
           filter: drop-shadow(0 -1px 0 rgba(28,25,23,.08));
         }
         @media (prefers-reduced-motion: reduce) {
-          .startline-map-pin span { transition: none !important; }
+          .letsrace-map-pin span { transition: none !important; }
         }
       `;
 
@@ -599,14 +599,14 @@ export function RaceMap({
     });
     mapRef.current = map;
     initialViewDoneRef.current = false;
-    (window as unknown as { __startlineMap?: Map }).__startlineMap = map;
+    (window as unknown as { __letsraceMap?: Map }).__letsraceMap = map;
 
     const locateCtrl = {
       onAdd() {
         const container = document.createElement("div");
-        container.className = "maplibregl-ctrl maplibregl-ctrl-group startline-locate-group";
+        container.className = "maplibregl-ctrl maplibregl-ctrl-group letsrace-locate-group";
         const btn = appleCtrlButton({
-          className: "startline-locate-ctrl",
+          className: "letsrace-locate-ctrl",
           label: myLocationLabel,
           html: LOCATE_ARROW_SVG,
           onClick: () => goToMyLocationRef.current(),
@@ -622,16 +622,16 @@ export function RaceMap({
     const zoomCtrl = {
       onAdd() {
         const container = document.createElement("div");
-        container.className = "maplibregl-ctrl maplibregl-ctrl-group startline-zoom-ctrl";
+        container.className = "maplibregl-ctrl maplibregl-ctrl-group letsrace-zoom-ctrl";
         container.append(
           appleCtrlButton({
-            className: "startline-zoom-in maplibregl-ctrl-zoom-in",
+            className: "letsrace-zoom-in maplibregl-ctrl-zoom-in",
             label: "Zoom in",
             html: ZOOM_IN_SVG,
             onClick: () => map.zoomIn({ duration: 280 }),
           }),
           appleCtrlButton({
-            className: "startline-zoom-out maplibregl-ctrl-zoom-out",
+            className: "letsrace-zoom-out maplibregl-ctrl-zoom-out",
             label: "Zoom out",
             html: ZOOM_OUT_SVG,
             onClick: () => map.zoomOut({ duration: 280 }),
@@ -669,7 +669,7 @@ export function RaceMap({
 
     map.on("click", (e) => {
       const target = e.originalEvent.target;
-      if (target instanceof Element && target.closest(".startline-map-pin, .startline-locate-ctrl, .maplibregl-ctrl")) {
+      if (target instanceof Element && target.closest(".letsrace-map-pin, .letsrace-locate-ctrl, .maplibregl-ctrl")) {
         return;
       }
       onBackgroundClickRef.current?.();
@@ -751,7 +751,7 @@ export function RaceMap({
         closeOnClick: false,
         closeOnMove: false,
         offset: 18,
-        className: "startline-pin-tip",
+        className: "letsrace-pin-tip",
         maxWidth: "260px",
         anchor: "bottom",
       });
@@ -801,7 +801,7 @@ export function RaceMap({
       });
     }
 
-    (window as unknown as { __startlineMarkerCount?: number }).__startlineMarkerCount =
+    (window as unknown as { __letsraceMarkerCount?: number }).__letsraceMarkerCount =
       markersRef.current.length;
 
     requestAnimationFrame(() => map.resize());

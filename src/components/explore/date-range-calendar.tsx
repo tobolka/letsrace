@@ -33,7 +33,7 @@ export function DateRangeCalendar({ locale, selected, onSelect }: Props) {
   }, [selected?.from]);
 
   return (
-    <div className="startline-date-cal min-w-0 px-1.5 pb-1.5 pt-1">
+    <div className="letsrace-date-cal min-w-0 px-1.5 pb-1.5 pt-1">
       <DayPicker
         mode="range"
         locale={dfLocale}

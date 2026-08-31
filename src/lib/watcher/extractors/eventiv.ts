@@ -468,7 +468,7 @@ async function fetchBikeMap(sport: string): Promise<MapFeature[]> {
   const res = await fetch(url, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "StartlineBot/0.1 (+https://startline.app; race calendar aggregator)",
+      "User-Agent": "LetsRaceBot/0.1 (+https://letsrace.cz; race calendar aggregator)",
     },
     signal: AbortSignal.timeout(60000),
   });

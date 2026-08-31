@@ -13,6 +13,9 @@ function allowedOrigins(): Set<string> {
   const out = new Set<string>([
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://letsrace.cz",
+    "https://www.letsrace.cz",
+    "https://letsrace.vercel.app",
     "https://racegrid-one.vercel.app",
     "https://startline-lovat.vercel.app",
   ]);

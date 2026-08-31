@@ -1,7 +1,7 @@
 import { createHash, timingSafeEqual } from "crypto";
 import { safeEqual } from "@/lib/security";
 
-export const ADMIN_COOKIE = "startline_admin";
+export const ADMIN_COOKIE = "letsrace_admin";
 
 export function adminSessionToken(password: string, secret: string) {
   return createHash("sha256").update(`${password}:${secret}`).digest("hex");

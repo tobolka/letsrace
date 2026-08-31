@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import { hostnameOf, hostIntervalMs, sleep, withHostGate } from "@/lib/watcher/pool";
 
 export const BOT_UA =
-  "StartlineBot/0.2 (+https://startline.app; race calendar aggregator; polite)";
+  "LetsRaceBot/0.2 (+https://letsrace.cz; race calendar aggregator; polite)";
 
 /** Hosts whose WAF rejects the bot UA. */
 const BROWSER_UA_HOSTS = new Set(["detskatour.sk", "jesenickysnek.cz"]);

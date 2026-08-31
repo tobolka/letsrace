@@ -1,7 +1,7 @@
 import { pickerCountryCodes, PUBLIC_MAP_CODES } from "@/lib/coverage";
 
 /**
- * ISO 3166-1 alpha-2 codes we treat as Europe for Startline.
+ * ISO 3166-1 alpha-2 codes we treat as Europe for Let's Race.
  * Includes EU/EFTA/UK, Balkans, Caucasus edge cases used in UCI calendars, and TR/CY.
  */
 export const EUROPE_COUNTRY_CODES = [

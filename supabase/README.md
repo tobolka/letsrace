@@ -1,6 +1,6 @@
 # Supabase
 
-Remote project: `startline` (`xlomrxswdcekarazaahx`).
+Remote project: `letsrace` (`xlomrxswdcekarazaahx`).
 
 ## Migrations
 

@@ -1,5 +1,5 @@
 /**
- * Coverage markets — the single place to grow Startline beyond Czechia.
+ * Coverage markets — the single place to grow Let's Race beyond Czechia.
  *
  * Learn quality on `core` + `neighbor` first (riders near the border do not
  * care which side a race is on). Promote a country to `expanding` when ingest
