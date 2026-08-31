@@ -277,23 +277,38 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   if (/\bxco\b/.test(t)) found.add("xco");
   if (/\bdh\b|downhill|sjezd/.test(t)) found.add("dh");
   if (/\benduro\b/.test(t)) found.add("enduro");
-  if (/\bgravel\b/.test(t)) found.add("gravel");
+  if (/\bgravel\b|gravelow/.test(t)) found.add("gravel");
   if (/\bgran[\s-]?fondo\b|\bsportive\b|\bcyclosport/.test(t)) found.add("gran_fondo");
   if (/\bhill[\s-]?climb\b|vrchař|vrchar|côte[\s-]?spéciale/.test(t)) found.add("hill_climb");
-  if (/\bcriterium\b|\bcrit\b|kriterium/.test(t)) found.add("criterium");
-  if (/\btt\b|time[\s-]?trial|časovka|casovka|contre[- ]la[- ]montre/.test(t)) found.add("tt");
-  if (/\bcx\b|cyclocross|cyklokros|cyclo[- ]cross/.test(t)) found.add("cx");
-  if (/\btrack\b|dráha|draha|velodrom/.test(t) && !/short\s*track/.test(t)) found.add("track");
-  if (/\bbmx\b/.test(t)) found.add("bmx");
-  if (/\bpara[\s-]?cycl|\bparacycling\b/.test(t)) found.add("para");
-  if (/\broad[\s-]?race\b|silniční závod|silnicni zavod/.test(t)) found.add("road_race");
+  if (/\bcriterium\b|\bcrit\b|kriterium|kryterium/.test(t)) found.add("criterium");
   if (
-    /\bmtb\b|horské|horske|cross[\s-]?country|\bxc\b/.test(t) &&
+    /\btt\b|time[\s-]?trial|časovka|casovka|contre[- ]la[- ]montre|czasówka|czasowka|jazda na czas/.test(
+      t,
+    )
+  ) {
+    found.add("tt");
+  }
+  if (/\bcx\b|cyclocross|cyklokros|cyclo[- ]cross|przełaj|przelaj/.test(t)) found.add("cx");
+  if (
+    /\btrack\b|dráha|draha|velodrom|\btorow/.test(t) &&
+    !/short\s*track/.test(t)
+  ) {
+    found.add("track");
+  }
+  // UCI races pumptrack under BMX; four-cross is MTB gravity with no leaf of its own.
+  if (/\bbmx\b|pump[\s-]?track/.test(t)) found.add("bmx");
+  if (/\bpara[\s-]?cycl|\bparacycling\b/.test(t)) found.add("para");
+  if (/\broad[\s-]?race\b|silniční závod|silnicni zavod|wyścig szosowy|wyscig szosowy/.test(t))
+    found.add("road_race");
+  if (
+    /\bmtb\b|horské|horske|cross[\s-]?country|\bxc\b|\b4x\b|four[\s-]?cross|kolarstw\w* górsk|kolarstw\w* gorsk/.test(
+      t,
+    ) &&
     ![...found].some((d) => MTB_LEAVES.includes(d))
   ) {
     found.add("mtb");
   }
-  if (/\broad\b|silnic/.test(t) && ![...found].some((d) => ROAD_LEAVES.includes(d))) {
+  if (/\broad\b|silnic|szosow|\bszosa\b/.test(t) && ![...found].some((d) => ROAD_LEAVES.includes(d))) {
     found.add("road");
   }
 
@@ -847,7 +862,7 @@ const LEGACY_LEVEL: Record<string, RaceLevel> = {
  * Mostly Italian because FCI publishes them in the same calendar as the races.
  */
 const NON_COMPETITIVE_RIDE =
-  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevetto\b|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b/;
+  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevetto\b|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b|rajd\s+rowerow|\bturystyczn|wycieczka\s+rowerow|przejazd\s+rowerow/;
 
 export function inferEventType(opts: {
   name: string;

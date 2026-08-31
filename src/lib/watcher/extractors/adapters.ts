@@ -8,6 +8,8 @@ import { parseFederciclismo } from "@/lib/watcher/extractors/federciclismo";
 import { parseVelokal } from "@/lib/watcher/extractors/velokal";
 import { parseRadsportEvents } from "@/lib/watcher/extractors/radsport";
 import { parseEventiv } from "@/lib/watcher/extractors/eventiv";
+import { isPzkolHost, parsePzkolSeasons } from "@/lib/watcher/extractors/pzkol";
+import { isDostartuHost, parseDostartu } from "@/lib/watcher/extractors/dostartu";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
@@ -553,6 +555,12 @@ export async function extractWithAdapter(
       events: [...kids, ...ca],
       strategy: kids.length ? "adapter:oerv+at-kids-xc" : "adapter:oerv",
     };
+  }
+  if (isDostartuHost(host)) {
+    return { events: await parseDostartu(), strategy: "adapter:dostartu" };
+  }
+  if (isPzkolHost(host)) {
+    return { events: await parsePzkolSeasons(url, html), strategy: "adapter:pzkol" };
   }
   if (host.includes("rad-net.de")) {
     if (!/cyclo-cross/i.test(url)) {
