@@ -9,15 +9,20 @@ function safeNextPath(next: string | null) {
   return next;
 }
 
+/**
+ * Origins sign-in may return to.
+ *
+ * Only the real site and local development. The `startline-*` and `racegrid-*`
+ * aliases are leftovers from earlier names for this project; a visitor who
+ * reaches one of those now falls through to `getSiteUrl()` and lands on
+ * letsrace.cz, which is where they should end up anyway.
+ */
 function allowedOrigins(): Set<string> {
   const out = new Set<string>([
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://letsrace.cz",
     "https://www.letsrace.cz",
-    "https://letsrace.vercel.app",
-    "https://racegrid-one.vercel.app",
-    "https://startline-lovat.vercel.app",
   ]);
   try {
     out.add(getSiteUrl());
