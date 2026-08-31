@@ -1849,16 +1849,23 @@ export async function geocodePendingLocations(
   if (opts?.gazetteerOnly) return gaz;
 
   const supabase = createServerSupabase();
-  const { data: rows, error } = await supabase
-    .from("locations")
-    .select(
-      "id, name, municipality, country_code, geocode_query, geocode_status, events!inner(id, visibility, start_date)",
-    )
-    .is("lat", null)
-    .in("geocode_status", ["pending", "failed"])
-    .eq("events.visibility", "public")
-    .gte("events.start_date", "2026-01-01")
-    .limit(limit);
+  const pendingSince = async (since: string) =>
+    supabase
+      .from("locations")
+      .select(
+        "id, name, municipality, country_code, geocode_query, geocode_status, events!inner(id, visibility, start_date)",
+      )
+      .is("lat", null)
+      .in("geocode_status", ["pending", "failed"])
+      .eq("events.visibility", "public")
+      .gte("events.start_date", since)
+      .limit(limit);
+
+  // A race that has already run will never be looked for on the map, so spend
+  // the rate-limited budget on what is still ahead and only then work back.
+  const today = new Date().toISOString().slice(0, 10);
+  let { data: rows, error } = await pendingSince(today);
+  if (!error && !rows?.length) ({ data: rows, error } = await pendingSince("2026-01-01"));
 
   if (error) throw new Error(error.message);
 
