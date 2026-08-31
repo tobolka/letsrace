@@ -14,7 +14,8 @@ import {
 } from "@/lib/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { BrandMark } from "@/components/brand-mark";
-import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
@@ -110,6 +111,10 @@ export default async function EventPage({ params }: Props) {
   const to = disciplineColorDark(event.disciplines);
   const trustText = trustLabel(eventTrustLevel(event), t);
   const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
+  // Only markets that actually have a hub page — linking to a 404 is worse than
+  // not linking.
+  const rawCountry = event.location?.countryCode ?? null;
+  const hubCountry = rawCountry && isListedCountry(rawCountry) ? rawCountry : null;
 
   return (
     <main className="relative min-h-[100dvh] bg-background">
@@ -262,6 +267,34 @@ export default async function EventPage({ params }: Props) {
             </Button>
           ) : null}
         </div>
+
+        {/*
+          A race page linked only back to the map, so the country and series
+          hubs had no internal links at all — a crawler could reach them from
+          the sitemap and from nowhere else, and a reader who wanted the rest of
+          the series had to go back and filter. Both audiences want the same two
+          links.
+        */}
+        {(hubCountry || event.series) && (
+          <nav aria-label={t.seriesFilter} className="mt-8 flex flex-wrap justify-center gap-2">
+            {event.series && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/${locale}/series/${event.series.slug}`}>
+                  {fillCopy(hubCopy[locale].seriesTitle, { name: event.series.name })}
+                </Link>
+              </Button>
+            )}
+            {hubCountry && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/${locale}/c/${hubCountry.toLowerCase()}`}>
+                  {fillCopy(hubCopy[locale].countryTitle, {
+                    name: countryDisplayName(hubCountry, locale),
+                  })}
+                </Link>
+              </Button>
+            )}
+          </nav>
+        )}
       </div>
     </main>
   );

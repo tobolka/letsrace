@@ -10,9 +10,10 @@ import {
   PUBLIC_COUNTRY_CODES,
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
-import { eventMapPath } from "@/lib/event-url";
+import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { eventPagePath } from "@/lib/event-url";
 import { BrandMark } from "@/components/brand-mark";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -46,11 +47,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const code = rawCode.toUpperCase();
   if (!isListedCountry(code)) return { title: "Country", robots: { index: false } };
   const name = countryDisplayName(code, locale);
-  const title = `${name} · ${SITE_NAME}`;
-  const description = `Cycling races in ${name} — map calendar on ${SITE_NAME}.`;
+  const copy = hubCopy[locale];
+  // The visible title carries the query someone actually types — the country
+  // name alone competes with the country, not with race calendars.
+  const heading = fillCopy(copy.countryTitle, { name });
+  const title = `${heading} · ${SITE_NAME}`;
+  const description = fillCopy(copy.country, { name });
   const url = absoluteUrl(`/${locale}/c/${code.toLowerCase()}`);
   return {
-    title: name,
+    title: heading,
     description,
     alternates: {
       canonical: url,
@@ -75,8 +80,23 @@ export default async function CountryHubPage({ params }: Props) {
     dateTo: addDaysIso(weekend.to, 60),
   });
 
+  const copy = hubCopy[locale];
+  const heading = fillCopy(copy.countryTitle, { name });
+
   return (
     <main className="min-h-[100dvh] bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
+      <HubJsonLd
+        locale={locale}
+        title={heading}
+        description={fillCopy(copy.country, { name })}
+        path={`c/${code.toLowerCase()}`}
+        events={events.map((e) => ({
+          name: e.name,
+          slug: e.slug,
+          startDate: e.startDate,
+          place: e.location?.municipality ?? e.location?.name ?? null,
+        }))}
+      />
       <div className="mx-auto max-w-2xl py-8">
         <Button asChild variant="ghost" size="sm" className="-ml-2">
           <Link href={`/${locale}`}>{SITE_NAME}</Link>
@@ -98,7 +118,7 @@ export default async function CountryHubPage({ params }: Props) {
             <ItemGroup>
               {events.slice(0, 40).map((event) => (
                 <Item key={event.id} asChild size="sm" className="rounded-none border-x-0 border-t-0">
-                  <Link href={eventMapPath(locale, event)}>
+                  <Link href={eventPagePath(locale, event.slug)}>
                     <ItemContent>
                       <ItemTitle>{event.name}</ItemTitle>
                     </ItemContent>

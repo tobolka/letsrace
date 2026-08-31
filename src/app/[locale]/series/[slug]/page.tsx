@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
-import { eventMapPath } from "@/lib/event-url";
+import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { eventPagePath } from "@/lib/event-url";
 import { BrandMark } from "@/components/brand-mark";
+import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -24,13 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const data = await getSeriesBySlug(slug);
   if (!data) return { title: "Series not found", robots: { index: false } };
-  const title = `${data.series.name} · ${SITE_NAME}`;
+  const copy = hubCopy[locale];
+  const heading = fillCopy(copy.seriesTitle, { name: data.series.name });
+  const title = `${heading} · ${SITE_NAME}`;
   const description =
     data.series.description ||
-    `${data.events.length} races in ${data.series.name} on ${SITE_NAME}.`;
+    fillCopy(copy.series, { name: data.series.name, count: data.events.length });
   const url = absoluteUrl(`/${locale}/series/${slug}`);
   return {
-    title: data.series.name,
+    title: heading,
     description,
     alternates: { canonical: url, languages: localeAlternates(`series/${slug}`) },
     openGraph: { title, description, url, siteName: SITE_NAME },
@@ -46,8 +49,26 @@ export default async function SeriesPage({ params }: Props) {
   const t = messages[locale];
   const upcoming = data.events.filter((e) => e.startDate >= new Date().toISOString().slice(0, 10));
 
+  const copy = hubCopy[locale];
+  const heading = fillCopy(copy.seriesTitle, { name: data.series.name });
+
   return (
     <main className="min-h-[100dvh] bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
+      <HubJsonLd
+        locale={locale}
+        title={heading}
+        description={
+          data.series.description ||
+          fillCopy(copy.series, { name: data.series.name, count: data.events.length })
+        }
+        path={`series/${slug}`}
+        events={upcoming.map((e) => ({
+          name: e.name,
+          slug: e.slug,
+          startDate: e.startDate,
+          place: e.location?.municipality ?? e.location?.name ?? null,
+        }))}
+      />
       <div className="mx-auto max-w-2xl py-8">
         <Button asChild variant="ghost" size="sm" className="-ml-2">
           <Link href={`/${locale}`}>{SITE_NAME}</Link>
@@ -66,7 +87,7 @@ export default async function SeriesPage({ params }: Props) {
           <ItemGroup>
             {(upcoming.length ? upcoming : data.events).map((event) => (
               <Item key={event.id} asChild size="sm" className="rounded-none border-x-0 border-t-0">
-                <Link href={eventMapPath(locale, event)}>
+                <Link href={eventPagePath(locale, event.slug)}>
                   <ItemContent>
                     <ItemTitle>{event.name}</ItemTitle>
                   </ItemContent>

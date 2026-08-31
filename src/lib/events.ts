@@ -454,6 +454,37 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
 });
 
 /** Upcoming public races for sitemap (capped). */
+/**
+ * Series with a race still to come — the hubs worth indexing.
+ *
+ * These pages have existed all along and were absent from the sitemap, so 122
+ * ready-made landing pages had no way in. A series whose season is over is left
+ * out: an empty page earns nothing and dilutes the rest.
+ */
+export async function listSitemapSeries(
+  limit = 500,
+): Promise<{ slug: string; updatedAt: string | null }[]> {
+  const supabase = createServerSupabase();
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from("series")
+    .select("slug, updated_at, events!inner(id, visibility, start_date)")
+    .eq("visibility", "public")
+    .eq("events.visibility", "public")
+    .gte("events.start_date", today)
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  const seen = new Set<string>();
+  const out: { slug: string; updatedAt: string | null }[] = [];
+  for (const row of data ?? []) {
+    const slug = row.slug as string;
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push({ slug, updatedAt: (row.updated_at as string) ?? null });
+  }
+  return out;
+}
+
 export async function listSitemapEvents(limit = 4000): Promise<
   { slug: string; startDate: string; updatedAt: string | null }[]
 > {

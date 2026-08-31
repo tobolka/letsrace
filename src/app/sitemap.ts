@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { defaultLocale, locales } from "@/lib/i18n/messages";
-import { listSitemapEvents } from "@/lib/events";
+import { listSitemapEvents, listSitemapSeries } from "@/lib/events";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { absoluteUrl, getSiteUrl } from "@/lib/seo";
 
@@ -27,8 +27,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  for (const code of ["CZ", "SK", "PL", "DE", "AT", "IT", "FR", "CH"] as const) {
-    if (!PUBLIC_COUNTRY_CODES.includes(code)) continue;
+  // Every covered market, not a hardcoded eight — nineteen of the twenty-seven
+  // countries holding upcoming races had no way into the index.
+  for (const code of PUBLIC_COUNTRY_CODES) {
     const path = `c/${code.toLowerCase()}`;
     entries.push({
       url: absoluteUrl(`/${defaultLocale}/${path}`),
@@ -41,6 +42,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ),
       },
     });
+  }
+
+  try {
+    const series = await listSitemapSeries();
+    for (const s of series) {
+      const path = `series/${s.slug}`;
+      entries.push({
+        url: absoluteUrl(`/${defaultLocale}/${path}`),
+        lastModified: s.updatedAt ? new Date(s.updatedAt) : now,
+        changeFrequency: "weekly",
+        priority: 0.6,
+        alternates: {
+          languages: Object.fromEntries(locales.map((l) => [l, absoluteUrl(`/${l}/${path}`)])),
+        },
+      });
+    }
+  } catch {
+    // A series outage must not take the event URLs down with it.
   }
 
   try {
