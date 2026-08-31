@@ -8,6 +8,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
+import { WebMcpTools } from "@/components/agent/webmcp-tools";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 import "./globals.css";
 
@@ -70,10 +71,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       lang={lang}
       className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable} h-full`}
     >
+      <head>
+        <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+      </head>
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <TooltipProvider>
           <NuqsAdapter>{children}</NuqsAdapter>
         </TooltipProvider>
+        <WebMcpTools />
         <Toaster />
         <Analytics />
         <SpeedInsights />
