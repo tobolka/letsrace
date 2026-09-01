@@ -40,7 +40,10 @@ export function WelcomeCard({
       seen = false;
     }
     if (seen) return;
-    const t = window.setTimeout(() => setShow(true), 900);
+    // The photograph in this card is the largest thing the page paints, so
+    // whatever this timer is, the Largest Contentful Paint cannot beat it. Long
+    // enough not to slam in over the map, short enough not to be the metric.
+    const t = window.setTimeout(() => setShow(true), 200);
     return () => window.clearTimeout(t);
   }, []);
 
