@@ -81,9 +81,10 @@ export function WelcomeCard({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/intro-race.webp"
+        srcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
         alt=""
-        width={704}
-        height={224}
+        width={352}
+        height={112}
         className="h-24 w-full object-cover md:h-28"
       />
       <Button

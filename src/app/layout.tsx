@@ -108,7 +108,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           appeared — 2.3s of the 2.6s LCP was that wait. Twenty-two kilobytes,
           cached for a year, bought back in the preload scanner's first pass.
         */}
-        <link rel="preload" as="image" href="/intro-race.webp" fetchPriority="high" />
+        <link
+          rel="preload"
+          as="image"
+          href="/intro-race.webp"
+          imageSrcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
+          fetchPriority="high"
+        />
       </head>
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <TooltipProvider>
