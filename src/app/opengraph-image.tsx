@@ -18,30 +18,16 @@ const geistRegular = readFileSync(join(fontDir, "Geist-Regular.ttf"));
 
 /**
  * The share card has to answer "what is this?" in the second before someone
- * scrolls past. The old one was a wordmark and a sentence on flat charcoal,
- * which reads as any startup; this shows the thing itself — a map strewn with
- * races, colour-coded by discipline the way the app colours its pins.
+ * scrolls past. A wordmark on flat charcoal reads as any startup; a rider mid-
+ * blur through a sunlit forest reads as bike racing before a word is read.
+ *
+ * Satori has no gradient worth the name, so the photo carries the whole frame
+ * and the copy sits on a flat scrim over its left — legible without fighting
+ * the picture.
  */
-/**
- * Pins live in the right-hand band only. Satori has no real gradient support,
- * so text and map are separated by layout rather than by a fade — anything
- * behind the headline just fights it.
- */
-const PINS = [
-  { x: 60, y: 84, c: "#22c55e", r: 15 },
-  { x: 168, y: 178, c: "#3b82f6", r: 11 },
-  { x: 246, y: 62, c: "#f59e0b", r: 13 },
-  { x: 96, y: 286, c: "#22c55e", r: 10 },
-  { x: 300, y: 232, c: "#e11d2e", r: 20 },
-  { x: 178, y: 366, c: "#3b82f6", r: 12 },
-  { x: 372, y: 132, c: "#22c55e", r: 14 },
-  { x: 60, y: 432, c: "#a855f7", r: 11 },
-  { x: 396, y: 320, c: "#f59e0b", r: 13 },
-  { x: 288, y: 440, c: "#3b82f6", r: 10 },
-  { x: 130, y: 520, c: "#22c55e", r: 16 },
-  { x: 388, y: 508, c: "#e11d2e", r: 12 },
-  { x: 250, y: 560, c: "#3b82f6", r: 9 },
-];
+const photo = readFileSync(join(process.cwd(), "public/og-race.jpg"));
+const photoSrc = `data:image/jpeg;base64,${photo.toString("base64")}`;
+
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -51,18 +37,33 @@ export default function OpenGraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
+          position: "relative",
           background: "#1c1917",
           color: "#fafaf9",
           fontFamily: "Geist",
         }}
       >
+        <img
+          src={photoSrc}
+          alt=""
+          width={size.width}
+          height={size.height}
+          style={{ position: "absolute", left: 0, top: 0, objectFit: "cover" }}
+        />
         <div
           style={{
-            width: 740,
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "100%",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
             padding: 72,
+            // Even darkening rather than a panel: a scrim wide enough to hold
+            // the headline also swallowed the rider, who is the whole point.
+            background: "rgba(18, 16, 14, 0.55)",
           }}
         >
           <div
@@ -78,10 +79,10 @@ export default function OpenGraphImage() {
           >
             Let&apos;s Race
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 22, width: 760 }}>
             <div
               style={{
-                fontSize: 64,
+                fontSize: 62,
                 fontWeight: 700,
                 lineHeight: 1.05,
                 letterSpacing: "-0.035em",
@@ -89,37 +90,11 @@ export default function OpenGraphImage() {
             >
               Every cycling race, on one map
             </div>
-            <div style={{ fontSize: 27, color: "#a8a29e", lineHeight: 1.35 }}>
+            <div style={{ fontSize: 26, color: "#c9c3bd", lineHeight: 1.35 }}>
               Road · gravel · MTB · cyclocross · kids, across Central Europe.
               Plan the season for yourself, your family or your team.
             </div>
           </div>
-        </div>
-
-        <div
-          style={{
-            position: "relative",
-            width: 460,
-            display: "flex",
-            background: "#231f1d",
-            borderLeft: "1px solid #332e2b",
-          }}
-        >
-          {PINS.map((p, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                left: p.x,
-                top: p.y,
-                width: p.r * 2,
-                height: p.r * 2,
-                borderRadius: p.r * 2,
-                background: p.c,
-                display: "flex",
-              }}
-            />
-          ))}
         </div>
       </div>
     ),
