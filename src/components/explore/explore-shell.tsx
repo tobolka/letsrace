@@ -236,8 +236,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    * scroll its card into view.
    */
   const [visibleCount, setVisibleCount] = useState(LIST_WINDOW);
-  const listEndRef = useRef<HTMLDivElement>(null);
-  const mobileListEndRef = useRef<HTMLDivElement>(null);
 
   // A new result set starts the window over. Adjusting during render rather
   // than in an effect avoids a pass where the old window is applied to new
@@ -261,26 +259,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     if (effectiveCount >= sortedEvents.length) return;
     const grow = () =>
       setVisibleCount((prev) => (prev >= sortedEvents.length ? prev : prev + LIST_WINDOW));
-    // Both lists are in the DOM at all times and only one is laid out, so the
-    // hidden one's sentinel would otherwise read as permanently on screen and
-    // pull the whole catalogue in at once. Watch each sentinel inside its own
-    // scroller, and only while that scroller has a height.
-    const observers = [
-      [listRef.current, listEndRef.current] as const,
-      [mobileListRef.current, mobileListEndRef.current] as const,
-    ]
-      .filter(([root, end]) => root && end && root.offsetHeight > 0)
-      .map(([root, end]) => {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            if (entries.some((e) => e.isIntersecting)) grow();
-          },
-          { root, rootMargin: "600px" },
-        );
-        observer.observe(end!);
-        return observer;
-      });
-    return () => observers.forEach((o) => o.disconnect());
+    // Growth follows actual scrolling rather than an observer. Both lists live
+    // in the DOM at once and the hidden one still has a height, so a sentinel
+    // there reads as on screen and would pull the whole catalogue in without
+    // anyone asking; a list nobody scrolls never fires this.
+    const onScroll = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 600) grow();
+    };
+    const scrollers = [listRef.current, mobileListRef.current].filter(
+      (el): el is HTMLDivElement => el != null,
+    );
+    for (const el of scrollers) el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      for (const el of scrollers) el.removeEventListener("scroll", onScroll);
+    };
   }, [effectiveCount, sortedEvents.length]);
 
   const visibleEvents = useMemo(
@@ -830,7 +823,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     onClick={() => selectEvent(event.id)}
                   />
                 ))}
-                <div ref={listEndRef} aria-hidden />
               </ItemGroup>
             )}
           </div>
@@ -1022,7 +1014,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         }}
                       />
                     ))}
-                    <div ref={mobileListEndRef} aria-hidden />
                   </ItemGroup>
                 )}
             </div>
