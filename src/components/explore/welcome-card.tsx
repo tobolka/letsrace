@@ -82,8 +82,8 @@ export function WelcomeCard({
       <img
         src="/intro-race.webp"
         alt=""
-        width={700}
-        height={262}
+        width={704}
+        height={224}
         className="h-24 w-full object-cover md:h-28"
       />
       <Button
