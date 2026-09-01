@@ -786,8 +786,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 ) : null}
                 {listSettled
                   ? sortedEvents.map((event) => (
+                  <div role="listitem" key={event.id} className="border-b last:border-b-0">
                   <EventCard
-                    key={event.id}
                     event={event}
                     messages={messages}
                     locale={locale}
@@ -795,6 +795,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     active={event.id === selectedId}
                     onClick={() => selectEvent(event.id)}
                   />
+                  </div>
                     ))
                   : null}
               </ItemGroup>
@@ -975,8 +976,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   <ItemGroup>
                     {!listSettled ? <ListSkeleton rows={8} compact /> : null}
                     {listSettled && sortedEvents.map((event) => (
+                      <div role="listitem" key={event.id} className="border-b last:border-b-0">
                       <EventCard
-                        key={event.id}
                         event={event}
                         messages={messages}
                         locale={locale}
@@ -988,6 +989,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                           setMobilePanel("detail");
                         }}
                       />
+                      </div>
                     ))}
                   </ItemGroup>
                 )}
@@ -1231,6 +1233,7 @@ function ListSkeleton({ rows, compact }: { rows: number; compact?: boolean }) {
         <div
           key={i}
           aria-hidden
+          role="listitem"
           className="flex h-[90px] animate-pulse flex-col justify-center gap-2 border-b px-4 last:border-b-0"
         >
           {compact ? null : <div className="h-2.5 w-28 rounded bg-muted" />}
@@ -1305,7 +1308,9 @@ function EventCard({
       asChild
       size="sm"
       variant={active ? "muted" : "default"}
-      className="rounded-none border-0 shadow-[inset_0_-1px_0_0_var(--border)] last:shadow-none hover:bg-accent/50"
+      // The dividing line lives on the listitem wrapper now — inside it this
+      // button is always the last child, so `last:` here would never not match.
+      className="rounded-none border-0 hover:bg-accent/50"
     >
       <button
         type="button"

@@ -53,6 +53,18 @@ function DrawerHandle({
     <DrawerPrimitive.Handle
       data-slot="drawer-handle"
       aria-hidden={false}
+      /**
+       * The handle is dragged or tapped to open the sheet, so it is a control
+       * and needs to say so: `aria-label` is not allowed on a bare div, and
+       * without a role a keyboard never reaches it either.
+       */
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        e.currentTarget.click();
+      }}
       className={cn(
         // Compact grabber; hit area via padding, not a tall empty block.
         "mx-auto mt-1.5 mb-1 flex w-full max-w-none items-center justify-center bg-transparent py-1.5",
