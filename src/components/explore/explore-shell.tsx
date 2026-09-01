@@ -740,7 +740,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           </div>
           <Separator />
           <ListToolbar
-            count={events.length}
+            count={listSettled ? events.length : null}
             pending={listLoading}
             sort={listSort}
             distanceEnabled={distanceEnabled}
@@ -1047,7 +1047,7 @@ function ListToolbar({
   messages,
   onSort,
 }: {
-  count: number;
+  count: number | null;
   pending: boolean;
   sort: EventSort;
   distanceEnabled: boolean;
@@ -1076,7 +1076,9 @@ function ListToolbar({
         aria-live="polite"
         aria-busy={pending}
       >
-        {count} {messages.racesCount}
+        {/* The server's list is a stand-in until the map fetches its own, so
+            its length is not a count of anything worth showing. */}
+        {count == null ? messages.racesCount : `${count} ${messages.racesCount}`}
         <span className="inline-flex size-4 shrink-0 items-center justify-center" aria-hidden={!pending}>
           {pending ? <Spinner className="size-3.5" /> : null}
         </span>

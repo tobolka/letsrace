@@ -62,8 +62,18 @@ export default async function LocalePage({
     levels: many("levels"),
     q: one("q"),
   });
+  /**
+   * The list is placeholders until the map settles on its real bounds and
+   * fetches its own set, so everything sent here beyond the first screen is
+   * serialised into the page, hydrated, and thrown away — it was 257 KB of the
+   * 273 KB document. What is still worth sending is enough pins for the map's
+   * first paint, a list to fall back on if the map never loads, and the race
+   * someone followed a link to.
+   */
+  const INITIAL_LIST = 40;
+  const head = events.slice(0, INITIAL_LIST);
   const initialEvents =
-    focused && !events.some((e) => e.id === focused.id) ? [focused, ...events] : events;
+    focused && !head.some((e) => e.id === focused.id) ? [focused, ...head] : head;
 
   return (
     <Suspense
