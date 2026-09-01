@@ -7,7 +7,6 @@ import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/com
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor } from "@/lib/i18n/messages";
 
 function GoogleMark() {
@@ -31,6 +30,16 @@ function GoogleMark() {
       />
     </svg>
   );
+}
+
+/**
+ * Loaded on submit rather than imported, so the auth client does not ride along
+ * with the map on every first visit. Both entry points here are already async
+ * and already show a spinner while they work.
+ */
+async function browserSupabase() {
+  const { createBrowserSupabase } = await import("@/lib/supabase/browser");
+  return createBrowserSupabase();
 }
 
 export function AuthForm({
@@ -61,7 +70,7 @@ export function AuthForm({
     setBusy("google");
     setError("");
     setInfo("");
-    const supabase = createBrowserSupabase();
+    const supabase = await browserSupabase();
     const origin = window.location.origin;
     const next = `${window.location.pathname}${window.location.search}`;
     const { error: err } = await supabase.auth.signInWithOAuth({
@@ -82,7 +91,7 @@ export function AuthForm({
     setBusy("email");
     setError("");
     setInfo("");
-    const supabase = createBrowserSupabase();
+    const supabase = await browserSupabase();
     const emailValue = email.trim();
 
     if (mode === "register") {

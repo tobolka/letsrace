@@ -44,6 +44,19 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
   },
+  async redirects() {
+    return [
+      // The canonical host is the apex — it is what `NEXT_PUBLIC_SITE_URL`,
+      // the canonical tags and robots.txt all name. Serving the same pages on
+      // www as well split every page into two URLs for search engines.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.letsrace.cz" }],
+        destination: "https://letsrace.cz/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

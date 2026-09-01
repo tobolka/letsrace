@@ -72,6 +72,9 @@ import {
   type EventSort,
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
+
+/** Rows built on load, and the step the list grows by as it is scrolled. */
+const LIST_WINDOW = 40;
 import { format, parseISO } from "date-fns";
 import { MoreHorizontal, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -225,6 +228,59 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     [events, listSort, userOrigin],
   );
 
+  /**
+   * A viewport over central Europe routinely holds a couple of hundred races,
+   * and every one of them used to be built and hydrated on load to fill a list
+   * that shows about ten at a time. The window grows as the list is scrolled,
+   * and always covers the selected race so that clicking a map pin can still
+   * scroll its card into view.
+   */
+  const [visibleCount, setVisibleCount] = useState(LIST_WINDOW);
+
+  // A new result set starts the window over. Adjusting during render rather
+  // than in an effect avoids a pass where the old window is applied to new
+  // events.
+  const [windowedEvents, setWindowedEvents] = useState(sortedEvents);
+  if (windowedEvents !== sortedEvents) {
+    setWindowedEvents(sortedEvents);
+    setVisibleCount(LIST_WINDOW);
+  }
+
+  const selectedIndex = useMemo(
+    () => (selectedId ? sortedEvents.findIndex((e) => e.id === selectedId) : -1),
+    [selectedId, sortedEvents],
+  );
+  // A race picked on the map may sit past the window; widen to reach it so its
+  // card exists for the scroll below.
+  const effectiveCount =
+    selectedIndex >= visibleCount ? selectedIndex + LIST_WINDOW : visibleCount;
+
+  useEffect(() => {
+    if (effectiveCount >= sortedEvents.length) return;
+    const grow = () =>
+      setVisibleCount((prev) => (prev >= sortedEvents.length ? prev : prev + LIST_WINDOW));
+    // Growth follows actual scrolling rather than an observer. Both lists live
+    // in the DOM at once and the hidden one still has a height, so a sentinel
+    // there reads as on screen and would pull the whole catalogue in without
+    // anyone asking; a list nobody scrolls never fires this.
+    const onScroll = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 600) grow();
+    };
+    const scrollers = [listRef.current, mobileListRef.current].filter(
+      (el): el is HTMLDivElement => el != null,
+    );
+    for (const el of scrollers) el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      for (const el of scrollers) el.removeEventListener("scroll", onScroll);
+    };
+  }, [effectiveCount, sortedEvents.length]);
+
+  const visibleEvents = useMemo(
+    () => sortedEvents.slice(0, effectiveCount),
+    [sortedEvents, effectiveCount],
+  );
+
   function handleUserLocation(pos: { lat: number; lng: number }) {
     setUserOrigin((prev) => {
       if (!prev) return pos;
@@ -263,7 +319,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       });
       break;
     }
-  }, [selectedId]);
+    // `effectiveCount` is a dependency because selecting a race further down
+    // the list widens the window first; without it this would run against a
+    // card that has not been built yet and quietly scroll nowhere.
+  }, [selectedId, effectiveCount]);
 
   function toggleCategory(value: string) {
     const next = filters.categories.includes(value)
@@ -753,7 +812,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </Empty>
             ) : (
               <ItemGroup>
-                {sortedEvents.map((event) => (
+                {visibleEvents.map((event) => (
                   <EventCard
                     key={event.id}
                     event={event}
@@ -940,7 +999,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   </Empty>
                 ) : (
                   <ItemGroup>
-                    {sortedEvents.map((event) => (
+                    {visibleEvents.map((event) => (
                       <EventCard
                         key={event.id}
                         event={event}

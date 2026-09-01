@@ -25,7 +25,6 @@ import {
   type UciClass,
 } from "@/lib/taxonomy";
 import { disciplineColor } from "@/lib/map-visuals";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { AuthDialog } from "@/components/account/auth-dialog";
 import { RacePlanControls } from "@/components/account/race-plan-controls";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +59,16 @@ type Member = {
 };
 
 type Attendance = AttendanceRecord;
+
+/**
+ * The auth client weighs a quarter of a megabyte and this panel only needs it
+ * once someone opens a race, so it is fetched on demand instead of riding along
+ * with the first load of the map.
+ */
+async function browserSupabase() {
+  const { createBrowserSupabase } = await import("@/lib/supabase/browser");
+  return createBrowserSupabase();
+}
 
 /** Must match the desktop list card in explore-shell (width + overlay padding + gap). */
 const DEFAULT_X = 12 + 400 + 12;
@@ -179,7 +188,7 @@ export function EventDetailPanel({
   }, []);
 
   async function loadUserState(uid: string) {
-    const supabase = createBrowserSupabase();
+    const supabase = await browserSupabase();
     const [{ data: mems }, { data: fav }, { data: att }] = await Promise.all([
       supabase.from("family_members").select("*").eq("user_id", uid).order("created_at"),
       supabase
@@ -201,8 +210,8 @@ export function EventDetailPanel({
   }
 
   useEffect(() => {
-    const supabase = createBrowserSupabase();
     void (async () => {
+      const supabase = await browserSupabase();
       const { data: auth } = await supabase.auth.getUser();
       const uid = auth.user?.id ?? null;
       setUserId(uid);
@@ -229,7 +238,7 @@ export function EventDetailPanel({
       return;
     }
     setBusy(true);
-    const supabase = createBrowserSupabase();
+    const supabase = await browserSupabase();
     const next = await setMemberPlanStatus({
       supabase,
       userId: uid,
@@ -246,7 +255,7 @@ export function EventDetailPanel({
 
   async function onAuthSuccess() {
     const shouldSetGoing = pendingAction;
-    const supabase = createBrowserSupabase();
+    const supabase = await browserSupabase();
     const { data: auth } = await supabase.auth.getUser();
     const uid = auth.user?.id ?? null;
     setUserId(uid);

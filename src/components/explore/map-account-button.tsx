@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CalendarCheck, LogIn, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 /**
  * The account, where someone would look for it.
@@ -26,17 +25,27 @@ export function MapAccountButton({
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const supabase = createBrowserSupabase();
     let alive = true;
-    void supabase.auth.getUser().then(({ data }) => {
-      if (alive) setAuthed(Boolean(data.user));
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (alive) setAuthed(Boolean(session?.user));
-    });
+    let unsubscribe: (() => void) | undefined;
+    // The auth client is a quarter of a megabyte and nothing on screen needs it
+    // until we know who is signed in, so it is fetched after the page is up
+    // rather than shipped with it.
+    void (async () => {
+      const { createBrowserSupabase } = await import("@/lib/supabase/browser");
+      if (!alive) return;
+      const supabase = createBrowserSupabase();
+      const { data } = await supabase.auth.getUser();
+      if (!alive) return;
+      setAuthed(Boolean(data.user));
+      const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+        if (alive) setAuthed(Boolean(session?.user));
+      });
+      unsubscribe = () => sub.subscription.unsubscribe();
+      if (!alive) unsubscribe();
+    })();
     return () => {
       alive = false;
-      sub.subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, []);
 
