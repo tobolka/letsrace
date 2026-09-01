@@ -157,6 +157,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [authOpen, setAuthOpen] = useState(false);
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
   const [listLoading, setListLoading] = useState(false);
+  /**
+   * The server renders a guess at the list; the map then settles on its real
+   * bounds and the list is fetched again, and the two sets are not the same.
+   * Swapping one for the other lifted the rows by five cards' worth and was the
+   * whole of this page's layout shift, so the rows are placeholders until the
+   * real set lands. If the map never reports bounds, the guess is shown anyway.
+   */
+  const [listSettled, setListSettled] = useState(false);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const mobileListRef = useRef<HTMLDivElement>(null);
@@ -227,6 +235,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     () => sortEvents(events, listSort, userOrigin),
     [events, listSort, userOrigin],
   );
+
+  useEffect(() => {
+    if (listSettled) return;
+    const t = window.setTimeout(() => setListSettled(true), 2500);
+    return () => window.clearTimeout(t);
+  }, [listSettled]);
 
   function handleUserLocation(pos: { lat: number; lng: number }) {
     setUserOrigin((prev) => {
@@ -417,7 +431,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         });
         if (overrides.fitMap) setFitSeq((n) => n + 1);
       } finally {
-        if (gen === eventsFetchGen.current) setListLoading(false);
+        if (gen === eventsFetchGen.current) {
+          setListLoading(false);
+          setListSettled(true);
+        }
       }
     })();
   }
@@ -756,7 +773,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </Empty>
             ) : (
               <ItemGroup>
-                {sortedEvents.map((event) => (
+                {!listSettled ? (
+                  <ListSkeleton rows={8} />
+                ) : null}
+                {listSettled
+                  ? sortedEvents.map((event) => (
                   <EventCard
                     key={event.id}
                     event={event}
@@ -766,7 +787,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     active={event.id === selectedId}
                     onClick={() => selectEvent(event.id)}
                   />
-                ))}
+                    ))
+                  : null}
               </ItemGroup>
             )}
           </div>
@@ -943,7 +965,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   </Empty>
                 ) : (
                   <ItemGroup>
-                    {sortedEvents.map((event) => (
+                    {!listSettled ? <ListSkeleton rows={8} compact /> : null}
+                    {listSettled && sortedEvents.map((event) => (
                       <EventCard
                         key={event.id}
                         event={event}
@@ -1186,6 +1209,26 @@ function ExploreMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+/** Placeholder rows at the exact height of a card, so the real list drops in
+ *  without moving anything. */
+function ListSkeleton({ rows, compact }: { rows: number; compact?: boolean }) {
+  return (
+    <>
+      {Array.from({ length: rows }, (_, i) => (
+        <div
+          key={i}
+          aria-hidden
+          className="flex h-[90px] animate-pulse flex-col justify-center gap-2 border-b px-4 last:border-b-0"
+        >
+          {compact ? null : <div className="h-2.5 w-28 rounded bg-muted" />}
+          <div className="h-3.5 w-2/3 rounded bg-muted" />
+          <div className="h-3 w-1/2 rounded bg-muted" />
+        </div>
+      ))}
+    </>
   );
 }
 
