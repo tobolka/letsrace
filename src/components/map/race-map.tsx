@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Map, Marker, PaddingOptions, Popup } from "maplibre-gl";
+import type { Map, Marker, PaddingOptions, Popup, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
@@ -61,9 +61,32 @@ type Props = {
 };
 
 const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
-const MAP_STYLE = cartoKey
-  ? `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=${encodeURIComponent(cartoKey)}`
-  : "https://tiles.openfreemap.org/styles/liberty";
+
+/**
+ * Voyager as raster rather than vector.
+ *
+ * The design is the same one Carto renders from — the map looks as it did. What
+ * goes away is the work: a vector tile at this zoom is 125-209 KB that has to be
+ * decoded and drawn through ninety-three layers with label collision on the main
+ * thread, where the raster equivalent is about 30 KB the browser simply paints.
+ *
+ * The cost is that labels are baked in, so they no longer rotate with the map,
+ * and zooming between levels is briefly soft.
+ */
+const MAP_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    carto: {
+      type: "raster",
+      tiles: ["https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{ratio}.png"],
+      tileSize: 256,
+      maxzoom: 20,
+      attribution:
+        '&copy; <a href="https://carto.com/attributions">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [{ id: "carto", type: "raster", source: "carto" }],
+};
 
 function hideMarineNames(map: Map) {
   for (const id of ["watername_ocean", "watername_sea"]) {
