@@ -43,7 +43,9 @@ const SEZNAM_VERIFICATION = "5ixYWYYeiOTVCgKPzlpbV8K9oBN2TEJD";
 export const metadata: Metadata = {
   metadataBase: new URL(site),
   title: {
-    default: en.title,
+    // `default` is used verbatim, so it carries the brand itself; every other
+    // page gets it from the template and must not repeat it.
+    default: `${en.title} · ${SITE_NAME}`,
     template: `%s · ${SITE_NAME}`,
   },
   description: en.description,

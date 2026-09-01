@@ -5,7 +5,13 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { seoCopy } from "@/lib/seo";
 
 export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+/**
+ * JPEG, not the PNG next/og hands back. The card is mostly a photograph, which
+ * is the one thing PNG cannot compress: the same image was 1.2 MB as PNG and is
+ * a tenth of that as JPEG. Scrapers fetch this on every share and some refuse
+ * anything over a megabyte.
+ */
+export const contentType = "image/jpeg";
 
 export function resolveOgLocale(raw?: string): Locale {
   return locales.includes(raw as Locale) ? (raw as Locale) : defaultLocale;
@@ -49,7 +55,7 @@ export default async function HomeOpenGraphImage({
   const headline = messages[locale].introTitle;
   const subline = seoCopy[locale].description;
 
-  return new ImageResponse(
+  const png = new ImageResponse(
     (
       <div
         style={{
@@ -123,4 +129,17 @@ export default async function HomeOpenGraphImage({
       ],
     },
   );
+
+  const { default: sharp } = await import("sharp");
+  const jpeg = await sharp(Buffer.from(await png.arrayBuffer()))
+    .jpeg({ quality: 82, mozjpeg: true })
+    .toBuffer();
+
+  return new Response(new Uint8Array(jpeg), {
+    headers: {
+      "Content-Type": contentType,
+      // The card only changes when the copy does, and scrapers re-fetch often.
+      "Cache-Control": "public, max-age=86400, s-maxage=604800, immutable",
+    },
+  });
 }

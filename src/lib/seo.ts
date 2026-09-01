@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { locales, type Locale } from "@/lib/i18n/messages";
+import { locales, messages, type Locale } from "@/lib/i18n/messages";
 
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
-export const DEFAULT_OG_ALT = "Let's Race — cycling races on the map";
+export const DEFAULT_OG_ALT = `${messages.en.introTitle} · Let's Race`;
 export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
 
 /** Locale home pages use `generateImageMetadata` with id `default`. */
@@ -27,32 +27,52 @@ export const SITE_AUTHOR = {
   email: "tobolka@gmail.com",
 } as const;
 
+/**
+ * One message, everywhere.
+ *
+ * The site said three different things in three places: a search result
+ * promised a "map-first calendar", the share card promised "every cycling race
+ * on one map", and the card that greets a first visit promised a season planned
+ * for a family or a team. These are the words from that last one, because it is
+ * the one that says what the site is actually for — the map is how you find a
+ * race, the plan is why you would stay.
+ *
+ * The shape is the same in every language: what kind of racing, where, and what
+ * you can do with it. Titles stay under sixty characters so search shows them
+ * whole, descriptions under about a hundred and sixty for the same reason.
+ */
 export const seoCopy: Record<
   Locale,
   { title: string; description: string; ogLocale: string }
 > = {
   en: {
-    title: "Let's Race — cycling races on the map",
+    /**
+     * The title is the intro card's headline, not a copy of it — read from the
+     * same place so the two cannot drift apart again. The brand is added by the
+     * template in the root layout rather than written in here, which is why
+     * this used to read "Let's Race — ... · Let's Race" in a browser tab.
+     */
+    title: messages.en.introTitle,
     description:
-      "Map-first calendar of cycling races across Central Europe — road, gravel, MTB, CX, and kids races.",
+      "Road, gravel, MTB, cyclocross and kids' races across Central Europe. Plan the season for yourself, your family or your team.",
     ogLocale: "en_GB",
   },
   cs: {
-    title: "Let's Race — cyklistické závody na mapě",
+    title: messages.cs.introTitle,
     description:
-      "Mapový kalendář cyklistických závodů ve střední Evropě — silnice, gravel, MTB, CX i dětské závody.",
+      "Silnice, gravel, MTB, cyklokros i dětské závody napříč střední Evropou. Naplánuj sezónu sobě, rodině nebo týmu.",
     ogLocale: "cs_CZ",
   },
   pl: {
-    title: "Let's Race — wyścigi rowerowe na mapie",
+    title: messages.pl.introTitle,
     description:
-      "Kalendarz wyścigów rowerowych na mapie Europy Środkowej — szosa, gravel, MTB, CX i wyścigi dla dzieci.",
+      "Szosa, gravel, MTB, przełaje i wyścigi dla dzieci w Europie Środkowej. Zaplanuj sezon dla siebie, rodziny lub drużyny.",
     ogLocale: "pl_PL",
   },
   sk: {
-    title: "Let's Race — cyklistické preteky na mape",
+    title: messages.sk.introTitle,
     description:
-      "Mapový kalendár cyklistických pretekov v strednej Európe — cesta, gravel, MTB, CX aj detské preteky.",
+      "Cesta, gravel, MTB, cyklokros aj detské preteky naprieč strednou Európou. Naplánuj sezónu sebe, rodine alebo tímu.",
     ogLocale: "sk_SK",
   },
 };
