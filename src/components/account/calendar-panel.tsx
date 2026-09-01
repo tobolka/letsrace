@@ -8,6 +8,7 @@ import { CalendarDays, List, MapPin } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
 import { PlanRaceCard } from "@/components/account/plan-race-card";
 import { PlanTable } from "@/components/account/plan-table";
+import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
@@ -47,10 +48,12 @@ import {
   type PlannerMember,
 } from "@/lib/planner";
 import {
+  ensureFavorite,
   removeFromPlan,
   setMemberPlanStatus,
   type AttendanceRecord,
 } from "@/lib/planner-db";
+import type { SuggestionContext } from "@/lib/plan-suggestions";
 
 const EVENT_EMBED =
   "id, name, start_date, end_date, slug, level, class_label, disciplines, registration_url, website_url, location:locations(name, municipality, country_code)";
@@ -119,6 +122,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const [busyWeekdays, setBusyWeekdays] = useState<number[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
+  const [suggestCtx, setSuggestCtx] = useState<SuggestionContext | null>(null);
   const [nearby, setNearby] = useState<
     { id: string; name: string; startDate: string; slug: string; km: number | null }[]
   >([]);
@@ -195,7 +199,39 @@ export function CalendarPanel({ locale }: { locale: string }) {
     setAttendanceByEvent(nextAtt);
     setBusyWeekdays(parseWeekdays(prefs?.busy_weekdays));
 
-    const { data: alertIds } = await supabase.from("race_alerts").select("id").eq("user_id", auth.user.id);
+    // What the ranker needs: where they said they are, and what they have
+    // actually ridden — series to continue and disciplines they turn up for.
+    const [{ data: alertRows }, { data: ridden }] = await Promise.all([
+      supabase
+        .from("race_alerts")
+        .select("id, lat, lng, radius_km")
+        .eq("user_id", auth.user.id)
+        .eq("enabled", true),
+      supabase
+        .from("event_attendance")
+        .select("event:events(series_id, disciplines)")
+        .eq("user_id", auth.user.id),
+    ]);
+    const home = (alertRows ?? []).find((a) => a.lat != null && a.lng != null);
+    const riddenSeriesIds = new Set<string>();
+    const riddenDisciplines = new Set<string>();
+    for (const row of (ridden ?? []) as unknown as {
+      event: { series_id: string | null; disciplines: string[] | null } | { series_id: string | null; disciplines: string[] | null }[] | null;
+    }[]) {
+      const ev = unwrap(row.event);
+      if (!ev) continue;
+      if (ev.series_id) riddenSeriesIds.add(ev.series_id);
+      for (const d of ev.disciplines ?? []) riddenDisciplines.add(d);
+    }
+    setSuggestCtx({
+      home: home ? { lat: Number(home.lat), lng: Number(home.lng) } : null,
+      radiusKm: Number(home?.radius_km ?? 60),
+      riddenSeriesIds,
+      riddenDisciplines,
+      plannedEventIds: new Set(Object.keys(nextEvents)),
+    });
+
+    const alertIds = alertRows;
     if (alertIds && alertIds.length > 0) {
       const since = new Date();
       since.setDate(since.getDate() - 14);
@@ -374,6 +410,22 @@ export function CalendarPanel({ locale }: { locale: string }) {
         <p className="max-w-xl text-sm text-muted-foreground">{t.planSubtitle}</p>
         <p className="text-sm tabular-nums text-foreground">{summary}</p>
       </header>
+
+      {currentWeekend && thisWeekend.length === 0 && !thisWeekendBusy && suggestCtx ? (
+        <FreeWeekendSuggestions
+          locale={locale}
+          saturday={currentWeekend.saturday}
+          sunday={currentWeekend.sunday}
+          context={suggestCtx}
+          onAdd={async (eventId) => {
+            const supabase = createBrowserSupabase();
+            const { data: auth } = await supabase.auth.getUser();
+            if (!auth.user) return;
+            await ensureFavorite(supabase, auth.user.id, eventId, false);
+            await load();
+          }}
+        />
+      ) : null}
 
       {nearby.length > 0 ? (
         <Card>
