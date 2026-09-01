@@ -901,7 +901,14 @@ export function RaceMap({
     if (btn) btn.dataset.active = userPos ? "true" : "";
   }, [userPos, mapEpoch]);
 
-  // Resolve location: fast network position first, then optional precise watch
+  /**
+   * Resolve location: fast network position first, then optional precise watch.
+   *
+   * Only for someone who has already granted it. Asking on load put a browser
+   * permission prompt over the map before anyone had seen what the site was,
+   * which is both rude and the thing Lighthouse flags; the locate button is
+   * still there for anyone who wants it.
+   */
   useEffect(() => {
     if (mapEpoch === 0 || !navigator.geolocation) return;
 
@@ -937,29 +944,43 @@ export function RaceMap({
       }
     };
 
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        onFix(pos);
-        // Keep updating in the background (wifi/cell is enough)
-        watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_FAST);
-        watchIdRef.current = watchId;
-      },
-      (err) => {
-        // Retry once with high accuracy (phones)
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            onFix(pos);
-            watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_PRECISE);
-            watchIdRef.current = watchId;
-          },
-          onFail,
-          GEO_OPTS_PRECISE,
-        );
-        if (err.code === err.PERMISSION_DENIED) onFail(err);
-      },
-      GEO_OPTS_FAST,
-    );
+    function resolve() {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          onFix(pos);
+          // Keep updating in the background (wifi/cell is enough)
+          watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_FAST);
+          watchIdRef.current = watchId;
+        },
+        (err) => {
+          // Retry once with high accuracy (phones)
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              onFix(pos);
+              watchId = navigator.geolocation.watchPosition(onFix, () => undefined, GEO_OPTS_PRECISE);
+              watchIdRef.current = watchId;
+            },
+            onFail,
+            GEO_OPTS_PRECISE,
+          );
+          if (err.code === err.PERMISSION_DENIED) onFail(err);
+        },
+        GEO_OPTS_FAST,
+      );
+    }
+
+    // Without the Permissions API (older Safari) we stay put and wait to be
+    // asked, rather than guessing and prompting.
+    if (navigator.permissions?.query) {
+      void navigator.permissions
+        .query({ name: "geolocation" as PermissionName })
+        .then((status) => {
+          if (cancelled || status.state !== "granted") return;
+          setLocating(true);
+          resolve();
+        })
+        .catch(() => undefined);
+    }
 
     return () => {
       cancelled = true;

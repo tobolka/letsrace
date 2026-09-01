@@ -13,7 +13,10 @@ export function GET() {
     "",
     "Content-Signal: ai-train=no, search=yes, ai-input=yes",
     "",
-    `Agentmap: ${base}/.well-known/ai-catalog.json`,
+    // A comment, not a directive: "Agentmap:" is not part of the robots.txt
+    // grammar and validators read it as a malformed file. The catalogue is
+    // already announced properly by the Link headers and under /.well-known.
+    `# Agent catalogue: ${base}/.well-known/ai-catalog.json`,
     "",
     `Sitemap: ${base}/sitemap.xml`,
     `Host: ${base}`,
