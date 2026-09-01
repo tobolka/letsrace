@@ -72,6 +72,9 @@ import {
   type EventSort,
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
+
+/** Rows built on load, and the step the list grows by as it is scrolled. */
+const LIST_WINDOW = 40;
 import { format, parseISO } from "date-fns";
 import { MoreHorizontal, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -225,6 +228,66 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     [events, listSort, userOrigin],
   );
 
+  /**
+   * A viewport over central Europe routinely holds a couple of hundred races,
+   * and every one of them used to be built and hydrated on load to fill a list
+   * that shows about ten at a time. The window grows as the list is scrolled,
+   * and always covers the selected race so that clicking a map pin can still
+   * scroll its card into view.
+   */
+  const [visibleCount, setVisibleCount] = useState(LIST_WINDOW);
+  const listEndRef = useRef<HTMLDivElement>(null);
+  const mobileListEndRef = useRef<HTMLDivElement>(null);
+
+  // A new result set starts the window over. Adjusting during render rather
+  // than in an effect avoids a pass where the old window is applied to new
+  // events.
+  const [windowedEvents, setWindowedEvents] = useState(sortedEvents);
+  if (windowedEvents !== sortedEvents) {
+    setWindowedEvents(sortedEvents);
+    setVisibleCount(LIST_WINDOW);
+  }
+
+  const selectedIndex = useMemo(
+    () => (selectedId ? sortedEvents.findIndex((e) => e.id === selectedId) : -1),
+    [selectedId, sortedEvents],
+  );
+  // A race picked on the map may sit past the window; widen to reach it so its
+  // card exists for the scroll below.
+  const effectiveCount =
+    selectedIndex >= visibleCount ? selectedIndex + LIST_WINDOW : visibleCount;
+
+  useEffect(() => {
+    if (effectiveCount >= sortedEvents.length) return;
+    const grow = () =>
+      setVisibleCount((prev) => (prev >= sortedEvents.length ? prev : prev + LIST_WINDOW));
+    // Both lists are in the DOM at all times and only one is laid out, so the
+    // hidden one's sentinel would otherwise read as permanently on screen and
+    // pull the whole catalogue in at once. Watch each sentinel inside its own
+    // scroller, and only while that scroller has a height.
+    const observers = [
+      [listRef.current, listEndRef.current] as const,
+      [mobileListRef.current, mobileListEndRef.current] as const,
+    ]
+      .filter(([root, end]) => root && end && root.offsetHeight > 0)
+      .map(([root, end]) => {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) grow();
+          },
+          { root, rootMargin: "600px" },
+        );
+        observer.observe(end!);
+        return observer;
+      });
+    return () => observers.forEach((o) => o.disconnect());
+  }, [effectiveCount, sortedEvents.length]);
+
+  const visibleEvents = useMemo(
+    () => sortedEvents.slice(0, effectiveCount),
+    [sortedEvents, effectiveCount],
+  );
+
   function handleUserLocation(pos: { lat: number; lng: number }) {
     setUserOrigin((prev) => {
       if (!prev) return pos;
@@ -263,7 +326,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       });
       break;
     }
-  }, [selectedId]);
+    // `effectiveCount` is a dependency because selecting a race further down
+    // the list widens the window first; without it this would run against a
+    // card that has not been built yet and quietly scroll nowhere.
+  }, [selectedId, effectiveCount]);
 
   function toggleCategory(value: string) {
     const next = filters.categories.includes(value)
@@ -753,7 +819,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </Empty>
             ) : (
               <ItemGroup>
-                {sortedEvents.map((event) => (
+                {visibleEvents.map((event) => (
                   <EventCard
                     key={event.id}
                     event={event}
@@ -764,6 +830,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     onClick={() => selectEvent(event.id)}
                   />
                 ))}
+                <div ref={listEndRef} aria-hidden />
               </ItemGroup>
             )}
           </div>
@@ -940,7 +1007,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   </Empty>
                 ) : (
                   <ItemGroup>
-                    {sortedEvents.map((event) => (
+                    {visibleEvents.map((event) => (
                       <EventCard
                         key={event.id}
                         event={event}
@@ -955,6 +1022,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         }}
                       />
                     ))}
+                    <div ref={mobileListEndRef} aria-hidden />
                   </ItemGroup>
                 )}
             </div>
