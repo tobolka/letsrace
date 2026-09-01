@@ -102,6 +102,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+        {/*
+          The intro card mounts a second after load and its photograph is the
+          largest thing painted, so the browser only learned of it once the card
+          appeared — 2.3s of the 2.6s LCP was that wait. Twenty-two kilobytes,
+          cached for a year, bought back in the preload scanner's first pass.
+        */}
+        <link rel="preload" as="image" href="/intro-race.webp" fetchPriority="high" />
       </head>
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <TooltipProvider>
