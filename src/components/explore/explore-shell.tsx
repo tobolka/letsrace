@@ -1260,9 +1260,11 @@ function EventCard({
         onClick={onClick}
         className="w-full min-h-12 scroll-my-2 text-left touch-manipulation md:min-h-11"
       >
-        <ItemContent>
+        {/* Without this a flex child refuses to shrink below its content, and
+            `truncate` on the rows inside does nothing but overflow. */}
+        <ItemContent className="min-w-0">
           {compact ? null : (
-            <ItemHeader>
+            <ItemHeader className="min-w-0">
               <span className="flex min-w-0 items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
                 <span
                   className="size-2 shrink-0 rounded-full"
@@ -1282,10 +1284,9 @@ function EventCard({
             whole of this page's layout shift.
           */}
           <ItemTitle
-            className={cn(
-              "truncate text-[15px]",
-              compact && "flex min-w-0 items-center gap-1.5",
-            )}
+            // ItemTitle ships `w-fit`, which sizes it to its text and defeats
+            // any truncation inside it.
+            className={cn("w-full min-w-0 text-[15px]", compact && "flex items-center gap-1.5")}
           >
             {compact ? (
               <span
@@ -1294,7 +1295,7 @@ function EventCard({
                 aria-hidden
               />
             ) : null}
-            {compact ? <span className="truncate">{event.name}</span> : event.name}
+            <span className="truncate">{event.name}</span>
           </ItemTitle>
           <span className="line-clamp-1 text-sm leading-normal text-muted-foreground">
             {compact ? compactPlace : place}
