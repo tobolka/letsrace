@@ -1263,17 +1263,30 @@ function EventCard({
         <ItemContent>
           {compact ? null : (
             <ItemHeader>
-              <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+              <span className="flex min-w-0 items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
                 <span
                   className="size-2 shrink-0 rounded-full"
                   style={{ background: disciplineColor(event.disciplines) }}
                   aria-hidden
                 />
-                {meta}
+                {/* One line, like the place below it: a long series name here
+                    was the last thing that could change a card's height. */}
+                <span className="truncate">{meta}</span>
               </span>
             </ItemHeader>
           )}
-          <ItemTitle className={cn("text-[15px]", compact && "flex items-center gap-1.5")}>
+          {/*
+            One line, cut with an ellipsis. The list is rebuilt when the map
+            settles on its real bounds, and cards that change height as their
+            names change length drag everything below them — which was the
+            whole of this page's layout shift.
+          */}
+          <ItemTitle
+            className={cn(
+              "truncate text-[15px]",
+              compact && "flex min-w-0 items-center gap-1.5",
+            )}
+          >
             {compact ? (
               <span
                 className="size-2 shrink-0 rounded-full"
@@ -1281,7 +1294,7 @@ function EventCard({
                 aria-hidden
               />
             ) : null}
-            {event.name}
+            {compact ? <span className="truncate">{event.name}</span> : event.name}
           </ItemTitle>
           <span className="line-clamp-1 text-sm leading-normal text-muted-foreground">
             {compact ? compactPlace : place}
