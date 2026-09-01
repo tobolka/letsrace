@@ -165,6 +165,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    * real set lands. If the map never reports bounds, the guess is shown anyway.
    */
   const [listSettled, setListSettled] = useState(false);
+  const fetchStartedRef = useRef(false);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const mobileListRef = useRef<HTMLDivElement>(null);
@@ -238,7 +239,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   useEffect(() => {
     if (listSettled) return;
-    const t = window.setTimeout(() => setListSettled(true), 2500);
+    // Only for the case where the map never reports bounds and so nothing is
+    // ever requested. A timeout that fires while a request is in flight shows
+    // the stand-in list and then replaces it — which is the shift this was
+    // meant to prevent, and on a slow machine that is exactly what happened.
+    const t = window.setTimeout(() => {
+      if (!fetchStartedRef.current) setListSettled(true);
+    }, 2500);
     return () => window.clearTimeout(t);
   }, [listSettled]);
 
@@ -383,6 +390,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   function refetch(overrides: Record<string, unknown> = {}) {
     const gen = ++eventsFetchGen.current;
+    fetchStartedRef.current = true;
     setListLoading(true);
     void (async () => {
       const params = new URLSearchParams();
