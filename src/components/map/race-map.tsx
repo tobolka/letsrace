@@ -586,11 +586,6 @@ export function RaceMap({
       maxBounds: EUROPE_CAMERA_BOUNDS,
       renderWorldCopies: false,
       attributionControl: { compact: true },
-      // Voyager carries a lot of label layers and the default cross-fade
-      // re-renders all of them for 300ms after every tile lands, on the main
-      // thread, while the page is still trying to become interactive.
-      fadeDuration: 0,
-      refreshExpiredTiles: false,
       transformRequest: cartoKey
         ? (url) => {
             if (!url.includes("basemaps.cartocdn.com") || /[?&]key=/.test(url)) {
