@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { addDays, format, parseISO } from "date-fns";
 import { PlanDiscardButton } from "@/components/account/plan-discard-button";
-import { PlanStatusMenu, planStatusLabel } from "@/components/account/plan-status-menu";
+import { PlanStatusToggle, planRowSummary } from "@/components/account/plan-status-toggle";
 import { memberLabel } from "@/components/account/race-plan-controls";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -69,6 +69,7 @@ export function PlanTable({
               {memberLabel(m, t)}
             </TableHead>
           ))}
+          <TableHead className="min-w-24">{t.planPaid}</TableHead>
           <TableHead className="w-12">
             <span className="sr-only">{t.planDiscard}</span>
           </TableHead>
@@ -89,7 +90,7 @@ export function PlanTable({
             <Fragment key={plan.event.id}>
               {showBand ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={2 + members.length} className="bg-muted/50">
+                  <TableCell colSpan={3 + members.length} className="bg-muted/50">
                     <div className="flex flex-wrap items-center gap-2 font-medium">
                       <span className="tabular-nums">
                         {format(parseISO(sat), "d. M.", { locale: df })}
@@ -126,16 +127,31 @@ export function PlanTable({
                   const status = plan.memberStatus[m.id] ?? "none";
                   return (
                     <TableCell key={m.id}>
-                      <PlanStatusMenu
+                      <PlanStatusToggle
                         locale={locale}
                         value={status}
                         disabled={busyId === plan.event.id}
-                        labelledBy={`${memberLabel(m, t)} · ${plan.event.name} · ${planStatusLabel(status, t)}`}
+                        memberName={memberLabel(m, t)}
+                        eventName={plan.event.name}
                         onChange={(next) => onStatusChange(plan.event.id, m.id, next)}
                       />
                     </TableCell>
                   );
                 })}
+                <TableCell className="whitespace-nowrap text-xs tabular-nums text-muted-foreground">
+                  {(() => {
+                    const sum = planRowSummary(
+                      members.map((m) => plan.memberStatus[m.id] ?? "none"),
+                    );
+                    if (sum.going === 0) return null;
+                    const settled = sum.paid === sum.going;
+                    return (
+                      <Badge variant={settled ? "secondary" : "outline"}>
+                        {sum.paid}/{sum.going} {t.planPaid.toLowerCase()}
+                      </Badge>
+                    );
+                  })()}
+                </TableCell>
                 <TableCell>
                   <PlanDiscardButton
                     locale={locale}

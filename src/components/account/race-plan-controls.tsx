@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PlanStatusMenu } from "@/components/account/plan-status-menu";
+import { PlanStatusToggle } from "@/components/account/plan-status-toggle";
 import { memberPlanStatus, type PlanMemberStatus, type PlannerMember } from "@/lib/planner";
 import { messagesFor, type Messages } from "@/lib/i18n/messages";
 
@@ -37,11 +37,12 @@ export function RacePlanControls({
           return (
             <div key={m.id} className="flex items-center justify-between gap-2">
               <span className="text-sm font-medium">{memberLabel(m, t)}</span>
-              <PlanStatusMenu
+              <PlanStatusToggle
                 locale={locale}
                 value={status}
                 disabled={busy}
-                labelledBy={`${t.planWhoGoes}: ${memberLabel(m, t)}`}
+                memberName={memberLabel(m, t)}
+                eventName={t.planWhoGoes}
                 onChange={(next) => onStatusChange(m.id, next)}
               />
             </div>
