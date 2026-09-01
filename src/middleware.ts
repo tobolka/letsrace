@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { agentLinkHeaders } from "@/lib/agent-discovery";
-import { ADMIN_COOKIE, verifyAdminCookieValue } from "@/lib/auth/admin-token";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
 
@@ -25,16 +24,6 @@ function isHomepage(pathname: string): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    const token = request.cookies.get(ADMIN_COOKIE)?.value;
-    if (!verifyAdminCookieValue(token)) {
-      const login = request.nextUrl.clone();
-      login.pathname = "/admin/login";
-      login.search = "";
-      return NextResponse.redirect(login);
-    }
-  }
-
   if (isHomepage(pathname) && wantsMarkdown(request)) {
     const locale = pathname === "/" ? defaultLocale : localeFromPath(pathname);
     const markdown = homepageMarkdown(locale);
@@ -56,5 +45,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/((?!api|_next|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|admin|.*\\..*).*)"],
 };
