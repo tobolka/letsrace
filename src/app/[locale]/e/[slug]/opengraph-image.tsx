@@ -1,24 +1,35 @@
+import { format, parseISO } from "date-fns";
 import { ImageResponse } from "next/og";
 import { getPublicEventBySlug } from "@/lib/events";
+import { dateFnsLocale } from "@/lib/i18n/dates";
+import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
+import { eventSeoCopy } from "@/lib/seo";
 
-export const alt = "Let's Race race";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+function resolveLocale(raw?: string): Locale {
+  return locales.includes(raw as Locale) ? (raw as Locale) : defaultLocale;
+}
 
 export default async function EventOgImage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale: raw, slug } = await params;
+  const locale = resolveLocale(raw);
+  const seo = eventSeoCopy[locale];
   const event = await getPublicEventBySlug(slug);
-  const title = event?.name ?? "Cycling race";
+  const title = event?.name ?? seo.fallbackRace;
   const place =
     event?.location?.municipality ||
     event?.location?.name ||
     event?.location?.countryCode ||
     "";
-  const date = event?.startDate ?? "";
+  const date = event?.startDate
+    ? format(parseISO(event.startDate), "d MMM yyyy", { locale: dateFnsLocale(locale) })
+    : "";
 
   return new ImageResponse(
     (
@@ -49,7 +60,9 @@ export default async function EventOgImage({
           Let&apos;s Race
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 980 }}>
-          <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.03em" }}>{title}</div>
+          <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.03em" }}>
+            {title}
+          </div>
           <div style={{ fontSize: 26, opacity: 0.75 }}>
             {[date, place].filter(Boolean).join(" · ")}
           </div>

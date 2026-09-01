@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import { locales, type Locale } from "@/lib/i18n/messages";
+
+export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
+export const DEFAULT_OG_ALT = "Let's Race — cycling races on the map";
+export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
+
+/** Locale home pages use `generateImageMetadata` with id `default`. */
+export function localeOgImagePath(locale: string): string {
+  return `/${locale}/opengraph-image/default`;
+}
 
 /** Production URL used for canonicals, sitemap, and Open Graph. */
 export function getSiteUrl(): string {
@@ -44,6 +54,33 @@ export const seoCopy: Record<
     description:
       "Mapový kalendár cyklistických pretekov v strednej Európe — cesta, gravel, MTB, CX aj detské preteky.",
     ogLocale: "sk_SK",
+  },
+};
+
+/** Event detail pages and their share cards. */
+export const eventSeoCopy: Record<
+  Locale,
+  { notFound: string; fallbackRace: string; findOnSite: string }
+> = {
+  en: {
+    notFound: "Race not found",
+    fallbackRace: "Cycling race",
+    findOnSite: `Find this race on ${SITE_NAME}.`,
+  },
+  cs: {
+    notFound: "Závod nenalezen",
+    fallbackRace: "Cyklistický závod",
+    findOnSite: `Najdi tento závod na ${SITE_NAME}.`,
+  },
+  pl: {
+    notFound: "Nie znaleziono wyścigu",
+    fallbackRace: "Wyścig kolarski",
+    findOnSite: `Znajdź ten wyścig na ${SITE_NAME}.`,
+  },
+  sk: {
+    notFound: "Pretek nenájdený",
+    fallbackRace: "Cyklistický pretek",
+    findOnSite: `Nájdi tento pretek na ${SITE_NAME}.`,
   },
 };
 
@@ -112,4 +149,68 @@ export function absoluteUrl(path: string): string {
   const base = getSiteUrl();
   if (!path || path === "/") return base;
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+type SocialCardParams = {
+  title: string;
+  description: string;
+  url: string;
+  /** BCP 47 Open Graph locale, e.g. `cs_CZ`. */
+  locale?: string;
+  /** When set, fills `locale` and `alternateLocale` from `seoCopy`. */
+  localeKey?: Locale;
+  /** Defaults to `title`. Hub pages pass a title with the site suffix. */
+  ogTitle?: string;
+  imagePath?: string;
+  imageAlt?: string;
+};
+
+/**
+ * Open Graph and Twitter card metadata. Child `generateMetadata` replaces the
+ * whole `openGraph` object, so file-based `opengraph-image.tsx` alone is not
+ * enough — every segment that sets `openGraph` must include `images` too.
+ */
+export function socialCard({
+  title,
+  description,
+  url,
+  locale,
+  localeKey,
+  ogTitle,
+  imagePath = DEFAULT_OG_IMAGE_PATH,
+  imageAlt = DEFAULT_OG_ALT,
+}: SocialCardParams): Pick<Metadata, "openGraph" | "twitter"> {
+  const imageUrl = absoluteUrl(imagePath);
+  const images = [
+    {
+      url: imageUrl,
+      width: OG_IMAGE_SIZE.width,
+      height: OG_IMAGE_SIZE.height,
+      alt: imageAlt,
+    },
+  ];
+  const resolvedOgTitle = ogTitle ?? title;
+  const ogLocale = localeKey ? seoCopy[localeKey].ogLocale : locale;
+  const alternateLocale = localeKey
+    ? locales.filter((l) => l !== localeKey).map((l) => seoCopy[l].ogLocale)
+    : undefined;
+
+  return {
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      title: resolvedOgTitle,
+      description,
+      url,
+      ...(ogLocale ? { locale: ogLocale } : {}),
+      ...(alternateLocale?.length ? { alternateLocale } : {}),
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
 }

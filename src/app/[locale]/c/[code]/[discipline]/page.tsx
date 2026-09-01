@@ -6,7 +6,7 @@ import { listEvents } from "@/lib/events";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import {
   disciplineCopy,
   disciplineLeaves,
@@ -59,17 +59,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const heading = fillCopy(copy.title, { name });
   const description = fillCopy(copy.description, { name, count: events.length });
   const path = `c/${code.toLowerCase()}/${discipline}`;
+  const url = absoluteUrl(`/${locale}/${path}`);
+  const ogTitle = `${heading} · ${SITE_NAME}`;
 
   return {
     title: heading,
     description,
-    alternates: { canonical: absoluteUrl(`/${locale}/${path}`), languages: localeAlternates(path) },
-    openGraph: {
-      title: `${heading} · ${SITE_NAME}`,
+    alternates: { canonical: url, languages: localeAlternates(path) },
+    ...socialCard({
+      title: heading,
+      ogTitle,
       description,
-      url: absoluteUrl(`/${locale}/${path}`),
-      siteName: SITE_NAME,
-    },
+      url,
+      localeKey: locale,
+      imagePath: localeOgImagePath(locale),
+      imageAlt: ogTitle,
+    }),
     // A hub thinner than the country page it splits off from competes with its
     // own parent. It stays reachable, it just does not ask to be indexed.
     robots: events.length >= MIN_RACES ? undefined : { index: false, follow: true },

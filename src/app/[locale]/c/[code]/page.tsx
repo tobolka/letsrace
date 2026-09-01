@@ -10,7 +10,7 @@ import {
   PUBLIC_COUNTRY_CODES,
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { eventPagePath } from "@/lib/event-url";
 import { BrandMark } from "@/components/brand-mark";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
@@ -62,7 +62,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: url,
       languages: localeAlternates(`c/${code.toLowerCase()}`),
     },
-    openGraph: { title, description, url, siteName: SITE_NAME },
+    ...socialCard({
+      title: heading,
+      ogTitle: title,
+      description,
+      url,
+      localeKey: locale,
+      imagePath: localeOgImagePath(locale),
+      imageAlt: title,
+    }),
   };
 }
 

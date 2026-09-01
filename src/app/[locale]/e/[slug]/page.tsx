@@ -14,7 +14,8 @@ import {
 } from "@/lib/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { BrandMark } from "@/components/brand-mark";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
@@ -31,22 +32,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw, slug } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const event = await getPublicEventBySlug(slug);
+  const seo = eventSeoCopy[locale];
   if (!event) {
-    return { title: "Race not found", robots: { index: false, follow: false } };
+    return { title: seo.notFound, robots: { index: false, follow: false } };
   }
 
   const place =
     event.location?.municipality || event.location?.name || event.location?.countryCode || "";
-  const date = format(parseISO(event.startDate), "d MMM yyyy");
+  const date = format(parseISO(event.startDate), "d MMM yyyy", {
+    locale: dateFnsLocale(locale),
+  });
   const title = place ? `${event.name} · ${place}` : event.name;
   const disc = event.disciplines
     .slice(0, 3)
     .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
     .filter(Boolean)
     .join(", ");
-  const description = [date, place, disc, `Find this race on ${SITE_NAME}.`]
-    .filter(Boolean)
-    .join(" · ");
+  const description = [date, place, disc, seo.findOnSite].filter(Boolean).join(" · ");
   const url = absoluteUrl(`/${locale}/e/${event.slug}`);
 
   return {
@@ -56,18 +58,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: url,
       languages: localeAlternates(`e/${event.slug}`),
     },
-    openGraph: {
-      type: "website",
-      siteName: SITE_NAME,
+    ...socialCard({
       title,
       description,
       url,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+      localeKey: locale,
+      imagePath: `/${locale}/e/${event.slug}/opengraph-image`,
+      imageAlt: `${event.name} — ${SITE_NAME}`,
+    }),
   };
 }
 

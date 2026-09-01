@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { eventPagePath } from "@/lib/event-url";
 import { BrandMark } from "@/components/brand-mark";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
@@ -36,7 +36,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: heading,
     description,
     alternates: { canonical: url, languages: localeAlternates(`series/${slug}`) },
-    openGraph: { title, description, url, siteName: SITE_NAME },
+    ...socialCard({
+      title: heading,
+      ogTitle: title,
+      description,
+      url,
+      localeKey: locale,
+      imagePath: localeOgImagePath(locale),
+      imageAlt: title,
+    }),
   };
 }
 

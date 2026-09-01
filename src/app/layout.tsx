@@ -9,11 +9,18 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { WebMcpTools } from "@/components/agent/webmcp-tools";
-import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
+import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME, socialCard } from "@/lib/seo";
 import "./globals.css";
 
 const site = getSiteUrl();
 const en = seoCopy.en;
+const rootSocial = socialCard({
+  title: en.title,
+  description: en.description,
+  url: site,
+  localeKey: "en",
+  imageAlt: en.title,
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -53,19 +60,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: SITE_AUTHOR.name, url: SITE_AUTHOR.url }],
   creator: SITE_AUTHOR.name,
-  openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    title: en.title,
-    description: en.description,
-    url: site,
-    locale: en.ogLocale,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: en.title,
-    description: en.description,
-  },
+  openGraph: rootSocial.openGraph,
+  twitter: rootSocial.twitter,
   robots: {
     index: true,
     follow: true,

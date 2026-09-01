@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AuthErrorToast } from "@/components/account/auth-error-toast";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, localeAlternates, seoCopy, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, localeAlternates, localeOgImagePath, seoCopy, socialCard } from "@/lib/seo";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -25,19 +25,14 @@ export async function generateMetadata({
       canonical: url,
       languages: localeAlternates(),
     },
-    openGraph: {
-      type: "website",
-      siteName: SITE_NAME,
+    ...socialCard({
       title: copy.title,
       description: copy.description,
       url,
-      locale: copy.ogLocale,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: copy.title,
-      description: copy.description,
-    },
+      localeKey: locale,
+      imagePath: localeOgImagePath(locale),
+      imageAlt: copy.title,
+    }),
   };
 }
 
