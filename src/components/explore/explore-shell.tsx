@@ -741,7 +741,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             locale={locale}
             onSubmitRace={() => setSubmitOpen(true)}
             onFeedback={() => setFeedbackOpen(true)}
-            onSignIn={() => setAuthOpen(true)}
           />
           <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
             {renderFilterBar()}
@@ -877,7 +876,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 locale={locale}
                 onSubmitRace={() => setSubmitOpen(true)}
                 onFeedback={() => setFeedbackOpen(true)}
-                onSignIn={() => setAuthOpen(true)}
                 compact
               />
             }
@@ -1124,14 +1122,12 @@ function Header({
   locale,
   onSubmitRace,
   onFeedback,
-  onSignIn,
   compact,
 }: {
   messages: Messages;
   locale: string;
   onSubmitRace: () => void;
   onFeedback: () => void;
-  onSignIn: () => void;
   compact?: boolean;
 }) {
   return (
@@ -1147,7 +1143,6 @@ function Header({
         locale={locale}
         onSubmitRace={onSubmitRace}
         onFeedback={onFeedback}
-        onSignIn={onSignIn}
         compact
       />
     </div>
@@ -1159,14 +1154,12 @@ function ExploreMenu({
   locale,
   onSubmitRace,
   onFeedback,
-  onSignIn,
   compact,
 }: {
   messages: Messages;
   locale: string;
   onSubmitRace: () => void;
   onFeedback: () => void;
-  onSignIn: () => void;
   compact?: boolean;
 }) {
   return (
@@ -1205,20 +1198,16 @@ function ExploreMenu({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onSelect={onSignIn}>{messages.signIn}</DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/${locale}/account`}>{messages.account}</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/${locale}/calendar`}>{messages.myCalendar}</Link>
-          </DropdownMenuItem>
+          {/*
+            Signing in, the account and the plan all live on the button in the
+            map's top-right corner, which is where a map app puts them and where
+            someone actually looks. Repeating them here made this menu mostly a
+            second copy of that. Admin is not for visitors and is reachable at
+            /admin by the one person who needs it.
+          */}
           <DropdownMenuItem onSelect={onSubmitRace}>{messages.missingRace}</DropdownMenuItem>
           <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/admin">{messages.admin}</Link>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
