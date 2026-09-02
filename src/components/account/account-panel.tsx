@@ -214,7 +214,7 @@ export function AccountPanel({ locale }: { locale: string }) {
 
   if (!ready) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
         <Skeleton className="h-8 w-40" />
         <Skeleton className="h-4 w-56" />
         <Skeleton className="h-64 w-full" />
@@ -237,10 +237,13 @@ export function AccountPanel({ locale }: { locale: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">{t.account}</h1>
       </header>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
+      <div className="flex min-w-0 flex-col gap-6">
 
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
@@ -254,8 +257,6 @@ export function AccountPanel({ locale }: { locale: string }) {
           </Button>
         </CardContent>
       </Card>
-
-      {userId ? <CalendarFeed locale={locale} userId={userId} /> : null}
 
       <Card>
         <CardHeader>
@@ -414,6 +415,12 @@ export function AccountPanel({ locale }: { locale: string }) {
           </Collapsible>
         </CardContent>
       </Card>
+      </div>
+
+      <aside className="min-w-0 lg:sticky lg:top-16">
+        {userId ? <CalendarFeed locale={locale} userId={userId} /> : null}
+      </aside>
+      </div>
     </div>
   );
 }

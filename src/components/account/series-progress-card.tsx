@@ -55,7 +55,9 @@ export function SeriesProgressCard({
               <Item
                 key={s.seriesId}
                 variant="outline"
-                className="flex-col items-stretch sm:flex-row sm:items-start"
+                // The card lives in a narrow rail, so this never goes to a row:
+                // the name, the pips and the button each get the full width.
+                className="flex-col items-stretch"
               >
                 <ItemContent className="min-w-0 gap-2">
                   <ItemTitle className="w-full min-w-0">
@@ -87,7 +89,7 @@ export function SeriesProgressCard({
                     {s.next ? null : <Badge variant="secondary">{t.seriesDone}</Badge>}
                   </ItemDescription>
                 </ItemContent>
-                <ItemActions className="justify-end">
+                <ItemActions className="justify-stretch [&>*]:w-full">
                   {remaining === 0 ? (
                     s.next ? (
                       <Badge variant="secondary">
@@ -110,8 +112,7 @@ export function SeriesProgressCard({
                       }}
                     >
                       {busy ? <Spinner /> : <Plus />}
-                      <span className="hidden sm:inline">{t.seriesAddAll}</span>
-                      <span className="sm:hidden tabular-nums">
+                      <span className="tabular-nums">
                         {t.seriesRoundsLeft.replace("{n}", String(remaining))}
                       </span>
                     </Button>

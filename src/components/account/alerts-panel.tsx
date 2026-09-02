@@ -40,7 +40,7 @@ export function AlertsPanel({ locale }: { locale: string }) {
 
   if (!ready) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
         <Skeleton className="h-8 w-40" />
         <Skeleton className="h-4 w-80" />
         <Skeleton className="h-64 w-full" />
@@ -63,22 +63,31 @@ export function AlertsPanel({ locale }: { locale: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">{t.alertTitle}</h1>
         <p className="max-w-xl text-sm text-muted-foreground">{t.alertHelp}</p>
       </header>
-      <Section title={t.alertPlacesTitle}>
-        <AlertSettings
-          locale={locale}
-          userId={userId}
-          preferredDisciplines={preferredDisciplines}
-        />
-      </Section>
-      <AlertInbox locale={locale} userId={userId} />
-      <Section title={t.alertMailTitle}>
-        <MailPrefs locale={locale} userId={userId} />
-      </Section>
+
+      {/* Same split as the plan, so the left edge does not jump between tabs:
+          what you are setting on the left, what it has produced beside it. */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
+        <div className="flex min-w-0 flex-col gap-6">
+          <Section title={t.alertPlacesTitle}>
+            <AlertSettings
+              locale={locale}
+              userId={userId}
+              preferredDisciplines={preferredDisciplines}
+            />
+          </Section>
+          <Section title={t.alertMailTitle}>
+            <MailPrefs locale={locale} userId={userId} />
+          </Section>
+        </div>
+        <aside className="min-w-0 lg:sticky lg:top-16">
+          <AlertInbox locale={locale} userId={userId} />
+        </aside>
+      </div>
     </div>
   );
 }

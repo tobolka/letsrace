@@ -55,7 +55,10 @@ export function WeekendBoard({
         <CardDescription>{t.weekendBoardBody}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+        {/* One row, scrolled sideways: a season reads as a line, and a 4x4 grid
+            spent three hundred pixels of height saying "one race, fifteen
+            free". Scroll-snap so a thumb lands on whole weekends. */}
+        <div className="-mx-2 flex snap-x snap-mandatory gap-2 overflow-x-auto px-2 pb-2">
           {weekends.map((w) => (
             <WeekendTile
               key={w.saturday}
@@ -117,7 +120,7 @@ function WeekendTile({
           type="button"
           aria-pressed={selected}
           className={cn(
-            "flex min-w-0 flex-col gap-1 rounded-lg border p-2 text-left transition-colors",
+            "flex w-28 shrink-0 snap-start flex-col gap-1 rounded-lg border p-2 text-left transition-colors",
             free && "border-dashed hover:border-solid hover:bg-accent",
             selected && "border-solid border-brand bg-accent",
             (blocked || recurringBusy) && "bg-muted/40",

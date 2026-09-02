@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { format, parseISO } from "date-fns";
@@ -135,6 +135,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const [series, setSeries] = useState<SeriesProgress[]>([]);
   const [pickedSaturday, setPickedSaturday] = useState<string | null>(null);
   const [blocked, setBlocked] = useState<Record<string, BlockedWeekend>>({});
+  const railRef = useRef<HTMLElement>(null);
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -397,6 +398,13 @@ export function CalendarPanel({ locale }: { locale: string }) {
     setBusyId(null);
   }
 
+  // Picking a weekend on the strip answers in the rail, which on a phone is
+  // below the plan; without this the tap looks like it did nothing.
+  useEffect(() => {
+    if (!pickedSaturday) return;
+    railRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [pickedSaturday]);
+
   async function onBlockWeekend(saturday: string, note: string) {
     if (!userId) return;
     const row = { saturday, note: note || null };
@@ -505,12 +513,29 @@ export function CalendarPanel({ locale }: { locale: string }) {
   ].join(" · ");
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-      <header className="flex flex-col gap-1">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+      <header className="flex flex-col gap-1.5">
         <h1 className="text-2xl font-semibold tracking-tight">{t.planTitle}</h1>
-        <p className="max-w-xl text-sm text-muted-foreground">{t.planSubtitle}</p>
+        <PlanStats
+          locale={locale}
+          upcoming={upcomingCount}
+          needsAction={actionCount}
+          freeWeekends={freeCount}
+          onShowAction={() => {
+            void setView("list");
+            void setFilter("action");
+          }}
+        />
         <p className="sr-only">{summary}</p>
       </header>
+
+      <PlanSetup
+        locale={locale}
+        hasPeople={members.length > 0}
+        hasPlace={Boolean(suggestCtx?.home)}
+        hasRace={plans.length > 0}
+        onSetHome={(place) => onSetHome(place)}
+      />
 
       {nextRace ? (
         <NextRaceCard
@@ -524,25 +549,6 @@ export function CalendarPanel({ locale }: { locale: string }) {
         />
       ) : null}
 
-      <PlanStats
-        locale={locale}
-        upcoming={upcomingCount}
-        needsAction={actionCount}
-        freeWeekends={freeCount}
-        onShowAction={() => {
-          void setView("list");
-          void setFilter("action");
-        }}
-      />
-
-      <PlanSetup
-        locale={locale}
-        hasPeople={members.length > 0}
-        hasPlace={Boolean(suggestCtx?.home)}
-        hasRace={plans.length > 0}
-        onSetHome={(place) => onSetHome(place)}
-      />
-
       <WeekendBoard
         locale={locale}
         weekends={board.weekends}
@@ -554,44 +560,16 @@ export function CalendarPanel({ locale }: { locale: string }) {
         onUnblock={(saturday) => onUnblockWeekend(saturday)}
       />
 
-      {fillWeekend && suggestCtx ? (
-        <FreeWeekendSuggestions
-          key={fillWeekend.saturday}
-          locale={locale}
-          saturday={fillWeekend.saturday}
-          sunday={fillWeekend.sunday}
-          context={suggestCtx}
-          title={
-            fillWeekend.isCurrent
-              ? undefined
-              : t.suggestForWeekend.replace(
-                  "{range}",
-                  `${format(parseISO(fillWeekend.saturday), "d.", { locale: dateFnsLocale(locale) })}–${format(
-                    parseISO(fillWeekend.sunday),
-                    "d. M.",
-                    { locale: dateFnsLocale(locale) },
-                  )}`,
-                )
-          }
-          onAdd={async (eventId) => {
-            const supabase = createBrowserSupabase();
-            const { data: auth } = await supabase.auth.getUser();
-            if (!auth.user) return;
-            await ensureFavorite(supabase, auth.user.id, eventId, false);
-            await load();
-          }}
-        />
-      ) : null}
+      {/* Below the season line the page splits: the plan itself on the left,
+          and the two things that answer "what else" beside it rather than a
+          thousand pixels further down. */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
 
-      <SeriesProgressCard
-        locale={locale}
-        items={series}
-        plannedEventIds={new Set(Object.keys(eventsById))}
-        onAddRounds={(ids) => onAddRounds(ids)}
-      />
-
+      <div className="flex min-w-0 flex-col gap-4">
       {plans.length === 0 ? null : (
       <Tabs value={view} onValueChange={(v) => void setView(v as (typeof VIEWS)[number])}>
+        {/* One row of controls, not two stacked above a short list. */}
+        <div className="flex flex-wrap items-center gap-2">
         <TabsList>
           <TabsTrigger value="calendar">
             <CalendarDays data-icon="inline-start" />
@@ -602,6 +580,30 @@ export function CalendarPanel({ locale }: { locale: string }) {
             {t.planViewList}
           </TabsTrigger>
         </TabsList>
+        {view === "list" && plans.length > 0 ? (
+          <ToggleGroup
+            type="single"
+            value={filter}
+            onValueChange={(v) => {
+              if (v) setFilter(v as Filter);
+            }}
+            variant="outline"
+            size="sm"
+            className="ml-auto justify-start"
+          >
+            <ToggleGroupItem value="all">{t.planAll}</ToggleGroupItem>
+            <ToggleGroupItem value="weekend">{t.thisWeekend}</ToggleGroupItem>
+            <ToggleGroupItem value="action">
+              {t.planNeedsAction}
+              {actionCount > 0 ? (
+                <Badge variant="secondary" className="tabular-nums">
+                  {actionCount}
+                </Badge>
+              ) : null}
+            </ToggleGroupItem>
+          </ToggleGroup>
+        ) : null}
+        </div>
 
         <TabsContent value="calendar" className="mt-4">
           {plans.length === 0 ? (
@@ -680,28 +682,6 @@ export function CalendarPanel({ locale }: { locale: string }) {
             <PlanEmpty locale={locale} />
           ) : (
             <>
-              <ToggleGroup
-                type="single"
-                value={filter}
-                onValueChange={(v) => {
-                  if (v) setFilter(v as Filter);
-                }}
-                variant="outline"
-                size="sm"
-                className="justify-start"
-              >
-                <ToggleGroupItem value="all">{t.planAll}</ToggleGroupItem>
-                <ToggleGroupItem value="weekend">{t.thisWeekend}</ToggleGroupItem>
-                <ToggleGroupItem value="action">
-                  {t.planNeedsAction}
-                  {actionCount > 0 ? (
-                    <Badge variant="secondary" className="tabular-nums">
-                      {actionCount}
-                    </Badge>
-                  ) : null}
-                </ToggleGroupItem>
-              </ToggleGroup>
-
               {members.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   <Link href={`/${locale}/account`} className="underline-offset-4 hover:underline">
@@ -797,6 +777,46 @@ export function CalendarPanel({ locale }: { locale: string }) {
         </TabsContent>
       </Tabs>
       )}
+      </div>
+
+      <aside ref={railRef} className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-16">
+      {fillWeekend && suggestCtx ? (
+        <FreeWeekendSuggestions
+          key={fillWeekend.saturday}
+          locale={locale}
+          saturday={fillWeekend.saturday}
+          sunday={fillWeekend.sunday}
+          context={suggestCtx}
+          title={
+            fillWeekend.isCurrent
+              ? undefined
+              : t.suggestForWeekend.replace(
+                  "{range}",
+                  `${format(parseISO(fillWeekend.saturday), "d.", { locale: dateFnsLocale(locale) })}–${format(
+                    parseISO(fillWeekend.sunday),
+                    "d. M.",
+                    { locale: dateFnsLocale(locale) },
+                  )}`,
+                )
+          }
+          onAdd={async (eventId) => {
+            const supabase = createBrowserSupabase();
+            const { data: auth } = await supabase.auth.getUser();
+            if (!auth.user) return;
+            await ensureFavorite(supabase, auth.user.id, eventId, false);
+            await load();
+          }}
+        />
+      ) : null}
+
+      <SeriesProgressCard
+        locale={locale}
+        items={series}
+        plannedEventIds={new Set(Object.keys(eventsById))}
+        onAddRounds={(ids) => onAddRounds(ids)}
+      />
+      </aside>
+      </div>
     </div>
   );
 }
