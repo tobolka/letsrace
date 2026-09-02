@@ -108,3 +108,24 @@ export function sportMarkers(name: string, extraText?: string | null): string[] 
   if (cyc) out.push(`cycling:${cyc[0]}`);
   return out;
 }
+
+/**
+ * Racing that happens on a screen rather than a road.
+ *
+ * This has to be narrow, because the platforms sponsor real racing and real
+ * venues are indoors. "Tour de France Femmes avec Zwift" is a road race with a
+ * title sponsor; "SP BMX Freestyle: INDOOR JAM" is a Slovak championship in a
+ * hall in Šurany. Neither belongs on a keyword blocklist.
+ *
+ * What does identify a virtual race is the platform's own event — a Tour de
+ * Zwift, a Zwift Racing League round — or a venue that exists only in software.
+ */
+const VIRTUAL_WORLDS = /\bwatopia\b|\bmakuri\b|\bzwift island\b/;
+const PLATFORM_OWN_EVENT =
+  /\btour de zwift\b|\bzwift racing league\b|\bzwift games\b|\bzwift academy\b|\bzts racing\b|\bindieVelo\b|\bmywhoosh\b/;
+
+export function isVirtualRace(name: string, placeText?: string | null): boolean {
+  const blob = fold(`${name} ${placeText ?? ""}`);
+  if (VIRTUAL_WORLDS.test(blob)) return true;
+  return PLATFORM_OWN_EVENT.test(fold(name));
+}

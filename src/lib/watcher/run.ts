@@ -1739,7 +1739,7 @@ async function upsertParsedEvent(
   }
 
   const { isNonRaceEventName } = await import("@/lib/event-visibility");
-  const { isNonCyclingEventName } = await import("@/lib/sport-gate");
+  const { isNonCyclingEventName, isVirtualRace } = await import("@/lib/sport-gate");
   // Regional calendars mix club triathlons and charity runs in with the road
   // races. Judge on the source's own words only — our inferred disciplines
   // cannot vouch for an entry, since a wrong discipline is what we are catching.
@@ -1747,7 +1747,9 @@ async function upsertParsedEvent(
     ev.name,
     (ev.categories ?? []).map((c) => c.name).join(" "),
   );
-  const hideAsNonRace = isNonRaceEventName(ev.name) || nonCycling;
+  // A race held in software has no place on a map of where to drive on Sunday.
+  const virtual = isVirtualRace(ev.name, ev.placeText);
+  const hideAsNonRace = isNonRaceEventName(ev.name) || nonCycling || virtual;
 
   const existingRow = existingFull as {
     id?: string;
