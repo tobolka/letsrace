@@ -24,6 +24,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronRight } from "lucide-react";
 
 export type StalledRow = {
   id: string;
@@ -49,6 +51,33 @@ function hostOf(url: string) {
   } catch {
     return url;
   }
+}
+
+/**
+ * One line per site, not per URL.
+ *
+ * A single calendar contributes dozens of rows — sumator.cz alone was 53 of the
+ * 70 — and they fail together and are fixed together, so a wall of near
+ * identical URLs asks the reader to do the grouping in their head. Worst first:
+ * anything provably losing races, then whatever is largest.
+ */
+function groupByHost(rows: StalledRow[]) {
+  const groups = new Map<string, StalledRow[]>();
+  for (const row of rows) {
+    const host = hostOf(row.url);
+    const list = groups.get(host);
+    if (list) list.push(row);
+    else groups.set(host, [row]);
+  }
+  return [...groups.entries()]
+    .map(([host, list]) => ({
+      host,
+      rows: list,
+      liveRaces: list.reduce((n, r) => n + (r.liveRaces ?? 0), 0),
+      neverRead: list.filter((r) => r.reason === "never read").length,
+      erroring: list.filter((r) => r.reason === "erroring").length,
+    }))
+    .sort((a, b) => b.liveRaces - a.liveRaces || b.rows.length - a.rows.length);
 }
 
 /**
@@ -136,76 +165,107 @@ export function StalledSources({ initial }: { initial: StalledRow[] }) {
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Why</TableHead>
-                  <TableHead className="text-right">Unread</TableHead>
-                  <TableHead className="text-right">Live races</TableHead>
-                  <TableHead className="w-px" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id} className={row.liveRaces ? "bg-amber-50/60 dark:bg-amber-950/20" : undefined}>
-                    <TableCell className="max-w-[22rem]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="truncate font-medium">{hostOf(row.url)}</span>
-                        <a
-                          href={row.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          <ExternalLink className="size-3.5" />
-                        </a>
-                      </div>
-                      <p className="truncate text-xs text-muted-foreground">{row.url}</p>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={REASON_TONE[row.reason] ?? "outline"}>{row.reason}</Badge>
-                      {row.lastError && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="ml-1.5 cursor-help text-xs text-muted-foreground underline decoration-dotted">
-                              error
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">{row.lastError}</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
-                      {row.daysSinceFetch == null ? "never" : `${row.daysSinceFetch}d`}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {row.liveRaces == null ? (
-                        <span className="text-muted-foreground">—</span>
-                      ) : row.liveRaces > 0 ? (
-                        <span className="font-semibold text-amber-700 dark:text-amber-500">
-                          {row.liveRaces}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">0</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant={row.liveRaces ? "default" : "ghost"}
-                        onClick={() => rerun(row)}
-                        disabled={busyId === row.id}
-                      >
-                        {busyId === row.id ? <Spinner /> : <RefreshCw />}
-                        Re-read
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="divide-y">
+            {groupByHost(rows).map((g) => (
+              <Collapsible key={g.host} defaultOpen={groupByHost(rows).length <= 3}>
+                <div className="flex items-center gap-2 px-6 py-3">
+                  <CollapsibleTrigger className="group flex min-w-0 flex-1 items-center gap-2 text-left">
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-90" />
+                    <span className="truncate font-medium">{g.host}</span>
+                    <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                      {g.rows.length}
+                    </span>
+                    {g.erroring > 0 ? (
+                      <Badge variant="destructive">{g.erroring} erroring</Badge>
+                    ) : null}
+                    {g.neverRead > 0 ? (
+                      <Badge variant="secondary">{g.neverRead} never read</Badge>
+                    ) : null}
+                    {g.liveRaces > 0 ? (
+                      <Badge className="bg-amber-600 text-white hover:bg-amber-600/90">
+                        {g.liveRaces} races going missing
+                      </Badge>
+                    ) : null}
+                  </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent>
+                  <div className="overflow-x-auto border-t bg-muted/30">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Address</TableHead>
+                          <TableHead>Why</TableHead>
+                          <TableHead className="text-right">Unread</TableHead>
+                          <TableHead className="text-right">Live races</TableHead>
+                          <TableHead className="w-px" />
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {g.rows.map((row) => (
+                          <TableRow
+                            key={row.id}
+                            className={row.liveRaces ? "bg-amber-50/60 dark:bg-amber-950/20" : undefined}
+                          >
+                            <TableCell className="max-w-[26rem]">
+                              <div className="flex items-center gap-1.5">
+                                <span className="truncate text-xs text-muted-foreground">{row.url}</span>
+                                <a
+                                  href={row.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="shrink-0 text-muted-foreground hover:text-foreground"
+                                  aria-label={`Open ${row.url}`}
+                                >
+                                  <ExternalLink className="size-3.5" />
+                                </a>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={REASON_TONE[row.reason] ?? "outline"}>{row.reason}</Badge>
+                              {row.lastError && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="ml-1.5 cursor-help text-xs text-muted-foreground underline decoration-dotted">
+                                      error
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">{row.lastError}</TooltipContent>
+                                </Tooltip>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums text-muted-foreground">
+                              {row.daysSinceFetch == null ? "never" : `${row.daysSinceFetch}d`}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums">
+                              {row.liveRaces == null ? (
+                                <span className="text-muted-foreground">—</span>
+                              ) : row.liveRaces > 0 ? (
+                                <span className="font-semibold text-amber-700 dark:text-amber-500">
+                                  {row.liveRaces}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">0</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                variant={row.liveRaces ? "default" : "ghost"}
+                                onClick={() => rerun(row)}
+                                disabled={busyId === row.id}
+                              >
+                                {busyId === row.id ? <Spinner /> : <RefreshCw />}
+                                Re-read
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ))}
           </div>
         )}
       </CardContent>
