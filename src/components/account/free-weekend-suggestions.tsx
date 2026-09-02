@@ -41,9 +41,19 @@ export function FreeWeekendSuggestions({
   const [items, setItems] = useState<Suggestion[] | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<string | null>(null);
+  const hasHome = context.home != null;
 
   useEffect(() => {
     let alive = true;
+    // Without a place to measure from, the ranker has nothing to rank by and
+    // would offer whatever the catalogue happens to hold that weekend — races
+    // three countries away. Ask for the place instead of guessing.
+    if (!context.home) {
+      setItems(null);
+      return () => {
+        alive = false;
+      };
+    }
     void (async () => {
       const params = new URLSearchParams({ dateFrom: saturday, dateTo: sunday });
       if (context.home) {
@@ -88,6 +98,10 @@ export function FreeWeekendSuggestions({
     discipline: t.suggestOther,
   };
   const ReasonIcon = { series: Repeat, nearby: MapPin, discipline: MapPin };
+
+  // Without a place there is nothing to rank by; the setup checklist asks for
+  // one rather than this card offering races three countries away.
+  if (!hasHome) return null;
 
   return (
     <Card>

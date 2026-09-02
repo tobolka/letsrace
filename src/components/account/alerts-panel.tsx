@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertInbox } from "@/components/account/alert-inbox";
 import { AlertSettings } from "@/components/account/alert-settings";
 import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,9 +68,27 @@ export function AlertsPanel({ locale }: { locale: string }) {
         <h1 className="text-2xl font-semibold tracking-tight">{t.alertTitle}</h1>
         <p className="max-w-xl text-sm text-muted-foreground">{t.alertHelp}</p>
       </header>
-      <MailPrefs locale={locale} userId={userId} />
-      <AlertSettings locale={locale} userId={userId} preferredDisciplines={preferredDisciplines} />
+      <Section title={t.alertPlacesTitle}>
+        <AlertSettings
+          locale={locale}
+          userId={userId}
+          preferredDisciplines={preferredDisciplines}
+        />
+      </Section>
+      <AlertInbox locale={locale} userId={userId} />
+      <Section title={t.alertMailTitle}>
+        <MailPrefs locale={locale} userId={userId} />
+      </Section>
     </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-sm font-semibold text-muted-foreground">{title}</h2>
+      {children}
+    </section>
   );
 }
 

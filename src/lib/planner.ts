@@ -14,6 +14,7 @@ export type PlannerEvent = {
   countryCode: string | null;
   registrationUrl: string | null;
   websiteUrl: string | null;
+  seriesId?: string | null;
 };
 
 export type PlannerMember = {

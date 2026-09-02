@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LocateFixed } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -13,10 +12,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { PlacePicker } from "@/components/account/place-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -51,6 +56,7 @@ export function AlertSettings({
   const t = messagesFor(locale);
   const [rows, setRows] = useState<AlertRow[]>([]);
   const [ready, setReady] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -123,11 +129,37 @@ export function AlertSettings({
         </Card>
       ))}
 
-      <Card>
-        <CardContent className="pt-6">
-          <PlacePicker locale={locale} onPick={(place) => void createAlert(place)} />
-        </CardContent>
-      </Card>
+      {ready && rows.length > 0 ? (
+        // Most people watch one place. Once it is set, the form for a second
+        // one is clutter until it is asked for.
+        <Collapsible open={adding} onOpenChange={setAdding}>
+          <CollapsibleTrigger asChild>
+            <Button type="button" variant="outline" size="sm" className="w-fit">
+              <Plus data-icon="inline-start" />
+              {t.alertAddAnother}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <Card className="mt-3">
+              <CardContent className="pt-6">
+                <PlacePicker
+                  locale={locale}
+                  onPick={(place) => {
+                    setAdding(false);
+                    void createAlert(place);
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
+      ) : ready ? (
+        <Card>
+          <CardContent className="pt-6">
+            <PlacePicker locale={locale} onPick={(place) => void createAlert(place)} />
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }
@@ -228,96 +260,5 @@ function AlertCard({
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
-}
-
-function PlacePicker({
-  locale,
-  onPick,
-}: {
-  locale: string;
-  onPick: (place: { label: string; lat: number; lng: number }) => void;
-}) {
-  const t = messagesFor(locale);
-  const [q, setQ] = useState("");
-  const [error, setError] = useState("");
-  const [locating, setLocating] = useState(false);
-  const [searching, setSearching] = useState(false);
-
-  async function search(e: React.FormEvent) {
-    e.preventDefault();
-    const query = q.trim();
-    if (query.length < 3) return;
-    setSearching(true);
-    setError("");
-    try {
-      const res = await fetch(`/api/places?q=${encodeURIComponent(query)}`);
-      if (!res.ok) {
-        setError(t.noResults);
-        return;
-      }
-      const hit = (await res.json()) as { lat: number; lng: number; displayName?: string };
-      onPick({ label: hit.displayName || query, lat: hit.lat, lng: hit.lng });
-      setQ("");
-    } catch {
-      setError(t.noResults);
-    } finally {
-      setSearching(false);
-    }
-  }
-
-  function useMyLocation() {
-    if (!navigator.geolocation) {
-      setError(t.alertLocationDenied);
-      return;
-    }
-    setLocating(true);
-    setError("");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        onPick({
-          label: t.myLocation,
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-        setLocating(false);
-      },
-      () => {
-        setError(t.alertLocationDenied);
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 12_000, maximumAge: 30_000 },
-    );
-  }
-
-  return (
-    <form onSubmit={(e) => void search(e)}>
-      <FieldGroup>
-        <Field data-invalid={error ? true : undefined}>
-          <FieldLabel htmlFor="alert-place">{t.alertPlace}</FieldLabel>
-          <InputGroup>
-            <InputGroupInput
-              id="alert-place"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t.alertPlacePlaceholder}
-              autoComplete="off"
-              spellCheck={false}
-              aria-invalid={error ? true : undefined}
-            />
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton type="submit" disabled={searching || q.trim().length < 3}>
-                {t.alertAdd}
-              </InputGroupButton>
-            </InputGroupAddon>
-          </InputGroup>
-          {error ? <FieldError>{error}</FieldError> : null}
-        </Field>
-        <Button type="button" variant="outline" onClick={useMyLocation} disabled={locating}>
-          <LocateFixed data-icon="inline-start" />
-          {locating ? t.alertLocating : t.alertUseLocation}
-        </Button>
-      </FieldGroup>
-    </form>
   );
 }

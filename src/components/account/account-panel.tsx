@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/account/auth-form";
 import { PlanPrefsFields, notifyPrefsSaved, saveMemberPrefs } from "@/components/account/plan-prefs-card";
@@ -19,6 +19,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Field,
   FieldGroup,
@@ -107,6 +112,8 @@ export function AccountPanel({ locale }: { locale: string }) {
   const [birthYear, setBirthYear] = useState("");
   const [busy, setBusy] = useState(false);
   const [openPrefsId, setOpenPrefsId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [ridesByMember, setRidesByMember] = useState<Record<string, number>>({});
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -126,6 +133,24 @@ export function AccountPanel({ locale }: { locale: string }) {
       .eq("user_id", auth.user.id)
       .order("created_at");
     setMembers((data ?? []).map(toMember));
+
+    // How much racing each of them actually did this year — the one number
+    // that makes a row of names feel like a season rather than a settings list.
+    const year = new Date().getFullYear();
+    const { data: rides } = await supabase
+      .from("event_attendance")
+      .select("member_id, event:events(start_date)")
+      .eq("user_id", auth.user.id);
+    const counts: Record<string, number> = {};
+    for (const row of (rides ?? []) as unknown as {
+      member_id: string;
+      event: { start_date: string } | { start_date: string }[] | null;
+    }[]) {
+      const ev = Array.isArray(row.event) ? row.event[0] : row.event;
+      if (!ev?.start_date?.startsWith(String(year))) continue;
+      counts[row.member_id] = (counts[row.member_id] ?? 0) + 1;
+    }
+    setRidesByMember(counts);
     setReady(true);
   }
 
@@ -158,6 +183,12 @@ export function AccountPanel({ locale }: { locale: string }) {
     toast.success(t.profilesAdded);
     await load();
     setBusy(false);
+  }
+
+  async function signOut() {
+    const supabase = createBrowserSupabase();
+    await supabase.auth.signOut();
+    window.location.href = `/${locale}`;
   }
 
   async function removeMember(id: string) {
@@ -208,8 +239,20 @@ export function AccountPanel({ locale }: { locale: string }) {
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">{t.account}</h1>
-        <p className="truncate text-sm text-muted-foreground">{email}</p>
       </header>
+
+      <Card>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">{t.accountSignedIn}</p>
+            <p className="truncate font-medium">{email}</p>
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={() => void signOut()}>
+            <LogOut data-icon="inline-start" />
+            {t.signOut}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -237,9 +280,13 @@ export function AccountPanel({ locale }: { locale: string }) {
                           {m.is_self ? <Badge variant="secondary">{t.planSelf}</Badge> : null}
                         </ItemTitle>
                         <ItemDescription>
-                          {roleLabel(m.relationship, t)}
+                          {/* The "you" badge already says it; repeating the role reads as a stutter. */}
+                          {m.is_self ? "" : roleLabel(m.relationship, t)}
                           {m.birth_year
-                            ? ` · ${t.profilesBorn.replace("{n}", String(m.birth_year))}`
+                            ? `${m.is_self ? "" : " · "}${t.profilesBorn.replace("{n}", String(m.birth_year))}`
+                            : ""}
+                          {ridesByMember[m.id]
+                            ? ` · ${t.accountRidesThisYear.replace("{n}", String(ridesByMember[m.id]))}`
                             : ""}
                         </ItemDescription>
                       </ItemContent>
@@ -299,6 +346,16 @@ export function AccountPanel({ locale }: { locale: string }) {
             </ItemGroup>
           )}
 
+          <Collapsible open={adding || members.length === 0} onOpenChange={setAdding}>
+            {members.length > 0 ? (
+              <CollapsibleTrigger asChild>
+                <Button type="button" variant="outline" size="sm" className="w-fit">
+                  <Plus data-icon="inline-start" />
+                  {t.profilesAdd}
+                </Button>
+              </CollapsibleTrigger>
+            ) : null}
+            <CollapsibleContent className={members.length > 0 ? "pt-4" : undefined}>
           <form onSubmit={(e) => void addMember(e)}>
             <FieldGroup className="gap-4">
               <div className="grid gap-4 sm:grid-cols-3">
@@ -350,6 +407,8 @@ export function AccountPanel({ locale }: { locale: string }) {
               </Button>
             </FieldGroup>
           </form>
+            </CollapsibleContent>
+          </Collapsible>
         </CardContent>
       </Card>
     </div>

@@ -6,13 +6,17 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { format, parseISO } from "date-fns";
 import { CalendarDays, List, MapPin } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
+import { PlanSetup } from "@/components/account/plan-setup";
+import { PlanStats } from "@/components/account/plan-stats";
+import { SeriesProgressCard } from "@/components/account/series-progress-card";
+import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanRaceCard } from "@/components/account/plan-race-card";
 import { PlanTable } from "@/components/account/plan-table";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
@@ -21,7 +25,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -29,9 +32,9 @@ import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { todayIso } from "@/lib/date-presets";
-import { eventMapPath } from "@/lib/event-url";
-import { formatDistanceKm } from "@/lib/geo/distance";
 import { pluralize } from "@/lib/i18n/plural";
+import { buildSeriesProgress, type SeriesProgress, type SeriesRound } from "@/lib/plan-series";
+import { ALERT_RADIUS_DEFAULT } from "@/lib/race-alerts";
 import { isBusyIsoDate, parseWeekdays, toJsDayOfWeek } from "@/lib/plan-prefs";
 import {
   buildWeekendBoard,
@@ -56,7 +59,7 @@ import {
 import type { SuggestionContext } from "@/lib/plan-suggestions";
 
 const EVENT_EMBED =
-  "id, name, start_date, end_date, slug, level, class_label, disciplines, registration_url, website_url, location:locations(name, municipality, country_code)";
+  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, website_url, location:locations(name, municipality, country_code)";
 
 type EventEmbed = {
   id: string;
@@ -67,6 +70,7 @@ type EventEmbed = {
   level: string | null;
   class_label: string | null;
   disciplines: string[] | null;
+  series_id: string | null;
   registration_url: string | null;
   website_url: string | null;
   location:
@@ -95,6 +99,7 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
     countryCode: loc?.country_code ?? null,
     registrationUrl: row.registration_url,
     websiteUrl: row.website_url,
+    seriesId: row.series_id,
   };
 }
 
@@ -123,9 +128,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [suggestCtx, setSuggestCtx] = useState<SuggestionContext | null>(null);
-  const [nearby, setNearby] = useState<
-    { id: string; name: string; startDate: string; slug: string; km: number | null }[]
-  >([]);
+  const [series, setSeries] = useState<SeriesProgress[]>([]);
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -231,46 +234,67 @@ export function CalendarPanel({ locale }: { locale: string }) {
       plannedEventIds: new Set(Object.keys(nextEvents)),
     });
 
-    const alertIds = alertRows;
-    if (alertIds && alertIds.length > 0) {
-      const since = new Date();
-      since.setDate(since.getDate() - 14);
-      const { data: dels } = await supabase
-        .from("race_alert_deliveries")
-        .select("distance_km, event:events(id, name, slug, start_date)")
-        .in(
-          "alert_id",
-          alertIds.map((a) => a.id),
-        )
-        .gte("created_at", since.toISOString())
-        .order("created_at", { ascending: false })
-        .limit(8);
-      const hits: { id: string; name: string; startDate: string; slug: string; km: number | null }[] = [];
-      const seenEv = new Set<string>();
-      for (const row of (dels ?? []) as unknown as {
-        distance_km: number | null;
-        event:
-          | { id: string; name: string; slug: string; start_date: string }
-          | { id: string; name: string; slug: string; start_date: string }[]
-          | null;
-      }[]) {
-        const ev = unwrap(row.event);
-        if (!ev || seenEv.has(ev.id)) continue;
-        seenEv.add(ev.id);
-        hits.push({
-          id: ev.id,
-          name: ev.name,
-          startDate: ev.start_date,
-          slug: ev.slug,
-          km: row.distance_km,
-        });
-      }
-      setNearby(hits);
-    } else {
-      setNearby([]);
-    }
+    await loadSeries(nextEvents);
 
     setReady(true);
+  }
+
+  /**
+   * A series only becomes interesting once at least one of its rounds is in
+   * the plan, so the rounds are fetched for those series alone — and only for
+   * this season, because last year's standings are not a plan.
+   */
+  async function loadSeries(planned: Record<string, PlannerEvent>) {
+    const seriesIds = [
+      ...new Set(
+        Object.values(planned)
+          .map((e) => e.seriesId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ];
+    if (seriesIds.length === 0) {
+      setSeries([]);
+      return;
+    }
+    const year = new Date().getFullYear();
+    const supabase = createBrowserSupabase();
+    const { data } = await supabase
+      .from("events")
+      .select(
+        "id, name, slug, start_date, end_date, series_id, series:series(id, name, slug), location:locations(name, municipality)",
+      )
+      .in("series_id", seriesIds)
+      .gte("start_date", `${year}-01-01`)
+      .lte("start_date", `${year}-12-31`)
+      .order("start_date");
+
+    const rounds: SeriesRound[] = [];
+    for (const row of (data ?? []) as unknown as {
+      id: string;
+      name: string;
+      slug: string;
+      start_date: string;
+      end_date: string | null;
+      series_id: string | null;
+      series: { id: string; name: string; slug: string } | { id: string; name: string; slug: string }[] | null;
+      location: { name: string | null; municipality: string | null } | { name: string | null; municipality: string | null }[] | null;
+    }[]) {
+      const ser = unwrap(row.series);
+      if (!row.series_id || !ser) continue;
+      const place = unwrap(row.location);
+      rounds.push({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        startDate: row.start_date,
+        endDate: row.end_date,
+        place: place?.municipality || place?.name || null,
+        seriesId: row.series_id,
+        seriesName: ser.name,
+        seriesSlug: ser.slug,
+      });
+    }
+    setSeries(buildSeriesProgress(rounds, { plannedEventIds: new Set(Object.keys(planned)) }));
   }
 
   useEffect(() => {
@@ -355,6 +379,30 @@ export function CalendarPanel({ locale }: { locale: string }) {
     setBusyId(null);
   }
 
+  async function onSetHome(place: PickedPlace) {
+    if (!userId) return;
+    const supabase = createBrowserSupabase();
+    await supabase.from("race_alerts").insert({
+      user_id: userId,
+      enabled: true,
+      label: place.label,
+      lat: place.lat,
+      lng: place.lng,
+      radius_km: ALERT_RADIUS_DEFAULT,
+      locale,
+    });
+    await load();
+  }
+
+  async function onAddRounds(eventIds: string[]) {
+    if (!userId) return;
+    const supabase = createBrowserSupabase();
+    for (const id of eventIds) {
+      await ensureFavorite(supabase, userId, id, false);
+    }
+    await load();
+  }
+
   if (!ready) {
     return (
       <div className="flex flex-col gap-4">
@@ -408,8 +456,27 @@ export function CalendarPanel({ locale }: { locale: string }) {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">{t.planTitle}</h1>
         <p className="max-w-xl text-sm text-muted-foreground">{t.planSubtitle}</p>
-        <p className="text-sm tabular-nums text-foreground">{summary}</p>
+        <p className="sr-only">{summary}</p>
       </header>
+
+      <PlanStats
+        locale={locale}
+        upcoming={upcomingCount}
+        needsAction={actionCount}
+        freeWeekends={freeCount}
+        onShowAction={() => {
+          void setView("list");
+          void setFilter("action");
+        }}
+      />
+
+      <PlanSetup
+        locale={locale}
+        hasPeople={members.length > 0}
+        hasPlace={Boolean(suggestCtx?.home)}
+        hasRace={plans.length > 0}
+        onSetHome={(place) => onSetHome(place)}
+      />
 
       {currentWeekend && thisWeekend.length === 0 && !thisWeekendBusy && suggestCtx ? (
         <FreeWeekendSuggestions
@@ -427,35 +494,14 @@ export function CalendarPanel({ locale }: { locale: string }) {
         />
       ) : null}
 
-      {nearby.length > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t.alertInbox}</CardTitle>
-            <CardAction>
-              <Button asChild variant="ghost" size="sm">
-                <Link href={`/${locale}/alerts`}>{t.alertTitle}</Link>
-              </Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <ItemGroup>
-              {nearby.map((n) => (
-                <Item key={n.id} variant="muted" size="sm" asChild>
-                  <Link href={eventMapPath(locale, { slug: n.slug, startDate: n.startDate })}>
-                    <ItemContent>
-                      <ItemTitle>{n.name}</ItemTitle>
-                      <ItemDescription>
-                        {n.km != null ? formatDistanceKm(n.km, loc) : n.startDate}
-                      </ItemDescription>
-                    </ItemContent>
-                  </Link>
-                </Item>
-              ))}
-            </ItemGroup>
-          </CardContent>
-        </Card>
-      ) : null}
+      <SeriesProgressCard
+        locale={locale}
+        items={series}
+        plannedEventIds={new Set(Object.keys(eventsById))}
+        onAddRounds={(ids) => onAddRounds(ids)}
+      />
 
+      {plans.length === 0 ? null : (
       <Tabs value={view} onValueChange={(v) => void setView(v as (typeof VIEWS)[number])}>
         <TabsList>
           <TabsTrigger value="calendar">
@@ -619,13 +665,14 @@ export function CalendarPanel({ locale }: { locale: string }) {
                       void onStatusChange(eventId, memberId, status)
                     }
                     onDiscard={(eventId) => void onDiscard(eventId)}
-                  />
+                    />
                 </section>
               ) : null}
             </>
           )}
         </TabsContent>
       </Tabs>
+      )}
     </div>
   );
 }
