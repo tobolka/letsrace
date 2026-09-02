@@ -11,6 +11,7 @@ import { PlanStats } from "@/components/account/plan-stats";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanRaceCard } from "@/components/account/plan-race-card";
+import { PlanCardList } from "@/components/account/plan-card-list";
 import { PlanTable } from "@/components/account/plan-table";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { Badge } from "@/components/ui/badge";
@@ -636,17 +637,35 @@ export function CalendarPanel({ locale }: { locale: string }) {
               ) : null}
 
               {listPlans.length > 0 ? (
-                <PlanTable
-                  locale={locale}
-                  plans={listPlans}
-                  members={members}
-                  busyId={busyId}
-                  currentSaturday={board.currentSaturday}
-                  onStatusChange={(eventId, memberId, status) =>
-                    void onStatusChange(eventId, memberId, status)
-                  }
-                  onDiscard={(eventId) => void onDiscard(eventId)}
-                />
+                <>
+                  <div className="hidden sm:block">
+                    <PlanTable
+                      locale={locale}
+                      plans={listPlans}
+                      members={members}
+                      busyId={busyId}
+                      currentSaturday={board.currentSaturday}
+                      onStatusChange={(eventId, memberId, status) =>
+                        void onStatusChange(eventId, memberId, status)
+                      }
+                      onDiscard={(eventId) => void onDiscard(eventId)}
+                    />
+                  </div>
+                  <div className="sm:hidden">
+                    <PlanCardList
+                      locale={locale}
+                      plans={listPlans}
+                      members={members}
+                      attendanceByEvent={attendanceByEvent}
+                      busyId={busyId}
+                      currentSaturday={board.currentSaturday}
+                      onStatusChange={(eventId, memberId, status) =>
+                        void onStatusChange(eventId, memberId, status)
+                      }
+                      onDiscard={(eventId) => void onDiscard(eventId)}
+                    />
+                  </div>
+                </>
               ) : filter !== "weekend" && filter !== "action" ? (
                 <PlanEmpty locale={locale} />
               ) : null}
@@ -654,18 +673,35 @@ export function CalendarPanel({ locale }: { locale: string }) {
               {filter === "all" && board.past.length > 0 ? (
                 <section className="flex flex-col gap-2">
                   <h2 className="text-sm font-semibold text-muted-foreground">{t.planPast}</h2>
-                  <PlanTable
-                    locale={locale}
-                    plans={board.past}
-                    members={members}
-                    busyId={busyId}
-                    muted
-                    showWeekendBands={false}
-                    onStatusChange={(eventId, memberId, status) =>
-                      void onStatusChange(eventId, memberId, status)
-                    }
-                    onDiscard={(eventId) => void onDiscard(eventId)}
+                  <div className="hidden sm:block">
+                    <PlanTable
+                      locale={locale}
+                      plans={board.past}
+                      members={members}
+                      busyId={busyId}
+                      muted
+                      showWeekendBands={false}
+                      onStatusChange={(eventId, memberId, status) =>
+                        void onStatusChange(eventId, memberId, status)
+                      }
+                      onDiscard={(eventId) => void onDiscard(eventId)}
                     />
+                  </div>
+                  <div className="sm:hidden">
+                    <PlanCardList
+                      locale={locale}
+                      plans={board.past}
+                      members={members}
+                      attendanceByEvent={attendanceByEvent}
+                      busyId={busyId}
+                      muted
+                      showWeekendBands={false}
+                      onStatusChange={(eventId, memberId, status) =>
+                        void onStatusChange(eventId, memberId, status)
+                      }
+                      onDiscard={(eventId) => void onDiscard(eventId)}
+                    />
+                  </div>
                 </section>
               ) : null}
             </>
