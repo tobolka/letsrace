@@ -20,6 +20,9 @@ export type CountryCoverage = {
   withAges: number;
 };
 
+/** Races added per day, oldest first — the catalogue's pulse. */
+export type GrowthDay = { day: string; added: number };
+
 export type AdminOverview = {
   /** Things that need a person, most urgent first. */
   stalled: StalledSource[];
@@ -34,6 +37,8 @@ export type AdminOverview = {
   coverage: CountryCoverage[];
   lastRun: { at: string | null; ok: boolean | null; upserted: number } | null;
   failRate7d: { fails: number; runs: number };
+  /** Fourteen days of new races, and this week against last week. */
+  growth: { days: GrowthDay[]; thisWeek: number; lastWeek: number };
 };
 
 const PAGE = 1000;
@@ -61,7 +66,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     if (!data || data.length < PAGE) break;
   }
 
-  const [health, eventCount, sourceCount, activeCount, pendingDiscovery, feedback, runs] =
+  const since14 = new Date(Date.now() - 14 * 864e5);
+  const [health, eventCount, sourceCount, activeCount, pendingDiscovery, feedback, runs, fresh] =
     await Promise.all([
       getSourceHealth(),
       supabase.from("events").select("*", { count: "exact", head: true }),
@@ -78,6 +84,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         .gte("started_at", new Date(Date.now() - 7 * 864e5).toISOString())
         .order("started_at", { ascending: false })
         .limit(500),
+      supabase
+        .from("events")
+        .select("created_at")
+        .gte("created_at", since14.toISOString())
+        .limit(20000),
     ]);
 
   const byMonth = new Map<string, number>();
@@ -107,6 +118,20 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   const runRows = runs.data ?? [];
   const last = runRows[0];
 
+  // Fourteen days of arrivals. Two weeks is the shortest window where a quiet
+  // week reads as quiet rather than as a Tuesday.
+  const perDay = new Map<string, number>();
+  for (let i = 13; i >= 0; i -= 1) {
+    perDay.set(new Date(Date.now() - i * 864e5).toISOString().slice(0, 10), 0);
+  }
+  for (const row of (fresh.data ?? []) as { created_at: string | null }[]) {
+    const day = (row.created_at ?? "").slice(0, 10);
+    if (perDay.has(day)) perDay.set(day, (perDay.get(day) ?? 0) + 1);
+  }
+  const days = [...perDay.entries()].map(([day, added]) => ({ day, added }));
+  const thisWeek = days.slice(7).reduce((n, d) => n + d.added, 0);
+  const lastWeek = days.slice(0, 7).reduce((n, d) => n + d.added, 0);
+
   return {
     stalled: health.stalled,
     pendingDiscovery: pendingDiscovery.count ?? 0,
@@ -135,5 +160,6 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       fails: runRows.filter((r) => r.ok === false).length,
       runs: runRows.length,
     },
+    growth: { days, thisWeek, lastWeek },
   };
 }

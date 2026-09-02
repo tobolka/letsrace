@@ -198,13 +198,38 @@ time,
   z-index: 2 !important;
 }
 
+/*
+ * Only the admin turns this on, by putting .dark on <html>. The light palette
+ * is warm stone, so this is the same family read from the other end rather
+ * than a neutral grey — the brand red is the one value that does not move.
+ */
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  color-scheme: dark;
+  --background: #16130f;
+  --foreground: #f5f5f4;
+  --card: #1f1b16;
+  --card-foreground: #f5f5f4;
+  --popover: #1f1b16;
+  --popover-foreground: #f5f5f4;
+  --primary: #f5f5f4;
+  --primary-foreground: #1c1917;
+  --secondary: #2a251f;
+  --secondary-foreground: #f5f5f4;
+  --muted: #241f1a;
+  --muted-foreground: #a8a29e;
+  --accent: #2a251f;
+  --accent-foreground: #f5f5f4;
+  --destructive: #ef4444;
+  --brand: #e8323b;
+  --border: #332c25;
+  --input: #332c25;
+  --ring: #a8a29e;
+  --sidebar: #1a1611;
+  --sidebar-foreground: #d6d3d1;
+  --sidebar-primary: #f5f5f4;
+  --sidebar-primary-foreground: #1c1917;
+  --sidebar-accent: #2a251f;
+  --sidebar-accent-foreground: #f5f5f4;
+  --sidebar-border: #332c25;
+  --sidebar-ring: #a8a29e;
 }

@@ -21,9 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
+import { Eye, EyeOff, X } from "lucide-react";
 
 export type AdminEventRow = {
   id: string;
@@ -58,6 +60,8 @@ export function AdminEventsTable({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulking, setBulking] = useState(false);
 
   async function setVisibility(id: string, visibility: "public" | "hidden") {
     setBusyId(id);
@@ -75,6 +79,46 @@ export function AdminEventsTable({
     startTransition(() => router.refresh());
   }
 
+  // Selection belongs to the rows on screen; changing the question clears it.
+  useEffect(() => {
+    setSelected(new Set());
+  }, [events]);
+
+  function toggle(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  async function bulkVisibility(visibility: "public" | "hidden") {
+    const ids = [...selected];
+    if (ids.length === 0) return;
+    setBulking(true);
+    const res = await fetch("/api/admin/events", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids, visibility }),
+    });
+    setBulking(false);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || "Bulk update failed");
+      return;
+    }
+    const data = (await res.json()) as { changed: number };
+    toast.success(
+      `${data.changed} ${data.changed === 1 ? "race" : "races"} ${
+        visibility === "hidden" ? "taken off the map" : "put back on the map"
+      }`,
+    );
+    setSelected(new Set());
+    startTransition(() => router.refresh());
+  }
+
+  const allOnPage = events.length > 0 && events.every((e) => selected.has(e.id));
   const lastPage = Math.max(1, Math.ceil(total / pageSize));
 
   function go(next: Partial<{ view: string; when: string; q: string; page: number }>) {
@@ -116,6 +160,52 @@ export function AdminEventsTable({
         </span>
       </div>
 
+      {/* Always here, so choosing a row does not shove the table down under the
+          pointer that was about to tick the next box. */}
+      <div className="sticky top-14 z-10 flex min-h-11 flex-wrap items-center gap-2 rounded-lg border bg-card p-2 shadow-xs">
+        {selected.size === 0 ? (
+          <span className="px-1 text-sm text-muted-foreground">
+            Tick rows to take several off the map at once.
+          </span>
+        ) : (
+          <>
+          <span className="px-1 text-sm font-medium tabular-nums">
+            {selected.size} selected
+          </span>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={bulking}
+            onClick={() => void bulkVisibility("hidden")}
+          >
+            {bulking ? <Spinner data-icon="inline-start" /> : <EyeOff data-icon="inline-start" />}
+            Take off the map
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={bulking}
+            onClick={() => void bulkVisibility("public")}
+          >
+            <Eye data-icon="inline-start" />
+            Put back on
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="ml-auto"
+            onClick={() => setSelected(new Set())}
+          >
+            <X data-icon="inline-start" />
+            Clear
+          </Button>
+          </>
+        )}
+      </div>
+
       {events.length === 0 ? (
         <Empty>
           <EmptyHeader>
@@ -128,6 +218,15 @@ export function AdminEventsTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-8">
+                <Checkbox
+                  checked={allOnPage}
+                  aria-label="Select every race on this page"
+                  onCheckedChange={(on) =>
+                    setSelected(on ? new Set(events.map((e) => e.id)) : new Set())
+                  }
+                />
+              </TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Place</TableHead>
@@ -143,7 +242,14 @@ export function AdminEventsTable({
               const busy = pending || busyId === e.id;
               const url = firstOpenableUrl(e.website_url, e.registration_url);
               return (
-                <TableRow key={e.id}>
+                <TableRow key={e.id} data-state={selected.has(e.id) ? "selected" : undefined}>
+                  <TableCell className="w-8">
+                    <Checkbox
+                      checked={selected.has(e.id)}
+                      aria-label={`Select ${e.name}`}
+                      onCheckedChange={() => toggle(e.id)}
+                    />
+                  </TableCell>
                   <TableCell className="whitespace-nowrap tabular-nums">{e.start_date}</TableCell>
                   {/* Wide enough that a long Italian race title is two lines
                       rather than six, and clamped so one entry cannot make a

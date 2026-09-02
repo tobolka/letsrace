@@ -92,6 +92,7 @@ export function StalledSources({ initial }: { initial: StalledRow[] }) {
   const [rows, setRows] = useState<StalledRow[]>(initial);
   const [checking, setChecking] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [listOpen, setListOpen] = useState(false);
   const [, startTransition] = useTransition();
 
   async function checkAll() {
@@ -135,6 +136,18 @@ export function StalledSources({ initial }: { initial: StalledRow[] }) {
 
   const losing = rows.filter((r) => (r.liveRaces ?? 0) > 0);
 
+  // A wall of seventy hosts used to be the first thing on the dashboard, above
+  // everything that could actually be acted on. It says its size and stays shut
+  // until asked.
+  const hosts = groupByHost(rows);
+  const summaryLine =
+    hosts.length === 0
+      ? ""
+      : `${rows.length} across ${hosts.length} ${hosts.length === 1 ? "site" : "sites"} — ${hosts
+          .slice(0, 3)
+          .map((h) => h.host)
+          .join(", ")}${hosts.length > 3 ? ` and ${hosts.length - 3} more` : ""}`;
+
   return (
     <Card>
       <CardHeader className="border-b">
@@ -165,6 +178,21 @@ export function StalledSources({ initial }: { initial: StalledRow[] }) {
             </EmptyHeader>
           </Empty>
         ) : (
+          <Collapsible open={listOpen} onOpenChange={setListOpen}>
+            <CollapsibleTrigger asChild>
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 border-b px-6 py-3 text-left text-sm hover:bg-accent"
+              >
+                <ChevronRight
+                  className={`size-4 shrink-0 transition-transform ${listOpen ? "rotate-90" : ""}`}
+                />
+                <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                  {listOpen ? "Hide the list" : summaryLine}
+                </span>
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
           <div className="divide-y">
             {groupByHost(rows).map((g) => (
               <Collapsible key={g.host} defaultOpen={groupByHost(rows).length <= 3}>
@@ -267,6 +295,8 @@ export function StalledSources({ initial }: { initial: StalledRow[] }) {
               </Collapsible>
             ))}
           </div>
+            </CollapsibleContent>
+          </Collapsible>
         )}
       </CardContent>
       {losing.length > 0 && (
