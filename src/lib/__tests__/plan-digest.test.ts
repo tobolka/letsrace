@@ -74,3 +74,21 @@ describe("digestHasContent", () => {
     expect(digestHasContent({ ...empty, thisWeekendFree: true }, true)).toBe(true);
   });
 });
+
+describe("buildWeeklyDigest with a weekend claimed by something else", () => {
+  const now = new Date("2026-09-02T08:00:00Z"); // Wednesday
+
+  it("does not call a weekend free once it has been marked taken", () => {
+    const free = buildWeeklyDigest({ plans: [], now });
+    expect(free.thisWeekendFree).toBe(true);
+    expect(free.nextWeekendFree).toBe(true);
+
+    const taken = buildWeeklyDigest({
+      plans: [],
+      blockedSaturdays: new Set(["2026-09-05", "2026-09-12"]),
+      now,
+    });
+    expect(taken.thisWeekendFree).toBe(false);
+    expect(taken.nextWeekendFree).toBe(false);
+  });
+});

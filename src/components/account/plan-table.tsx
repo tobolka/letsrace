@@ -21,6 +21,7 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import {
   saturdayOfRaceWeekend,
+  weekendSpread,
   type EventPlan,
   type PlanMemberStatus,
   type PlannerMember,
@@ -80,7 +81,7 @@ export function PlanTable({
           const prev = plans[i - 1];
           const sat = weekendKey(plan);
           const showBand = showWeekendBands && (!prev || weekendKey(prev) !== sat);
-          const weekendCount = plans.filter((p) => weekendKey(p) === sat).length;
+          const weekendPlans = plans.filter((p) => weekendKey(p) === sat);
           const disc =
             DISCIPLINE_LABELS[(plan.event.disciplines[0] ?? "") as Discipline] ||
             plan.event.disciplines[0];
@@ -98,7 +99,7 @@ export function PlanTable({
                         {format(addDays(parseISO(sat), 1), "d. M.", { locale: df })}
                       </span>
                       {sat === currentSaturday ? <Badge>{t.thisWeekend}</Badge> : null}
-                      {weekendCount > 1 ? <Badge variant="secondary">{t.planConflict}</Badge> : null}
+                      <WeekendSpreadBadge locale={locale} plans={weekendPlans} />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -168,5 +169,16 @@ export function PlanTable({
       </TableBody>
       </Table>
     </Card>
+  );
+}
+
+function WeekendSpreadBadge({ locale, plans }: { locale: string; plans: EventPlan[] }) {
+  const t = messagesFor(locale);
+  const spread = weekendSpread(plans);
+  if (spread === "single") return null;
+  return (
+    <Badge variant={spread === "same-day" ? "outline" : "secondary"}>
+      {spread === "same-day" ? t.planSameDay : t.planBothDays}
+    </Badge>
   );
 }

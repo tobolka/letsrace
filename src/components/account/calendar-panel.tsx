@@ -8,7 +8,7 @@ import { CalendarDays, List, MapPin } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
 import { PlanSetup } from "@/components/account/plan-setup";
 import { PlanStats } from "@/components/account/plan-stats";
-import { WeekendBoard } from "@/components/account/weekend-board";
+import { WeekendBoard, type BlockedWeekend } from "@/components/account/weekend-board";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanRaceCard } from "@/components/account/plan-race-card";
@@ -41,6 +41,7 @@ import { isBusyIsoDate, parseWeekdays, toJsDayOfWeek } from "@/lib/plan-prefs";
 import {
   buildWeekendBoard,
   countFreeWeekends,
+  isWeekendFree,
   currentWeekendPlans,
   formatIsoDate,
   mergeEventPlans,
@@ -132,6 +133,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const [suggestCtx, setSuggestCtx] = useState<SuggestionContext | null>(null);
   const [series, setSeries] = useState<SeriesProgress[]>([]);
   const [pickedSaturday, setPickedSaturday] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState<Record<string, BlockedWeekend>>({});
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -157,6 +159,16 @@ export function CalendarPanel({ locale }: { locale: string }) {
       supabase.from("event_favorites").select(`event:events(${EVENT_EMBED})`).eq("user_id", auth.user.id),
       supabase.from("profiles").select("busy_weekdays").eq("id", auth.user.id).maybeSingle(),
     ]);
+
+    const { data: blockedRows } = await supabase
+      .from("blocked_weekends")
+      .select("saturday, note")
+      .eq("user_id", auth.user.id);
+    setBlocked(
+      Object.fromEntries(
+        ((blockedRows ?? []) as BlockedWeekend[]).map((r) => [r.saturday, r]),
+      ),
+    );
 
     const nextEvents: Record<string, PlannerEvent> = {};
     const nextAtt: Record<string, AttendanceRecord[]> = {};
@@ -327,7 +339,8 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const board = useMemo(() => buildWeekendBoard({ plans, weeks: 16 }), [plans]);
   const today = todayIso();
   const thisWeekend = currentWeekendPlans(board.weekends);
-  const freeCount = countFreeWeekends(board.weekends, busyWeekdays);
+  const blockedSaturdays = useMemo(() => new Set(Object.keys(blocked)), [blocked]);
+  const freeCount = countFreeWeekends(board.weekends, busyWeekdays, blockedSaturdays);
   const upcomingCount = plans.filter((p) => p.event.startDate >= today).length;
   const actionCount = plans.filter((p) => planNeedsAction(p, today)).length;
   const raceDates = useMemo(() => raceDatesFromPlans(plans), [plans]);
@@ -380,6 +393,32 @@ export function CalendarPanel({ locale }: { locale: string }) {
     });
     setFavoriteIds((prev) => prev.filter((id) => id !== eventId));
     setBusyId(null);
+  }
+
+  async function onBlockWeekend(saturday: string, note: string) {
+    if (!userId) return;
+    const row = { saturday, note: note || null };
+    setBlocked((prev) => ({ ...prev, [saturday]: row }));
+    if (pickedSaturday === saturday) setPickedSaturday(null);
+    const supabase = createBrowserSupabase();
+    await supabase
+      .from("blocked_weekends")
+      .upsert({ user_id: userId, ...row }, { onConflict: "user_id,saturday" });
+  }
+
+  async function onUnblockWeekend(saturday: string) {
+    if (!userId) return;
+    setBlocked((prev) => {
+      const next = { ...prev };
+      delete next[saturday];
+      return next;
+    });
+    const supabase = createBrowserSupabase();
+    await supabase
+      .from("blocked_weekends")
+      .delete()
+      .eq("user_id", userId)
+      .eq("saturday", saturday);
   }
 
   async function onSetHome(place: PickedPlace) {
@@ -448,7 +487,9 @@ export function CalendarPanel({ locale }: { locale: string }) {
   // to the picked weekend updates what is shown for it.
   const fillWeekend =
     board.weekends.find((w) => w.saturday === pickedSaturday) ??
-    (currentWeekend && thisWeekend.length === 0 && !thisWeekendBusy ? currentWeekend : null);
+    (currentWeekend && isWeekendFree(currentWeekend, busyWeekdays, blockedSaturdays)
+      ? currentWeekend
+      : null);
   const busyDayOfWeek = toJsDayOfWeek(busyWeekdays);
 
   const summary = [
@@ -492,8 +533,11 @@ export function CalendarPanel({ locale }: { locale: string }) {
         locale={locale}
         weekends={board.weekends}
         busyWeekdays={busyWeekdays}
+        blocked={blocked}
         selected={fillWeekend?.saturday ?? null}
         onSelect={(w) => setPickedSaturday(w.saturday)}
+        onBlock={(saturday, note) => onBlockWeekend(saturday, note)}
+        onUnblock={(saturday) => onUnblockWeekend(saturday)}
       />
 
       {fillWeekend && suggestCtx ? (

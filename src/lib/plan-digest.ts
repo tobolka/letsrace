@@ -54,6 +54,8 @@ export function pickDigestNearby(
 export function buildWeeklyDigest(opts: {
   plans: EventPlan[];
   busyWeekdays?: number[];
+  /** Weekends claimed by something that is not a race, by their Saturday. */
+  blockedSaturdays?: ReadonlySet<string>;
   nearby?: DigestNearby | null;
   now?: Date;
 }): WeeklyDigest {
@@ -62,6 +64,7 @@ export function buildWeeklyDigest(opts: {
   const weekend = thisWeekendRange(now);
   const next = nextWeekendRange(now);
   const busy = opts.busyWeekdays ?? [];
+  const blocked = opts.blockedSaturdays ?? new Set<string>();
 
   const thisWeekend = opts.plans.filter((p) => {
     const sat = saturdayOfRaceWeekend(p.event.startDate);
@@ -72,9 +75,11 @@ export function buildWeeklyDigest(opts: {
 
   return {
     thisWeekend,
-    thisWeekendFree: thisWeekend.length === 0,
+    // Telling someone their weekend is free when they have already said it is
+    // taken is the fastest way to make the whole mail untrustworthy.
+    thisWeekendFree: thisWeekend.length === 0 && !blocked.has(weekend.from),
     needsAction: opts.plans.filter((p) => planNeedsAction(p, today)),
-    nextWeekendFree: nextWeekend.length === 0 && !nextBusy,
+    nextWeekendFree: nextWeekend.length === 0 && !nextBusy && !blocked.has(next.from),
     nearby: opts.nearby ?? null,
   };
 }

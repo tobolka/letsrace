@@ -254,12 +254,41 @@ export function buildWeekendBoard(opts: {
   return { currentSaturday, weekends, past };
 }
 
-export function countFreeWeekends(weekends: WeekendBucket[], busyWeekdays: number[] = []): number {
-  return weekends.filter((w) => {
-    if (w.plans.length > 0) return false;
-    if (isBusyIsoDate(w.saturday, busyWeekdays) || isBusyIsoDate(w.sunday, busyWeekdays)) return false;
-    return true;
-  }).length;
+/**
+ * A weekend is free when nothing is booked on it, it is not a weekday the
+ * household never races on, and it has not been claimed by something that is
+ * not a race at all — a wedding fills a weekend as completely as a race does.
+ */
+export function countFreeWeekends(
+  weekends: WeekendBucket[],
+  busyWeekdays: number[] = [],
+  blockedSaturdays: ReadonlySet<string> = new Set(),
+): number {
+  return weekends.filter((w) => isWeekendFree(w, busyWeekdays, blockedSaturdays)).length;
+}
+
+export function isWeekendFree(
+  weekend: WeekendBucket,
+  busyWeekdays: number[] = [],
+  blockedSaturdays: ReadonlySet<string> = new Set(),
+): boolean {
+  if (weekend.plans.length > 0) return false;
+  if (blockedSaturdays.has(weekend.saturday)) return false;
+  if (isBusyIsoDate(weekend.saturday, busyWeekdays) || isBusyIsoDate(weekend.sunday, busyWeekdays)) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Two races on one weekend is normal — a shortlist to choose from, or one on
+ * the Saturday and one on the Sunday. Only two on the same day is a clash the
+ * plan should point at.
+ */
+export function weekendSpread(plans: EventPlan[]): "single" | "same-day" | "both-days" {
+  if (plans.length < 2) return "single";
+  const days = new Set(plans.map((p) => p.event.startDate));
+  return days.size < plans.length ? "same-day" : "both-days";
 }
 
 export function currentWeekendPlans(weekends: WeekendBucket[]): EventPlan[] {

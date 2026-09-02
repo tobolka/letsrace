@@ -6,7 +6,13 @@ import { PlanRaceCard } from "@/components/account/plan-race-card";
 import { Badge } from "@/components/ui/badge";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
-import { saturdayOfRaceWeekend, type EventPlan, type PlanMemberStatus, type PlannerMember } from "@/lib/planner";
+import {
+  saturdayOfRaceWeekend,
+  weekendSpread,
+  type EventPlan,
+  type PlanMemberStatus,
+  type PlannerMember,
+} from "@/lib/planner";
 import type { AttendanceRecord } from "@/lib/planner-db";
 import { cn } from "@/lib/utils";
 
@@ -48,9 +54,9 @@ export function PlanCardList({
         const prev = plans[i - 1];
         const showBand =
           showWeekendBands && (!prev || saturdayOfRaceWeekend(prev.event.startDate) !== sat);
-        const weekendCount = plans.filter(
+        const weekendPlans = plans.filter(
           (p) => saturdayOfRaceWeekend(p.event.startDate) === sat,
-        ).length;
+        );
 
         return (
           <Fragment key={plan.event.id}>
@@ -61,7 +67,7 @@ export function PlanCardList({
                   {format(addDays(parseISO(sat), 1), "d. M.", { locale: df })}
                 </span>
                 {sat === currentSaturday ? <Badge>{t.thisWeekend}</Badge> : null}
-                {weekendCount > 1 ? <Badge variant="secondary">{t.planConflict}</Badge> : null}
+                <WeekendSpreadBadge locale={locale} plans={weekendPlans} />
               </div>
             ) : null}
             <PlanRaceCard
@@ -79,5 +85,16 @@ export function PlanCardList({
         );
       })}
     </div>
+  );
+}
+
+function WeekendSpreadBadge({ locale, plans }: { locale: string; plans: EventPlan[] }) {
+  const t = messagesFor(locale);
+  const spread = weekendSpread(plans);
+  if (spread === "single") return null;
+  return (
+    <Badge variant={spread === "same-day" ? "outline" : "secondary"}>
+      {spread === "same-day" ? t.planSameDay : t.planBothDays}
+    </Badge>
   );
 }

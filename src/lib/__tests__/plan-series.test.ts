@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildSeriesProgress, type SeriesRound } from "@/lib/plan-series";
+import { weekendSpread } from "@/lib/planner";
 
 function round(n: number, startDate: string, seriesId = "s1", seriesName = "Solid MTB"): SeriesRound {
   return {
@@ -71,5 +72,25 @@ describe("buildSeriesProgress", () => {
       today: TODAY,
     });
     expect(out.map((p) => p.seriesId)).toEqual(["live", "done"]);
+  });
+});
+
+describe("weekendSpread", () => {
+  function plan(startDate: string, id: string) {
+    return {
+      event: { id, startDate },
+    } as unknown as import("@/lib/planner").EventPlan;
+  }
+
+  it("says nothing about a weekend with one race", () => {
+    expect(weekendSpread([plan("2026-09-12", "a")])).toBe("single");
+  });
+
+  it("treats Saturday and Sunday as two races, not a clash", () => {
+    expect(weekendSpread([plan("2026-09-12", "a"), plan("2026-09-13", "b")])).toBe("both-days");
+  });
+
+  it("flags two races on the same day", () => {
+    expect(weekendSpread([plan("2026-09-12", "a"), plan("2026-09-12", "b")])).toBe("same-day");
   });
 });
