@@ -50,7 +50,7 @@ export function AlertsPanel({ locale }: { locale: string }) {
 
   if (!userId) {
     return (
-      <Card className="mx-auto w-full max-w-md">
+      <Card className="m-auto w-full max-w-md">
         <CardHeader>
           <CardTitle>{t.alertTitle}</CardTitle>
           <CardDescription>{t.alertAuth}</CardDescription>

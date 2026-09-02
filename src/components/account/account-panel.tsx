@@ -224,7 +224,7 @@ export function AccountPanel({ locale }: { locale: string }) {
 
   if (!authed) {
     return (
-      <Card className="mx-auto w-full max-w-md">
+      <Card className="m-auto w-full max-w-md">
         <CardHeader>
           <CardTitle>{t.account}</CardTitle>
           <CardDescription>{t.planAuthGoing}</CardDescription>

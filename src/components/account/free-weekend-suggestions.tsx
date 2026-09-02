@@ -154,11 +154,16 @@ export function FreeWeekendSuggestions({
                       <span className="truncate">{meta}</span>
                     </ItemDescription>
                   </ItemContent>
+                  {/* The card lives in a narrow rail: a labelled button here
+                      left about eight characters for the race name. */}
                   <Button
                     type="button"
-                    size="sm"
+                    size="icon-sm"
+                    className="shrink-0"
                     variant={isAdded ? "ghost" : "secondary"}
                     disabled={isAdded || busy === s.id}
+                    aria-label={`${isAdded ? t.suggestAdded : t.suggestAdd} — ${s.name}`}
+                    title={isAdded ? t.suggestAdded : t.suggestAdd}
                     onClick={async () => {
                       setBusy(s.id);
                       try {
@@ -170,7 +175,6 @@ export function FreeWeekendSuggestions({
                     }}
                   >
                     {isAdded ? <Check /> : <CalendarPlus />}
-                    {isAdded ? t.suggestAdded : t.suggestAdd}
                   </Button>
                 </Item>
               );

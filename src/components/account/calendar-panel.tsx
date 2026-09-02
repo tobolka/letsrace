@@ -467,7 +467,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
 
   if (!authed) {
     return (
-      <Card className="mx-auto w-full max-w-md">
+      <Card className="m-auto w-full max-w-md">
         <CardHeader>
           <CardTitle>{t.myCalendar}</CardTitle>
           <CardDescription>{t.planAuthGoing}</CardDescription>
@@ -563,7 +563,15 @@ export function CalendarPanel({ locale }: { locale: string }) {
       {/* Below the season line the page splits: the plan itself on the left,
           and the two things that answer "what else" beside it rather than a
           thousand pixels further down. */}
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
+      <div
+        className={
+          // With nothing in the plan there is no left column to sit beside, so
+          // the rail stops being a rail rather than leaving a hole in a grid.
+          plans.length === 0
+            ? "flex flex-col gap-6"
+            : "grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start"
+        }
+      >
 
       <div className="flex min-w-0 flex-col gap-4">
       {plans.length === 0 ? null : (
@@ -605,11 +613,13 @@ export function CalendarPanel({ locale }: { locale: string }) {
         ) : null}
         </div>
 
+        {/* Month and day-plans share the main column now, so they stack until
+            there is genuinely room for both side by side. */}
         <TabsContent value="calendar" className="mt-4">
           {plans.length === 0 ? (
             <PlanEmpty locale={locale} />
           ) : (
-            <div className="grid gap-4 lg:grid-cols-[auto_1fr] lg:items-start">
+            <div className="grid gap-4 xl:grid-cols-[auto_1fr] xl:items-start">
               <Card className="w-fit">
                 <CardContent className="pt-4">
                   <Calendar

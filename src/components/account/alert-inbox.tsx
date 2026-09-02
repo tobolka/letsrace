@@ -148,9 +148,12 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
                   <ItemActions>
                     <Button
                       type="button"
-                      size="sm"
+                      size="icon-sm"
+                      className="shrink-0"
                       variant={isAdded ? "ghost" : "secondary"}
                       disabled={isAdded || busy === h.id}
+                      aria-label={`${isAdded ? t.suggestAdded : t.suggestAdd} — ${h.name}`}
+                      title={isAdded ? t.suggestAdded : t.suggestAdd}
                       onClick={async () => {
                         setBusy(h.id);
                         try {
@@ -163,9 +166,6 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
                       }}
                     >
                       {isAdded ? <Check /> : <CalendarPlus />}
-                      <span className="hidden sm:inline">
-                        {isAdded ? t.suggestAdded : t.suggestAdd}
-                      </span>
                     </Button>
                   </ItemActions>
                 </Item>
