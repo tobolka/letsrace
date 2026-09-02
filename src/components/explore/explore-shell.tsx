@@ -388,11 +388,15 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     refetch({ dateFrom, dateTo });
   }
 
-  function refetch(overrides: Record<string, unknown> = {}) {
+  /**
+   * Returns what was fetched, so a caller that needs to know whether the
+   * search found anything can wait for it. Superseded fetches resolve to null.
+   */
+  function refetch(overrides: Record<string, unknown> = {}): Promise<EventListItem[] | null> {
     const gen = ++eventsFetchGen.current;
     fetchStartedRef.current = true;
     setListLoading(true);
-    void (async () => {
+    return (async () => {
       const params = new URLSearchParams();
       const qRaw = (overrides.q as string) ?? filters.q;
       const placed = lastPlacedQ.current;
@@ -428,7 +432,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       try {
         const res = await fetch(`/api/events?${params.toString()}`);
         const data = (await res.json()) as EventListItem[];
-        if (gen !== eventsFetchGen.current) return;
+        if (gen !== eventsFetchGen.current) return null;
         const focusSlug = filters.e;
         setEvents((prev) => {
           if (!focusSlug) return data;
@@ -438,6 +442,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           return [kept, ...data];
         });
         if (overrides.fitMap) setFitSeq((n) => n + 1);
+        return data;
+      } catch {
+        return null;
       } finally {
         if (gen === eventsFetchGen.current) {
           setListLoading(false);
@@ -485,14 +492,37 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   async function runSearch(q: string) {
     const gen = ++searchGen.current;
     const trimmed = q.trim();
+    if (!trimmed) {
+      lastPlacedQ.current = "";
+      void refetch({ q: "" });
+      return;
+    }
+
+    // Typed text is a race name first. Half the race names in this catalogue
+    // are also places — Sudety, Vysočina, Beskydy — and geocoding those threw
+    // away the query, flew the map somewhere, and reported nothing found for a
+    // race that is in the catalogue. Only when no race matches is the text
+    // treated as a place to go to.
+    lastPlacedQ.current = "";
+    // A search is a find, not a filter: the date window goes too, so a race in
+    // October is not missing just because the bar still said "this weekend".
+    // Clearing it rather than ignoring it keeps the chip honest about what ran.
+    void setFilters({ dateFrom: "", dateTo: "" });
+    const hits = await refetch({
+      q: trimmed,
+      dateFrom: "",
+      dateTo: "",
+      skipBounds: true,
+      fitMap: true,
+    });
+    if (gen !== searchGen.current) return;
+    if (hits === null || hits.length > 0) return;
+
     if (trimmed.length >= 3) {
       const ok = await flyToPlace(trimmed, gen);
       if (gen !== searchGen.current) return;
       if (ok) return;
     }
-    if (gen !== searchGen.current) return;
-    lastPlacedQ.current = "";
-    refetch({ q: trimmed });
   }
 
   function handleSearchChange(q: string) {
@@ -503,7 +533,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       lastPlacedQ.current = "";
       searchGen.current += 1;
       placeAbortRef.current?.abort();
-      refetch({ q: trimmed });
+      void refetch({ q: trimmed });
       return;
     }
     searchTimerRef.current = window.setTimeout(() => {
@@ -518,6 +548,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   searchViewportRef.current = (b) => {
     if (filters.series || filters.country) return;
+    // A name search is a find, not a filter on the current window: let the map
+    // move without quietly dropping matches that sit outside it.
+    if (filters.q.trim() && !lastPlacedQ.current) return;
     if (lastAreaRef.current && !viewportNeedsFetch(lastAreaRef.current, b)) return;
     const query = expandViewport(b);
     lastAreaRef.current = query;
