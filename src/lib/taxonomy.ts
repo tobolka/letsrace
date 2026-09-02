@@ -268,12 +268,17 @@ export function canonicalizeDisciplines(raw: string[] | null | undefined): Disci
 export function inferDisciplines(text: string, existing?: string[] | null): Discipline[] {
   const fromExisting = canonicalizeDisciplines(existing);
   const t = text.toLowerCase();
+  // Marathons are matched on a diacritic-free copy: the Slovak and Czech
+  // spelling is "maratón", and a word boundary before "maraton" also misses
+  // "minimaraton" and "půlmaraton" — between them that was most of the MTB
+  // marathons in the catalogue losing their XCM tag.
+  const tf = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const found = new Set<Discipline>(fromExisting);
 
   if (/\bxce\b|eliminat/.test(t)) found.add("xce");
   if (/\bxcc\b/.test(t)) found.add("xcc");
-  if (/\bxcm\b/.test(t)) found.add("xcm");
-  else if (/\bmaraton|marathon/.test(t) && isMtbMarathon(t)) found.add("xcm");
+  if (/\bxcm\b/.test(tf)) found.add("xcm");
+  else if (/marath?on/.test(tf) && isMtbMarathon(tf)) found.add("xcm");
   if (/\bxco\b/.test(t)) found.add("xco");
   if (/\bdh\b|downhill|sjezd/.test(t)) found.add("dh");
   if (/\benduro\b/.test(t)) found.add("enduro");
