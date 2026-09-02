@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
 
@@ -40,9 +41,19 @@ export type AdminEventRow = {
 export function AdminEventsTable({
   events,
   filter,
+  when,
+  q,
+  page,
+  pageSize,
+  total,
 }: {
   events: AdminEventRow[];
   filter: "visible" | "hidden" | "all";
+  when: string;
+  q: string;
+  page: number;
+  pageSize: number;
+  total: number;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -64,20 +75,46 @@ export function AdminEventsTable({
     startTransition(() => router.refresh());
   }
 
+  const lastPage = Math.max(1, Math.ceil(total / pageSize));
+
+  function go(next: Partial<{ view: string; when: string; q: string; page: number }>) {
+    const params = new URLSearchParams();
+    const v = next.view ?? filter;
+    const w = next.when ?? when;
+    const term = next.q ?? q;
+    // Any change of what you are looking at starts the paging over; staying on
+    // page 7 of a different question is never what you meant.
+    const p = next.page ?? 1;
+    if (v !== "visible") params.set("view", v);
+    if (w !== "upcoming") params.set("when", w);
+    if (term) params.set("q", term);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    router.push(qs ? `/admin/events?${qs}` : "/admin/events");
+  }
+
   return (
-    <div className="flex flex-col gap-3">
-      <Tabs
-        value={filter}
-        onValueChange={(value) => {
-          router.push(value === "visible" ? "/admin/events" : `/admin/events?view=${value}`);
-        }}
-      >
-        <TabsList>
-          <TabsTrigger value="visible">On map</TabsTrigger>
-          <TabsTrigger value="hidden">Hidden</TabsTrigger>
-          <TabsTrigger value="all">All</TabsTrigger>
-        </TabsList>
-      </Tabs>
+    <div className="flex min-w-0 flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <Tabs value={filter} onValueChange={(value) => go({ view: value })}>
+          <TabsList>
+            <TabsTrigger value="visible">On map</TabsTrigger>
+            <TabsTrigger value="hidden">Hidden</TabsTrigger>
+            <TabsTrigger value="all">All</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Tabs value={when} onValueChange={(value) => go({ when: value })}>
+          <TabsList>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="past">Past</TabsTrigger>
+            <TabsTrigger value="all">Any date</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <SearchBox value={q} onSubmit={(term) => go({ q: term })} />
+        <span className="ml-auto text-sm tabular-nums text-muted-foreground">
+          {total.toLocaleString()} {total === 1 ? "race" : "races"}
+        </span>
+      </div>
 
       {events.length === 0 ? (
         <Empty>
@@ -87,6 +124,7 @@ export function AdminEventsTable({
           </EmptyHeader>
         </Empty>
       ) : (
+        <div className="w-full overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -107,8 +145,15 @@ export function AdminEventsTable({
               return (
                 <TableRow key={e.id}>
                   <TableCell className="whitespace-nowrap tabular-nums">{e.start_date}</TableCell>
-                  <TableCell className="max-w-80 whitespace-normal">
-                    <Link href={`/admin/events/${e.id}`} className="font-medium hover:underline">
+                  {/* Wide enough that a long Italian race title is two lines
+                      rather than six, and clamped so one entry cannot make a
+                      row taller than the screen. */}
+                  <TableCell className="min-w-64 max-w-96 whitespace-normal">
+                    <Link
+                      href={`/admin/events/${e.id}`}
+                      className="line-clamp-2 font-medium hover:underline"
+                      title={e.name}
+                    >
                       {e.name}
                     </Link>
                   </TableCell>
@@ -146,7 +191,59 @@ export function AdminEventsTable({
             })}
           </TableBody>
         </Table>
+        </div>
       )}
+
+      {lastPage > 1 ? (
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => go({ page: page - 1 })}
+          >
+            Previous
+          </Button>
+          <span className="text-sm tabular-nums text-muted-foreground">
+            Page {page} of {lastPage}
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={page >= lastPage}
+            onClick={() => go({ page: page + 1 })}
+          >
+            Next
+          </Button>
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+/** Submits on Enter rather than on every keystroke — each search is a round
+ *  trip to the server, and 2,000 races do not need filtering as you type. */
+function SearchBox({ value, onSubmit }: { value: string; onSubmit: (term: string) => void }) {
+  const [term, setTerm] = useState(value);
+  useEffect(() => setTerm(value), [value]);
+  return (
+    <form
+      className="min-w-48 flex-1"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(term.trim());
+      }}
+    >
+      <Input
+        type="search"
+        value={term}
+        placeholder="Search by name…"
+        aria-label="Search races by name"
+        onChange={(e) => setTerm(e.target.value)}
+        onBlur={() => term.trim() !== value && onSubmit(term.trim())}
+      />
+    </form>
   );
 }
