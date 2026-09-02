@@ -8,6 +8,7 @@ import { CalendarDays, List, MapPin } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
 import { PlanSetup } from "@/components/account/plan-setup";
 import { PlanStats } from "@/components/account/plan-stats";
+import { WeekendBoard } from "@/components/account/weekend-board";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanRaceCard } from "@/components/account/plan-race-card";
@@ -130,6 +131,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [suggestCtx, setSuggestCtx] = useState<SuggestionContext | null>(null);
   const [series, setSeries] = useState<SeriesProgress[]>([]);
+  const [pickedSaturday, setPickedSaturday] = useState<string | null>(null);
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -440,6 +442,13 @@ export function CalendarPanel({ locale }: { locale: string }) {
         isBusyIsoDate(currentWeekend.sunday, busyWeekdays)),
   );
   const selectedBusy = isBusyIsoDate(selectedIso, busyWeekdays);
+  // The weekend the suggestions are answering for: whichever was clicked on
+  // the board, or this one when it is sitting empty.
+  // Derived from the board rather than held as a snapshot, so adding a race
+  // to the picked weekend updates what is shown for it.
+  const fillWeekend =
+    board.weekends.find((w) => w.saturday === pickedSaturday) ??
+    (currentWeekend && thisWeekend.length === 0 && !thisWeekendBusy ? currentWeekend : null);
   const busyDayOfWeek = toJsDayOfWeek(busyWeekdays);
 
   const summary = [
@@ -479,12 +488,33 @@ export function CalendarPanel({ locale }: { locale: string }) {
         onSetHome={(place) => onSetHome(place)}
       />
 
-      {currentWeekend && thisWeekend.length === 0 && !thisWeekendBusy && suggestCtx ? (
+      <WeekendBoard
+        locale={locale}
+        weekends={board.weekends}
+        busyWeekdays={busyWeekdays}
+        selected={fillWeekend?.saturday ?? null}
+        onSelect={(w) => setPickedSaturday(w.saturday)}
+      />
+
+      {fillWeekend && suggestCtx ? (
         <FreeWeekendSuggestions
+          key={fillWeekend.saturday}
           locale={locale}
-          saturday={currentWeekend.saturday}
-          sunday={currentWeekend.sunday}
+          saturday={fillWeekend.saturday}
+          sunday={fillWeekend.sunday}
           context={suggestCtx}
+          title={
+            fillWeekend.isCurrent
+              ? undefined
+              : t.suggestForWeekend.replace(
+                  "{range}",
+                  `${format(parseISO(fillWeekend.saturday), "d.", { locale: dateFnsLocale(locale) })}–${format(
+                    parseISO(fillWeekend.sunday),
+                    "d. M.",
+                    { locale: dateFnsLocale(locale) },
+                  )}`,
+                )
+          }
           onAdd={async (eventId) => {
             const supabase = createBrowserSupabase();
             const { data: auth } = await supabase.auth.getUser();

@@ -29,12 +29,15 @@ export function FreeWeekendSuggestions({
   saturday,
   sunday,
   context,
+  title,
   onAdd,
 }: {
   locale: string;
   saturday: string;
   sunday: string;
   context: SuggestionContext;
+  /** Set when the weekend being filled is not the current one. */
+  title?: string;
   onAdd: (eventId: string) => Promise<void> | void;
 }) {
   const t = messagesFor(locale);
@@ -106,7 +109,7 @@ export function FreeWeekendSuggestions({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{t.suggestTitle}</CardTitle>
+        <CardTitle className="text-base">{title ?? t.suggestTitle}</CardTitle>
         <CardDescription>{t.suggestBody}</CardDescription>
       </CardHeader>
       <CardContent>
