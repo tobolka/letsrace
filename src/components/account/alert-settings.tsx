@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { AlertPreview } from "@/components/account/alert-preview";
 import { PlacePicker } from "@/components/account/place-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -240,6 +241,16 @@ function AlertCard({
           ))}
         </ToggleGroup>
       </Field>
+
+      <div className="rounded-lg border bg-muted/30 p-3">
+        <AlertPreview
+          locale={locale}
+          lat={Number(row.lat)}
+          lng={Number(row.lng)}
+          radiusKm={row.radius_km}
+          disciplines={discs}
+        />
+      </div>
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
