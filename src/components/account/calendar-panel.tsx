@@ -7,6 +7,7 @@ import { format, parseISO } from "date-fns";
 import { CalendarDays, List, MapPin } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
 import { PlanSetup } from "@/components/account/plan-setup";
+import { NextRaceCard } from "@/components/account/next-race-card";
 import { PlanStats } from "@/components/account/plan-stats";
 import { WeekendBoard, type BlockedWeekend } from "@/components/account/weekend-board";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
@@ -344,6 +345,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
   const upcomingCount = plans.filter((p) => p.event.startDate >= today).length;
   const actionCount = plans.filter((p) => planNeedsAction(p, today)).length;
   const raceDates = useMemo(() => raceDatesFromPlans(plans), [plans]);
+  const nextRace = plans.find((p) => (p.event.endDate ?? p.event.startDate) >= today) ?? null;
 
   const listPlans = useMemo(() => {
     const day = todayIso();
@@ -509,6 +511,18 @@ export function CalendarPanel({ locale }: { locale: string }) {
         <p className="max-w-xl text-sm text-muted-foreground">{t.planSubtitle}</p>
         <p className="sr-only">{summary}</p>
       </header>
+
+      {nextRace ? (
+        <NextRaceCard
+          locale={locale}
+          plan={nextRace}
+          members={members}
+          busy={busyId === nextRace.event.id}
+          onStatusChange={(memberId, status) =>
+            void onStatusChange(nextRace.event.id, memberId, status)
+          }
+        />
+      ) : null}
 
       <PlanStats
         locale={locale}

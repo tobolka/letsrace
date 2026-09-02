@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, LogOut, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/account/auth-form";
+import { CalendarFeed } from "@/components/account/calendar-feed";
 import { PlanPrefsFields, notifyPrefsSaved, saveMemberPrefs } from "@/components/account/plan-prefs-card";
 import {
   AlertDialog,
@@ -253,6 +254,8 @@ export function AccountPanel({ locale }: { locale: string }) {
           </Button>
         </CardContent>
       </Card>
+
+      {userId ? <CalendarFeed locale={locale} userId={userId} /> : null}
 
       <Card>
         <CardHeader>
