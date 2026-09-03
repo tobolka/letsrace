@@ -17,6 +17,7 @@ import {
   parseKalendarzRowerowy,
 } from "@/lib/watcher/extractors/kalendarzrowerowy";
 import { isOdjazdHost, parseOdjazd } from "@/lib/watcher/extractors/odjazd";
+import { isNaZavodyHost, parseNaZavody } from "@/lib/watcher/extractors/nazavody";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
@@ -583,6 +584,9 @@ export async function extractWithAdapter(
   }
   if (isDostartuHost(host)) {
     return { events: await parseDostartu(), strategy: "adapter:dostartu" };
+  }
+  if (isNaZavodyHost(host)) {
+    return { events: await parseNaZavody(), strategy: "adapter:nazavody" };
   }
   if (isPzkolHost(host)) {
     return { events: await parsePzkolSeasons(url, html), strategy: "adapter:pzkol" };
