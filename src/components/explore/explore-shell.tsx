@@ -78,6 +78,7 @@ import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
+import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { MobileFiltersSheet } from "@/components/explore/mobile-filters-sheet";
@@ -697,8 +698,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       >
         <Suspense
           fallback={
-            <div className="flex h-full w-full items-center justify-center bg-stone-200 text-sm text-stone-500">
-              Loading map…
+            // The same ground the route's skeleton paints, so the handover
+            // between the two is invisible. Bare "Loading map…" text in the
+            // middle of the screen was the one part of the load that announced
+            // itself, and it announced a wait rather than progress.
+            <div className="h-full w-full animate-pulse bg-stone-200" role="status">
+              <span className="sr-only">{messages.mapLoading}</span>
             </div>
           }
         >
@@ -1248,25 +1253,6 @@ function ExploreMenu({
 
 /** Placeholder rows at the exact height of a card, so the real list drops in
  *  without moving anything. */
-function ListSkeleton({ rows, compact }: { rows: number; compact?: boolean }) {
-  return (
-    <>
-      {Array.from({ length: rows }, (_, i) => (
-        <div
-          key={i}
-          aria-hidden
-          role="listitem"
-          className="flex h-[90px] animate-pulse flex-col justify-center gap-2 border-b px-4 last:border-b-0"
-        >
-          {compact ? null : <div className="h-2.5 w-28 rounded bg-muted" />}
-          <div className="h-3.5 w-2/3 rounded bg-muted" />
-          <div className="h-3 w-1/2 rounded bg-muted" />
-        </div>
-      ))}
-    </>
-  );
-}
-
 function EventCard({
   event,
   messages,

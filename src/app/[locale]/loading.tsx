@@ -1,4 +1,5 @@
 import { BrandMark } from "@/components/brand-mark";
+import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -10,9 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  * window after you pressed enter. This is what Next streams first, so the app
  * is on screen immediately and the races drop into it when they arrive.
  *
- * It is a copy of the real layout rather than a spinner: same full-height map
- * ground, same 400px panel at the same inset, so nothing moves when the page
- * itself takes over.
+ * Every measurement here is copied from the component it stands in for, not
+ * approximated: the same h-12 header, the same md wordmark, the same 400px
+ * panel at the same inset, the same 90px list rows. A skeleton that is nearly
+ * right is worse than none — the swap becomes a flinch.
  */
 export default function Loading() {
   return (
@@ -23,48 +25,40 @@ export default function Loading() {
         <Skeleton className="size-9 rounded-full" />
       </div>
 
+      {/* Desktop: the panel Card, mirroring ExploreShell's own chrome. */}
       <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
         <Card className="flex h-full w-[400px] flex-col gap-0 overflow-hidden py-0 shadow-lg">
-          <div className="flex items-center justify-between px-3 py-3">
-            <BrandMark size="sm" />
+          <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
+            <BrandMark size="md" />
             <Skeleton className="size-7 rounded-md" />
           </div>
-          <div className="flex items-center gap-2 border-t px-3 py-2">
+          <div className="relative flex min-h-12 shrink-0 items-center gap-2 px-3 py-2">
             <Skeleton className="h-8 w-28 rounded-md" />
-            <Skeleton className="h-8 w-8 rounded-md" />
+            <Skeleton className="h-8 w-20 rounded-md" />
             <Skeleton className="ml-auto h-8 w-8 rounded-md" />
           </div>
-          <div className="flex items-center justify-between border-t px-3 py-2">
-            <Skeleton className="h-4 w-16" />
+          <div className="flex h-10 shrink-0 items-center justify-between border-y px-3">
+            <Skeleton className="h-3.5 w-16" />
             <Skeleton className="h-7 w-32 rounded-md" />
           </div>
-          <div className="flex flex-1 flex-col gap-3 overflow-hidden border-t p-3">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="flex flex-col gap-1.5">
-                <Skeleton className="h-3 w-32" />
-                <Skeleton className="h-4 w-full max-w-[17rem]" />
-                <Skeleton className="h-3 w-40" />
-              </div>
-            ))}
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <ListSkeleton rows={8} />
           </div>
         </Card>
       </div>
 
-      {/* On a phone the panel is a sheet at the bottom, so the hint sits there. */}
+      {/* Phone: the chrome lives in a bottom sheet, so the shell does too. */}
       <div className="absolute inset-x-0 bottom-0 z-20 md:hidden">
-        <Card className="mx-3 mb-3 flex flex-col gap-3 rounded-2xl p-3 shadow-lg">
-          <div className="mx-auto h-1 w-10 rounded-full bg-stone-200" aria-hidden />
-          <div className="flex items-center gap-2">
-            <BrandMark size="sm" mark="lr" />
-            <Skeleton className="h-8 flex-1 rounded-md" />
+        <div className="rounded-t-2xl bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(28,25,23,.12)]">
+          <div className="mx-auto mt-2 mb-3 h-1 w-10 rounded-full bg-stone-200" aria-hidden />
+          <div className="flex items-center gap-2 px-3 pb-2">
+            <BrandMark mark="lr" size="sm" className="shrink-0 px-0.5" />
+            <Skeleton className="h-8 w-28 shrink-0 rounded-md" />
+            <Skeleton className="h-8 w-20 shrink-0 rounded-md" />
+            <Skeleton className="ml-auto size-8 shrink-0 rounded-md" />
           </div>
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-1.5">
-              <Skeleton className="h-3 w-28" />
-              <Skeleton className="h-4 w-56" />
-            </div>
-          ))}
-        </Card>
+          <ListSkeleton rows={3} compact />
+        </div>
       </div>
     </div>
   );
