@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { ExploreShell } from "@/components/explore/explore-shell";
 import { listEvents, getPublicEventBySlug } from "@/lib/events";
 import { thisWeekendRange } from "@/lib/date-presets";
@@ -75,15 +74,10 @@ export default async function LocalePage({
   const initialEvents =
     focused && !head.some((e) => e.id === focused.id) ? [focused, ...head] : head;
 
+  // No Suspense boundary here: the data above is already awaited, so one would
+  // never show. `loading.tsx` is the real boundary — it is what Next streams
+  // before this component runs at all.
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-[100dvh] items-center justify-center text-sm text-stone-500">
-          Loading map…
-        </div>
-      }
-    >
-      <ExploreShell initialEvents={initialEvents} messages={messages[locale]} locale={locale} />
-    </Suspense>
+    <ExploreShell initialEvents={initialEvents} messages={messages[locale]} locale={locale} />
   );
 }
