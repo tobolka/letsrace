@@ -88,8 +88,11 @@ const MAP_STYLE: StyleSpecification = {
       tiles: ["https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{ratio}.png"],
       tileSize: 256,
       maxzoom: 20,
+      // Ours to write, so ours to get right: these are the only links on the
+      // page that were taking the map away with them.
       attribution:
-        '&copy; <a href="https://carto.com/attributions">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>, ' +
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
     },
   },
   layers: [{ id: "carto", type: "raster", source: "carto" }],

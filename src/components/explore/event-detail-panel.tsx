@@ -419,18 +419,20 @@ export function EventDetailPanel({
         <CardTitle
           id="race-detail-title"
           className={cn(
-            "flex min-w-0 flex-1 items-center gap-2.5 leading-snug",
+            "flex min-w-0 flex-1 items-stretch gap-2.5 leading-snug",
             embedded ? "text-[17px] font-semibold" : "text-base",
           )}
         >
           {/* The same rule the list card wears, so a race looks like itself
-              whether you are reading it in the list or in the panel. */}
+              whether you are reading it in the list or in the panel — but
+              stretched, because this is the one place the whole name is
+              spelled out and it can run to two lines. */}
           <span
             aria-hidden
-            className="h-5 w-[3px] shrink-0 rounded-full"
+            className="w-[3px] shrink-0 self-stretch rounded-full"
             style={{ background: disciplineColor(event.disciplines) }}
           />
-          <span className="min-w-0 truncate">{event.name}</span>
+          <span className="min-w-0">{event.name}</span>
         </CardTitle>
         <CardAction className="ml-auto self-center">
           <Button
