@@ -21,6 +21,10 @@ export function BrandMark({
       className={cn(
         "font-black italic leading-none tracking-[-0.04em]",
         tone === "inverse" ? "text-white" : "text-brand",
+        // The initials are italic, so their ink sits right of the box that gets
+        // centred — measured at 1.6px right and 0.5px high on a 44px button.
+        // Nudged back by that, in em, so it holds at any size.
+        mark === "lr" && "translate-x-[-0.097em] translate-y-[-0.032em]",
         mark === "lr"
           ? size === "sm"
             ? "text-[1.05rem]"

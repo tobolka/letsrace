@@ -134,40 +134,68 @@ const GLOW_LAYER = "letsrace-races-glow";
 const DOT_LAYER = "letsrace-races-dot";
 const ICON_LAYER = "letsrace-races-icon";
 
-/** Glyph size inside the pin, in CSS pixels, and the factor it is drawn at. */
-const ICON_PX = 13;
-const ICON_SCALE = 2;
+/**
+ * The glyph inside the pin: rasterised big, drawn small.
+ *
+ * `RASTER_PX` is the size the SVG is baked at, `ICON_PX` the size it appears
+ * on the map. The layer scales one to the other, rather than leaning on
+ * MapLibre's `pixelRatio`, so what ends up on a 22px dot is a number written
+ * down here and not one inferred from the screen.
+ */
+const RASTER_PX = 36;
+const ICON_PX = 12;
 
 /**
  * Turn the discipline SVGs into images the GPU can stamp on a pin.
  *
- * The artwork is black on transparent, and the pin under it is not — so the
- * shape is kept and the colour thrown away, leaving a white glyph. Rasterising
- * at twice the size keeps it from going soft on a retina screen.
+ * Three things happen to each one. The artwork is black on transparent and
+ * the pin under it is not, so the shape is kept and the colour thrown away.
+ * The bikes are not all drawn to the same size inside their 24px box — one
+ * fills it, another leaves a margin — so each is measured by its own ink and
+ * scaled to a common width, or a road pin would carry a visibly bigger bike
+ * than a mountain one. And it is then centred on that ink, so a glyph never
+ * leans out of the circle it is supposed to sit in.
  */
 let familyIcons: Promise<void> | null = null;
+
+/** How much of the raster the glyph fills, once trimmed to its own ink. */
+const GLYPH_FILL = 0.92;
 
 function loadFamilyIcons(): Promise<void> {
   familyIcons ??= Promise.all(
     Object.entries(DISCIPLINE_FAMILY_ICONS).map(async ([family, href]) => {
-      const size = ICON_PX * ICON_SCALE;
-      const img = new Image(size, size);
+      const img = new Image();
       img.decoding = "async";
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve();
         img.onerror = () => reject(new Error(`icon ${href}`));
         img.src = href;
       });
+
+      // Draw it once oversized to find where the ink actually is.
+      const probe = document.createElement("canvas");
+      probe.width = RASTER_PX;
+      probe.height = RASTER_PX;
+      const pctx = probe.getContext("2d", { willReadFrequently: true });
+      if (!pctx) return;
+      pctx.drawImage(img, 0, 0, RASTER_PX, RASTER_PX);
+      const box = inkBounds(pctx.getImageData(0, 0, RASTER_PX, RASTER_PX));
+      if (!box) return;
+
       const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = RASTER_PX;
+      canvas.height = RASTER_PX;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      ctx.drawImage(img, 0, 0, size, size);
+      const scale = (RASTER_PX * GLYPH_FILL) / Math.max(box.w, box.h);
+      const w = RASTER_PX * scale;
+      const dx = (RASTER_PX - box.w * scale) / 2 - box.x * scale;
+      const dy = (RASTER_PX - box.h * scale) / 2 - box.y * scale;
+      ctx.drawImage(img, dx, dy, w, w);
       ctx.globalCompositeOperation = "source-in";
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, size, size);
-      iconBitmaps[family] = ctx.getImageData(0, 0, size, size);
+      ctx.fillRect(0, 0, RASTER_PX, RASTER_PX);
+      iconBitmaps[family] = ctx.getImageData(0, 0, RASTER_PX, RASTER_PX);
     }),
   )
     .then(() => undefined)
@@ -175,12 +203,32 @@ function loadFamilyIcons(): Promise<void> {
   return familyIcons;
 }
 
+/** The rectangle the non-transparent pixels occupy, or null if there are none. */
+function inkBounds(data: ImageData): { x: number; y: number; w: number; h: number } | null {
+  const { width, height } = data;
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data.data[(y * width + x) * 4 + 3] < 16) continue;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+  if (maxX < 0) return null;
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
+
 /** Decoded once per page, added to every map instance that needs them. */
 const iconBitmaps: Record<string, ImageData> = {};
 
 function registerFamilyIcons(map: Map) {
   for (const [family, data] of Object.entries(iconBitmaps)) {
-    if (!map.hasImage(family)) map.addImage(family, data, { pixelRatio: ICON_SCALE });
+    if (!map.hasImage(family)) map.addImage(family, data, { pixelRatio: 1 });
   }
 }
 
@@ -895,7 +943,7 @@ export function RaceMap({
         filter: ["!=", ["get", "icon"], ""],
         layout: {
           "icon-image": ["get", "icon"],
-          "icon-size": 1,
+          "icon-size": ICON_PX / RASTER_PX,
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },

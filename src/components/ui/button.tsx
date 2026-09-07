@@ -22,11 +22,15 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3 [@media(pointer:coarse)]:h-11",
-        xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3 [@media(pointer:coarse)]:h-11",
+        // A touch target wants 44px; a chip that says which series a race
+        // belongs to is not a touch target. Held at 44 it became a pill four
+        // times taller than its own words, so on a phone it grows to a
+        // proportioned 32 and takes the padding to match.
+        xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3 [@media(pointer:coarse)]:h-8 [@media(pointer:coarse)]:px-2.5",
         sm: "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5 [@media(pointer:coarse)]:h-11",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4 [@media(pointer:coarse)]:h-12",
         icon: "size-9 [@media(pointer:coarse)]:size-11",
-        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3 [@media(pointer:coarse)]:size-11",
+        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3 [@media(pointer:coarse)]:size-8",
         "icon-sm": "size-8 [@media(pointer:coarse)]:size-11",
         "icon-lg": "size-10 [@media(pointer:coarse)]:size-11",
       },

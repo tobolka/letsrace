@@ -9,32 +9,37 @@ export { disciplineFamily, eventDisciplineFamily };
 /**
  * One hue per discipline family — map pins, list rules, detail header.
  *
- * Six hues spread right around the wheel rather than six neighbours from one
- * ramp. Six cannot all be far apart, so the crowding is put where it costs
- * least: road and MTB are two thirds of the catalogue and sit a third of the
- * wheel apart, while the pair that ends up closest — blue and teal — is road
- * against track, and track is the rarest discipline we carry. Every colour
- * holds at least 3.4:1 against white, which is what the glyph inside the pin
- * is drawn in.
+ * Built in OKLCH rather than picked by eye: every family sits at the same
+ * lightness and the same chroma, and only the hue moves. That is what makes
+ * six colours read as one set — none of them shouts louder than the rest, and
+ * a green pin next to a blue one differs in nothing but the thing it is
+ * supposed to differ in.
+ *
+ * Six hues cannot all be far apart, so the crowding is put where it costs
+ * least. Road and MTB are two thirds of the catalogue, so they sit a third of
+ * the wheel apart; the closest pair is road against track, and track is the
+ * rarest discipline we carry. At this lightness every colour holds at least
+ * 3.5:1 against white, which is what the glyph inside the pin is drawn in.
  */
 export const DISCIPLINE_FAMILY_COLORS: Record<string, string> = {
-  mtb: "#1e9e57",
-  road: "#3b6ff6",
-  gravel: "#c2661a",
-  cx: "#d62c7f",
-  track: "#0e7c9b",
-  bmx: "#7a5af8",
-  other: "#6b7280",
+  mtb: "#009447",
+  road: "#3778d7",
+  gravel: "#ba5e00",
+  cx: "#c54868",
+  track: "#0092a7",
+  bmx: "#975ac0",
+  other: "#757b83",
 };
 
+/** The same wheel eight points of lightness down, worn by the selected pin. */
 export const DISCIPLINE_FAMILY_COLORS_DARK: Record<string, string> = {
-  mtb: "#187e46",
-  road: "#2f59c5",
-  gravel: "#9b5215",
-  cx: "#ab2366",
-  track: "#0b637c",
-  bmx: "#6248c6",
-  other: "#565b66",
+  mtb: "#007b2f",
+  road: "#1d60bc",
+  gravel: "#a04600",
+  cx: "#a92e52",
+  track: "#007a8e",
+  bmx: "#7f42a6",
+  other: "#5e646c",
 };
 
 /**

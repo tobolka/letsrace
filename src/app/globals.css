@@ -80,6 +80,21 @@ html[data-welcome-seen="1"] #letsrace-welcome {
   --color-sidebar: var(--sidebar);
 }
 
+/*
+ * Safari draws a blue ring around whatever a tap moved focus to, and vaul
+ * hands focus to the sheet itself when it opens — so the whole bottom panel
+ * came up outlined. Keyboard focus still shows: `focus-visible` is untouched,
+ * and this only silences the ring on the container that never asked for it.
+ */
+[data-slot="drawer-content"]:focus,
+[data-slot="drawer-content"]:focus-visible {
+  outline: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
