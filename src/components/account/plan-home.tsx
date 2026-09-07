@@ -495,14 +495,19 @@ export function PlanHome({ locale }: { locale: string }) {
             void onStatusChange(nextRace.event.id, memberId, status)
           }
         />
-      ) : plans.length === 0 ? (
+      ) : (
+        // A plan holding only races that have been ridden is not an empty plan,
+        // but the top of this page is still empty without something in it — and
+        // "nothing coming up" is the one thing worth saying there.
         <Empty className="border border-dashed">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <CalendarDays />
             </EmptyMedia>
-            <EmptyTitle>{t.planThisWeekendFree}</EmptyTitle>
-            <EmptyDescription>{t.planEmpty}</EmptyDescription>
+            <EmptyTitle>{t.planNoUpcoming}</EmptyTitle>
+            <EmptyDescription>
+              {plans.length === 0 ? t.planEmpty : t.planNoUpcomingBody}
+            </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
             <Button asChild>
@@ -513,7 +518,7 @@ export function PlanHome({ locale }: { locale: string }) {
             </Button>
           </EmptyContent>
         </Empty>
-      ) : null}
+      )}
 
       {plans.length > 0 ? (
         <PlanTodo
