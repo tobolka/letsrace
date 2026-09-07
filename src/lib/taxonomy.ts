@@ -293,9 +293,18 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   ) {
     found.add("tt");
   }
-  if (/\bcx\b|cyclocross|cyklokros|cyclo[- ]cross|przełaj|przelaj/.test(t)) found.add("cx");
+  // "Cyklo-X" is what Czech federation calendars call cyclocross, and "TBC
+  // série" is a cyclocross series that never spells the word out. Both were
+  // arriving with no discipline at all.
   if (
-    /\btrack\b|dráha|draha|velodrom|\btorow/.test(t) &&
+    /\bcx\b|cyclocross|cyklokros|cyclo[- ]cross|cyklo[- ]?x\b|\btbc\s*s[eé]rie|przełaj|przelaj/.test(t)
+  ) {
+    found.add("cx");
+  }
+  if (
+    // "tor kolarski" is the Polish for a velodrome, and it is how their track
+    // championships name the venue rather than the discipline.
+    /\btrack\b|dráha|draha|velodrom|\btorow|tor\s+kolarski/.test(t) &&
     !/short\s*track/.test(t)
   ) {
     found.add("track");

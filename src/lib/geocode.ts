@@ -1,4 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase/server";
+import { simplifyPlaceQuery } from "@/lib/geo/simplify-place";
 import {
   boundsFromRadiusKm,
   isPlaceSearchStopword,
@@ -1925,6 +1926,40 @@ export async function geocodePendingLocations(
         nominatimCalls += 1;
       }
       seen.set(cacheKey, geo ?? null);
+    }
+
+    /*
+     * One more try, on a shorter question.
+     *
+     * Forty upcoming races have no pin because the place field holds a club's
+     * full name, an Italian street, a venue, or a Czech village named after the
+     * bigger one next door — and the geocoder was asked for all of that. When
+     * the tidy query misses, ask again for whatever town is left inside it.
+     */
+    if (!geo) {
+      const simple = simplifyPlaceQuery(raw);
+      if (simple) {
+        const retryKey = `${fold(simple)}|${countryCode}|retry`;
+        let retry = seen.get(retryKey);
+        if (retry === undefined) {
+          retry = gazetteerLookup(simple);
+          if (!retry) {
+            if (nominatimCalls > 0) await new Promise((r) => setTimeout(r, 1100));
+            try {
+              retry = await nominatimSearch(simple, countryCode);
+            } catch (e) {
+              if (e instanceof GeocodeUnavailableError) {
+                result.unavailable = e.reason;
+                break;
+              }
+              throw e;
+            }
+            nominatimCalls += 1;
+          }
+          seen.set(retryKey, retry ?? null);
+        }
+        if (retry) geo = retry;
+      }
     }
 
     if (!geo) {
