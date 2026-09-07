@@ -89,10 +89,15 @@ export async function runDueWatches(
   }
 
   // Calendars first — one series page is worth dozens of race pages.
+  //
+  // `outbound` belongs with `race`: it is the kind an accepted discovery gets,
+  // one organiser's own site. It was in neither list, so fifteen sources the
+  // admin had accepted — eight of them never fetched at all — sat active and
+  // due and were never once claimed.
   const calendars = await claimDue(CALENDAR_KINDS, limit);
   const claimed = [
     ...calendars,
-    ...(await claimDue(["race"], limit - calendars.length)),
+    ...(await claimDue(["race", "outbound"], limit - calendars.length)),
   ];
 
   const deadline = Date.now() + (opts?.budgetMs ?? DEFAULT_BUDGET_MS);
