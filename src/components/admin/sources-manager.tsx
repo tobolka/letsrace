@@ -82,12 +82,18 @@ function healthOf(s: Source): Health {
   /*
    * Read fine, produced nothing.
    *
-   * This is the state that hid: the fetch succeeded, no error was raised, the
-   * badge said healthy — and the parser has never put a single race in the
-   * catalogue. It is a different job from a broken source and it needs its own
-   * name, or it stays invisible among four hundred green rows.
+   * The fetch succeeded, no error was raised, the badge said healthy — and the
+   * parser has never put a single race in the catalogue. That is a different
+   * job from a broken source and it needs its own name, or it stays invisible
+   * among four hundred green rows.
+   *
+   * Not `off_season`, though. Thirty of the thirty-one sources that first
+   * landed here were next season's URLs — `/dirke-2027/`, `/kalendarz-2027/`,
+   * `/zavody-2027/` — waiting for a page that does not exist yet. That is the
+   * watcher working as intended, and calling it a fault buries the one source
+   * that really was one.
    */
-  if ((s.races ?? 0) === 0) return "silent";
+  if ((s.races ?? 0) === 0 && s.last_extract_status !== "off_season") return "silent";
   const days = (Date.now() - Date.parse(s.last_fetched_at)) / 86_400_000;
   if (days >= 10) return "quiet";
   if (s.last_extract_status === "off_season" || s.last_extract_status === "needs_review") {
