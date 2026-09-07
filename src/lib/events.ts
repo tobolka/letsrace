@@ -10,6 +10,7 @@ import {
 import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 import { canonicalEventDisciplines } from "@/lib/taxonomy";
 import { formatPlaceName } from "@/lib/places";
+import { repairText } from "@/lib/text";
 
 export type EventListItem = {
   id: string;
@@ -544,7 +545,10 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
   return {
     id: String(row.id),
     slug: String(row.slug),
-    name: String(row.name),
+    // Names arrive from a hundred calendars, some of them mis-decoded on the
+    // way. Repairing here means the list, the map, the panel and the share card
+    // all show the apostrophe rather than an empty box.
+    name: repairText(String(row.name)),
     startDate: String(row.start_date),
     endDate: row.end_date ? String(row.end_date) : null,
     disciplines: canonicalEventDisciplines((row.disciplines as string[]) ?? []),
@@ -581,8 +585,8 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
           // here rather than at each screen means the list, the map, the
           // detail panel, the share card and the structured data all say the
           // same thing, and none of them has to remember to.
-          name: formatPlaceName(String(location.name)) ?? String(location.name),
-          municipality: formatPlaceName(location.municipality as string | null),
+          name: formatPlaceName(repairText(String(location.name))) ?? String(location.name),
+          municipality: formatPlaceName(repairText(location.municipality as string | null)),
           countryCode: String(location.country_code),
           lat: (location.lat as number) ?? null,
           lng: (location.lng as number) ?? null,
@@ -592,7 +596,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
       series && String(series.visibility ?? "public") !== "hidden"
         ? {
             id: String(series.id),
-            name: String(series.name),
+            name: repairText(String(series.name)),
             slug: String(series.slug),
           }
         : null,

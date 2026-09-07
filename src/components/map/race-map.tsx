@@ -44,7 +44,7 @@ type Props = {
   onSelect: (id: string) => void;
   /** Map canvas tap (not a pin) — used to collapse the mobile sheet. */
   onBackgroundClick?: () => void;
-  onBoundsChange: (b: MapBounds, reason: BoundsChangeReason) => void;
+  onBoundsChange: (b: MapBounds, reason: BoundsChangeReason, camera: MapBounds) => void;
   myLocationLabel?: string;
   locationDeniedLabel?: string;
   /** Keep markers clear of side panels / bottom sheet */
@@ -684,7 +684,13 @@ export function RaceMap({
   const goToMyLocationRef = useRef<() => void>(() => {});
 
   function emitBounds(map: MapLibreMap, reason: BoundsChangeReason = "sync") {
-    onBoundsChangeRef.current(visibleBounds(map, paddingRef.current), reason);
+    const b = map.getBounds();
+    onBoundsChangeRef.current(visibleBounds(map, paddingRef.current), reason, {
+      west: b.getWest(),
+      south: b.getSouth(),
+      east: b.getEast(),
+      north: b.getNorth(),
+    });
   }
 
   function emitBoundsWhenIdle(map: MapLibreMap, reason: BoundsChangeReason) {

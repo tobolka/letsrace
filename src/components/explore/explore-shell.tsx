@@ -176,6 +176,15 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [listSettled, setListSettled] = useState(false);
   const fetchStartedRef = useRef(false);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
+  /**
+   * What the camera actually shows, insets and all.
+   *
+   * `bounds` is the box the panel leaves free, and it is the right one to
+   * decide when more races have to be fetched. It is the wrong one to decide
+   * what the list names: it is inset on every side, so a pin plainly visible
+   * near the bottom of the map fell out of the list beside it.
+   */
+  const [cameraBounds, setCameraBounds] = useState<MapBounds | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const mobileListRef = useRef<HTMLDivElement>(null);
   const [fitSeq, setFitSeq] = useState(0);
@@ -257,18 +266,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    * those are meant to reach outside the frame.
    */
   const visibleEvents = useMemo(() => {
-    if (!bounds || filters.series || filters.country) return events;
+    const box = cameraBounds;
+    if (!box || filters.series || filters.country) return events;
     if (filters.q.trim() && !lastPlacedQ.current) return events;
     return events.filter((e) => {
+      // The race you opened stays in the list even when the map has carried it
+      // off the edge — losing the row you are reading is worse than a row you
+      // cannot see.
+      if (e.id === selectedId) return true;
       const lat = Number(e.location?.lat);
       const lng = Number(e.location?.lng);
       // A race we could not place is never hidden by a box it has no point in.
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return true;
-      return (
-        lat >= bounds.south && lat <= bounds.north && lng >= bounds.west && lng <= bounds.east
-      );
+      return lat >= box.south && lat <= box.north && lng >= box.west && lng <= box.east;
     });
-  }, [events, bounds, filters.series, filters.country, filters.q]);
+  }, [events, cameraBounds, selectedId, filters.series, filters.country, filters.q]);
 
   const sortedEvents = useMemo(
     () => sortEvents(visibleEvents, listSort, userOrigin),
@@ -793,8 +805,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 setMobilePanel("list");
               }
             }}
-            onBoundsChange={(b, reason) => {
+            onBoundsChange={(b, reason, camera) => {
               setBounds(b);
+              // The padded box decides when to fetch; the camera box decides
+              // what the list shows. If a pin is on the map it belongs in the
+              // list beside it.
+              setCameraBounds(camera);
               // First camera settle → load races for this viewport (padded query box)
               if (!initialBoundsFetchDone.current) {
                 initialBoundsFetchDone.current = true;
