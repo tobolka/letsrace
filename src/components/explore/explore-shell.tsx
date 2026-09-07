@@ -1270,12 +1270,13 @@ function EventCard({
         {/*
           The discipline used to be a coloured dot beside the date, which on a
           white list reads as an unread badge — something to clear rather than
-          something to tell races apart by. A rule down the edge is the same
-          colour doing the same job without asking to be dismissed.
+          something to tell races apart by. A short tick at the edge is the
+          same colour doing the same job: enough to scan a column by, small
+          enough that it never competes with the name of the race.
         */}
         <span
           aria-hidden
-          className="absolute inset-y-1.5 left-1 w-[3px] rounded-full"
+          className="absolute top-1/2 left-1.5 h-5 w-0.5 -translate-y-1/2 rounded-full"
           style={{ background: disciplineColor(event.disciplines) }}
         />
         {/* Without this a flex child refuses to shrink below its content, and
