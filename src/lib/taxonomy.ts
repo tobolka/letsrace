@@ -28,7 +28,6 @@ export const DISCIPLINES = [
   "cx",
   "track",
   "bmx",
-  "para",
   "other",
 ] as const;
 
@@ -52,7 +51,6 @@ export const DISCIPLINE_LABELS: Record<Discipline, string> = {
   cx: "Cyclocross",
   track: "Track",
   bmx: "BMX",
-  para: "Para-cycling",
   other: "Other",
 };
 
@@ -89,7 +87,6 @@ export const DISCIPLINE_TREE: {
   { id: "cx", label: "Cyclocross" },
   { id: "track", label: "Track" },
   { id: "bmx", label: "BMX" },
-  { id: "para", label: "Para-cycling" },
 ];
 
 const MTB_LEAVES: Discipline[] = ["xco", "xcc", "xce", "xcm", "dh", "enduro", "mtb"];
@@ -135,13 +132,13 @@ export function expandDisciplineFilter(ids: string[]): string[] {
 }
 
 const MTB_RACE = new Set<string>(["mtb", "xco", "xcc", "xce", "dh", "enduro"]);
-const FAMILY_FILTERS = new Set<string>(["mtb", "road", "gravel", "cx", "track", "bmx", "para"]);
+const FAMILY_FILTERS = new Set<string>(["mtb", "road", "gravel", "cx", "track", "bmx"]);
 
 export function disciplineFamily(id: string | null | undefined): Discipline {
   if (!id) return "other";
   if (MTB_LEAVES.includes(id as Discipline)) return "mtb";
   if (ROAD_LEAVES.includes(id as Discipline)) return "road";
-  if (id === "gravel" || id === "cx" || id === "track" || id === "bmx" || id === "para") {
+  if (id === "gravel" || id === "cx" || id === "track" || id === "bmx") {
     return id;
   }
   return "other";
@@ -235,8 +232,11 @@ const LEGACY_DISC: Record<string, Discipline> = {
   track: "track",
   draha: "track",
   bmx: "bmx",
-  para: "para",
-  "para-cycling": "para",
+  // Para-cycling is not a discipline of its own here: every para race we
+  // carry is also a road race, and a tag that only ever rides along with
+  // another one bought a filter, a colour and a label for nothing.
+  para: "road",
+  "para-cycling": "road",
   other: "other",
   mtbo: "other",
   biathlon: "other",
@@ -302,7 +302,6 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   }
   // UCI races pumptrack under BMX; four-cross is MTB gravity with no leaf of its own.
   if (/\bbmx\b|pump[\s-]?track/.test(t)) found.add("bmx");
-  if (/\bpara[\s-]?cycl|\bparacycling\b/.test(t)) found.add("para");
   if (/\broad[\s-]?race\b|silniční závod|silnicni zavod|wyścig szosowy|wyscig szosowy/.test(t))
     found.add("road_race");
   if (

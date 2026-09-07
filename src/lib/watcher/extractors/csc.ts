@@ -23,7 +23,7 @@ const DISC_MAP: Record<string, Discipline | "skip"> = {
   track: "track",
   bikros: "bmx",
   bmx: "bmx",
-  handicap: "para",
+  handicap: "road",
   trial: "other",
 };
 

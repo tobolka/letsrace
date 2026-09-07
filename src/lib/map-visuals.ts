@@ -14,7 +14,6 @@ export const DISCIPLINE_FAMILY_COLORS: Record<string, string> = {
   cx: "#c2410c",
   track: "#7c3aed",
   bmx: "#e11d48",
-  para: "#0891b2",
   other: "#78716c",
 };
 
@@ -25,7 +24,6 @@ export const DISCIPLINE_FAMILY_COLORS_DARK: Record<string, string> = {
   cx: "#9a3412",
   track: "#6d28d9",
   bmx: "#be123c",
-  para: "#0e7490",
   other: "#57534e",
 };
 

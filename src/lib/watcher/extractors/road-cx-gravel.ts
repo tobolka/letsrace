@@ -165,7 +165,6 @@ function uecDiscipline(cat: string, title: string): Discipline[] {
   if (/cyclo-?cross|\bcx\b/.test(t)) return ["cx"];
   if (/gravel/.test(t)) return ["gravel"];
   if (/gran\s*fondo/.test(t)) return ["gran_fondo"];
-  if (/para/.test(t)) return ["para", "road"];
   if (/downhill/.test(t)) return ["dh"];
   if (/marathon/.test(t)) return ["xcm"];
   if (/eliminator/.test(t)) return ["xce"];

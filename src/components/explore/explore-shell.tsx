@@ -34,7 +34,7 @@ import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
-import { formatEventCategoryLabel } from "@/lib/taxonomy";
+import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import { disciplineColor } from "@/lib/map-visuals";
 import {
@@ -863,10 +863,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
                 {listView === "rows"
                   ? sortedEvents.map((event) => (
-                  <div role="listitem" key={event.id} className="border-b last:border-b-0">
+                  <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
                   <EventCard
                     event={event}
-                    messages={messages}
                     locale={locale}
                     distanceKm={eventDistanceKm(event, userOrigin)}
                     active={event.id === selectedId}
@@ -998,10 +997,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   <ItemGroup>
                     {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
                     {listView === "rows" && sortedEvents.map((event) => (
-                      <div role="listitem" key={event.id} className="border-b last:border-b-0">
+                      <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
                       <EventCard
                         event={event}
-                        messages={messages}
                         locale={locale}
                         distanceKm={eventDistanceKm(event, userOrigin)}
                         active={event.id === selectedId}
@@ -1072,6 +1070,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
     </div>
   );
+}
+
+function disciplineLabel(id: string): string {
+  return DISCIPLINE_LABELS[id as Discipline] || id;
 }
 
 function ListToolbar({
@@ -1173,24 +1175,18 @@ function Header({ locale, compact }: { locale: string; compact?: boolean }) {
  *  without moving anything. */
 function EventCard({
   event,
-  messages,
   locale,
   distanceKm: km,
   active,
   onClick,
 }: {
   event: EventListItem;
-  messages: Messages;
   locale: string;
   distanceKm?: number | null;
   active: boolean;
   onClick: () => void;
 }) {
-  const audienceLabel = formatEventCategoryLabel(event, {
-    kids: messages.kids,
-    youth: messages.youth,
-    adults: messages.adults,
-  });
+  const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
   const df = dateFnsLocale(locale);
   const dateLabel =
@@ -1199,19 +1195,19 @@ function EventCard({
       ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
       : "");
   /*
-    One line under the name, the same on a phone and on a desktop. The level
-    and the discipline are gone from it: the level is a word almost every race
-    shares, and the discipline is what the colour at the edge already says —
-    between them they were half the line and none of the reason you were
-    reading it.
+    One line under the name, the same on a phone and on a desktop. The level is
+    gone from it — almost every race is "Local", so the word was a column of
+    noise — and so is who it is for: "Amateur · Masters" is true of nearly all
+    of them and tells you nothing about which one to pick. The discipline is
+    the fact that actually sorts one race from another.
   */
   const meta = [
     dateLabel,
     event.location?.municipality || event.location?.name || "—",
     event.location?.countryCode,
     distanceLabel,
+    discLabel,
     event.series?.name,
-    audienceLabel,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -1239,7 +1235,7 @@ function EventCard({
         */}
         <span
           aria-hidden
-          className="absolute inset-y-2.5 left-1.5 w-0.5 rounded-full"
+          className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full"
           style={{ background: disciplineColor(event.disciplines) }}
         />
         {/* Without this a flex child refuses to shrink below its content, and
