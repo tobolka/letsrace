@@ -1126,12 +1126,24 @@ function ListToolbar({
         aria-live="polite"
         aria-busy={pending}
       >
-        {/* The server's list is a stand-in until the map fetches its own, so
-            its length is not a count of anything worth showing. */}
-        {count == null ? messages.racesCount : `${count} ${messages.racesCount}`}
-        <span className="inline-flex size-4 shrink-0 items-center justify-center" aria-hidden={!pending}>
-          {pending ? <Spinner className="size-3.5" /> : null}
-        </span>
+        {/* Until the map has fetched its own set there is no count, and the
+            bare noun on its own — "races", with nothing in front of it — reads
+            as a label whose value went missing. A placeholder says "counting"
+            the way the rows below it do, and makes the spinner beside it
+            redundant; that is for a refetch, when a count is already showing. */}
+        {count == null ? (
+          <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" />
+        ) : (
+          <>
+            {`${count} ${messages.racesCount}`}
+            <span
+              className="inline-flex size-4 shrink-0 items-center justify-center"
+              aria-hidden={!pending}
+            >
+              {pending ? <Spinner className="size-3.5" /> : null}
+            </span>
+          </>
+        )}
       </span>
       <div className="flex items-center gap-2">
         <ToggleGroup
