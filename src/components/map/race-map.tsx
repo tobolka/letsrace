@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Map, Marker, PaddingOptions, Popup, StyleSpecification } from "maplibre-gl";
+import type {
+  ExpressionSpecification,
+  GeoJSONSource,
+  Map,
+  Marker,
+  PaddingOptions,
+  Popup,
+  StyleSpecification,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
@@ -21,13 +29,6 @@ export type MapBounds = {
 };
 
 /** A rendered race pin, kept so selection can re-style it in place. */
-type PinEntry = {
-  id: string;
-  event: EventListItem;
-  el: HTMLElement;
-  marker: Marker;
-};
-
 /** Why the camera settled — parent auto-searches only on user/gps/locate. */
 export type BoundsChangeReason = "sync" | "user" | "gps" | "locate";
 
@@ -105,96 +106,77 @@ function hideMarineNames(map: Map) {
 
 let lastPinTipAt = 0;
 
-function pinTipContent(event: EventListItem, locale: string) {
+function pinTipContent(name: string, meta: string) {
   const root = document.createElement("div");
-  const name = document.createElement("p");
-  name.textContent = event.name;
-  name.style.cssText =
+  const title = document.createElement("p");
+  title.textContent = name;
+  title.style.cssText =
     "margin:0;font-size:13px;font-weight:600;line-height:1.3;color:#1c1917;letter-spacing:-0.01em";
 
-  const meta = document.createElement("p");
-  const date = format(parseISO(event.startDate), "d MMM yyyy", {
-    locale: dateFnsLocale(locale),
-  });
-  const discs = event.disciplines
-    .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
-    .filter(Boolean)
-    .slice(0, 3)
-    .join(" · ");
-  meta.textContent = discs ? `${date} · ${discs}` : date;
-  meta.style.cssText =
+  const sub = document.createElement("p");
+  sub.textContent = meta;
+  sub.style.cssText =
     "margin:3px 0 0;font-size:11px;line-height:1.35;color:#78716c;font-variant-numeric:tabular-nums";
 
-  root.append(name, meta);
+  root.append(title, sub);
   return root;
 }
 
-function pinDotCss(event: EventListItem, selected: boolean) {
-  const color = disciplineColor(event.disciplines);
-  const colorDark = disciplineColorDark(event.disciplines);
-  return selected
-    ? [
-        "width:16px",
-        "height:16px",
-        "border-radius:9999px",
-        `background:${colorDark}`,
-        "border:2.5px solid #fff",
-        `box-shadow:0 0 0 3px ${color}, 0 0 0 5px rgba(255,255,255,.92), 0 2px 10px ${color}`,
-        "pointer-events:none",
-        "flex:0 0 auto",
-      ].join(";")
-    : [
-        "width:16px",
-        "height:16px",
-        "border-radius:9999px",
-        `background:${color}`,
-        "border:2px solid #fff",
-        "box-shadow:0 1px 3px rgba(0,0,0,.32)",
-        "pointer-events:none",
-        "flex:0 0 auto",
-      ].join(";");
+const RACES_SOURCE = "letsrace-races";
+const HIT_LAYER = "letsrace-races-hit";
+const SHADOW_LAYER = "letsrace-races-shadow";
+const GLOW_LAYER = "letsrace-races-glow";
+const DOT_LAYER = "letsrace-races-dot";
+
+/**
+ * Every race as one GeoJSON feature rather than one DOM element.
+ *
+ * Two hundred markers were two hundred absolutely positioned buttons, and
+ * MapLibre rewrote every one of their transforms on every frame — style and
+ * layout work that was most of this page's blocking time. As geometry they
+ * cost the GPU a draw call and the main thread nothing.
+ *
+ * The tooltip's text is carried on the feature, so hovering does not have to
+ * find the original event again.
+ */
+function raceFeatures(events: EventListItem[], locale: string): GeoJSON.FeatureCollection {
+  const df = dateFnsLocale(locale);
+  const features: GeoJSON.Feature[] = [];
+
+  for (const event of events) {
+    const lat = Number(event.location?.lat);
+    const lng = Number(event.location?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+
+    const date = format(parseISO(event.startDate), "d MMM yyyy", { locale: df });
+    const discs = event.disciplines
+      .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
+      .filter(Boolean)
+      .slice(0, 3)
+      .join(" · ");
+
+    features.push({
+      type: "Feature",
+      id: event.id,
+      geometry: { type: "Point", coordinates: [lng, lat] },
+      properties: {
+        id: event.id,
+        name: event.name,
+        meta: discs ? `${date} · ${discs}` : date,
+        color: disciplineColor(event.disciplines),
+        colorDark: disciplineColorDark(event.disciplines),
+      },
+    });
+  }
+
+  return { type: "FeatureCollection", features };
 }
 
-/** Re-style an existing pin without recreating it. */
-function applyPinSelected(wrap: HTMLElement, event: EventListItem, selected: boolean) {
-  if (selected) wrap.dataset.selected = "true";
-  else delete wrap.dataset.selected;
-  const dot = wrap.firstElementChild as HTMLElement | null;
-  if (dot) dot.style.cssText = pinDotCss(event, selected);
-}
+/** Selected state lives in feature state, so selecting repaints nothing else. */
+const SELECTED: ExpressionSpecification = ["boolean", ["feature-state", "selected"], false];
 
-function makePinElement(event: EventListItem, selected: boolean) {
-  const wrap = document.createElement("button");
-  wrap.type = "button";
-  wrap.className = "letsrace-map-pin";
-  wrap.setAttribute("aria-label", event.name);
-  wrap.dataset.eventId = event.id;
-  wrap.dataset.level = event.level || "local";
-  wrap.dataset.discipline = event.disciplines?.[0] || "other";
-
-  wrap.style.cssText = [
-    "display:flex",
-    "align-items:center",
-    "justify-content:center",
-    typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
-      ? "width:44px;height:44px"
-      : "width:32px;height:32px",
-    "padding:0",
-    "margin:0",
-    "border:0",
-    "background:transparent",
-    "cursor:pointer",
-    "appearance:none",
-    "-webkit-appearance:none",
-    "touch-action:manipulation",
-  ].join(";");
-
-  const dot = document.createElement("span");
-  dot.setAttribute("aria-hidden", "true");
-  wrap.appendChild(dot);
-  applyPinSelected(wrap, event, selected);
-
-  return wrap;
+function coarsePointer() {
+  return typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
 }
 
 function makeUserLocationElement() {
@@ -377,7 +359,8 @@ export function RaceMap({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
-  const markersRef = useRef<PinEntry[]>([]);
+  const hoveredIdRef = useRef<string | null>(null);
+  const styledSelectedRef = useRef<string | null>(null);
   const selectedIdRef = useRef(selectedId);
   const userMarkerRef = useRef<Marker | null>(null);
   const hoverPopupRef = useRef<Popup | null>(null);
@@ -561,12 +544,6 @@ export function RaceMap({
           z-index: 5 !important;
           overflow: visible !important;
         }
-        .maplibregl-marker:has(.letsrace-map-pin:hover) {
-          z-index: 20 !important;
-        }
-        .maplibregl-marker:has(.letsrace-map-pin[data-selected="true"]) {
-          z-index: 25 !important;
-        }
         .letsrace-pin-tip {
           pointer-events: none;
           z-index: 30 !important;
@@ -591,9 +568,6 @@ export function RaceMap({
           margin-bottom: -1px;
           z-index: 2;
           filter: drop-shadow(0 -1px 0 rgba(28,25,23,.08));
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .letsrace-map-pin span { transition: none !important; }
         }
       `;
 
@@ -692,7 +666,12 @@ export function RaceMap({
 
     map.on("click", (e) => {
       const target = e.originalEvent.target;
-      if (target instanceof Element && target.closest(".letsrace-map-pin, .letsrace-locate-ctrl, .maplibregl-ctrl")) {
+      if (target instanceof Element && target.closest(".letsrace-locate-ctrl, .maplibregl-ctrl")) {
+        return;
+      }
+      // Pins are geometry now, so there is no element to look for: ask the map
+      // whether the click landed on one before treating it as background.
+      if (map.getLayer(HIT_LAYER) && map.queryRenderedFeatures(e.point, { layers: [HIT_LAYER] }).length) {
         return;
       }
       onBackgroundClickRef.current?.();
@@ -743,8 +722,6 @@ export function RaceMap({
       window.clearTimeout(hoverTimerRef.current);
       hoverPopupRef.current?.remove();
       hoverPopupRef.current = null;
-      markersRef.current.forEach((entry) => entry.marker.remove());
-      markersRef.current = [];
       map.remove();
       mapRef.current = null;
     };
@@ -759,12 +736,11 @@ export function RaceMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Pins: one GeoJSON source and four thin circle layers, drawn by the GPU.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || mapEpoch === 0) return;
 
-    markersRef.current.forEach((entry) => entry.marker.remove());
-    markersRef.current = [];
     window.clearTimeout(hoverTimerRef.current);
     hoverPopupRef.current?.remove();
 
@@ -780,67 +756,128 @@ export function RaceMap({
       });
     }
     const popup = hoverPopupRef.current;
+    const data = raceFeatures(events, localeRef.current);
 
-    const withCoords = events.filter(
-      (e) =>
-        e.location?.lat != null &&
-        e.location?.lng != null &&
-        Number.isFinite(Number(e.location.lat)) &&
-        Number.isFinite(Number(e.location.lng)),
-    );
+    function install() {
+      const existing = map!.getSource(RACES_SOURCE);
+      if (existing) {
+        (existing as GeoJSONSource).setData(data);
+        return;
+      }
 
-    for (const event of withCoords) {
-      const selected = event.id === selectedIdRef.current;
-      const pin = makePinElement(event, selected);
-      const lngLat: [number, number] = [Number(event.location!.lng), Number(event.location!.lat)];
+      map!.addSource(RACES_SOURCE, {
+        type: "geojson",
+        data,
+        // The event id is a string, and feature state needs a feature id.
+        promoteId: "id",
+      });
 
-      pin.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
+      // A soft disc under the pin, standing in for the drop shadow the DOM
+      // markers had. Circles cannot carry a box-shadow, but they can be blurred.
+      map!.addLayer({
+        id: SHADOW_LAYER,
+        type: "circle",
+        source: RACES_SOURCE,
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "rgba(28,25,23,0.35)",
+          "circle-blur": 0.5,
+          "circle-translate": [0, 1],
+        },
+      });
+
+      // The halo the selected pin wears. Radius zero when nothing is selected,
+      // so the layer costs nothing until it is needed.
+      map!.addLayer({
+        id: GLOW_LAYER,
+        type: "circle",
+        source: RACES_SOURCE,
+        paint: {
+          "circle-radius": ["case", SELECTED, 13, 0],
+          "circle-color": ["get", "color"],
+          "circle-opacity": ["case", SELECTED, 0.4, 0],
+        },
+      });
+
+      map!.addLayer({
+        id: DOT_LAYER,
+        type: "circle",
+        source: RACES_SOURCE,
+        paint: {
+          "circle-radius": 8,
+          "circle-color": ["case", SELECTED, ["get", "colorDark"], ["get", "color"]],
+          "circle-stroke-width": ["case", SELECTED, 2.5, 2],
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      // Invisible, and larger than the dot: a finger is not sixteen pixels wide.
+      map!.addLayer({
+        id: HIT_LAYER,
+        type: "circle",
+        source: RACES_SOURCE,
+        paint: {
+          "circle-radius": coarsePointer() ? 22 : 16,
+          "circle-opacity": 0,
+        },
+      });
+
+      map!.on("click", HIT_LAYER, (e) => {
+        const id = e.features?.[0]?.properties?.id as string | undefined;
+        if (!id) return;
         window.clearTimeout(hoverTimerRef.current);
         popup.remove();
-        onSelectRef.current(event.id);
+        onSelectRef.current(id);
       });
-      pin.addEventListener("mouseenter", () => {
+
+      map!.on("mousemove", HIT_LAYER, (e) => {
+        const f = e.features?.[0];
+        if (!f) return;
+        map!.getCanvas().style.cursor = "pointer";
+        const id = f.properties?.id as string;
+        if (hoveredIdRef.current === id) return;
+        hoveredIdRef.current = id;
         window.clearTimeout(hoverTimerRef.current);
+        const coords = (f.geometry as GeoJSON.Point).coordinates as [number, number];
+        const name = f.properties?.name as string;
+        const meta = f.properties?.meta as string;
         const delay = Date.now() - lastPinTipAt < 500 ? 0 : 280;
         hoverTimerRef.current = window.setTimeout(() => {
-          popup.setLngLat(lngLat).setDOMContent(pinTipContent(event, localeRef.current)).addTo(map);
+          popup.setLngLat(coords).setDOMContent(pinTipContent(name, meta)).addTo(map!);
           lastPinTipAt = Date.now();
         }, delay);
       });
-      pin.addEventListener("mouseleave", () => {
+
+      map!.on("mouseleave", HIT_LAYER, () => {
+        hoveredIdRef.current = null;
+        map!.getCanvas().style.cursor = "";
         window.clearTimeout(hoverTimerRef.current);
         popup.remove();
       });
-
-      markersRef.current.push({
-        id: event.id,
-        event,
-        el: pin,
-        marker: new maplibre.Marker({ element: pin, anchor: "center" })
-          .setLngLat(lngLat)
-          .addTo(map),
-      });
     }
+
+    if (map.isStyleLoaded()) install();
+    else map.once("load", install);
 
     (window as unknown as { __letsraceMarkerCount?: number }).__letsraceMarkerCount =
-      markersRef.current.length;
+      data.features.length;
 
     requestAnimationFrame(() => map.resize());
-    // `selectedId` is read through a ref and re-applied by the effect below, so
-    // selecting a pin re-styles two elements instead of rebuilding every marker.
-    // The user dot has its own effect and is not part of `markersRef`.
   }, [events, mapEpoch]);
 
-  // Selection: re-style only the pins whose state actually changed.
+  // Selection: two feature-state writes, not a walk over every pin.
   useEffect(() => {
-    for (const entry of markersRef.current) {
-      const next = entry.id === selectedId;
-      if (next === (entry.el.dataset.selected === "true")) continue;
-      applyPinSelected(entry.el, entry.event, next);
+    const map = mapRef.current;
+    if (!map || !map.getSource(RACES_SOURCE)) return;
+    const prev = styledSelectedRef.current;
+    if (prev && prev !== selectedId) {
+      map.setFeatureState({ source: RACES_SOURCE, id: prev }, { selected: false });
     }
-  }, [selectedId]);
+    if (selectedId) {
+      map.setFeatureState({ source: RACES_SOURCE, id: selectedId }, { selected: true });
+    }
+    styledSelectedRef.current = selectedId ?? null;
+  }, [selectedId, events, mapEpoch]);
 
   const prevSelectedIdRef = useRef(selectedId);
   useEffect(() => {

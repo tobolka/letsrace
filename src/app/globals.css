@@ -186,11 +186,7 @@ time,
   }
 }
 
-/* MapLibre markers — keep above canvas, immune to form resets */
-.letsrace-map-pin {
-  z-index: 2;
-  pointer-events: auto !important;
-}
+/* The only DOM marker left is the user's own dot; race pins are GPU geometry. */
 .maplibregl-marker {
   position: absolute !important;
   top: 0;
