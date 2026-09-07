@@ -19,6 +19,7 @@ export type MergeDuplicateRow = {
   registration_url: string | null;
   series_id: string | null;
   fingerprint: string | null;
+  disciplines?: string[] | null;
   location: { lat?: number; lng?: number; name?: string; municipality?: string } | null;
   series: { name?: string } | null;
   sources?: { id: string; watched_url_id: string | null; external_id: string | null }[] | null;
@@ -36,6 +37,7 @@ function asDedup(row: MergeDuplicateRow): DedupEvent {
     seriesName: row.series?.name,
     fingerprint: row.fingerprint ?? undefined,
     urls: [row.website_url, row.registration_url],
+    disciplines: row.disciplines ?? null,
   };
 }
 
@@ -303,7 +305,7 @@ export async function mergePublicDuplicates(opts?: {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, location:locations(lat, lng, name, municipality), series:series(name)",
+        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality), series:series(name)",
       )
       .eq("visibility", "public")
       .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
@@ -321,7 +323,7 @@ export async function mergePublicDuplicates(opts?: {
   const { data: ongoing } = await supabase
     .from("events")
     .select(
-      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, location:locations(lat, lng, name, municipality), series:series(name)",
+      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality), series:series(name)",
     )
     .eq("visibility", "public")
     .in("status", ["scheduled", "tbc", "postponed", "registration_open"])

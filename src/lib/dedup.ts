@@ -1,4 +1,5 @@
 import { normalizeName } from "@/lib/domain";
+import { disciplineFamily } from "@/lib/taxonomy";
 
 /** Haversine distance in km */
 export function distanceKm(
@@ -487,6 +488,8 @@ export type DedupEvent = {
   fingerprint?: string;
   /** website / registration / race-detail source URLs (not calendar roots) */
   urls?: (string | null | undefined)[];
+  /** Canonical discipline ids, used to tell two races at one venue apart. */
+  disciplines?: string[] | null;
 };
 
 export type DedupScore = {
@@ -644,6 +647,24 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
     }
   }
 
+  /*
+   * One venue, one day, one discipline — recorded, and worth nothing.
+   *
+   * It reads like the answer to the cases titles cannot solve: "Časovka do
+   * vrchu Český Krumlov" and "Časovka na Kleť" are one time trial up one hill,
+   * and nothing in their names says so. But run over the catalogue it pairs
+   * eighty listings and only about half are real — "Giro della Lunigiana" with
+   * "Giro del Veneto", four Eschborn side events with the youth cup they run
+   * beside, three audax rides that share a village hall. Towns hold more than
+   * one bike race on a Sunday, and a merge cannot be taken back.
+   *
+   * So the signal is carried, not spent: enough to gather a review list from,
+   * never enough to join two races on its own.
+   */
+  if (near && sameDay && sharesDisciplineFamily(a.disciplines, b.disciplines)) {
+    reasons.push("same_discipline");
+  }
+
   // Substring fallback
   const na = normalizeName(a.name);
   const nb = normalizeName(b.name);
@@ -666,6 +687,23 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   }
 
   return { score, reasons };
+}
+
+/**
+ * Do two races sit in the same discipline family?
+ *
+ * Compared by family rather than by leaf, because one source says "XCO" where
+ * another says "MTB" for the same start line. Unknown on either side is not a
+ * match: absence of a tag is not evidence of agreement.
+ */
+export function sharesDisciplineFamily(
+  a: string[] | null | undefined,
+  b: string[] | null | undefined,
+): boolean {
+  if (!a?.length || !b?.length) return false;
+  const famA = new Set(a.map((d) => disciplineFamily(d)));
+  const famB = b.map((d) => disciplineFamily(d));
+  return famB.some((f) => famA.has(f));
 }
 
 export function isLikelyDuplicate(a: DedupEvent, b: DedupEvent): boolean {
