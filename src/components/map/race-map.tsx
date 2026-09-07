@@ -15,7 +15,12 @@ import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
-import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
+import {
+  DISCIPLINE_FAMILY_ICONS,
+  disciplineColor,
+  disciplineColorDark,
+  disciplineIcon,
+} from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
@@ -126,8 +131,58 @@ const RACES_SOURCE = "letsrace-races";
 const HIT_LAYER = "letsrace-races-hit";
 const SHADOW_LAYER = "letsrace-races-shadow";
 const GLOW_LAYER = "letsrace-races-glow";
-const RIM_LAYER = "letsrace-races-rim";
 const DOT_LAYER = "letsrace-races-dot";
+const ICON_LAYER = "letsrace-races-icon";
+
+/** Glyph size inside the pin, in CSS pixels, and the factor it is drawn at. */
+const ICON_PX = 13;
+const ICON_SCALE = 2;
+
+/**
+ * Turn the discipline SVGs into images the GPU can stamp on a pin.
+ *
+ * The artwork is black on transparent, and the pin under it is not — so the
+ * shape is kept and the colour thrown away, leaving a white glyph. Rasterising
+ * at twice the size keeps it from going soft on a retina screen.
+ */
+let familyIcons: Promise<void> | null = null;
+
+function loadFamilyIcons(): Promise<void> {
+  familyIcons ??= Promise.all(
+    Object.entries(DISCIPLINE_FAMILY_ICONS).map(async ([family, href]) => {
+      const size = ICON_PX * ICON_SCALE;
+      const img = new Image(size, size);
+      img.decoding = "async";
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error(`icon ${href}`));
+        img.src = href;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, size, size);
+      ctx.globalCompositeOperation = "source-in";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, size, size);
+      iconBitmaps[family] = ctx.getImageData(0, 0, size, size);
+    }),
+  )
+    .then(() => undefined)
+    .catch(() => undefined);
+  return familyIcons;
+}
+
+/** Decoded once per page, added to every map instance that needs them. */
+const iconBitmaps: Record<string, ImageData> = {};
+
+function registerFamilyIcons(map: Map) {
+  for (const [family, data] of Object.entries(iconBitmaps)) {
+    if (!map.hasImage(family)) map.addImage(family, data, { pixelRatio: ICON_SCALE });
+  }
+}
 
 /**
  * Every race as one GeoJSON feature rather than one DOM element.
@@ -166,6 +221,7 @@ function raceFeatures(events: EventListItem[], locale: string): GeoJSON.FeatureC
         meta: discs ? `${date} · ${discs}` : date,
         color: disciplineColor(event.disciplines),
         colorDark: disciplineColorDark(event.disciplines),
+        icon: disciplineIcon(event.disciplines),
       },
     });
   }
@@ -797,7 +853,7 @@ export function RaceMap({
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": 8,
+          "circle-radius": 11,
           "circle-color": "rgba(28,25,23,0.35)",
           "circle-blur": 0.5,
           "circle-translate": [0, 1],
@@ -811,23 +867,9 @@ export function RaceMap({
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": ["case", SELECTED, 13, 0],
+          "circle-radius": ["case", SELECTED, 17, 0],
           "circle-color": ["get", "color"],
           "circle-opacity": ["case", SELECTED, 0.4, 0],
-        },
-      });
-
-      // Half a pixel of ink around the white ring. A circle can carry one
-      // stroke, and that one is the white; the dark outside it is this disc
-      // showing through. It is meant to settle the ring against a pale map,
-      // not to draw an outline — any heavier and the pins look stamped on.
-      map!.addLayer({
-        id: RIM_LAYER,
-        type: "circle",
-        source: RACES_SOURCE,
-        paint: {
-          "circle-radius": ["case", SELECTED, 11, 10.5],
-          "circle-color": "rgba(28,25,23,0.35)",
         },
       });
 
@@ -836,10 +878,26 @@ export function RaceMap({
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": 8,
+          "circle-radius": ["case", SELECTED, 12, 11],
           "circle-color": ["case", SELECTED, ["get", "colorDark"], ["get", "color"]],
           "circle-stroke-width": ["case", SELECTED, 2.5, 2],
           "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      // The discipline, drawn inside its own pin. `allow-overlap` because a
+      // glyph that hides itself when two races sit close together would leave
+      // a pin that means nothing; the pins already overlap, and so may these.
+      map!.addLayer({
+        id: ICON_LAYER,
+        type: "symbol",
+        source: RACES_SOURCE,
+        filter: ["!=", ["get", "icon"], ""],
+        layout: {
+          "icon-image": ["get", "icon"],
+          "icon-size": 1,
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
         },
       });
 
@@ -888,8 +946,20 @@ export function RaceMap({
       });
     }
 
-    if (map.isStyleLoaded()) install();
-    else map.once("load", install);
+    // The icons have to exist before the symbol layer asks for them, or
+    // MapLibre caches the miss and the pins come up bare. They are six small
+    // same-origin files decoded once for the life of the page, so the wait is
+    // a few milliseconds on the first map and nothing on every one after.
+    function installWithIcons() {
+      void loadFamilyIcons().then(() => {
+        if (!mapRef.current) return;
+        registerFamilyIcons(map!);
+        install();
+      });
+    }
+
+    if (map.isStyleLoaded()) installWithIcons();
+    else map.once("load", installWithIcons);
 
     (window as unknown as { __letsraceMarkerCount?: number }).__letsraceMarkerCount =
       data.features.length;

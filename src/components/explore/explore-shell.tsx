@@ -802,11 +802,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         <Button
           asChild
           size="icon"
-          variant="secondary"
-          className="pointer-events-auto rounded-full shadow-md md:hidden"
+          className="pointer-events-auto rounded-full bg-brand shadow-md hover:bg-brand/90 md:hidden"
         >
           <Link href={`/${locale}`} aria-label={SITE_NAME}>
-            <BrandMark mark="lr" size="sm" className="px-0" />
+            <BrandMark mark="lr" size="sm" tone="inverse" className="px-0" />
           </Link>
         </Button>
         <span aria-hidden className="hidden md:block" />
