@@ -1254,10 +1254,15 @@ function EventCard({
     <Item
       asChild
       size="sm"
-      variant={active ? "muted" : "default"}
       // The dividing line lives on the listitem wrapper now — inside it this
       // button is always the last child, so `last:` here would never not match.
-      className="rounded-none border-0 px-4 py-2.5 hover:bg-accent/50"
+      className={cn(
+        "rounded-none border-0 px-4 py-2.5 hover:bg-accent/50",
+        // `muted/50` over a near-white ground was a shade nobody could see. The
+        // race you picked is the one thing on this list worth finding again
+        // after you look away from it.
+        active && "bg-stone-200/80 hover:bg-stone-200/80 dark:bg-stone-800",
+      )}
     >
       <button
         type="button"

@@ -568,18 +568,21 @@ function fitRadius(
   padding: PaddingOptions,
   duration = 0,
 ) {
+  /*
+   * Take the zoom from the box and the centre from the point.
+   *
+   * Fitting the box put you off-centre: the camera is fenced in by
+   * `maxBounds`, and once that fence and a 488px left padding both pull on the
+   * same fit, the result drifts. Measured on a 900px window it landed 66px
+   * right and 144px above the middle of the strip the panel leaves — which is
+   * what "it slides off to the right and my position is nowhere near the
+   * middle" looks like. Asking for the point itself lands it dead centre of
+   * that strip, to the pixel.
+   */
   const bounds = boundsAround(lng, lat, radiusKm);
   const camera = map.cameraForBounds(bounds, { padding, maxZoom: 9 });
-  if (!camera) {
-    map.fitBounds(bounds, { padding, duration, maxZoom: 9 });
-    return;
-  }
-  map.easeTo({
-    center: camera.center,
-    zoom: Math.max(MIN_FIT_ZOOM, camera.zoom ?? MIN_FIT_ZOOM),
-    padding,
-    duration,
-  });
+  const zoom = Math.max(MIN_FIT_ZOOM, Math.min(9, camera?.zoom ?? MIN_FIT_ZOOM));
+  map.easeTo({ center: [lng, lat], zoom, padding, duration });
 }
 
 function visibleBounds(map: MapLibreMap, padding: PaddingOptions): MapBounds {
