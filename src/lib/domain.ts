@@ -28,6 +28,12 @@ export type ParsedEvent = {
   countryHint?: string;
   discipline?: Discipline[];
   audience?: Audience;
+  /**
+   * Set only when the source names who may start — a calendar whose event type
+   * is "Jedermann" or "RTF" is saying "anyone", in its own words, and that
+   * beats anything the classifier can read out of a German race title.
+   */
+  ageCategories?: AgeCategory[];
   categories?: ParsedCategory[];
   /** Provenance / discovery URL (may be an aggregator page). */
   sourceUrl: string;

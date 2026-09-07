@@ -1,7 +1,7 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 
-type ApiEvent = {
+export type ApiEvent = {
   id: number;
   title: string;
   description?: string | null;
@@ -72,6 +72,34 @@ const RIDE_EVENT_TYPES = new Set([
   "RADTOURISTIK",
 ]);
 
+/**
+ * Event types that say, in the German calendar's own vocabulary, that anybody
+ * may start.
+ *
+ * "Jedermann" is literally everyman; an RTF or a Volksradfahren is a ride the
+ * club puts on for whoever turns up; a marathon or a brevet is entered by
+ * paying, not by holding a licence. None of them is a category of licensed
+ * riders, so they are `amateur` and nothing more — a Strassenrennen or a
+ * Crosscountry says nothing about who may enter and gets nothing from here.
+ */
+const OPEN_EVENT_TYPES = new Set([
+  "RTF",
+  "CTF",
+  "TOUR",
+  "AUSFAHRT",
+  "RADTOURISTIK",
+  "VOLKSRADFAHREN",
+  "JEDERMANN",
+  "RADMARATHON",
+  "MTB_MARATHON",
+  "GRAVEL_TOUR",
+  "GRAVEL_RIDE",
+  "GRAVEL_RACE",
+  "BREVET",
+  "BIKEPACKING",
+  "ULTRA",
+]);
+
 function mapCategory(
   cat?: string | null,
   secondary?: string[] | null,
@@ -119,7 +147,7 @@ function placeOf(ev: ApiEvent): string {
   return (place || ev.address || ev.bundesland || "Germany").slice(0, 100);
 }
 
-function toParsed(ev: ApiEvent): ParsedEvent | null {
+export function radsportEventToParsed(ev: ApiEvent): ParsedEvent | null {
   if (!ev.title || !ev.eventDate) return null;
   if (ev.cancelled || ev.active === false) return null;
   if (ev.status && ev.status.toUpperCase() !== "PUBLISHED") return null;
@@ -159,6 +187,7 @@ function toParsed(ev: ApiEvent): ParsedEvent | null {
     // RTF and CTF are organised rides, a fifth of this calendar. The source
     // says so outright, which beats inferring it from a German title.
     eventType: RIDE_EVENT_TYPES.has(type) ? "ride" : undefined,
+    ageCategories: OPEN_EVENT_TYPES.has(type) ? ["amateur"] : undefined,
     lat: ev.latitude ?? undefined,
     lng: ev.longitude ?? undefined,
     confidence: 0.9,
@@ -195,7 +224,7 @@ export async function parseRadsportEvents(_url: string, _html?: string): Promise
 
   const collect = (rows: ApiEvent[]) => {
     for (const row of rows) {
-      const parsed = toParsed(row);
+      const parsed = radsportEventToParsed(row);
       if (parsed) byId.set(parsed.externalId, parsed);
     }
   };

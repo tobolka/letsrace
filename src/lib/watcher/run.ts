@@ -239,12 +239,27 @@ export async function watchOne(row: {
     const extracted = await extractEvents(row.url, fetched.html);
     const { data: knownRows } = await supabase
       .from("event_sources")
-      .select("external_id")
+      .select("external_id, event:events(updated_at)")
       .eq("watched_url_id", row.id)
       .not("external_id", "is", null);
-    const known = new Set(
-      (knownRows ?? []).map((r) => r.external_id).filter((id): id is string => Boolean(id)),
-    );
+    /**
+     * When each of these was last written, so the refresh sample below can
+     * rotate instead of re-reading the same races every run.
+     *
+     * `updated_at` and not `last_seen_at`: an unchanged poll stamps last_seen
+     * on every race of the source at once, which would flatten the order back
+     * to a tie the moment the listing sat still for one cycle.
+     */
+    const writtenAtByExternalId = new Map<string, number>();
+    for (const r of (knownRows ?? []) as unknown as {
+      external_id: string | null;
+      event: { updated_at: string | null } | { updated_at: string | null }[] | null;
+    }[]) {
+      if (!r.external_id) continue;
+      const ev = Array.isArray(r.event) ? r.event[0] : r.event;
+      writtenAtByExternalId.set(r.external_id, Date.parse(ev?.updated_at ?? "") || 0);
+    }
+    const known = new Set(writtenAtByExternalId.keys());
 
     // A next-season URL that answers with another season's races is a wrong
     // guess, not a calendar. Ingesting it re-imports the current season under a
@@ -302,10 +317,24 @@ export async function watchOne(row: {
       .filter((ev) => !ev.externalId || !known.has(ev.externalId))
       .sort(forwardFirst)
       .slice(0, maxNew);
-    // When page changed, refresh a sample of known races so updates land
+    /**
+     * When the page changed, refresh a sample of known races so updates land.
+     *
+     * The sample used to be the nearest 250 by date, which on a calendar of 623
+     * is the same 250 every run: a race in April was written once and never
+     * looked at again, and a field added to the extractor reached less than half
+     * the catalogue however many times the source was polled. Stalest first
+     * rotates through the whole list instead — a race just refreshed goes to the
+     * back of the queue by definition.
+     */
     const refresh = candidates
       .filter((ev) => ev.externalId && known.has(ev.externalId))
-      .sort(forwardFirst)
+      .sort((a, b) => {
+        const written =
+          (writtenAtByExternalId.get(a.externalId!) ?? 0) -
+          (writtenAtByExternalId.get(b.externalId!) ?? 0);
+        return written !== 0 ? written : forwardFirst(a, b);
+      })
       .slice(0, MAX_REFRESH_PER_RUN);
     const toUpsert = dedupeByExternalId([...fresh, ...refresh]);
 
@@ -1840,10 +1869,18 @@ async function upsertParsedEvent(
    * category list now replaces the stored set; a level/discipline default only
    * fills a row that has nothing.
    */
+  // A source that states who may start is evidence of the same standing as a
+  // category list in the name — the two are unioned, and either replaces what
+  // is stored rather than being unioned into it.
+  const statedAges =
+    ev.ageCategories?.length || classified.ageConfidence === "explicit"
+      ? unionText(
+          ev.ageCategories ?? [],
+          classified.ageConfidence === "explicit" ? classified.ageCategories : [],
+        )
+      : null;
   const mergedAgeCategories =
-    classified.ageConfidence === "explicit"
-      ? classified.ageCategories
-      : unionText(existingRow?.age_categories, classified.ageCategories);
+    statedAges ?? unionText(existingRow?.age_categories, classified.ageCategories);
   const mergedAudience = mergedAgeCategories.length
     ? audienceFromAgeCategories(
         mergedAgeCategories as import("@/lib/taxonomy").AgeCategory[],
