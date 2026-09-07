@@ -58,10 +58,9 @@ export const DISCIPLINE_FAMILY_ICONS: Record<string, string> = {
   bmx: "/bmx.svg",
 };
 
-/** The icon id for a race, or "" when its family has no glyph. */
+/** Which baked pin a race wears — its family, glyph or no glyph. */
 export function disciplineIcon(disciplines: string[] | null | undefined): string {
-  const fam = eventDisciplineFamily(disciplines);
-  return DISCIPLINE_FAMILY_ICONS[fam] ? fam : "";
+  return eventDisciplineFamily(disciplines);
 }
 
 export function disciplineColor(disciplines: string[] | null | undefined): string {

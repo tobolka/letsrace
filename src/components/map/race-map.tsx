@@ -16,6 +16,7 @@ import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
 import {
+  DISCIPLINE_FAMILY_COLORS,
   DISCIPLINE_FAMILY_ICONS,
   disciplineColor,
   disciplineColorDark,
@@ -131,76 +132,112 @@ const RACES_SOURCE = "letsrace-races";
 const HIT_LAYER = "letsrace-races-hit";
 const SHADOW_LAYER = "letsrace-races-shadow";
 const GLOW_LAYER = "letsrace-races-glow";
-const DOT_LAYER = "letsrace-races-dot";
-const ICON_LAYER = "letsrace-races-icon";
+const PIN_LAYER = "letsrace-races-pin";
 
 /**
- * The glyph inside the pin: rasterised big, drawn small.
+ * The whole pin as one image.
  *
- * `RASTER_PX` is the size the SVG is baked at, `ICON_PX` the size it appears
- * on the map. The layer scales one to the other, rather than leaning on
- * MapLibre's `pixelRatio`, so what ends up on a 22px dot is a number written
- * down here and not one inferred from the screen.
- */
-const RASTER_PX = 36;
-const ICON_PX = 12;
-
-/**
- * Turn the discipline SVGs into images the GPU can stamp on a pin.
+ * The circle used to be a circle layer and the bike a symbol layer on top of
+ * it, which meant every bike was drawn after every circle — so a pin behind
+ * another one had its glyph floating over the front pin's face. Baked
+ * together, the pins are one symbol layer, and a symbol layer draws its icons
+ * in order: the pin in front simply covers the one behind, face and all.
  *
- * Three things happen to each one. The artwork is black on transparent and
- * the pin under it is not, so the shape is kept and the colour thrown away.
- * The bikes are not all drawn to the same size inside their 24px box — one
- * fills it, another leaves a margin — so each is measured by its own ink and
- * scaled to a common width, or a road pin would carry a visibly bigger bike
- * than a mountain one. And it is then centred on that ink, so a glyph never
- * leans out of the circle it is supposed to sit in.
+ * `PIN_RASTER` is the size it is baked at, `PIN_PX` the size it appears on the
+ * map. The layer scales one to the other rather than leaning on MapLibre's
+ * `pixelRatio`, so what ends up on screen is a number written down here and
+ * not one inferred from it.
  */
-let familyIcons: Promise<void> | null = null;
-
-/** How much of the raster the glyph fills, once trimmed to its own ink. */
+const PIN_PX = 26;
+const PIN_RASTER = PIN_PX * 3;
+/** Of the 26px pin, 22 is the coloured disc and the remaining 4 its white ring. */
+const PIN_FILL_PX = 22;
+/** The glyph inside, at the size it reads best without touching the ring. */
+const GLYPH_PX = 12;
+/** How much of its own box the glyph fills, once trimmed to its ink. */
 const GLYPH_FILL = 0.92;
 
+let familyIcons: Promise<void> | null = null;
+
+/**
+ * Bake one pin per discipline family.
+ *
+ * The glyph artwork is black on transparent and the pin under it is not, so
+ * the shape is kept and the colour thrown away. The bikes are also not drawn
+ * to the same size inside their 24px boxes — one fills it, another leaves a
+ * margin — so each is measured by its own ink and scaled to a common width,
+ * or a road pin would carry a visibly bigger bike than a mountain one.
+ *
+ * `other` gets a bare disc: a plain dot is the honest answer for a race whose
+ * discipline we could not read.
+ */
 function loadFamilyIcons(): Promise<void> {
   familyIcons ??= Promise.all(
-    Object.entries(DISCIPLINE_FAMILY_ICONS).map(async ([family, href]) => {
-      const img = new Image();
-      img.decoding = "async";
-      await new Promise<void>((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error(`icon ${href}`));
-        img.src = href;
-      });
-
-      // Draw it once oversized to find where the ink actually is.
-      const probe = document.createElement("canvas");
-      probe.width = RASTER_PX;
-      probe.height = RASTER_PX;
-      const pctx = probe.getContext("2d", { willReadFrequently: true });
-      if (!pctx) return;
-      pctx.drawImage(img, 0, 0, RASTER_PX, RASTER_PX);
-      const box = inkBounds(pctx.getImageData(0, 0, RASTER_PX, RASTER_PX));
-      if (!box) return;
-
+    Object.keys(DISCIPLINE_FAMILY_COLORS).map(async (family) => {
+      const glyph = await loadGlyph(DISCIPLINE_FAMILY_ICONS[family]);
       const canvas = document.createElement("canvas");
-      canvas.width = RASTER_PX;
-      canvas.height = RASTER_PX;
+      canvas.width = PIN_RASTER;
+      canvas.height = PIN_RASTER;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      const scale = (RASTER_PX * GLYPH_FILL) / Math.max(box.w, box.h);
-      const w = RASTER_PX * scale;
-      const dx = (RASTER_PX - box.w * scale) / 2 - box.x * scale;
-      const dy = (RASTER_PX - box.h * scale) / 2 - box.y * scale;
-      ctx.drawImage(img, dx, dy, w, w);
-      ctx.globalCompositeOperation = "source-in";
+
+      const mid = PIN_RASTER / 2;
+      const scale = PIN_RASTER / PIN_PX;
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, RASTER_PX, RASTER_PX);
-      iconBitmaps[family] = ctx.getImageData(0, 0, RASTER_PX, RASTER_PX);
+      ctx.beginPath();
+      ctx.arc(mid, mid, mid, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = DISCIPLINE_FAMILY_COLORS[family];
+      ctx.beginPath();
+      ctx.arc(mid, mid, (PIN_FILL_PX / 2) * scale, 0, Math.PI * 2);
+      ctx.fill();
+      if (glyph) {
+        const g = GLYPH_PX * scale;
+        ctx.drawImage(glyph, mid - g / 2, mid - g / 2, g, g);
+      }
+      pinBitmaps[family] = ctx.getImageData(0, 0, PIN_RASTER, PIN_RASTER);
     }),
   )
     .then(() => undefined)
     .catch(() => undefined);
   return familyIcons;
+}
+
+/** One discipline glyph, trimmed to its ink, centred, and turned white. */
+async function loadGlyph(href: string | undefined): Promise<HTMLCanvasElement | null> {
+  if (!href) return null;
+  const img = new Image();
+  img.decoding = "async";
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error(`icon ${href}`));
+    img.src = href;
+  });
+
+  const size = GLYPH_PX * 3;
+  // Draw it once to find where the ink actually is.
+  const probe = document.createElement("canvas");
+  probe.width = size;
+  probe.height = size;
+  const pctx = probe.getContext("2d", { willReadFrequently: true });
+  if (!pctx) return null;
+  pctx.drawImage(img, 0, 0, size, size);
+  const box = inkBounds(pctx.getImageData(0, 0, size, size));
+  if (!box) return null;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const scale = (size * GLYPH_FILL) / Math.max(box.w, box.h);
+  const dx = (size - box.w * scale) / 2 - box.x * scale;
+  const dy = (size - box.h * scale) / 2 - box.y * scale;
+  ctx.drawImage(img, dx, dy, size * scale, size * scale);
+  ctx.globalCompositeOperation = "source-in";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, size, size);
+  return canvas;
 }
 
 /** The rectangle the non-transparent pixels occupy, or null if there are none. */
@@ -223,11 +260,11 @@ function inkBounds(data: ImageData): { x: number; y: number; w: number; h: numbe
   return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
 }
 
-/** Decoded once per page, added to every map instance that needs them. */
-const iconBitmaps: Record<string, ImageData> = {};
+/** Baked once per page, added to every map instance that needs them. */
+const pinBitmaps: Record<string, ImageData> = {};
 
 function registerFamilyIcons(map: Map) {
-  for (const [family, data] of Object.entries(iconBitmaps)) {
+  for (const [family, data] of Object.entries(pinBitmaps)) {
     if (!map.hasImage(family)) map.addImage(family, data, { pixelRatio: 1 });
   }
 }
@@ -913,48 +950,37 @@ export function RaceMap({
         },
       });
 
-      // The halo the selected pin wears. Radius zero when nothing is selected,
-      // so the layer costs nothing until it is needed.
+      // The ring the selected race wears. It sits under the pin rather than on
+      // it, because the pin is one baked image and cannot change its face —
+      // and a halo around the outside is what a map does for "this one"
+      // anyway. Radius zero when nothing is selected, so the layer costs
+      // nothing until it is needed.
       map!.addLayer({
         id: GLOW_LAYER,
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": ["case", SELECTED, 17, 0],
+          "circle-radius": ["case", SELECTED, 18, 0],
           "circle-color": ["get", "color"],
-          "circle-opacity": ["case", SELECTED, 0.4, 0],
+          "circle-opacity": ["case", SELECTED, 0.28, 0],
+          "circle-stroke-width": ["case", SELECTED, 2, 0],
+          "circle-stroke-color": ["get", "colorDark"],
         },
       });
 
+      // The pin: disc, white ring and discipline, all in one image, so that a
+      // pin in front covers the one behind instead of the two interleaving.
+      // Overlap is allowed on purpose — a race is never dropped from the map
+      // just because a neighbour got there first.
       map!.addLayer({
-        id: DOT_LAYER,
-        type: "circle",
-        source: RACES_SOURCE,
-        paint: {
-          "circle-radius": ["case", SELECTED, 12, 11],
-          "circle-color": ["case", SELECTED, ["get", "colorDark"], ["get", "color"]],
-          "circle-stroke-width": ["case", SELECTED, 2.5, 2],
-          "circle-stroke-color": "#ffffff",
-        },
-      });
-
-      // The discipline, drawn inside its own pin — but only where there is
-      // room for it. Letting the glyphs overlap turned a cluster of races into
-      // a pile of bicycles on top of each other; with collision left on, the
-      // pin in front keeps its bike and the ones behind, which you can barely
-      // see anyway, fall back to a plain coloured dot.
-      map!.addLayer({
-        id: ICON_LAYER,
+        id: PIN_LAYER,
         type: "symbol",
         source: RACES_SOURCE,
-        filter: ["!=", ["get", "icon"], ""],
         layout: {
           "icon-image": ["get", "icon"],
-          "icon-size": ICON_PX / RASTER_PX,
-          // The glyph is 12px but the pin around it is 26, so the collision
-          // box is padded out to the pin: a bike is dropped as soon as the
-          // circles themselves touch, not only when the bikes would.
-          "icon-padding": 7,
+          "icon-size": PIN_PX / PIN_RASTER,
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
         },
       });
 
