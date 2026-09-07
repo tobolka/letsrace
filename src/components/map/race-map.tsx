@@ -295,6 +295,16 @@ function boundsAround(lng: number, lat: number, radiusKm: number) {
   return new maplibre.LngLatBounds([lng - dLng, lat - dLat], [lng + dLng, lat + dLat]);
 }
 
+/**
+ * Never open on the whole continent.
+ *
+ * `fitBounds` has a ceiling but no floor, so a 200 km reach fitted into what a
+ * phone leaves once the sheet has taken its half — a strip about 350 by 380
+ * pixels — settles at zoom 5.5. That is Hamburg to Vienna in one frame, every
+ * race a dot in one blob, and it is what "find my location" did on a phone.
+ */
+const MIN_FIT_ZOOM = 7;
+
 function fitRadius(
   map: Map,
   lng: number,
@@ -303,10 +313,17 @@ function fitRadius(
   padding: PaddingOptions,
   duration = 0,
 ) {
-  map.fitBounds(boundsAround(lng, lat, radiusKm), {
+  const bounds = boundsAround(lng, lat, radiusKm);
+  const camera = map.cameraForBounds(bounds, { padding, maxZoom: 9 });
+  if (!camera) {
+    map.fitBounds(bounds, { padding, duration, maxZoom: 9 });
+    return;
+  }
+  map.easeTo({
+    center: camera.center,
+    zoom: Math.max(MIN_FIT_ZOOM, camera.zoom ?? MIN_FIT_ZOOM),
     padding,
     duration,
-    maxZoom: 9,
   });
 }
 

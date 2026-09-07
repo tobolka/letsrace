@@ -70,7 +70,7 @@ import {
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { MoreHorizontal, Check, ExternalLink } from "lucide-react";
+import { MoreHorizontal, Check } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -186,7 +186,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [mobilePanel, setMobilePanel] = useState<"closed" | "list" | "detail">("list");
+  const [mobilePanel, setMobilePanel] = useState<"list" | "detail">("list");
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -220,7 +220,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [mobileSheetReady, setMobileSheetReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [listSnap, setListSnap] = useState<number>(0.5);
+  const [listSnap, setListSnap] = useState<number | string>(0.5);
   // A tapped pin opens the card at half height, the way Maps does it: the map
   // stays on screen above it, and dragging up is how you ask for the rest.
   const [detailSnap, setDetailSnap] = useState<number>(0.5);
@@ -313,22 +313,34 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     return { lng, lat };
   }, [filters.e, events]);
 
+  /**
+   * Keep the selected race in view in the list.
+   *
+   * On a phone the list is unmounted while a race card is open, so there is
+   * nothing to scroll at the moment the race is picked off the map. This runs
+   * again when the list comes back, on the frame after it mounts — otherwise
+   * closing the card dropped you at the top of the list with no sign of the
+   * race you had just been reading about.
+   */
   useEffect(() => {
     if (!selectedId) return;
     const selector = `[data-event-id="${CSS.escape(selectedId)}"]`;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    for (const root of [listRef.current, mobileListRef.current]) {
-      if (!root || root.offsetHeight === 0) continue;
-      const el = root.querySelector<HTMLElement>(selector);
-      if (!el) continue;
-      el.scrollIntoView({
-        block: "nearest",
-        inline: "nearest",
-        behavior: reduce ? "auto" : "smooth",
-      });
-      break;
-    }
-  }, [selectedId]);
+    const raf = requestAnimationFrame(() => {
+      for (const root of [listRef.current, mobileListRef.current]) {
+        if (!root || root.offsetHeight === 0) continue;
+        const el = root.querySelector<HTMLElement>(selector);
+        if (!el) continue;
+        el.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+          behavior: reduce ? "auto" : "smooth",
+        });
+        break;
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [selectedId, mobilePanel, listSettled]);
 
   function toggleCategory(value: string) {
     const next = filters.categories.includes(value)
@@ -644,20 +656,19 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const peek = selected ? 220 : 112;
       const snap = mobilePanel === "detail" ? detailSnap : listSnap;
+      const snapPx =
+        typeof snap === "number" ? viewportH * snap : Number.parseFloat(snap) || viewportH * 0.5;
       /*
        * Never hand the map less than 45% of the screen. The sheet at full
        * height left a fifty-pixel strip, and easing a race into a strip that
        * size zooms the map out to the whole of Europe to make it fit.
        */
-      const open = Math.round(
-        Math.min(viewportH * (typeof snap === "number" ? snap : 0.5), viewportH * 0.55, 640),
-      );
+      const open = Math.round(Math.min(snapPx, viewportH * 0.55, 640));
       return {
         top: 16,
         right: 12,
-        bottom: (mobilePanel === "closed" ? peek : open) + 12,
+        bottom: open + 12,
         left: 12,
       };
     }
@@ -704,19 +715,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   const df = dateFnsLocale(locale);
-  const selectedPeekMeta = selected
-    ? [
-        format(parseISO(selected.startDate), "d MMM", { locale: df }),
-        selected.location?.municipality || selected.location?.name,
-      ]
-        .filter(Boolean)
-        .join(" · ")
-    : "";
-  const peekSnap = selected ? "220px" : "112px";
+  const minSnap = "112px";
   const midSnap = 0.5;
   const fullSnap = 0.92;
-  const sheetSnap =
-    mobilePanel === "closed" ? peekSnap : mobilePanel === "detail" ? detailSnap : listSnap;
+  const sheetSnap = mobilePanel === "detail" ? detailSnap : listSnap;
 
   const weekend = thisWeekendRange();
   const isThisWeekend = filters.dateFrom === weekend.from && filters.dateTo === weekend.to;
@@ -771,7 +773,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               setMobilePanel("detail");
             }}
             onBackgroundClick={() => {
-              if (!isDesktop) setMobilePanel("closed");
+              // Tapping the map is a request to see it: collapse to the bar.
+              if (!isDesktop) {
+                setListSnap(minSnap);
+                setMobilePanel("list");
+              }
             }}
             onBoundsChange={(b, reason) => {
               setBounds(b);
@@ -922,22 +928,22 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         noBodyStyles
         repositionInputs={false}
         snapToSequentialPoint
-        snapPoints={[peekSnap, midSnap, fullSnap]}
+        snapPoints={[minSnap, midSnap, fullSnap]}
         fadeFromIndex={2}
         activeSnapPoint={sheetSnap}
         setActiveSnapPoint={(point) => {
-          if (point == null || point === peekSnap) {
-            setMobilePanel("closed");
+          if (point == null) return;
+          // Dragging the sheet sets the height of whichever thing is in it.
+          // Pulling a race card down puts the list back rather than stranding
+          // the sheet on a race you can no longer see.
+          if (mobilePanel === "detail") {
+            if (point === minSnap) {
+              setListSnap(minSnap);
+              setMobilePanel("list");
+            } else if (typeof point === "number") setDetailSnap(point);
             return;
           }
-          if (point === midSnap || point === fullSnap) {
-            // Dragging the sheet sets the height of whichever thing is in it.
-            if (mobilePanel === "detail") setDetailSnap(point);
-            else {
-              setListSnap(point);
-              setMobilePanel("list");
-            }
-          }
+          setListSnap(point);
         }}
       >
         <DrawerContent
@@ -945,7 +951,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           style={{ height: "100dvh", maxHeight: "100dvh" }}
           className="z-20 overflow-hidden rounded-t-2xl border-0 bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(28,25,23,.12)] data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh] md:hidden"
         >
-          <DrawerHandle aria-label={mobilePanel === "closed" ? messages.sheetExpand : messages.sheetCollapse} />
+          <DrawerHandle aria-label={sheetSnap === minSnap ? messages.sheetExpand : messages.sheetCollapse} />
           <DrawerTitle className="sr-only">{messages.racesCount}</DrawerTitle>
           {/* A race detail is its own panel: filters belong to the list it covers. */}
           {mobilePanel !== "detail" ? (
@@ -986,57 +992,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             }
           />
           ) : null}
-
-          {mobilePanel === "closed" && selected ? (
-            <div className="flex items-start gap-3 px-4 pb-3">
-              <button
-                type="button"
-                className="flex min-h-11 min-w-0 flex-1 items-start gap-2 text-left touch-manipulation"
-                onClick={() => setMobilePanel("detail")}
-              >
-                <span
-                  className="mt-2 size-2.5 shrink-0 rounded-full"
-                  style={{ background: disciplineColor(selected.disciplines) }}
-                  aria-hidden
-                />
-                <span className="min-w-0">
-                  <span className="block truncate text-base font-semibold leading-snug">
-                    {selected.name}
-                  </span>
-                  {selectedPeekMeta ? (
-                    <span className="mt-0.5 block truncate text-sm text-muted-foreground">
-                      {selectedPeekMeta}
-                    </span>
-                  ) : null}
-                </span>
-              </button>
-              {selected.registrationUrl || selected.websiteUrl || selected.listingUrl ? (
-                <Button asChild size="sm" className="mt-0.5 h-11 shrink-0 px-3">
-                  <a
-                    href={
-                      selected.registrationUrl || selected.websiteUrl || selected.listingUrl || "#"
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink data-icon="inline-start" />
-                    {selected.registrationUrl ? messages.register : messages.openWebsite}
-                  </a>
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="mt-0.5 h-11 shrink-0"
-                  onClick={() => setMobilePanel("detail")}
-                >
-                  {messages.sheetExpand}
-                </Button>
-              )}
-            </div>
-          ) : null}
-
 
           {mobilePanel === "detail" && selected ? (
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
