@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -12,10 +12,8 @@ import {
   LayoutDashboard,
   Link2Off,
   Map,
-  Moon,
   Plus,
   Radar,
-  Sun,
   TriangleAlert,
 } from "lucide-react";
 import { AdminCommand } from "@/components/admin/admin-command";
@@ -60,26 +58,55 @@ type NavItem = {
   urgent?: boolean;
 };
 
-const NAV: NavItem[] = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true, count: "stalled", urgent: true },
-  { href: "/admin/sources", label: "Sources", icon: Globe, exact: false },
-  { href: "/admin/events", label: "Events", icon: Flag, exact: false },
+/**
+ * Two groups, because there are two jobs here.
+ *
+ * "Waiting" is everything that needs a person and can be finished: links to
+ * judge, riders to answer, duplicates to call, races with a hole in them. Each
+ * carries its own number, so the sidebar is the queue and the overview is not
+ * the only place that knows whether anything is outstanding.
+ *
+ * "Catalogue" is what you browse rather than clear — the races and the sources
+ * they come from. It has no counts because a count of everything is not work.
+ */
+const WAITING: NavItem[] = [
   { href: "/admin/discovery", label: "Discovery", icon: Radar, exact: false, count: "discovery" },
-  { href: "/admin/duplicates", label: "Duplicates", icon: CopyCheck, exact: false },
   { href: "/admin/inbox", label: "Inbox", icon: Inbox, exact: false, count: "inbox" },
+  { href: "/admin/duplicates", label: "Duplicates", icon: CopyCheck, exact: false },
+  {
+    href: "/admin/events?missing=website",
+    label: "Missing a link",
+    icon: Link2Off,
+    exact: false,
+    count: "unlinked",
+  },
 ];
 
-const THEME_KEY = "letsrace-admin-theme";
+const CATALOGUE: NavItem[] = [
+  { href: "/admin/events", label: "Races", icon: Flag, exact: false },
+  { href: "/admin/sources", label: "Sources", icon: Globe, exact: false, count: "stalled", urgent: true },
+];
+
+const NAV: NavItem[] = [
+  { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+  ...WAITING,
+  ...CATALOGUE,
+];
 
 function isActive(pathname: string, href: string, exact: boolean) {
-  if (exact) return pathname === href;
+  // Some rows are a filtered view of a page rather than a page: "Missing a
+  // link" is /admin/events with a query on it. Highlight the page it lives in
+  // rather than nothing at all.
+  const path = href.split("?")[0] ?? href;
+  if (exact) return pathname === path;
+  if (path !== href) return false;
   if (href === "/admin/events") {
     return (
       pathname === "/admin/events" ||
       (pathname.startsWith("/admin/events/") && pathname !== "/admin/events/new")
     );
   }
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === path || pathname.startsWith(`${path}/`);
 }
 
 function crumbFor(pathname: string): string {
@@ -89,12 +116,43 @@ function crumbFor(pathname: string): string {
   return item?.label ?? "Admin";
 }
 
+/** One row of the sidebar, with its number when it has work on it. */
+function NavRow({
+  item,
+  pathname,
+  counts,
+}: {
+  item: NavItem;
+  pathname: string;
+  counts: WorkCounts | null;
+}) {
+  const n = item.count && counts ? counts[item.count] : 0;
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={isActive(pathname, item.href, item.exact)}
+        tooltip={item.label}
+      >
+        <Link href={item.href}>
+          <item.icon />
+          <span>{item.label}</span>
+        </Link>
+      </SidebarMenuButton>
+      {n > 0 ? (
+        <SidebarMenuBadge className={item.urgent ? "text-amber-600" : undefined}>
+          {n > 999 ? "999+" : n}
+        </SidebarMenuBadge>
+      ) : null}
+    </SidebarMenuItem>
+  );
+}
+
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const onLogin = pathname === "/admin/login";
   const [counts, setCounts] = useState<WorkCounts | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [dark, setDark] = useState(false);
 
   // The badges are the reason to open the admin at all, so they are refreshed
   // while you work rather than frozen at the moment the page was rendered.
@@ -119,35 +177,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     };
   }, [onLogin, pathname]);
 
-  useEffect(() => {
-    let stored: string | null = null;
-    try {
-      stored = window.localStorage.getItem(THEME_KEY);
-    } catch {
-      /* private windows have no storage; light is a fine default */
-    }
-    const prefers =
-      stored === "dark" ||
-      (stored == null && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
-    setDark(Boolean(prefers));
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    return () => document.documentElement.classList.remove("dark");
-  }, [dark]);
-
-  const toggleTheme = useCallback(() => {
-    setDark((prev) => {
-      const next = !prev;
-      try {
-        window.localStorage.setItem(THEME_KEY, next ? "dark" : "light");
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
 
   useEffect(() => {
     if (onLogin) return;
@@ -189,56 +218,42 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Catalog</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {NAV.map((item) => {
-                  const n = item.count && counts ? counts[item.count] : 0;
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive(pathname, item.href, item.exact)}
-                        tooltip={item.label}
-                      >
-                        <Link href={item.href}>
-                          <item.icon />
-                          <span>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                      {n > 0 ? (
-                        <SidebarMenuBadge
-                          className={
-                            item.urgent ? "text-amber-600 dark:text-amber-500" : undefined
-                          }
-                        >
-                          {n > 99 ? "99+" : n}
-                        </SidebarMenuBadge>
-                      ) : null}
-                    </SidebarMenuItem>
-                  );
-                })}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(pathname, "/admin", true)}
+                    tooltip="Overview"
+                  >
+                    <Link href="/admin">
+                      <LayoutDashboard />
+                      <span>Overview</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
 
           <SidebarGroup>
-            <SidebarGroupLabel>Fix</SidebarGroupLabel>
+            <SidebarGroupLabel>Waiting for you</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Upcoming races with no link">
-                    <Link href="/admin/events?filter=incomplete">
-                      <Link2Off />
-                      <span>No link</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  {counts && counts.unlinked > 0 ? (
-                    <SidebarMenuBadge>
-                      {counts.unlinked > 999 ? "999+" : counts.unlinked}
-                    </SidebarMenuBadge>
-                  ) : null}
-                </SidebarMenuItem>
+                {WAITING.map((item) => (
+                  <NavRow key={item.href} item={item} pathname={pathname} counts={counts} />
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Catalogue</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {CATALOGUE.map((item) => (
+                  <NavRow key={item.href} item={item} pathname={pathname} counts={counts} />
+                ))}
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild tooltip="Add a race by hand">
                     <Link href="/admin/events/new">
@@ -300,19 +315,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <span className="hidden sm:inline">Search</span>
                 <kbd className="hidden rounded border bg-muted px-1 text-[10px] sm:inline">⌘K</kbd>
               </Button>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={dark ? "Switch to light" : "Switch to dark"}
-                    onClick={toggleTheme}
-                  >
-                    {dark ? <Sun /> : <Moon />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{dark ? "Light" : "Dark"}</TooltipContent>
-              </Tooltip>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/en">Map</Link>
               </Button>
@@ -321,13 +323,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">{children}</div>
         </TooltipProvider>
       </SidebarInset>
-      <AdminCommand
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        dark={dark}
-        onToggleTheme={toggleTheme}
-      />
-      <Toaster theme={dark ? "dark" : "light"} />
+      <AdminCommand open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <Toaster theme="light" />
     </SidebarProvider>
   );
 }

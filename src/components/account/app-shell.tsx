@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, CalendarDays, LogOut, Map, Moon, Search, Sun, Users, UserRound } from "lucide-react";
+import { Bell, CalendarDays, LogOut, Map, Search, Users, UserRound } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { AccountCommand } from "@/components/account/account-command";
 import { Badge } from "@/components/ui/badge";
@@ -27,8 +27,6 @@ import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { todayIso } from "@/lib/date-presets";
 import { cn } from "@/lib/utils";
 
-const THEME_KEY = "letsrace-theme";
-
 type Counts = { action: number; alerts: number };
 
 export function AppShell({
@@ -43,7 +41,6 @@ export function AppShell({
   const router = useRouter();
   const [authed, setAuthed] = useState(false);
   const [counts, setCounts] = useState<Counts>({ action: 0, alerts: 0 });
-  const [dark, setDark] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   // The plan is the account; everything else hangs off it.
   const planHref = `/${locale}/account`;
@@ -109,32 +106,6 @@ export function AppShell({
     };
   }, [pathname]);
 
-  useEffect(() => {
-    let stored: string | null = null;
-    try {
-      stored = window.localStorage.getItem(THEME_KEY);
-    } catch {
-      /* private windows have no storage; light is a fine default */
-    }
-    setDark(stored === "dark");
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    return () => document.documentElement.classList.remove("dark");
-  }, [dark]);
-
-  const toggleTheme = useCallback(() => {
-    setDark((prev) => {
-      const next = !prev;
-      try {
-        window.localStorage.setItem(THEME_KEY, next ? "dark" : "light");
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -224,14 +195,6 @@ export function AppShell({
               <span className="hidden sm:inline">{t.searchPlaceholder}</span>
               <kbd className="hidden rounded border bg-muted px-1 text-[10px] sm:inline">⌘K</kbd>
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={dark ? "Light" : "Dark"}
-              onClick={toggleTheme}
-            >
-              {dark ? <Sun /> : <Moon />}
-            </Button>
           </div>
         </header>
 
@@ -273,13 +236,7 @@ export function AppShell({
         </nav>
       </SidebarInset>
 
-      <AccountCommand
-        locale={locale}
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        dark={dark}
-        onToggleTheme={toggleTheme}
-      />
+      <AccountCommand locale={locale} open={paletteOpen} onOpenChange={setPaletteOpen} />
     </SidebarProvider>
   );
 }

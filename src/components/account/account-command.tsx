@@ -9,8 +9,6 @@ import {
   CalendarPlus,
   Check,
   Map,
-  Moon,
-  Sun,
   UserRound,
 } from "lucide-react";
 import {
@@ -46,14 +44,10 @@ export function AccountCommand({
   locale,
   open,
   onOpenChange,
-  dark,
-  onToggleTheme,
 }: {
   locale: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  dark: boolean;
-  onToggleTheme: () => void;
 }) {
   const t = messagesFor(locale);
   const router = useRouter();
@@ -167,16 +161,6 @@ export function AccountCommand({
           <CommandItem value={`map ${t.viewOnMap}`} onSelect={() => go(`/${locale}`)}>
             <Map />
             {t.viewOnMap}
-          </CommandItem>
-          <CommandItem
-            value="theme dark light"
-            onSelect={() => {
-              onToggleTheme();
-              close();
-            }}
-          >
-            {dark ? <Sun /> : <Moon />}
-            {dark ? "Light" : "Dark"}
           </CommandItem>
         </CommandGroup>
       </CommandList>

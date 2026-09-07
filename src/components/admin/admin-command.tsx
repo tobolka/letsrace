@@ -14,8 +14,6 @@ import {
   Play,
   Plus,
   Radar,
-  Moon,
-  Sun,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -57,13 +55,9 @@ const PAGES = [
 export function AdminCommand({
   open,
   onOpenChange,
-  dark,
-  onToggleTheme,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  dark: boolean;
-  onToggleTheme: () => void;
 }) {
   const router = useRouter();
   const [term, setTerm] = useState("");
@@ -194,17 +188,7 @@ export function AdminCommand({
             <MapPin />
             Geocode pending places
           </CommandItem>
-          <CommandItem
-            value="theme dark light appearance"
-            onSelect={() => {
-              onToggleTheme();
-              close();
-            }}
-          >
-            {dark ? <Sun /> : <Moon />}
-            {dark ? "Switch to light" : "Switch to dark"}
-          </CommandItem>
-        </CommandGroup>
+                  </CommandGroup>
       </CommandList>
     </CommandDialog>
   );
