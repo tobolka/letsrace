@@ -43,8 +43,8 @@ const MAX_REFRESH_PER_RUN = 250;
 /** Soft claim window so overlapping crons don't double-process the same row. */
 const CLAIM_MS = 20 * 60 * 1000;
 /** Stay under Fluid Compute's 300s cap with room for geocode. */
-const DEFAULT_BUDGET_MS = 200_000;
-const DEFAULT_CONCURRENCY = 5;
+const DEFAULT_BUDGET_MS = 260_000;
+const DEFAULT_CONCURRENCY = 10;
 const CALENDAR_KINDS = ["series", "federation", "aggregator", "calendar"] as const;
 
 export async function runDueWatches(

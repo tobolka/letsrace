@@ -10,7 +10,20 @@ export async function GET(req: NextRequest) {
   if (!requireCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const outcomes = await runDueWatches(120, { concurrency: 5, budgetMs: 200_000 });
+  /*
+   * A run gets through what it gets through, and it was not much.
+   *
+   * Measured over three days: 27 to 50 sources per run, at 22 to 42 seconds
+   * each. Five at a time inside a 200-second budget works out to about
+   * thirty-five — so three runs a day covered a hundred of the four hundred
+   * active sources, and a full cycle took the better part of four days. The
+   * tail of that is a race whose listing was last read four weeks ago.
+   *
+   * The time is nearly all network wait, so widening the pool costs little and
+   * the busiest hosts are already held to two sources a run. `maxDuration` is
+   * 300s, which is what the budget leaves room under.
+   */
+  const outcomes = await runDueWatches(120, { concurrency: 10, budgetMs: 260_000 });
   let geocode = null;
   try {
     geocode = await geocodePendingLocations(80);
