@@ -4,6 +4,43 @@ function todayIso(now = new Date()): string {
   return now.toISOString().slice(0, 10);
 }
 
+/**
+ * Every source row of one watched URL.
+ *
+ * PostgREST answers with at most a thousand rows however many there are, and
+ * one aggregator in this catalogue has 1798. Read as an unpaged select it
+ * silently stranded 798 of them: races that were never stamped as still-seen,
+ * so 105 upcoming races read as "not confirmed in a fortnight" on a listing
+ * that had been fetched an hour before.
+ */
+const PAGE = 1000;
+
+async function allSourceRows<T>(
+  select: string,
+  watchedUrlId: string,
+  notNullExternalId = false,
+): Promise<T[]> {
+  const supabase = createServerSupabase();
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    let query = supabase
+      .from("event_sources")
+      .select(select)
+      .eq("watched_url_id", watchedUrlId)
+      // Paging without an order is not paging: Postgres is free to return the
+      // rows in a different order for each range, so pages overlap and others
+      // are never seen. Sorting by the primary key makes the walk complete.
+      .order("id", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (notNullExternalId) query = query.not("external_id", "is", null);
+    const { data, error } = await query;
+    const page = (data ?? []) as unknown as T[];
+    rows.push(...page);
+    if (error || page.length < PAGE) break;
+  }
+  return rows;
+}
+
 function chunk<T>(items: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -31,11 +68,8 @@ export function shouldHideDroppedFromCalendar(opts: {
 /** 304 / unchanged watches still prove the listing is alive. */
 export async function touchLastSeenForWatchedUrl(watchedUrlId: string): Promise<number> {
   const supabase = createServerSupabase();
-  const { data: sources } = await supabase
-    .from("event_sources")
-    .select("event_id")
-    .eq("watched_url_id", watchedUrlId);
-  const ids = [...new Set((sources ?? []).map((r) => r.event_id as string).filter(Boolean))];
+  const sources = await allSourceRows<{ event_id: string }>("event_id", watchedUrlId);
+  const ids = [...new Set(sources.map((r) => r.event_id).filter(Boolean))];
   if (!ids.length) return 0;
 
   const now = new Date().toISOString();
@@ -60,13 +94,13 @@ export async function hideDroppedCalendarEvents(opts: {
   extractedCount: number;
 }): Promise<number> {
   const supabase = createServerSupabase();
-  const { data: sources } = await supabase
-    .from("event_sources")
-    .select("event_id, external_id")
-    .eq("watched_url_id", opts.watchedUrlId)
-    .not("external_id", "is", null);
+  const sources = await allSourceRows<{ event_id: string; external_id: string | null }>(
+    "event_id, external_id",
+    opts.watchedUrlId,
+    true,
+  );
 
-  const linked = (sources ?? []).filter(
+  const linked = sources.filter(
     (row): row is { event_id: string; external_id: string } =>
       Boolean(row.event_id && row.external_id),
   );

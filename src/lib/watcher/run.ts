@@ -237,11 +237,27 @@ export async function watchOne(row: {
     }
 
     const extracted = await extractEvents(row.url, fetched.html);
-    const { data: knownRows } = await supabase
-      .from("event_sources")
-      .select("external_id, event:events(updated_at)")
-      .eq("watched_url_id", row.id)
-      .not("external_id", "is", null);
+    // Paged: PostgREST caps a select at a thousand rows however many there are,
+    // and the largest aggregator here has 1798. Unpaged, 798 races looked new
+    // on every single run — they competed for the new-race budget for ever and
+    // never counted as known.
+    const knownRows: {
+      external_id: string | null;
+      event: { updated_at: string | null } | { updated_at: string | null }[] | null;
+    }[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data: page } = await supabase
+        .from("event_sources")
+        .select("external_id, event:events(updated_at)")
+        .eq("watched_url_id", row.id)
+        .not("external_id", "is", null)
+        // Ordered, or the ranges overlap and miss rows between them.
+        .order("id", { ascending: true })
+        .range(from, from + 999);
+      const rows = (page ?? []) as unknown as typeof knownRows;
+      knownRows.push(...rows);
+      if (rows.length < 1000) break;
+    }
     /**
      * When each of these was last written, so the refresh sample below can
      * rotate instead of re-reading the same races every run.
@@ -251,10 +267,7 @@ export async function watchOne(row: {
      * to a tie the moment the listing sat still for one cycle.
      */
     const writtenAtByExternalId = new Map<string, number>();
-    for (const r of (knownRows ?? []) as unknown as {
-      external_id: string | null;
-      event: { updated_at: string | null } | { updated_at: string | null }[] | null;
-    }[]) {
+    for (const r of knownRows) {
       if (!r.external_id) continue;
       const ev = Array.isArray(r.event) ? r.event[0] : r.event;
       writtenAtByExternalId.set(r.external_id, Date.parse(ev?.updated_at ?? "") || 0);
