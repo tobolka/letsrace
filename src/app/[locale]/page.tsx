@@ -1,6 +1,5 @@
 import { ExploreShell } from "@/components/explore/explore-shell";
-import { listEvents, getPublicEventBySlug } from "@/lib/events";
-import { thisWeekendRange } from "@/lib/date-presets";
+import { getPublicEventBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { notFound, redirect } from "next/navigation";
 
@@ -26,12 +25,6 @@ export default async function LocalePage({
     const v = sp[key];
     return typeof v === "string" && v ? v : undefined;
   };
-  const many = (key: string) => {
-    const v = sp[key];
-    if (Array.isArray(v)) return v.filter(Boolean);
-    return typeof v === "string" && v ? [v] : [];
-  };
-  const weekend = thisWeekendRange();
   const slug = one("e");
   const focused = slug ? await getPublicEventBySlug(slug) : null;
   if (focused && (!one("dateFrom") || !one("dateTo"))) {
@@ -49,30 +42,19 @@ export default async function LocalePage({
     if (!one("dateTo")) next.set("dateTo", focused.endDate || focused.startDate);
     redirect(`/${locale}?${next.toString()}`);
   }
-  const dateFrom = one("dateFrom") || weekend.from;
-  const dateTo = one("dateTo") || (one("dateFrom") ? undefined : weekend.to);
-  const events = await listEvents({
-    dateFrom,
-    dateTo,
-    seriesSlug: one("series"),
-    countryCodes: many("country"),
-    ageCategories: many("categories"),
-    disciplines: many("disciplines"),
-    levels: many("levels"),
-    q: one("q"),
-  });
   /**
-   * The list is placeholders until the map settles on its real bounds and
-   * fetches its own set, so everything sent here beyond the first screen is
-   * serialised into the page, hydrated, and thrown away — it was 257 KB of the
-   * 273 KB document. What is still worth sending is enough pins for the map's
-   * first paint, a list to fall back on if the map never loads, and the race
-   * someone followed a link to.
+   * No race list is fetched here, and that is the point.
+   *
+   * The list this used to send was never shown: the shell renders placeholder
+   * rows until the map settles on its real bounds and fetches its own set, and
+   * the two sets are not the same. So a second of server time went into rows
+   * that were serialised, hydrated and then replaced — the whole of the wait
+   * before the page appeared, spent on something nobody saw.
+   *
+   * The one row still worth fetching is the race someone followed a link to:
+   * the map has to open on it.
    */
-  const INITIAL_LIST = 40;
-  const head = events.slice(0, INITIAL_LIST);
-  const initialEvents =
-    focused && !head.some((e) => e.id === focused.id) ? [focused, ...head] : head;
+  const initialEvents = focused ? [focused] : [];
 
   // No Suspense boundary here: the data above is already awaited, so one would
   // never show. `loading.tsx` is the real boundary — it is what Next streams

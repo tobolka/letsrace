@@ -159,11 +159,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
   const [listLoading, setListLoading] = useState(false);
   /**
-   * The server renders a guess at the list; the map then settles on its real
-   * bounds and the list is fetched again, and the two sets are not the same.
-   * Swapping one for the other lifted the rows by five cards' worth and was the
-   * whole of this page's layout shift, so the rows are placeholders until the
-   * real set lands. If the map never reports bounds, the guess is shown anyway.
+   * The rows are placeholders until the map settles on its bounds and the list
+   * is fetched for them. Nothing is rendered before that: the server used to
+   * send a guess, and swapping it for the real set lifted the rows by five
+   * cards' worth — the whole of this page's layout shift.
    */
   const [listSettled, setListSettled] = useState(false);
   const fetchStartedRef = useRef(false);
@@ -240,14 +239,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   useEffect(() => {
     if (listSettled) return;
-    // Only for the case where the map never reports bounds and so nothing is
-    // ever requested. A timeout that fires while a request is in flight shows
-    // the stand-in list and then replaces it — which is the shift this was
-    // meant to prevent, and on a slow machine that is exactly what happened.
+    // The map is what asks for the list, so if it never reports bounds — no
+    // WebGL, a blocked tile host, a thrown error — nothing would ever be
+    // requested and the list would stay empty for good. Ask without bounds
+    // instead, which is the whole date range: the same set the server used to
+    // render. A timeout that fired while a request was already in flight would
+    // show one list and then replace it, which is the shift this exists to
+    // prevent, so it only acts when nothing has been asked for at all.
     const t = window.setTimeout(() => {
-      if (!fetchStartedRef.current) setListSettled(true);
+      if (!fetchStartedRef.current) void refetch({ skipBounds: true });
     }, 2500);
     return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listSettled]);
 
   function handleUserLocation(pos: { lat: number; lng: number }) {
