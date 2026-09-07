@@ -1,10 +1,11 @@
-import { AlertsPanel } from "@/components/account/alerts-panel";
+import { redirect } from "next/navigation";
 
-export default async function AlertsPage({
+/** Alerts live under the account now. */
+export default async function AlertsRedirect({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <AlertsPanel locale={locale} />;
+  redirect(`/${locale}/account/alerts`);
 }

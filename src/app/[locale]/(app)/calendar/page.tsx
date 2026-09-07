@@ -1,12 +1,11 @@
-import { CalendarPanel } from "@/components/account/calendar-panel";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function CalendarPage({
+/** The plan moved to the account it belongs to; links in the wild still work. */
+export default async function CalendarRedirect({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <CalendarPanel locale={locale} />;
+  redirect(`/${locale}/account`);
 }

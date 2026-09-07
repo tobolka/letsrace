@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, CalendarDays, LogOut, Map, Moon, Search, Sun, UserRound } from "lucide-react";
+import { Bell, CalendarDays, LogOut, Map, Moon, Search, Sun, Users, UserRound } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { AccountCommand } from "@/components/account/account-command";
 import { Badge } from "@/components/ui/badge";
@@ -45,9 +45,11 @@ export function AppShell({
   const [counts, setCounts] = useState<Counts>({ action: 0, alerts: 0 });
   const [dark, setDark] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const planHref = `/${locale}/calendar`;
-  const alertsHref = `/${locale}/alerts`;
-  const accountHref = `/${locale}/account`;
+  // The plan is the account; everything else hangs off it.
+  const planHref = `/${locale}/account`;
+  const ridersHref = `/${locale}/account/riders`;
+  const alertsHref = `/${locale}/account/alerts`;
+  const settingsHref = `/${locale}/account/settings`;
   const mapHref = `/${locale}`;
 
   useEffect(() => {
@@ -152,9 +154,10 @@ export function AppShell({
   }
 
   const nav = [
-    { href: planHref, label: t.myCalendar, icon: CalendarDays, match: "/calendar", badge: counts.action },
-    { href: alertsHref, label: t.alertTitle, icon: Bell, match: "/alerts", badge: counts.alerts },
-    { href: accountHref, label: t.account, icon: UserRound, match: "/account", badge: 0 },
+    { href: planHref, label: t.myCalendar, icon: CalendarDays, match: "__plan__", badge: counts.action },
+    { href: ridersHref, label: t.profilesTitle, icon: Users, match: "/account/riders", badge: 0 },
+    { href: alertsHref, label: t.alertTitle, icon: Bell, match: "/account/alerts", badge: counts.alerts },
+    { href: settingsHref, label: t.account, icon: UserRound, match: "/account/settings", badge: 0 },
     { href: mapHref, label: t.viewOnMap, icon: Map, match: "__map__", badge: 0 },
   ];
 
@@ -172,7 +175,11 @@ export function AppShell({
                   <SidebarMenuItem key={item.href + item.match}>
                     <SidebarMenuButton
                       asChild
-                      isActive={item.match !== "__map__" && pathname?.includes(item.match)}
+                      isActive={
+                        item.match === "__plan__"
+                          ? pathname === planHref
+                          : item.match !== "__map__" && Boolean(pathname?.includes(item.match))
+                      }
                       tooltip={item.label}
                     >
                       <Link href={item.href}>

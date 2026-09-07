@@ -1,15 +1,21 @@
-import { redirect } from "next/navigation";
-import { AccountPanel } from "@/components/account/account-panel";
+import { CalendarPanel } from "@/components/account/calendar-panel";
 
+export const dynamic = "force-dynamic";
+
+/**
+ * The account is the plan.
+ *
+ * It used to be three siblings — `/calendar` for the season, `/account` for the
+ * profile, `/alerts` for the watchlist — which put the reason people sign in on
+ * a URL that sounded like a date picker, and settings on the one that sounded
+ * like the product. The plan is what an account is for, so it is what an
+ * account opens on; everything else sits underneath it.
+ */
 export default async function AccountPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ tab?: string }>;
 }) {
   const { locale } = await params;
-  const { tab } = await searchParams;
-  if (tab === "alerts") redirect(`/${locale}/alerts`);
-  return <AccountPanel locale={locale} />;
+  return <CalendarPanel locale={locale} />;
 }

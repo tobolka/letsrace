@@ -65,12 +65,12 @@ export function PlanRaceCard({
             members={members}
             attendance={attendance}
             busy={busy}
-            addPeopleHref={`/${locale}/account`}
+            addPeopleHref={`/${locale}/account/riders`}
             onStatusChange={onStatusChange}
           />
         ) : (
           <Link
-            href={`/${locale}/account`}
+            href={`/${locale}/account/riders`}
             className="text-sm text-muted-foreground underline-offset-4 hover:underline"
           >
             {t.planAddPeople}…

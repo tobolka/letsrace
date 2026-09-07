@@ -89,7 +89,7 @@ export function MapAccountButton({
       */}
       {authed === true ? (
         <Button asChild size="sm" className="shadow-md">
-          <Link href={`/${locale}/calendar`}>
+          <Link href={`/${locale}/account`}>
             <CalendarCheck /> {messages.myCalendar}
           </Link>
         </Button>
@@ -211,17 +211,17 @@ export function AccountMenuItems({
         <>
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={`/${locale}/calendar`}>
+              <Link href={`/${locale}/account`}>
                 <CalendarCheck /> {messages.myCalendar}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/${locale}/alerts`}>
+              <Link href={`/${locale}/account/alerts`}>
                 <Bell /> {messages.alertTitle}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/${locale}/account`}>
+              <Link href={`/${locale}/account/settings`}>
                 <UserRound /> {messages.account}
               </Link>
             </DropdownMenuItem>

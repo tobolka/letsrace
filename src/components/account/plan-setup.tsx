@@ -48,7 +48,7 @@ export function PlanSetup({
       icon: Users,
       title: t.planSetupPeople,
       body: t.planSetupPeopleBody,
-      href: `/${locale}/account`,
+      href: `/${locale}/account/riders`,
       cta: t.profilesAdd,
     },
     {

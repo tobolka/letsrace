@@ -536,7 +536,7 @@ export function EventDetailPanel({
               }))}
               attendance={attendance}
               busy={busy}
-              addPeopleHref={`/${locale}/account`}
+              addPeopleHref={`/${locale}/account/riders`}
               onStatusChange={(memberId, status) => void setStatus(memberId, status)}
             />
           </div>

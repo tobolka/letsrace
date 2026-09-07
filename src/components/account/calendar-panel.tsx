@@ -694,7 +694,7 @@ export function CalendarPanel({ locale }: { locale: string }) {
             <>
               {members.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  <Link href={`/${locale}/account`} className="underline-offset-4 hover:underline">
+                  <Link href={`/${locale}/account/riders`} className="underline-offset-4 hover:underline">
                     {t.planAddPeople}…
                   </Link>
                 </p>

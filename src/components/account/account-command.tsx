@@ -152,15 +152,15 @@ export function AccountCommand({
         ) : null}
 
         <CommandGroup heading={t.account}>
-          <CommandItem value={`plan ${t.myCalendar}`} onSelect={() => go(`/${locale}/calendar`)}>
+          <CommandItem value={`plan ${t.myCalendar}`} onSelect={() => go(`/${locale}/account`)}>
             <CalendarDays />
             {t.myCalendar}
           </CommandItem>
-          <CommandItem value={`alerts ${t.alertTitle}`} onSelect={() => go(`/${locale}/alerts`)}>
+          <CommandItem value={`alerts ${t.alertTitle}`} onSelect={() => go(`/${locale}/account/alerts`)}>
             <Bell />
             {t.alertTitle}
           </CommandItem>
-          <CommandItem value={`account ${t.account}`} onSelect={() => go(`/${locale}/account`)}>
+          <CommandItem value={`account ${t.account}`} onSelect={() => go(`/${locale}/account/settings`)}>
             <UserRound />
             {t.account}
           </CommandItem>
