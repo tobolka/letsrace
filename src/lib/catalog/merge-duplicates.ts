@@ -292,6 +292,7 @@ export async function mergePublicDuplicates(opts?: {
   events: number;
   pairs: number;
   merged: number;
+  failed?: { keep: string; drop: string; error: string }[];
   dry: boolean;
   preview: { date: string; keep: string; drop: string; reasons: string[] }[];
 }> {
@@ -532,16 +533,18 @@ export async function mergePublicDuplicates(opts?: {
     reasons: m.reasons,
   }));
   if (dry) {
-    return { events: rows.length, pairs: merges.length, merged: 0, dry: true, preview };
+    return { events: rows.length, pairs: merges.length, merged: 0, failed: [], dry: true, preview };
   }
 
   let merged = 0;
+  const failed: { keep: string; drop: string; error: string }[] = [];
   for (const m of toApply) {
-    await applyMerge(supabase, m.keep, m.drop);
-    merged += 1;
+    const error = await applyMerge(supabase, m.keep, m.drop);
+    if (error) failed.push({ keep: m.keep.name, drop: m.drop.name, error });
+    else merged += 1;
   }
 
-  return { events: rows.length, pairs: merges.length, merged, dry: false, preview };
+  return { events: rows.length, pairs: merges.length, merged, failed, dry: false, preview };
 }
 
 type MergeSide = Pick<
@@ -549,12 +552,19 @@ type MergeSide = Pick<
   "id" | "name" | "website_url" | "registration_url" | "series_id"
 > & { location?: { name?: string; municipality?: string } | null };
 
-/** Fold `drop` into `keep`: move its sources and links across, then hide it. */
+/**
+ * Fold `drop` into `keep`: move its sources and links across, then hide it.
+ *
+ * Returns the first error rather than throwing, and — this is the point — it
+ * returns one at all. Every write here used to be fired and forgotten, so a
+ * merge the database refused was counted as a merge that happened, and the
+ * duplicate stayed on the map with the job reporting success.
+ */
 async function applyMerge(
   supabase: ReturnType<typeof createServerSupabase>,
   keep: MergeSide,
   drop: MergeSide,
-) {
+): Promise<string | null> {
   const { data: dropSources } = await supabase
     .from("event_sources")
     .select("id, watched_url_id, external_id, source_url, kind")
@@ -581,14 +591,15 @@ async function applyMerge(
   const better = preferEventName(keep.name, drop.name, place);
   if (better !== keep.name) patch.name = better;
   if (Object.keys(patch).length > 1) {
-    await supabase.from("events").update(patch).eq("id", keep.id);
+    const { error } = await supabase.from("events").update(patch).eq("id", keep.id);
+    if (error) return `keep ${keep.id}: ${error.message}`;
   }
 
   // Retire the loser's fingerprint. It is the watcher's identity key, so leaving
   // it intact would let a later fetch re-match onto the hidden row and resurrect
   // the duplicate — and it is what blocks the unique index on `events`.
   // The column is NOT NULL, so we mark it rather than clear it.
-  await supabase
+  const { error: hideErr } = await supabase
     .from("events")
     .update({
       visibility: "hidden",
@@ -597,6 +608,8 @@ async function applyMerge(
       updated_at: new Date().toISOString(),
     })
     .eq("id", drop.id);
+  if (hideErr) return `drop ${drop.id}: ${hideErr.message}`;
+  return null;
 }
 
 /**

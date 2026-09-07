@@ -7,6 +7,7 @@ export type CatalogHygieneResult = {
     events: number;
     pairs: number;
     merged: number;
+    failed?: { keep: string; drop: string; error: string }[];
     dry: boolean;
     preview: { date: string; keep: string; drop: string; reasons: string[] }[];
   };
