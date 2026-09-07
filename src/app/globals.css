@@ -195,6 +195,20 @@ time,
   }
 }
 
+/*
+ * Radix marks the rest of the page inert while the detail panel is open, by
+ * setting pointer-events:none on <body>. That inherits all the way down to the
+ * map canvas, so clicking a second pin did nothing.
+ *
+ * The DOM pins used to slip through this on their own — they carried
+ * pointer-events:auto — and removing them removed the escape hatch with them.
+ * The map is a side panel's neighbour, not something behind a modal: picking
+ * another race off it is the whole point.
+ */
+.maplibregl-map {
+  pointer-events: auto;
+}
+
 /* The only DOM marker left is the user's own dot; race pins are GPU geometry. */
 .maplibregl-marker {
   position: absolute !important;
