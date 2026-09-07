@@ -54,6 +54,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 type Source = {
   id: string;
+  /** Races this source has put in the catalogue. */
+  races?: number;
   url: string;
   kind: string;
   status: string;
@@ -64,7 +66,7 @@ type Source = {
   next_poll_at: string;
 };
 
-type Health = "broken" | "quiet" | "ok" | "paused";
+type Health = "broken" | "silent" | "quiet" | "ok" | "paused";
 
 /**
  * How worried should someone be about this row?
@@ -77,6 +79,15 @@ function healthOf(s: Source): Health {
   if (s.status !== "active") return "paused";
   if (s.last_error || s.last_extract_status === "error") return "broken";
   if (!s.last_fetched_at) return "quiet";
+  /*
+   * Read fine, produced nothing.
+   *
+   * This is the state that hid: the fetch succeeded, no error was raised, the
+   * badge said healthy — and the parser has never put a single race in the
+   * catalogue. It is a different job from a broken source and it needs its own
+   * name, or it stays invisible among four hundred green rows.
+   */
+  if ((s.races ?? 0) === 0) return "silent";
   const days = (Date.now() - Date.parse(s.last_fetched_at)) / 86_400_000;
   if (days >= 10) return "quiet";
   if (s.last_extract_status === "off_season" || s.last_extract_status === "needs_review") {
@@ -85,15 +96,17 @@ function healthOf(s: Source): Health {
   return "ok";
 }
 
-const HEALTH_RANK: Record<Health, number> = { broken: 0, quiet: 1, ok: 2, paused: 3 };
+const HEALTH_RANK: Record<Health, number> = { broken: 0, silent: 1, quiet: 2, ok: 3, paused: 4 };
 const HEALTH_LABEL: Record<Health, string> = {
   broken: "Broken",
+  silent: "No races",
   quiet: "Quiet",
   ok: "Healthy",
   paused: "Paused",
 };
 const HEALTH_TONE: Record<Health, "destructive" | "secondary" | "outline"> = {
   broken: "destructive",
+  silent: "secondary",
   quiet: "secondary",
   ok: "outline",
   paused: "outline",
@@ -127,7 +140,7 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
   const [filter, setFilter] = useState<Health | "all">("all");
 
   const counts = useMemo(() => {
-    const c: Record<Health, number> = { broken: 0, quiet: 0, ok: 0, paused: 0 };
+    const c: Record<Health, number> = { broken: 0, silent: 0, quiet: 0, ok: 0, paused: 0 };
     for (const s of initialSources) c[healthOf(s)] += 1;
     return c;
   }, [initialSources]);
@@ -305,6 +318,7 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
         >
           <ToggleGroupItem value="all">All {initialSources.length}</ToggleGroupItem>
           <ToggleGroupItem value="broken">Broken {counts.broken}</ToggleGroupItem>
+          <ToggleGroupItem value="silent">No races {counts.silent}</ToggleGroupItem>
           <ToggleGroupItem value="quiet">Quiet {counts.quiet}</ToggleGroupItem>
           <ToggleGroupItem value="ok">Healthy {counts.ok}</ToggleGroupItem>
           <ToggleGroupItem value="paused">Paused {counts.paused}</ToggleGroupItem>
@@ -326,6 +340,7 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
                 <TableHead>Source</TableHead>
                 <TableHead>Health</TableHead>
                 <TableHead>Kind</TableHead>
+                <TableHead className="text-right">Races</TableHead>
                 <TableHead className="text-right">Last read</TableHead>
                 <TableHead className="w-px" />
               </TableRow>
@@ -369,6 +384,15 @@ export function SourcesManager({ initialSources }: { initialSources: Source[] })
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{s.kind}</Badge>
+                  </TableCell>
+                  {/* A source that has never produced a race is a parser that
+                      does not work, however healthy its last fetch looked. */}
+                  <TableCell className="text-right tabular-nums">
+                    {s.races ? (
+                      <span className="text-sm">{s.races}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">none</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-right text-xs tabular-nums text-muted-foreground">
                     {ago(s.last_fetched_at)}
