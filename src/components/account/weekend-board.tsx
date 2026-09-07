@@ -5,7 +5,6 @@ import { addDays, format, parseISO } from "date-fns";
 import { CalendarOff, Search, Undo2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -25,7 +24,7 @@ export type BlockedWeekend = { saturday: string; note: string | null };
  * completely as a race does. Saying so here is what keeps the free count
  * honest and stops the suggestions offering a weekend nobody can go to.
  */
-export function WeekendBoard({
+export function WeekendStrip({
   locale,
   weekends,
   busyWeekdays,
@@ -44,45 +43,35 @@ export function WeekendBoard({
   onBlock: (saturday: string, note: string) => Promise<void> | void;
   onUnblock: (saturday: string) => Promise<void> | void;
 }) {
-  const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   if (weekends.length === 0) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{t.weekendBoardTitle}</CardTitle>
-        <CardDescription>{t.weekendBoardBody}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* One row, scrolled sideways: a season reads as a line, and a 4x4 grid
-            spent three hundred pixels of height saying "one race, fifteen
-            free". Scroll-snap so a thumb lands on whole weekends. */}
-        <div className="-mx-2 flex snap-x snap-mandatory gap-2 overflow-x-auto px-2 pb-2">
-          {weekends.map((w) => (
-            <WeekendTile
-              key={w.saturday}
-              locale={locale}
-              weekend={w}
-              blocked={blocked[w.saturday] ?? null}
-              recurringBusy={
-                isBusyIsoDate(w.saturday, busyWeekdays) || isBusyIsoDate(w.sunday, busyWeekdays)
-              }
-              selected={selected === w.saturday}
-              label={`${format(parseISO(w.saturday), "d.", { locale: df })}–${format(
-                addDays(parseISO(w.saturday), 1),
-                "d. M.",
-                { locale: df },
-              )}`}
-              onSelect={() => onSelect(w)}
-              onBlock={(note) => onBlock(w.saturday, note)}
-              onUnblock={() => onUnblock(w.saturday)}
-            />
-          ))}
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">{t.weekendPickFree}</p>
-      </CardContent>
-    </Card>
+    // One row, scrolled sideways: a season reads as a line, and a 4x4 grid
+    // spent three hundred pixels of height saying "one race, fifteen free".
+    // Scroll-snap so a thumb lands on whole weekends.
+    <div className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2">
+      {weekends.map((w) => (
+        <WeekendTile
+          key={w.saturday}
+          locale={locale}
+          weekend={w}
+          blocked={blocked[w.saturday] ?? null}
+          recurringBusy={
+            isBusyIsoDate(w.saturday, busyWeekdays) || isBusyIsoDate(w.sunday, busyWeekdays)
+          }
+          selected={selected === w.saturday}
+          label={`${format(parseISO(w.saturday), "d.", { locale: df })}–${format(
+            addDays(parseISO(w.saturday), 1),
+            "d. M.",
+            { locale: df },
+          )}`}
+          onSelect={() => onSelect(w)}
+          onBlock={(note) => onBlock(w.saturday, note)}
+          onUnblock={() => onUnblock(w.saturday)}
+        />
+      ))}
+    </div>
   );
 }
 

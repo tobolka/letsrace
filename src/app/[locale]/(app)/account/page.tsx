@@ -1,4 +1,4 @@
-import { CalendarPanel } from "@/components/account/calendar-panel";
+import { PlanHome } from "@/components/account/plan-home";
 
 export const dynamic = "force-dynamic";
 
@@ -17,5 +17,5 @@ export default async function AccountPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <CalendarPanel locale={locale} />;
+  return <PlanHome locale={locale} />;
 }

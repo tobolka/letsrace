@@ -129,7 +129,9 @@ export function AppShell({
     { href: ridersHref, label: t.profilesTitle, icon: Users, match: "/account/riders", badge: 0 },
     { href: alertsHref, label: t.alertTitle, icon: Bell, match: "/account/alerts", badge: counts.alerts },
     { href: settingsHref, label: t.account, icon: UserRound, match: "/account/settings", badge: 0 },
-    { href: mapHref, label: t.viewOnMap, icon: Map, match: "__map__", badge: 0 },
+    // Five labels across a phone: "Zobrazit na mapě" is an ellipsis there, and
+    // the sidebar has the room to say it in full.
+    { href: mapHref, label: t.viewOnMap, short: t.navMap, icon: Map, match: "__map__", badge: 0 },
   ];
 
   return (
@@ -206,10 +208,15 @@ export function AppShell({
             corner. Four destinations, each with its own outstanding count. */}
         <nav
           aria-label={t.account}
-          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
         >
           {nav.map((item) => {
-            const active = item.match !== "__map__" && pathname?.includes(item.match);
+            // The plan has no path fragment of its own — every other tab lives
+            // under it — so it is active on an exact match and nothing else.
+            const active =
+              item.match === "__plan__"
+                ? pathname === planHref
+                : item.match !== "__map__" && Boolean(pathname?.includes(item.match));
             return (
               <Link
                 key={`tab-${item.href}${item.match}`}
@@ -221,7 +228,7 @@ export function AppShell({
                 )}
               >
                 <item.icon className="size-5" />
-                <span className="max-w-full truncate px-1">{item.label}</span>
+                <span className="max-w-full truncate px-1">{item.short ?? item.label}</span>
                 {item.badge > 0 ? (
                   <Badge
                     variant="default"
