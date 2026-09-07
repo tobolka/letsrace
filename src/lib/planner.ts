@@ -14,6 +14,8 @@ export type PlannerEvent = {
   countryCode: string | null;
   registrationUrl: string | null;
   websiteUrl: string | null;
+  /** The last day entries are open, when the source states one. */
+  registrationClosesAt?: string | null;
   seriesId?: string | null;
 };
 

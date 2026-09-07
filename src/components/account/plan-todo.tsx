@@ -1,7 +1,9 @@
 "use client";
 
+import { format, parseISO } from "date-fns";
 import { CircleCheck } from "lucide-react";
 import { PlanRow } from "@/components/account/plan-row";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import type { PlanAction, PlanActionKind } from "@/lib/plan-actions";
 import type { PlanMemberStatus, PlannerMember } from "@/lib/planner";
@@ -37,6 +39,15 @@ export function PlanTodo({
     enter: t.planActionEnter,
     pay: t.planActionPay,
   };
+  // "Enter" is a job with no date on it; "entries close Friday" is a job you
+  // can miss. When the source states the deadline, that is what the row says.
+  const noteFor = (action: PlanAction) =>
+    action.closesAt
+      ? `${label[action.kind]} · ${t.planEntryCloses.replace(
+          "{date}",
+          format(parseISO(action.closesAt), "d. M.", { locale: dateFnsLocale(locale) }),
+        )}`
+      : label[action.kind];
 
   if (actions.length === 0) {
     return (
@@ -68,7 +79,7 @@ export function PlanTodo({
             plan={action.plan}
             members={members}
             busy={busyId === action.plan.event.id}
-            note={label[action.kind]}
+            note={noteFor(action)}
             onStatusChange={(memberId, status) =>
               onStatusChange(action.plan.event.id, memberId, status)
             }

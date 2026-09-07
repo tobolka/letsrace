@@ -51,7 +51,7 @@ import {
 import type { SuggestionContext } from "@/lib/plan-suggestions";
 
 const EVENT_EMBED =
-  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, website_url, location:locations(name, municipality, country_code)";
+  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, location:locations(name, municipality, country_code)";
 
 type EventEmbed = {
   id: string;
@@ -64,6 +64,7 @@ type EventEmbed = {
   disciplines: string[] | null;
   series_id: string | null;
   registration_url: string | null;
+  registration_closes_at: string | null;
   website_url: string | null;
   location:
     | { name: string | null; municipality: string | null; country_code: string | null }
@@ -90,6 +91,7 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
     place: loc?.municipality || loc?.name || null,
     countryCode: loc?.country_code ?? null,
     registrationUrl: row.registration_url,
+    registrationClosesAt: row.registration_closes_at,
     websiteUrl: row.website_url,
     seriesId: row.series_id,
   };

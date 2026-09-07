@@ -21,6 +21,14 @@ export type PlanAction = {
   kind: PlanActionKind;
   /** Calendar days from today to the start. 0 is today. */
   daysAway: number;
+  /**
+   * The day this job actually runs out — the entry deadline when there is one
+   * and the job is to enter, the race day otherwise. A race in three weeks
+   * whose entries close on Friday is this week's job.
+   */
+  dueInDays: number;
+  /** The stated entry deadline, when it is what makes this urgent. */
+  closesAt?: string;
 };
 
 /**
@@ -56,15 +64,27 @@ export function planAction(
   if (marked.length === 0) {
     if (opts.members.length === 0) return null;
     if (!plan.favorited) return null;
-    return daysAway <= DECIDE_WITHIN_DAYS ? { plan, kind: "who", daysAway } : null;
+    return daysAway <= DECIDE_WITHIN_DAYS
+      ? { plan, kind: "who", daysAway, dueInDays: daysAway }
+      : null;
   }
 
-  if (marked.some((s) => s === "registered")) return { plan, kind: "pay", daysAway };
-  if (marked.some((s) => s === "going")) return { plan, kind: "enter", daysAway };
+  if (marked.some((s) => s === "registered")) {
+    return { plan, kind: "pay", daysAway, dueInDays: daysAway };
+  }
+  if (marked.some((s) => s === "going")) {
+    // Entries usually close before the race, and when the source says when,
+    // that date is the deadline this job is measured against.
+    const closesAt = plan.event.registrationClosesAt ?? null;
+    const closesIn = closesAt ? daysUntil(closesAt, today) : null;
+    return closesAt && closesIn != null && closesIn < daysAway
+      ? { plan, kind: "enter", daysAway, dueInDays: closesIn, closesAt }
+      : { plan, kind: "enter", daysAway, dueInDays: daysAway };
+  }
   return null;
 }
 
-/** Every job in the plan, soonest race first. */
+/** Every job in the plan, soonest deadline first. */
 export function planActions(
   plans: EventPlan[],
   opts: { members: PlannerMember[]; today?: string },
@@ -72,5 +92,7 @@ export function planActions(
   return plans
     .map((plan) => planAction(plan, opts))
     .filter((a): a is PlanAction => a !== null)
-    .sort((a, b) => a.daysAway - b.daysAway || a.plan.event.name.localeCompare(b.plan.event.name));
+    .sort(
+      (a, b) => a.dueInDays - b.dueInDays || a.plan.event.name.localeCompare(b.plan.event.name),
+    );
 }

@@ -157,3 +157,30 @@ export function fciAdmittedText(html: string): string {
   const fields = fciFields(html);
   return [fields["categorie ammesse"], fields["classe"]].filter(Boolean).join(" — ");
 }
+
+/**
+ * When entries open and close, which the page states as a pair of Italian
+ * dates: "Iscrizioni: 26/01/2026 - 03/09/2026".
+ *
+ * Some pages carry a second "Iscrizioni online" window below the first. The
+ * first pair is the entry window proper; the online one is a subset of it and
+ * says nothing extra about the last day to enter.
+ */
+export function fciRegistrationWindow(html: string): {
+  opensAt: string | null;
+  closesAt: string | null;
+} {
+  const raw = fciFields(html)["iscrizioni"] ?? "";
+  const m = raw.match(/(\d{2})\/(\d{2})\/(\d{4})\s*[-–]\s*(\d{2})\/(\d{2})\/(\d{4})/);
+  if (!m) return { opensAt: null, closesAt: null };
+  const iso = (d: string, mo: string, y: string) => {
+    const day = Number(d);
+    const month = Number(mo);
+    if (day < 1 || day > 31 || month < 1 || month > 12) return null;
+    return `${y}-${mo}-${d}`;
+  };
+  return {
+    opensAt: iso(m[1]!, m[2]!, m[3]!),
+    closesAt: iso(m[4]!, m[5]!, m[6]!),
+  };
+}

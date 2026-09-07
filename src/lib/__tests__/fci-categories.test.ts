@@ -3,6 +3,7 @@ import {
   fciAdmittedText,
   fciCategoryLine,
   fciClassLine,
+  fciRegistrationWindow,
   parseFciCategories,
 } from "@/lib/watcher/extractors/fci-categories";
 
@@ -107,5 +108,40 @@ describe("fciFields", () => {
       expect.arrayContaining(["elite", "u23"]),
     );
     expect(parseFciCategories(fciAdmittedText(page))).not.toContain("masters");
+  });
+});
+
+/**
+ * Not one upcoming race in the catalogue carried an entry deadline: the reader
+ * that finds one only ran on pages describing a single race, and every source
+ * that reaches this catalogue is a calendar. The Italian race page states the
+ * window outright.
+ */
+describe("fciRegistrationWindow", () => {
+  const page = (iscrizioni: string) =>
+    `<div>Email:</div><div>a@b.c</div><div>Iscrizioni:</div><div>${iscrizioni}</div>`;
+
+  it("reads the pair of Italian dates", () => {
+    expect(fciRegistrationWindow(page("26/01/2026  - 03/09/2026"))).toEqual({
+      opensAt: "2026-01-26",
+      closesAt: "2026-09-03",
+    });
+  });
+
+  it("takes the entry window, not the online one below it", () => {
+    expect(
+      fciRegistrationWindow(
+        page("11/09/2026 - 16/10/2026  Iscrizioni online:  16/10/2026 - 16/10/2026"),
+      ).opensAt,
+    ).toBe("2026-09-11");
+  });
+
+  it("says nothing when the field is blank or malformed", () => {
+    expect(fciRegistrationWindow(page(""))).toEqual({ opensAt: null, closesAt: null });
+    expect(fciRegistrationWindow(page("da definire"))).toEqual({ opensAt: null, closesAt: null });
+    expect(fciRegistrationWindow(page("32/01/2026 - 03/13/2026"))).toEqual({
+      opensAt: null,
+      closesAt: null,
+    });
   });
 });

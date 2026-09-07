@@ -61,6 +61,11 @@ export function NextRaceHero({
     endDate: plan.event.endDate,
   });
   const accent = disciplineColor(plan.event.disciplines);
+  // An entry deadline is only news while it is ahead of you and ahead of the
+  // race; after either it is a date that can only mislead.
+  const closesAt = plan.event.registrationClosesAt ?? null;
+  const showClosing =
+    closesAt && daysUntil(closesAt) >= 0 && closesAt < plan.event.startDate ? closesAt : null;
 
   return (
     <section
@@ -135,6 +140,14 @@ export function NextRaceHero({
                   {t.openWebsite}
                 </a>
               </Button>
+            ) : null}
+            {showClosing ? (
+              <span className="self-center text-xs tabular-nums text-muted-foreground">
+                {t.planEntryCloses.replace(
+                  "{date}",
+                  format(parseISO(showClosing), "d. M.", { locale: df }),
+                )}
+              </span>
             ) : null}
           </div>
         </div>
