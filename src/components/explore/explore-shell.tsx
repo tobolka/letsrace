@@ -221,6 +221,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [listSnap, setListSnap] = useState<number>(0.5);
+  // A tapped pin opens the card at half height, the way Maps does it: the map
+  // stays on screen above it, and dragging up is how you ask for the rest.
+  const [detailSnap, setDetailSnap] = useState<number>(0.5);
 
   const fallbackCenter = useMemo(() => {
     const c = coldStartCenter(locale);
@@ -642,10 +645,15 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
       const peek = selected ? 220 : 112;
-      const open =
-        mobilePanel === "detail"
-          ? Math.round(Math.min(viewportH * 0.92, 720))
-          : Math.round(Math.min(viewportH * (typeof listSnap === "number" ? listSnap : 0.5), 640));
+      const snap = mobilePanel === "detail" ? detailSnap : listSnap;
+      /*
+       * Never hand the map less than 45% of the screen. The sheet at full
+       * height left a fifty-pixel strip, and easing a race into a strip that
+       * size zooms the map out to the whole of Europe to make it fit.
+       */
+      const open = Math.round(
+        Math.min(viewportH * (typeof snap === "number" ? snap : 0.5), viewportH * 0.55, 640),
+      );
       return {
         top: 16,
         right: 12,
@@ -661,7 +669,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, mobilePanel, viewportH, listSnap]);
+  }, [selected, isDesktop, mobilePanel, viewportH, listSnap, detailSnap]);
 
   function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean }) {
     return (
@@ -708,7 +716,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const midSnap = 0.5;
   const fullSnap = 0.92;
   const sheetSnap =
-    mobilePanel === "closed" ? peekSnap : mobilePanel === "detail" ? fullSnap : listSnap;
+    mobilePanel === "closed" ? peekSnap : mobilePanel === "detail" ? detailSnap : listSnap;
 
   const weekend = thisWeekendRange();
   const isThisWeekend = filters.dateFrom === weekend.from && filters.dateTo === weekend.to;
@@ -759,7 +767,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onUserLocation={handleUserLocation}
             onSelect={(id) => {
               selectEvent(id);
-              setMobilePanel("closed");
+              setDetailSnap(midSnap);
+              setMobilePanel("detail");
             }}
             onBackgroundClick={() => {
               if (!isDesktop) setMobilePanel("closed");
@@ -922,8 +931,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             return;
           }
           if (point === midSnap || point === fullSnap) {
-            setListSnap(point);
-            setMobilePanel((panel) => (panel === "detail" ? "detail" : "list"));
+            // Dragging the sheet sets the height of whichever thing is in it.
+            if (mobilePanel === "detail") setDetailSnap(point);
+            else {
+              setListSnap(point);
+              setMobilePanel("list");
+            }
           }
         }}
       >
