@@ -9,6 +9,7 @@ import {
 } from "@/lib/domain";
 import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 import { canonicalEventDisciplines } from "@/lib/taxonomy";
+import { formatPlaceName } from "@/lib/places";
 
 export type EventListItem = {
   id: string;
@@ -576,8 +577,12 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     location: location
       ? {
           id: String(location.id),
-          name: String(location.name),
-          municipality: (location.municipality as string) ?? null,
+          // A tenth of our sources publish place names in capitals. Fixing it
+          // here rather than at each screen means the list, the map, the
+          // detail panel, the share card and the structured data all say the
+          // same thing, and none of them has to remember to.
+          name: formatPlaceName(String(location.name)) ?? String(location.name),
+          municipality: formatPlaceName(location.municipality as string | null),
           countryCode: String(location.country_code),
           lat: (location.lat as number) ?? null,
           lng: (location.lng as number) ?? null,
