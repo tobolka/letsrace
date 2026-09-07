@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { parseCyklokrosCalendar } from "@/lib/watcher/extractors/cyklokros";
 import { fetchText } from "@/lib/watcher/http";
 import { mapPool } from "@/lib/watcher/pool";
 import { isStartListUrl } from "@/lib/watcher/registration-url";
@@ -792,6 +793,17 @@ export function parseCyklokros(url: string, html: string): ParsedEvent[] {
     });
   });
   if (events.length) return events;
+
+  /*
+   * The season table on /kalendar.
+   *
+   * The cards above are the JANEV Cup page's shape. The calendar itself is one
+   * table — date, town, and four columns for World Cup, UCI international,
+   * youth and everything else — which matched none of the selectors here, so
+   * this source sat in the watchlist reading fine and producing nothing.
+   */
+  const fromTable = parseCyklokrosCalendar(url, html);
+  if (fromTable.length) return fromTable;
 
   $("article, .sp-content, main")
     .find("h2, h3, li")
