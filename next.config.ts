@@ -43,6 +43,16 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
+    /**
+     * Ship the stylesheet inside the HTML instead of behind a <link>.
+     *
+     * The shell now leaves the server in 40ms, but the browser cannot paint it
+     * until a render-blocking stylesheet has been discovered, requested and
+     * parsed — which is the two blank frames at the start of the filmstrip.
+     * Tailwind keeps this small (121 kB raw, 21 kB on the wire), so trading a
+     * round trip for those bytes is worth it on a first visit.
+     */
+    inlineCss: true,
   },
   async redirects() {
     return [
