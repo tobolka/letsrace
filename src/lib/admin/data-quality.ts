@@ -42,6 +42,39 @@ function isBadPlace(raw: string | null | undefined): boolean {
   return false;
 }
 
+/** Why a row is not on the map, in the words someone can act on. */
+export type HiddenReason = "merged" | "by_hand" | "no_link" | "dropped";
+
+/**
+ * Read the reason off the row.
+ *
+ * Nothing records why a race was hidden, but the state says it plainly enough:
+ * the merger stamps the loser's fingerprint, a hand-made row that is hidden was
+ * hidden by hand, and a scraped row with no usable link outside a home country
+ * is one the map refuses on purpose. What is left was dropped by the calendar
+ * that used to list it.
+ */
+export function hiddenReason(row: {
+  fingerprint: string | null;
+  source_kind: string | null;
+  website_url: string | null;
+  registration_url: string | null;
+  location: { country_code?: string | null } | null;
+}): HiddenReason {
+  if (row.fingerprint?.startsWith("merged:")) return "merged";
+  if (row.source_kind === "manual") return "by_hand";
+  if (
+    !isPublicMapWorthy({
+      websiteUrl: row.website_url,
+      registrationUrl: row.registration_url,
+      location: { countryCode: row.location?.country_code ?? null },
+    })
+  ) {
+    return "no_link";
+  }
+  return "dropped";
+}
+
 export function computeMissing(row: {
   location_id: string | null;
   website_url: string | null;

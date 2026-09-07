@@ -17,6 +17,20 @@ import { DISCIPLINE_LABELS } from "@/lib/taxonomy";
  */
 const COUNTRIES = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH", "HU", "SI", "GB", "FR"];
 
+const WHY = [
+  { id: "merged", label: "Merged into another" },
+  { id: "dropped", label: "Dropped from calendar" },
+  { id: "no_link", label: "No usable link" },
+  { id: "by_hand", label: "Hidden by hand" },
+];
+
+const TRUST = [
+  { id: "official", label: "Official entry" },
+  { id: "series", label: "Series page" },
+  { id: "calendar", label: "Calendar listing" },
+  { id: "low", label: "Low" },
+];
+
 const MISSING = [
   { id: "website", label: "No website" },
   { id: "registration", label: "No entry link" },
@@ -28,10 +42,14 @@ export function AdminEventFilters({
   country,
   discipline,
   missing,
+  why,
+  trust,
 }: {
   country: string;
   discipline: string;
   missing: string;
+  why: string;
+  trust: string;
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -46,7 +64,7 @@ export function AdminEventFilters({
     startTransition(() => router.push(`/admin/events?${next.toString()}`));
   }
 
-  const active = Boolean(country || discipline || missing);
+  const active = Boolean(country || discipline || missing || why || trust);
 
   return (
     <div className="flex flex-wrap items-end gap-3 rounded-md border p-3">
@@ -107,6 +125,44 @@ export function AdminEventFilters({
         </select>
       </div>
 
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="ev-why" className="text-xs">
+          Why hidden
+        </Label>
+        <select
+          id="ev-why"
+          className="h-9 rounded-md border bg-transparent px-2 text-sm"
+          value={why}
+          onChange={(e) => set("why", e.target.value)}
+        >
+          <option value="">Any reason</option>
+          {WHY.map((w) => (
+            <option key={w.id} value={w.id}>
+              {w.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="ev-trust" className="text-xs">
+          Confidence
+        </Label>
+        <select
+          id="ev-trust"
+          className="h-9 rounded-md border bg-transparent px-2 text-sm"
+          value={trust}
+          onChange={(e) => set("trust", e.target.value)}
+        >
+          <option value="">Any</option>
+          {TRUST.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {active ? (
         <Button
           type="button"
@@ -115,7 +171,8 @@ export function AdminEventFilters({
           disabled={pending}
           onClick={() => {
             const next = new URLSearchParams(params?.toString() ?? "");
-            for (const k of ["country", "discipline", "missing", "page"]) next.delete(k);
+            for (const k of ["country", "discipline", "missing", "why", "trust", "page"])
+              next.delete(k);
             startTransition(() => router.push(`/admin/events?${next.toString()}`));
           }}
         >

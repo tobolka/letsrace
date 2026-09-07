@@ -28,6 +28,14 @@ import { OpenUrlButton } from "@/components/admin/open-url";
 import { firstOpenableUrl } from "@/lib/admin/urls";
 import { Eye, EyeOff, X } from "lucide-react";
 
+/** Why a hidden row is hidden, in words rather than states. */
+const WHY_LABELS: Record<string, string> = {
+  merged: "merged",
+  dropped: "dropped",
+  no_link: "no link",
+  by_hand: "by hand",
+};
+
 /** Short words for the gaps `computeMissing` reports. */
 const MISSING_LABELS: Record<string, string> = {
   place: "place",
@@ -49,6 +57,9 @@ export type AdminEventRow = {
   website_url: string | null;
   registration_url: string | null;
   disciplines?: string[];
+  /** Read off the row: how good the outbound links are, and why it is hidden. */
+  trust?: string;
+  why?: string | null;
   /** What this row is short of, so the table can say why it is not on the map. */
   missing?: string[];
   location: {
@@ -251,6 +262,8 @@ export function AdminEventsTable({
               <TableHead>Name</TableHead>
               <TableHead>Place</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Why</TableHead>
+              <TableHead>Confidence</TableHead>
               <TableHead>Missing</TableHead>
               <TableHead>Source</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -291,6 +304,17 @@ export function AdminEventsTable({
                   <TableCell>
                     <Badge variant={hidden ? "secondary" : "outline"}>
                       {hidden ? "hidden" : e.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+                    {e.why ? (WHY_LABELS[e.why] ?? e.why) : "—"}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    <Badge
+                      variant={e.trust === "low" ? "destructive" : "outline"}
+                      className="text-[10px]"
+                    >
+                      {e.trust ?? "—"}
                     </Badge>
                   </TableCell>
                   {/* Why this row is not carrying its weight, in the row itself

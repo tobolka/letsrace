@@ -6,7 +6,8 @@ import {
   type AdminEventRow,
 } from "@/components/admin/admin-events-table";
 import { Button } from "@/components/ui/button";
-import { computeMissing } from "@/lib/admin/data-quality";
+import { computeMissing, hiddenReason } from "@/lib/admin/data-quality";
+import { eventTrustLevel } from "@/lib/trust";
 import { AdminEventFilters } from "@/components/admin/admin-event-filters";
 
 const PAGE_SIZE = 50;
@@ -29,6 +30,8 @@ export default async function EventsAdminPage({
     country?: string;
     discipline?: string;
     missing?: string;
+    why?: string;
+    trust?: string;
   }>;
 }) {
   await requireAdminPage();
@@ -40,13 +43,15 @@ export default async function EventsAdminPage({
   const country = (sp.country ?? "").trim().toUpperCase();
   const discipline = (sp.discipline ?? "").trim();
   const missing = (sp.missing ?? "").trim();
+  const why = (sp.why ?? "").trim();
+  const trust = (sp.trust ?? "").trim();
   const today = new Date().toISOString().slice(0, 10);
 
   const supabase = createServerSupabase();
   let query = supabase
     .from("events")
     .select(
-      `id, name, start_date, audience, source_kind, status, visibility, website_url, registration_url, disciplines, location_id, location:locations${
+      `id, name, start_date, audience, source_kind, status, visibility, website_url, registration_url, disciplines, fingerprint, location_id, location:locations${
         country ? "!inner" : ""
       }(name, municipality, country_code, lat, lng)`,
       { count: "exact" },
@@ -92,6 +97,22 @@ export default async function EventsAdminPage({
     website_url: e.website_url ?? null,
     registration_url: e.registration_url ?? null,
     disciplines: (e.disciplines as string[]) ?? [],
+    trust: eventTrustLevel({
+      registrationUrl: e.registration_url,
+      websiteUrl: e.website_url,
+      sourceKind: e.source_kind,
+      listingUrl: null,
+    } as Parameters<typeof eventTrustLevel>[0]),
+    why:
+      (e.visibility ?? "public") === "hidden"
+        ? hiddenReason({
+            fingerprint: (e.fingerprint as string) ?? null,
+            source_kind: e.source_kind,
+            website_url: e.website_url,
+            registration_url: e.registration_url,
+            location: (e.location as { country_code?: string } | null) ?? null,
+          })
+        : null,
     missing: computeMissing({
       location_id: e.location_id as string | null,
       website_url: e.website_url,
@@ -111,6 +132,17 @@ export default async function EventsAdminPage({
     location: (e.location as AdminEventRow["location"]) ?? null,
   }));
 
+  /*
+   * "Why hidden" and "Confidence" are read off the row, not stored on it, so
+   * they narrow the page you are looking at rather than the query behind it.
+   * The count above the table still names the whole set — the alternative is
+   * storing two more columns and keeping them true, which is a bigger promise
+   * than a review queue needs.
+   */
+  const shown = rows.filter(
+    (r) => (!why || r.why === why) && (!trust || r.trust === trust),
+  );
+
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -124,9 +156,15 @@ export default async function EventsAdminPage({
           <Link href="/admin/events/new">Add event</Link>
         </Button>
       </div>
-      <AdminEventFilters country={country} discipline={discipline} missing={missing} />
+      <AdminEventFilters
+        country={country}
+        discipline={discipline}
+        missing={missing}
+        why={why}
+        trust={trust}
+      />
       <AdminEventsTable
-        events={rows}
+        events={shown}
         filter={view}
         when={when}
         q={q}
