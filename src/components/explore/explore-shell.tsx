@@ -75,6 +75,7 @@ import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
+import { SITE_NAME } from "@/lib/seo";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
@@ -802,7 +803,23 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </Suspense>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between p-3">
+        {/*
+          On a phone the sheet is the page, and the wordmark inside it spent a
+          row of a small screen saying where you already are. Over the map it is
+          a way home; on a desktop the panel header still carries it.
+        */}
+        <Button
+          asChild
+          size="icon"
+          variant="secondary"
+          className="pointer-events-auto rounded-full shadow-md md:hidden"
+        >
+          <Link href={`/${locale}`} aria-label={SITE_NAME}>
+            <BrandMark mark="lr" size="sm" className="px-0" />
+          </Link>
+        </Button>
+        <span aria-hidden className="hidden md:block" />
         <MapAccountButton
           locale={locale}
           messages={messages}
@@ -917,8 +934,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         >
           <DrawerHandle aria-label={mobilePanel === "closed" ? messages.sheetExpand : messages.sheetCollapse} />
           <DrawerTitle className="sr-only">{messages.racesCount}</DrawerTitle>
+          {/* A race detail is its own panel: filters belong to the list it covers. */}
+          {mobilePanel !== "detail" ? (
           <MobileTopBar
-            homeHref={`/${locale}`}
             weekendLabel={weekendLabel}
             weekendActive={isThisWeekend}
             onWeekend={() => {
@@ -954,6 +972,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               />
             }
           />
+          ) : null}
 
           {mobilePanel === "closed" && selected ? (
             <div className="flex items-start gap-3 px-4 pb-3">

@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import { ChevronDown, ListFilter, Search } from "lucide-react";
-import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +17,6 @@ const pillClass =
   "h-9 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3 text-sm font-medium text-foreground shadow-none hover:bg-muted/80";
 
 export function MobileTopBar({
-  homeHref,
   weekendLabel,
   weekendActive,
   onWeekend,
@@ -39,7 +37,6 @@ export function MobileTopBar({
   onSort,
   menu,
 }: {
-  homeHref: string;
   weekendLabel: string;
   weekendActive: boolean;
   onWeekend: () => void;
@@ -67,7 +64,6 @@ export function MobileTopBar({
 
   return (
     <div className="flex items-center gap-2 px-3 pb-2">
-      <BrandMark href={homeHref} mark="lr" size="sm" className="shrink-0 px-0.5" />
       {/*
         The strip scrolls, and a pill cut dead at the container edge reads as a
         broken layout rather than as more content. Fade the last few pixels so

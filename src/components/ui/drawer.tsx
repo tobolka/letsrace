@@ -68,6 +68,15 @@ function DrawerHandle({
       className={cn(
         // Compact grabber; hit area via padding, not a tall empty block.
         "mx-auto mt-1.5 mb-1 flex w-full max-w-none items-center justify-center bg-transparent py-1.5",
+        /*
+         * vaul wraps whatever is passed in its own hit-area span, and that span
+         * is absolutely positioned so the 44px touch target reaches above the
+         * sheet's edge. The grabber inherited that origin and was drawn sixteen
+         * pixels above the sheet, where the rounded top clips it — present in
+         * the DOM, draggable, and invisible. Centring inside the hit area puts
+         * it back in the middle of the handle.
+         */
+        "[&>[data-vaul-handle-hitarea]]:flex [&>[data-vaul-handle-hitarea]]:items-center [&>[data-vaul-handle-hitarea]]:justify-center",
         className
       )}
       style={{ width: "100%", background: "transparent" }}
