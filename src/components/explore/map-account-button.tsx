@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Bell, CalendarCheck, Check, LogIn, LogOut, User, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -129,6 +129,27 @@ export function MapAccountButton({
   );
 }
 
+/**
+ * The same page, in another language.
+ *
+ * Switching used to go to `/en` — the map back at its opening view, with the
+ * dates, the filters and whatever race was open all thrown away. Only the
+ * first segment of the path is the language; everything after it, and the whole
+ * query string, is where you were.
+ */
+function useLocaleHref(): (next: string) => string {
+  const pathname = usePathname() || "/";
+  const search = useSearchParams();
+  return (next: string) => {
+    const [, first, ...rest] = pathname.split("/");
+    const tail = (locales as readonly string[]).includes(first ?? "")
+      ? rest.join("/")
+      : [first, ...rest].filter(Boolean).join("/");
+    const query = search?.toString() ?? "";
+    return `/${next}${tail ? `/${tail}` : ""}${query ? `?${query}` : ""}`;
+  };
+}
+
 /** The same menu wherever it is opened from — the map corner or the panel
  *  header — so there is one place to add to and nothing to keep in step. */
 export function AccountMenuItems({
@@ -150,6 +171,8 @@ export function AccountMenuItems({
   onFeedback: () => void;
   onSignOut: () => void;
 }) {
+  const localeHref = useLocaleHref();
+
   return (
     <>
       {/*
@@ -217,7 +240,7 @@ export function AccountMenuItems({
             <DropdownMenuSubContent>
               {locales.map((l) => (
                 <DropdownMenuItem key={l} asChild>
-                  <Link href={`/${l}`} aria-current={l === locale ? "page" : undefined}>
+                  <Link href={localeHref(l)} aria-current={l === locale ? "page" : undefined}>
                     <Check aria-hidden className={l === locale ? undefined : "opacity-0"} />
                     {l.toUpperCase()}
                   </Link>
