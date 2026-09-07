@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { ChevronDown, ListFilter, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +34,6 @@ export function MobileTopBar({
   sortNeedsLocationLabel,
   distanceEnabled,
   onSort,
-  menu,
 }: {
   weekendLabel: string;
   weekendActive: boolean;
@@ -56,7 +54,6 @@ export function MobileTopBar({
   sortNeedsLocationLabel: string;
   distanceEnabled: boolean;
   onSort: (sort: EventSort) => void;
-  menu: ReactNode;
 }) {
   // "Řadit dle vzdálenosti" does not fit a pill on a 375px screen — it was
   // clipped mid-word, and the search button behind it sat off-screen.
@@ -145,7 +142,6 @@ export function MobileTopBar({
       >
         <Search className="size-4" aria-hidden />
       </Button>
-      <div className="shrink-0">{menu}</div>
     </div>
   );
 }

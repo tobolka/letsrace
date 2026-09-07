@@ -126,6 +126,7 @@ const RACES_SOURCE = "letsrace-races";
 const HIT_LAYER = "letsrace-races-hit";
 const SHADOW_LAYER = "letsrace-races-shadow";
 const GLOW_LAYER = "letsrace-races-glow";
+const RIM_LAYER = "letsrace-races-rim";
 const DOT_LAYER = "letsrace-races-dot";
 
 /**
@@ -813,6 +814,20 @@ export function RaceMap({
           "circle-radius": ["case", SELECTED, 13, 0],
           "circle-color": ["get", "color"],
           "circle-opacity": ["case", SELECTED, 0.4, 0],
+        },
+      });
+
+      // Half a pixel of ink around the white ring. A circle can carry one
+      // stroke, and that one is the white; the dark outside it is this disc
+      // showing through. It is meant to settle the ring against a pale map,
+      // not to draw an outline — any heavier and the pins look stamped on.
+      map!.addLayer({
+        id: RIM_LAYER,
+        type: "circle",
+        source: RACES_SOURCE,
+        paint: {
+          "circle-radius": ["case", SELECTED, 11, 10.5],
+          "circle-color": "rgba(28,25,23,0.35)",
         },
       });
 

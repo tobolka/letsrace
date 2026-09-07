@@ -70,7 +70,6 @@ import {
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
-import { MoreHorizontal, Check } from "lucide-react";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -839,17 +838,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           locale={locale}
           messages={messages}
           onSignIn={() => setAuthOpen(true)}
+          onSubmitRace={() => setSubmitOpen(true)}
+          onFeedback={() => setFeedbackOpen(true)}
         />
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
         <Card className="pointer-events-auto flex h-full w-[400px] flex-col gap-0 overflow-hidden py-0 shadow-lg">
-          <Header
-            messages={messages}
-            locale={locale}
-            onSubmitRace={() => setSubmitOpen(true)}
-            onFeedback={() => setFeedbackOpen(true)}
-          />
+          <Header locale={locale} />
           <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
             {renderFilterBar()}
           </div>
@@ -981,15 +977,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             sortNeedsLocationLabel={messages.sortNeedsLocation}
             distanceEnabled={distanceEnabled}
             onSort={setListSort}
-            menu={
-              <ExploreMenu
-                messages={messages}
-                locale={locale}
-                onSubmitRace={() => setSubmitOpen(true)}
-                onFeedback={() => setFeedbackOpen(true)}
-                compact
-              />
-            }
           />
           ) : null}
 
@@ -1198,19 +1185,7 @@ function ListToolbar({
   );
 }
 
-function Header({
-  messages,
-  locale,
-  onSubmitRace,
-  onFeedback,
-  compact,
-}: {
-  messages: Messages;
-  locale: string;
-  onSubmitRace: () => void;
-  onFeedback: () => void;
-  compact?: boolean;
-}) {
+function Header({ locale, compact }: { locale: string; compact?: boolean }) {
   return (
     <div
       className={cn(
@@ -1219,78 +1194,7 @@ function Header({
       )}
     >
       <BrandMark href={`/${locale}`} size={compact ? "sm" : "md"} />
-      <ExploreMenu
-        messages={messages}
-        locale={locale}
-        onSubmitRace={onSubmitRace}
-        onFeedback={onFeedback}
-        compact
-      />
     </div>
-  );
-}
-
-function ExploreMenu({
-  messages,
-  locale,
-  onSubmitRace,
-  onFeedback,
-  compact,
-}: {
-  messages: Messages;
-  locale: string;
-  onSubmitRace: () => void;
-  onFeedback: () => void;
-  compact?: boolean;
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size={compact ? "icon-sm" : "icon"}
-          aria-label={messages.more}
-          className={compact ? "size-8" : "size-11 shrink-0 rounded-full"}
-        >
-          <MoreHorizontal />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align={compact ? "end" : "start"} className="w-56">
-        <DropdownMenuGroup>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              {messages.language}
-              <span className="ml-auto text-xs text-muted-foreground">{locale.toUpperCase()}</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {locales.map((l) => (
-                  <DropdownMenuItem key={l} asChild>
-                    <Link href={`/${l}`} aria-current={l === locale ? "page" : undefined}>
-                      <Check aria-hidden className={l === locale ? undefined : "opacity-0"} />
-                      {l.toUpperCase()}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {/*
-            Signing in, the account and the plan all live on the button in the
-            map's top-right corner, which is where a map app puts them and where
-            someone actually looks. Repeating them here made this menu mostly a
-            second copy of that. Admin is not for visitors and is reachable at
-            /admin by the one person who needs it.
-          */}
-          <DropdownMenuItem onSelect={onSubmitRace}>{messages.missingRace}</DropdownMenuItem>
-          <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
