@@ -704,6 +704,11 @@ export function RaceMap({
       zoom: 7,
       maxBounds: EUROPE_CAMERA_BOUNDS,
       renderWorldCopies: false,
+      // Collision is what keeps the bikes from piling up on each other, and it
+      // should be a contest between pins — not between a pin and whatever the
+      // basemap wanted to write in the same spot. Confined to their own
+      // source, they only ever elbow each other.
+      crossSourceCollisions: false,
       attributionControl: { compact: true },
       transformRequest: cartoKey
         ? (url) => {
@@ -933,9 +938,11 @@ export function RaceMap({
         },
       });
 
-      // The discipline, drawn inside its own pin. `allow-overlap` because a
-      // glyph that hides itself when two races sit close together would leave
-      // a pin that means nothing; the pins already overlap, and so may these.
+      // The discipline, drawn inside its own pin — but only where there is
+      // room for it. Letting the glyphs overlap turned a cluster of races into
+      // a pile of bicycles on top of each other; with collision left on, the
+      // pin in front keeps its bike and the ones behind, which you can barely
+      // see anyway, fall back to a plain coloured dot.
       map!.addLayer({
         id: ICON_LAYER,
         type: "symbol",
@@ -944,8 +951,10 @@ export function RaceMap({
         layout: {
           "icon-image": ["get", "icon"],
           "icon-size": ICON_PX / RASTER_PX,
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
+          // The glyph is 12px but the pin around it is 26, so the collision
+          // box is padded out to the pin: a bike is dropped as soon as the
+          // circles themselves touch, not only when the bikes would.
+          "icon-padding": 7,
         },
       });
 
