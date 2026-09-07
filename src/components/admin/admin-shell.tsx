@@ -7,6 +7,7 @@ import {
   Command as CommandIcon,
   Flag,
   Globe,
+  CopyCheck,
   Inbox,
   LayoutDashboard,
   Link2Off,
@@ -64,6 +65,7 @@ const NAV: NavItem[] = [
   { href: "/admin/sources", label: "Sources", icon: Globe, exact: false },
   { href: "/admin/events", label: "Events", icon: Flag, exact: false },
   { href: "/admin/discovery", label: "Discovery", icon: Radar, exact: false, count: "discovery" },
+  { href: "/admin/duplicates", label: "Duplicates", icon: CopyCheck, exact: false },
   { href: "/admin/inbox", label: "Inbox", icon: Inbox, exact: false, count: "inbox" },
 ];
 

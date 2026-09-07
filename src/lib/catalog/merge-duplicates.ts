@@ -547,6 +547,32 @@ export async function mergePublicDuplicates(opts?: {
   return { events: rows.length, pairs: merges.length, merged, failed, dry: false, preview };
 }
 
+/**
+ * Fold one race into another by id, for a person who has looked at both.
+ *
+ * The automatic pass is deliberately cautious and leaves the cases only a
+ * human can call — a hill named in one listing and a town in the other. This
+ * is how that call gets carried out, with the same bookkeeping: sources move,
+ * links and series fill in the gaps, and the loser's fingerprint is retired so
+ * the watcher cannot resurrect it on the next fetch.
+ */
+export async function mergeEventPair(keepId: string, dropId: string): Promise<void> {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      "id, name, website_url, registration_url, series_id, location:locations(name, municipality)",
+    )
+    .in("id", [keepId, dropId]);
+  if (error) throw new Error(error.message);
+  const rows = (data ?? []) as unknown as MergeSide[];
+  const keep = rows.find((r) => r.id === keepId);
+  const drop = rows.find((r) => r.id === dropId);
+  if (!keep || !drop) throw new Error("Both races have to exist to merge them");
+  const failure = await applyMerge(supabase, keep, drop);
+  if (failure) throw new Error(failure);
+}
+
 type MergeSide = Pick<
   MergeDuplicateRow,
   "id" | "name" | "website_url" | "registration_url" | "series_id"
