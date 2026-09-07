@@ -171,6 +171,7 @@ export async function listIncompleteEvents(opts?: {
       .eq("visibility", "public")
       .neq("status", "cancelled")
       .order("start_date", { ascending: true })
+      .order("id", { ascending: true })
       .range(from, from + 999);
     if (upcomingOnly) query = query.gte("start_date", today);
     const { data, error } = await query;

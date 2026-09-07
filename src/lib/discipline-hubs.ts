@@ -104,6 +104,7 @@ export async function listQualifyingHubs(countryCodes: string[]): Promise<HubCom
       .eq("visibility", "public")
       .gte("start_date", today)
       .in("locations.country_code", countryCodes)
+      .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw new Error(error.message);
     rows.push(...((data ?? []) as unknown as typeof rows));

@@ -41,6 +41,7 @@ export async function recentlyProbed(
       .from("catalog_probes")
       .select("event_id, outcome, last_attempt_at")
       .eq("probe", probe)
+      .order("event_id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error || !data || data.length === 0) break;
     for (const row of data as { event_id: string; outcome: string; last_attempt_at: string }[]) {

@@ -42,6 +42,7 @@ export async function fillRaceResultAgeCategories(opts?: {
       .gte("start_date", today)
       .or("age_categories.is.null,age_categories.eq.{}")
       .order("start_date", { ascending: true })
+      .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
 
     const rows = (data ?? []) as unknown as {

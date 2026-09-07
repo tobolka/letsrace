@@ -312,6 +312,7 @@ export async function mergePublicDuplicates(opts?: {
       .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
       .gte("start_date", fromDate)
       .order("start_date", { ascending: true })
+      .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw error;
     const chunk = (data ?? []) as unknown as MergeDuplicateRow[];
@@ -667,6 +668,7 @@ export async function collapseFingerprintCollisions(opts?: {
       .from("events")
       .select("id, name, start_date, fingerprint, visibility, website_url, registration_url, series_id")
       .order("start_date")
+      .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw error;
     rows.push(...((data ?? []) as unknown as FpRow[]));

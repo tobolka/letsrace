@@ -25,6 +25,7 @@ export default async function SourcesPage() {
       .from("event_sources")
       .select("watched_url_id")
       .not("watched_url_id", "is", null)
+      .order("id", { ascending: true })
       .range(from, from + 999);
     const page = data ?? [];
     for (const row of page) {

@@ -133,6 +133,7 @@ export async function listSuspiciousDuplicates(
     if (opts?.discipline) query = query.contains("disciplines", [opts.discipline]);
     const { data } = await query
       .order("start_date", { ascending: true })
+      .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     const page = (data ?? []) as unknown as Row[];
     rows.push(...page);

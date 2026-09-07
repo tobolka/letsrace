@@ -61,6 +61,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .eq("visibility", "public")
       .gte("start_date", today)
       .order("start_date")
+      .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     rows.push(...((data ?? []) as unknown as typeof rows));
     if (!data || data.length < PAGE) break;
