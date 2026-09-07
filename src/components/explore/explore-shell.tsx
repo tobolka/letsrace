@@ -30,23 +30,11 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Item,
-  ItemContent,
-  ItemGroup,
-  ItemHeader,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
-import {
-  DISCIPLINE_LABELS,
-  RACE_LEVEL_LABELS,
-  formatEventCategoryLabel,
-  type Discipline,
-  type RaceLevel,
-} from "@/lib/taxonomy";
+import { formatEventCategoryLabel } from "@/lib/taxonomy";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import { disciplineColor } from "@/lib/map-visuals";
 import {
@@ -1008,7 +996,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   </Empty>
                 ) : (
                   <ItemGroup>
-                    {listView === "skeleton" ? <ListSkeleton rows={8} compact /> : null}
+                    {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
                     {listView === "rows" && sortedEvents.map((event) => (
                       <div role="listitem" key={event.id} className="border-b last:border-b-0">
                       <EventCard
@@ -1017,7 +1005,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         locale={locale}
                         distanceKm={eventDistanceKm(event, userOrigin)}
                         active={event.id === selectedId}
-                        compact
                         onClick={() => {
                           selectEvent(event.id);
                           setMobilePanel("detail");
@@ -1085,10 +1072,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
     </div>
   );
-}
-
-function disciplineLabel(id: string): string {
-  return DISCIPLINE_LABELS[id as Discipline] || id;
 }
 
 function ListToolbar({
@@ -1194,7 +1177,6 @@ function EventCard({
   locale,
   distanceKm: km,
   active,
-  compact,
   onClick,
 }: {
   event: EventListItem;
@@ -1202,52 +1184,34 @@ function EventCard({
   locale: string;
   distanceKm?: number | null;
   active: boolean;
-  compact?: boolean;
   onClick: () => void;
 }) {
-  const level =
-    event.uciClass?.toUpperCase() ||
-    event.classLabel ||
-    RACE_LEVEL_LABELS[(event.level || "local") as RaceLevel] ||
-    event.level;
   const audienceLabel = formatEventCategoryLabel(event, {
     kids: messages.kids,
     youth: messages.youth,
     adults: messages.adults,
   });
-  const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
   const df = dateFnsLocale(locale);
+  const dateLabel =
+    format(parseISO(event.startDate), "d MMM", { locale: df }) +
+    (event.endDate && event.endDate !== event.startDate
+      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
+      : "");
+  /*
+    One line under the name, the same on a phone and on a desktop. The level
+    and the discipline are gone from it: the level is a word almost every race
+    shares, and the discipline is what the colour at the edge already says —
+    between them they were half the line and none of the reason you were
+    reading it.
+  */
   const meta = [
-    format(parseISO(event.startDate), "d MMM yyyy", { locale: df }) +
-      (event.endDate && event.endDate !== event.startDate
-        ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
-        : ""),
-    level,
-    event.series?.name,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-  const place = [
+    dateLabel,
     event.location?.municipality || event.location?.name || "—",
     event.location?.countryCode,
     distanceLabel,
-    discLabel,
+    event.series?.name,
     audienceLabel,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
-  // The phone gets one line where the desktop card gets two, so the same facts
-  // are packed into it in the order you would give up: the date and the place
-  // first, then how far, then what kind of race, and the level last — that is
-  // the end that gets cut on a narrow screen, and the one you miss least.
-  const compactPlace = [
-    format(parseISO(event.startDate), "d MMM", { locale: df }),
-    event.location?.municipality || event.location?.name,
-    distanceLabel,
-    discLabel,
-    level,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -1259,54 +1223,42 @@ function EventCard({
       variant={active ? "muted" : "default"}
       // The dividing line lives on the listitem wrapper now — inside it this
       // button is always the last child, so `last:` here would never not match.
-      className="rounded-none border-0 hover:bg-accent/50"
+      className="rounded-none border-0 px-4 py-2.5 hover:bg-accent/50"
     >
       <button
         type="button"
         data-event-id={event.id}
         onClick={onClick}
-        className="relative w-full min-h-12 scroll-my-2 text-left touch-manipulation md:min-h-11"
+        className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
         {/*
           The discipline used to be a coloured dot beside the date, which on a
           white list reads as an unread badge — something to clear rather than
-          something to tell races apart by. A short tick at the edge is the
-          same colour doing the same job: enough to scan a column by, small
-          enough that it never competes with the name of the race.
+          something to tell races apart by. The same colour runs down the edge
+          of both lines instead, saying as much without asking to be dismissed.
         */}
         <span
           aria-hidden
-          className="absolute top-1/2 left-1.5 h-5 w-0.5 -translate-y-1/2 rounded-full"
+          className="absolute inset-y-2.5 left-1.5 w-0.5 rounded-full"
           style={{ background: disciplineColor(event.disciplines) }}
         />
         {/* Without this a flex child refuses to shrink below its content, and
             `truncate` on the rows inside does nothing but overflow. */}
-        <ItemContent className="min-w-0">
-          {compact ? null : (
-            <ItemHeader className="min-w-0">
-              <span className="flex min-w-0 items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                {/* One line, like the place below it: a long series name here
-                    was the last thing that could change a card's height. */}
-                <span className="truncate">{meta}</span>
-              </span>
-            </ItemHeader>
-          )}
+        <ItemContent className="min-w-0 gap-0.5">
           {/*
             One line, cut with an ellipsis. The list is rebuilt when the map
             settles on its real bounds, and cards that change height as their
             names change length drag everything below them — which was the
-            whole of this page's layout shift.
+            whole of this page’s layout shift.
           */}
           <ItemTitle
             // ItemTitle ships `w-fit`, which sizes it to its text and defeats
             // any truncation inside it.
-            className="w-full min-w-0 text-[15px]"
+            className="w-full min-w-0 text-sm leading-snug"
           >
             <span className="truncate">{event.name}</span>
           </ItemTitle>
-          <span className="line-clamp-1 text-sm leading-normal text-muted-foreground">
-            {compact ? compactPlace : place}
-          </span>
+          <span className="line-clamp-1 text-xs leading-snug text-muted-foreground">{meta}</span>
         </ItemContent>
       </button>
     </Item>

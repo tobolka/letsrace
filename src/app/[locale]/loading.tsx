@@ -57,7 +57,7 @@ export default function Loading() {
             <Skeleton className="h-8 w-20 shrink-0 rounded-md" />
             <Skeleton className="ml-auto size-8 shrink-0 rounded-md" />
           </div>
-          <ListSkeleton rows={3} compact />
+          <ListSkeleton rows={3} />
         </div>
       </div>
     </div>
