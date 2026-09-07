@@ -553,7 +553,12 @@ export function PlanHome({ locale }: { locale: string }) {
         onDiscard={(eventId) => void onDiscard(eventId)}
       />
 
-      <div ref={fillRef} className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      {/* Grid items default to min-width:auto, so one long race name in the
+          suggestions pushed the whole card past the right edge of a phone. */}
+      <div
+        ref={fillRef}
+        className="grid gap-6 [&>*]:min-w-0 lg:grid-cols-2 lg:items-start"
+      >
         {fillWeekend && suggestCtx ? (
           <FreeWeekendSuggestions
             key={fillWeekend.saturday}
