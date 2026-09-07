@@ -93,7 +93,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const lang = locales.includes(raw as Locale) ? raw : defaultLocale;
 
   return (
-    <html lang={lang} className={`${GeistSans.className} ${GeistSans.variable} h-full`}>
+    /*
+     * The inline script below stamps `data-welcome-seen` on this element before
+     * React hydrates, which is the whole point — the welcome card must not
+     * flash for someone who has already dismissed it. React sees an attribute
+     * the server never sent and calls it a mismatch, so this element, and only
+     * this element, is exempt.
+     */
+    <html
+      lang={lang}
+      className={`${GeistSans.className} ${GeistSans.variable} h-full`}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
         {/*

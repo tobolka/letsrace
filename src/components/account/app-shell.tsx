@@ -8,7 +8,6 @@ import { BrandMark } from "@/components/brand-mark";
 import { AccountCommand } from "@/components/account/account-command";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -225,10 +224,6 @@ export function AppShell({
               onClick={toggleTheme}
             >
               {dark ? <Sun /> : <Moon />}
-            </Button>
-            <Separator orientation="vertical" className="mx-1 hidden h-4 md:block" />
-            <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
-              <Link href={mapHref}>{t.viewOnMap}</Link>
             </Button>
           </div>
         </header>
