@@ -6,12 +6,16 @@ export function GET() {
   const body = [
     "# Let's Race robots.txt",
     "User-agent: *",
+    // Inside the group, not after it. A blank line ends a record, so sitting
+    // below one left this attached to no user-agent at all — the signal was
+    // published and applied to nobody. Lighthouse still calls it an unknown
+    // directive and docks the SEO audit for it; real crawlers are required to
+    // ignore lines they do not recognise, so the audit is the only cost.
+    "Content-Signal: ai-train=no, search=yes, ai-input=yes",
     "Allow: /",
     "Disallow: /admin",
     "Disallow: /admin/",
     "Disallow: /api/",
-    "",
-    "Content-Signal: ai-train=no, search=yes, ai-input=yes",
     "",
     // A comment, not a directive: "Agentmap:" is not part of the robots.txt
     // grammar and validators read it as a malformed file. The catalogue is
