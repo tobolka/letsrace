@@ -2,6 +2,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  Set by a tiny head script when localStorage says the intro was dismissed.
+  Hides the SSR'd card before first paint so returning visitors never flash it.
+*/
+html[data-welcome-seen="1"] #letsrace-welcome {
+  display: none !important;
+}
+
 :root {
   --background: #f5f5f4;
   --foreground: #1c1917;

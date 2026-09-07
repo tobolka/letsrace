@@ -8,6 +8,7 @@ import { DeferredVitals } from "@/components/perf/deferred-vitals";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { WebMcpTools } from "@/components/agent/webmcp-tools";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME, socialCard } from "@/lib/seo";
+import { WELCOME_SEEN_BOOT_SCRIPT } from "@/lib/welcome";
 import "./globals.css";
 
 const site = getSiteUrl();
@@ -95,6 +96,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} className={`${GeistSans.className} ${GeistSans.variable} h-full`}>
       <head>
         <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+        {/*
+          Runs before first paint. The intro card is SSR'd for LCP on first
+          visit; without this, returning visitors see it for one frame while
+          React reads localStorage and unmounts it.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: WELCOME_SEEN_BOOT_SCRIPT }} />
       </head>
       <body className="min-h-full bg-background font-sans text-foreground antialiased">
         <TooltipProvider>

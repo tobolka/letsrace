@@ -59,11 +59,16 @@ function useAfterIntroPaint(ceilingMs = 3500): boolean {
       finish();
     };
 
-    const img = document.querySelector<HTMLImageElement>('img[src*="intro-race"]');
-    if (!img || img.complete) markImg();
-    else {
-      img.addEventListener("load", markImg, { once: true });
-      img.addEventListener("error", markImg, { once: true });
+    // Returning visitors never show the card — don't wait on its hidden <img>.
+    if (document.documentElement.dataset.welcomeSeen === "1") {
+      markImg();
+    } else {
+      const img = document.querySelector<HTMLImageElement>('img[src*="intro-race"]');
+      if (!img || img.complete) markImg();
+      else {
+        img.addEventListener("load", markImg, { once: true });
+        img.addEventListener("error", markImg, { once: true });
+      }
     }
 
     const hasIdle = typeof window.requestIdleCallback === "function";

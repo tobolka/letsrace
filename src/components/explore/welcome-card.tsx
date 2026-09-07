@@ -17,8 +17,9 @@ import { markWelcomeSeen, WELCOME_SEEN_KEY } from "@/lib/welcome";
  * race, not a modal.
  *
  * Default-shown in SSR so the photograph is in the first HTML (and is the LCP
- * element PageSpeed measures). Returning visitors hide it on hydrate from
- * localStorage — a one-frame flash beats a multi-second render delay.
+ * element PageSpeed measures). Returning visitors already dismissed it: a head
+ * script sets `data-welcome-seen` before paint and CSS hides `#letsrace-welcome`,
+ * so React can unmount on hydrate without a visible flash.
  */
 export function WelcomeCard({
   messages,
@@ -37,6 +38,7 @@ export function WelcomeCard({
   useEffect(() => {
     try {
       if (window.localStorage.getItem(WELCOME_SEEN_KEY) === "1") {
+        document.documentElement.dataset.welcomeSeen = "1";
         setShow(false);
       }
     } catch {
@@ -53,6 +55,7 @@ export function WelcomeCard({
 
   return (
     <div
+      id="letsrace-welcome"
       role="dialog"
       aria-label={messages.introTitle}
       /**
