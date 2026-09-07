@@ -25,7 +25,8 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
+import { OpenUrlButton } from "@/components/admin/open-url";
+import { firstOpenableUrl } from "@/lib/admin/urls";
 
 type Note = {
   id: string;

@@ -24,7 +24,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
+import { OpenUrlButton } from "@/components/admin/open-url";
+import { firstOpenableUrl } from "@/lib/admin/urls";
 import { Eye, EyeOff, X } from "lucide-react";
 
 export type AdminEventRow = {

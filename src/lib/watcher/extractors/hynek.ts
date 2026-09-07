@@ -7,10 +7,20 @@ import { isNonRaceEventName } from "@/lib/event-visibility";
 const WEEKDAYS = /^(pondělí|úterý|středa|čtvrtek|pátek|sobota|neděle)$/i;
 
 const SKIP =
-  /\b(běh|beh |půlmaraton|pulmaraton|marat[oó]n\b(?!.*mtb)|trail run|běžec|bezec|tempo makers|osvračín|osvracin|přeštice|prestice|kralovick)/i;
+  /\b(běh|beh |půlmaraton|pulmaraton|marat[oó]n\b(?!.*mtb)|trail run|běžec|bezec|tempo makers|osvračín|osvracin|přeštice|prestice|kralovick|forestov|forest gump)/i;
 
 const BIKE_HINT =
   /\b(mtb|xco|xcc|xcm|xc\b|dh\b|enduro|gravel|silnice|cyklo|bike|kpž|kpz|čp|cp\b|uci|kolo|talent|bundesliga|pražský pohár|prazsky|cyclo|cx\b|biatlon|kolopro|manitou|galaxy|tour)\b/i;
+
+/**
+ * Hynek's calendar is a timing service, not a cycling calendar — he measures
+ * "MTB i běžecké" races and gives the running series their own filter tabs.
+ * Those series pages parse exactly like the bike ones, so nothing downstream
+ * can tell them apart; the code is the only reliable signal. Forestovo závody
+ * is the Forrest Gump Team trail series (Forestova čtrnáctka, Nočník), bbp is
+ * Běžecký pohár Plzeňska and bch is Běžec Chodska.
+ */
+export const HYNEK_RUNNING_SERIES = new Set(["forest", "bbp", "bch"]);
 
 /** Known Hynek `?serialosss=` codes → canonical series */
 export const HYNEK_SERIES: Record<string, { name: string; slug: string; audience?: "kids" | "mixed" | "adults" }> =
@@ -20,7 +30,6 @@ export const HYNEK_SERIES: Record<string, { name: string; slug: string; audience
     ppkhk: { name: "Pohár Plzeňského kraje HK", slug: "pohar-plz-kraje-hk", audience: "kids" },
     pkkhk: { name: "Pohár KV kraje HK", slug: "pohar-kv-kraje-hk", audience: "kids" },
     mtbb: { name: "MTB Biatlon", slug: "mtb-biatlon", audience: "mixed" },
-    forest: { name: "Forestovo závody", slug: "forestovo-zavody", audience: "mixed" },
     uci: { name: "UCI Championships", slug: "uci-championships", audience: "adults" },
     uciXC: { name: "UCI MTB World Cup", slug: "uci-mtb-world-cup", audience: "adults" },
     uciX: { name: "UCI Cyclocross World Cup", slug: "uci-cx-world-cup", audience: "adults" },
@@ -115,6 +124,23 @@ export function canonicalizeSeries(raw: string): { name: string; slug: string } 
   return { name, slug: slugifySeries(name) };
 }
 
+/** The `?serialosss=` code of a series page, decoded. */
+function seriesCodeOf(url: string): string | null {
+  try {
+    const code = new URL(url, "https://hynekmusil.cz").searchParams.get("serialosss");
+    if (!code) return null;
+    return decodeURIComponent(code);
+  } catch {
+    return null;
+  }
+}
+
+/** True when the URL is one of the running series' filter pages. */
+export function isHynekRunningSeriesUrl(url: string): boolean {
+  const code = seriesCodeOf(url);
+  return code != null && HYNEK_RUNNING_SERIES.has(code);
+}
+
 function seriesFromUrl(url: string): { name: string; slug: string; audience?: string } | null {
   try {
     const code = new URL(url).searchParams.get("serialosss");
@@ -139,6 +165,7 @@ export function discoverHynekSeriesUrls(html: string): string[] {
       if (!code) return;
       // skip empty "back to full calendar"
       if (!code.trim()) return;
+      if (HYNEK_RUNNING_SERIES.has(code)) return;
       urls.add(`https://hynekmusil.cz/?serialosss=${encodeURIComponent(code)}`);
     } catch {
       /* ignore */
@@ -148,6 +175,7 @@ export function discoverHynekSeriesUrls(html: string): string[] {
 }
 
 export function parseHynekMusil(url: string, html: string): ParsedEvent[] {
+  if (isHynekRunningSeriesUrl(url)) return [];
   const $ = cheerio.load(html);
   const year = yearHint(html);
   const events: ParsedEvent[] = [];

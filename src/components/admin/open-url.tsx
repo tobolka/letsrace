@@ -9,9 +9,16 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { firstOpenableUrl, openableUrl } from "@/lib/admin/urls";
-
-export { firstOpenableUrl, openableUrl };
+/*
+ * Only `openableUrl`, and only for this file's own components.
+ *
+ * This module used to re-export the URL helpers, and a server page imported
+ * one of them through here — which turns a plain function into a client
+ * reference and throws "Attempted to call firstOpenableUrl() from the server"
+ * the moment the page renders. Anything that is not a component belongs in
+ * `@/lib/admin/urls`, where both sides can reach it.
+ */
+import { openableUrl } from "@/lib/admin/urls";
 
 export function OpenUrlButton({
   href,

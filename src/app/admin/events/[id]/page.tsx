@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { getEventById } from "@/lib/events";
 import { EventForm } from "@/components/admin/event-form";
-import { firstOpenableUrl, OpenUrlButton } from "@/components/admin/open-url";
+import { OpenUrlButton } from "@/components/admin/open-url";
+import { firstOpenableUrl } from "@/lib/admin/urls";
 
 export default async function EditEventPage({
   params,
