@@ -1,7 +1,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
-import { fciCategoryLine, parseFciCategories } from "@/lib/watcher/extractors/fci-categories";
+import { fciAdmittedText, parseFciCategories } from "@/lib/watcher/extractors/fci-categories";
 
 const PAGE = 1000;
 
@@ -72,7 +72,9 @@ export async function fillFciAgeCategories(opts?: {
         await recordProbe(supabase, target.id, "fci_ages", "failed");
         continue;
       }
-      const ages = parseFciCategories(fciCategoryLine(await res.text()));
+      // The categories line and the class, read together: the line is blank on
+      // about half these pages and the class says it instead.
+      const ages = parseFciCategories(fciAdmittedText(await res.text()));
       if (!ages.length) {
         result.silent += 1;
         await recordProbe(supabase, target.id, "fci_ages", "silent");

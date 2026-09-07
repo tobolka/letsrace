@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { parseFciCategories } from "@/lib/watcher/extractors/fci-categories";
+import {
+  fciAdmittedText,
+  fciCategoryLine,
+  fciClassLine,
+  parseFciCategories,
+} from "@/lib/watcher/extractors/fci-categories";
 
 /**
  * Every line below is the "Categorie ammesse" text from a race that is in the
@@ -43,5 +48,64 @@ describe("parseFciCategories", () => {
     expect(parseFciCategories("")).toEqual([]);
     expect(parseFciCategories(null)).toEqual([]);
     expect(parseFciCategories("   ")).toEqual([]);
+  });
+
+  it("reads the MTB calendar's initials, but only as a run", () => {
+    const ages = parseFciCategories("CAT. ES-ALL-JU - OPEN M/F - CICLOAMATORI TUTTI - APERTA AGLI ENTI");
+    expect(ages).toEqual(expect.arrayContaining(["youth", "junior", "amateur"]));
+    // "all" and "ju" are ordinary Italian words on their own.
+    expect(parseFciCategories("gara aperta all'iscrizione")).toEqual([]);
+  });
+
+  it("reads a licence as the racing categories it stands for", () => {
+    expect(
+      parseFciCategories("TESSERATI FCI APERTA AGLI ENTI COME DA CONVENZIONE"),
+    ).toEqual(expect.arrayContaining(["junior", "u23", "elite", "masters"]));
+    expect(parseFciCategories("TUTTE + ALTRI ENTI")).toContain("elite");
+  });
+
+  it("reads a non-competitive ride as open to anyone", () => {
+    expect(parseFciCategories("PEDALATA NON COMPETITIVA")).toEqual(["amateur"]);
+    expect(
+      parseFciCategories(
+        "Questo tipo di manifestazioni sono aperte a: tutti fino ad una distanza di 20 km.",
+      ),
+    ).toEqual(["amateur"]);
+  });
+
+  it("reads a top-class cyclocross that names both audiences", () => {
+    const ages = parseFciCategories(
+      "tutte FCI gara aperta agli Enti di Promozione gara top class solo per Esordienti ed Allievi con montepremi federale",
+    );
+    expect(ages).toEqual(expect.arrayContaining(["youth", "elite", "masters"]));
+  });
+});
+
+/**
+ * The page is a list of labelled fields; a value ends where the next label
+ * begins. Taking everything after "Categorie ammesse" swept up the club name,
+ * the phone number and the whole route description with it.
+ */
+describe("fciFields", () => {
+  const page = `<html><body>
+    <div>Classe:</div><div>(1.12) Elite e Under 23</div>
+    <div>Categoria:</div><div>Nazionale</div>
+    <div>Tipo:</div><div>In linea \ strada</div>
+    <div>Categorie ammesse:</div><div></div>
+    <div>Organizzatore:</div><div>G.S. MASTER FIGLINE BIKE</div>
+    <div>Telefono:</div><div>3485810750</div>
+  </body></html>`;
+
+  it("stops a value at the next label", () => {
+    expect(fciClassLine(page)).toBe("(1.12) Elite e Under 23");
+    expect(fciCategoryLine(page)).toBeNull();
+  });
+
+  it("keeps a club name out of the categories", () => {
+    // "MASTER" in the organiser's name is not a category anybody stated.
+    expect(parseFciCategories(fciAdmittedText(page))).toEqual(
+      expect.arrayContaining(["elite", "u23"]),
+    );
+    expect(parseFciCategories(fciAdmittedText(page))).not.toContain("masters");
   });
 });
