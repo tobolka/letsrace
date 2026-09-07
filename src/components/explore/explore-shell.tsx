@@ -244,9 +244,35 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const listSort: EventSort =
     filters.sort === "distance" && distanceEnabled ? "distance" : "date";
 
+  /**
+   * What is on screen, not what is in memory.
+   *
+   * The map asks for a box padded on every side so races are already loaded
+   * when they scroll into frame. That padding is a buffer, not a promise —
+   * leaving it in the list meant zooming in or panning changed the view and not
+   * the count, and the list kept naming races you could no longer see. Clipping
+   * costs no round trip, so the count answers the camera at once.
+   *
+   * A name search, a series or a country is a find rather than a window, and
+   * those are meant to reach outside the frame.
+   */
+  const visibleEvents = useMemo(() => {
+    if (!bounds || filters.series || filters.country) return events;
+    if (filters.q.trim() && !lastPlacedQ.current) return events;
+    return events.filter((e) => {
+      const lat = Number(e.location?.lat);
+      const lng = Number(e.location?.lng);
+      // A race we could not place is never hidden by a box it has no point in.
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return true;
+      return (
+        lat >= bounds.south && lat <= bounds.north && lng >= bounds.west && lng <= bounds.east
+      );
+    });
+  }, [events, bounds, filters.series, filters.country, filters.q]);
+
   const sortedEvents = useMemo(
-    () => sortEvents(events, listSort, userOrigin),
-    [events, listSort, userOrigin],
+    () => sortEvents(visibleEvents, listSort, userOrigin),
+    [visibleEvents, listSort, userOrigin],
   );
 
   useEffect(() => {
@@ -440,7 +466,20 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       const skipBounds =
         overrides.skipBounds === true ||
         (Boolean(series || country) && overrides.forceBounds !== true);
-      const b = skipBounds ? null : ((overrides.bounds as typeof bounds) ?? bounds);
+      /*
+       * Fetch the padded box, and remember that we did.
+       *
+       * A viewport fetch asks for a box grown on every side, so races load just
+       * before they enter the frame, and records that box as what it holds. A
+       * filter change used to ask for the bare camera box instead while leaving
+       * the record alone — so after changing the date we held races for what
+       * was on screen but still claimed the padded ring around it. Zoom out a
+       * little and nothing refetched, because we believed we already had that
+       * ground; the ring came up empty.
+       */
+      const explicit = overrides.bounds as typeof bounds | undefined;
+      const b = skipBounds ? null : (explicit ?? (bounds ? expandViewport(bounds) : null));
+      if (b) lastAreaRef.current = b;
       if (q) params.set("q", q);
       if (series) params.set("series", series);
       if (country) params.set("country", country);
@@ -712,7 +751,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     (filters.series ? 1 : 0) +
     (isThisWeekend ? 0 : 1);
 
-  const listView = listViewState({ settled: listSettled, count: events.length });
+  const listView = listViewState({ settled: listSettled, count: visibleEvents.length });
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
@@ -826,7 +865,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           </div>
           <Separator />
           <ListToolbar
-            count={listSettled ? events.length : null}
+            count={listSettled ? visibleEvents.length : null}
             pending={listLoading}
             sort={listSort}
             distanceEnabled={distanceEnabled}
