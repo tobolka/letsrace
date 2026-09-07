@@ -1,12 +1,27 @@
 import { revalidatePath } from "next/cache";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
-import { listSuspiciousDuplicates, dismissSuspiciousPair } from "@/lib/catalog/suspicious-duplicates";
+import {
+  listSuspiciousDuplicates,
+  dismissSuspiciousPair,
+} from "@/lib/catalog/suspicious-duplicates";
 import { mergeEventPair } from "@/lib/catalog/merge-duplicates";
 import { DuplicateReview } from "@/components/admin/duplicate-review";
+import { DuplicateFilters } from "@/components/admin/duplicate-filters";
 
-export default async function DuplicatesPage() {
+export default async function DuplicatesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ country?: string; discipline?: string; from?: string; to?: string }>;
+}) {
   await requireAdminPage();
-  const pairs = await listSuspiciousDuplicates();
+  const sp = await searchParams;
+  const filters = {
+    country: (sp.country ?? "").trim().toUpperCase(),
+    discipline: (sp.discipline ?? "").trim(),
+    fromDate: (sp.from ?? "").trim(),
+    toDate: (sp.to ?? "").trim(),
+  };
+  const pairs = await listSuspiciousDuplicates(filters);
 
   async function merge(keepId: string, dropId: string) {
     "use server";
@@ -32,6 +47,12 @@ export default async function DuplicatesPage() {
           a Sunday — so each one is a question, not a verdict.
         </p>
       </div>
+      <DuplicateFilters
+        country={filters.country}
+        discipline={filters.discipline}
+        from={filters.fromDate}
+        to={filters.toDate}
+      />
       <DuplicateReview pairs={pairs} onMerge={merge} onDismiss={dismiss} />
     </div>
   );

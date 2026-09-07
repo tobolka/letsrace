@@ -85,6 +85,12 @@ function PairCard({
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <Badge variant="outline">{pair.date}</Badge>
         <span>{pair.place}</span>
+        {pair.country ? (
+          <>
+            <span aria-hidden>·</span>
+            <span>{pair.country}</span>
+          </>
+        ) : null}
         <span aria-hidden>·</span>
         <span>{pair.discipline}</span>
       </div>

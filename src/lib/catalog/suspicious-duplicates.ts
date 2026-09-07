@@ -26,6 +26,7 @@ export type SuspiciousPair = {
   date: string;
   place: string;
   discipline: string;
+  country: string | null;
   left: SuspiciousSide;
   right: SuspiciousSide;
   reasons: string[];
@@ -53,13 +54,28 @@ type Row = {
   registration_url: string | null;
   fingerprint: string | null;
   series_id: string | null;
-  location: { lat?: number; lng?: number; name?: string; municipality?: string } | null;
+  location: {
+    lat?: number;
+    lng?: number;
+    name?: string;
+    municipality?: string;
+    country_code?: string;
+  } | null;
   series: { name?: string } | null;
-  sources?: { id: string }[] | null;
 };
 
+/*
+ * No `sources:event_sources(id)` here.
+ *
+ * Counting sources for every upcoming race took the query from 0.5 seconds to
+ * 7.5 — fourteen times the cost, to put a number under two names. The count is
+ * fetched afterwards for the few hundred races that actually end up in a pair.
+ */
 const COLUMNS =
-  "id, name, start_date, end_date, disciplines, website_url, registration_url, fingerprint, series_id, location:locations(lat, lng, name, municipality), series:series(name), sources:event_sources(id)";
+  "id, name, start_date, end_date, disciplines, website_url, registration_url, fingerprint, series_id, location:locations(lat, lng, name, municipality, country_code), series:series(name)";
+
+/** PostgREST answers at most a thousand rows however large the limit is. */
+const PAGE = 1000;
 
 function side(row: Row): SuspiciousSide {
   return {
@@ -71,7 +87,7 @@ function side(row: Row): SuspiciousSide {
     series: row.series?.name ?? null,
     websiteUrl: row.website_url,
     registrationUrl: row.registration_url,
-    sources: row.sources?.length ?? 0,
+    sources: 0,
   };
 }
 
@@ -91,23 +107,37 @@ function asDedup(row: Row) {
   };
 }
 
-export async function listSuspiciousDuplicates(opts?: {
+export type SuspiciousFilters = {
   fromDate?: string;
+  toDate?: string;
+  country?: string;
+  discipline?: string;
   limit?: number;
-}): Promise<SuspiciousPair[]> {
+};
+
+export async function listSuspiciousDuplicates(
+  opts?: SuspiciousFilters,
+): Promise<SuspiciousPair[]> {
   const supabase = createServerSupabase();
-  const fromDate = opts?.fromDate ?? new Date().toISOString().slice(0, 10);
+  const fromDate = opts?.fromDate || new Date().toISOString().slice(0, 10);
 
-  const { data } = await supabase
-    .from("events")
-    .select(COLUMNS)
-    .eq("visibility", "public")
-    .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
-    .gte("start_date", fromDate)
-    .order("start_date", { ascending: true })
-    .limit(4000);
-
-  const rows = (data ?? []) as unknown as Row[];
+  const rows: Row[] = [];
+  for (let from = 0; ; from += PAGE) {
+    let query = supabase
+      .from("events")
+      .select(COLUMNS)
+      .eq("visibility", "public")
+      .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+      .gte("start_date", fromDate);
+    if (opts?.toDate) query = query.lte("start_date", opts.toDate);
+    if (opts?.discipline) query = query.contains("disciplines", [opts.discipline]);
+    const { data } = await query
+      .order("start_date", { ascending: true })
+      .range(from, from + PAGE - 1);
+    const page = (data ?? []) as unknown as Row[];
+    rows.push(...page);
+    if (page.length < PAGE || rows.length >= 6000) break;
+  }
 
   const { data: reviewed } = await supabase
     .from("duplicate_reviews")
@@ -127,12 +157,14 @@ export async function listSuspiciousDuplicates(opts?: {
     }
   }
 
+  const country = (opts?.country || "").toUpperCase();
   const pairs = new Map<string, SuspiciousPair>();
   for (const [day, here] of byDay) {
     for (let i = 0; i < here.length; i++) {
       for (let j = i + 1; j < here.length; j++) {
         const a = here[i]!;
         const b = here[j]!;
+        if (country && (a.location?.country_code ?? "").toUpperCase() !== country) continue;
         if (!sharesDisciplineFamily(a.disciplines, b.disciplines)) continue;
         const { score, reasons } = scoreDuplicate(asDedup(a), asDedup(b));
         if (!reasons.includes("same_place")) continue;
@@ -148,6 +180,7 @@ export async function listSuspiciousDuplicates(opts?: {
           date: day,
           place: a.location?.municipality || a.location?.name || "—",
           discipline: (a.disciplines ?? [])[0] ?? "—",
+          country: a.location?.country_code ?? null,
           left: side(left),
           right: side(right),
           reasons,
@@ -156,9 +189,33 @@ export async function listSuspiciousDuplicates(opts?: {
     }
   }
 
-  return [...pairs.values()]
+  const shortlist = [...pairs.values()]
     .sort((x, y) => x.date.localeCompare(y.date) || x.place.localeCompare(y.place))
     .slice(0, opts?.limit ?? 200);
+
+  // How many calendars list each race is the strongest hint about which of two
+  // rows to keep, so it is worth one more query — but only for the few hundred
+  // races that reached the list, not for every race in the season.
+  const ids = [...new Set(shortlist.flatMap((p) => [p.left.id, p.right.id]))];
+  if (ids.length) {
+    const counts = new Map<string, number>();
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data } = await supabase
+        .from("event_sources")
+        .select("event_id")
+        .in("event_id", ids.slice(i, i + 200));
+      for (const row of data ?? []) {
+        const id = row.event_id as string;
+        counts.set(id, (counts.get(id) ?? 0) + 1);
+      }
+    }
+    for (const pair of shortlist) {
+      pair.left.sources = counts.get(pair.left.id) ?? 0;
+      pair.right.sources = counts.get(pair.right.id) ?? 0;
+    }
+  }
+
+  return shortlist;
 }
 
 /** Remember that a pair is two races, so it stops coming back. */

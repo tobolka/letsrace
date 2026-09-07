@@ -28,6 +28,16 @@ import { OpenUrlButton } from "@/components/admin/open-url";
 import { firstOpenableUrl } from "@/lib/admin/urls";
 import { Eye, EyeOff, X } from "lucide-react";
 
+/** Short words for the gaps `computeMissing` reports. */
+const MISSING_LABELS: Record<string, string> = {
+  place: "place",
+  bad_place: "bad place",
+  coords: "coords",
+  website: "website",
+  registration: "entry",
+  disciplines: "discipline",
+};
+
 export type AdminEventRow = {
   id: string;
   name: string;
@@ -38,7 +48,16 @@ export type AdminEventRow = {
   visibility: string;
   website_url: string | null;
   registration_url: string | null;
-  location: { name?: string; country_code?: string } | null;
+  disciplines?: string[];
+  /** What this row is short of, so the table can say why it is not on the map. */
+  missing?: string[];
+  location: {
+    name?: string | null;
+    municipality?: string | null;
+    country_code?: string;
+    lat?: number | null;
+    lng?: number | null;
+  } | null;
 };
 
 export function AdminEventsTable({
@@ -232,6 +251,7 @@ export function AdminEventsTable({
               <TableHead>Name</TableHead>
               <TableHead>Place</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Missing</TableHead>
               <TableHead>Source</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -272,6 +292,22 @@ export function AdminEventsTable({
                     <Badge variant={hidden ? "secondary" : "outline"}>
                       {hidden ? "hidden" : e.status}
                     </Badge>
+                  </TableCell>
+                  {/* Why this row is not carrying its weight, in the row itself
+                      — otherwise "hidden" is a state with no explanation and
+                      no obvious next move. */}
+                  <TableCell className="whitespace-nowrap">
+                    {e.missing?.length ? (
+                      <span className="flex flex-wrap gap-1">
+                        {e.missing.map((m) => (
+                          <Badge key={m} variant="outline" className="text-[10px]">
+                            {MISSING_LABELS[m] ?? m}
+                          </Badge>
+                        ))}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant={e.source_kind === "manual" ? "default" : "secondary"}>
