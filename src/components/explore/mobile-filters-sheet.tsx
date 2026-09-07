@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { addDays, endOfMonth, format, parseISO, startOfMonth } from "date-fns";
 import { X } from "lucide-react";
-import { DateRangeCalendar, isoToRange } from "@/components/explore/date-range-calendar";
+import { isoToRange } from "@/components/explore/date-range";
 import { seriesCountryKey, INT_COUNTRY, type SeriesOption } from "@/components/explore/map-filter-bar";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,13 @@ import {
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
 import { dateFnsLocale } from "@/lib/i18n/dates";
+
+const DateRangeCalendar = dynamic(
+  () =>
+    import("@/components/explore/date-range-calendar").then((m) => ({
+      default: m.DateRangeCalendar,
+    })),
+);
 
 function thisMonthRange() {
   const now = new Date();

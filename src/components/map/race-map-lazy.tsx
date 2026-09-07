@@ -25,49 +25,71 @@ const RaceMapInner = dynamic(
 );
 
 /**
- * Hold the map back until the browser has drawn a frame.
+ * Hold MapLibre until the intro photograph has been able to paint.
  *
- * MapLibre is 280 kB of JavaScript and evaluating it saturated the main thread
- * for two and a half seconds. On a phone that was 78% of the LCP: the intro
- * card's image had finished downloading and then waited four and a half
- * seconds for a thread free enough to paint it.
- *
- * Nothing is saved by starting sooner — the map cannot be interacted with
- * before it is parsed either way — so the parse goes after the first paint
- * rather than in front of it. The timeout is the ceiling: on a page that never
- * goes idle the map must still arrive.
+ * Listening for "any LCP" was too eager: a small text node counted, MapLibre
+ * started downloading, and the real LCP image then sat unpainted behind that
+ * parse. Waiting for the intro <img> (when present) plus a settled idle gap
+ * keeps the megabyte of map code off the critical path.
  */
-function useAfterFirstPaint(): boolean {
+function useAfterIntroPaint(ceilingMs = 3500): boolean {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    const go = () => {
-      if (!cancelled) setReady(true);
+    let imgReady = false;
+    let idleReady = false;
+    let done = false;
+
+    const finish = () => {
+      if (cancelled || done) return;
+      if (!imgReady || !idleReady) return;
+      done = true;
+      requestAnimationFrame(() => {
+        if (!cancelled) setReady(true);
+      });
     };
 
-    // Two frames: the first is scheduled before this paint, the second lands
-    // after the browser has actually put something on screen.
-    const raf = requestAnimationFrame(() => requestAnimationFrame(go));
+    const markImg = () => {
+      imgReady = true;
+      finish();
+    };
+    const markIdle = () => {
+      idleReady = true;
+      finish();
+    };
+
+    const img = document.querySelector<HTMLImageElement>('img[src*="intro-race"]');
+    if (!img || img.complete) markImg();
+    else {
+      img.addEventListener("load", markImg, { once: true });
+      img.addEventListener("error", markImg, { once: true });
+    }
 
     const hasIdle = typeof window.requestIdleCallback === "function";
     const idle = hasIdle
-      ? window.requestIdleCallback(go, { timeout: 1000 })
-      : window.setTimeout(go, 200);
+      ? window.requestIdleCallback(markIdle, { timeout: 2000 })
+      : window.setTimeout(markIdle, 400);
+
+    const ceiling = window.setTimeout(() => {
+      imgReady = true;
+      idleReady = true;
+      finish();
+    }, ceilingMs);
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(raf);
+      window.clearTimeout(ceiling);
       if (hasIdle) window.cancelIdleCallback(idle as number);
       else window.clearTimeout(idle as number);
     };
-  }, []);
+  }, [ceilingMs]);
 
   return ready;
 }
 
 export function RaceMapLazy(props: ComponentProps<typeof RaceMapInner>) {
-  const ready = useAfterFirstPaint();
+  const ready = useAfterIntroPaint();
   if (!ready) return <MapGround />;
   return <RaceMapInner {...props} />;
 }

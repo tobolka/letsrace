@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ComponentType } from "react";
+import dynamic from "next/dynamic";
 import {
   addDays,
   endOfMonth,
@@ -20,7 +21,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { DateRangeCalendar, isoToRange } from "@/components/explore/date-range-calendar";
+import { isoToRange } from "@/components/explore/date-range";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -67,6 +68,18 @@ import {
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
 import { dateFnsLocale } from "@/lib/i18n/dates";
+
+const DateRangeCalendar = dynamic(
+  () =>
+    import("@/components/explore/date-range-calendar").then((m) => ({
+      default: m.DateRangeCalendar,
+    })),
+  {
+    loading: () => (
+      <div className="h-64 w-[280px] animate-pulse rounded-md bg-muted/50" aria-hidden />
+    ),
+  },
+);
 
 export const INT_COUNTRY = "INT";
 
@@ -584,20 +597,22 @@ export function MapFilterBar({
               </div>
               <Separator orientation="vertical" className="hidden md:block" />
               <Separator className="md:hidden" />
-              <DateRangeCalendar
-                locale={locale}
-                selected={dateDraft ?? isoToRange(dateFrom, dateTo)}
-                onSelect={(range) => {
-                  if (!range?.from) return;
-                  setCustomPicked(true);
-                  setDateDraft(range);
-                  if (range.to) {
-                    const start = range.from <= range.to ? range.from : range.to;
-                    const end = range.from <= range.to ? range.to : range.from;
-                    onPreset(format(start, "yyyy-MM-dd"), format(end, "yyyy-MM-dd"));
-                  }
-                }}
-              />
+              {dateOpen ? (
+                <DateRangeCalendar
+                  locale={locale}
+                  selected={dateDraft ?? isoToRange(dateFrom, dateTo)}
+                  onSelect={(range) => {
+                    if (!range?.from) return;
+                    setCustomPicked(true);
+                    setDateDraft(range);
+                    if (range.to) {
+                      const start = range.from <= range.to ? range.from : range.to;
+                      const end = range.from <= range.to ? range.to : range.from;
+                      onPreset(format(start, "yyyy-MM-dd"), format(end, "yyyy-MM-dd"));
+                    }
+                  }}
+                />
+              ) : null}
             </div>
           </PopoverContent>
         </Popover>

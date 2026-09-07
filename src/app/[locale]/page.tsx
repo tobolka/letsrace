@@ -60,6 +60,25 @@ export default async function LocalePage({
   // never show. `loading.tsx` is the real boundary — it is what Next streams
   // before this component runs at all.
   return (
-    <ExploreShell initialEvents={initialEvents} messages={messages[locale]} locale={locale} />
+    <>
+      {/*
+        The intro photograph is the LCP element. It has to be discoverable in the
+        first HTML so the preload scanner starts it before hydration — and before
+        MapLibre takes the main thread. PageSpeed runs with empty storage, so this
+        always matches what the lab measures; returning visitors dismiss via
+        localStorage after paint.
+      */}
+      <link
+        rel="preload"
+        as="image"
+        href="/intro-race.webp"
+        fetchPriority="high"
+      />
+      <ExploreShell
+        initialEvents={initialEvents}
+        messages={messages[locale]}
+        locale={locale}
+      />
+    </>
   );
 }

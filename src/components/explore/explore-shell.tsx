@@ -1,18 +1,15 @@
 "use client";
 
 import { Suspense, useMemo, useRef, useState, useEffect, type CSSProperties } from "react";
+import dynamic from "next/dynamic";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
-import { EventDetailPanel } from "@/components/explore/event-detail-panel";
 import {
   INT_COUNTRY,
   MapFilterBar,
   seriesCountryKey,
   type SeriesOption,
 } from "@/components/explore/map-filter-bar";
-import { SubmitRaceModal } from "@/components/explore/submit-race-modal";
-import { FeedbackModal } from "@/components/explore/feedback-modal";
-import { AuthDialog } from "@/components/account/auth-dialog";
 import { MapAccountButton } from "@/components/explore/map-account-button";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
@@ -82,8 +79,43 @@ import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
-import { MobileFiltersSheet } from "@/components/explore/mobile-filters-sheet";
-import { MobileSearchSheet } from "@/components/explore/mobile-search-sheet";
+
+const EventDetailPanel = dynamic(
+  () =>
+    import("@/components/explore/event-detail-panel").then((m) => ({
+      default: m.EventDetailPanel,
+    })),
+);
+const SubmitRaceModal = dynamic(
+  () =>
+    import("@/components/explore/submit-race-modal").then((m) => ({
+      default: m.SubmitRaceModal,
+    })),
+);
+const FeedbackModal = dynamic(
+  () =>
+    import("@/components/explore/feedback-modal").then((m) => ({
+      default: m.FeedbackModal,
+    })),
+);
+const AuthDialog = dynamic(
+  () =>
+    import("@/components/account/auth-dialog").then((m) => ({
+      default: m.AuthDialog,
+    })),
+);
+const MobileFiltersSheet = dynamic(
+  () =>
+    import("@/components/explore/mobile-filters-sheet").then((m) => ({
+      default: m.MobileFiltersSheet,
+    })),
+);
+const MobileSearchSheet = dynamic(
+  () =>
+    import("@/components/explore/mobile-search-sheet").then((m) => ({
+      default: m.MobileSearchSheet,
+    })),
+);
 
 const WEEKEND_DEFAULT = thisWeekendRange();
 const exploreSearchParams = {
@@ -1039,47 +1071,55 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       </Drawer>
       ) : null}
 
-      <MobileFiltersSheet
-        open={filtersOpen}
-        onOpenChange={setFiltersOpen}
-        messages={messages}
-        locale={locale}
-        dateFrom={filters.dateFrom}
-        dateTo={filters.dateTo}
-        categories={filters.categories}
-        disciplines={filters.disciplines}
-        levels={filters.levels}
-        series={filters.series}
-        country={filters.country}
-        seriesList={seriesList}
-        onPreset={setDateRange}
-        onCategory={toggleCategory}
-        onDiscipline={setDiscipline}
-        onLevel={toggleLevel}
-        onClearDisciplines={clearDisciplines}
-        onClearLevels={clearLevels}
-        onClearCategories={clearCategories}
-        onSeries={setSeries}
-        onCountry={setCountry}
-        onReset={() => resetExploreFilters()}
-      />
-      <MobileSearchSheet
-        open={searchOpen}
-        onOpenChange={setSearchOpen}
-        messages={messages}
-        q={filters.q}
-        onQ={handleSearchChange}
-        onSubmit={handleSearchSubmit}
-      />
+      {filtersOpen ? (
+        <MobileFiltersSheet
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+          messages={messages}
+          locale={locale}
+          dateFrom={filters.dateFrom}
+          dateTo={filters.dateTo}
+          categories={filters.categories}
+          disciplines={filters.disciplines}
+          levels={filters.levels}
+          series={filters.series}
+          country={filters.country}
+          seriesList={seriesList}
+          onPreset={setDateRange}
+          onCategory={toggleCategory}
+          onDiscipline={setDiscipline}
+          onLevel={toggleLevel}
+          onClearDisciplines={clearDisciplines}
+          onClearLevels={clearLevels}
+          onClearCategories={clearCategories}
+          onSeries={setSeries}
+          onCountry={setCountry}
+          onReset={() => resetExploreFilters()}
+        />
+      ) : null}
+      {searchOpen ? (
+        <MobileSearchSheet
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          messages={messages}
+          q={filters.q}
+          onQ={handleSearchChange}
+          onSubmit={handleSearchSubmit}
+        />
+      ) : null}
 
-      <SubmitRaceModal open={submitOpen} onClose={() => setSubmitOpen(false)} messages={messages} />
-      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-      <AuthDialog
-        open={authOpen}
-        onClose={() => setAuthOpen(false)}
-        onSuccess={() => setAuthOpen(false)}
-        locale={locale}
-      />
+      {submitOpen ? (
+        <SubmitRaceModal open onClose={() => setSubmitOpen(false)} messages={messages} />
+      ) : null}
+      {feedbackOpen ? <FeedbackModal open onClose={() => setFeedbackOpen(false)} /> : null}
+      {authOpen ? (
+        <AuthDialog
+          open
+          onClose={() => setAuthOpen(false)}
+          onSuccess={() => setAuthOpen(false)}
+          locale={locale}
+        />
+      ) : null}
       <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
     </div>
   );

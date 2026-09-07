@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { MapPin, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const SEEN_KEY = "letsrace.welcome.seen";
+import { markWelcomeSeen, WELCOME_SEEN_KEY } from "@/lib/welcome";
 
 /**
  * What this app is, said once.
@@ -16,6 +15,10 @@ const SEEN_KEY = "letsrace.welcome.seen";
  *
  * Deliberately non-blocking: someone who landed here from a race link wants the
  * race, not a modal.
+ *
+ * Default-shown in SSR so the photograph is in the first HTML (and is the LCP
+ * element PageSpeed measures). Returning visitors hide it on hydrate from
+ * localStorage — a one-frame flash beats a multi-second render delay.
  */
 export function WelcomeCard({
   messages,
@@ -29,34 +32,24 @@ export function WelcomeCard({
   };
   onSignIn: () => void;
 }) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
-    // Storage can throw in private windows — a missing flag just shows the card.
-    let seen = false;
     try {
-      seen = window.localStorage.getItem(SEEN_KEY) === "1";
+      if (window.localStorage.getItem(WELCOME_SEEN_KEY) === "1") {
+        setShow(false);
+      }
     } catch {
-      seen = false;
+      /* private mode — show again, which is survivable */
     }
-    if (seen) return;
-    // The photograph in this card is the largest thing the page paints, so
-    // whatever this timer is, the Largest Contentful Paint cannot beat it. Long
-    // enough not to slam in over the map, short enough not to be the metric.
-    const t = window.setTimeout(() => setShow(true), 200);
-    return () => window.clearTimeout(t);
   }, []);
+
+  if (!show) return null;
 
   function dismiss() {
     setShow(false);
-    try {
-      window.localStorage.setItem(SEEN_KEY, "1");
-    } catch {
-      /* nothing to remember it with — it will show again, which is survivable */
-    }
+    markWelcomeSeen();
   }
-
-  if (!show) return null;
 
   return (
     <div
@@ -67,7 +60,7 @@ export function WelcomeCard({
        * bottom half to the race sheet, and a corner card there covered the
        * entire list — the first thing someone should see.
        */
-      className="pointer-events-auto fixed inset-x-3 top-16 z-40 overflow-hidden rounded-xl border bg-background/95 shadow-xl backdrop-blur duration-300 animate-in fade-in slide-in-from-top-4 md:inset-x-auto md:bottom-6 md:right-6 md:top-auto md:w-[22rem] md:slide-in-from-bottom-4"
+      className="pointer-events-auto fixed inset-x-3 top-16 z-40 overflow-hidden rounded-xl border bg-background/95 shadow-xl backdrop-blur md:inset-x-auto md:bottom-6 md:right-6 md:top-auto md:w-[22rem]"
     >
       {/*
         Decorative, so it carries no alt text — the dialog is already labelled.
@@ -77,14 +70,18 @@ export function WelcomeCard({
         encoded to the size it is shown at, 27 KB, and next/image is used
         nowhere else in the app — pulling the component in for one banner would
         cost more than it saves.
+
+        No enter animation: the photograph is the LCP element, and animating it
+        in delayed the paint that Lighthouse measures.
       */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/intro-race.webp"
-        srcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
         alt=""
         width={352}
         height={112}
+        fetchPriority="high"
+        decoding="async"
         className="h-24 w-full object-cover md:h-28"
       />
       <Button

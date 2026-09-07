@@ -2,21 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { DayPicker, type DateRange } from "react-day-picker";
-import { parseISO } from "date-fns";
 import { cs, enGB, pl, sk } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "react-day-picker/style.css";
 
-const LOCALES = { cs, en: enGB, pl, sk } as const;
+export type { DateRange };
+export { isoToRange } from "@/components/explore/date-range";
 
-export function isoToRange(dateFrom: string, dateTo: string): DateRange | undefined {
-  if (!dateFrom) return undefined;
-  const from = parseISO(dateFrom);
-  if (Number.isNaN(from.getTime())) return undefined;
-  if (!dateTo) return { from };
-  const to = parseISO(dateTo);
-  return { from, to: Number.isNaN(to.getTime()) ? undefined : to };
-}
+const LOCALES = { cs, en: enGB, pl, sk } as const;
 
 type Props = {
   locale: string;
