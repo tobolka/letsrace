@@ -79,6 +79,7 @@ import { thisWeekendRange } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
+import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { MobileFiltersSheet } from "@/components/explore/mobile-filters-sheet";
@@ -693,6 +694,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     (filters.series ? 1 : 0) +
     (isThisWeekend ? 0 : 1);
 
+  const listView = listViewState({ settled: listSettled, count: events.length });
+
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
       <div
@@ -797,7 +800,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           />
           <Separator />
           <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
-            {events.length === 0 ? (
+            {listView === "empty" ? (
               <Empty className="border-0 p-6 md:p-8">
                 <EmptyHeader>
                   <EmptyTitle>{messages.noResults}</EmptyTitle>
@@ -821,10 +824,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               </Empty>
             ) : (
               <ItemGroup>
-                {!listSettled ? (
-                  <ListSkeleton rows={8} />
-                ) : null}
-                {listSettled
+                {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
+                {listView === "rows"
                   ? sortedEvents.map((event) => (
                   <div role="listitem" key={event.id} className="border-b last:border-b-0">
                   <EventCard
@@ -994,7 +995,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
           {mobilePanel !== "detail" ? (
             <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                {events.length === 0 ? (
+                {listView === "empty" ? (
                   <Empty className="border-0 p-6">
                     <EmptyHeader>
                       <EmptyTitle>{messages.noResults}</EmptyTitle>
@@ -1013,8 +1014,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   </Empty>
                 ) : (
                   <ItemGroup>
-                    {!listSettled ? <ListSkeleton rows={8} compact /> : null}
-                    {listSettled && sortedEvents.map((event) => (
+                    {listView === "skeleton" ? <ListSkeleton rows={8} compact /> : null}
+                    {listView === "rows" && sortedEvents.map((event) => (
                       <div role="listitem" key={event.id} className="border-b last:border-b-0">
                       <EventCard
                         event={event}
