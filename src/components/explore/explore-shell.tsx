@@ -24,18 +24,6 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -51,7 +39,7 @@ import {
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
-import { locales, type Messages } from "@/lib/i18n/messages";
+import type { Messages } from "@/lib/i18n/messages";
 import {
   DISCIPLINE_LABELS,
   RACE_LEVEL_LABELS,
@@ -1250,10 +1238,16 @@ function EventCard({
     .filter(Boolean)
     .join(" · ");
 
+  // The phone gets one line where the desktop card gets two, so the same facts
+  // are packed into it in the order you would give up: the date and the place
+  // first, then how far, then what kind of race, and the level last — that is
+  // the end that gets cut on a narrow screen, and the one you miss least.
   const compactPlace = [
     format(parseISO(event.startDate), "d MMM", { locale: df }),
     event.location?.municipality || event.location?.name,
     distanceLabel,
+    discLabel,
+    level,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -1271,19 +1265,25 @@ function EventCard({
         type="button"
         data-event-id={event.id}
         onClick={onClick}
-        className="w-full min-h-12 scroll-my-2 text-left touch-manipulation md:min-h-11"
+        className="relative w-full min-h-12 scroll-my-2 text-left touch-manipulation md:min-h-11"
       >
+        {/*
+          The discipline used to be a coloured dot beside the date, which on a
+          white list reads as an unread badge — something to clear rather than
+          something to tell races apart by. A rule down the edge is the same
+          colour doing the same job without asking to be dismissed.
+        */}
+        <span
+          aria-hidden
+          className="absolute inset-y-1.5 left-1 w-[3px] rounded-full"
+          style={{ background: disciplineColor(event.disciplines) }}
+        />
         {/* Without this a flex child refuses to shrink below its content, and
             `truncate` on the rows inside does nothing but overflow. */}
         <ItemContent className="min-w-0">
           {compact ? null : (
             <ItemHeader className="min-w-0">
               <span className="flex min-w-0 items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: disciplineColor(event.disciplines) }}
-                  aria-hidden
-                />
                 {/* One line, like the place below it: a long series name here
                     was the last thing that could change a card's height. */}
                 <span className="truncate">{meta}</span>
@@ -1299,15 +1299,8 @@ function EventCard({
           <ItemTitle
             // ItemTitle ships `w-fit`, which sizes it to its text and defeats
             // any truncation inside it.
-            className={cn("w-full min-w-0 text-[15px]", compact && "flex items-center gap-1.5")}
+            className="w-full min-w-0 text-[15px]"
           >
-            {compact ? (
-              <span
-                className="size-2 shrink-0 rounded-full"
-                style={{ background: disciplineColor(event.disciplines) }}
-                aria-hidden
-              />
-            ) : null}
             <span className="truncate">{event.name}</span>
           </ItemTitle>
           <span className="line-clamp-1 text-sm leading-normal text-muted-foreground">
