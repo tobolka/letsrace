@@ -399,8 +399,14 @@ export function EventDetailPanel({
       style={embedded ? undefined : { left: offset.x, top: offset.y }}
     >
       <CardHeader
+        /*
+         * A flex row, not the card's default grid. That grid always lays out
+         * two rows and lets the close button span both, so the button centred
+         * across a header the title only ever filled the top half of — which
+         * is why the name sat visibly above the cross next to it.
+         */
         className={cn(
-          "shrink-0 items-center border-b px-4 py-3 [.border-b]:pb-3",
+          "flex shrink-0 flex-row items-center gap-2 border-b px-4 py-3 [.border-b]:pb-3",
           !embedded && "cursor-grab touch-none select-none",
           dragging && "cursor-grabbing",
         )}
@@ -413,18 +419,20 @@ export function EventDetailPanel({
         <CardTitle
           id="race-detail-title"
           className={cn(
-            "flex min-w-0 items-center gap-2 leading-snug",
+            "flex min-w-0 flex-1 items-center gap-2.5 leading-snug",
             embedded ? "text-[17px] font-semibold" : "text-base",
           )}
         >
+          {/* The same rule the list card wears, so a race looks like itself
+              whether you are reading it in the list or in the panel. */}
           <span
-            className="size-2 shrink-0 rounded-full"
-            style={{ background: disciplineColor(event.disciplines) }}
             aria-hidden
+            className="h-5 w-[3px] shrink-0 rounded-full"
+            style={{ background: disciplineColor(event.disciplines) }}
           />
-          <span className="min-w-0">{event.name}</span>
+          <span className="min-w-0 truncate">{event.name}</span>
         </CardTitle>
-        <CardAction className="self-center">
+        <CardAction className="ml-auto self-center">
           <Button
             type="button"
             variant="ghost"

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type {
   ExpressionSpecification,
   GeoJSONSource,
-  Map,
+  Map as MapLibreMap,
   Marker,
   PaddingOptions,
   Popup,
@@ -95,7 +95,7 @@ const MAP_STYLE: StyleSpecification = {
   layers: [{ id: "carto", type: "raster", source: "carto" }],
 };
 
-function hideMarineNames(map: Map) {
+function hideMarineNames(map: MapLibreMap) {
   for (const id of ["watername_ocean", "watername_sea"]) {
     if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
   }
@@ -129,10 +129,10 @@ function pinTipContent(name: string, meta: string) {
 }
 
 const RACES_SOURCE = "letsrace-races";
-const HIT_LAYER = "letsrace-races-hit";
 const SHADOW_LAYER = "letsrace-races-shadow";
 const GLOW_LAYER = "letsrace-races-glow";
 const PIN_LAYER = "letsrace-races-pin";
+const BADGE_LAYER = "letsrace-races-badge";
 
 /**
  * The whole pin as one image.
@@ -148,14 +148,26 @@ const PIN_LAYER = "letsrace-races-pin";
  * `pixelRatio`, so what ends up on screen is a number written down here and
  * not one inferred from it.
  */
-const PIN_PX = 26;
-const PIN_RASTER = PIN_PX * 3;
-/** Of the 26px pin, 22 is the coloured disc and the remaining 4 its white ring. */
+const PIN_BOX_PX = 40;
+const PIN_RASTER = PIN_BOX_PX * 3;
+/** The visible disc, and the coloured part of it inside its white ring. */
+const PIN_DISC_PX = 26;
 const PIN_FILL_PX = 22;
 /** The glyph inside, at the size it reads best without touching the ring. */
 const GLYPH_PX = 12;
 /** How much of its own box the glyph fills, once trimmed to its ink. */
 const GLYPH_FILL = 0.92;
+/**
+ * The pin is baked inside a box half again its own width. The transparent
+ * margin is the touch target — `queryRenderedFeatures` hits the icon's box,
+ * not its ink — which is how a 26px pin answers to a finger.
+ */
+const OFFSET_UNITS = PIN_RASTER / PIN_BOX_PX;
+
+/** The badge that says how many races share a point. */
+const BADGE_PX = 17;
+const BADGE_RASTER = BADGE_PX * 3;
+const BADGE_IDS = ["2", "3", "4", "5", "6", "7", "8", "9", "more"] as const;
 
 let familyIcons: Promise<void> | null = null;
 
@@ -172,8 +184,8 @@ let familyIcons: Promise<void> | null = null;
  * discipline we could not read.
  */
 function loadFamilyIcons(): Promise<void> {
-  familyIcons ??= Promise.all(
-    Object.keys(DISCIPLINE_FAMILY_COLORS).map(async (family) => {
+  familyIcons ??= Promise.all([
+    ...Object.keys(DISCIPLINE_FAMILY_COLORS).map(async (family) => {
       const glyph = await loadGlyph(DISCIPLINE_FAMILY_ICONS[family]);
       const canvas = document.createElement("canvas");
       canvas.width = PIN_RASTER;
@@ -182,10 +194,10 @@ function loadFamilyIcons(): Promise<void> {
       if (!ctx) return;
 
       const mid = PIN_RASTER / 2;
-      const scale = PIN_RASTER / PIN_PX;
+      const scale = PIN_RASTER / PIN_BOX_PX;
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.arc(mid, mid, mid, 0, Math.PI * 2);
+      ctx.arc(mid, mid, (PIN_DISC_PX / 2) * scale, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = DISCIPLINE_FAMILY_COLORS[family];
       ctx.beginPath();
@@ -197,10 +209,45 @@ function loadFamilyIcons(): Promise<void> {
       }
       pinBitmaps[family] = ctx.getImageData(0, 0, PIN_RASTER, PIN_RASTER);
     }),
-  )
+    bakeCountBadges(),
+  ])
     .then(() => undefined)
     .catch(() => undefined);
   return familyIcons;
+}
+
+/**
+ * "2", "3" … "9+", as small dark discs to hang off the corner of a pin.
+ *
+ * The basemap is raster and carries no glyph server, so a `text-field` is not
+ * available — the number is drawn onto a canvas instead, which is why there is
+ * one image per count rather than one layer that can render any.
+ */
+async function bakeCountBadges(): Promise<void> {
+  await document.fonts.ready;
+  for (const id of BADGE_IDS) {
+    const canvas = document.createElement("canvas");
+    canvas.width = BADGE_RASTER;
+    canvas.height = BADGE_RASTER;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const mid = BADGE_RASTER / 2;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(mid, mid, mid, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#1c1917";
+    ctx.beginPath();
+    ctx.arc(mid, mid, mid - 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const label = id === "more" ? "9+" : id;
+    ctx.font = `700 ${id === "more" ? 24 : 28}px ui-sans-serif, system-ui, sans-serif`;
+    ctx.fillText(label, mid, mid + 1);
+    pinBitmaps[`lr-count-${id}`] = ctx.getImageData(0, 0, BADGE_RASTER, BADGE_RASTER);
+  }
 }
 
 /** One discipline glyph, trimmed to its ink, centred, and turned white. */
@@ -263,7 +310,7 @@ function inkBounds(data: ImageData): { x: number; y: number; w: number; h: numbe
 /** Baked once per page, added to every map instance that needs them. */
 const pinBitmaps: Record<string, ImageData> = {};
 
-function registerFamilyIcons(map: Map) {
+function registerFamilyIcons(map: MapLibreMap) {
   for (const [family, data] of Object.entries(pinBitmaps)) {
     if (!map.hasImage(family)) map.addImage(family, data, { pixelRatio: 1 });
   }
@@ -280,15 +327,47 @@ function registerFamilyIcons(map: Map) {
  * The tooltip's text is carried on the feature, so hovering does not have to
  * find the original event again.
  */
-function raceFeatures(events: EventListItem[], locale: string): GeoJSON.FeatureCollection {
+/** Races within about eleven metres of each other are at the same place. */
+function stackKey(lng: number, lat: number): string {
+  return `${lat.toFixed(4)},${lng.toFixed(4)}`;
+}
+
+/**
+ * How far from the true point the fanned pins sit, so that neighbours in the
+ * ring clear each other by a few pixels. Two races need barely any room; a
+ * town with twenty-six needs a wide circle, and gets one.
+ */
+function fanRadius(n: number): number {
+  const needed = (PIN_DISC_PX + 4) / (2 * Math.sin(Math.PI / n));
+  return Math.min(140, Math.max(24, needed));
+}
+
+function raceFeatures(
+  events: EventListItem[],
+  locale: string,
+  expandedKey: string | null,
+): GeoJSON.FeatureCollection {
   const df = dateFnsLocale(locale);
-  const features: GeoJSON.Feature[] = [];
+  const groups = new Map<string, { lng: number; lat: number; items: EventListItem[] }>();
 
   for (const event of events) {
     const lat = Number(event.location?.lat);
     const lng = Number(event.location?.lng);
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+    const key = stackKey(lng, lat);
+    const group = groups.get(key);
+    if (group) group.items.push(event);
+    else groups.set(key, { lng, lat, items: [event] });
+  }
 
+  const features: GeoJSON.Feature[] = [];
+
+  function push(
+    event: EventListItem,
+    lng: number,
+    lat: number,
+    props: { key: string; count: number; offset: [number, number] },
+  ) {
     const date = format(parseISO(event.startDate), "d MMM yyyy", { locale: df });
     const discs = event.disciplines
       .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
@@ -307,7 +386,38 @@ function raceFeatures(events: EventListItem[], locale: string): GeoJSON.FeatureC
         color: disciplineColor(event.disciplines),
         colorDark: disciplineColorDark(event.disciplines),
         icon: disciplineIcon(event.disciplines),
+        stack: props.key,
+        count: props.count,
+        offset: props.offset,
       },
+    });
+  }
+
+  for (const [key, { lng, lat, items }] of groups) {
+    if (items.length === 1) {
+      push(items[0], lng, lat, { key, count: 1, offset: [0, 0] });
+      continue;
+    }
+
+    // Collapsed, one pin stands for the pile and wears the count. Expanded,
+    // every race steps out onto a ring around the point it shares — offset in
+    // screen space, so the fan holds its shape at any zoom.
+    if (key !== expandedKey) {
+      push(items[0], lng, lat, { key, count: items.length, offset: [0, 0] });
+      continue;
+    }
+
+    const r = fanRadius(items.length);
+    items.forEach((event, i) => {
+      const angle = (i / items.length) * Math.PI * 2 - Math.PI / 2;
+      push(event, lng, lat, {
+        key,
+        count: 1,
+        offset: [
+          Math.cos(angle) * r * OFFSET_UNITS,
+          Math.sin(angle) * r * OFFSET_UNITS,
+        ],
+      });
     });
   }
 
@@ -367,7 +477,7 @@ function makeUserLocationElement() {
 }
 
 function upsertUserMarker(
-  map: Map,
+  map: MapLibreMap,
   markerRef: { current: Marker | null },
   pos: { lng: number; lat: number },
 ) {
@@ -448,7 +558,7 @@ function boundsAround(lng: number, lat: number, radiusKm: number) {
 const MIN_FIT_ZOOM = 7;
 
 function fitRadius(
-  map: Map,
+  map: MapLibreMap,
   lng: number,
   lat: number,
   radiusKm: number,
@@ -469,7 +579,7 @@ function fitRadius(
   });
 }
 
-function visibleBounds(map: Map, padding: PaddingOptions): MapBounds {
+function visibleBounds(map: MapLibreMap, padding: PaddingOptions): MapBounds {
   const canvas = map.getCanvas();
   const width = canvas.clientWidth || canvas.width;
   const height = canvas.clientHeight || canvas.height;
@@ -517,7 +627,7 @@ export function RaceMap({
   locale = "en",
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<Map | null>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
   const hoveredIdRef = useRef<string | null>(null);
   const styledSelectedRef = useRef<string | null>(null);
   const selectedIdRef = useRef(selectedId);
@@ -542,6 +652,13 @@ export function RaceMap({
   const fitSeqRef = useRef(0);
   const destSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
+  /**
+   * Which pile of races is currently fanned out, keyed by its shared point.
+   * One at a time: two open fans over the same map would be a puzzle, not a
+   * map. Held here rather than in feature state because the offsets that do
+   * the fanning are a layout property, and layout properties cannot read it.
+   */
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
   const [userPos, setUserPos] = useState<{ lng: number; lat: number; accuracy?: number } | null>(
     null,
   );
@@ -560,11 +677,11 @@ export function RaceMap({
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
-  function emitBounds(map: Map, reason: BoundsChangeReason = "sync") {
+  function emitBounds(map: MapLibreMap, reason: BoundsChangeReason = "sync") {
     onBoundsChangeRef.current(visibleBounds(map, paddingRef.current), reason);
   }
 
-  function emitBoundsWhenIdle(map: Map, reason: BoundsChangeReason) {
+  function emitBoundsWhenIdle(map: MapLibreMap, reason: BoundsChangeReason) {
     let done = false;
     const fire = () => {
       if (done || mapRef.current !== map) return;
@@ -579,7 +696,7 @@ export function RaceMap({
     window.setTimeout(fire, 350);
   }
 
-  function applyInitialView(map: Map, lng: number, lat: number, duration = 0) {
+  function applyInitialView(map: MapLibreMap, lng: number, lat: number, duration = 0) {
     if (skipInitialLocateRef.current) return;
     if (initialViewDoneRef.current || userMovedRef.current) return;
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
@@ -760,7 +877,7 @@ export function RaceMap({
     });
     mapRef.current = map;
     initialViewDoneRef.current = false;
-    (window as unknown as { __letsraceMap?: Map }).__letsraceMap = map;
+    (window as unknown as { __letsraceMap?: MapLibreMap }).__letsraceMap = map;
 
     const locateCtrl = {
       onAdd() {
@@ -835,9 +952,11 @@ export function RaceMap({
       }
       // Pins are geometry now, so there is no element to look for: ask the map
       // whether the click landed on one before treating it as background.
-      if (map.getLayer(HIT_LAYER) && map.queryRenderedFeatures(e.point, { layers: [HIT_LAYER] }).length) {
+      if (map.getLayer(PIN_LAYER) && map.queryRenderedFeatures(e.point, { layers: [PIN_LAYER] }).length) {
         return;
       }
+      // Clicking the map is also how you put a fanned-out stack back together.
+      setExpandedKey(null);
       onBackgroundClickRef.current?.();
     });
     map.on("dragstart", () => {
@@ -920,7 +1039,7 @@ export function RaceMap({
       });
     }
     const popup = hoverPopupRef.current;
-    const data = raceFeatures(events, localeRef.current);
+    const data = raceFeatures(events, localeRef.current, expandedKey);
 
     function install() {
       const existing = map!.getSource(RACES_SOURCE);
@@ -971,39 +1090,57 @@ export function RaceMap({
       // The pin: disc, white ring and discipline, all in one image, so that a
       // pin in front covers the one behind instead of the two interleaving.
       // Overlap is allowed on purpose — a race is never dropped from the map
-      // just because a neighbour got there first.
+      // just because a neighbour got there first. The offset is what fans a
+      // stack out; it is zero for everything else.
       map!.addLayer({
         id: PIN_LAYER,
         type: "symbol",
         source: RACES_SOURCE,
         layout: {
           "icon-image": ["get", "icon"],
-          "icon-size": PIN_PX / PIN_RASTER,
+          "icon-size": PIN_BOX_PX / PIN_RASTER,
+          "icon-offset": ["get", "offset"],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },
       });
 
-      // Invisible, and larger than the dot: a finger is not sixteen pixels wide.
+      // How many races are hiding under this one. Only ever on a collapsed
+      // stack: fanned out, each pin speaks for itself.
       map!.addLayer({
-        id: HIT_LAYER,
-        type: "circle",
+        id: BADGE_LAYER,
+        type: "symbol",
         source: RACES_SOURCE,
-        paint: {
-          "circle-radius": coarsePointer() ? 22 : 16,
-          "circle-opacity": 0,
+        filter: [">", ["get", "count"], 1],
+        layout: {
+          "icon-image": [
+            "concat",
+            "lr-count-",
+            ["case", [">", ["get", "count"], 9], "more", ["to-string", ["get", "count"]]],
+          ],
+          "icon-size": BADGE_PX / BADGE_RASTER,
+          "icon-offset": [11 * (BADGE_RASTER / BADGE_PX), -11 * (BADGE_RASTER / BADGE_PX)],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
         },
       });
 
-      map!.on("click", HIT_LAYER, (e) => {
-        const id = e.features?.[0]?.properties?.id as string | undefined;
-        if (!id) return;
+      map!.on("click", PIN_LAYER, (e) => {
+        const f = e.features?.[0];
+        if (!f) return;
         window.clearTimeout(hoverTimerRef.current);
         popup.remove();
-        onSelectRef.current(id);
+        // A stack opens before it can be picked from. Anything else is a race.
+        const count = Number(f.properties?.count ?? 1);
+        if (count > 1) {
+          setExpandedKey((f.properties?.stack as string) ?? null);
+          return;
+        }
+        const id = f.properties?.id as string | undefined;
+        if (id) onSelectRef.current(id);
       });
 
-      map!.on("mousemove", HIT_LAYER, (e) => {
+      map!.on("mousemove", PIN_LAYER, (e) => {
         const f = e.features?.[0];
         if (!f) return;
         map!.getCanvas().style.cursor = "pointer";
@@ -1011,6 +1148,7 @@ export function RaceMap({
         if (hoveredIdRef.current === id) return;
         hoveredIdRef.current = id;
         window.clearTimeout(hoverTimerRef.current);
+        if (Number(f.properties?.count ?? 1) > 1) return;
         const coords = (f.geometry as GeoJSON.Point).coordinates as [number, number];
         const name = f.properties?.name as string;
         const meta = f.properties?.meta as string;
@@ -1021,7 +1159,7 @@ export function RaceMap({
         }, delay);
       });
 
-      map!.on("mouseleave", HIT_LAYER, () => {
+      map!.on("mouseleave", PIN_LAYER, () => {
         hoveredIdRef.current = null;
         map!.getCanvas().style.cursor = "";
         window.clearTimeout(hoverTimerRef.current);
@@ -1048,7 +1186,7 @@ export function RaceMap({
       data.features.length;
 
     requestAnimationFrame(() => map.resize());
-  }, [events, mapEpoch]);
+  }, [events, mapEpoch, expandedKey]);
 
   // Selection: two feature-state writes, not a walk over every pin.
   useEffect(() => {
@@ -1062,7 +1200,27 @@ export function RaceMap({
       map.setFeatureState({ source: RACES_SOURCE, id: selectedId }, { selected: true });
     }
     styledSelectedRef.current = selectedId ?? null;
-  }, [selectedId, events, mapEpoch]);
+  }, [selectedId, events, mapEpoch, expandedKey]);
+
+  /*
+   * A race picked from the list can be the third of five at one point, where
+   * the map only draws the first. Opening its pile is the only way the ring
+   * around "this one" can land on the race you actually chose.
+   */
+  useEffect(() => {
+    if (!selectedId) return;
+    const chosen = events.find((e) => e.id === selectedId);
+    const lat = Number(chosen?.location?.lat);
+    const lng = Number(chosen?.location?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    const key = stackKey(lng, lat);
+    const shared = events.filter((e) => {
+      const y = Number(e.location?.lat);
+      const x = Number(e.location?.lng);
+      return Number.isFinite(y) && Number.isFinite(x) && stackKey(x, y) === key;
+    });
+    if (shared.length > 1 && shared[0].id !== selectedId) setExpandedKey(key);
+  }, [selectedId, events]);
 
   const prevSelectedIdRef = useRef(selectedId);
   useEffect(() => {
