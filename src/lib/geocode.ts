@@ -1501,7 +1501,12 @@ async function nominatimSearch(query: string, countryCode: string): Promise<Geoc
   if (!data?.[0]) {
     // retry without country restriction (once)
     if (countryCode) {
-      const p2 = new URLSearchParams({ q: query, format: "json", limit: "1" });
+      const p2 = new URLSearchParams({
+        q: query,
+        format: "json",
+        limit: "1",
+        addressdetails: "1",
+      });
       let res2: Response;
       try {
         res2 = await fetch(`https://nominatim.openstreetmap.org/search?${p2}`, {
@@ -1518,11 +1523,38 @@ async function nominatimSearch(query: string, countryCode: string): Promise<Geoc
         throw new GeocodeUnavailableError(`HTTP ${res2.status}`);
       }
       if (!res2.ok) return null;
-      const data2 = (await res2.json()) as { lat: string; lon: string; display_name?: string }[];
+      const data2 = (await res2.json()) as {
+        lat: string;
+        lon: string;
+        display_name?: string;
+        address?: { country_code?: string };
+      }[];
       if (!data2?.[0]) return null;
+      const lat = Number(data2[0].lat);
+      const lng = Number(data2[0].lon);
+      /*
+       * The unrestricted retry is here because a calendar's country hint is
+       * sometimes the organiser's rather than the venue's, and the real place
+       * is over a border. It is not here to accept a town on another continent
+       * that happens to share a name with a country: asked for "Italy" in
+       * Italy and finding nothing, it took Italy, Texas — and pinned three
+       * upcoming races there. "Switzerland" went to Indiana, "Unknown" to
+       * Assam.
+       *
+       * So the answer has to be either the country that was asked for — which
+       * is how Gran Canaria and Madeira stay Spanish and Portuguese despite
+       * sitting well outside any box drawn around Europe — or another European
+       * one, which is the border case this retry exists for.
+       */
+      const foundCc = (data2[0].address?.country_code ?? "").toUpperCase();
+      const asked = countryCode.toUpperCase();
+      const europe = EUROPE_COUNTRY_CODES as readonly string[];
+      if (foundCc && foundCc !== asked && !(europe.includes(asked) && europe.includes(foundCc))) {
+        return null;
+      }
       return {
-        lat: Number(data2[0].lat),
-        lng: Number(data2[0].lon),
+        lat,
+        lng,
         displayName: data2[0].display_name,
       };
     }
