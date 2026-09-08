@@ -1244,10 +1244,12 @@ export function RaceMap({
     if (ev?.location?.lat == null || ev.location.lng == null) return;
     map.easeTo({
       center: [Number(ev.location.lng), Number(ev.location.lat)],
-      padding,
+      padding: paddingRef.current,
       duration: 550,
     });
-  }, [selectedId, events, padding]);
+    // Not `padding`: this only ever runs when the selection changes, and taking
+    // it as a dependency rebuilt the effect every time the sheet moved.
+  }, [selectedId, events]);
 
   // Shared-race deep link: focus arrived after map load
   useEffect(() => {

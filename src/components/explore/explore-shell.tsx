@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useRef, useState, useEffect, type CSSProperties } from "react";
+import { Suspense, memo, type CSSProperties, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
@@ -221,6 +221,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     const slug = id ? (events.find((ev) => ev.id === id)?.slug ?? "") : "";
     void setFilters({ e: slug || null });
   }
+
+  /*
+   * `memo` on a row is worth nothing if the row is handed a new closure on
+   * every render, so the two lists keep one handler each. The ref is what lets
+   * them stay stable while still seeing the latest `events`.
+   */
+  const selectEventRef = useRef(selectEvent);
+  selectEventRef.current = selectEvent;
+  const selectFromList = useCallback((id: string) => {
+    selectEventRef.current(id);
+  }, []);
+  const selectFromSheet = useCallback((id: string) => {
+    selectEventRef.current(id);
+    setMobilePanel("detail");
+  }, []);
 
   useEffect(() => {
     if (!filters.e) return;
@@ -680,9 +695,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     };
   }, []);
 
+  /*
+   * The sheet's height while it is moving is not the map's business.
+   *
+   * Dragging the sheet set `listSnap`, which recomputed the map's padding,
+   * which handed `RaceMap` a new object, which re-rendered the map and the
+   * whole list — every frame, while the browser was animating a full-height
+   * translate. Deferring it lets React finish the sheet at the frame rate and
+   * catch the map up when it settles.
+   */
+  const deferredListSnap = useDeferredValue(listSnap);
+  const deferredDetailSnap = useDeferredValue(detailSnap);
+
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const snap = mobilePanel === "detail" ? detailSnap : listSnap;
+      const snap = mobilePanel === "detail" ? deferredDetailSnap : deferredListSnap;
       const snapPx =
         typeof snap === "number" ? viewportH * snap : Number.parseFloat(snap) || viewportH * 0.5;
       /*
@@ -706,7 +733,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, mobilePanel, viewportH, listSnap, detailSnap]);
+  }, [selected, isDesktop, mobilePanel, viewportH, deferredListSnap, deferredDetailSnap]);
 
   function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean }) {
     return (
@@ -923,7 +950,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     locale={locale}
                     distanceKm={eventDistanceKm(event, userOrigin)}
                     active={event.id === selectedId}
-                    onClick={() => selectEvent(event.id)}
+                    onSelect={selectFromList}
                   />
                   </div>
                     ))
@@ -1057,10 +1084,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         locale={locale}
                         distanceKm={eventDistanceKm(event, userOrigin)}
                         active={event.id === selectedId}
-                        onClick={() => {
-                          selectEvent(event.id);
-                          setMobilePanel("detail");
-                        }}
+                        onSelect={selectFromSheet}
                       />
                       </div>
                     ))}
@@ -1225,20 +1249,25 @@ function Header({ locale, compact }: { locale: string; compact?: boolean }) {
   );
 }
 
-/** Placeholder rows at the exact height of a card, so the real list drops in
- *  without moving anything. */
-function EventCard({
+/**
+ * One race in the list.
+ *
+ * Memoised because the shell re-renders for reasons that have nothing to do
+ * with any race in it — the sheet moving, the map settling — and without this
+ * every visible card was rebuilt each time, in the middle of an animation.
+ */
+const EventCard = memo(function EventCard({
   event,
   locale,
   distanceKm: km,
   active,
-  onClick,
+  onSelect,
 }: {
   event: EventListItem;
   locale: string;
   distanceKm?: number | null;
   active: boolean;
-  onClick: () => void;
+  onSelect: (id: string) => void;
 }) {
   const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
@@ -1283,7 +1312,7 @@ function EventCard({
       <button
         type="button"
         data-event-id={event.id}
-        onClick={onClick}
+        onClick={() => onSelect(event.id)}
         className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
         {/*
@@ -1318,4 +1347,4 @@ function EventCard({
       </button>
     </Item>
   );
-}
+});
