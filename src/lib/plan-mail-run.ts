@@ -1,5 +1,6 @@
 import { format, parseISO } from "date-fns";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import { todayIso } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
@@ -255,16 +256,25 @@ export async function runPlanChangeMails(now = new Date()) {
   if (changes.length === 0) return { changes: 0, emailed: 0 };
 
   const eventIds = [...new Set(changes.map((c) => c.event_id))];
-  const [{ data: favs }, { data: atts }, { data: existing }] = await Promise.all([
+  const [{ data: favs }, { data: atts }, existing] = await Promise.all([
     supabase.from("event_favorites").select("user_id, event_id").in("event_id", eventIds),
     supabase.from("event_attendance").select("user_id, event_id").in("event_id", eventIds),
-    supabase
-      .from("plan_change_deliveries")
-      .select("user_id, change_id")
-      .in(
-        "change_id",
-        changes.map((c) => c.id),
-      ),
+    /*
+     * Who has already had this letter. Read short — and PostgREST answers at
+     * most a thousand rows whatever `.limit()` says — it reads as "not sent",
+     * and the same change is mailed out again.
+     */
+    readAllRows<{ user_id: string; change_id: string }>((from, to) =>
+      supabase
+        .from("plan_change_deliveries")
+        .select("user_id, change_id")
+        .in(
+          "change_id",
+          changes.map((c) => c.id),
+        )
+        .order("id", { ascending: true })
+        .range(from, to),
+    ),
   ]);
 
   const owners = new Map<string, Set<string>>();
@@ -273,7 +283,7 @@ export async function runPlanChangeMails(now = new Date()) {
     set.add(row.user_id);
     owners.set(row.event_id, set);
   }
-  const seen = new Set((existing ?? []).map((d) => `${d.user_id}:${d.change_id}`));
+  const seen = new Set(existing.map((d) => `${d.user_id}:${d.change_id}`));
 
   const pending: { userId: string; notice: Notice }[] = [];
   for (const row of changes) {
@@ -378,12 +388,16 @@ export async function runWeeklyDigest(now = new Date()) {
   if (eligible.length === 0) return { users: 0, emailed: 0 };
 
   const userIds = eligible.map((u) => u.id as string);
-  const { data: already } = await supabase
-    .from("plan_digest_deliveries")
-    .select("user_id")
-    .eq("week_key", weekKey)
-    .in("user_id", userIds);
-  const sent = new Set((already ?? []).map((r) => r.user_id as string));
+  const already = await readAllRows<{ user_id: string }>((from, to) =>
+    supabase
+      .from("plan_digest_deliveries")
+      .select("user_id")
+      .eq("week_key", weekKey)
+      .in("user_id", userIds)
+      .order("id", { ascending: true })
+      .range(from, to),
+  );
+  const sent = new Set(already.map((r) => r.user_id));
   const remaining = eligible.filter((u) => !sent.has(u.id as string));
   if (remaining.length === 0) return { users: eligible.length, emailed: 0 };
 

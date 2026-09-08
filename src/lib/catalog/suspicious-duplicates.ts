@@ -1,4 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import {
   DEDUP_THRESHOLD,
   scoreDuplicate,
@@ -140,12 +141,16 @@ export async function listSuspiciousDuplicates(
     if (page.length < PAGE || rows.length >= 6000) break;
   }
 
-  const { data: reviewed } = await supabase
-    .from("duplicate_reviews")
-    .select("left_id, right_id");
-  const dismissed = new Set(
-    (reviewed ?? []).map((r) => `${r.left_id as string}:${r.right_id as string}`),
+  // Every pair a person has already looked at and called two races. Read short,
+  // their answer stops sticking and the same pairs come back every morning.
+  const reviewed = await readAllRows<{ left_id: string; right_id: string }>((from, to) =>
+    supabase
+      .from("duplicate_reviews")
+      .select("left_id, right_id")
+      .order("id", { ascending: true })
+      .range(from, to),
   );
+  const dismissed = new Set(reviewed.map((r) => `${r.left_id}:${r.right_id}`));
 
   // Index by every day a race occupies, so a Saturday–Sunday listing still meets
   // the single-day mirror of its Sunday.

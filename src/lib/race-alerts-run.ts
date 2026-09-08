@@ -1,4 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import { todayIso } from "@/lib/date-presets";
 import { eventMapPath } from "@/lib/event-url";
 import { getSiteUrl, SITE_NAME } from "@/lib/seo";
@@ -164,14 +165,23 @@ export async function runRaceAlerts(now = new Date()) {
     return { alerts: alerts.length, candidates: candidates.length, matched: 0, emailed: 0 };
   }
 
-  const { data: existing } = await supabase
-    .from("race_alert_deliveries")
-    .select("alert_id, event_id")
-    .in(
-      "alert_id",
-      alerts.map((a) => a.id),
-    );
-  const seen = new Set((existing ?? []).map((d) => `${d.alert_id}:${d.event_id}`));
+  /*
+   * What has already been sent. Truncated at a thousand rows this reads as
+   * "not sent yet", and the same alert goes out a second time — so it is read
+   * in full.
+   */
+  const existing = await readAllRows<{ alert_id: string; event_id: string }>((from, to) =>
+    supabase
+      .from("race_alert_deliveries")
+      .select("alert_id, event_id")
+      .in(
+        "alert_id",
+        alerts.map((a) => a.id),
+      )
+      .order("id", { ascending: true })
+      .range(from, to),
+  );
+  const seen = new Set(existing.map((d) => `${d.alert_id}:${d.event_id}`));
 
   const pending: { alert: RaceAlert; match: AlertMatch; email: string | null }[] = [];
   for (const alert of alerts) {

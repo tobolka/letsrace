@@ -1,14 +1,20 @@
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import { SourcesManager } from "@/components/admin/sources-manager";
 
 export default async function SourcesPage() {
   await requireAdminPage();
   const supabase = createServerSupabase();
-  const { data: sources } = await supabase
-    .from("watched_urls")
-    .select("*")
-    .order("created_at", { ascending: false });
+  // 1290 of them, and this page was showing a thousand without saying so.
+  const sources = await readAllRows<Record<string, unknown>>((from, to) =>
+    supabase
+      .from("watched_urls")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to),
+  );
 
   /*
    * What each source is actually worth.
@@ -35,10 +41,10 @@ export default async function SourcesPage() {
     if (page.length < 1000) break;
   }
 
-  const withYield = (sources ?? []).map((s) => ({
+  const withYield = sources.map((s) => ({
     ...s,
     races: yields.get(s.id as string) ?? 0,
-  }));
+  })) as Parameters<typeof SourcesManager>[0]["initialSources"];
 
   return (
     <div className="flex flex-col gap-4">
