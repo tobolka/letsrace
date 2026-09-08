@@ -14,7 +14,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor } from "@/lib/i18n/messages";
-import { cn } from "@/lib/utils";
 
 /**
  * A plan that lives only on this site is a plan nobody sees on a Friday
@@ -24,12 +23,12 @@ import { cn } from "@/lib/utils";
 export function CalendarFeed({
   locale,
   userId,
-  hideTitle,
+  bare,
 }: {
   locale: string;
   userId: string;
-  /** The section heading already says it; a card title under it says it twice. */
-  hideTitle?: boolean;
+  /** Inside a panel that already carries the title, the blurb and the surface. */
+  bare?: boolean;
 }) {
   const t = messagesFor(locale);
   const [token, setToken] = useState<string | null>(null);
@@ -90,19 +89,8 @@ export function CalendarFeed({
   if (!ready) return <Skeleton className="h-40 w-full" />;
   if (!token) return null;
 
-  return (
-    <Card>
-      {hideTitle ? null : (
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <CalendarPlus className="size-4" aria-hidden />
-            {t.feedTitle}
-          </CardTitle>
-          <CardDescription>{t.feedBody}</CardDescription>
-        </CardHeader>
-      )}
-      <CardContent className={cn("flex flex-col gap-3", hideTitle && "pt-6")}>
-        {hideTitle ? <p className="text-sm text-muted-foreground">{t.feedBody}</p> : null}
+  const inner = (
+    <>
         <InputGroup>
           <InputGroupInput readOnly value={url} aria-label={t.feedTitle} onFocus={(e) => e.currentTarget.select()} />
           <InputGroupAddon align="inline-end">
@@ -140,7 +128,21 @@ export function CalendarFeed({
         </div>
 
         <p className="text-xs text-muted-foreground">{t.feedWarn}</p>
-      </CardContent>
+    </>
+  );
+
+  if (bare) return <div className="flex flex-col gap-3">{inner}</div>;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <CalendarPlus className="size-4" aria-hidden />
+          {t.feedTitle}
+        </CardTitle>
+        <CardDescription>{t.feedBody}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">{inner}</CardContent>
     </Card>
   );
 }

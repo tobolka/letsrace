@@ -111,7 +111,7 @@ export function PlanAgenda({
 
   if (members.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed p-8 text-center">
+      <div className="p-8 text-center">
         <p className="text-sm font-medium">{t.planSetupPeople}</p>
         <p className="mt-1 text-sm text-muted-foreground">{t.planSetupPeopleBody}</p>
         <Button asChild size="sm" className="mt-4">
@@ -127,7 +127,7 @@ export function PlanAgenda({
   let lastMonth = "";
 
   return (
-    <div className="flex flex-col gap-3">
+    <div>
       {/*
         `overflow-x: auto` makes this a scroll container in both axes, and a
         sticky heading inside one sticks to the container — which never scrolls
@@ -135,7 +135,7 @@ export function PlanAgenda({
         to need sideways scrolling only on a phone; above that the page is the
         scrollport and the heading sticks under the bar as intended.
       */}
-      <div className="overflow-x-auto rounded-xl border bg-card md:overflow-x-visible">
+      <div className="overflow-x-auto md:overflow-x-visible">
         {/* `border-separate` because a sticky heading does not stick inside a
             collapsed-border table — the borders are drawn by the cells here. */}
         <table className="w-full min-w-[38rem] border-separate border-spacing-0 text-sm">
@@ -285,15 +285,16 @@ export function PlanAgenda({
           </tbody>
         </table>
       </div>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="self-start"
-        onClick={() => setExtraWeeks((w) => w + WEEKS_AT_A_TIME)}
-      >
-        {t.planMoreDays}
-      </Button>
+      <div className="px-4 py-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setExtraWeeks((w) => w + WEEKS_AT_A_TIME)}
+        >
+          {t.planMoreDays}
+        </Button>
+      </div>
     </div>
   );
 }

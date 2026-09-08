@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/account/auth-form";
 import { CalendarFeed } from "@/components/account/calendar-feed";
+import { Panel } from "@/components/account/panel";
 import { MailPrefs } from "@/components/account/mail-prefs";
 import { PlanPrefsFields, notifyPrefsSaved, saveMemberPrefs } from "@/components/account/plan-prefs-card";
 import {
@@ -279,21 +280,17 @@ export function AccountPanel({
 
       {section === "settings" && userId ? (
         <>
-          <Section title={t.alertMailTitle}>
+          <Panel title={t.alertMailTitle}>
             <MailPrefs locale={locale} userId={userId} />
-          </Section>
-          <Section title={t.feedTitle}>
-            <CalendarFeed locale={locale} userId={userId} hideTitle />
-          </Section>
+          </Panel>
+          <Panel title={t.feedTitle} description={t.feedBody}>
+            <CalendarFeed locale={locale} userId={userId} bare />
+          </Panel>
         </>
       ) : null}
 
       {section === "riders" ? (
-        <section className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <h2 className="text-base font-semibold">{t.profilesTitle}</h2>
-            <p className="text-xs text-muted-foreground">{t.profilesHelp}</p>
-          </div>
+        <Panel title={t.profilesTitle} description={t.profilesHelp} bodyClassName="flex flex-col gap-4 p-4">
           {members.length === 0 ? null : (
             <div className="flex flex-col gap-3">
               {members.map((m) => (
@@ -432,17 +429,8 @@ export function AccountPanel({
           </form>
             </CollapsibleContent>
           </Collapsible>
-        </section>
+        </Panel>
       ) : null}
     </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-sm font-semibold text-muted-foreground">{title}</h2>
-      {children}
-    </section>
   );
 }

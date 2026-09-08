@@ -6,11 +6,11 @@ import { format, parseISO } from "date-fns";
 import { Check, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Spinner } from "@/components/ui/spinner";
 import { dateFnsLocale } from "@/lib/i18n/dates";
+import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
 import { eventMapPath } from "@/lib/event-url";
@@ -41,13 +41,8 @@ export function SeriesProgressCard({
   if (items.length === 0) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{t.seriesTitle}</CardTitle>
-        <CardDescription>{t.seriesBody}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ItemGroup>
+    <Panel title={t.seriesTitle} description={t.seriesBody} bodyClassName="p-2">
+      <ItemGroup>
           {items.map((s) => {
             const remaining = s.remaining.length;
             const busy = busyId === s.seriesId;
@@ -121,9 +116,8 @@ export function SeriesProgressCard({
               </Item>
             );
           })}
-        </ItemGroup>
-      </CardContent>
-    </Card>
+      </ItemGroup>
+    </Panel>
   );
 }
 

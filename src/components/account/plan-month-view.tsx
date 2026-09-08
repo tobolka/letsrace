@@ -49,8 +49,8 @@ export function PlanMonthView({
   const headings = weeks[0]!.map((d) => format(parseISO(d.iso), "EEEEEE", { locale: df }));
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
-      <div className="grid grid-cols-7 border-b bg-muted/40">
+    <div>
+      <div className="grid grid-cols-7 border-b bg-muted/50">
         {headings.map((label, i) => (
           <div
             key={label + i}

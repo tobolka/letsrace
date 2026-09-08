@@ -5,12 +5,12 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { BellRing, CalendarPlus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { dateFnsLocale } from "@/lib/i18n/dates";
+import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { asLocale } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
@@ -99,12 +99,8 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
   }, [userId]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{t.alertInbox}</CardTitle>
-        <CardDescription>{t.alertInboxHelp}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Panel title={t.alertInbox} description={t.alertInboxHelp} bodyClassName="p-2">
+      <>
         {hits === null ? (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-12 w-full" />
@@ -173,7 +169,7 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
             })}
           </ItemGroup>
         )}
-      </CardContent>
-    </Card>
+      </>
+    </Panel>
   );
 }

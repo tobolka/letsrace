@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import { CircleCheck } from "lucide-react";
 import { PlanRow } from "@/components/account/plan-row";
 import { dateFnsLocale } from "@/lib/i18n/dates";
+import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import type { PlanAction, PlanActionKind } from "@/lib/plan-actions";
 import type { PlanMemberStatus, PlannerMember } from "@/lib/planner";
@@ -51,27 +52,26 @@ export function PlanTodo({
 
   if (actions.length === 0) {
     return (
-      <section aria-labelledby="plan-todo" className="flex flex-col gap-2">
-        <h2 id="plan-todo" className="text-sm font-semibold">
-          {t.planTodoTitle}
-        </h2>
+      <Panel title={t.planTodoTitle}>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <CircleCheck className="size-4 shrink-0" aria-hidden />
           {t.planTodoEmpty}
         </p>
-      </section>
+      </Panel>
     );
   }
 
   return (
-    <section aria-labelledby="plan-todo" className="flex flex-col gap-2">
-      <h2 id="plan-todo" className="flex items-center gap-2 text-sm font-semibold">
-        {t.planTodoTitle}
-        <span className="rounded-full bg-brand/10 px-1.5 text-xs tabular-nums text-brand">
+    <Panel
+      title={t.planTodoTitle}
+      bodyClassName="p-0"
+      actions={
+        <span className="rounded-full bg-brand/10 px-1.5 py-0.5 text-xs tabular-nums text-brand">
           {actions.length}
         </span>
-      </h2>
-      <div className="divide-y rounded-xl border bg-card">
+      }
+    >
+      <div className="divide-y">
         {actions.map((action) => (
           <PlanRow
             key={action.plan.event.id}
@@ -87,6 +87,6 @@ export function PlanTodo({
           />
         ))}
       </div>
-    </section>
+    </Panel>
   );
 }

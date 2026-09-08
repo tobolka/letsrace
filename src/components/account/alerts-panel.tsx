@@ -7,6 +7,7 @@ import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
 
@@ -70,13 +71,13 @@ export function AlertsPanel({ locale }: { locale: string }) {
           what you are setting on the left, what it has produced beside it. */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
         <div className="flex min-w-0 flex-col gap-6">
-          <Section title={t.alertPlacesTitle}>
+          <Panel title={t.alertPlacesTitle} bodyClassName="p-4">
             <AlertSettings
               locale={locale}
               userId={userId}
               preferredDisciplines={preferredDisciplines}
             />
-          </Section>
+          </Panel>
         </div>
         <aside className="min-w-0 lg:sticky lg:top-20">
           <AlertInbox locale={locale} userId={userId} />
@@ -86,11 +87,3 @@ export function AlertsPanel({ locale }: { locale: string }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-sm font-semibold text-muted-foreground">{title}</h2>
-      {children}
-    </section>
-  );
-}

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { CalendarPlus, MapPin, Repeat, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { eventMapPath } from "@/lib/event-url";
@@ -107,12 +107,8 @@ export function FreeWeekendSuggestions({
   if (!hasHome) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{title ?? t.suggestTitle}</CardTitle>
-        <CardDescription>{t.suggestBody}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Panel title={title ?? t.suggestTitle} description={t.suggestBody} bodyClassName="p-2">
+      <>
         {items === null ? (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-12 w-full" />
@@ -181,7 +177,7 @@ export function FreeWeekendSuggestions({
             })}
           </ItemGroup>
         )}
-      </CardContent>
-    </Card>
+      </>
+    </Panel>
   );
 }
