@@ -13,6 +13,25 @@ function serializeJsonLd(data: Record<string, unknown>): string {
     .replace(/\u2029/g, "\\u2029");
 }
 
+/**
+ * What the race's status means to a search engine.
+ *
+ * This was the string "EventScheduled", written on every race page whatever
+ * the row said — so the fifteen cancelled races in the catalogue were
+ * published to Google as going ahead, and a postponed one as keeping its
+ * original date. That is the one field in this block a reader might act on.
+ */
+function schemaEventStatus(status: string | null | undefined): string {
+  switch (status) {
+    case "cancelled":
+      return "https://schema.org/EventCancelled";
+    case "postponed":
+      return "https://schema.org/EventPostponed";
+    default:
+      return "https://schema.org/EventScheduled";
+  }
+}
+
 export function EventJsonLd({
   event,
   locale,
@@ -36,7 +55,7 @@ export function EventJsonLd({
     name: event.name,
     url: pageUrl,
     startDate: event.startDate,
-    eventStatus: "https://schema.org/EventScheduled",
+    eventStatus: schemaEventStatus(event.status),
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   };
 

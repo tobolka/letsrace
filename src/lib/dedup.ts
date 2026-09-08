@@ -574,6 +574,13 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
     return { score: 0, reasons: ["format_conflict"] };
   }
 
+  // Round 9 and round 10 of one cup are two races, however alike they read.
+  const roundA = roundNumber(a.name);
+  const roundB = roundNumber(b.name);
+  if (!sameUrl && roundA !== null && roundB !== null && roundA !== roundB) {
+    return { score: 0, reasons: ["round_conflict"] };
+  }
+
   // Women's race vs open/men's race the same day (UMAG/Poreč Classic)
   if (!sameUrl && genderConflict(a.name, b.name)) {
     return { score: 0, reasons: ["gender_conflict"] };
@@ -662,6 +669,17 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
       }
       reasons.push("name_sim_low");
     }
+  }
+
+  /*
+   * The same round number, at one venue, on the same weekend. One calendar
+   * calls it "10. závod allwyn Českého poháru" across two days, another
+   * "Allwyn BMX Czech Cup - Round 10" on the Sunday; nothing in the words they
+   * share is enough on its own, and the digit they share is the whole answer.
+   */
+  if (near && datesOk && roundA !== null && roundA === roundB) {
+    score += 14;
+    reasons.push("same_round");
   }
 
   // Weak title ("UCI C1") absorbed into richer title at same place/weekend
@@ -787,6 +805,39 @@ export function spanDays(span: DateSpan, maxDays = 12): string[] {
     out.push(new Date(d * 86_400_000).toISOString().slice(0, 10));
   }
   return out;
+}
+
+/**
+ * Which round of a cup a name says it is.
+ *
+ * A season's rounds share everything a duplicate shares — the cup's name, the
+ * venue, often the same weekend, because a cup runs Saturday and Sunday at one
+ * track. "Allwyn BMX Czech Cup - Round 9" and "Round 10" are the same words
+ * apart from a digit, and the canonical form drops leading numbers, so they
+ * scored as one race at 54 against a threshold of 50. They are two races, a
+ * day apart, and one of them was going to be eaten.
+ *
+ * Only a number that says which round it is counts. "29. Internationales MTB
+ * XCO" is an edition, "3x Kolem Kalicha" is a route; both are left alone
+ * because neither is followed by a word meaning round.
+ */
+const ROUND_PATTERNS = [
+  /\b(\d{1,2})\s*[.°]?\s*(kolo|zavod|závod|prova|runda|round|rd)\b/i,
+  /\b(?:round|kolo|runda|prova|rd|leg|round)\s*#?\s*(\d{1,2})\b/i,
+  /#\s*(\d{1,2})\b/,
+];
+
+export function roundNumber(name: string): number | null {
+  const text = fold(name).replace(/\s+/g, " ");
+  for (const re of ROUND_PATTERNS) {
+    const m = text.match(re);
+    if (!m) continue;
+    const digits = m.slice(1).find((g) => g && /^\d+$/.test(g));
+    if (!digits) continue;
+    const n = Number(digits);
+    if (n >= 1 && n <= 40) return n;
+  }
+  return null;
 }
 
 /**

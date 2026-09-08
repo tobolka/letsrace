@@ -395,7 +395,18 @@ export async function mergePublicDuplicates(opts?: {
       // from collapsing into one.
       dateSpansOverlap(a, b);
 
+    /*
+     * Two listings that name the same round of a cup, at one venue, on days
+     * that overlap. The titles need not look alike — "10. závod allwyn
+     * Českého poháru" across the weekend and "Allwyn BMX Czech Cup - Round 10"
+     * on the Sunday share almost no words and one digit, and the digit is the
+     * answer. Spans must overlap, so round 3 of two different cups on the
+     * Saturday and the Sunday stay apart.
+     */
+    const sameRoundHere = reasons.includes("same_round") && dateSpansOverlap(a, b);
+
     const nameOk =
+      sameRoundHere ||
       reasons.includes("same_canonical_name") ||
       reasons.includes("name_sim_high") ||
       (reasons.includes("name_substring") && reasons.includes("name_sim_mid")) ||
@@ -408,7 +419,8 @@ export async function mergePublicDuplicates(opts?: {
       !reasons.includes("same_day") &&
       !reasons.includes("same_canonical_name") &&
       !reasons.includes("name_sim_high") &&
-      !sameSeriesRound
+      !sameSeriesRound &&
+      !sameRoundHere
     ) {
       return;
     }

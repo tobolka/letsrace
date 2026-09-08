@@ -7,6 +7,7 @@ import {
   normalizeUrlForDedup,
   pickBestDuplicate,
   raceFormats,
+  roundNumber,
   scoreDuplicate,
   spanDays,
   urlsOverlap,
@@ -242,5 +243,57 @@ describe("a province is not a venue", () => {
     expect(isGarbagePlace("Ligist")).toBe(false);
     expect(isGarbagePlace("Klagenfurt")).toBe(false);
     expect(isGarbagePlace("Wiener Neustadt")).toBe(false);
+  });
+});
+
+/**
+ * A cup runs Saturday and Sunday at one track, so its rounds share the venue,
+ * the weekend and every word of the name but a digit — and the canonical form
+ * drops leading numbers. "Allwyn BMX Czech Cup - Round 9" and "Round 10"
+ * scored 54 against a threshold of 50, and one of them was going to be eaten.
+ */
+describe("rounds of one cup", () => {
+  const at = (name: string, startDate: string, endDate?: string) => ({
+    id: name,
+    name,
+    startDate,
+    endDate: endDate ?? null,
+    placeText: "Brno",
+    lat: 49.1848255,
+    lng: 16.5784899,
+    seriesName: null,
+    disciplines: ["bmx"],
+  });
+
+  it("reads the round a name says it is, and nothing else", () => {
+    expect(roundNumber("Allwyn BMX Czech Cup - Round 9")).toBe(9);
+    expect(roundNumber("6. kolo Slovenský pohár BMX Racing")).toBe(6);
+    expect(roundNumber("10. závod allwyn Českého poháru")).toBe(10);
+    expect(roundNumber("4° PROVA TROFEO TRIVENETO BMX 2026")).toBe(4);
+    // An edition, a route and a cup's own number are not rounds.
+    expect(roundNumber('29. Internationales MTB XCO "Rund um den Roadlberg"')).toBeNull();
+    expect(roundNumber("3x Kolem Kalicha")).toBeNull();
+    expect(roundNumber("13. Achensee Kids Race")).toBeNull();
+    expect(roundNumber("10. Pohár KV kraje HK: PARKBIKE")).toBeNull();
+  });
+
+  it("refuses to make two rounds one race", () => {
+    const nine = at("Allwyn BMX Czech Cup - Round 9", "2026-09-12");
+    const ten = at("Allwyn BMX Czech Cup - Round 10", "2026-09-13");
+    expect(scoreDuplicate(nine, ten)).toEqual({ score: 0, reasons: ["round_conflict"] });
+
+    const six = at("6. kolo Slovenský pohár BMX Racing - Favorit Brno", "2026-09-12");
+    const seven = at("7. kolo Slovenský pohár BMX Racing - Favorit Brno", "2026-09-13");
+    expect(scoreDuplicate(six, seven).reasons).toEqual(["round_conflict"]);
+  });
+
+  it("makes one race of the same round told twice", () => {
+    // One calendar spans the weekend, the other names the Sunday; the digit
+    // they share is the whole answer.
+    const czech = at("10. závod allwyn Českého poháru", "2026-09-12", "2026-09-13");
+    const english = at("Allwyn BMX Czech Cup - Round 10", "2026-09-13");
+    const { score, reasons } = scoreDuplicate(czech, english);
+    expect(reasons).toContain("same_round");
+    expect(score).toBeGreaterThanOrEqual(DEDUP_THRESHOLD);
   });
 });
