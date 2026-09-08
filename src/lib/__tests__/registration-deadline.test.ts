@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseRegistrationWindow, firstDateIn } from "@/lib/watcher/registration-deadline";
+import { parseRegistrationWindow, firstDateIn, registrationWindowPayload } from "@/lib/watcher/registration-deadline";
 
 /**
  * `events.registration_closes_at` was empty for every upcoming race, so the
@@ -75,5 +75,46 @@ describe("visible text", () => {
     const text = visibleText(html);
     expect(text).not.toContain("entries close");
     expect(text).toContain("Start 20.9.2026");
+  });
+});
+
+describe("registrationWindowPayload", () => {
+  it("drops a stored deadline that a freshly read opening date contradicts", () => {
+    // GIOVANISSIMI "PRIMI SPRINT": a pass stored 17 May as the deadline, a
+    // later pass read 1 September as the opening, and the row then said entries
+    // open three months after they close.
+    const payload = registrationWindowPayload(
+      { registrationOpensAt: "2026-09-01" },
+      { registration_closes_at: "2026-05-17T00:00:00+00:00" },
+    );
+    expect(payload).toEqual({
+      registration_opens_at: "2026-09-01",
+      registration_closes_at: null,
+    });
+  });
+
+  it("drops a stored opening date that a freshly read deadline contradicts", () => {
+    const payload = registrationWindowPayload(
+      { registrationClosesAt: "2026-05-17" },
+      { registration_opens_at: "2026-09-01T00:00:00+00:00" },
+    );
+    expect(payload).toEqual({
+      registration_closes_at: "2026-05-17",
+      registration_opens_at: null,
+    });
+  });
+
+  it("leaves a consistent window alone", () => {
+    expect(
+      registrationWindowPayload(
+        { registrationOpensAt: "2026-06-01" },
+        { registration_closes_at: "2026-09-01T00:00:00+00:00" },
+      ),
+    ).toEqual({ registration_opens_at: "2026-06-01" });
+  });
+
+  it("writes nothing when the source says nothing", () => {
+    expect(registrationWindowPayload({}, { registration_closes_at: "2026-09-01" })).toEqual({});
+    expect(registrationWindowPayload({}, null)).toEqual({});
   });
 });

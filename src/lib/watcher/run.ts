@@ -1471,12 +1471,19 @@ async function upsertParsedEvent(
     lat: ev.lat,
     lng: ev.lng,
     placeText: ev.placeText,
+    countryCode: (ev.countryHint || "").trim().toUpperCase() || null,
     seriesName: ev.seriesName,
     fingerprint: fp,
     urls: incomingUrls,
   };
 
-  type LocRow = { lat?: number; lng?: number; name?: string; municipality?: string } | null;
+  type LocRow = {
+    lat?: number;
+    lng?: number;
+    name?: string;
+    municipality?: string;
+    country_code?: string | null;
+  } | null;
   type CandidateRow = {
     id: string;
     name: string;
@@ -1501,6 +1508,7 @@ async function upsertParsedEvent(
         lat: loc?.lat,
         lng: loc?.lng,
         placeText: loc?.municipality || loc?.name,
+        countryCode: loc?.country_code ?? null,
         seriesName: series?.name,
         fingerprint: row.fingerprint ?? undefined,
         urls: [
@@ -1517,7 +1525,7 @@ async function upsertParsedEvent(
   // "nogps" variant, which only count once the scorer confirms them.
   let existingId: string | undefined;
   const fpCols =
-    "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality), overrides:event_overrides(locked_fields)";
+    "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
   const { data: fpRows } = await supabase
     .from("events")
     .select(fpCols)
@@ -1539,7 +1547,7 @@ async function upsertParsedEvent(
   // 1b) same specific website / race-detail URL (strong signal)
   if (!existingId) {
     const urlCols =
-      "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality)";
+      "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code)";
     const exactUrls = [incomingWebsite, incomingRegistration].filter(
       (u): u is string => Boolean(u && normalizeUrlForDedup(u)),
     );
@@ -1568,7 +1576,7 @@ async function upsertParsedEvent(
       const { data: bySrc } = await supabase
         .from("event_sources")
         .select(
-          "event_id, source_url, event:events(id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality))",
+          "event_id, source_url, event:events(id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code))",
         )
         .eq("source_url", ev.sourceUrl)
         .limit(5);
@@ -1596,7 +1604,7 @@ async function upsertParsedEvent(
     const spanEnd = (ev.endDate ?? ev.startDate).slice(0, 10);
 
     const eventCols =
-      "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series(name), location:locations(lat, lng, name, municipality), sources:event_sources(source_url)";
+      "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series(name), location:locations(lat, lng, name, municipality, country_code), sources:event_sources(source_url)";
 
     const { data: nearbyDays } = await supabase
       .from("events")
@@ -1656,7 +1664,7 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, status, visibility, website_url, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, status, visibility, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -1815,6 +1823,8 @@ async function upsertParsedEvent(
     status?: string | null;
     visibility?: string | null;
     website_url?: string | null;
+    registration_opens_at?: string | null;
+    registration_closes_at?: string | null;
   } | null;
 
   const { isCancelledRaceName, shouldTreatAsReschedule } = await import(
@@ -1842,7 +1852,9 @@ async function upsertParsedEvent(
   const website = preferDeeperOfficialUrl(incomingWebsite, existingRow?.website_url ?? null);
   const registration = incomingRegistration;
 
-  let mergedName = ev.name;
+  // A title carrying a double space or a stray newline is the same title with
+  // worse typography, and it reaches the map, the page heading and Google.
+  let mergedName = ev.name.replace(/\s+/g, " ").trim();
   let mergedStart = ev.startDate;
   let mergedEnd = ev.endDate ?? ev.startDate;
   let mergedLevel: { level: string; uciClass: string | null; classLabel: string | null } = {
@@ -1863,7 +1875,9 @@ async function upsertParsedEvent(
       mergedStart = span.startDate;
       mergedEnd = span.endDate;
     }
-    mergedName = preferEventName(existingRow.name || ev.name, ev.name, ev.placeText);
+    mergedName = preferEventName(existingRow.name || mergedName, mergedName, ev.placeText)
+      .replace(/\s+/g, " ")
+      .trim();
     mergedLevel = preferLevel(
       {
         level: existingRow.level,
@@ -1925,8 +1939,10 @@ async function upsertParsedEvent(
       lat: resolvedLat,
       lng: resolvedLng,
     }),
-    ...(ev.registrationOpensAt ? { registration_opens_at: ev.registrationOpensAt } : {}),
-    ...(ev.registrationClosesAt ? { registration_closes_at: ev.registrationClosesAt } : {}),
+    ...(await import("@/lib/watcher/registration-deadline")).registrationWindowPayload(
+      ev,
+      existingRow,
+    ),
     source_kind: "scraped",
     level: mergedLevel.level,
     class_label: mergedLevel.classLabel ?? null,

@@ -174,3 +174,39 @@ export function parseRegistrationWindow(
   if (opensAt && closesAt && opensAt > closesAt) return { opensAt: null, closesAt };
   return { opensAt, closesAt };
 }
+
+/**
+ * The entry window as a whole, not two independent columns.
+ *
+ * `parseRegistrationWindow` refuses an inverted pair, but only within one read
+ * of one page. A row is written over many polls: a pass that finds only an
+ * opening date lands it on top of a closing date some earlier pass stored, and
+ * three Italian races ended up advertising entries that open a month after
+ * they shut. Judge the pair against what is already stored, and let the fresh
+ * half win — the stale half is the one that has just been contradicted.
+ */
+export function registrationWindowPayload(
+  incoming: { registrationOpensAt?: string | null; registrationClosesAt?: string | null },
+  existing: { registration_opens_at?: string | null; registration_closes_at?: string | null } | null,
+): Record<string, string | null> {
+  const day = (v: string | null | undefined) => (v ? v.slice(0, 10) : null);
+  const freshOpens = day(incoming.registrationOpensAt);
+  const freshCloses = day(incoming.registrationClosesAt);
+  const storedOpens = day(existing?.registration_opens_at);
+  const storedCloses = day(existing?.registration_closes_at);
+
+  const payload: Record<string, string | null> = {};
+  if (freshOpens) payload.registration_opens_at = incoming.registrationOpensAt!;
+  if (freshCloses) payload.registration_closes_at = incoming.registrationClosesAt!;
+
+  const opens = freshOpens ?? storedOpens;
+  const closes = freshCloses ?? storedCloses;
+  if (!opens || !closes || opens <= closes) return payload;
+
+  // Contradiction: drop whichever half was not just read off the page. When
+  // both arrived together the parser already checked them, so prefer to keep
+  // the deadline — it is the date a rider acts on.
+  if (freshOpens && !freshCloses) payload.registration_closes_at = null;
+  else payload.registration_opens_at = null;
+  return payload;
+}

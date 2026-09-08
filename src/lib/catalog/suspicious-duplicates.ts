@@ -101,6 +101,7 @@ function asDedup(row: Row) {
     lat: loc?.lat,
     lng: loc?.lng,
     placeText: loc?.municipality || loc?.name,
+    countryCode: loc?.country_code ?? null,
     seriesName: row.series?.name,
     fingerprint: row.fingerprint ?? undefined,
     urls: [row.website_url, row.registration_url],

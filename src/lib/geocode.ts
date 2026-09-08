@@ -1,4 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import { simplifyPlaceQuery } from "@/lib/geo/simplify-place";
 import {
   boundsFromRadiusKm,
@@ -1763,19 +1764,28 @@ export type GeocodeBatchResult = {
 /** Instant pass: fill all pending locations that match the built-in town list. */
 export async function geocodePendingFromGazetteer(): Promise<GeocodeBatchResult> {
   const supabase = createServerSupabase();
-  const { data: rows, error } = await supabase
-    .from("locations")
-    .select("id, name, municipality, country_code, geocode_query")
-    .is("lat", null)
-    .limit(2000);
-  if (error) throw new Error(error.message);
+  // `.limit(2000)` reads a thousand rows and says nothing about the rest.
+  const rows = await readAllRows<{
+    id: string;
+    name: string | null;
+    municipality: string | null;
+    country_code: string | null;
+    geocode_query: string | null;
+  }>((from, to) =>
+    supabase
+      .from("locations")
+      .select("id, name, municipality, country_code, geocode_query")
+      .is("lat", null)
+      .order("id", { ascending: true })
+      .range(from, to),
+  );
 
   const result: GeocodeBatchResult = { attempted: 0, updated: 0, failed: 0, skipped: 0 };
   const byQuery = new Map<string, { geo: GeocodeResult; ids: string[] }>();
 
   const { shouldIngestByCountry } = await import("@/lib/geo/europe");
 
-  for (const row of rows ?? []) {
+  for (const row of rows) {
     result.attempted += 1;
     if (!shouldIngestByCountry(row.country_code)) {
       await supabase
@@ -1889,7 +1899,10 @@ export async function geocodePendingLocations(
         "id, name, municipality, country_code, geocode_query, geocode_status, events!inner(id, visibility, start_date)",
       )
       .is("lat", null)
-      .in("geocode_status", ["pending", "failed"])
+      // A row can carry `geocode_status = "ok"` and still have no coordinates —
+      // a later cleanup nulls the point without touching the status. Trust the
+      // missing coordinate, not the label, or such a row is never retried.
+      .or("geocode_status.is.null,geocode_status.neq.skipped")
       .eq("events.visibility", "public")
       .gte("events.start_date", since)
       .limit(limit);

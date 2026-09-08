@@ -346,6 +346,34 @@ describe("golden races — dedup", () => {
     expect(scoreDuplicate(badCoords, tbc).score).toBeGreaterThanOrEqual(50);
   });
 
+  it("a Scottish enduro round is not a Czech one that shares a weekend", () => {
+    // "Army Cycling Enduro Series – R4" is listed with no venue at all, only
+    // "United Kingdom". A garbage place is allowed to stand in for a shared
+    // venue, and that let this race — and four more — into the Czech Enduro
+    // Series, where they showed on the series page and in Czech filters.
+    const czech = {
+      startDate: "2026-10-03",
+      name: "Enduro Race Kraličák",
+      lat: 50.1705,
+      lng: 16.8963,
+      placeText: "Kraličák",
+      countryCode: "CZ",
+      seriesName: "Czech Enduro Series",
+      urls: ["https://www.enduroserie.cz/zavody/enduro-race-kralicak/"],
+    };
+    const british = {
+      startDate: "2026-10-04",
+      name: "Army Cycling Enduro Series – R4",
+      lat: 54.7024,
+      lng: -3.2766,
+      placeText: "United Kingdom",
+      countryCode: "GB",
+      urls: ["https://www.sientries.co.uk/event/army-cycling-enduro-series-r4-2026"],
+    };
+    expect(scoreDuplicate(czech, british).score).toBeLessThan(50);
+    expect(scoreDuplicate(british, czech).score).toBeLessThan(50);
+  });
+
   it("Kolo pro život Znojmo multi-day listing merges with Sunday mirror", () => {
     const { score, reasons } = scoreDuplicate(
       {

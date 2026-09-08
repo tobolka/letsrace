@@ -20,7 +20,13 @@ export type MergeDuplicateRow = {
   series_id: string | null;
   fingerprint: string | null;
   disciplines?: string[] | null;
-  location: { lat?: number; lng?: number; name?: string; municipality?: string } | null;
+  location: {
+    lat?: number;
+    lng?: number;
+    name?: string;
+    municipality?: string;
+    country_code?: string | null;
+  } | null;
   series: { name?: string } | null;
   sources?: { id: string; watched_url_id: string | null; external_id: string | null }[] | null;
 };
@@ -34,6 +40,7 @@ function asDedup(row: MergeDuplicateRow): DedupEvent {
     lat: loc?.lat,
     lng: loc?.lng,
     placeText: loc?.municipality || loc?.name,
+    countryCode: loc?.country_code ?? null,
     seriesName: row.series?.name,
     fingerprint: row.fingerprint ?? undefined,
     urls: [row.website_url, row.registration_url],
@@ -306,7 +313,7 @@ export async function mergePublicDuplicates(opts?: {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality), series:series(name)",
+        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series(name)",
       )
       .eq("visibility", "public")
       .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
@@ -325,7 +332,7 @@ export async function mergePublicDuplicates(opts?: {
   const { data: ongoing } = await supabase
     .from("events")
     .select(
-      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality), series:series(name)",
+      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series(name)",
     )
     .eq("visibility", "public")
     .in("status", ["scheduled", "tbc", "postponed", "registration_open"])

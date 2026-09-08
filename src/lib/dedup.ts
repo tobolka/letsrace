@@ -514,8 +514,23 @@ export function placesNearby(
   return ta.some((w) => pb.includes(w)) || tb.some((w) => pa.includes(w));
 }
 
+/**
+ * Two-letter country of the venue, when the caller knows it. A country is the
+ * one part of a place that survives a garbage place name: "United Kingdom" is
+ * useless as a venue and conclusive as a country.
+ */
+function countriesConflict(
+  a: { countryCode?: string | null },
+  b: { countryCode?: string | null },
+): boolean {
+  const x = (a.countryCode ?? "").trim().toUpperCase();
+  const y = (b.countryCode ?? "").trim().toUpperCase();
+  return x.length === 2 && y.length === 2 && x !== y;
+}
+
 export type DedupEvent = {
   startDate: string;
+  countryCode?: string | null;
   endDate?: string | null;
   name: string;
   lat?: number | null;
@@ -591,8 +606,15 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
     return { score: 0, reasons: ["series_conflict"] };
   }
 
+  // A race listed only as "United Kingdom" or "Steiermark" says nothing about
+  // where it is, so a shared weekend and a shared name are allowed to stand in
+  // for a shared venue — a country centroid and the town it contains are the
+  // same race described twice. Across a border they are not: this override put
+  // "Scottish Enduro Series Round 4" at Fort William into the Czech Enduro
+  // Series, on the strength of one word of the title and a shared weekend.
   if (
     !near &&
+    !countriesConflict(a, b) &&
     datesOk &&
     (isGarbagePlace(a.placeText) || isGarbagePlace(b.placeText)) &&
     (sharedAlias || sim >= 0.55 || weakA || weakB)
