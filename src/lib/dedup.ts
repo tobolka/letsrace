@@ -744,30 +744,43 @@ export function spanDays(span: DateSpan, maxDays = 12): string[] {
   return out;
 }
 
-/** Conflicting race-format tokens → not the same event even at one venue. */
-const FORMAT_TOKENS = [
-  "biatlon",
-  "xco",
-  "xcm",
-  "xcc",
-  "dh",
-  "downhill",
-  "enduro",
-  "gravel",
-  "cyclo",
-  "casovka",
-  "časovka",
-  "eliminator",
-  "eliminátor",
-  "short track",
-  "maraton",
-] as const;
+/**
+ * Conflicting race formats → not the same event even at one venue.
+ *
+ * Two things were wrong with this list. It held `dh` and `downhill` as separate
+ * formats, so a national championship called "DHI" and the venue's own
+ * "Todtnau Downhill" — same day, same coordinates — were read as a conflict and
+ * the pair was thrown out before it could even be put to a person. And it
+ * matched by substring, so `dh` was a format token inside Sandhausen and
+ * Nordhausen, and `cyclo` inside "cycling".
+ *
+ * A format is a group of names for one thing, matched as whole words.
+ */
+const FORMAT_ALIASES: { format: string; re: RegExp }[] = [
+  { format: "dh", re: /\b(dh|dhi|downhill|sjezd)\b/ },
+  { format: "xcm", re: /\b(xcm|maraton\w*|marathon)\b/ },
+  { format: "xco", re: /\b(xco|xcr)\b/ },
+  { format: "xcc", re: /\b(xcc|short\s?track)\b/ },
+  { format: "xce", re: /\b(xce|eliminator|eliminatorem)\b/ },
+  { format: "enduro", re: /\benduro\b/ },
+  { format: "gravel", re: /\bgravel\b/ },
+  { format: "cx", re: /\b(cx|cyclocross|cyclo-?cross|cyklokros|ciclocross|veldrit)\b/ },
+  { format: "tt", re: /\b(casovka|casovce|time\s?trial|zeitfahren|cronometro)\b/ },
+  { format: "biathlon", re: /\bbiatlon\b/ },
+];
+
+/** Every format a title names, as whole words, with synonyms collapsed. */
+export function raceFormats(name: string): string[] {
+  const text = fold(name)
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return FORMAT_ALIASES.filter((f) => f.re.test(text)).map((f) => f.format);
+}
 
 export function formatConflict(aName: string, bName: string): boolean {
-  const fa = fold(aName);
-  const fb = fold(bName);
-  const ta = FORMAT_TOKENS.filter((t) => fa.includes(fold(t)));
-  const tb = FORMAT_TOKENS.filter((t) => fb.includes(fold(t)));
+  const ta = raceFormats(aName);
+  const tb = raceFormats(bName);
   if (!ta.length || !tb.length) return false;
   return !ta.some((t) => tb.includes(t));
 }

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   DEDUP_THRESHOLD,
+  formatConflict,
   normalizeUrlForDedup,
   pickBestDuplicate,
+  raceFormats,
   scoreDuplicate,
   spanDays,
   urlsOverlap,
@@ -143,5 +145,36 @@ describe("pickBestDuplicate", () => {
         },
       ]),
     ).toBeNull();
+  });
+});
+
+/**
+ * "German National Championships - DHI" and "Todtnau Downhill" are the same
+ * race on the same day at the same coordinates. They never reached the review
+ * queue: `dh` and `downhill` were separate formats, so the pair was thrown out
+ * as a format conflict before anything else was looked at.
+ */
+describe("raceFormats", () => {
+  it("reads the names of one format as one format", () => {
+    expect(raceFormats("German National Championships - DHI")).toEqual(["dh"]);
+    expect(raceFormats("Todtnau Downhill")).toEqual(["dh"]);
+    expect(formatConflict("German National Championships - DHI", "Todtnau Downhill")).toBe(false);
+  });
+
+  it("still separates formats that really differ", () => {
+    expect(formatConflict("Todtnau Downhill", "Todtnau XCO")).toBe(true);
+    expect(formatConflict("Bike maraton Drásal", "Cyklokros Kolín")).toBe(true);
+  });
+
+  it("does not find a format inside a town", () => {
+    // "Sandhausen" and "Nordhausen" both contain "dh".
+    expect(raceFormats("Rund um Sandhausen")).toEqual([]);
+    expect(formatConflict("Rund um Sandhausen", "Nordhausen Kriterium")).toBe(false);
+    // "cyclo" used to match the middle of "cycling".
+    expect(raceFormats("Gran Fondo Cycling Tour")).toEqual([]);
+  });
+
+  it("says nothing when a title names no format", () => {
+    expect(formatConflict("Grand Prix Brno", "Velká cena Brna")).toBe(false);
   });
 });
