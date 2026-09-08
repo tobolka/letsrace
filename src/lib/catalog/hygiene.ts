@@ -2,6 +2,7 @@ import { fillEmptyAgeCategories } from "@/lib/catalog/ages";
 import { mergePublicDuplicates } from "@/lib/catalog/merge-duplicates";
 import { fillFciAgeCategories } from "@/lib/catalog/fci-ages";
 import { fillRaceResultAgeCategories } from "@/lib/catalog/raceresult-ages";
+import { mergeDuplicateLocations, type MergeLocationsResult } from "@/lib/catalog/merge-locations";
 
 export type CatalogHygieneResult = {
   ages: { eventsFilled: number; seriesFilled: number; stillUnknown: number };
@@ -15,11 +16,13 @@ export type CatalogHygieneResult = {
     dry: boolean;
     preview: { date: string; keep: string; drop: string; reasons: string[] }[];
   };
+  locations: MergeLocationsResult;
 };
 
 export async function runCatalogHygiene(opts?: {
   maxAgeFills?: number;
   maxMerges?: number;
+  maxLocationMerges?: number;
 }): Promise<CatalogHygieneResult> {
   const ages = await fillEmptyAgeCategories({
     maxEvents: opts?.maxAgeFills ?? 400,
@@ -34,5 +37,8 @@ export async function runCatalogHygiene(opts?: {
     fromDate: new Date().toISOString().slice(0, 10),
     maxMerges: opts?.maxMerges ?? 40,
   });
-  return { ages, fciAges, timingAges, duplicates };
+  // New spellings of one town arrive with every poll, and so does the odd
+  // calendar that gives a country where a venue belongs.
+  const locations = await mergeDuplicateLocations({ max: opts?.maxLocationMerges ?? 200 });
+  return { ages, fciAges, timingAges, duplicates, locations };
 }
