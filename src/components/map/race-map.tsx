@@ -585,6 +585,17 @@ function fitRadius(
   map.easeTo({ center: [lng, lat], zoom, padding, duration });
 }
 
+/** Equal to within a metre or so, which is closer than any pin can tell. */
+function boxesEqual(a: MapBounds, b: MapBounds): boolean {
+  const e = 1e-5;
+  return (
+    Math.abs(a.west - b.west) < e &&
+    Math.abs(a.east - b.east) < e &&
+    Math.abs(a.south - b.south) < e &&
+    Math.abs(a.north - b.north) < e
+  );
+}
+
 function visibleBounds(map: MapLibreMap, padding: PaddingOptions): MapBounds {
   const canvas = map.getCanvas();
   const width = canvas.clientWidth || canvas.width;
@@ -650,6 +661,11 @@ export function RaceMap({
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onUserLocationRef = useRef(onUserLocation);
   const paddingRef = useRef(padding);
+  const lastEmitRef = useRef<{
+    reason: BoundsChangeReason;
+    visible: MapBounds;
+    camera: MapBounds;
+  } | null>(null);
   const initialFocusRef = useRef(initialFocus);
   const skipInitialLocateRef = useRef(skipInitialLocate);
   const fallbackCenterRef = useRef(fallbackCenter);
@@ -683,14 +699,34 @@ export function RaceMap({
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
+  /**
+   * The same box, reported again, is not news.
+   *
+   * A settle fires for a resize, for the sheet changing the padding, and for
+   * every programmatic ease, and each report set two pieces of state on the
+   * shell — so one tap on a race re-rendered the page four times over with a
+   * box that had not moved. Reporting only what changed is most of that gone.
+   */
   function emitBounds(map: MapLibreMap, reason: BoundsChangeReason = "sync") {
     const b = map.getBounds();
-    onBoundsChangeRef.current(visibleBounds(map, paddingRef.current), reason, {
+    const visible = visibleBounds(map, paddingRef.current);
+    const camera = {
       west: b.getWest(),
       south: b.getSouth(),
       east: b.getEast(),
       north: b.getNorth(),
-    });
+    };
+    const same = lastEmitRef.current;
+    if (
+      same &&
+      same.reason === reason &&
+      boxesEqual(same.visible, visible) &&
+      boxesEqual(same.camera, camera)
+    ) {
+      return;
+    }
+    lastEmitRef.current = { reason, visible, camera };
+    onBoundsChangeRef.current(visible, reason, camera);
   }
 
   function emitBoundsWhenIdle(map: MapLibreMap, reason: BoundsChangeReason) {
