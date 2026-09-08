@@ -79,6 +79,13 @@ export type EventFilters = {
 
 const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
 
+/** `YYYY-MM-DD`, and a real day — the only date shape this catalogue stores. */
+export function isIsoDay(value: string | null | undefined): value is string {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const t = Date.parse(`${value}T00:00:00Z`);
+  return Number.isFinite(t) && new Date(t).toISOString().slice(0, 10) === value;
+}
+
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
   const supabase = createServerSupabase();
   const { expandDisciplineFilter, matchesDisciplineFilter } = await import("@/lib/taxonomy");
@@ -123,8 +130,13 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
       .not("location.lng", "is", null);
   }
 
-  if (filters.dateFrom) query = query.gte("start_date", filters.dateFrom);
-  if (filters.dateTo) query = query.lte("start_date", filters.dateTo);
+  // A date PostgREST cannot parse is an error from the database, which reaches
+  // the caller as a 500 — `?dateFrom=notadate` took the whole list down. A
+  // filter nobody can read is no filter.
+  const dateFrom = isIsoDay(filters.dateFrom) ? filters.dateFrom : undefined;
+  const dateTo = isIsoDay(filters.dateTo) ? filters.dateTo : undefined;
+  if (dateFrom) query = query.gte("start_date", dateFrom);
+  if (dateTo) query = query.lte("start_date", dateTo);
   if (filters.audience?.length === 1) {
     query = query.eq("audience", filters.audience[0]);
   } else if (filters.audience && filters.audience.length > 1) {
@@ -317,8 +329,8 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
       .eq("visibility", PUBLIC_VISIBILITY)
       .in("status", [...PUBLIC_EVENT_STATUSES]);
 
-    if (filters.dateFrom) query = query.gte("start_date", filters.dateFrom);
-    if (filters.dateTo) query = query.lte("start_date", filters.dateTo);
+    if (isIsoDay(filters.dateFrom)) query = query.gte("start_date", filters.dateFrom);
+    if (isIsoDay(filters.dateTo)) query = query.lte("start_date", filters.dateTo);
     if (filters.disciplines?.length) {
       query = query.overlaps("disciplines", expandDisciplineFilter(filters.disciplines));
     }

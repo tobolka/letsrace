@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isHomeMapCountry, isNonRaceEventName, isPublicMapWorthy, PUBLIC_EVENT_STATUSES, shouldHideFromMap, shouldSkipUnlinkedDumpInsert } from "@/lib/event-visibility";
+import { isIsoDay } from "@/lib/events";
 
 describe("public map quality gate", () => {
   it("keeps home-country races without an enter link", () => {
@@ -149,5 +150,30 @@ describe("non-race listings", () => {
     expect(isNonRaceEventName("Přestavlcký Vlk MTB 2026")).toBe(false);
     expect(isNonRaceEventName("Campionato Italiano XCO")).toBe(false);
     expect(shouldHideFromMap("Van Gillern Cup 2026", "scheduled", "public")).toBe(false);
+  });
+});
+
+describe("isIsoDay", () => {
+  // `?dateFrom=notadate` reached PostgREST as a date and came back a 500,
+  // taking the whole race list with it.
+  it("takes a real calendar day", () => {
+    expect(isIsoDay("2026-09-08")).toBe(true);
+    expect(isIsoDay("2028-02-29")).toBe(true); // 2028 is a leap year
+  });
+
+  it("refuses anything else", () => {
+    for (const bad of [
+      "notadate",
+      "2026-13-45",
+      "2026-02-29", // 2026 is not a leap year
+      "2026-02-30",
+      "2026-9-8",
+      "2026-09-08T00:00:00Z",
+      "",
+      null,
+      undefined,
+    ]) {
+      expect(isIsoDay(bad), String(bad)).toBe(false);
+    }
   });
 });

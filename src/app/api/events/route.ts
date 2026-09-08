@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listEvents } from "@/lib/events";
+import { isIsoDay, listEvents } from "@/lib/events";
 
 /** Guard against a huge ring turning the polygon filter into a CPU sink. */
 const MAX_POLYGON_POINTS = 500;
@@ -52,6 +52,15 @@ export async function GET(req: NextRequest) {
       { error: "west, south, east and north must all be finite numbers" },
       { status: 400 },
     );
+  }
+
+  // Same shape as the bbox check: an unreadable date is a client error, not a
+  // 500 from the database — `?dateFrom=notadate` used to be exactly that.
+  for (const key of ["dateFrom", "dateTo"] as const) {
+    const raw = sp.get(key);
+    if (raw && !isIsoDay(raw)) {
+      return NextResponse.json({ error: `${key} must be YYYY-MM-DD` }, { status: 400 });
+    }
   }
 
   const polygonRaw = sp.get("polygon");
