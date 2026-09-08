@@ -328,11 +328,24 @@ export function isWeakRaceName(name: string): boolean {
   return !canon || canon.length < 3;
 }
 
-/** Dice coefficient on character bigrams */
+/**
+ * Whether a name is written as one word or two is a spelling, not a race.
+ *
+ * "Park Bike" and "PARKBIKE" are the same race at Ostrov, listed by two
+ * calendars; on bigrams the space between the halves costs enough similarity
+ * to drop the pair below every threshold that would have caught it. The same
+ * goes for Bikemaraton/Bike maraton and Cyklokros/Cyklo kros, which is most of
+ * the Czech calendar.
+ */
+function despace(s: string): string {
+  return s.replace(/\s+/g, "");
+}
+
+/** Dice coefficient on character bigrams, blind to where the spaces fall. */
 export function nameSimilarity(a: string, b: string): number {
   const x = canonicalizeForDedup(a) || normalizeName(a);
   const y = canonicalizeForDedup(b) || normalizeName(b);
-  return dice(x, y);
+  return Math.max(dice(x, y), dice(despace(x), despace(y)));
 }
 
 function dice(x: string, y: string): number {
@@ -412,12 +425,28 @@ function sharedPlaceTitleToken(a: DedupEvent, b: DedupEvent): string | null {
 }
 
 /** Canonical title with venue words stripped so "Blovice - DÚŠA KAP" ≈ "5. TalentCUP: DÚŠA KAP". */
-function coreCanonical(ev: DedupEvent, other: DedupEvent): string {
+/**
+ * What is left of a name once the venue is taken out of it — with the series
+ * folded in, or without.
+ *
+ * With it, a row that names its cup matches one whose title carries the cup in
+ * words. Without it is the case that was missing: "Park Bike" from the
+ * federation and "Ostrov — PARKBIKE OSTROV" from the cup are one race, but the
+ * cup's row canonicalises to "series:pohar_kv_hk parkbike hk", and against
+ * two short words that is mostly series. Both forms are compared and the
+ * better one counts.
+ */
+export function coreCanonical(
+  ev: DedupEvent,
+  other: DedupEvent,
+  opts?: { withSeries?: boolean },
+): string {
   let s = fold(ev.name);
   for (const tok of placeTokens(ev.placeText, other.placeText)) {
     s = s.replace(new RegExp(`\\b${escapeRe(tok)}\\b`, "g"), " ");
   }
-  const blob = ev.seriesName ? `${s} ${fold(ev.seriesName)}` : s;
+  const withSeries = opts?.withSeries ?? true;
+  const blob = withSeries && ev.seriesName ? `${s} ${fold(ev.seriesName)}` : s;
   return canonicalizeForDedup(blob);
 }
 
@@ -517,7 +546,15 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   let near = placesNearby(a, b);
   const ca = coreCanonical(a, b);
   const cb = coreCanonical(b, a);
-  const sim = Math.max(nameSimilarity(a.name, b.name), dice(ca, cb));
+  const ba = coreCanonical(a, b, { withSeries: false });
+  const bb = coreCanonical(b, a, { withSeries: false });
+  const sim = Math.max(
+    nameSimilarity(a.name, b.name),
+    dice(ca, cb),
+    dice(despace(ca), despace(cb)),
+    dice(ba, bb),
+    dice(despace(ba), despace(bb)),
+  );
   const aliasesA = seriesAliasTokens(`${a.name} ${a.seriesName ?? ""}`);
   const aliasesB = seriesAliasTokens(`${b.name} ${b.seriesName ?? ""}`);
   const sharedAlias = aliasesA.some((t) => aliasesB.includes(t));

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEDUP_THRESHOLD,
   formatConflict,
+  nameSimilarity,
   normalizeUrlForDedup,
   pickBestDuplicate,
   raceFormats,
@@ -176,5 +177,50 @@ describe("raceFormats", () => {
 
   it("says nothing when a title names no format", () => {
     expect(formatConflict("Grand Prix Brno", "Velká cena Brna")).toBe(false);
+  });
+});
+
+/**
+ * "Park Bike" from the federation and "Ostrov — PARKBIKE OSTROV" from the cup
+ * are one race at Ostrov, and they sat on the map as two: on bigrams the space
+ * between the halves of the name costs enough to fall under every threshold,
+ * and the cup's row canonicalises to mostly its series.
+ */
+describe("one race, two spellings", () => {
+  const at = (name: string, seriesName?: string) => ({
+    id: name,
+    name,
+    startDate: "2026-10-03",
+    placeText: "Ostrov",
+    lat: 50.3059,
+    lng: 12.946,
+    seriesName: seriesName ?? null,
+    disciplines: ["mtb"],
+  });
+
+  it("reads a compound and a spaced name as the same name", () => {
+    expect(nameSimilarity("Park Bike", "PARKBIKE")).toBe(1);
+    expect(nameSimilarity("Bikemaraton Drásal", "Bike maraton Drásal")).toBe(1);
+  });
+
+  it("merges the pair the map was showing twice", () => {
+    const { score, reasons } = scoreDuplicate(
+      at("Park Bike"),
+      at("Ostrov - PARKBIKE OSTROV", "Pohár KV kraje HK"),
+    );
+    expect(reasons).toContain("name_sim_high");
+    expect(score).toBeGreaterThanOrEqual(DEDUP_THRESHOLD);
+  });
+
+  it("does not merge two different races at one venue on one day", () => {
+    expect(
+      scoreDuplicate(at("Park Bike"), at("Ostrovský kritérium")).score,
+    ).toBeLessThan(DEDUP_THRESHOLD);
+  });
+
+  it("leaves a month between two rounds of one cup alone", () => {
+    const april = { ...at("Povltavský bikerský pohár - První jarní cross country"), startDate: "2026-04-19" };
+    const may = { ...at("Druhé jarní cross country - Povltavský bikerský pohár DA-BA"), startDate: "2026-05-17" };
+    expect(scoreDuplicate(april, may).reasons).toEqual(["dates_too_far"]);
   });
 });
