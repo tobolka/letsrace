@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEDUP_THRESHOLD,
   formatConflict,
+  isGarbagePlace,
   nameSimilarity,
   normalizeUrlForDedup,
   pickBestDuplicate,
@@ -222,5 +223,24 @@ describe("one race, two spellings", () => {
     const april = { ...at("Povltavský bikerský pohár - První jarní cross country"), startDate: "2026-04-19" };
     const may = { ...at("Druhé jarní cross country - Povltavský bikerský pohár DA-BA"), startDate: "2026-05-17" };
     expect(scoreDuplicate(april, may).reasons).toEqual(["dates_too_far"]);
+  });
+});
+
+/**
+ * The Austrian federation's calendar gives the organising club and its federal
+ * state where a venue should be. Joined together they geocoded to the state
+ * capital, so a race sat 80km from itself and the two rows never met.
+ */
+describe("a province is not a venue", () => {
+  it("treats a bare Austrian state as a place we do not know", () => {
+    expect(isGarbagePlace("Kärnten")).toBe(true);
+    expect(isGarbagePlace("Wien")).toBe(true);
+    expect(isGarbagePlace("Niederösterreich")).toBe(true);
+  });
+
+  it("still treats a town as a town", () => {
+    expect(isGarbagePlace("Ligist")).toBe(false);
+    expect(isGarbagePlace("Klagenfurt")).toBe(false);
+    expect(isGarbagePlace("Wiener Neustadt")).toBe(false);
   });
 });

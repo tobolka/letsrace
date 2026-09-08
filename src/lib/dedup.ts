@@ -486,6 +486,14 @@ export function isGarbagePlace(place?: string | null): boolean {
     /^(uci\s*(c[123]|cn|hc)|unknown|silnice)$/.test(p) ||
     /^(czechia|czech republic|cesko|ceska republika|poland|polsko|slovakia|slovensko|austria|rakousko|germany|nemecko|italy|italie|hungary|madarsko)$/.test(
       p,
+    ) ||
+    // A province is not a venue. The Austrian federation's calendar gives the
+    // federal state and nothing finer, which geocodes to the state capital —
+    // so a race listed there and the same race listed by its organiser sat 80km
+    // apart and never met. Coarse enough to place a pin, too coarse to say two
+    // races are not the same one.
+    /^(wien|niederosterreich|oberosterreich|steiermark|karnten|salzburg|tirol|vorarlberg|burgenland)$/.test(
+      p,
     )
   );
 }

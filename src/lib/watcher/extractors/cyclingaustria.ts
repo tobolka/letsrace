@@ -168,7 +168,6 @@ export function parseCyclingAustria(url: string, html: string): ParsedEvent[] {
     const blob = `${name} ${discRaw}`;
     if (CA_SKIP.test(blob) || /\bbahn\b/i.test(blob)) return;
 
-    const verein = $wrap.find(".event-verein").text().replace(/\s+/g, " ").trim();
     const heading = $wrap.find(".uk-heading-small").text().replace(/\s+/g, " ").trim();
     // "Sa, 15. August 2026 | …" — confirm year
     const named = heading.match(/(\d{1,2})\.\s*([A-Za-zäöüÄÖÜ]+)\s*(20\d{2})/);
@@ -209,7 +208,17 @@ export function parseCyclingAustria(url: string, html: string): ParsedEvent[] {
       externalId,
       name,
       startDate,
-      placeText: [verein, region].filter(Boolean).join(" — ") || region || "Austria",
+      /*
+       * The club is who puts the race on, not where it is. Joined to the
+       * federal state it geocoded to the state capital, so 45 upcoming races
+       * were pinned in Wien, Klagenfurt or Graz rather than the village they
+       * are held in — and none of them would merge with the same race listed by
+       * its own organiser, because a place 80km away is not the same place.
+       *
+       * The state on its own is coarse but true, and `isGarbagePlace` knows it
+       * is too coarse to keep two rows apart.
+       */
+      placeText: region || "Austria",
       countryHint: "AT",
       discipline: mapDisc(discRaw + " " + name),
       audience: /nachwuchs|jugend|u1[13579]|kids|kinder|youngsters/i.test(blob)
