@@ -1,25 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { addDays, format, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, List, Undo2 } from "lucide-react";
+import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, Rows3, Undo2 } from "lucide-react";
+import { PlanAgenda } from "@/components/account/plan-agenda";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { PlanRow } from "@/components/account/plan-row";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { dateFnsLocale } from "@/lib/i18n/dates";
-import { asLocale, messagesFor } from "@/lib/i18n/messages";
-import { pluralize } from "@/lib/i18n/plural";
+import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
 import { addMonths, monthStart, type MonthDay } from "@/lib/plan-month";
-import { isBusyIsoDate } from "@/lib/plan-prefs";
 import {
-  saturdayOfRaceWeekend,
-  type BlockedWeekend,
+  type BlockedDay,
   type EventPlan,
   type PlanMemberStatus,
   type PlannerMember,
@@ -30,11 +25,15 @@ const VIEWS = ["calendar", "list"] as const;
 /**
  * The season, and it is the page's centre of gravity.
  *
- * It was a row of weekend tiles: the right shape for "is Saturday free" and
- * the wrong one for everything else. A Wednesday criterium had nowhere to sit,
- * a month with one race looked like a month with five, and nothing said which
- * day of the weekend a race was on. It is a month calendar now, with a list
- * for reading the same season straight through, and every race is on its day.
+ * It was a row of weekend tiles: the right shape for one question — is
+ * Saturday free — and the wrong one for the rest. A Wednesday criterium had
+ * nowhere to sit, a month with one race looked like a month with five, and
+ * picking anything picked a whole weekend.
+ *
+ * Two views of the same days now. The month is for seeing the shape of a
+ * season at a glance. The rows are the shape people already keep this in: a
+ * day per line, a rider per column, every day present whether anything is on
+ * it or not. Both select a single day, because a day is what a race is on.
  */
 export function PlanSeason({
   locale,
@@ -43,28 +42,24 @@ export function PlanSeason({
   members,
   busyWeekdays,
   blocked,
-  freeCount,
   selected,
   busyId,
-  onSelectWeekend,
-  onBlock,
-  onUnblock,
+  onSelectDay,
+  onSetNote,
   onStatusChange,
   onDiscard,
 }: {
   locale: string;
-  /** Every race in the plan, past and future — the calendar shows both. */
+  /** Every race in the plan, past and future — both views show both. */
   plans: EventPlan[];
   past: EventPlan[];
   members: PlannerMember[];
   busyWeekdays: number[];
-  blocked: Record<string, BlockedWeekend>;
-  freeCount: number;
+  blocked: Record<string, BlockedDay>;
   selected: string | null;
   busyId: string | null;
-  onSelectWeekend: (saturday: string) => void;
-  onBlock: (saturday: string, note: string) => Promise<void> | void;
-  onUnblock: (saturday: string) => Promise<void> | void;
+  onSelectDay: (day: string) => void;
+  onSetNote: (day: string, note: string) => Promise<void> | void;
   onStatusChange: (eventId: string, memberId: string, status: PlanMemberStatus) => void;
   onDiscard: (eventId: string) => void;
 }) {
@@ -72,15 +67,7 @@ export function PlanSeason({
   const df = dateFnsLocale(locale);
   const today = todayIso();
   const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("calendar"));
-  const [month, setMonth] = useState(() => monthStart(today));
-
-  const upcoming = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
-  // The list reads day by day, so races that share a date share one heading.
-  const byDay = new Map<string, EventPlan[]>();
-  for (const plan of upcoming) {
-    byDay.set(plan.event.startDate, [...(byDay.get(plan.event.startDate) ?? []), plan]);
-  }
-  const days = [...byDay.keys()].sort();
+  const [month, setMonth] = useState(() => monthStart(selected ?? today));
 
   return (
     <section aria-labelledby="plan-season" className="flex flex-col gap-3">
@@ -88,13 +75,6 @@ export function PlanSeason({
         <h2 id="plan-season" className="text-base font-semibold">
           {t.weekendBoardTitle}
         </h2>
-        <p className="text-xs tabular-nums text-muted-foreground">
-          {pluralize(freeCount, asLocale(locale), {
-            one: t.countFreeOne,
-            few: t.countFreeFew,
-            many: t.countFreeMany,
-          })}
-        </p>
         <ToggleGroup
           type="single"
           value={view}
@@ -110,7 +90,7 @@ export function PlanSeason({
             {t.planViewCalendar}
           </ToggleGroupItem>
           <ToggleGroupItem value="list">
-            <List data-icon="inline-start" />
+            <Rows3 data-icon="inline-start" />
             {t.planViewList}
           </ToggleGroupItem>
         </ToggleGroup>
@@ -159,58 +139,30 @@ export function PlanSeason({
             plans={plans}
             busyWeekdays={busyWeekdays}
             blocked={blocked}
-            selectedSaturday={selected}
-            onPickDay={(day: MonthDay) => onSelectWeekend(day.saturday)}
+            selectedDay={selected}
+            onPickDay={(day: MonthDay) => onSelectDay(day.iso)}
           />
 
           {selected ? (
-            <WeekendBar
+            <DayBar
               locale={locale}
-              saturday={selected}
-              blocked={blocked[selected] ?? null}
-              busy={
-                isBusyIsoDate(selected, busyWeekdays) ||
-                isBusyIsoDate(addDaysIso(selected), busyWeekdays)
-              }
-              hasRace={plans.some((p) => saturdayOfRaceWeekend(p.event.startDate) === selected)}
-              onBlock={(note) => onBlock(selected, note)}
-              onUnblock={() => onUnblock(selected)}
+              day={selected}
+              note={blocked[selected]?.note ?? null}
+              onSetNote={(note) => onSetNote(selected, note)}
             />
           ) : null}
         </>
-      ) : days.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t.planNoUpcoming}</p>
       ) : (
-        <div className="divide-y rounded-xl border bg-card">
-          {days.map((iso) => (
-            <div key={iso}>
-              <div className="flex flex-wrap items-center gap-2 bg-muted/40 px-4 py-1.5 text-xs font-medium">
-                <span className="tabular-nums first-letter:uppercase">
-                  {format(parseISO(iso), "EEEE d. MMMM", { locale: df })}
-                </span>
-                {saturdayOfRaceWeekend(iso) === saturdayOfRaceWeekend(today) ? (
-                  <Badge>{t.thisWeekend}</Badge>
-                ) : null}
-              </div>
-              <div className="divide-y">
-                {byDay.get(iso)!.map((plan) => (
-                  <PlanRow
-                    key={plan.event.id}
-                    locale={locale}
-                    plan={plan}
-                    members={members}
-                    busy={busyId === plan.event.id}
-                    showDate={false}
-                    onStatusChange={(memberId, status) =>
-                      onStatusChange(plan.event.id, memberId, status)
-                    }
-                    onDiscard={() => onDiscard(plan.event.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <PlanAgenda
+          locale={locale}
+          plans={plans}
+          members={members}
+          blocked={blocked}
+          busyWeekdays={busyWeekdays}
+          selected={selected}
+          onSelectDay={onSelectDay}
+          onSetNote={onSetNote}
+        />
       )}
 
       {past.length > 0 ? (
@@ -240,102 +192,76 @@ export function PlanSeason({
   );
 }
 
-function addDaysIso(iso: string): string {
-  const d = parseISO(iso);
-  return format(addDays(d, 1), "yyyy-MM-dd");
-}
-
 /**
- * What can be done with the weekend that was just clicked.
- *
- * This used to live in a popover on each weekend tile, which meant the actions
- * were invisible until you guessed that a tile was pressable. One bar under
- * the calendar, about the weekend you actually picked, says the same thing out
- * loud — and the suggestions further down are already answering for it.
+ * The day you just clicked, and the one thing you might want to say about it:
+ * that it is already taken. Typed here rather than hidden in a popover on a
+ * tile, which is where nobody found it.
  */
-function WeekendBar({
+function DayBar({
   locale,
-  saturday,
-  blocked,
-  busy,
-  hasRace,
-  onBlock,
-  onUnblock,
+  day,
+  note,
+  onSetNote,
 }: {
   locale: string;
-  saturday: string;
-  blocked: BlockedWeekend | null;
-  busy: boolean;
-  hasRace: boolean;
-  onBlock: (note: string) => Promise<void> | void;
-  onUnblock: () => Promise<void> | void;
+  day: string;
+  note: string | null;
+  onSetNote: (note: string) => Promise<void> | void;
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
-  const [open, setOpen] = useState(false);
-  const [note, setNote] = useState("");
-  const label = `${format(parseISO(saturday), "d.", { locale: df })}–${format(
-    addDays(parseISO(saturday), 1),
-    "d. M.",
-    { locale: df },
-  )}`;
+  const [draft, setDraft] = useState(note ?? "");
+  const [editing, setEditing] = useState(false);
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm">
-      <span className="tabular-nums text-muted-foreground">{label}</span>
-      {blocked ? (
+      <span className="tabular-nums text-muted-foreground first-letter:uppercase">
+        {format(parseISO(day), "EEEE d. MMMM", { locale: df })}
+      </span>
+      {editing ? (
+        <input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={() => {
+            setEditing(false);
+            if (draft.trim() !== (note ?? "")) void onSetNote(draft.trim());
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
+            if (e.key === "Escape") {
+              setDraft(note ?? "");
+              setEditing(false);
+            }
+          }}
+          placeholder={t.weekendTakenNote}
+          aria-label={t.weekendTakenNote}
+          className="h-8 rounded-md border bg-background px-2 text-sm outline-none focus-visible:border-ring"
+        />
+      ) : note ? (
         <>
           <span className="flex items-center gap-1 text-muted-foreground">
             <CalendarOff className="size-3.5" aria-hidden />
-            {blocked.note || t.weekendTaken}
+            {note}
           </span>
-          <Button type="button" variant="outline" size="sm" onClick={() => void onUnblock()}>
+          <Button type="button" variant="outline" size="sm" onClick={() => void onSetNote("")}>
             <Undo2 data-icon="inline-start" />
             {t.weekendFreeAgain}
           </Button>
         </>
       ) : (
-        <>
-          {!hasRace && !busy ? (
-            <span className="text-muted-foreground">{t.weekendPickFree}</span>
-          ) : null}
-          {busy ? <Badge variant="outline">{t.weekendBusy}</Badge> : null}
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="outline" size="sm">
-                <CalendarOff data-icon="inline-start" />
-                {t.weekendTakenAction}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-64">
-              <div className="flex flex-col gap-2">
-                <Input
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder={t.weekendTakenNote}
-                  aria-label={t.weekendTakenNote}
-                  onKeyDown={async (e) => {
-                    if (e.key !== "Enter") return;
-                    setOpen(false);
-                    await onBlock(note.trim());
-                    setNote("");
-                  }}
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={async () => {
-                    setOpen(false);
-                    await onBlock(note.trim());
-                    setNote("");
-                  }}
-                >
-                  {t.weekendTakenSave}
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setDraft("");
+            setEditing(true);
+          }}
+        >
+          <CalendarOff data-icon="inline-start" />
+          {t.weekendTakenAction}
+        </Button>
       )}
     </div>
   );

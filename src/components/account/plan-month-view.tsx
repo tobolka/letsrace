@@ -9,7 +9,7 @@ import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
 import { monthGrid, type MonthDay } from "@/lib/plan-month";
 import { isBusyIsoDate } from "@/lib/plan-prefs";
-import { plansOnIsoDate, type BlockedWeekend, type EventPlan } from "@/lib/planner";
+import { plansOnIsoDate, type BlockedDay, type EventPlan } from "@/lib/planner";
 import { cn } from "@/lib/utils";
 
 /** How many races fit in a cell before it says "+2". */
@@ -29,7 +29,7 @@ export function PlanMonthView({
   plans,
   busyWeekdays,
   blocked,
-  selectedSaturday,
+  selectedDay,
   onPickDay,
 }: {
   locale: string;
@@ -37,8 +37,8 @@ export function PlanMonthView({
   month: string;
   plans: EventPlan[];
   busyWeekdays: number[];
-  blocked: Record<string, BlockedWeekend>;
-  selectedSaturday: string | null;
+  blocked: Record<string, BlockedDay>;
+  selectedDay: string | null;
   onPickDay: (day: MonthDay) => void;
 }) {
   const t = messagesFor(locale);
@@ -67,9 +67,9 @@ export function PlanMonthView({
       <div className="grid grid-cols-7">
         {weeks.flat().map((day, i) => {
           const dayPlans = plansOnIsoDate(plans, day.iso);
-          const taken = blocked[day.saturday];
+          const taken = blocked[day.iso];
           const isBusy = isBusyIsoDate(day.iso, busyWeekdays);
-          const blockedHere = day.isWeekend && Boolean(taken);
+          const blockedHere = Boolean(taken);
           return (
             <button
               key={day.iso}
@@ -88,7 +88,7 @@ export function PlanMonthView({
                 // seven reads as an error, not as emphasis.
                 day.isWeekend && day.inMonth && "bg-stone-200/55 dark:bg-stone-900/50",
                 (isBusy || blockedHere) && "bg-muted/60",
-                day.saturday === selectedSaturday && day.isWeekend && "bg-brand/8 inset-ring inset-ring-brand/40",
+                day.iso === selectedDay && "bg-brand/8 inset-ring inset-ring-brand/40",
                 "hover:bg-accent/60",
               )}
             >
@@ -132,7 +132,7 @@ export function PlanMonthView({
                 </span>
               ) : null}
 
-              {dayPlans.length === 0 && blockedHere && day.iso === day.saturday ? (
+              {dayPlans.length === 0 && blockedHere ? (
                 <span
                   className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground sm:px-1"
                   title={taken!.note || t.weekendTaken}

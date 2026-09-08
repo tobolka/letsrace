@@ -33,11 +33,8 @@ import { ALERT_RADIUS_DEFAULT } from "@/lib/race-alerts";
 import { parseWeekdays } from "@/lib/plan-prefs";
 import { planActions } from "@/lib/plan-actions";
 import {
-  buildWeekendBoard,
-  countFreeWeekends,
-  isWeekendFree,
   mergeEventPlans,
-  type BlockedWeekend,
+  type BlockedDay,
   type PlanMemberStatus,
   type PlannerEvent,
   type PlannerMember,
@@ -71,6 +68,12 @@ type EventEmbed = {
     | { name: string | null; municipality: string | null; country_code: string | null }[]
     | null;
 };
+
+function addDaysIso(iso: string, days: number): string {
+  const d = parseISO(iso);
+  d.setDate(d.getDate() + days);
+  return format(d, "yyyy-MM-dd");
+}
 
 function unwrap<T>(v: T | T[] | null | undefined): T | null {
   if (!v) return null;
@@ -121,8 +124,8 @@ export function PlanHome({ locale }: { locale: string }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [suggestCtx, setSuggestCtx] = useState<SuggestionContext | null>(null);
   const [series, setSeries] = useState<SeriesProgress[]>([]);
-  const [pickedSaturday, setPickedSaturday] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState<Record<string, BlockedWeekend>>({});
+  const [pickedDay, setPickedDay] = useState<string | null>(null);
+  const [blocked, setBlocked] = useState<Record<string, BlockedDay>>({});
   const fillRef = useRef<HTMLDivElement>(null);
 
   async function load() {
@@ -154,12 +157,10 @@ export function PlanHome({ locale }: { locale: string }) {
     ]);
 
     const { data: blockedRows } = await supabase
-      .from("blocked_weekends")
-      .select("saturday, note")
+      .from("blocked_days")
+      .select("day, note")
       .eq("user_id", auth.user.id);
-    setBlocked(
-      Object.fromEntries(((blockedRows ?? []) as BlockedWeekend[]).map((r) => [r.saturday, r])),
-    );
+    setBlocked(Object.fromEntries(((blockedRows ?? []) as BlockedDay[]).map((r) => [r.day, r])));
 
     const nextEvents: Record<string, PlannerEvent> = {};
     const nextAtt: Record<string, AttendanceRecord[]> = {};
@@ -334,10 +335,14 @@ export function PlanHome({ locale }: { locale: string }) {
   );
 
   const today = todayIso();
-  const board = useMemo(() => buildWeekendBoard({ plans, weeks: 16 }), [plans]);
-  const blockedSaturdays = useMemo(() => new Set(Object.keys(blocked)), [blocked]);
-  const freeCount = countFreeWeekends(board.weekends, busyWeekdays, blockedSaturdays);
   const upcomingCount = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today).length;
+  const past = useMemo(
+    () =>
+      plans
+        .filter((p) => (p.event.endDate ?? p.event.startDate) < today)
+        .sort((a, b) => b.event.startDate.localeCompare(a.event.startDate)),
+    [plans, today],
+  );
   const actions = useMemo(() => planActions(plans, { members, today }), [plans, members, today]);
   const nextRace = plans.find((p) => (p.event.endDate ?? p.event.startDate) >= today) ?? null;
 
@@ -379,33 +384,30 @@ export function PlanHome({ locale }: { locale: string }) {
     setBusyId(null);
   }
 
-  // Picking a weekend on the strip answers further down the page; without this
-  // the tap looks like it did nothing.
+  // Picking a day answers further down the page; without this the click looks
+  // like it did nothing.
   useEffect(() => {
-    if (!pickedSaturday) return;
+    if (!pickedDay) return;
     fillRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [pickedSaturday]);
+  }, [pickedDay]);
 
-  async function onBlockWeekend(saturday: string, note: string) {
+  /** One note per day: writing it claims the day, clearing it gives it back. */
+  async function onSetNote(day: string, note: string) {
     if (!userId) return;
-    const row = { saturday, note: note || null };
-    setBlocked((prev) => ({ ...prev, [saturday]: row }));
-    if (pickedSaturday === saturday) setPickedSaturday(null);
     const supabase = createBrowserSupabase();
+    if (!note) {
+      setBlocked((prev) => {
+        const next = { ...prev };
+        delete next[day];
+        return next;
+      });
+      await supabase.from("blocked_days").delete().eq("user_id", userId).eq("day", day);
+      return;
+    }
+    setBlocked((prev) => ({ ...prev, [day]: { day, note } }));
     await supabase
-      .from("blocked_weekends")
-      .upsert({ user_id: userId, ...row }, { onConflict: "user_id,saturday" });
-  }
-
-  async function onUnblockWeekend(saturday: string) {
-    if (!userId) return;
-    setBlocked((prev) => {
-      const next = { ...prev };
-      delete next[saturday];
-      return next;
-    });
-    const supabase = createBrowserSupabase();
-    await supabase.from("blocked_weekends").delete().eq("user_id", userId).eq("saturday", saturday);
+      .from("blocked_days")
+      .upsert({ user_id: userId, day, note }, { onConflict: "user_id,day" });
   }
 
   async function onSetHome(place: PickedPlace) {
@@ -454,15 +456,11 @@ export function PlanHome({ locale }: { locale: string }) {
     );
   }
 
-  // The weekend the suggestions answer for: whichever was picked on the strip,
-  // or the next free one when nothing was. Derived from the board rather than
-  // held as a snapshot, so adding a race to it updates what is offered.
-  const currentWeekend = board.weekends.find((w) => w.isCurrent);
-  const fillWeekend =
-    board.weekends.find((w) => w.saturday === pickedSaturday) ??
-    board.weekends.find((w) => isWeekendFree(w, busyWeekdays, blockedSaturdays)) ??
-    currentWeekend ??
-    null;
+  // What the suggestions answer for: the day that was clicked, or — before
+  // anything has been — the month ahead, which is more use than one arbitrary
+  // day would be.
+  const suggestFrom = pickedDay ?? today;
+  const suggestTo = pickedDay ?? addDaysIso(today, 30);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
@@ -536,16 +534,14 @@ export function PlanHome({ locale }: { locale: string }) {
       <PlanSeason
         locale={locale}
         plans={plans}
-        past={board.past}
+        past={past}
         members={members}
         busyWeekdays={busyWeekdays}
         blocked={blocked}
-        freeCount={freeCount}
-        selected={fillWeekend?.saturday ?? null}
+        selected={pickedDay}
         busyId={busyId}
-        onSelectWeekend={(saturday) => setPickedSaturday(saturday)}
-        onBlock={(saturday, note) => onBlockWeekend(saturday, note)}
-        onUnblock={(saturday) => onUnblockWeekend(saturday)}
+        onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
+        onSetNote={(day, note) => onSetNote(day, note)}
         onStatusChange={(eventId, memberId, status) =>
           void onStatusChange(eventId, memberId, status)
         }
@@ -558,24 +554,20 @@ export function PlanHome({ locale }: { locale: string }) {
         ref={fillRef}
         className="grid gap-6 [&>*]:min-w-0 lg:grid-cols-2 lg:items-start"
       >
-        {fillWeekend && suggestCtx ? (
+        {suggestCtx ? (
           <FreeWeekendSuggestions
-            key={fillWeekend.saturday}
+            key={`${suggestFrom}-${suggestTo}`}
             locale={locale}
-            saturday={fillWeekend.saturday}
-            sunday={fillWeekend.sunday}
+            from={suggestFrom}
+            to={suggestTo}
             context={suggestCtx}
             title={
-              fillWeekend.isCurrent
-                ? undefined
-                : t.suggestForWeekend.replace(
-                    "{range}",
-                    `${format(parseISO(fillWeekend.saturday), "d.", {
-                      locale: dateFnsLocale(locale),
-                    })}–${format(parseISO(fillWeekend.sunday), "d. M.", {
-                      locale: dateFnsLocale(locale),
-                    })}`,
+              pickedDay
+                ? t.suggestForDay.replace(
+                    "{day}",
+                    format(parseISO(pickedDay), "EEEE d. M.", { locale: dateFnsLocale(locale) }),
                   )
+                : t.suggestSoon
             }
             onAdd={async (eventId) => {
               const supabase = createBrowserSupabase();

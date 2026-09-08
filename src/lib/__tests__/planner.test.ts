@@ -1,17 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   attendanceFieldsForStatus,
-  buildWeekendBoard,
-  countFreeWeekends,
   feeAmountFromUnknown,
   formatIsoDate,
   memberPlanStatus,
   mergeEventPlans,
   parseFeeInput,
-  planIsOpen,
   planNeedsAction,
   plansOnIsoDate,
-  raceDatesFromPlans,
   saturdayOfRaceWeekend,
   type EventPlan,
   type PlannerEvent,
@@ -86,12 +82,11 @@ describe("mergeEventPlans", () => {
   });
 });
 
-describe("planNeedsAction / planIsOpen", () => {
+describe("planNeedsAction", () => {
   const today = "2026-08-18";
 
   it("treats shortlisted-only as open, not action", () => {
     const p = plan({ event: event({ id: "x", name: "X", startDate: "2026-08-29" }) });
-    expect(planIsOpen(p, today)).toBe(true);
     expect(planNeedsAction(p, today)).toBe(false);
   });
 
@@ -102,7 +97,6 @@ describe("planNeedsAction / planIsOpen", () => {
       memberStatus: { me: "going", mates: "paid" },
     });
     expect(planNeedsAction(p, today)).toBe(true);
-    expect(planIsOpen(p, today)).toBe(false);
   });
 
   it("ignores past races", () => {
@@ -111,34 +105,6 @@ describe("planNeedsAction / planIsOpen", () => {
       goingMemberIds: ["me"],
     });
     expect(planNeedsAction(p, today)).toBe(false);
-    expect(planIsOpen(p, today)).toBe(false);
-  });
-});
-
-describe("buildWeekendBoard", () => {
-  it("answers whether this weekend is free and keeps empty weekends", () => {
-    const now = new Date(2026, 7, 18, 12); // Tue 18 Aug 2026 → weekend 22–23 Aug
-    const filled = plan({
-      event: event({ id: "vg", name: "Van Gillern", startDate: "2026-08-29" }),
-      goingMemberIds: ["me"],
-    });
-    const board = buildWeekendBoard({ plans: [filled], now, weeks: 4 });
-    expect(board.currentSaturday).toBe("2026-08-22");
-    expect(board.weekends).toHaveLength(4);
-    expect(board.weekends[0]?.plans).toEqual([]);
-    expect(board.weekends[1]?.plans.map((p) => p.event.id)).toEqual(["vg"]);
-    expect(countFreeWeekends(board.weekends)).toBe(3);
-    expect(countFreeWeekends(board.weekends, [6, 7])).toBe(0);
-  });
-
-  it("parks last weekend in past", () => {
-    const now = new Date(2026, 7, 18, 12);
-    const old = plan({
-      event: event({ id: "old", name: "Old", startDate: "2026-08-15" }),
-    });
-    const board = buildWeekendBoard({ plans: [old], now, weeks: 2 });
-    expect(board.past.map((p) => p.event.id)).toEqual(["old"]);
-    expect(board.weekends.every((w) => w.plans.length === 0)).toBe(true);
   });
 });
 
@@ -164,22 +130,6 @@ describe("plansOnIsoDate", () => {
   });
 });
 
-describe("raceDatesFromPlans", () => {
-  it("dedupes start dates and covers multi-day races", () => {
-    const a = plan({ event: event({ id: "a", name: "A", startDate: "2026-08-22" }) });
-    const b = plan({ event: event({ id: "b", name: "B", startDate: "2026-08-22" }) });
-    const stage = plan({
-      event: event({
-        id: "stage",
-        name: "Stage",
-        startDate: "2026-08-22",
-        endDate: "2026-08-23",
-      }),
-    });
-    expect(raceDatesFromPlans([a, b]).map(formatIsoDate)).toEqual(["2026-08-22"]);
-    expect(raceDatesFromPlans([stage]).map(formatIsoDate)).toEqual(["2026-08-22", "2026-08-23"]);
-  });
-});
 
 describe("memberPlanStatus", () => {
   it("ranks paid over registered over going", () => {

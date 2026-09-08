@@ -85,10 +85,34 @@ describe("buildWeeklyDigest with a weekend claimed by something else", () => {
 
     const taken = buildWeeklyDigest({
       plans: [],
-      blockedSaturdays: new Set(["2026-09-05", "2026-09-12"]),
+      blockedDays: new Set(["2026-09-05", "2026-09-12"]),
       now,
     });
     expect(taken.thisWeekendFree).toBe(false);
     expect(taken.nextWeekendFree).toBe(false);
+  });
+});
+
+/**
+ * Blocked days used to be blocked weekends, keyed by the Saturday. A wedding
+ * on the Sunday takes the weekend as surely as one on the Saturday.
+ */
+describe("a weekend claimed by one of its days", () => {
+  it("is not free when only the Sunday is taken", () => {
+    const digest = buildWeeklyDigest({
+      plans: [],
+      blockedDays: new Set(["2026-09-13"]),
+      now: new Date("2026-09-08T09:00:00Z"),
+    });
+    expect(digest.thisWeekendFree).toBe(false);
+  });
+
+  it("is free when a day outside it is taken", () => {
+    const digest = buildWeeklyDigest({
+      plans: [],
+      blockedDays: new Set(["2026-09-16"]),
+      now: new Date("2026-09-08T09:00:00Z"),
+    });
+    expect(digest.thisWeekendFree).toBe(true);
   });
 });

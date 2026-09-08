@@ -405,13 +405,13 @@ export async function runWeeklyDigest(now = new Date()) {
   ]);
 
   const { data: blockedRows } = await supabase
-    .from("blocked_weekends")
-    .select("user_id, saturday")
+    .from("blocked_days")
+    .select("user_id, day")
     .in("user_id", remainingIds);
   const blockedByUser = new Map<string, Set<string>>();
-  for (const row of (blockedRows ?? []) as { user_id: string; saturday: string }[]) {
+  for (const row of (blockedRows ?? []) as { user_id: string; day: string }[]) {
     const set = blockedByUser.get(row.user_id) ?? new Set<string>();
-    set.add(row.saturday);
+    set.add(row.day);
     blockedByUser.set(row.user_id, set);
   }
 
@@ -529,7 +529,7 @@ export async function runWeeklyDigest(now = new Date()) {
     const digest = buildWeeklyDigest({
       plans: upcoming,
       busyWeekdays: parseWeekdays(user.busy_weekdays),
-      blockedSaturdays: blockedByUser.get(user.id as string) ?? new Set<string>(),
+      blockedDays: blockedByUser.get(user.id as string) ?? new Set<string>(),
       nearby,
       now,
     });

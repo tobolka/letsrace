@@ -26,17 +26,17 @@ import {
  */
 export function FreeWeekendSuggestions({
   locale,
-  saturday,
-  sunday,
+  from,
+  to,
   context,
   title,
   onAdd,
 }: {
   locale: string;
-  saturday: string;
-  sunday: string;
+  /** The span being filled — one day when a day was picked, else the month ahead. */
+  from: string;
+  to: string;
   context: SuggestionContext;
-  /** Set when the weekend being filled is not the current one. */
   title?: string;
   onAdd: (eventId: string) => Promise<void> | void;
 }) {
@@ -58,7 +58,7 @@ export function FreeWeekendSuggestions({
       };
     }
     void (async () => {
-      const params = new URLSearchParams({ dateFrom: saturday, dateTo: sunday });
+      const params = new URLSearchParams({ dateFrom: from, dateTo: to });
       if (context.home) {
         // A box wide enough to hold everything the ranker is willing to keep.
         const span = (context.radiusKm * 2.5) / 111;
@@ -93,7 +93,7 @@ export function FreeWeekendSuggestions({
     return () => {
       alive = false;
     };
-  }, [saturday, sunday, context]);
+  }, [from, to, context]);
 
   const reasonLabel: Record<Suggestion["reason"], string> = {
     series: t.suggestSeries,

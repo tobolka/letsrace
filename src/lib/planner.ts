@@ -1,5 +1,4 @@
-import { thisWeekendRange, todayIso } from "@/lib/date-presets";
-import { isBusyIsoDate } from "@/lib/plan-prefs";
+import { todayIso } from "@/lib/date-presets";
 
 export type PlannerEvent = {
   id: string;
@@ -47,15 +46,8 @@ export type EventPlan = {
   feeAmount: number | null;
 };
 
-/** A weekend the household has already given to something that is not a race. */
-export type BlockedWeekend = { saturday: string; note: string | null };
-
-export type WeekendBucket = {
-  saturday: string;
-  sunday: string;
-  isCurrent: boolean;
-  plans: EventPlan[];
-};
+/** A day the household has already given to something that is not a race. */
+export type BlockedDay = { day: string; note: string | null };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -72,12 +64,6 @@ export function parseIsoDate(iso: string): Date {
 
 export function formatIsoDate(d: Date): string {
   return isoFromParts(d.getFullYear(), d.getMonth() + 1, d.getDate());
-}
-
-function addDaysIso(iso: string, days: number): string {
-  const d = parseIsoDate(iso);
-  d.setDate(d.getDate() + days);
-  return formatIsoDate(d);
 }
 
 /**
@@ -189,16 +175,6 @@ export function planNeedsAction(plan: EventPlan, today = todayIso()): boolean {
   return !plan.registered || !plan.paid;
 }
 
-export function planIsOpen(plan: EventPlan, today = todayIso()): boolean {
-  return (
-    plan.event.startDate >= today &&
-    plan.favorited &&
-    plan.goingMemberIds.length === 0 &&
-    !plan.registered &&
-    !plan.paid
-  );
-}
-
 export function plansOnIsoDate(plans: EventPlan[], iso: string): EventPlan[] {
   return plans.filter((p) => {
     if (p.event.startDate === iso) return true;
@@ -207,95 +183,3 @@ export function plansOnIsoDate(plans: EventPlan[], iso: string): EventPlan[] {
   });
 }
 
-export function raceDatesFromPlans(plans: EventPlan[]): Date[] {
-  const seen = new Set<string>();
-  const out: Date[] = [];
-  for (const p of plans) {
-    const last =
-      p.event.endDate && p.event.endDate > p.event.startDate ? p.event.endDate : p.event.startDate;
-    let iso = p.event.startDate;
-    while (iso <= last) {
-      if (!seen.has(iso)) {
-        seen.add(iso);
-        out.push(parseIsoDate(iso));
-      }
-      if (iso === last) break;
-      iso = addDaysIso(iso, 1);
-    }
-  }
-  return out;
-}
-
-export function buildWeekendBoard(opts: {
-  plans: EventPlan[];
-  now?: Date;
-  weeks?: number;
-}): { currentSaturday: string; weekends: WeekendBucket[]; past: EventPlan[] } {
-  const now = opts.now ?? new Date();
-  const weeks = opts.weeks ?? 16;
-  const currentSaturday = thisWeekendRange(now).from;
-  const past = opts.plans
-    .filter((p) => saturdayOfRaceWeekend(p.event.startDate) < currentSaturday)
-    .sort((a, b) => b.event.startDate.localeCompare(a.event.startDate));
-
-  const futurePlans = opts.plans.filter(
-    (p) => saturdayOfRaceWeekend(p.event.startDate) >= currentSaturday,
-  );
-  const saturdays: string[] = [];
-  for (let i = 0; i < weeks; i++) saturdays.push(addDaysIso(currentSaturday, i * 7));
-  for (const plan of futurePlans) {
-    const sat = saturdayOfRaceWeekend(plan.event.startDate);
-    if (!saturdays.includes(sat)) saturdays.push(sat);
-  }
-  saturdays.sort();
-
-  const weekends: WeekendBucket[] = saturdays.map((saturday) => ({
-    saturday,
-    sunday: addDaysIso(saturday, 1),
-    isCurrent: saturday === currentSaturday,
-    plans: futurePlans.filter((p) => saturdayOfRaceWeekend(p.event.startDate) === saturday),
-  }));
-
-  return { currentSaturday, weekends, past };
-}
-
-/**
- * A weekend is free when nothing is booked on it, it is not a weekday the
- * household never races on, and it has not been claimed by something that is
- * not a race at all — a wedding fills a weekend as completely as a race does.
- */
-export function countFreeWeekends(
-  weekends: WeekendBucket[],
-  busyWeekdays: number[] = [],
-  blockedSaturdays: ReadonlySet<string> = new Set(),
-): number {
-  return weekends.filter((w) => isWeekendFree(w, busyWeekdays, blockedSaturdays)).length;
-}
-
-export function isWeekendFree(
-  weekend: WeekendBucket,
-  busyWeekdays: number[] = [],
-  blockedSaturdays: ReadonlySet<string> = new Set(),
-): boolean {
-  if (weekend.plans.length > 0) return false;
-  if (blockedSaturdays.has(weekend.saturday)) return false;
-  if (isBusyIsoDate(weekend.saturday, busyWeekdays) || isBusyIsoDate(weekend.sunday, busyWeekdays)) {
-    return false;
-  }
-  return true;
-}
-
-/**
- * Two races on one weekend is normal — a shortlist to choose from, or one on
- * the Saturday and one on the Sunday. Only two on the same day is a clash the
- * plan should point at.
- */
-export function weekendSpread(plans: EventPlan[]): "single" | "same-day" | "both-days" {
-  if (plans.length < 2) return "single";
-  const days = new Set(plans.map((p) => p.event.startDate));
-  return days.size < plans.length ? "same-day" : "both-days";
-}
-
-export function currentWeekendPlans(weekends: WeekendBucket[]): EventPlan[] {
-  return weekends.find((w) => w.isCurrent)?.plans ?? [];
-}
