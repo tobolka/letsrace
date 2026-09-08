@@ -1,4 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase/server";
+import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 
 function todayIso(now = new Date()): string {
   return now.toISOString().slice(0, 10);
@@ -116,7 +117,7 @@ export async function hideDroppedCalendarEvents(opts: {
       .in("id", idsChunk)
       .gte("start_date", today)
       .eq("visibility", "public")
-      .in("status", ["scheduled", "tbc", "postponed", "registration_open"]);
+      .in("status", [...ACTIVE_EVENT_STATUSES]);
     events.push(...((data ?? []) as typeof events));
   }
 

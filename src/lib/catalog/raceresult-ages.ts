@@ -6,6 +6,7 @@ import {
   parseContestCategories,
   raceResultEventId,
 } from "@/lib/watcher/extractors/contest-categories";
+import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 
 const PAGE = 1000;
 
@@ -38,7 +39,7 @@ export async function fillRaceResultAgeCategories(opts?: {
       .from("events")
       .select("id, website_url, registration_url, sources:event_sources(source_url)")
       .eq("visibility", "public")
-      .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+      .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
       .or("age_categories.is.null,age_categories.eq.{}")
       .order("start_date", { ascending: true })

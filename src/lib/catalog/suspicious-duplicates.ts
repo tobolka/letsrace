@@ -6,6 +6,7 @@ import {
   sharesDisciplineFamily,
   spanDays,
 } from "@/lib/dedup";
+import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 
 /**
  * Pairs worth a second pair of eyes.
@@ -129,7 +130,7 @@ export async function listSuspiciousDuplicates(
       .from("events")
       .select(COLUMNS)
       .eq("visibility", "public")
-      .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+      .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", fromDate);
     if (opts?.toDate) query = query.lte("start_date", opts.toDate);
     if (opts?.discipline) query = query.contains("disciplines", [opts.discipline]);

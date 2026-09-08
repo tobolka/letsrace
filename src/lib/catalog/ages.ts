@@ -4,6 +4,7 @@ import {
   inferClassification,
   type AgeCategory,
 } from "@/lib/taxonomy";
+import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 
 function todayIso(now = new Date()): string {
   return now.toISOString().slice(0, 10);
@@ -82,7 +83,7 @@ export async function fillEmptyAgeCategories(opts?: {
       "id, name, start_date, audience, age_categories, level, class_label, disciplines, series:series(name, slug, age_categories, audience_hint)",
     )
     .eq("visibility", "public")
-    .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+    .in("status", [...ACTIVE_EVENT_STATUSES])
     .or("age_categories.is.null,age_categories.eq.{}")
     .order("start_date", { ascending: true })
     .limit(maxEvents);

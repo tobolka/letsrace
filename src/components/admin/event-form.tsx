@@ -269,6 +269,10 @@ export function EventForm({ initial }: { initial?: Partial<EventFormValues> }) {
                       <SelectItem value="tbc">TBC (off map until confirmed)</SelectItem>
                       <SelectItem value="postponed">Postponed (on map)</SelectItem>
                       <SelectItem value="cancelled">Cancelled</SelectItem>
+                      {/* Written by the catalog once the day has passed. Listed
+                          so that opening a past race does not show a blank
+                          status and save it away. */}
+                      <SelectItem value="completed">Completed (already run)</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>

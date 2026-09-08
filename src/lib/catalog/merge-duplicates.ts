@@ -9,6 +9,7 @@ import {
   isGarbagePlace,
   type DedupEvent,
 } from "@/lib/dedup";
+import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 
 export type MergeDuplicateRow = {
   id: string;
@@ -316,7 +317,7 @@ export async function mergePublicDuplicates(opts?: {
         "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series(name)",
       )
       .eq("visibility", "public")
-      .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+      .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", fromDate)
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
@@ -335,7 +336,7 @@ export async function mergePublicDuplicates(opts?: {
       "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series(name)",
     )
     .eq("visibility", "public")
-    .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+    .in("status", [...ACTIVE_EVENT_STATUSES])
     .lt("start_date", fromDate)
     .gte("end_date", fromDate)
     .limit(500);

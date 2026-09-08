@@ -6,6 +6,7 @@ import {
   fciRegistrationWindow,
   parseFciCategories,
 } from "@/lib/watcher/extractors/fci-categories";
+import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 
 const PAGE = 1000;
 
@@ -56,7 +57,7 @@ export async function fillFciAgeCategories(opts?: {
         "id, age_categories, registration_closes_at, sources:event_sources(source_url)",
       )
       .eq("visibility", "public")
-      .in("status", ["scheduled", "tbc", "postponed", "registration_open"])
+      .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
       .or("age_categories.is.null,age_categories.eq.{},registration_closes_at.is.null")
       .order("start_date", { ascending: true })

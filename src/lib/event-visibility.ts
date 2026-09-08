@@ -1,8 +1,27 @@
 import { allowsUnlinkedPublicListing, UNLINKED_LISTING_CODES } from "@/lib/coverage";
 import { publicRaceUrl } from "@/lib/watcher/public-url";
 
-/** Statuses shown on the public map / explore list. TBC stays in admin until confirmed. */
-export const PUBLIC_EVENT_STATUSES = ["scheduled", "postponed", "registration_open"] as const;
+/** A race that has not happened yet. TBC stays in admin until confirmed. */
+export const UPCOMING_EVENT_STATUSES = ["scheduled", "postponed", "registration_open"] as const;
+
+/**
+ * Statuses the public sees.
+ *
+ * `completed` is here so that marking a race as run does not delete it. Every
+ * race that has already taken place used to sit at `scheduled` for ever — the
+ * catalogue claimed fifteen hundred races were going to happen in the past —
+ * and the obvious fix, writing `completed`, would have 404'd every one of
+ * their pages, all of them indexed. A race that happened is still a race that
+ * happened; the map hides it by date, not by status.
+ */
+export const PUBLIC_EVENT_STATUSES = [...UPCOMING_EVENT_STATUSES, "completed"] as const;
+
+/**
+ * Statuses the catalogue still works on: fills ages, merges duplicates, checks
+ * freshness. Seven jobs each carried their own copy of this list, so adding a
+ * status meant finding all seven.
+ */
+export const ACTIVE_EVENT_STATUSES = [...UPCOMING_EVENT_STATUSES, "tbc"] as const;
 
 /**
  * Home map: keep listing even without an official enter link.

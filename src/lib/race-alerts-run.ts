@@ -8,6 +8,7 @@ import { formatDistanceKm } from "@/lib/geo/distance";
 import { escapeHtml, sendResendEmail } from "@/lib/mail";
 import { matchAlert, type AlertCandidate, type AlertMatch, type RaceAlert } from "@/lib/race-alerts";
 import { parseWeekdays } from "@/lib/plan-prefs";
+import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
 
 type AlertRow = {
   id: string;
@@ -144,7 +145,7 @@ export async function runRaceAlerts(now = new Date()) {
         "id, name, slug, start_date, disciplines, status, visibility, created_at, location:locations(lat, lng, municipality, name, country_code)",
       )
       .eq("visibility", "public")
-      .in("status", ["scheduled", "postponed", "registration_open"])
+      .in("status", [...UPCOMING_EVENT_STATUSES])
       .gte("start_date", today)
       .gte("created_at", since.toISOString())
       .limit(800),

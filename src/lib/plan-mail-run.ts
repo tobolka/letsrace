@@ -21,6 +21,7 @@ import { matchAlert, type AlertCandidate, type RaceAlert } from "@/lib/race-aler
 import { getSiteUrl, SITE_NAME } from "@/lib/seo";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import type { PlanChangeKind } from "@/lib/plan-changes";
+import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
 
 function unwrap<T>(v: T | T[] | null | undefined): T | null {
   if (!v) return null;
@@ -435,7 +436,7 @@ export async function runWeeklyDigest(now = new Date()) {
     .from("events")
     .select(EVENT_EMBED)
     .eq("visibility", "public")
-    .in("status", ["scheduled", "postponed", "registration_open"])
+    .in("status", [...UPCOMING_EVENT_STATUSES])
     .gte("start_date", today)
     .gte("created_at", since.toISOString())
     .limit(800);

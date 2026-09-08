@@ -98,8 +98,10 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     filters.north != null;
   const bySeries = Boolean(filters.seriesSlug);
   const byCountry = Boolean(filters.countryCodes?.length);
-  // Without bbox, unfiltered Europe is huge — keep a higher cap but prefer bbox queries.
-  const limit = bySeries ? 400 : hasBbox || byCountry ? 1200 : 800;
+  // Without bbox, unfiltered Europe is huge — keep a higher cap but prefer bbox
+  // queries. A thousand is the real ceiling whatever is asked for: PostgREST
+  // answers no more than that in one page, so 1200 only read as a bigger cap.
+  const limit = bySeries ? 400 : hasBbox || byCountry ? 1000 : 800;
   const locationSelect = bySeries
     ? "location:locations(id, name, municipality, country_code, lat, lng)"
     : "location:locations!inner(id, name, municipality, country_code, lat, lng)";
@@ -135,7 +137,11 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   // filter nobody can read is no filter.
   const dateFrom = isIsoDay(filters.dateFrom) ? filters.dateFrom : undefined;
   const dateTo = isIsoDay(filters.dateTo) ? filters.dateTo : undefined;
-  if (dateFrom) query = query.gte("start_date", dateFrom);
+  // Clearing the date filter meant no floor at all, and the rows come back
+  // oldest first: a Europe-wide view answered with 999 races, every one of
+  // them already run, and not a single upcoming one. A race finder's floor is
+  // today unless a caller asks to look back on purpose.
+  query = query.gte("start_date", dateFrom ?? new Date().toISOString().slice(0, 10));
   if (dateTo) query = query.lte("start_date", dateTo);
   if (filters.audience?.length === 1) {
     query = query.eq("audience", filters.audience[0]);

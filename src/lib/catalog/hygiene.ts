@@ -3,6 +3,7 @@ import { mergePublicDuplicates } from "@/lib/catalog/merge-duplicates";
 import { fillFciAgeCategories } from "@/lib/catalog/fci-ages";
 import { fillRaceResultAgeCategories } from "@/lib/catalog/raceresult-ages";
 import { mergeDuplicateLocations, type MergeLocationsResult } from "@/lib/catalog/merge-locations";
+import { completePastEvents, type CompletePastResult } from "@/lib/catalog/complete-past";
 
 export type CatalogHygieneResult = {
   ages: { eventsFilled: number; seriesFilled: number; stillUnknown: number };
@@ -17,12 +18,14 @@ export type CatalogHygieneResult = {
     preview: { date: string; keep: string; drop: string; reasons: string[] }[];
   };
   locations: MergeLocationsResult;
+  completed: CompletePastResult;
 };
 
 export async function runCatalogHygiene(opts?: {
   maxAgeFills?: number;
   maxMerges?: number;
   maxLocationMerges?: number;
+  maxCompletions?: number;
 }): Promise<CatalogHygieneResult> {
   const ages = await fillEmptyAgeCategories({
     maxEvents: opts?.maxAgeFills ?? 400,
@@ -40,5 +43,7 @@ export async function runCatalogHygiene(opts?: {
   // New spellings of one town arrive with every poll, and so does the odd
   // calendar that gives a country where a venue belongs.
   const locations = await mergeDuplicateLocations({ max: opts?.maxLocationMerges ?? 200 });
-  return { ages, fciAges, timingAges, duplicates, locations };
+  // Yesterday's races stopped being scheduled overnight, so say so.
+  const completed = await completePastEvents({ max: opts?.maxCompletions ?? 500 });
+  return { ages, fciAges, timingAges, duplicates, locations, completed };
 }
