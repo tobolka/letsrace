@@ -36,6 +36,7 @@ export function PlanRow({
   busy,
   muted,
   note,
+  showDate = true,
   onStatusChange,
   onDiscard,
 }: {
@@ -44,6 +45,8 @@ export function PlanRow({
   members: PlannerMember[];
   busy?: boolean;
   muted?: boolean;
+  /** False under a date heading that already says which day this is. */
+  showDate?: boolean;
   /** What this race is waiting for, when it is being shown as a job. */
   note?: string;
   onStatusChange: (memberId: string, status: PlanMemberStatus) => void;
@@ -55,7 +58,7 @@ export function PlanRow({
     DISCIPLINE_LABELS[(plan.event.disciplines[0] ?? "") as Discipline] ||
     plan.event.disciplines[0];
   const meta = [
-    format(parseISO(plan.event.startDate), "EEE d. M.", { locale: df }),
+    showDate ? format(parseISO(plan.event.startDate), "EEE d. M.", { locale: df }) : null,
     [plan.event.place, plan.event.countryCode].filter(Boolean).join(" · "),
     disc,
   ]

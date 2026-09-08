@@ -12,7 +12,6 @@ import { PlanSeason } from "@/components/account/plan-season";
 import { PlanSetup } from "@/components/account/plan-setup";
 import { PlanTodo } from "@/components/account/plan-todo";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
-import type { BlockedWeekend } from "@/components/account/weekend-board";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -38,6 +37,7 @@ import {
   countFreeWeekends,
   isWeekendFree,
   mergeEventPlans,
+  type BlockedWeekend,
   type PlanMemberStatus,
   type PlannerEvent,
   type PlannerMember,
@@ -535,16 +535,15 @@ export function PlanHome({ locale }: { locale: string }) {
 
       <PlanSeason
         locale={locale}
-        weekends={board.weekends}
+        plans={plans}
         past={board.past}
         members={members}
         busyWeekdays={busyWeekdays}
         blocked={blocked}
-        currentSaturday={board.currentSaturday}
         freeCount={freeCount}
         selected={fillWeekend?.saturday ?? null}
         busyId={busyId}
-        onSelectWeekend={(w) => setPickedSaturday(w.saturday)}
+        onSelectWeekend={(saturday) => setPickedSaturday(saturday)}
         onBlock={(saturday, note) => onBlockWeekend(saturday, note)}
         onUnblock={(saturday) => onUnblockWeekend(saturday)}
         onStatusChange={(eventId, memberId, status) =>

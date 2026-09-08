@@ -47,6 +47,9 @@ export type EventPlan = {
   feeAmount: number | null;
 };
 
+/** A weekend the household has already given to something that is not a race. */
+export type BlockedWeekend = { saturday: string; note: string | null };
+
 export type WeekendBucket = {
   saturday: string;
   sunday: string;
