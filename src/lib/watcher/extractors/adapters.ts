@@ -18,6 +18,7 @@ import {
 } from "@/lib/watcher/extractors/kalendarzrowerowy";
 import { isOdjazdHost, parseOdjazd } from "@/lib/watcher/extractors/odjazd";
 import { isNaZavodyHost, parseNaZavody } from "@/lib/watcher/extractors/nazavody";
+import { isSporttHost, parseSportt } from "@/lib/watcher/extractors/sportt";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
@@ -305,6 +306,9 @@ export async function extractWithAdapter(
   }
   if (host.includes("radsport-events.de")) {
     return { events: await parseRadsportEvents(url, html), strategy: "adapter:radsport" };
+  }
+  if (isSporttHost(host)) {
+    return { events: await parseSportt(), strategy: "adapter:sportt" };
   }
   if (host.includes("eventivsport.com")) {
     return { events: await parseEventiv(url, html), strategy: "adapter:eventiv" };

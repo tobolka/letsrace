@@ -27,6 +27,10 @@ type FetchOpts = {
   /** Skip host gate (e.g. already gated by caller). */
   skipGate?: boolean;
   retries?: number;
+  /** For the handful of calendars that answer only to a POST. */
+  method?: "GET" | "POST";
+  body?: string;
+  contentType?: string;
 };
 
 async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
@@ -39,9 +43,12 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
   if (browser) headers["Accept-Language"] = "sk-SK,sk;q=0.9,en;q=0.8";
   if (opts.etag) headers["If-None-Match"] = opts.etag;
   if (opts.lastModified) headers["If-Modified-Since"] = opts.lastModified;
+  if (opts.contentType) headers["Content-Type"] = opts.contentType;
 
   const res = await fetch(url, {
     headers,
+    method: opts.method ?? "GET",
+    ...(opts.body != null ? { body: opts.body } : {}),
     redirect: "follow",
     signal: AbortSignal.timeout(opts.timeoutMs ?? 25_000),
   });
@@ -155,11 +162,20 @@ export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<Fetc
 /** Convenience for JSON APIs used by extractors. */
 export async function fetchText(
   url: string,
-  opts?: { timeoutMs?: number; accept?: string },
+  opts?: {
+    timeoutMs?: number;
+    accept?: string;
+    method?: "GET" | "POST";
+    body?: string;
+    contentType?: string;
+  },
 ): Promise<{ ok: boolean; status: number; text: string }> {
   const res = await fetchPage(url, {
     timeoutMs: opts?.timeoutMs ?? 20_000,
     accept: opts?.accept,
+    method: opts?.method,
+    body: opts?.body,
+    contentType: opts?.contentType,
     retries: 2,
   });
   return { ok: res.status > 0 && res.status < 400, status: res.status, text: res.html };
