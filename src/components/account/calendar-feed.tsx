@@ -14,13 +14,23 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor } from "@/lib/i18n/messages";
+import { cn } from "@/lib/utils";
 
 /**
  * A plan that lives only on this site is a plan nobody sees on a Friday
  * evening. Subscribing puts the weekend's race next to the dentist and the
  * school run, which is where the decision actually gets made.
  */
-export function CalendarFeed({ locale, userId }: { locale: string; userId: string }) {
+export function CalendarFeed({
+  locale,
+  userId,
+  hideTitle,
+}: {
+  locale: string;
+  userId: string;
+  /** The section heading already says it; a card title under it says it twice. */
+  hideTitle?: boolean;
+}) {
   const t = messagesFor(locale);
   const [token, setToken] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -82,14 +92,17 @@ export function CalendarFeed({ locale, userId }: { locale: string; userId: strin
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <CalendarPlus className="size-4" aria-hidden />
-          {t.feedTitle}
-        </CardTitle>
-        <CardDescription>{t.feedBody}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">
+      {hideTitle ? null : (
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <CalendarPlus className="size-4" aria-hidden />
+            {t.feedTitle}
+          </CardTitle>
+          <CardDescription>{t.feedBody}</CardDescription>
+        </CardHeader>
+      )}
+      <CardContent className={cn("flex flex-col gap-3", hideTitle && "pt-6")}>
+        {hideTitle ? <p className="text-sm text-muted-foreground">{t.feedBody}</p> : null}
         <InputGroup>
           <InputGroupInput readOnly value={url} aria-label={t.feedTitle} onFocus={(e) => e.currentTarget.select()} />
           <InputGroupAddon align="inline-end">

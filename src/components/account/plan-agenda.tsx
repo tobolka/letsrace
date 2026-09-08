@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import { addDays, format, parseISO } from "date-fns";
+import { Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -11,6 +12,7 @@ import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
 import { todayIso } from "@/lib/date-presets";
 import { isBusyIsoDate } from "@/lib/plan-prefs";
+import { monthStart } from "@/lib/plan-month";
 import {
   plansOnIsoDate,
   type BlockedDay,
@@ -19,15 +21,21 @@ import {
 } from "@/lib/planner";
 import { cn } from "@/lib/utils";
 
+/** How much further "show more days" reaches each time it is pressed. */
 const WEEKS_AT_A_TIME = 8;
 
 /** Sticks under the app bar; the row it sits in cannot stick for it. */
-const HEAD =
-  "sticky top-0 z-10 border-b bg-muted py-1.5 text-xs font-medium md:top-14";
+const HEAD = "sticky top-0 z-10 border-b bg-muted py-2 text-xs font-medium md:top-14";
+
+const CELL = "border-b px-2 py-1.5";
 
 /** A column heading has room for a name, not for a full name. */
 function firstName(name: string): string {
   return name.trim().split(/\s+/)[0] || name;
+}
+
+function iso(d: Date): string {
+  return format(d, "yyyy-MM-dd");
 }
 
 /**
@@ -39,9 +47,11 @@ function firstName(name: string): string {
  * as much of the answer as the full ones: you read a fortnight of nothing and
  * know there is room.
  *
- * The note column is what a note column in that spreadsheet is: the holiday,
- * the wedding, the school play. It is the same day-off the suggestions and the
- * free-day count read, typed where you would type it.
+ * It runs from the first of this month, not from today, because a month you
+ * are eight days into is still this month and the races already ridden are
+ * part of how it reads. And it always runs far enough to hold the last race in
+ * the plan: a table that leaves out a race you have entered is worse than no
+ * table.
  */
 export function PlanAgenda({
   locale,
@@ -65,27 +75,56 @@ export function PlanAgenda({
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   const today = todayIso();
-  const [weeks, setWeeks] = useState(WEEKS_AT_A_TIME);
+  const [extraWeeks, setExtraWeeks] = useState(0);
 
-  const start = parseISO(today);
-  const days: string[] = [];
-  for (let i = 0; i < weeks * 7; i++) days.push(format(addDays(start, i), "yyyy-MM-dd"));
+  const days = useMemo(() => {
+    const from = parseISO(monthStart(today));
+    const lastPlanned = plans.reduce(
+      (max, p) => ((p.event.endDate ?? p.event.startDate) > max ? p.event.endDate ?? p.event.startDate : max),
+      today,
+    );
+    const floor = iso(addDays(parseISO(today), (WEEKS_AT_A_TIME + extraWeeks) * 7));
+    const until = parseISO(lastPlanned > floor ? lastPlanned : floor);
+    const out: string[] = [];
+    for (let d = from; iso(d) <= iso(until); d = addDays(d, 1)) out.push(iso(d));
+    return out;
+  }, [plans, today, extraWeeks]);
 
   /**
    * A race nobody has been marked on is not nobody's race — it is in the plan
    * and anyone in the house could still be the one who rides it, so it stands
    * in every column, quietly, until somebody is named.
    */
-  function racesFor(iso: string, memberId: string): { plan: EventPlan; claimed: boolean }[] {
-    return plansOnIsoDate(plans, iso)
-      .map((plan) => ({
-        plan,
-        claimed: (plan.memberStatus[memberId] ?? "none") !== "none",
-        anyone: members.some((m) => (plan.memberStatus[m.id] ?? "none") !== "none"),
-      }))
-      .filter((r) => r.claimed || !r.anyone)
-      .map(({ plan, claimed }) => ({ plan, claimed }));
+  function racesFor(day: string, memberId: string) {
+    return plansOnIsoDate(plans, day)
+      .map((plan) => {
+        const marked = members.filter((m) => (plan.memberStatus[m.id] ?? "none") !== "none");
+        return {
+          plan,
+          claimed: (plan.memberStatus[memberId] ?? "none") !== "none",
+          unclaimed: marked.length === 0,
+          settled: marked.length > 0 && marked.every((m) => plan.memberStatus[m.id] === "paid"),
+        };
+      })
+      .filter((r) => r.claimed || r.unclaimed);
   }
+
+  if (members.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed p-8 text-center">
+        <p className="text-sm font-medium">{t.planSetupPeople}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t.planSetupPeopleBody}</p>
+        <Button asChild size="sm" className="mt-4">
+          <Link href={`/${locale}/account/riders`}>
+            <Plus data-icon="inline-start" />
+            {t.profilesAdd}
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  let lastMonth = "";
 
   return (
     <div className="flex flex-col gap-3">
@@ -99,7 +138,7 @@ export function PlanAgenda({
       <div className="overflow-x-auto rounded-xl border bg-card md:overflow-x-visible">
         {/* `border-separate` because a sticky heading does not stick inside a
             collapsed-border table — the borders are drawn by the cells here. */}
-        <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-sm">
+        <table className="w-full min-w-[38rem] border-separate border-spacing-0 text-sm">
           <thead>
             <tr className="text-left">
               <th scope="col" className={cn(HEAD, "w-24 px-3 text-right")}>
@@ -108,7 +147,7 @@ export function PlanAgenda({
               <th scope="col" className={cn(HEAD, "w-24 px-2")}>
                 {t.planDay}
               </th>
-              <th scope="col" className={cn(HEAD, "w-40 px-2")}>
+              <th scope="col" className={cn(HEAD, "w-44 px-2")}>
                 {t.planNote}
               </th>
               {members.map((m) => (
@@ -118,81 +157,129 @@ export function PlanAgenda({
                   className={cn(HEAD, "px-2")}
                   // The rider columns share whatever is left, evenly, so the
                   // table does not jump about as names come and go.
-                  style={{ width: `${70 / members.length}%` }}
+                  style={{ width: `${68 / members.length}%` }}
                 >
                   {firstName(m.name)}
                 </th>
               ))}
+              <th scope="col" className={cn(HEAD, "w-10 px-2")}>
+                <Link
+                  href={`/${locale}/account/riders`}
+                  aria-label={t.profilesAdd}
+                  title={t.profilesAdd}
+                  className="inline-flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+                >
+                  <Plus className="size-3.5" />
+                </Link>
+              </th>
             </tr>
           </thead>
           <tbody>
-            {days.map((iso) => {
-              const d = parseISO(iso);
+            {days.map((day) => {
+              const d = parseISO(day);
               const weekend = d.getDay() === 0 || d.getDay() === 6;
-              const isToday = iso === today;
-              const note = blocked[iso];
-              const busy = isBusyIsoDate(iso, busyWeekdays);
+              const isToday = day === today;
+              const past = day < today;
+              const note = blocked[day];
+              const busy = isBusyIsoDate(day, busyWeekdays);
+              const month = day.slice(0, 7);
+              const newMonth = month !== lastMonth;
+              lastMonth = month;
+
               return (
-                <tr
-                  key={iso}
-                  onClick={() => onSelectDay(iso)}
-                  className={cn(
-                    "group/row align-middle [&>*]:border-b [&>*]:last:border-b-0",
-                    weekend && "bg-stone-200/45 dark:bg-stone-900/50",
-                    (note || busy) && "bg-muted/60",
-                    selected === iso && "bg-brand/8 inset-ring inset-ring-brand/40",
-                    "hover:bg-accent/60",
-                  )}
-                >
-                  <th
-                    scope="row"
+                <Fragment key={day}>
+                  {/* Sixty numbered rows need somewhere to breathe; the month
+                      it turns into is the natural place. */}
+                  {newMonth ? (
+                    <tr>
+                      <td
+                        colSpan={4 + members.length}
+                        className="border-b bg-muted/40 px-3 py-1 text-xs font-semibold tracking-wide first-letter:uppercase"
+                      >
+                        {format(d, "LLLL yyyy", { locale: df })}
+                      </td>
+                    </tr>
+                  ) : null}
+                  <tr
+                    onClick={() => onSelectDay(day)}
                     className={cn(
-                      "px-3 py-1 text-right text-xs font-normal tabular-nums whitespace-nowrap",
-                      isToday ? "font-semibold text-brand" : "text-muted-foreground",
+                      "group/row cursor-default align-middle",
+                      weekend && "bg-stone-200/45 dark:bg-stone-900/50",
+                      (note || busy) && "bg-muted/60",
+                      past && "opacity-55",
+                      selected === day && "bg-brand/8 inset-ring inset-ring-brand/40",
+                      "hover:bg-accent/60",
                     )}
                   >
-                    {format(d, "d. M. yyyy", { locale: df })}
-                  </th>
-                  <td className="px-2 py-1 text-xs whitespace-nowrap text-muted-foreground first-letter:uppercase">
-                    {format(d, "EEEE", { locale: df })}
-                  </td>
-                  <td className="px-2 py-1">
-                    <NoteCell
-                      locale={locale}
-                      value={note?.note ?? ""}
-                      onSave={(next) => onSetNote(iso, next)}
-                    />
-                  </td>
-                  {members.map((m) => (
-                    <td key={m.id} className="px-2 py-1">
-                      <div className="flex flex-col gap-0.5">
-                        {racesFor(iso, m.id).map(({ plan, claimed }) => (
-                          <Link
-                            key={plan.event.id}
-                            href={eventMapPath(locale, {
-                              slug: plan.event.slug,
-                              startDate: plan.event.startDate,
-                              endDate: plan.event.endDate,
-                            })}
-                            title={plan.event.name}
-                            onClick={(e) => e.stopPropagation()}
-                            className={cn(
-                              "flex min-w-0 items-center gap-1.5 text-xs leading-tight hover:underline",
-                              !claimed && "text-muted-foreground",
-                            )}
-                          >
-                            <span
-                              aria-hidden
-                              className={cn("size-1.5 shrink-0 rounded-full", !claimed && "opacity-50")}
-                              style={{ background: disciplineColor(plan.event.disciplines) }}
-                            />
-                            <span className="truncate">{plan.event.name}</span>
-                          </Link>
-                        ))}
-                      </div>
+                    <th
+                      scope="row"
+                      className={cn(
+                        CELL,
+                        "px-3 text-right text-xs font-normal tabular-nums whitespace-nowrap",
+                        isToday ? "font-semibold text-brand" : "text-muted-foreground",
+                      )}
+                    >
+                      {format(d, "d. M.", { locale: df })}
+                    </th>
+                    <td
+                      className={cn(
+                        CELL,
+                        "text-xs whitespace-nowrap text-muted-foreground first-letter:uppercase",
+                      )}
+                    >
+                      {format(d, "EEEE", { locale: df })}
                     </td>
-                  ))}
-                </tr>
+                    <td className={CELL}>
+                      <NoteCell
+                        locale={locale}
+                        value={note?.note ?? ""}
+                        onSave={(next) => onSetNote(day, next)}
+                      />
+                    </td>
+                    {members.map((m) => (
+                      <td key={m.id} className={CELL}>
+                        <div className="flex flex-col gap-0.5">
+                          {racesFor(day, m.id).map(({ plan, unclaimed, settled }) => (
+                            <Link
+                              key={plan.event.id}
+                              href={eventMapPath(locale, {
+                                slug: plan.event.slug,
+                                startDate: plan.event.startDate,
+                                endDate: plan.event.endDate,
+                              })}
+                              title={plan.event.name}
+                              onClick={(e) => e.stopPropagation()}
+                              className={cn(
+                                "flex min-w-0 items-center gap-1.5 text-xs leading-tight hover:underline",
+                                unclaimed && "text-muted-foreground",
+                              )}
+                            >
+                              <span
+                                aria-hidden
+                                className={cn(
+                                  "size-1.5 shrink-0 rounded-full",
+                                  unclaimed && "opacity-50",
+                                )}
+                                style={{ background: disciplineColor(plan.event.disciplines) }}
+                              />
+                              <span className="truncate">{plan.event.name}</span>
+                              {/* Entered and paid for: the one state worth a
+                                  mark, because it is the one that means there
+                                  is nothing left to do. */}
+                              {settled ? (
+                                <Check
+                                  className="size-3 shrink-0 text-muted-foreground"
+                                  aria-label={t.planPaid}
+                                />
+                              ) : null}
+                            </Link>
+                          ))}
+                        </div>
+                      </td>
+                    ))}
+                    <td className={CELL} />
+                  </tr>
+                </Fragment>
               );
             })}
           </tbody>
@@ -203,7 +290,7 @@ export function PlanAgenda({
         variant="outline"
         size="sm"
         className="self-start"
-        onClick={() => setWeeks((w) => w + WEEKS_AT_A_TIME)}
+        onClick={() => setExtraWeeks((w) => w + WEEKS_AT_A_TIME)}
       >
         {t.planMoreDays}
       </Button>

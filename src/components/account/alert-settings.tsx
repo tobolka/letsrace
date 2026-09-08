@@ -253,8 +253,10 @@ function AlertCard({
       </div>
 
       <AlertDialog>
+        {/* Destroying something is not the widest, most central control on a
+            card; it sits at the end of the row like every other afterthought. */}
         <AlertDialogTrigger asChild>
-          <Button type="button" variant="ghost" size="sm">
+          <Button type="button" variant="ghost" size="sm" className="self-end text-muted-foreground">
             {t.alertRemove}
           </Button>
         </AlertDialogTrigger>

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, LogOut, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/account/auth-form";
 import { CalendarFeed } from "@/components/account/calendar-feed";
+import { MailPrefs } from "@/components/account/mail-prefs";
 import { PlanPrefsFields, notifyPrefsSaved, saveMemberPrefs } from "@/components/account/plan-prefs-card";
 import {
   AlertDialog,
@@ -31,15 +32,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
 import {
   Select,
   SelectContent,
@@ -135,7 +127,6 @@ export function AccountPanel({
   const [relationship, setRelationship] = useState("rider");
   const [birthYear, setBirthYear] = useState("");
   const [busy, setBusy] = useState(false);
-  const [openPrefsId, setOpenPrefsId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [ridesByMember, setRidesByMember] = useState<Record<string, number>>({});
 
@@ -260,122 +251,122 @@ export function AccountPanel({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {section === "riders" ? t.profilesTitle : t.account}
-        </h1>
-      </header>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
-      <div className="flex min-w-0 flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 [&>*]:max-w-3xl">
+      {/*
+        The nav says which page this is, and said it three times over: once as
+        the tab, once as a heading, once as the title of the only card on the
+        page. The heading stays for a screen reader and the card is gone — a
+        card around the entire contents of a page is a border drawn inside a
+        border.
+      */}
+      <h1 className="sr-only">{section === "riders" ? t.profilesTitle : t.account}</h1>
 
       {section === "settings" ? (
-        <Card>
-          <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">{t.accountSignedIn}</p>
-              <p className="truncate font-medium">{email}</p>
-            </div>
-            <Button type="button" variant="outline" size="sm" onClick={() => void signOut()}>
-              <LogOut data-icon="inline-start" />
-              {t.signOut}
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+          <p className="min-w-0 truncate">
+            <span className="text-muted-foreground">{t.accountSignedIn} </span>
+            <span className="font-medium">{email}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {t.signOut}
+          </button>
+        </div>
+      ) : null}
+
+      {section === "settings" && userId ? (
+        <>
+          <Section title={t.alertMailTitle}>
+            <MailPrefs locale={locale} userId={userId} />
+          </Section>
+          <Section title={t.feedTitle}>
+            <CalendarFeed locale={locale} userId={userId} hideTitle />
+          </Section>
+        </>
       ) : null}
 
       {section === "riders" ? (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t.profilesTitle}</CardTitle>
-          <CardDescription>{t.profilesHelp}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
-          {members.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t.profilesHelp}</p>
-          ) : (
-            <ItemGroup>
-              {members.map((m) => {
-                const open = openPrefsId === m.id;
-                return (
-                  <div key={m.id} className="flex flex-col gap-2">
-                    <Item variant="outline" size="sm">
-                      <ItemMedia>
-                        <Avatar size="sm">
-                          <AvatarFallback>{initials(m.name) || "?"}</AvatarFallback>
-                        </Avatar>
-                      </ItemMedia>
-                      <ItemContent>
-                        <ItemTitle>
-                          {m.name}
-                          {m.is_self ? <Badge variant="secondary">{t.planSelf}</Badge> : null}
-                        </ItemTitle>
-                        <ItemDescription>
-                          {/* The "you" badge already says it; repeating the role reads as a stutter. */}
-                          {m.is_self ? "" : roleLabel(m.relationship, t)}
-                          {m.birth_year
-                            ? `${m.is_self ? "" : " · "}${t.profilesBorn.replace("{n}", String(m.birth_year))}`
-                            : ""}
-                          {ridesByMember[m.id]
-                            ? ` · ${t.accountRidesThisYear.replace("{n}", String(ridesByMember[m.id]))}`
-                            : ""}
-                        </ItemDescription>
-                      </ItemContent>
-                      <ItemActions>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          aria-expanded={open}
-                          className={open ? "[&_svg]:rotate-180" : undefined}
-                          onClick={() => setOpenPrefsId(open ? null : m.id)}
-                        >
-                          <ChevronDown data-icon="inline-start" />
-                          {t.prefsTitle}
-                        </Button>
-                        {!m.is_self ? (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                {t.remove}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>{t.confirmRemove}</AlertDialogTitle>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
-                                <AlertDialogAction
-                                  variant="destructive"
-                                  onClick={() => void removeMember(m.id)}
-                                >
-                                  {t.remove}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        ) : null}
-                      </ItemActions>
-                    </Item>
-                    {open ? (
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <PlanPrefsFields
-                          locale={locale}
-                          busyWeekdays={m.busy_weekdays}
-                          preferredDisciplines={m.preferred_disciplines}
-                          onBusyChange={(days) => void patchMember(m, { busy_weekdays: days })}
-                          onDisciplinesChange={(discs) =>
-                            void patchMember(m, { preferred_disciplines: discs })
-                          }
-                        />
-                      </div>
+        <section className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h2 className="text-base font-semibold">{t.profilesTitle}</h2>
+            <p className="text-xs text-muted-foreground">{t.profilesHelp}</p>
+          </div>
+          {members.length === 0 ? null : (
+            <div className="flex flex-col gap-3">
+              {members.map((m) => (
+                /*
+                 * What a rider is, and everything the plan knows about them, on
+                 * one card. The days they cannot ride and the racing they turn
+                 * up for used to be behind a "Kdy může" toggle, which left this
+                 * page as one name and a button on an empty screen — and left
+                 * the two settings that make the suggestions work unset.
+                 */
+                <div key={m.id} className="rounded-xl border bg-card">
+                  <div className="flex flex-wrap items-center gap-3 border-b px-4 py-3">
+                    <Avatar size="sm">
+                      <AvatarFallback>{initials(m.name) || "?"}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="flex flex-wrap items-center gap-2 font-medium">
+                        {m.name}
+                        {m.is_self ? <Badge variant="secondary">{t.planSelf}</Badge> : null}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {/* The "you" badge already says it; repeating the role reads as a stutter. */}
+                        {[
+                          m.is_self ? null : roleLabel(m.relationship, t),
+                          m.birth_year
+                            ? t.profilesBorn.replace("{n}", String(m.birth_year))
+                            : null,
+                          ridesByMember[m.id]
+                            ? t.accountRidesThisYear.replace("{n}", String(ridesByMember[m.id]))
+                            : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    </div>
+                    {!m.is_self ? (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            {t.remove}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t.confirmRemove}</AlertDialogTitle>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
+                            <AlertDialogAction
+                              variant="destructive"
+                              onClick={() => void removeMember(m.id)}
+                            >
+                              {t.remove}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     ) : null}
                   </div>
-                );
-              })}
-            </ItemGroup>
+                  <div className="px-4 py-3">
+                    <PlanPrefsFields
+                      locale={locale}
+                      busyWeekdays={m.busy_weekdays}
+                      preferredDisciplines={m.preferred_disciplines}
+                      onBusyChange={(days) => void patchMember(m, { busy_weekdays: days })}
+                      onDisciplinesChange={(discs) =>
+                        void patchMember(m, { preferred_disciplines: discs })
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
 
           <Collapsible open={adding || members.length === 0} onOpenChange={setAdding}>
@@ -441,15 +432,17 @@ export function AccountPanel({
           </form>
             </CollapsibleContent>
           </Collapsible>
-        </CardContent>
-      </Card>
+        </section>
       ) : null}
-      </div>
-
-      <aside className="min-w-0 lg:sticky lg:top-16">
-        {section === "settings" && userId ? <CalendarFeed locale={locale} userId={userId} /> : null}
-      </aside>
-      </div>
     </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-sm font-semibold text-muted-foreground">{title}</h2>
+      {children}
+    </section>
   );
 }
