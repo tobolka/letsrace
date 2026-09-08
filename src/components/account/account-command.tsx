@@ -99,7 +99,10 @@ export function AccountCommand({
         toast.error(t.planAuthGoing);
         return;
       }
-      await ensureFavorite(supabase, auth.user.id, hit.id, false);
+      if (!(await ensureFavorite(supabase, auth.user.id, hit.id, false))) {
+        toast.error(t.saveFailed);
+        return;
+      }
       setAdded((prev) => new Set(prev).add(hit.id));
       toast.success(`${hit.name} — ${t.suggestAdded}`);
       router.refresh();

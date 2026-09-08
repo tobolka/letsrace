@@ -16,6 +16,7 @@ import { asLocale } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { ensureFavorite } from "@/lib/planner-db";
+import { toast } from "sonner";
 
 type Hit = {
   id: string;
@@ -154,8 +155,11 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
                         setBusy(h.id);
                         try {
                           const supabase = createBrowserSupabase();
-                          await ensureFavorite(supabase, userId, h.id, false);
-                          setAdded((prev) => new Set(prev).add(h.id));
+                          if (await ensureFavorite(supabase, userId, h.id, false)) {
+                            setAdded((prev) => new Set(prev).add(h.id));
+                          } else {
+                            toast.error(t.saveFailed);
+                          }
                         } finally {
                           setBusy(null);
                         }

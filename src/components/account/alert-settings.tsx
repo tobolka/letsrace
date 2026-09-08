@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { persist } from "@/lib/account/save";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -77,13 +78,21 @@ export function AlertSettings({
 
   async function patch(id: string, next: Partial<AlertRow>) {
     const supabase = createBrowserSupabase();
+    const before = rows.find((r) => r.id === id);
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...next } : r)));
-    await supabase
-      .from("race_alerts")
-      .update({ ...next, updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .eq("user_id", userId);
-    toast.success(t.alertSaved);
+    const ok = await persist(
+      supabase
+        .from("race_alerts")
+        .update({ ...next, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("user_id", userId),
+      {
+        locale,
+        onFailure: () =>
+          setRows((prev) => prev.map((r) => (r.id === id && before ? before : r))),
+      },
+    );
+    if (ok) toast.success(t.alertSaved);
   }
 
   async function createAlert(place: { label: string; lat: number; lng: number }) {
@@ -109,8 +118,12 @@ export function AlertSettings({
 
   async function removeAlert(id: string) {
     const supabase = createBrowserSupabase();
+    const before = rows;
     setRows((prev) => prev.filter((r) => r.id !== id));
-    await supabase.from("race_alerts").delete().eq("id", id).eq("user_id", userId);
+    await persist(
+      supabase.from("race_alerts").delete().eq("id", id).eq("user_id", userId),
+      { locale, onFailure: () => setRows(before) },
+    );
   }
 
   return (

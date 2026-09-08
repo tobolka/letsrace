@@ -19,15 +19,25 @@ function flagsFrom(rows: AttendanceRecord[]) {
   };
 }
 
+/**
+ * Returns whether the race is on the plan afterwards.
+ *
+ * It used to return `true` unconditionally, so a rejected insert read exactly
+ * like a successful one and the race quietly disappeared on the next reload.
+ * A row that is already there is not a failure — that is what the insert's
+ * unique violation means.
+ */
 export async function ensureFavorite(
   supabase: SupabaseClient,
   userId: string,
   eventId: string,
   favorited: boolean,
-) {
+): Promise<boolean> {
   if (favorited) return true;
-  await supabase.from("event_favorites").insert({ user_id: userId, event_id: eventId });
-  return true;
+  const { error } = await supabase
+    .from("event_favorites")
+    .insert({ user_id: userId, event_id: eventId });
+  return !error || error.code === "23505";
 }
 
 export async function toggleFavoriteRow(
@@ -249,21 +259,23 @@ export async function setPlanFee(opts: {
   return true;
 }
 
+/** Returns whether the race actually left the plan. */
 export async function removeFromPlan(opts: {
   supabase: SupabaseClient;
   userId: string;
   eventId: string;
-}) {
-  await opts.supabase
+}): Promise<boolean> {
+  const { error: attendanceError } = await opts.supabase
     .from("event_attendance")
     .delete()
     .eq("user_id", opts.userId)
     .eq("event_id", opts.eventId);
-  await opts.supabase
+  const { error: favoriteError } = await opts.supabase
     .from("event_favorites")
     .delete()
     .eq("user_id", opts.userId)
     .eq("event_id", opts.eventId);
+  return !attendanceError && !favoriteError;
 }
 
 export { flagsFrom };

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import { persist } from "@/lib/account/save";
 import { AuthForm } from "@/components/account/auth-form";
 import { CalendarFeed } from "@/components/account/calendar-feed";
 import { Panel } from "@/components/account/panel";
@@ -186,13 +187,20 @@ export function AccountPanel({
       setBusy(false);
       return;
     }
-    await supabase.from("family_members").insert({
-      user_id: auth.user.id,
-      name: trimmed,
-      relationship,
-      birth_year: birthYear ? Number(birthYear) : null,
-      is_self: false,
-    });
+    const ok = await persist(
+      supabase.from("family_members").insert({
+        user_id: auth.user.id,
+        name: trimmed,
+        relationship,
+        birth_year: birthYear ? Number(birthYear) : null,
+        is_self: false,
+      }),
+      { locale },
+    );
+    if (!ok) {
+      setBusy(false);
+      return;
+    }
     setName("");
     setBirthYear("");
     setRelationship("rider");
@@ -209,7 +217,7 @@ export function AccountPanel({
 
   async function removeMember(id: string) {
     const supabase = createBrowserSupabase();
-    await supabase.from("family_members").delete().eq("id", id);
+    await persist(supabase.from("family_members").delete().eq("id", id), { locale });
     await load();
   }
 
@@ -217,13 +225,18 @@ export function AccountPanel({
     if (!userId) return;
     const updated = { ...member, ...next };
     setMembers((prev) => prev.map((m) => (m.id === member.id ? updated : m)));
-    await saveMemberPrefs({
+    const ok = await saveMemberPrefs({
       userId,
       memberId: member.id,
       isSelf: member.is_self,
       busyWeekdays: updated.busy_weekdays,
       preferredDisciplines: updated.preferred_disciplines,
+      locale,
     });
+    if (!ok) {
+      setMembers((prev) => prev.map((m) => (m.id === member.id ? member : m)));
+      return;
+    }
     notifyPrefsSaved(locale);
   }
 

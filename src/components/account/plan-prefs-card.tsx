@@ -2,6 +2,7 @@
 
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
+import { persist } from "@/lib/account/save";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -79,31 +80,39 @@ export function PlanPrefsFields({
   );
 }
 
+/** Returns false when nothing was stored, so no caller says "Saved" in error. */
 export async function saveMemberPrefs(opts: {
   userId: string;
   memberId: string;
   isSelf: boolean;
   busyWeekdays: number[];
   preferredDisciplines: string[];
-}) {
+  locale: string;
+}): Promise<boolean> {
   const supabase = createBrowserSupabase();
-  await supabase
-    .from("family_members")
-    .update({
-      busy_weekdays: opts.busyWeekdays,
-      preferred_disciplines: opts.preferredDisciplines,
-    })
-    .eq("id", opts.memberId)
-    .eq("user_id", opts.userId);
-  if (opts.isSelf) {
-    await supabase
+  const ok = await persist(
+    supabase
+      .from("family_members")
+      .update({
+        busy_weekdays: opts.busyWeekdays,
+        preferred_disciplines: opts.preferredDisciplines,
+      })
+      .eq("id", opts.memberId)
+      .eq("user_id", opts.userId),
+    { locale: opts.locale },
+  );
+  if (!ok) return false;
+  if (!opts.isSelf) return true;
+  return persist(
+    supabase
       .from("profiles")
       .update({
         busy_weekdays: opts.busyWeekdays,
         preferred_disciplines: opts.preferredDisciplines,
       })
-      .eq("id", opts.userId);
-  }
+      .eq("id", opts.userId),
+    { locale: opts.locale },
+  );
 }
 
 export function notifyPrefsSaved(locale: string) {

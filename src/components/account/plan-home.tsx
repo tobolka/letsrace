@@ -35,6 +35,8 @@ import {
   type AttendanceRecord,
 } from "@/lib/planner-db";
 import type { SuggestionContext } from "@/lib/plan-suggestions";
+import { persist } from "@/lib/account/save";
+import { toast } from "sonner";
 
 const EVENT_EMBED =
   "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, location:locations(name, municipality, country_code)";
@@ -361,7 +363,11 @@ export function PlanHome({ locale }: { locale: string }) {
     if (!userId) return;
     setBusyId(eventId);
     const supabase = createBrowserSupabase();
-    await removeFromPlan({ supabase, userId, eventId });
+    if (!(await removeFromPlan({ supabase, userId, eventId }))) {
+      toast.error(t.saveFailed);
+      setBusyId(null);
+      return;
+    }
     setAttendanceByEvent((prev) => {
       const next = { ...prev };
       delete next[eventId];
@@ -382,40 +388,67 @@ export function PlanHome({ locale }: { locale: string }) {
   async function onSetNote(day: string, note: string) {
     if (!userId) return;
     const supabase = createBrowserSupabase();
+    const before = blocked[day];
     if (!note) {
       setBlocked((prev) => {
         const next = { ...prev };
         delete next[day];
         return next;
       });
-      await supabase.from("blocked_days").delete().eq("user_id", userId).eq("day", day);
+      await persist(
+        supabase.from("blocked_days").delete().eq("user_id", userId).eq("day", day),
+        {
+          locale,
+          onFailure: () =>
+            setBlocked((prev) => (before ? { ...prev, [day]: before } : prev)),
+        },
+      );
       return;
     }
     setBlocked((prev) => ({ ...prev, [day]: { day, note } }));
-    await supabase
-      .from("blocked_days")
-      .upsert({ user_id: userId, day, note }, { onConflict: "user_id,day" });
+    await persist(
+      supabase
+        .from("blocked_days")
+        .upsert({ user_id: userId, day, note }, { onConflict: "user_id,day" }),
+      {
+        locale,
+        onFailure: () =>
+          setBlocked((prev) => {
+            const next = { ...prev };
+            if (before) next[day] = before;
+            else delete next[day];
+            return next;
+          }),
+      },
+    );
   }
 
   async function onSetHome(place: PickedPlace) {
     if (!userId) return;
     const supabase = createBrowserSupabase();
-    await supabase.from("race_alerts").insert({
-      user_id: userId,
-      enabled: true,
-      label: place.label,
-      lat: place.lat,
-      lng: place.lng,
-      radius_km: ALERT_RADIUS_DEFAULT,
-      locale,
-    });
-    await load();
+    const ok = await persist(
+      supabase.from("race_alerts").insert({
+        user_id: userId,
+        enabled: true,
+        label: place.label,
+        lat: place.lat,
+        lng: place.lng,
+        radius_km: ALERT_RADIUS_DEFAULT,
+        locale,
+      }),
+      { locale },
+    );
+    if (ok) await load();
   }
 
   async function onAddRounds(eventIds: string[]) {
     if (!userId) return;
     const supabase = createBrowserSupabase();
-    for (const id of eventIds) await ensureFavorite(supabase, userId, id, false);
+    let allStored = true;
+    for (const id of eventIds) {
+      if (!(await ensureFavorite(supabase, userId, id, false))) allStored = false;
+    }
+    if (!allStored) toast.error(t.saveFailed);
     await load();
   }
 
@@ -537,7 +570,10 @@ export function PlanHome({ locale }: { locale: string }) {
                 const supabase = createBrowserSupabase();
                 const { data: auth } = await supabase.auth.getUser();
                 if (!auth.user) return;
-                await ensureFavorite(supabase, auth.user.id, eventId, false);
+                if (!(await ensureFavorite(supabase, auth.user.id, eventId, false))) {
+                  toast.error(t.saveFailed);
+                  return;
+                }
                 await load();
               }}
             />

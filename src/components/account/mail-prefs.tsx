@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { persist } from "@/lib/account/save";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -37,14 +38,27 @@ export function MailPrefs({ locale, userId }: { locale: string; userId: string }
   }, [userId]);
 
   async function patch(next: { plan_mail?: boolean; digest_mail?: boolean }) {
+    const wasPlan = planMail;
+    const wasDigest = digestMail;
     if (next.plan_mail != null) setPlanMail(next.plan_mail);
     if (next.digest_mail != null) setDigestMail(next.digest_mail);
     const supabase = createBrowserSupabase();
-    await supabase
-      .from("profiles")
-      .update({ ...next, locale, updated_at: new Date().toISOString() })
-      .eq("id", userId);
-    toast.success(t.alertSaved);
+    // Silence here means the user believes they turned the mail off and keeps
+    // receiving it.
+    const ok = await persist(
+      supabase
+        .from("profiles")
+        .update({ ...next, locale, updated_at: new Date().toISOString() })
+        .eq("id", userId),
+      {
+        locale,
+        onFailure: () => {
+          setPlanMail(wasPlan);
+          setDigestMail(wasDigest);
+        },
+      },
+    );
+    if (ok) toast.success(t.alertSaved);
   }
 
   if (!ready) return <Skeleton className="h-36 w-full" />;
