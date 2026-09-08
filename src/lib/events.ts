@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import {
   fingerprint,
   normalizeName,
@@ -305,34 +306,44 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
     .order("name");
   if (error) throw new Error(error.message);
 
-  let query = supabase
-    .from("events")
-    .select("series_id, audience, age_categories, disciplines")
-    .not("series_id", "is", null)
-    .eq("visibility", PUBLIC_VISIBILITY)
-    .in("status", [...PUBLIC_EVENT_STATUSES])
-    .limit(20_000);
+  // `.limit(20_000)` does not lift PostgREST's thousand-row ceiling. This tally
+  // is each series' race count, and a series whose races all fall past the cut
+  // vanishes from /series altogether — it stands at 1,034 rows today.
+  const countsPage = (from: number, to: number) => {
+    let query = supabase
+      .from("events")
+      .select("id, series_id, audience, age_categories, disciplines")
+      .not("series_id", "is", null)
+      .eq("visibility", PUBLIC_VISIBILITY)
+      .in("status", [...PUBLIC_EVENT_STATUSES]);
 
-  if (filters.dateFrom) query = query.gte("start_date", filters.dateFrom);
-  if (filters.dateTo) query = query.lte("start_date", filters.dateTo);
-  if (filters.disciplines?.length) {
-    query = query.overlaps("disciplines", expandDisciplineFilter(filters.disciplines));
-  }
-  if (filters.levels?.length) {
-    query = query.in("level", filters.levels);
-  }
-  if (filters.ageCategories?.length) {
-    const expanded = expandAgeCategoryFilter(filters.ageCategories);
-    const parts = [`age_categories.ov.{${expanded.join(",")}}`];
-    if (filters.ageCategories.includes("kids")) parts.push("audience.eq.kids");
-    if (filters.ageCategories.includes("youth")) parts.push("audience.eq.youth");
-    query =
-      parts.length > 1 ? query.or(parts.join(",")) : query.overlaps("age_categories", expanded);
-  }
+    if (filters.dateFrom) query = query.gte("start_date", filters.dateFrom);
+    if (filters.dateTo) query = query.lte("start_date", filters.dateTo);
+    if (filters.disciplines?.length) {
+      query = query.overlaps("disciplines", expandDisciplineFilter(filters.disciplines));
+    }
+    if (filters.levels?.length) {
+      query = query.in("level", filters.levels);
+    }
+    if (filters.ageCategories?.length) {
+      const expanded = expandAgeCategoryFilter(filters.ageCategories);
+      const parts = [`age_categories.ov.{${expanded.join(",")}}`];
+      if (filters.ageCategories.includes("kids")) parts.push("audience.eq.kids");
+      if (filters.ageCategories.includes("youth")) parts.push("audience.eq.youth");
+      query =
+        parts.length > 1 ? query.or(parts.join(",")) : query.overlaps("age_categories", expanded);
+    }
+    return query.order("id", { ascending: true }).range(from, to);
+  };
 
-  const { data: counts } = await query;
+  const counts = await readAllRows<{
+    series_id: string | null;
+    audience: string | null;
+    age_categories: string[] | null;
+    disciplines: string[] | null;
+  }>(countsPage);
   const tally = new Map<string, number>();
-  for (const row of counts ?? []) {
+  for (const row of counts) {
     if (
       filters.disciplines?.length &&
       !matchesDisciplineFilter((row.disciplines as string[]) ?? [], filters.disciplines)
@@ -468,17 +479,26 @@ export async function listSitemapSeries(
 ): Promise<{ slug: string; updatedAt: string | null }[]> {
   const supabase = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await supabase
-    .from("series")
-    .select("slug, updated_at, events!inner(id, visibility, start_date)")
-    .eq("visibility", "public")
-    .eq("events.visibility", "public")
-    .gte("events.start_date", today)
-    .limit(limit);
-  if (error) throw new Error(error.message);
+  // One row per (series, race) pair, so `limit` counts pairs, not series.
+  const data = await readAllRows<{
+    id: string;
+    slug: string;
+    updated_at: string | null;
+  }>(
+    (from, to) =>
+      supabase
+        .from("series")
+        .select("id, slug, updated_at, events!inner(id, visibility, start_date)")
+        .eq("visibility", "public")
+        .eq("events.visibility", "public")
+        .gte("events.start_date", today)
+        .order("id", { ascending: true })
+        .range(from, to),
+    { max: limit },
+  );
   const seen = new Set<string>();
   const out: { slug: string; updatedAt: string | null }[] = [];
-  for (const row of data ?? []) {
+  for (const row of data) {
     const slug = row.slug as string;
     if (!slug || seen.has(slug)) continue;
     seen.add(slug);
@@ -495,18 +515,32 @@ export async function listSitemapEvents(limit = 4000): Promise<
     await import("@/lib/event-visibility");
   const { isListedCountry } = await import("@/lib/geo/europe");
   const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await supabase
-    .from("events")
-    .select(
-      "slug, start_date, updated_at, website_url, registration_url, location:locations(country_code)",
-    )
-    .eq("visibility", PUBLIC_VISIBILITY)
-    .in("status", [...PUBLIC_EVENT_STATUSES])
-    .gte("start_date", today)
-    .order("start_date", { ascending: true })
-    .limit(limit);
-  if (error) throw new Error(error.message);
-  return (data ?? [])
+  // 1,896 races are upcoming and public; `.limit(4000)` shipped a thousand of
+  // them, so nine hundred race pages were never offered to Google at all.
+  const data = await readAllRows<{
+    id: string;
+    slug: string;
+    start_date: string;
+    updated_at: string | null;
+    website_url: string | null;
+    registration_url: string | null;
+    location: { country_code?: string } | { country_code?: string }[] | null;
+  }>(
+    (from, to) =>
+      supabase
+        .from("events")
+        .select(
+          "id, slug, start_date, updated_at, website_url, registration_url, location:locations(country_code)",
+        )
+        .eq("visibility", PUBLIC_VISIBILITY)
+        .in("status", [...PUBLIC_EVENT_STATUSES])
+        .gte("start_date", today)
+        .order("start_date", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, to),
+    { max: limit },
+  );
+  return data
     .filter((row) => {
       const loc = row.location as { country_code?: string } | { country_code?: string }[] | null;
       const countryCode = Array.isArray(loc) ? loc[0]?.country_code : loc?.country_code;

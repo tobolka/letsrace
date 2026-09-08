@@ -8,6 +8,7 @@
  * against anything outside it.
  */
 import { createServerSupabase } from "@/lib/supabase/server";
+import { readAllRows } from "@/lib/supabase/read-all";
 import { getSourceHealth, type StalledSource } from "@/lib/admin/source-health";
 
 export type ForwardBucket = { month: string; races: number };
@@ -85,11 +86,16 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         .gte("started_at", new Date(Date.now() - 7 * 864e5).toISOString())
         .order("started_at", { ascending: false })
         .limit(500),
-      supabase
-        .from("events")
-        .select("created_at")
-        .gte("created_at", since14.toISOString())
-        .limit(20000),
+      // `.limit(20000)` still reads a thousand rows; this is a count of what
+      // arrived in a fortnight and has to see all of it.
+      readAllRows<{ id: string; created_at: string }>((from, to) =>
+        supabase
+          .from("events")
+          .select("id, created_at")
+          .gte("created_at", since14.toISOString())
+          .order("id", { ascending: true })
+          .range(from, to),
+      ).then((data) => ({ data })),
     ]);
 
   const byMonth = new Map<string, number>();
