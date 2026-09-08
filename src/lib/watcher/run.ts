@@ -1,3 +1,4 @@
+import { isWholeCalendarHost } from "@/lib/watcher/extractors/adapters";
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
   fingerprint,
@@ -369,6 +370,9 @@ export async function watchOne(row: {
         ) {
           continue;
         }
+        // One page of these is the whole calendar; its links are the same
+        // calendar again, one watch per race.
+        if (isWholeCalendarHost(hostnameOf(child))) continue;
         const sameHost = hostnameOf(child) === hostnameOf(row.url);
         if (
           sameHost &&

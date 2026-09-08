@@ -191,6 +191,29 @@ import * as cheerio from "cheerio";
 
 type AdapterResult = { events: ParsedEvent[]; strategy: string };
 
+/**
+ * Hosts whose adapter answers the same for every URL on them.
+ *
+ * mtbs.cz paginates the whole season whichever of its pages was fetched, and
+ * the others read an API that takes no URL at all. Following the links such a
+ * page discovers therefore adds watches that re-ingest the identical calendar:
+ * mtbs.cz had grown to fifty of them, each claiming all 157 races, which is
+ * where 10,736 of the catalogue's 19,668 source rows came from — and with them
+ * a "how many calendars list this race" count that the duplicate queue leans on
+ * and that had stopped meaning anything.
+ */
+export const WHOLE_CALENDAR_HOSTS = [
+  "mtbs.cz",
+  "radsport-events.de",
+  "nazavody.cz",
+  "sportt.cz",
+];
+
+export function isWholeCalendarHost(host: string): boolean {
+  const h = host.replace(/^www\./, "");
+  return WHOLE_CALENDAR_HOSTS.some((known) => h === known || h.endsWith(`.${known}`));
+}
+
 export async function extractWithAdapter(
   host: string,
   url: string,
