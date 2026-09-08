@@ -31,15 +31,25 @@ import { locales, type Messages } from "@/lib/i18n/messages";
 export function MapAccountButton({
   locale,
   messages,
+  variant = "overlay",
   onSignIn,
   onSubmitRace,
   onFeedback,
 }: {
   locale: string;
   messages: Messages;
-  onSignIn: () => void;
-  onSubmitRace: () => void;
-  onFeedback: () => void;
+  /**
+   * "overlay" floats over the map and needs its own shadow; "bar" sits in the
+   * account pages' top bar, where the bar already provides the surface. Same
+   * control, same menu, either way — so the two halves of the app are not two
+   * apps.
+   */
+  variant?: "overlay" | "bar";
+  /** Absent where there is no sign-in dialog to open: the menu links instead. */
+  onSignIn?: () => void;
+  /** Absent outside the map, where these dialogs do not exist. */
+  onSubmitRace?: () => void;
+  onFeedback?: () => void;
 }) {
   const router = useRouter();
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -87,14 +97,16 @@ export function MapAccountButton({
         a "Sign in" that flips to "Our plan" a second later reads as a glitch —
         while the menu beside it is there from the first frame.
       */}
-      {authed === true ? (
+      {/* On the map this is the way into the plan. In the account's own bar the
+          nav already says it, twice over. */}
+      {authed === true && variant === "overlay" ? (
         <Button asChild size="sm" className="shadow-md">
           <Link href={`/${locale}/account`}>
             <CalendarCheck /> {messages.myCalendar}
           </Link>
         </Button>
       ) : null}
-      {authed === false ? (
+      {authed === false && onSignIn ? (
         <Button size="sm" onClick={onSignIn} className="shadow-md">
           <LogIn /> {messages.signIn}
         </Button>
@@ -105,9 +117,9 @@ export function MapAccountButton({
           <Button
             type="button"
             size="icon"
-            variant="secondary"
+            variant={variant === "bar" ? "ghost" : "secondary"}
             aria-label={messages.account}
-            className="rounded-full shadow-md"
+            className={variant === "bar" ? "rounded-full" : "rounded-full shadow-md"}
           >
             <User />
           </Button>
@@ -166,9 +178,9 @@ export function AccountMenuItems({
   email: string | null;
   locale: string;
   messages: Messages;
-  onSignIn: () => void;
-  onSubmitRace: () => void;
-  onFeedback: () => void;
+  onSignIn?: () => void;
+  onSubmitRace?: () => void;
+  onFeedback?: () => void;
   onSignOut: () => void;
 }) {
   const localeHref = useLocaleHref();
@@ -199,9 +211,17 @@ export function AccountMenuItems({
       {authed === false ? (
         <>
           <DropdownMenuGroup>
-            <DropdownMenuItem onSelect={onSignIn}>
-              <LogIn /> {messages.signIn}
-            </DropdownMenuItem>
+            {onSignIn ? (
+              <DropdownMenuItem onSelect={onSignIn}>
+                <LogIn /> {messages.signIn}
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem asChild>
+                <Link href={`/${locale}/account`}>
+                  <LogIn /> {messages.signIn}
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
         </>
@@ -249,8 +269,12 @@ export function AccountMenuItems({
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        <DropdownMenuItem onSelect={onSubmitRace}>{messages.missingRace}</DropdownMenuItem>
-        <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
+        {onSubmitRace ? (
+          <DropdownMenuItem onSelect={onSubmitRace}>{messages.missingRace}</DropdownMenuItem>
+        ) : null}
+        {onFeedback ? (
+          <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
+        ) : null}
       </DropdownMenuGroup>
 
       {authed === true ? (

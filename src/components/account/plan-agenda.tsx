@@ -10,7 +10,6 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
 import { todayIso } from "@/lib/date-presets";
-import { memberLabel } from "@/components/account/race-plan-controls";
 import { isBusyIsoDate } from "@/lib/plan-prefs";
 import {
   plansOnIsoDate,
@@ -21,6 +20,15 @@ import {
 import { cn } from "@/lib/utils";
 
 const WEEKS_AT_A_TIME = 8;
+
+/** Sticks under the app bar; the row it sits in cannot stick for it. */
+const HEAD =
+  "sticky top-0 z-10 border-b bg-muted py-1.5 text-xs font-medium md:top-14";
+
+/** A column heading has room for a name, not for a full name. */
+function firstName(name: string): string {
+  return name.trim().split(/\s+/)[0] || name;
+}
 
 /**
  * The season as a row per day and a column per rider.
@@ -63,39 +71,56 @@ export function PlanAgenda({
   const days: string[] = [];
   for (let i = 0; i < weeks * 7; i++) days.push(format(addDays(start, i), "yyyy-MM-dd"));
 
-  // A race nobody has been marked on yet belongs to the household, not to a
-  // person — the same column a family sheet keeps for "all of us".
-  const columns = [{ id: "__all__", label: t.planEveryone }, ...members.map((m) => ({
-    id: m.id,
-    label: memberLabel(m, t),
-  }))];
-
-  function racesFor(iso: string, columnId: string): EventPlan[] {
-    const onDay = plansOnIsoDate(plans, iso);
-    if (columnId === "__all__") {
-      return onDay.filter((p) => members.every((m) => (p.memberStatus[m.id] ?? "none") === "none"));
-    }
-    return onDay.filter((p) => (p.memberStatus[columnId] ?? "none") !== "none");
+  /**
+   * A race nobody has been marked on is not nobody's race — it is in the plan
+   * and anyone in the house could still be the one who rides it, so it stands
+   * in every column, quietly, until somebody is named.
+   */
+  function racesFor(iso: string, memberId: string): { plan: EventPlan; claimed: boolean }[] {
+    return plansOnIsoDate(plans, iso)
+      .map((plan) => ({
+        plan,
+        claimed: (plan.memberStatus[memberId] ?? "none") !== "none",
+        anyone: members.some((m) => (plan.memberStatus[m.id] ?? "none") !== "none"),
+      }))
+      .filter((r) => r.claimed || !r.anyone)
+      .map(({ plan, claimed }) => ({ plan, claimed }));
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-x-auto rounded-xl border bg-card">
-        <table className="w-full min-w-[36rem] border-collapse text-sm">
-          <thead className="sticky top-12 z-10">
-            <tr className="border-b bg-muted text-left">
-              <th scope="col" className="px-3 py-1.5 text-xs font-medium">
+      {/*
+        `overflow-x: auto` makes this a scroll container in both axes, and a
+        sticky heading inside one sticks to the container — which never scrolls
+        — so it sat 56px down the table, on top of the second row. Wide enough
+        to need sideways scrolling only on a phone; above that the page is the
+        scrollport and the heading sticks under the bar as intended.
+      */}
+      <div className="overflow-x-auto rounded-xl border bg-card md:overflow-x-visible">
+        {/* `border-separate` because a sticky heading does not stick inside a
+            collapsed-border table — the borders are drawn by the cells here. */}
+        <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-sm">
+          <thead>
+            <tr className="text-left">
+              <th scope="col" className={cn(HEAD, "w-24 px-3 text-right")}>
                 {t.date}
               </th>
-              <th scope="col" className="px-2 py-1.5 text-xs font-medium">
+              <th scope="col" className={cn(HEAD, "w-24 px-2")}>
                 {t.planDay}
               </th>
-              <th scope="col" className="px-2 py-1.5 text-xs font-medium">
+              <th scope="col" className={cn(HEAD, "w-40 px-2")}>
                 {t.planNote}
               </th>
-              {columns.map((c) => (
-                <th key={c.id} scope="col" className="px-2 py-1.5 text-xs font-medium">
-                  {c.label}
+              {members.map((m) => (
+                <th
+                  key={m.id}
+                  scope="col"
+                  className={cn(HEAD, "px-2")}
+                  // The rider columns share whatever is left, evenly, so the
+                  // table does not jump about as names come and go.
+                  style={{ width: `${70 / members.length}%` }}
+                >
+                  {firstName(m.name)}
                 </th>
               ))}
             </tr>
@@ -112,7 +137,7 @@ export function PlanAgenda({
                   key={iso}
                   onClick={() => onSelectDay(iso)}
                   className={cn(
-                    "group/row border-b align-top last:border-b-0",
+                    "group/row align-middle [&>*]:border-b [&>*]:last:border-b-0",
                     weekend && "bg-stone-200/45 dark:bg-stone-900/50",
                     (note || busy) && "bg-muted/60",
                     selected === iso && "bg-brand/8 inset-ring inset-ring-brand/40",
@@ -122,13 +147,13 @@ export function PlanAgenda({
                   <th
                     scope="row"
                     className={cn(
-                      "px-3 py-1 text-left text-xs font-normal tabular-nums whitespace-nowrap",
+                      "px-3 py-1 text-right text-xs font-normal tabular-nums whitespace-nowrap",
                       isToday ? "font-semibold text-brand" : "text-muted-foreground",
                     )}
                   >
                     {format(d, "d. M. yyyy", { locale: df })}
                   </th>
-                  <td className="px-2 py-1 text-xs whitespace-nowrap text-muted-foreground">
+                  <td className="px-2 py-1 text-xs whitespace-nowrap text-muted-foreground first-letter:uppercase">
                     {format(d, "EEEE", { locale: df })}
                   </td>
                   <td className="px-2 py-1">
@@ -138,10 +163,10 @@ export function PlanAgenda({
                       onSave={(next) => onSetNote(iso, next)}
                     />
                   </td>
-                  {columns.map((c) => (
-                    <td key={c.id} className="px-2 py-1">
+                  {members.map((m) => (
+                    <td key={m.id} className="px-2 py-1">
                       <div className="flex flex-col gap-0.5">
-                        {racesFor(iso, c.id).map((plan) => (
+                        {racesFor(iso, m.id).map(({ plan, claimed }) => (
                           <Link
                             key={plan.event.id}
                             href={eventMapPath(locale, {
@@ -149,12 +174,16 @@ export function PlanAgenda({
                               startDate: plan.event.startDate,
                               endDate: plan.event.endDate,
                             })}
+                            title={plan.event.name}
                             onClick={(e) => e.stopPropagation()}
-                            className="flex min-w-0 items-center gap-1.5 text-xs leading-tight hover:underline"
+                            className={cn(
+                              "flex min-w-0 items-center gap-1.5 text-xs leading-tight hover:underline",
+                              !claimed && "text-muted-foreground",
+                            )}
                           >
                             <span
                               aria-hidden
-                              className="size-1.5 shrink-0 rounded-full"
+                              className={cn("size-1.5 shrink-0 rounded-full", !claimed && "opacity-50")}
                               style={{ background: disciplineColor(plan.event.disciplines) }}
                             />
                             <span className="truncate">{plan.event.name}</span>

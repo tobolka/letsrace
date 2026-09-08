@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import { CalendarDays, MapPin } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { NextRaceHero } from "@/components/account/next-race-hero";
@@ -12,22 +11,12 @@ import { PlanSeason } from "@/components/account/plan-season";
 import { PlanSetup } from "@/components/account/plan-setup";
 import { PlanTodo } from "@/components/account/plan-todo";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
-import { asLocale, messagesFor } from "@/lib/i18n/messages";
+import { messagesFor } from "@/lib/i18n/messages";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { todayIso } from "@/lib/date-presets";
-import { pluralize } from "@/lib/i18n/plural";
 import { buildSeriesProgress, type SeriesProgress, type SeriesRound } from "@/lib/plan-series";
 import { ALERT_RADIUS_DEFAULT } from "@/lib/race-alerts";
 import { parseWeekdays } from "@/lib/plan-prefs";
@@ -112,7 +101,6 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
  */
 export function PlanHome({ locale }: { locale: string }) {
   const t = messagesFor(locale);
-  const loc = asLocale(locale);
   const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -335,7 +323,6 @@ export function PlanHome({ locale }: { locale: string }) {
   );
 
   const today = todayIso();
-  const upcomingCount = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today).length;
   const past = useMemo(
     () =>
       plans
@@ -463,18 +450,7 @@ export function PlanHome({ locale }: { locale: string }) {
   const suggestTo = pickedDay ?? addDaysIso(today, 30);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">{t.planTitle}</h1>
-        <p className="text-sm tabular-nums text-muted-foreground">
-          {pluralize(upcomingCount, loc, {
-            one: t.countRaceOne,
-            few: t.countRaceFew,
-            many: t.countRaceMany,
-          })}
-        </p>
-      </header>
-
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
       <PlanSetup
         locale={locale}
         hasPeople={members.length > 0}
@@ -483,6 +459,12 @@ export function PlanHome({ locale }: { locale: string }) {
         onSetHome={(place) => onSetHome(place)}
       />
 
+      {/*
+        The next race used to be a card the height of a phone screen, above a
+        list of jobs, above the season — so the season, which is the reason
+        this page exists, started below the fold. It is one line now, and the
+        season starts under it.
+      */}
       {nextRace ? (
         <NextRaceHero
           locale={locale}
@@ -494,97 +476,80 @@ export function PlanHome({ locale }: { locale: string }) {
           }
         />
       ) : (
-        // A plan holding only races that have been ridden is not an empty plan,
-        // but the top of this page is still empty without something in it — and
-        // "nothing coming up" is the one thing worth saying there.
-        <Empty className="border border-dashed">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <CalendarDays />
-            </EmptyMedia>
-            <EmptyTitle>{t.planNoUpcoming}</EmptyTitle>
-            <EmptyDescription>
-              {plans.length === 0 ? t.planEmpty : t.planNoUpcomingBody}
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button asChild>
-              <Link href={`/${locale}`}>
-                <MapPin data-icon="inline-start" />
-                {t.viewOnMap}
-              </Link>
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <p className="text-sm text-muted-foreground">
+          {plans.length === 0 ? t.planEmpty : t.planNoUpcomingBody}{" "}
+          <Link href={`/${locale}`} className="text-foreground underline underline-offset-4">
+            {t.viewOnMap}
+          </Link>
+        </p>
       )}
 
-      {plans.length > 0 ? (
-        <PlanTodo
+      {/* The season on the left, and beside it the two things that answer
+          "what now" — rather than a thousand pixels further down. */}
+      <div className="grid gap-6 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <PlanSeason
           locale={locale}
-          actions={actions}
+          plans={plans}
+          past={past}
           members={members}
+          busyWeekdays={busyWeekdays}
+          blocked={blocked}
+          selected={pickedDay}
           busyId={busyId}
+          onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
+          onSetNote={(day, note) => onSetNote(day, note)}
           onStatusChange={(eventId, memberId, status) =>
             void onStatusChange(eventId, memberId, status)
           }
           onDiscard={(eventId) => void onDiscard(eventId)}
         />
-      ) : null}
 
-      <PlanSeason
-        locale={locale}
-        plans={plans}
-        past={past}
-        members={members}
-        busyWeekdays={busyWeekdays}
-        blocked={blocked}
-        selected={pickedDay}
-        busyId={busyId}
-        onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
-        onSetNote={(day, note) => onSetNote(day, note)}
-        onStatusChange={(eventId, memberId, status) =>
-          void onStatusChange(eventId, memberId, status)
-        }
-        onDiscard={(eventId) => void onDiscard(eventId)}
-      />
+        <aside ref={fillRef} className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20">
+          {actions.length > 0 ? (
+            <PlanTodo
+              locale={locale}
+              actions={actions}
+              members={members}
+              busyId={busyId}
+              onStatusChange={(eventId, memberId, status) =>
+                void onStatusChange(eventId, memberId, status)
+              }
+              onDiscard={(eventId) => void onDiscard(eventId)}
+            />
+          ) : null}
 
-      {/* Grid items default to min-width:auto, so one long race name in the
-          suggestions pushed the whole card past the right edge of a phone. */}
-      <div
-        ref={fillRef}
-        className="grid gap-6 [&>*]:min-w-0 lg:grid-cols-2 lg:items-start"
-      >
-        {suggestCtx ? (
-          <FreeWeekendSuggestions
-            key={`${suggestFrom}-${suggestTo}`}
+          {suggestCtx ? (
+            <FreeWeekendSuggestions
+              key={`${suggestFrom}-${suggestTo}`}
+              locale={locale}
+              from={suggestFrom}
+              to={suggestTo}
+              context={suggestCtx}
+              title={
+                pickedDay
+                  ? t.suggestForDay.replace(
+                      "{day}",
+                      format(parseISO(pickedDay), "EEEE d. M.", { locale: dateFnsLocale(locale) }),
+                    )
+                  : t.suggestSoon
+              }
+              onAdd={async (eventId) => {
+                const supabase = createBrowserSupabase();
+                const { data: auth } = await supabase.auth.getUser();
+                if (!auth.user) return;
+                await ensureFavorite(supabase, auth.user.id, eventId, false);
+                await load();
+              }}
+            />
+          ) : null}
+
+          <SeriesProgressCard
             locale={locale}
-            from={suggestFrom}
-            to={suggestTo}
-            context={suggestCtx}
-            title={
-              pickedDay
-                ? t.suggestForDay.replace(
-                    "{day}",
-                    format(parseISO(pickedDay), "EEEE d. M.", { locale: dateFnsLocale(locale) }),
-                  )
-                : t.suggestSoon
-            }
-            onAdd={async (eventId) => {
-              const supabase = createBrowserSupabase();
-              const { data: auth } = await supabase.auth.getUser();
-              if (!auth.user) return;
-              await ensureFavorite(supabase, auth.user.id, eventId, false);
-              await load();
-            }}
+            items={series}
+            plannedEventIds={new Set(Object.keys(eventsById))}
+            onAddRounds={(ids) => onAddRounds(ids)}
           />
-        ) : null}
-
-        <SeriesProgressCard
-          locale={locale}
-          items={series}
-          plannedEventIds={new Set(Object.keys(eventsById))}
-          onAddRounds={(ids) => onAddRounds(ids)}
-        />
+        </aside>
       </div>
     </div>
   );

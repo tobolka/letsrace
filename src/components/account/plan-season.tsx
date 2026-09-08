@@ -20,7 +20,7 @@ import {
   type PlannerMember,
 } from "@/lib/planner";
 
-const VIEWS = ["calendar", "list"] as const;
+const VIEWS = ["list", "calendar"] as const;
 
 /**
  * The season, and it is the page's centre of gravity.
@@ -66,7 +66,7 @@ export function PlanSeason({
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   const today = todayIso();
-  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("calendar"));
+  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("list"));
   const [month, setMonth] = useState(() => monthStart(selected ?? today));
 
   return (
@@ -85,13 +85,13 @@ export function PlanSeason({
           size="sm"
           className="ml-auto"
         >
-          <ToggleGroupItem value="calendar">
-            <CalendarDays data-icon="inline-start" />
-            {t.planViewCalendar}
-          </ToggleGroupItem>
           <ToggleGroupItem value="list">
             <Rows3 data-icon="inline-start" />
             {t.planViewList}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="calendar">
+            <CalendarDays data-icon="inline-start" />
+            {t.planViewCalendar}
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
