@@ -34,29 +34,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  images: { unoptimized: true },
   serverExternalPackages: ["@sparticuz/chromium"],
   outputFileTracingExcludes: {
     "*": [
       "src/lib/watcher/extractors/csc-render.ts",
       "node_modules/@sparticuz/chromium/**",
-      // `sharp` and its libvips binary are 28 MB and Next traces them into all
-      // twenty-five page functions, because the image optimiser might be
-      // reachable from any of them. Nothing calls `next/image` (welcome-card
-      // says so and uses a plain <img>), and `images.unoptimized` means there
-      // is no optimiser to reach — but one route does use sharp, behind a
-      // dynamic import that no grep for "next/image" would ever find: the home
-      // OG card renders a PNG through `@vercel/og` and then has sharp squeeze
-      // it to a JPEG. That route gets it back below; the other twenty-four do
-      // not need to carry it.
-      "node_modules/@img/**",
-      "node_modules/sharp/**",
-      "node_modules/sharp-*/**",
     ],
-  },
-  outputFileTracingIncludes: {
-    "/[locale]/opengraph-image": ["node_modules/@img/**", "node_modules/sharp/**"],
-    "/opengraph-image": ["node_modules/@img/**", "node_modules/sharp/**"],
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
