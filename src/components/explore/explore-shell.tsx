@@ -1035,7 +1035,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         <DrawerContent
           showOverlay={false}
           style={{ height: "100dvh", maxHeight: "100dvh" }}
-          className="z-20 overflow-hidden rounded-t-2xl border-0 bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(28,25,23,.12)] data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh] md:hidden"
+          /**
+           * The sheet floats over the map rather than being welded to it, the
+           * way Google Maps does: a little map showing down both sides says
+           * the list is on top of something, and gives the rounding corners to
+           * actually be round at.
+           */
+          className="z-20 overflow-hidden border-0 bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_28px_rgba(28,25,23,.16)] data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-2 data-[vaul-drawer-direction=bottom]:rounded-2xl data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh] md:hidden"
         >
           <DrawerHandle aria-label={sheetSnap === minSnap ? messages.sheetExpand : messages.sheetCollapse} />
           <DrawerTitle className="sr-only">{messages.racesCount}</DrawerTitle>

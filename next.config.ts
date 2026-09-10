@@ -34,11 +34,21 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  images: { unoptimized: true },
   serverExternalPackages: ["@sparticuz/chromium"],
   outputFileTracingExcludes: {
     "*": [
       "src/lib/watcher/extractors/csc-render.ts",
       "node_modules/@sparticuz/chromium/**",
+      // `sharp` and its libvips binary are 28 MB, and Next traces them into
+      // every page function — 25 of them — because the image optimiser might
+      // be reachable. Nothing here calls `next/image` (see welcome-card, which
+      // says so in as many words), and the OG images go through `@vercel/og`,
+      // which rasterises with resvg's wasm and never touches sharp. With
+      // `images.unoptimized` there is no optimiser to reach either.
+      "node_modules/@img/**",
+      "node_modules/sharp/**",
+      "node_modules/sharp-*/**",
     ],
   },
   experimental: {
