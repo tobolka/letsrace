@@ -1002,8 +1002,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           <MobileListSheet
             snap={listSnap}
             onSnap={setListSnap}
+            viewportH={viewportH}
             title={messages.racesCount}
             handleLabel={listSnap === LIST_PEEK ? messages.sheetExpand : messages.sheetCollapse}
+            mapLabel={messages.navMap}
           >
             <MobileTopBar
               weekendLabel={weekendLabel}
@@ -1079,6 +1081,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             open={Boolean(selected)}
             snap={detailSnap}
             onSnap={setDetailSnap}
+            viewportH={viewportH}
             onClose={() => selectEvent(null)}
             title={selected?.name ?? ""}
             handleLabel={detailSnap === FULL ? messages.sheetCollapse : messages.sheetExpand}
@@ -1308,7 +1311,9 @@ const EventCard = memo(function EventCard({
       // The dividing line lives on the listitem wrapper now — inside it this
       // button is always the last child, so `last:` here would never not match.
       className={cn(
-        "rounded-none border-0 px-4 py-2.5 hover:bg-accent/50",
+        // `active:` is the press itself. On a phone there is no hover, and a
+        // row that does nothing until the card slides up feels like a miss.
+        "rounded-none border-0 px-4 py-3 hover:bg-accent/50 active:bg-accent",
         // `muted/50` over a near-white ground was a shade nobody could see. The
         // race you picked is the one thing on this list worth finding again
         // after you look away from it.

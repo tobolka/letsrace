@@ -5,6 +5,7 @@ import type {
   ExpressionSpecification,
   GeoJSONSource,
   Map as MapLibreMap,
+  MapGeoJSONFeature,
   Marker,
   PaddingOptions,
   Popup,
@@ -166,6 +167,21 @@ const GLYPH_FILL = 0.92;
  * not its ink — which is how a 26px pin answers to a finger.
  */
 const OFFSET_UNITS = PIN_RASTER / PIN_BOX_PX;
+
+/** How far off a pin a finger may land and still mean it. */
+const NEAR_MISS_PX = 14;
+
+/**
+ * MapLibre hands the click a MouseEvent whichever way it was made. A touch
+ * arrives with `sourceCapabilities.firesTouchEvents`, and where the browser
+ * does not say, a coarse pointer is the next best witness.
+ */
+function isTouchPointer(e: MouseEvent): boolean {
+  const caps = (e as MouseEvent & { sourceCapabilities?: { firesTouchEvents?: boolean } })
+    .sourceCapabilities;
+  if (caps && typeof caps.firesTouchEvents === "boolean") return caps.firesTouchEvents;
+  return window.matchMedia("(pointer: coarse)").matches;
+}
 
 /** The badge that says how many races share a point. */
 const BADGE_PX = 17;
@@ -658,6 +674,7 @@ export function RaceMap({
   const userGestureRef = useRef(false);
   const onSelectRef = useRef(onSelect);
   const onBackgroundClickRef = useRef(onBackgroundClick);
+  const tapPinRef = useRef<((f: GeoJSON.Feature | MapGeoJSONFeature) => void) | null>(null);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onUserLocationRef = useRef(onUserLocation);
   const paddingRef = useRef(padding);
@@ -1003,6 +1020,24 @@ export function RaceMap({
       if (map.getLayer(PIN_LAYER) && map.queryRenderedFeatures(e.point, { layers: [PIN_LAYER] }).length) {
         return;
       }
+      // A thumb lands near a pin more often than on it. Before calling the
+      // tap a miss, look a finger's width around it: a near miss used to close
+      // the card you had open, which read as the map closing things on its
+      // own. Only on a touch — a mouse is precise and should stay so.
+      if (map.getLayer(PIN_LAYER) && e.originalEvent instanceof MouseEvent && isTouchPointer(e.originalEvent)) {
+        const r = NEAR_MISS_PX;
+        const near = map.queryRenderedFeatures(
+          [
+            [e.point.x - r, e.point.y - r],
+            [e.point.x + r, e.point.y + r],
+          ],
+          { layers: [PIN_LAYER] },
+        );
+        if (near.length) {
+          tapPinRef.current?.(near[0]!);
+          return;
+        }
+      }
       // Clicking the map is also how you put a fanned-out stack back together.
       setExpandedKey(null);
       onBackgroundClickRef.current?.();
@@ -1173,9 +1208,7 @@ export function RaceMap({
         },
       });
 
-      map!.on("click", PIN_LAYER, (e) => {
-        const f = e.features?.[0];
-        if (!f) return;
+      const tapPin = (f: GeoJSON.Feature | MapGeoJSONFeature) => {
         window.clearTimeout(hoverTimerRef.current);
         popup.remove();
         // A stack opens before it can be picked from. Anything else is a race.
@@ -1186,6 +1219,12 @@ export function RaceMap({
         }
         const id = f.properties?.id as string | undefined;
         if (id) onSelectRef.current(id);
+      };
+      tapPinRef.current = tapPin;
+
+      map!.on("click", PIN_LAYER, (e) => {
+        const f = e.features?.[0];
+        if (f) tapPin(f);
       });
 
       map!.on("mousemove", PIN_LAYER, (e) => {

@@ -12,8 +12,13 @@ import {
 import type { EventSort } from "@/lib/geo/distance";
 import { cn } from "@/lib/utils";
 
+/**
+ * Forty pixels tall, not thirty-six, and pressing one says so. These are the
+ * controls a thumb uses most, in a row it reaches across; a chip that only
+ * lights up on hover gives a finger nothing back at all.
+ */
 const pillClass =
-  "h-9 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3 text-sm font-medium text-foreground shadow-none hover:bg-muted/80";
+  "h-10 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3.5 text-sm font-medium text-foreground shadow-none touch-manipulation hover:bg-muted/80 active:bg-muted";
 
 export function MobileTopBar({
   weekendLabel,
@@ -135,7 +140,7 @@ export function MobileTopBar({
         type="button"
         variant={searchActive ? "secondary" : "outline"}
         size="icon"
-        className="size-9 shrink-0 rounded-full border-border/80"
+        className="size-10 shrink-0 rounded-full border-border/80 touch-manipulation active:bg-muted"
         aria-label={searchLabel}
         aria-pressed={searchActive}
         onClick={onSearch}

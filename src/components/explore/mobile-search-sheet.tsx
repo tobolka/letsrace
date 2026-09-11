@@ -9,6 +9,7 @@ import {
   DrawerHandle,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { MODAL_SURFACE } from "@/components/explore/mobile-sheets";
 import { Input } from "@/components/ui/input";
 import type { Messages } from "@/lib/i18n/messages";
 
@@ -42,7 +43,7 @@ export function MobileSearchSheet({
       shouldScaleBackground={false}
       repositionInputs={false}
     >
-      <DrawerContent className="md:hidden">
+      <DrawerContent className={MODAL_SURFACE}>
         <DrawerHandle />
         <DrawerTitle className="px-4 pb-2 text-left text-base font-semibold">
           {messages.search}

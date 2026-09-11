@@ -14,6 +14,7 @@ import {
   DrawerHandle,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { MODAL_SURFACE } from "@/components/explore/mobile-sheets";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { thisWeekendRange, nextWeekendRange, todayIso } from "@/lib/date-presets";
@@ -206,7 +207,7 @@ export function MobileFiltersSheet({
       shouldScaleBackground={false}
       repositionInputs={false}
     >
-      <DrawerContent className="flex max-h-[92dvh] flex-col md:hidden">
+      <DrawerContent className={cn(MODAL_SURFACE, "flex max-h-[92dvh] flex-col")}>
         <DrawerHandle />
         <div className="flex items-center justify-between gap-3 px-4 pb-2">
           <DrawerTitle className="text-left text-base font-semibold">
