@@ -18,11 +18,12 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Card } from "@/components/ui/card";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHandle,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+  FULL,
+  HALF,
+  LIST_PEEK,
+  MobileDetailSheet,
+  MobileListSheet,
+} from "@/components/explore/mobile-sheets";
 import {
   Empty,
   EmptyContent,
@@ -193,7 +194,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [mobilePanel, setMobilePanel] = useState<"list" | "detail">("list");
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -236,10 +236,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [mobileSheetReady, setMobileSheetReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [listSnap, setListSnap] = useState<number | string>(0.5);
+  const [listSnap, setListSnap] = useState<number | string>(HALF);
   // A tapped pin opens the card at half height, the way Maps does it: the map
   // stays on screen above it, and dragging up is how you ask for the rest.
-  const [detailSnap, setDetailSnap] = useState<number>(0.5);
+  const [detailSnap, setDetailSnap] = useState<number>(HALF);
 
   const fallbackCenter = useMemo(() => {
     const c = coldStartCenter(locale);
@@ -264,9 +264,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const selectFromList = useCallback((id: string) => {
     selectEventRef.current(id);
   }, []);
+  // The card opens at half height whichever way a race was picked — a row in
+  // the list or a pin on the map — so it never comes up covering the map.
   const selectFromSheet = useCallback((id: string) => {
+    setDetailSnap(HALF);
     selectEventRef.current(id);
-    setMobilePanel("detail");
   }, []);
 
   useEffect(() => {
@@ -400,7 +402,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [selectedId, mobilePanel, listSettled]);
+  }, [selectedId, listSettled]);
 
   function toggleCategory(value: string) {
     const next = filters.categories.includes(value)
@@ -742,7 +744,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   const mapPadding = useMemo(() => {
     if (!isDesktop) {
-      const snap = mobilePanel === "detail" ? deferredDetailSnap : deferredListSnap;
+      const snap = selected ? deferredDetailSnap : deferredListSnap;
       const snapPx =
         typeof snap === "number" ? viewportH * snap : Number.parseFloat(snap) || viewportH * 0.5;
       /*
@@ -766,7 +768,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, mobilePanel, viewportH, deferredListSnap, deferredDetailSnap]);
+  }, [selected, isDesktop, viewportH, deferredListSnap, deferredDetailSnap]);
 
   function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean }) {
     return (
@@ -801,10 +803,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   const df = dateFnsLocale(locale);
-  const minSnap = "112px";
-  const midSnap = 0.5;
-  const fullSnap = 0.92;
-  const sheetSnap = mobilePanel === "detail" ? detailSnap : listSnap;
 
   const weekend = thisWeekendRange();
   const isThisWeekend = filters.dateFrom === weekend.from && filters.dateTo === weekend.to;
@@ -854,17 +852,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             initialFocus={initialFocus}
             skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
             onUserLocation={handleUserLocation}
-            onSelect={(id) => {
-              selectEvent(id);
-              setDetailSnap(midSnap);
-              setMobilePanel("detail");
-            }}
+            onSelect={selectFromSheet}
             onBackgroundClick={() => {
-              // Tapping the map is a request to see it: collapse to the bar.
-              if (!isDesktop) {
-                setListSnap(minSnap);
-                setMobilePanel("list");
-              }
+              // A tap on the map puts the card away and does nothing else. It
+              // used to collapse the list too, so every stray tap while panning
+              // yanked the list down — the list is the handle's to resize.
+              if (!isDesktop && selectedId) selectEvent(null);
             }}
             onBoundsChange={(b, reason, camera) => {
               setBounds(b);
@@ -1005,135 +998,108 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       </div>
 
       {mobileSheetReady ? (
-      <Drawer
-        open
-        dismissible={false}
-        modal={false}
-        shouldScaleBackground={false}
-        setBackgroundColorOnScale={false}
-        noBodyStyles
-        repositionInputs={false}
-        snapToSequentialPoint
-        snapPoints={[minSnap, midSnap, fullSnap]}
-        fadeFromIndex={2}
-        activeSnapPoint={sheetSnap}
-        setActiveSnapPoint={(point) => {
-          if (point == null) return;
-          // Dragging the sheet sets the height of whichever thing is in it.
-          // Pulling a race card down puts the list back rather than stranding
-          // the sheet on a race you can no longer see.
-          if (mobilePanel === "detail") {
-            if (point === minSnap) {
-              setListSnap(minSnap);
-              setMobilePanel("list");
-            } else if (typeof point === "number") setDetailSnap(point);
-            return;
-          }
-          setListSnap(point);
-        }}
-      >
-        <DrawerContent
-          showOverlay={false}
-          style={{ height: "100dvh", maxHeight: "100dvh" }}
-          /**
-           * The sheet floats over the map rather than being welded to it, the
-           * way Google Maps does: a little map showing down both sides says
-           * the list is on top of something, and gives the rounding corners to
-           * actually be round at.
-           */
-          className="z-20 overflow-hidden border-0 bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_28px_rgba(28,25,23,.16)] data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-2 data-[vaul-drawer-direction=bottom]:rounded-2xl data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh] md:hidden"
-        >
-          <DrawerHandle aria-label={sheetSnap === minSnap ? messages.sheetExpand : messages.sheetCollapse} />
-          <DrawerTitle className="sr-only">{messages.racesCount}</DrawerTitle>
-          {/* A race detail is its own panel: filters belong to the list it covers. */}
-          {mobilePanel !== "detail" ? (
-          <MobileTopBar
-            weekendLabel={weekendLabel}
-            weekendActive={isThisWeekend}
-            onWeekend={() => {
-              if (isThisWeekend) {
-                setFiltersOpen(true);
-                return;
-              }
-              const w = thisWeekendRange();
-              setDateRange(w.from, w.to);
-            }}
-            filtersLabel={messages.addFilter}
-            filterCount={filterCount}
-            onFilters={() => setFiltersOpen(true)}
-            searchLabel={messages.search}
-            searchActive={Boolean(filters.q.trim())}
-            onSearch={() => setSearchOpen(true)}
-            sort={listSort}
-            sortByLabel={messages.sortBy}
-            sortDateLabel={messages.sortByDate}
-            sortDistanceLabel={messages.sortByDistance}
-            sortDateShort={messages.date}
-            sortDistanceShort={messages.sortDistance}
-            sortNeedsLocationLabel={messages.sortNeedsLocation}
-            distanceEnabled={distanceEnabled}
-            onSort={setListSort}
-          />
-          ) : null}
+        <>
+          <MobileListSheet
+            snap={listSnap}
+            onSnap={setListSnap}
+            title={messages.racesCount}
+            handleLabel={listSnap === LIST_PEEK ? messages.sheetExpand : messages.sheetCollapse}
+          >
+            <MobileTopBar
+              weekendLabel={weekendLabel}
+              weekendActive={isThisWeekend}
+              onWeekend={() => {
+                if (isThisWeekend) {
+                  setFiltersOpen(true);
+                  return;
+                }
+                const w = thisWeekendRange();
+                setDateRange(w.from, w.to);
+              }}
+              filtersLabel={messages.addFilter}
+              filterCount={filterCount}
+              onFilters={() => setFiltersOpen(true)}
+              searchLabel={messages.search}
+              searchActive={Boolean(filters.q.trim())}
+              onSearch={() => setSearchOpen(true)}
+              sort={listSort}
+              sortByLabel={messages.sortBy}
+              sortDateLabel={messages.sortByDate}
+              sortDistanceLabel={messages.sortByDistance}
+              sortDateShort={messages.date}
+              sortDistanceShort={messages.sortDistance}
+              sortNeedsLocationLabel={messages.sortNeedsLocation}
+              distanceEnabled={distanceEnabled}
+              onSort={setListSort}
+            />
 
-          {mobilePanel === "detail" && selected ? (
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
-              <EventDetailPanel
-                event={selected}
-                locale={locale}
-                embedded
-                onClose={() => {
-                  setListSnap(midSnap);
-                  setMobilePanel("list");
-                }}
-                onSelectSeries={(slug) => {
-                  applySeries(slug);
-                  setListSnap(midSnap);
-                  setMobilePanel("list");
-                }}
-              />
-            </div>
-          ) : null}
-
-          {mobilePanel !== "detail" ? (
             <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                {listView === "empty" ? (
-                  <Empty className="border-0 p-6">
-                    <EmptyHeader>
-                      <EmptyTitle>{messages.noResults}</EmptyTitle>
-                      <EmptyDescription>{messages.weekendNearYou}</EmptyDescription>
-                    </EmptyHeader>
-                    <EmptyContent>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => resetExploreFilters({ clearSearch: true })}
+              {listView === "empty" ? (
+                <Empty className="border-0 p-6">
+                  <EmptyHeader>
+                    <EmptyTitle>{messages.noResults}</EmptyTitle>
+                    <EmptyDescription>{messages.weekendNearYou}</EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => resetExploreFilters({ clearSearch: true })}
+                    >
+                      {messages.clearFilters}
+                    </Button>
+                  </EmptyContent>
+                </Empty>
+              ) : (
+                <ItemGroup>
+                  {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
+                  {listView === "rows" &&
+                    sortedEvents.map((event) => (
+                      <div
+                        role="listitem"
+                        key={event.id}
+                        className="border-b border-border/50 last:border-b-0"
                       >
-                        {messages.clearFilters}
-                      </Button>
-                    </EmptyContent>
-                  </Empty>
-                ) : (
-                  <ItemGroup>
-                    {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
-                    {listView === "rows" && sortedEvents.map((event) => (
-                      <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
-                      <EventCard
-                        event={event}
-                        locale={locale}
-                        distanceKm={eventDistanceKm(event, userOrigin)}
-                        active={event.id === selectedId}
-                        onSelect={selectFromSheet}
-                      />
+                        <EventCard
+                          event={event}
+                          locale={locale}
+                          distanceKm={eventDistanceKm(event, userOrigin)}
+                          active={event.id === selectedId}
+                          onSelect={selectFromSheet}
+                        />
                       </div>
                     ))}
-                  </ItemGroup>
-                )}
+                </ItemGroup>
+              )}
             </div>
-          ) : null}
-        </DrawerContent>
-      </Drawer>
+          </MobileListSheet>
+
+          <MobileDetailSheet
+            open={Boolean(selected)}
+            snap={detailSnap}
+            onSnap={setDetailSnap}
+            onClose={() => selectEvent(null)}
+            title={selected?.name ?? ""}
+            handleLabel={detailSnap === FULL ? messages.sheetCollapse : messages.sheetExpand}
+          >
+            {selected ? (
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
+                <EventDetailPanel
+                  event={selected}
+                  locale={locale}
+                  embedded
+                  onClose={() => selectEvent(null)}
+                  onSelectSeries={(slug) => {
+                    applySeries(slug);
+                    selectEvent(null);
+                    setListSnap(HALF);
+                  }}
+                />
+              </div>
+            ) : null}
+          </MobileDetailSheet>
+        </>
       ) : null}
 
       {filtersOpen ? (
