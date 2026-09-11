@@ -124,7 +124,13 @@ function Visible({
 function GrabZone({ label }: { label: string }) {
   return (
     <div className="flex h-11 shrink-0 items-center justify-center">
-      <DrawerHandle aria-label={label} className="m-0 h-11 w-full py-0" />
+      {/* Inline, because vaul ships unlayered CSS for [data-vaul-handle] that
+          sets a 5px height, and unlayered rules beat any utility class. */}
+      <DrawerHandle
+        aria-label={label}
+        className="m-0 w-full py-0"
+        style={{ width: "100%", height: 44, background: "transparent" }}
+      />
     </div>
   );
 }
@@ -158,6 +164,16 @@ export function MobileListSheet({
       // A flick moves one stop, never two. A list that can shoot from peek to
       // full on a hard swipe is a list that ends up somewhere you did not ask.
       snapToSequentialPoint
+      /*
+       * Only the grab zone moves the sheet. vaul's own rule is that content
+       * may scroll only when the sheet sits at translate 0 — the snap point
+       * `1` — and at every other snap any movement of the finger is a drag.
+       * With snaps at half and 0.92 the sheet is never at zero, so the list
+       * could not be scrolled by touch at all: every attempt resized it.
+       * Handle-only is the model Apple Maps uses, and it is unambiguous —
+       * the pill resizes, everything else scrolls and taps.
+       */
+      handleOnly
       snapPoints={[LIST_PEEK, HALF, FULL]}
       activeSnapPoint={snap}
       setActiveSnapPoint={(point) => {
@@ -229,6 +245,9 @@ export function MobileDetailSheet({
       noBodyStyles
       repositionInputs={false}
       snapToSequentialPoint
+      // Same rule as the list, for the same reason: the card's content
+      // scrolls, the pill resizes or closes.
+      handleOnly
       snapPoints={[HALF, FULL]}
       activeSnapPoint={snap}
       setActiveSnapPoint={(point) => {
