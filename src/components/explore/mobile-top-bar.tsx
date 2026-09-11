@@ -65,7 +65,7 @@ export function MobileTopBar({
   const sortLabel = sort === "distance" ? sortDistanceShort : sortDateShort;
 
   return (
-    <div className="flex items-center gap-2 px-3 pb-2">
+    <div className="flex items-center gap-2 px-3 pt-1 pb-2">
       {/*
         The strip scrolls, and a pill cut dead at the container edge reads as a
         broken layout rather than as more content. Fade the last few pixels so

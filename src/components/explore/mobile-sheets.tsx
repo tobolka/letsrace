@@ -37,20 +37,30 @@ export const HALF = 0.5;
 export const FULL = 0.92;
 
 /**
- * One surface for both sheets: floated off the edges with the map showing
- * down the sides, one radius on all four corners, full viewport height so a
- * snap point is a fraction of the screen and nothing else.
+ * The sheet vaul moves is an invisible frame; the card you see is drawn
+ * inside it, exactly as tall as the part on screen.
+ *
+ * vaul's sheet is the full height of the viewport and slides down to its snap
+ * point. Painting the sheet itself white meant that wherever its height and
+ * the browser's idea of the viewport disagreed — and on a phone they do, as
+ * the toolbar comes and goes — a white slab showed below the content with
+ * nothing in it. The frame is transparent now and cannot show; only the
+ * sized box has a background, a radius and a shadow, so there is never more
+ * white than there is content.
  */
-const SURFACE = cn(
-  "overflow-hidden border-0 bg-card md:hidden",
-  "pb-[max(0.5rem,env(safe-area-inset-bottom))]",
-  "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
+const FRAME = cn(
+  "border-0 bg-transparent shadow-none md:hidden",
   "data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-2",
-  "data-[vaul-drawer-direction=bottom]:rounded-2xl data-[vaul-drawer-direction=bottom]:mt-0",
+  "data-[vaul-drawer-direction=bottom]:rounded-none data-[vaul-drawer-direction=bottom]:mt-0",
   "data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh]",
 );
 
-const SURFACE_STYLE = { height: "100dvh", maxHeight: "100dvh" } as const;
+const FRAME_STYLE = { height: "100dvh", maxHeight: "100dvh" } as const;
+
+const CARD = cn(
+  "relative flex min-h-0 flex-col overflow-hidden rounded-2xl bg-card",
+  "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
+);
 
 /**
  * The same floating surface for the sheets that open on top — filters,
@@ -65,53 +75,57 @@ export const MODAL_SURFACE = cn(
   "data-[vaul-drawer-direction=bottom]:rounded-2xl",
 );
 
-/** The grab zone's height, which the visible content sits under. */
-const GRAB_PX = 44;
-/** The sheet floats `bottom-2` off the edge; that much of it is never on screen. */
-const FLOAT_PX = 8;
-
 /**
- * How much of the sheet is actually on screen at a snap point.
+ * How much of the sheet is on screen at a snap point: the snap's share of
+ * the viewport. vaul slides the frame down by the rest, and the frame already
+ * sits `bottom-2` up, so the float is inside that share, not on top of it.
  *
- * vaul makes the sheet the full height of the viewport and slides it down, so
- * at half height the bottom half of the sheet is simply below the screen. A
- * card laid out to fill the sheet put its sticky footer — the "Enter" button,
- * the one thing on the card that matters — at y=1081 on an 812px phone, and
- * the list's scroll box thought it had twice the height it could show, so the
- * last screenful of rows could never be scrolled into view at all. Sizing the
- * content to the visible part is what puts the footer at the bottom of the
- * screen and lets the list scroll to its end.
+ * Sizing the content to this is what puts a card's last row at the bottom of
+ * the screen and lets the list scroll to its end. Without it the list's
+ * scroll box thought it had twice the height it could show, and the last
+ * screenful of rows could never be scrolled into view at half height.
  */
 export function visibleContentHeight(snap: number | string, viewportH: number): number {
   const shown = typeof snap === "number" ? snap * viewportH : Number.parseFloat(snap) || 0;
-  return Math.max(0, Math.round(shown) - GRAB_PX - FLOAT_PX);
+  return Math.max(0, Math.round(shown));
 }
 
-function Visible({ snap, viewportH, children }: { snap: number | string; viewportH: number; children: ReactNode }) {
+/** The card: the grab zone, then whatever the sheet holds, sized to the screen. */
+function Visible({
+  snap,
+  viewportH,
+  handleLabel,
+  children,
+}: {
+  snap: number | string;
+  viewportH: number;
+  handleLabel: string;
+  children: ReactNode;
+}) {
   return (
-    <div
-      className="relative flex min-h-0 flex-col"
-      style={{ height: visibleContentHeight(snap, viewportH) }}
-    >
-      {children}
+    <div className={CARD} style={{ height: visibleContentHeight(snap, viewportH) }}>
+      <GrabZone label={handleLabel} />
+      <div className="flex min-h-0 flex-1 flex-col pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        {children}
+      </div>
     </div>
   );
 }
 
 /**
- * A grab zone a thumb can find.
+ * A grab zone a thumb can find, with room around the pill.
  *
- * The grabber is a 40×4 pill, and its hit area used to be the pill plus six
+ * The grabber is a 40×4 pill. Its hit area used to be the pill plus six
  * pixels — reach a little low and the finger is on the first filter chip, and
- * the drag becomes a tap. Forty-four points, the whole width, and the pill
- * sits in the middle of it.
+ * the drag becomes a tap. Now the zone is forty-four points tall and the
+ * whole width, the pill sits centred in it with air above and below, and the
+ * first row of content starts under that air rather than against the pill.
  */
 function GrabZone({ label }: { label: string }) {
   return (
-    <DrawerHandle
-      aria-label={label}
-      className="mt-0 mb-0 h-11 shrink-0 py-0"
-    />
+    <div className="flex h-11 shrink-0 items-center justify-center">
+      <DrawerHandle aria-label={label} className="m-0 h-11 w-full py-0" />
+    </div>
   );
 }
 
@@ -150,10 +164,9 @@ export function MobileListSheet({
         if (point != null) onSnap(point);
       }}
     >
-      <DrawerContent showOverlay={false} style={SURFACE_STYLE} className={cn(SURFACE, "z-20")}>
-        <GrabZone label={handleLabel} />
+      <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, "z-20")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
-        <Visible snap={snap} viewportH={viewportH}>
+        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel}>
           {children}
           {/*
             With the list at full height the map is a strip at the top of the
@@ -222,10 +235,9 @@ export function MobileDetailSheet({
         if (typeof point === "number") onSnap(point);
       }}
     >
-      <DrawerContent showOverlay={false} style={SURFACE_STYLE} className={cn(SURFACE, "z-30")}>
-        <GrabZone label={handleLabel} />
+      <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, "z-30")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
-        <Visible snap={snap} viewportH={viewportH}>
+        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel}>
           {children}
         </Visible>
       </DrawerContent>
