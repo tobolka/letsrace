@@ -34,11 +34,20 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Nothing calls `next/image` (plain <img> throughout). Leaving the optimiser
+  // on makes Next trace `sharp` + libvips (~28 MB) into every page function.
+  images: { unoptimized: true },
   serverExternalPackages: ["@sparticuz/chromium"],
   outputFileTracingExcludes: {
     "*": [
       "src/lib/watcher/extractors/csc-render.ts",
       "node_modules/@sparticuz/chromium/**",
+      // Home OG used to `import("sharp")` at request time; that pulled the
+      // stack into all twenty-five page functions. The cards are static JPEGs
+      // under public/og/ now, so nothing in the serverless graph needs these.
+      "node_modules/@img/**",
+      "node_modules/sharp/**",
+      "node_modules/sharp-*/**",
     ],
   },
   experimental: {
