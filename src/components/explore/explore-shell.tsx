@@ -360,9 +360,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     });
   }
 
+  const [locateSeq, setLocateSeq] = useState(0);
+  /**
+   * Distance is always pressable. It used to be greyed out until a position
+   * existed, and the only way to get one was a different button somewhere on
+   * the map — so the option read as broken. Now choosing it is what asks for
+   * the position; the list sorts by date until the fix lands, then flips.
+   */
   function setListSort(next: EventSort) {
-    if (next === "distance" && !distanceEnabled) return;
     void setFilters({ sort: next });
+    if (next === "distance" && !distanceEnabled) setLocateSeq((n) => n + 1);
   }
 
   const initialFocus = useMemo(() => {
@@ -852,6 +859,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             initialFocus={initialFocus}
             skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
             onUserLocation={handleUserLocation}
+            locateSeq={locateSeq}
             onSelect={selectFromSheet}
             onBackgroundClick={() => {
               // A tap on the map puts the card away and does nothing else. It
@@ -938,7 +946,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             count={listSettled ? visibleEvents.length : null}
             pending={listLoading}
             sort={listSort}
-            distanceEnabled={distanceEnabled}
+            distanceEnabled
             messages={messages}
             onSort={setListSort}
           />
@@ -1031,7 +1039,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               sortDateShort={messages.date}
               sortDistanceShort={messages.sortDistance}
               sortNeedsLocationLabel={messages.sortNeedsLocation}
-              distanceEnabled={distanceEnabled}
+              distanceEnabled
               onSort={setListSort}
             />
 

@@ -64,6 +64,8 @@ type Props = {
   skipInitialLocate?: boolean;
   /** GPS fix for sorting the race list by distance. */
   onUserLocation?: (pos: { lat: number; lng: number }) => void;
+  /** Bump to ask for the user's position, exactly as the locate button does. */
+  locateSeq?: number;
   /** UI locale — dates in pin tooltips follow it. */
   locale?: string;
 };
@@ -657,6 +659,7 @@ export function RaceMap({
   initialFocus = null,
   skipInitialLocate = false,
   onUserLocation,
+  locateSeq = 0,
   locale = "en",
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1392,6 +1395,14 @@ export function RaceMap({
     const btn = locateBtnRef.current;
     if (btn) btn.dataset.active = userPos ? "true" : "";
   }, [userPos, mapEpoch]);
+
+  // "Sort by distance" with no position yet is a request for one. It goes
+  // through the same button a finger would press, so it asks once, the same
+  // way, and lights the same control up when the fix arrives.
+  useEffect(() => {
+    if (locateSeq === 0) return;
+    locateBtnRef.current?.click();
+  }, [locateSeq]);
 
   /**
    * Resolve location: fast network position first, then optional precise watch.
