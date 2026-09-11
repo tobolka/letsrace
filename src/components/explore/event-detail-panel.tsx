@@ -25,8 +25,6 @@ import {
   type UciClass,
 } from "@/lib/taxonomy";
 import { disciplineColor } from "@/lib/map-visuals";
-import { AuthDialog } from "@/components/account/auth-dialog";
-import { RacePlanControls } from "@/components/account/race-plan-controls";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -45,30 +43,7 @@ import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
 import { dateFnsLocale } from "@/lib/i18n/dates";
-import { type PlanMemberStatus } from "@/lib/planner";
-import {
-  setMemberPlanStatus,
-  type AttendanceRecord,
-} from "@/lib/planner-db";
 
-type Member = {
-  id: string;
-  name: string;
-  relationship: string;
-  is_self: boolean;
-};
-
-type Attendance = AttendanceRecord;
-
-/**
- * The auth client weighs a quarter of a megabyte and this panel only needs it
- * once someone opens a race, so it is fetched on demand instead of riding along
- * with the first load of the map.
- */
-async function browserSupabase() {
-  const { createBrowserSupabase } = await import("@/lib/supabase/browser");
-  return createBrowserSupabase();
-}
 
 /** Must match the desktop list card in explore-shell (width + overlay padding + gap). */
 const DEFAULT_X = 12 + 400 + 12;
@@ -101,14 +76,6 @@ export function EventDetailPanel({
   embedded?: boolean;
 }) {
   const t = messagesFor(locale);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [favorited, setFavorited] = useState(false);
-  const [attendance, setAttendance] = useState<Attendance[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authReason, setAuthReason] = useState("");
-  const [pendingAction, setPendingAction] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const copyTimerRef = useRef<number | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -186,86 +153,6 @@ export function EventDetailPanel({
       if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
     };
   }, []);
-
-  async function loadUserState(uid: string) {
-    const supabase = await browserSupabase();
-    const [{ data: mems }, { data: fav }, { data: att }] = await Promise.all([
-      supabase.from("family_members").select("*").eq("user_id", uid).order("created_at"),
-      supabase
-        .from("event_favorites")
-        .select("event_id")
-        .eq("user_id", uid)
-        .eq("event_id", event.id)
-        .maybeSingle(),
-      supabase
-        .from("event_attendance")
-        .select("member_id, status, registered, paid")
-        .eq("user_id", uid)
-        .eq("event_id", event.id),
-    ]);
-    setMembers(mems ?? []);
-    setFavorited(Boolean(fav));
-    setAttendance(att ?? []);
-    return mems ?? [];
-  }
-
-  useEffect(() => {
-    void (async () => {
-      const supabase = await browserSupabase();
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth.user?.id ?? null;
-      setUserId(uid);
-      if (!uid) return;
-      await loadUserState(uid);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event.id]);
-
-  function requireAuth() {
-    setPendingAction(true);
-    setAuthReason(t.planAuthGoing);
-    setAuthOpen(true);
-  }
-
-  async function setStatus(
-    memberId: string,
-    status: PlanMemberStatus,
-    uidOverride?: string,
-  ) {
-    const uid = uidOverride ?? userId;
-    if (!uid) {
-      requireAuth();
-      return;
-    }
-    setBusy(true);
-    const supabase = await browserSupabase();
-    const next = await setMemberPlanStatus({
-      supabase,
-      userId: uid,
-      eventId: event.id,
-      memberId,
-      status,
-      rows: attendance,
-      favorited,
-    });
-    setAttendance(next.rows);
-    setFavorited(next.favorited);
-    setBusy(false);
-  }
-
-  async function onAuthSuccess() {
-    const shouldSetGoing = pendingAction;
-    const supabase = await browserSupabase();
-    const { data: auth } = await supabase.auth.getUser();
-    const uid = auth.user?.id ?? null;
-    setUserId(uid);
-    setPendingAction(false);
-    if (!uid) return;
-    const mems = await loadUserState(uid);
-    if (!shouldSetGoing) return;
-    const self = mems.find((m) => m.is_self) ?? mems[0];
-    if (self) await setStatus(self.id, "going", uid);
-  }
 
   const levelKey = (event.level || "local") as RaceLevel;
   const levelLabel =
@@ -385,6 +272,44 @@ export function EventDetailPanel({
     ...secondaryLinks,
   ];
 
+  const trustRow = (
+    <div className="flex w-full items-center gap-2 px-1">
+      <p className="sr-only" aria-live="polite">
+        {linkCopied ? t.linkCopied : ""}
+      </p>
+      <p
+        className={cn(
+          "min-w-0 flex-1 text-xs leading-snug",
+          trust === "low" ? "text-destructive" : "text-muted-foreground",
+        )}
+      >
+        {trustText}
+        {checkedText && event.lastSeenAt ? (
+          <>
+            <span aria-hidden> · </span>
+            <time className="tabular-nums" dateTime={event.lastSeenAt}>
+              {checkedText}
+            </time>
+          </>
+        ) : null}
+      </p>
+      <div className="ml-auto flex items-center gap-0.5">
+        <Toggle
+          pressed={linkCopied}
+          size="lg"
+          aria-label={linkCopied ? t.linkCopied : t.shareRace}
+          title={linkCopied ? t.linkCopied : t.shareRace}
+          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          onPressedChange={() => {
+            if (!linkCopied) void copyShareLink();
+          }}
+        >
+          <Share />
+        </Toggle>
+      </div>
+    </div>
+  );
+
   return (
     <Card
       ref={cardRef}
@@ -456,11 +381,32 @@ export function EventDetailPanel({
          */
         className={cn(
           "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4",
-          embedded ? "py-2" : "py-3",
+          embedded
+            ? "py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            : "py-3",
         )}
         inert={dragging || undefined}
       >
-        <div className={cn("flex flex-col", embedded ? "gap-0.5" : "gap-2")}>
+        {/*
+          On the phone the one button that matters comes first, under the
+          name, where it is on screen at half height without a drag. It used
+          to sit in a footer pinned below a scroll box, so the card scrolled
+          inside itself and the button sat under the fold.
+        */}
+        {embedded && primaryHref && primaryLabel ? (
+          <Button asChild size="lg" className="mb-4 h-12 w-full text-base">
+            <a
+              href={primaryHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEnter(primaryKind)}
+            >
+              <ExternalLink data-icon="inline-start" />
+              {primaryLabel}
+            </a>
+          </Button>
+        ) : null}
+        <div className={cn("flex flex-col", embedded ? "gap-1" : "gap-2")}>
           <p className="flex items-center gap-2 text-base font-medium">
             <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             <time className="tabular" dateTime={event.startDate}>
@@ -524,35 +470,6 @@ export function EventDetailPanel({
           ) : null}
         </div>
 
-        {members.length > 0 ? (
-          <div className={cn("border-t border-border", embedded ? "mt-3 pt-2.5" : "mt-4 pt-3")}>
-            <RacePlanControls
-              locale={locale}
-              members={members.map((m) => ({
-                id: m.id,
-                name: m.name,
-                relationship: m.relationship,
-                isSelf: m.is_self,
-              }))}
-              attendance={attendance}
-              busy={busy}
-              addPeopleHref={`/${locale}/account/riders`}
-              onStatusChange={(memberId, status) => void setStatus(memberId, status)}
-            />
-          </div>
-        ) : !userId ? (
-          <button
-            type="button"
-            className={cn(
-              "w-full rounded-lg border border-dashed border-border px-3 text-left text-sm text-muted-foreground hover:border-foreground/30 hover:text-foreground",
-              embedded ? "mt-3 py-2" : "mt-4 py-2.5",
-            )}
-            onClick={() => requireAuth()}
-          >
-            <span className="font-medium text-foreground">{t.planWhoGoes}</span>
-            <span className="mt-0.5 block text-xs">{t.planAuthGoing}</span>
-          </button>
-        ) : null}
 
         {actionLinks.length > 0 && !embedded ? (
           <ButtonGroup orientation="vertical" className={cn("w-full", embedded ? "mt-3" : "mt-4")}>
@@ -594,77 +511,18 @@ export function EventDetailPanel({
             ))}
           </ButtonGroup>
         )}
+        {embedded ? <div className="mt-4 border-t border-border pt-3">{trustRow}</div> : null}
       </CardContent>
 
-      <CardFooter
-        className={cn(
-          "shrink-0 gap-2 border-t px-2 py-2 [.border-t]:pt-2",
-          embedded
-            ? "flex-col items-stretch pb-[max(0.5rem,env(safe-area-inset-bottom))]"
-            : "justify-between pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2",
-        )}
-        inert={dragging || undefined}
-      >
-        {embedded && primaryHref && primaryLabel ? (
-          <Button asChild size="lg" className="h-12 w-full text-base">
-            <a
-              href={primaryHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEnter(primaryKind)}
-            >
-              <ExternalLink data-icon="inline-start" />
-              {primaryLabel}
-            </a>
-          </Button>
-        ) : null}
-        <div className={cn("flex w-full items-center gap-2", embedded && "px-1")}>
-          <p className="sr-only" aria-live="polite">
-            {linkCopied ? t.linkCopied : ""}
-          </p>
-          <p
-            className={cn(
-              "min-w-0 flex-1 text-xs leading-snug",
-              trust === "low" ? "text-destructive" : "text-muted-foreground",
-            )}
-          >
-            {trustText}
-            {checkedText && event.lastSeenAt ? (
-              <>
-                <span aria-hidden> · </span>
-                <time className="tabular-nums" dateTime={event.lastSeenAt}>
-                  {checkedText}
-                </time>
-              </>
-            ) : null}
-          </p>
-          <div className="ml-auto flex items-center gap-0.5">
-            <Toggle
-              pressed={linkCopied}
-              size="lg"
-              aria-label={linkCopied ? t.linkCopied : t.shareRace}
-              title={linkCopied ? t.linkCopied : t.shareRace}
-              className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-              onPressedChange={() => {
-                if (!linkCopied) void copyShareLink();
-              }}
-            >
-              <Share />
-            </Toggle>
-          </div>
-        </div>
-      </CardFooter>
+      {embedded ? null : (
+        <CardFooter
+          className="shrink-0 justify-between gap-2 border-t px-2 py-2 [.border-t]:pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2"
+          inert={dragging || undefined}
+        >
+          {trustRow}
+        </CardFooter>
+      )}
 
-      <AuthDialog
-        open={authOpen}
-        onClose={() => {
-          setAuthOpen(false);
-          setPendingAction(false);
-        }}
-        onSuccess={() => void onAuthSuccess()}
-        locale={locale}
-        reason={authReason}
-      />
     </Card>
   );
 }
