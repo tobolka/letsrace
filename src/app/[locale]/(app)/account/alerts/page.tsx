@@ -1,10 +1,6 @@
-import { AlertsPanel } from "@/components/account/alerts-panel";
+import { redirect } from "next/navigation";
 
-export default async function AlertsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function AlertsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  return <AlertsPanel locale={locale} />;
+  redirect(`/${locale}/account/recommendations?tab=watching`);
 }

@@ -490,14 +490,13 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
 
   if (section === "recommendations") return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      <header><h1 className="text-xl font-semibold">{t.accountRecommendations}</h1><p className="mt-1 text-sm text-muted-foreground">{t.accountRecommendationsDescription}</p></header>
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2 text-sm">{t.date}<input type="date" aria-label={t.date} value={pickedDay ?? ""} onChange={(e) => setPickedDay(e.target.value || null)} className="h-10 rounded-md border bg-background px-3" /></label>
         {pickedDay && <Button variant="ghost" onClick={() => setPickedDay(null)}>{t.suggestSoon}</Button>}
-        <Button asChild variant="outline"><Link href={`/${locale}/account`}>{t.myCalendar}</Link></Button>
+        <Button asChild variant="ghost" className="sm:ml-auto"><Link href={`/${locale}/account/recommendations?tab=watching`}>{t.discoverConfigure}</Link></Button>
       </div>
       <PlanSetup locale={locale} hasPeople={members.length > 0} hasPlace={Boolean(suggestCtx?.home)} hasRace={plans.length > 0} onSetHome={onSetHome} />
-      <div className="grid items-start gap-5 [&>*]:min-w-0 lg:grid-cols-2">
+      <div className="grid items-start gap-5 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           {suggestCtx ? (
             <FreeWeekendSuggestions
               key={`${suggestFrom}-${suggestTo}`}
@@ -539,7 +538,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
       <header className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">{t.myCalendar}</h1><p className="mt-1 text-sm text-muted-foreground">{t.accountPlanDescription}</p></div>          <Button asChild variant="outline" className="h-auto min-h-10 whitespace-normal">
-            <Link href={`/${locale}/account/recommendations${pickedDay ? `?day=${pickedDay}` : ""}`}>{pickedDay ? `${t.accountDayRecommendations} · ${format(parseISO(pickedDay), "d. M.")}` : t.accountRecommendations}</Link>
+            <Link href={`/${locale}/account/recommendations${pickedDay ? `?day=${pickedDay}` : ""}`}>{pickedDay ? `${t.accountDayRecommendations} · ${format(parseISO(pickedDay), "d. M.")}` : t.accountDiscover}</Link>
           </Button>
 </header>
       <PlanSetup

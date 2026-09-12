@@ -4,6 +4,14 @@ export const defaultLocale: Locale = "en";
 
 export const messages = {
   en: {
+    accountDiscover: "Discover",
+    discoverForYou: "For you",
+    discoverWatching: "Race alerts",
+    discoverHeadline: "Your next start is out there.",
+    discoverDescription: "Find races worth riding. Your places and disciplines help us choose — and keep you posted when something new appears.",
+    discoverConfigure: "Choose what to watch",
+    discoverSummary: "Upcoming races, followed series and new matches in one place.",
+
     accountRecommendations: "Recommendations",
     accountSettings: "Settings",
     accountPlanDescription: "Your saved races, attendance and calendar.",
@@ -337,6 +345,14 @@ export const messages = {
     submit: "Submit",
   },
   cs: {
+    accountDiscover: "Objevovat",
+    discoverForYou: "Pro tebe",
+    discoverWatching: "Hlídání závodů",
+    discoverHeadline: "Kam vyrazíš příště?",
+    discoverDescription: "Najdi závody, které stojí za to jet. Podle tvých míst a disciplín vybíráme tipy a hlídáme, co přibylo.",
+    discoverConfigure: "Nastavit hlídání",
+    discoverSummary: "Závody v okolí, tvoje série a nové tipy na jednom místě.",
+
     accountRecommendations: "Doporučení",
     accountSettings: "Nastavení",
     accountPlanDescription: "Uložené závody, účast jezdců a kalendář.",
@@ -670,6 +686,14 @@ export const messages = {
     submit: "Odeslat",
   },
   pl: {
+    accountDiscover: "Odkrywaj",
+    discoverForYou: "Dla ciebie",
+    discoverWatching: "Alerty wyścigów",
+    discoverHeadline: "Gdzie wystartujesz następnym razem?",
+    discoverDescription: "Znajdź wyścigi warte startu. Twoje miejsca i dyscypliny pomagają nam wybierać i informować o nowościach.",
+    discoverConfigure: "Ustaw alerty",
+    discoverSummary: "Wyścigi w okolicy, twoje serie i nowe propozycje w jednym miejscu.",
+
     accountRecommendations: "Polecane",
     accountSettings: "Ustawienia",
     accountPlanDescription: "Zapisane wyścigi, uczestnicy i kalendarz.",
@@ -1003,6 +1027,14 @@ export const messages = {
     submit: "Wyślij",
   },
   sk: {
+    accountDiscover: "Objavovať",
+    discoverForYou: "Pre teba",
+    discoverWatching: "Sledovanie pretekov",
+    discoverHeadline: "Kam vyrazíš nabudúce?",
+    discoverDescription: "Nájdi preteky, ktoré stojí za to ísť. Podľa tvojich miest a disciplín vyberáme tipy a sledujeme novinky.",
+    discoverConfigure: "Nastaviť sledovanie",
+    discoverSummary: "Preteky v okolí, tvoje série a nové tipy na jednom mieste.",
+
     accountRecommendations: "Odporúčania",
     accountSettings: "Nastavenia",
     accountPlanDescription: "Uložené preteky, účasť jazdcov a kalendár.",

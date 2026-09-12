@@ -11,7 +11,7 @@ import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
 
-export function AlertsPanel({ locale }: { locale: string }) {
+export function AlertsPanel({ locale, embedded = false }: { locale: string; embedded?: boolean }) {
   const t = messagesFor(locale);
   const [ready, setReady] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -62,7 +62,7 @@ export function AlertsPanel({ locale }: { locale: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      <h1 className="text-xl font-semibold">{t.alertTitle}</h1>
+      {!embedded && <h1 className="text-xl font-semibold">{t.alertTitle}</h1>}
       <p className="max-w-2xl text-sm text-muted-foreground">{t.alertHelp}</p>
 
       {/* Same split as the plan, so the left edge does not jump between tabs:

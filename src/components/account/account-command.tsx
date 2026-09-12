@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  Bell,
   Compass,
   Users,
   CalendarDays,
@@ -155,12 +154,9 @@ export function AccountCommand({
             <CalendarDays />
             {t.myCalendar}
           </CommandItem>
-          <CommandItem value={`recommendations ${t.accountRecommendations}`} onSelect={() => go(`/${locale}/account/recommendations`)}><Compass />{t.accountRecommendations}</CommandItem>
+          <CommandItem value={`recommendations ${t.accountDiscover}`} onSelect={() => go(`/${locale}/account/recommendations`)}><Compass />{t.accountDiscover}</CommandItem>
           <CommandItem value={`riders ${t.profilesTitle}`} onSelect={() => go(`/${locale}/account/riders`)}><Users />{t.profilesTitle}</CommandItem>
-          <CommandItem value={`alerts ${t.alertTitle}`} onSelect={() => go(`/${locale}/account/alerts`)}>
-            <Bell />
-            {t.alertTitle}
-          </CommandItem>
+
           <CommandItem value={`account ${t.account}`} onSelect={() => go(`/${locale}/account/settings`)}>
             <UserRound />
             {t.accountSettings}

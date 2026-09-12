@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CalendarDays, Compass, Users, UserRound } from "lucide-react";
+import { CalendarDays, Compass, Users, UserRound } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { AccountCommand } from "@/components/account/account-command";
 import { MapAccountButton } from "@/components/explore/map-account-button";
@@ -107,20 +107,13 @@ export function AppShell({
       match: "__plan__",
       badge: counts.action,
     },
-    { href: `/${locale}/account/recommendations`, label: t.accountRecommendations, icon: Compass, match: "/account/recommendations", badge: 0 },
+    { href: `/${locale}/account/recommendations`, label: t.accountDiscover, icon: Compass, match: "/account/recommendations", badge: counts.alerts },
     {
       href: `/${locale}/account/riders`,
       label: t.profilesTitle,
       icon: Users,
       match: "/account/riders",
       badge: 0,
-    },
-    {
-      href: `/${locale}/account/alerts`,
-      label: t.alertTitle,
-      icon: Bell,
-      match: "/account/alerts",
-      badge: counts.alerts,
     },
     {
       href: `/${locale}/account/settings`,
@@ -184,7 +177,7 @@ export function AppShell({
       {/* A phone reaches the bottom of the screen, not a menu in a corner. */}
       <nav
         aria-label={t.account}
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
       >
         {nav.map((item) => {
           const active = isActive(item.match);

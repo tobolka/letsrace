@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { format, parseISO } from "date-fns";
+import { dateFnsLocale } from "@/lib/i18n/dates";
 import { CalendarPlus, MapPin, Repeat, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -129,7 +131,8 @@ export function FreeWeekendSuggestions({
                 .filter(Boolean)
                 .join(" · ");
               return (
-                <Item key={s.id} size="sm">
+                <Item key={s.id} size="sm" className="gap-3 rounded-xl px-3 py-4 transition-colors hover:bg-muted/50">
+                  <time dateTime={s.startDate} className="flex w-12 shrink-0 flex-col items-center rounded-xl border bg-background py-2 text-center"><span className="text-xl font-semibold leading-none tabular-nums">{format(parseISO(s.startDate), "d")}</span><span className="mt-1 text-[10px] font-medium uppercase text-muted-foreground">{format(parseISO(s.startDate), "MMM", { locale: dateFnsLocale(locale) })}</span></time>
                   <ItemContent className="min-w-0">
                     <ItemTitle className="w-full min-w-0">
                       <Link
@@ -138,12 +141,12 @@ export function FreeWeekendSuggestions({
                           startDate: s.startDate,
                           endDate: s.endDate,
                         })}
-                        className="truncate hover:underline"
+                        className="line-clamp-2 text-sm leading-snug hover:underline"
                       >
                         {s.name}
                       </Link>
                     </ItemTitle>
-                    <ItemDescription className="flex items-center gap-1.5">
+                    <ItemDescription className="flex flex-wrap items-center gap-1.5">
                       <Badge variant={s.reason === "series" ? "default" : "secondary"}>
                         <Icon className="size-3" aria-hidden /> {reasonLabel[s.reason]}
                       </Badge>
