@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CalendarDays, Map, Users, UserRound } from "lucide-react";
+import { Bell, CalendarDays, Compass, Users, UserRound } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { AccountCommand } from "@/components/account/account-command";
 import { MapAccountButton } from "@/components/explore/map-account-button";
@@ -107,6 +107,7 @@ export function AppShell({
       match: "__plan__",
       badge: counts.action,
     },
+    { href: `/${locale}/account/recommendations`, label: t.accountRecommendations, icon: Compass, match: "/account/recommendations", badge: 0 },
     {
       href: `/${locale}/account/riders`,
       label: t.profilesTitle,
@@ -123,13 +124,12 @@ export function AppShell({
     },
     {
       href: `/${locale}/account/settings`,
-      label: t.account,
+      label: t.accountSettings,
       icon: UserRound,
       match: "/account/settings",
       badge: 0,
     },
-    // Five labels across a phone: "Zobrazit na mapě" is an ellipsis there.
-    { href: mapHref, label: t.viewOnMap, short: t.navMap, icon: Map, match: "__map__", badge: 0 },
+
   ];
 
   // The plan has no path fragment of its own — every other page lives under it
@@ -144,7 +144,7 @@ export function AppShell({
       <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-1 border-b bg-background/85 px-3 backdrop-blur md:px-4">
         <BrandMark href={mapHref} size="sm" className="shrink-0" />
 
-        <nav aria-label={t.account} className="ml-4 hidden items-center gap-0.5 md:flex">
+        <nav aria-label={t.account} className="ml-4 hidden items-center gap-0.5 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.href + item.match}
@@ -177,14 +177,14 @@ export function AppShell({
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col p-3 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-6">
+      <main className="flex flex-1 flex-col p-3 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 lg:pb-6">
         {children}
       </main>
 
       {/* A phone reaches the bottom of the screen, not a menu in a corner. */}
       <nav
         aria-label={t.account}
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
       >
         {nav.map((item) => {
           const active = isActive(item.match);
@@ -199,7 +199,7 @@ export function AppShell({
               )}
             >
               <item.icon className="size-5" />
-              <span className="max-w-full truncate px-1">{item.short ?? item.label}</span>
+              <span className="max-w-full truncate px-1">{item.label}</span>
               {item.badge > 0 ? (
                 <Badge
                   variant="default"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { AuthForm } from "@/components/account/auth-form";
@@ -92,17 +92,8 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
   };
 }
 
-/**
- * The account, which is the plan.
- *
- * Four questions in the order a season is actually lived: what is next, what
- * do I owe on it, how does the rest of the year look, and what could fill the
- * hole. Everything that used to sit between them — a view switcher, a filter
- * row that reordered the same list, a month grid, three summary cards
- * repeating counts printed a hundred pixels below — is gone, because none of
- * it answered a question anybody arrived with.
- */
-export function PlanHome({ locale }: { locale: string }) {
+/** Shared account data and persistence for the plan and recommendations routes. */
+export function PlanHome({ locale, section = "plan", day }: { locale: string; section?: "plan" | "recommendations"; day?: string }) {
   const t = messagesFor(locale);
   const [ready, setReady] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -116,9 +107,8 @@ export function PlanHome({ locale }: { locale: string }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [suggestCtx, setSuggestCtx] = useState<SuggestionContext | null>(null);
   const [series, setSeries] = useState<SeriesProgress[]>([]);
-  const [pickedDay, setPickedDay] = useState<string | null>(null);
+  const [pickedDay, setPickedDay] = useState<string | null>(day ?? null);
   const [blocked, setBlocked] = useState<Record<string, BlockedDay>>({});
-  const fillRef = useRef<HTMLDivElement>(null);
 
   async function load() {
     setLoadFailed(false);
@@ -392,13 +382,6 @@ export function PlanHome({ locale }: { locale: string }) {
     setBusyId(null);
   }
 
-  // Picking a day answers further down the page; without this the click looks
-  // like it did nothing.
-  useEffect(() => {
-    if (!pickedDay) return;
-    fillRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [pickedDay]);
-
   /** One note per day: writing it claims the day, clearing it gives it back. */
   async function onSetNote(day: string, note: string) {
     if (!userId) return;
@@ -505,75 +488,16 @@ export function PlanHome({ locale }: { locale: string }) {
   const suggestFrom = pickedDay ?? today;
   const suggestTo = pickedDay ?? addDaysIso(today, 30);
 
-  return (
+  if (section === "recommendations") return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      <PlanSetup
-        locale={locale}
-        hasPeople={members.length > 0}
-        hasPlace={Boolean(suggestCtx?.home)}
-        hasRace={plans.length > 0}
-        onSetHome={(place) => onSetHome(place)}
-      />
-
-      {/*
-        The next race used to be a card the height of a phone screen, above a
-        list of jobs, above the season — so the season, which is the reason
-        this page exists, started below the fold. It is one line now, and the
-        season starts under it.
-      */}
-      {nextRace ? (
-        <NextRaceHero
-          locale={locale}
-          plan={nextRace}
-          members={members}
-          busy={busyId === nextRace.event.id}
-          onStatusChange={(memberId, status) =>
-            void onStatusChange(nextRace.event.id, memberId, status)
-          }
-        />
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          {plans.length === 0 ? t.planEmpty : t.planNoUpcomingBody}{" "}
-          <Link href={`/${locale}`} className="text-foreground underline underline-offset-4">
-            {t.viewOnMap}
-          </Link>
-        </p>
-      )}
-
-      {/* The season on the left, and beside it the two things that answer
-          "what now" — rather than a thousand pixels further down. */}
-      <div className="grid gap-6 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-        <PlanSeason
-          locale={locale}
-          plans={plans}
-          past={past}
-          members={members}
-          busyWeekdays={busyWeekdays}
-          blocked={blocked}
-          selected={pickedDay}
-          busyId={busyId}
-          onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
-          onSetNote={(day, note) => onSetNote(day, note)}
-          onStatusChange={(eventId, memberId, status) =>
-            void onStatusChange(eventId, memberId, status)
-          }
-          onDiscard={(eventId) => void onDiscard(eventId)}
-        />
-
-        <aside ref={fillRef} className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20">
-          {actions.length > 0 ? (
-            <PlanTodo
-              locale={locale}
-              actions={actions}
-              members={members}
-              busyId={busyId}
-              onStatusChange={(eventId, memberId, status) =>
-                void onStatusChange(eventId, memberId, status)
-              }
-              onDiscard={(eventId) => void onDiscard(eventId)}
-            />
-          ) : null}
-
+      <header><h1 className="text-xl font-semibold">{t.accountRecommendations}</h1><p className="mt-1 text-sm text-muted-foreground">{t.accountRecommendationsDescription}</p></header>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="flex items-center gap-2 text-sm">{t.date}<input type="date" aria-label={t.date} value={pickedDay ?? ""} onChange={(e) => setPickedDay(e.target.value || null)} className="h-10 rounded-md border bg-background px-3" /></label>
+        {pickedDay && <Button variant="ghost" onClick={() => setPickedDay(null)}>{t.suggestSoon}</Button>}
+        <Button asChild variant="outline"><Link href={`/${locale}/account`}>{t.myCalendar}</Link></Button>
+      </div>
+      <PlanSetup locale={locale} hasPeople={members.length > 0} hasPlace={Boolean(suggestCtx?.home)} hasRace={plans.length > 0} onSetHome={onSetHome} />
+      <div className="grid items-start gap-5 [&>*]:min-w-0 lg:grid-cols-2">
           {suggestCtx ? (
             <FreeWeekendSuggestions
               key={`${suggestFrom}-${suggestTo}`}
@@ -608,6 +532,83 @@ export function PlanHome({ locale }: { locale: string }) {
             plannedEventIds={new Set(Object.keys(eventsById))}
             onAddRounds={(ids) => onAddRounds(ids)}
           />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
+      <header className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">{t.myCalendar}</h1><p className="mt-1 text-sm text-muted-foreground">{t.accountPlanDescription}</p></div>          <Button asChild variant="outline" className="h-auto min-h-10 whitespace-normal">
+            <Link href={`/${locale}/account/recommendations${pickedDay ? `?day=${pickedDay}` : ""}`}>{pickedDay ? `${t.accountDayRecommendations} · ${format(parseISO(pickedDay), "d. M.")}` : t.accountRecommendations}</Link>
+          </Button>
+</header>
+      <PlanSetup
+        locale={locale}
+        hasPeople={members.length > 0}
+        hasPlace={Boolean(suggestCtx?.home)}
+        hasRace={plans.length > 0}
+        onSetHome={(place) => onSetHome(place)}
+      />
+
+      {/*
+        The next race used to be a card the height of a phone screen, above a
+        list of jobs, above the season — so the season, which is the reason
+        this page exists, started below the fold. It is one line now, and the
+        season starts under it.
+      */}
+      {nextRace ? (
+        <NextRaceHero
+          locale={locale}
+          plan={nextRace}
+          members={members}
+          busy={busyId === nextRace.event.id}
+          onStatusChange={(memberId, status) =>
+            void onStatusChange(nextRace.event.id, memberId, status)
+          }
+        />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {plans.length === 0 ? t.planEmpty : t.planNoUpcomingBody}{" "}
+          <Link href={`/${locale}`} className="text-foreground underline underline-offset-4">
+            {t.viewOnMap}
+          </Link>
+        </p>
+      )}
+
+      {/* Keep attendance tasks beside the original season views. */}
+      <div className={`grid gap-6 [&>*]:min-w-0 ${actions.length ? "lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start" : ""}`}>
+        <PlanSeason
+          locale={locale}
+          plans={plans}
+          past={past}
+          members={members}
+          busyWeekdays={busyWeekdays}
+          blocked={blocked}
+          selected={pickedDay}
+          busyId={busyId}
+          onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
+          onSetNote={(day, note) => onSetNote(day, note)}
+          onStatusChange={(eventId, memberId, status) =>
+            void onStatusChange(eventId, memberId, status)
+          }
+          onDiscard={(eventId) => void onDiscard(eventId)}
+        />
+
+        <aside className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20">
+          {actions.length > 0 ? (
+            <PlanTodo
+              locale={locale}
+              actions={actions}
+              members={members}
+              busyId={busyId}
+              onStatusChange={(eventId, memberId, status) =>
+                void onStatusChange(eventId, memberId, status)
+              }
+              onDiscard={(eventId) => void onDiscard(eventId)}
+            />
+          ) : null}
+
+
         </aside>
       </div>
     </div>

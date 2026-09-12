@@ -4,6 +4,12 @@ export const defaultLocale: Locale = "en";
 
 export const messages = {
   en: {
+    accountRecommendations: "Recommendations",
+    accountSettings: "Settings",
+    accountPlanDescription: "Your saved races, attendance and calendar.",
+    accountRecommendationsDescription: "Find your next race nearby or continue a series.",
+    accountDayRecommendations: "Recommendations for this day",
+
     appName: "Let's Race",
     tagline: "Find cycling races near you",
     searchPlaceholder: "Races, towns…",
@@ -331,6 +337,12 @@ export const messages = {
     submit: "Submit",
   },
   cs: {
+    accountRecommendations: "Doporučení",
+    accountSettings: "Nastavení",
+    accountPlanDescription: "Uložené závody, účast jezdců a kalendář.",
+    accountRecommendationsDescription: "Najdi další závod v okolí nebo pokračuj v rozehrané sérii.",
+    accountDayRecommendations: "Doporučení pro tento den",
+
     appName: "Let's Race",
     tagline: "Najděte cyklistické závody kolem sebe",
     searchPlaceholder: "Závody, města…",
@@ -658,6 +670,12 @@ export const messages = {
     submit: "Odeslat",
   },
   pl: {
+    accountRecommendations: "Polecane",
+    accountSettings: "Ustawienia",
+    accountPlanDescription: "Zapisane wyścigi, uczestnicy i kalendarz.",
+    accountRecommendationsDescription: "Znajdź kolejny wyścig w okolicy lub kontynuuj serię.",
+    accountDayRecommendations: "Polecane na ten dzień",
+
     appName: "Let's Race",
     tagline: "Znajdź wyścigi kolarskie w okolicy",
     searchPlaceholder: "Wyścigi, miasta…",
@@ -985,6 +1003,12 @@ export const messages = {
     submit: "Wyślij",
   },
   sk: {
+    accountRecommendations: "Odporúčania",
+    accountSettings: "Nastavenia",
+    accountPlanDescription: "Uložené preteky, účasť jazdcov a kalendár.",
+    accountRecommendationsDescription: "Nájdi ďalšie preteky v okolí alebo pokračuj v sérii.",
+    accountDayRecommendations: "Odporúčania na tento deň",
+
     appName: "Let's Race",
     tagline: "Nájdite cyklistické preteky okolo seba",
     searchPlaceholder: "Preteky, mestá…",

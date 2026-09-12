@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Bell,
+  Compass,
+  Users,
   CalendarDays,
   CalendarPlus,
   Check,
@@ -153,13 +155,15 @@ export function AccountCommand({
             <CalendarDays />
             {t.myCalendar}
           </CommandItem>
+          <CommandItem value={`recommendations ${t.accountRecommendations}`} onSelect={() => go(`/${locale}/account/recommendations`)}><Compass />{t.accountRecommendations}</CommandItem>
+          <CommandItem value={`riders ${t.profilesTitle}`} onSelect={() => go(`/${locale}/account/riders`)}><Users />{t.profilesTitle}</CommandItem>
           <CommandItem value={`alerts ${t.alertTitle}`} onSelect={() => go(`/${locale}/account/alerts`)}>
             <Bell />
             {t.alertTitle}
           </CommandItem>
           <CommandItem value={`account ${t.account}`} onSelect={() => go(`/${locale}/account/settings`)}>
             <UserRound />
-            {t.account}
+            {t.accountSettings}
           </CommandItem>
           <CommandItem value={`map ${t.viewOnMap}`} onSelect={() => go(`/${locale}`)}>
             <Map />

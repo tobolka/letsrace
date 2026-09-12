@@ -62,9 +62,7 @@ export function AlertsPanel({ locale }: { locale: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      {/* The nav tab already names this page; a heading under it said it twice
-          and pushed the thing you came for down the screen. */}
-      <h1 className="sr-only">{t.alertTitle}</h1>
+      <h1 className="text-xl font-semibold">{t.alertTitle}</h1>
       <p className="max-w-2xl text-sm text-muted-foreground">{t.alertHelp}</p>
 
       {/* Same split as the plan, so the left edge does not jump between tabs:
