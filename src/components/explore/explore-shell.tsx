@@ -1293,6 +1293,7 @@ const EventCard = memo(function EventCard({
       : "");
   const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
   const extraLabel = [discLabel, event.series?.name].filter(Boolean).join(" · ");
+  const metadataLabel = [placeLabel, extraLabel].filter(Boolean).join(" · ");
 
   return (
     <Item
@@ -1344,12 +1345,11 @@ const EventCard = memo(function EventCard({
           >
             <span className="truncate">{event.name}</span>
           </ItemTitle>
-          <span className="flex min-w-0 items-center gap-2 text-xs leading-relaxed">
+          <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed">
             <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
-            <span className="truncate text-muted-foreground">{placeLabel}</span>
+            <span className="truncate text-muted-foreground">{metadataLabel}</span>
             {distanceLabel && <span className="ml-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
           </span>
-          <span className="block h-4 truncate text-[11px] leading-4 text-muted-foreground">{extraLabel}</span>
         </ItemContent>
       </button>
     </Item>
