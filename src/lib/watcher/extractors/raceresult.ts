@@ -126,14 +126,15 @@ export function parseRaceresultListPayload(data: unknown, _sourceUrl: string): P
       const place = [row.location, row.region].filter(Boolean).join(", ");
       const end = (row.dateTo || "").slice(0, 10);
       const href = `https://my.raceresult.com/${id}/`;
-      const lat = typeof row.lat === "number" && row.lat !== 0 ? row.lat : undefined;
-      const lng = typeof row.lng === "number" && row.lng !== 0 ? row.lng : undefined;
+      // Listings without a venue can carry a country-centre placeholder.
+      const lat = place && typeof row.lat === "number" && row.lat !== 0 ? row.lat : undefined;
+      const lng = place && typeof row.lng === "number" && row.lng !== 0 ? row.lng : undefined;
       out.push({
         externalId: `rr-${id}`,
         name,
         startDate: start,
         endDate: end && end !== start ? end : undefined,
-        placeText: place || cc,
+        placeText: place,
         countryHint: cc || undefined,
         discipline: mapDisc(row),
         audience: "mixed",

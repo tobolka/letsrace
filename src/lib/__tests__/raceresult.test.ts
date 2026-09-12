@@ -2,6 +2,16 @@ import { describe, expect, it } from "vitest";
 import { parseRaceresultListPayload } from "@/lib/watcher/extractors/raceresult";
 
 describe("RaceResult events listing", () => {
+  it("does not turn a country-only listing into a precise venue", () => {
+    const [event] = parseRaceresultListPayload([{ Events: [{
+      id: 900001, name: "MTB Race", dateFrom: "2026-09-19", countryCode: "CZ",
+      lat: 49.8823, lng: 15.3777,
+    }] }], "https://my.raceresult.com/events/");
+    expect(event.countryHint).toBe("CZ");
+    expect(event.placeText).toBe("");
+    expect(event.lat).toBeUndefined();
+    expect(event.lng).toBeUndefined();
+  });
   it("keeps cycling events in CZ/DE/SK/AT/PL and skips other countries and old years", () => {
     const payload = [
       {

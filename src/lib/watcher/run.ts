@@ -1523,7 +1523,22 @@ async function upsertParsedEvent(
 
   // 1) fingerprint — exact cell first, then the neighbouring geohash cells and the
   // "nogps" variant, which only count once the scorer confirms them.
-  let existingId: string | undefined;
+  // Source identity is stronger than a display name. After a reviewed merge,
+  // the source belongs to the keeper and must never create its old race again.
+  const { sourceEditionId } = await import("@/lib/watcher/source-identity");
+  const { data: knownSource, error: sourceError } = await supabase
+    .from("event_sources")
+    .select("event:events(id,start_date,merged_into_id)")
+    .eq("watched_url_id", watchedUrlId)
+    .eq("external_id", ev.externalId)
+    .maybeSingle();
+  if (sourceError) throw sourceError;
+  const sourceEvent = knownSource?.event;
+  let existingId = sourceEditionId(
+    ev.startDate,
+    (Array.isArray(sourceEvent) ? sourceEvent[0] : sourceEvent) as
+      { id: string; start_date: string; merged_into_id?: string | null } | null,
+  );
   const fpCols =
     "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
   const { data: fpRows } = await supabase
@@ -1542,7 +1557,7 @@ async function upsertParsedEvent(
     );
     byFp = (best?.row as CandidateRow | undefined) ?? null;
   }
-  existingId = byFp?.id;
+  existingId ??= byFp?.id;
 
   // 1b) same specific website / race-detail URL (strong signal)
   if (!existingId) {
@@ -1557,11 +1572,13 @@ async function upsertParsedEvent(
         .from("events")
         .select(urlCols)
         .eq("website_url", url)
+        .is("merged_into_id", null)
         .limit(8);
       const { data: byReg } = await supabase
         .from("events")
         .select(urlCols)
         .eq("registration_url", url)
+        .is("merged_into_id", null)
         .limit(8);
       urlCandidates.push(...((bySite ?? []) as unknown as CandidateRow[]));
       urlCandidates.push(...((byReg ?? []) as unknown as CandidateRow[]));
@@ -1612,6 +1629,7 @@ async function upsertParsedEvent(
       .gte("start_date", from)
       .lte("start_date", to)
       .neq("status", "cancelled")
+      .is("merged_into_id", null)
       .limit(400);
 
     const byId = new Map<string, CandidateRow>(
@@ -1627,6 +1645,7 @@ async function upsertParsedEvent(
       .gte("end_date", from)
       .lte("start_date", spanEnd)
       .neq("status", "cancelled")
+      .is("merged_into_id", null)
       .limit(120);
     for (const row of (spanning ?? []) as unknown as CandidateRow[]) byId.set(row.id, row);
 
@@ -1647,6 +1666,7 @@ async function upsertParsedEvent(
           .gte("start_date", from)
           .lte("start_date", to)
           .neq("status", "cancelled")
+          .is("merged_into_id", null)
           .in("location_id", locIds)
           .limit(80);
         for (const row of (nearbyGeo ?? []) as unknown as CandidateRow[]) byId.set(row.id, row);

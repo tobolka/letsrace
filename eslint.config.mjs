@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "**/*.cjs",
     "public/maplibre/**",
+    ".claude/worktrees/**",
+    "scripts/.tmp/**",
   ]),
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx}"],

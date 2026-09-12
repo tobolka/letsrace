@@ -17,8 +17,12 @@ export async function persist(
   work: PromiseLike<{ error: { message: string } | null }>,
   opts: { locale: string; onFailure?: () => void },
 ): Promise<boolean> {
-  const { error } = await work;
-  if (!error) return true;
+  try {
+    const { error } = await work;
+    if (!error) return true;
+  } catch {
+    // Network failures reject rather than returning a database error.
+  }
   opts.onFailure?.();
   toast.error(messagesFor(opts.locale).saveFailed);
   return false;

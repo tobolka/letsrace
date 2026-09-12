@@ -35,24 +35,36 @@ export function CalendarFeed({
   const [ready, setReady] = useState(false);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const supabase = createBrowserSupabase();
-      const { data } = await supabase
-        .from("profiles")
-        .select("ics_token")
-        .eq("id", userId)
-        .maybeSingle();
-      if (!alive) return;
-      setToken((data?.ics_token as string | null) ?? null);
-      setReady(true);
+      setReady(false);
+      setFailed(false);
+      setToken(null);
+      try {
+        const supabase = createBrowserSupabase();
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("ics_token")
+          .eq("id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!alive) return;
+        if (!data?.ics_token) throw new Error("Calendar token unavailable");
+        setToken((data?.ics_token as string | null) ?? null);
+      } catch {
+        if (alive) setFailed(true);
+      } finally {
+        if (alive) setReady(true);
+      }
     })();
     return () => {
       alive = false;
     };
-  }, [userId]);
+  }, [userId, attempt]);
 
   const url = token
     ? `${typeof window === "undefined" ? "" : window.location.origin}/api/plan/${token}.ics`
@@ -71,23 +83,32 @@ export function CalendarFeed({
 
   async function regenerate() {
     setBusy(true);
-    const next = crypto.randomUUID();
-    const supabase = createBrowserSupabase();
-    const { error } = await supabase
-      .from("profiles")
-      .update({ ics_token: next, updated_at: new Date().toISOString() })
-      .eq("id", userId);
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const next = crypto.randomUUID();
+      const supabase = createBrowserSupabase();
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ ics_token: next, updated_at: new Date().toISOString() })
+        .eq("id", userId)
+        .select("ics_token")
+        .single();
+      if (error || !data?.ics_token) throw error ?? new Error("Calendar update failed");
+      setToken(data.ics_token);
+      toast.success(t.feedRegenerated);
+    } catch {
+      toast.error(t.saveFailed);
+    } finally {
+      setBusy(false);
     }
-    setToken(next);
-    toast.success(t.feedRegenerated);
   }
 
   if (!ready) return <Skeleton className="h-40 w-full" />;
-  if (!token) return null;
+  if (failed || !token) return (
+    <div className="flex flex-col gap-3 rounded-lg border p-4">
+      <p role="alert" className="text-sm text-muted-foreground">{t.loadFailed}</p>
+      <Button variant="outline" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</Button>
+    </div>
+  );
 
   const inner = (
     <>

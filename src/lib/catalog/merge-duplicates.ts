@@ -2,11 +2,11 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import {
   DEDUP_THRESHOLD,
   distanceKm,
-  preferEventName,
   scoreDuplicate,
   spanDays,
   canonicalizeForDedup,
   isGarbagePlace,
+  preferEventName,
   type DedupEvent,
 } from "@/lib/dedup";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -612,51 +612,11 @@ async function applyMerge(
   keep: MergeSide,
   drop: MergeSide,
 ): Promise<string | null> {
-  const { data: dropSources } = await supabase
-    .from("event_sources")
-    .select("id, watched_url_id, external_id, source_url, kind")
-    .eq("event_id", drop.id);
-
-  for (const src of dropSources ?? []) {
-    const { error: moveErr } = await supabase
-      .from("event_sources")
-      .update({ event_id: keep.id })
-      .eq("id", src.id);
-    if (moveErr) {
-      // Unique (watched_url_id, external_id) already points at the keeper.
-      await supabase.from("event_sources").delete().eq("id", src.id);
-    }
-  }
-
-  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  if (!keep.website_url && drop.website_url) patch.website_url = drop.website_url;
-  if (!keep.registration_url && drop.registration_url) {
-    patch.registration_url = drop.registration_url;
-  }
-  if (!keep.series_id && drop.series_id) patch.series_id = drop.series_id;
-  const place = keep.location?.municipality || keep.location?.name || null;
-  const better = preferEventName(keep.name, drop.name, place);
-  if (better !== keep.name) patch.name = better;
-  if (Object.keys(patch).length > 1) {
-    const { error } = await supabase.from("events").update(patch).eq("id", keep.id);
-    if (error) return `keep ${keep.id}: ${error.message}`;
-  }
-
-  // Retire the loser's fingerprint. It is the watcher's identity key, so leaving
-  // it intact would let a later fetch re-match onto the hidden row and resurrect
-  // the duplicate — and it is what blocks the unique index on `events`.
-  // The column is NOT NULL, so we mark it rather than clear it.
-  const { error: hideErr } = await supabase
-    .from("events")
-    .update({
-      visibility: "hidden",
-      status: "hidden",
-      fingerprint: `merged:${drop.id}`,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", drop.id);
-  if (hideErr) return `drop ${drop.id}: ${hideErr.message}`;
-  return null;
+  const { error } = await supabase.rpc("app_merge_events", {
+    keep_id: keep.id,
+    drop_id: drop.id,
+  });
+  return error ? error.message : null;
 }
 
 /**

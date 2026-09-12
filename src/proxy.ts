@@ -21,7 +21,7 @@ function isHomepage(pathname: string): boolean {
   return new RegExp(`^/(${locales.join("|")})/?$`).test(pathname);
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isHomepage(pathname) && wantsMarkdown(request)) {

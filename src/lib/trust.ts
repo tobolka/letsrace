@@ -5,7 +5,6 @@ export type TrustLevel = "official" | "series" | "calendar" | "low";
 
 export function eventTrustLevel(event: EventListItem): TrustLevel {
   if (event.registrationUrl) return "official";
-  if (event.websiteUrl && event.sourceKind !== "scraped") return "official";
   if (event.websiteUrl) return "series";
   if (event.listingUrl) return "calendar";
   return "low";

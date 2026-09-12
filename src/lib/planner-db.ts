@@ -33,11 +33,15 @@ export async function ensureFavorite(
   eventId: string,
   favorited: boolean,
 ): Promise<boolean> {
-  if (favorited) return true;
-  const { error } = await supabase
-    .from("event_favorites")
-    .insert({ user_id: userId, event_id: eventId });
-  return !error || error.code === "23505";
+  try {
+    if (favorited) return true;
+    const { error } = await supabase
+      .from("event_favorites")
+      .insert({ user_id: userId, event_id: eventId });
+    return !error || error.code === "23505";
+  } catch {
+    return false;
+  }
 }
 
 export async function toggleFavoriteRow(
@@ -190,12 +194,13 @@ export async function setMemberPlanStatus(opts: {
   const fields = attendanceFieldsForStatus(opts.status);
 
   if (!fields) {
-    await supabase
+    const { error } = await supabase
       .from("event_attendance")
       .delete()
       .eq("user_id", userId)
       .eq("event_id", eventId)
       .eq("member_id", memberId);
+    if (error) throw new Error(error.message);
     return { rows: rows.filter((r) => r.member_id !== memberId), favorited };
   }
 
@@ -208,7 +213,7 @@ export async function setMemberPlanStatus(opts: {
   const existing = rows.find((r) => r.member_id === memberId);
 
   if (existing) {
-    await supabase
+    const { error } = await supabase
       .from("event_attendance")
       .update({
         status: next.status,
@@ -218,10 +223,13 @@ export async function setMemberPlanStatus(opts: {
       })
       .eq("user_id", userId)
       .eq("event_id", eventId)
-      .eq("member_id", memberId);
+      .eq("member_id", memberId)
+      .select("member_id")
+      .single();
+    if (error) throw new Error(error.message);
     rows = rows.map((r) => (r.member_id === memberId ? next : r));
   } else {
-    await supabase.from("event_attendance").insert({
+    const { error } = await supabase.from("event_attendance").insert({
       user_id: userId,
       event_id: eventId,
       member_id: memberId,
@@ -229,6 +237,7 @@ export async function setMemberPlanStatus(opts: {
       registered: next.registered,
       paid: next.paid,
     });
+    if (error) throw new Error(error.message);
     rows = [...rows, next];
   }
 
@@ -265,17 +274,21 @@ export async function removeFromPlan(opts: {
   userId: string;
   eventId: string;
 }): Promise<boolean> {
-  const { error: attendanceError } = await opts.supabase
-    .from("event_attendance")
-    .delete()
-    .eq("user_id", opts.userId)
-    .eq("event_id", opts.eventId);
-  const { error: favoriteError } = await opts.supabase
-    .from("event_favorites")
-    .delete()
-    .eq("user_id", opts.userId)
-    .eq("event_id", opts.eventId);
-  return !attendanceError && !favoriteError;
+  try {
+    const { error: attendanceError } = await opts.supabase
+      .from("event_attendance")
+      .delete()
+      .eq("user_id", opts.userId)
+      .eq("event_id", opts.eventId);
+    const { error: favoriteError } = await opts.supabase
+      .from("event_favorites")
+      .delete()
+      .eq("user_id", opts.userId)
+      .eq("event_id", opts.eventId);
+    return !attendanceError && !favoriteError;
+  } catch {
+    return false;
+  }
 }
 
 export { flagsFrom };

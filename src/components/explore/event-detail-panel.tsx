@@ -16,11 +16,9 @@ import {
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
 import {
-  DISCIPLINE_LABELS,
   RACE_LEVEL_LABELS,
   UCI_CLASS_LABELS,
   formatEventCategoryLabel,
-  type Discipline,
   type RaceLevel,
   type UciClass,
 } from "@/lib/taxonomy";
@@ -42,6 +40,7 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
+import { disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
 
@@ -159,9 +158,7 @@ export function EventDetailPanel({
     (event.uciClass
       ? UCI_CLASS_LABELS[event.uciClass as UciClass] || event.uciClass.toUpperCase()
       : null) ||
-    event.classLabel ||
-    RACE_LEVEL_LABELS[levelKey] ||
-    event.level;
+    (event.classLabel && event.classLabel !== RACE_LEVEL_LABELS[levelKey] ? event.classLabel : raceLevelLabel(levelKey, locale));
   const whoLabel = formatEventCategoryLabel(event, {
     kids: t.kids,
     youth: t.youth,
@@ -170,7 +167,7 @@ export function EventDetailPanel({
   const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
   const discChips = event.disciplines
     .slice(0, 4)
-    .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
+    .map((d) => disciplineLabel(d, locale))
     .filter(Boolean);
 
   const registerUrl = event.registrationUrl;
@@ -273,7 +270,7 @@ export function EventDetailPanel({
   ];
 
   const trustRow = (
-    <div className="flex w-full items-center gap-2 px-1">
+    <div className="flex w-full items-center gap-2 px-1" title={t.trustExplanation}>
       <p className="sr-only" aria-live="polite">
         {linkCopied ? t.linkCopied : ""}
       </p>

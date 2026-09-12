@@ -1310,6 +1310,11 @@ export function cleanGeocodeQuery(
 ): { query: string; countryCode: string } {
   let text = raw.replace(/\s+/g, " ").trim();
   let cc = (countryHint || "CZ").toUpperCase();
+  // A country identifies coverage, never a race venue. Otherwise Nominatim
+  // supplies the country's centroid and the UI invents a precise distance.
+  if ([...EUROPE_COUNTRY_CODES, "UK"].some((code) => code === text.toUpperCase())) {
+    return { query: "", countryCode: text.toUpperCase() === "UK" ? "GB" : text.toUpperCase() };
+  }
 
   for (const { re, cc: c } of COUNTRY_WORDS) {
     if (re.test(text)) {
@@ -1578,6 +1583,7 @@ export function geocodeFromGazetteer(
 
   const { query, countryCode } = cleanGeocodeQuery(raw, countryHint);
   // Prefer cleaned query, then fall back to scanning the raw place string
+  if (!query) return null;
   const hit =
     (query ? gazetteerLookup(query) : null) ||
     gazetteerLookup(raw.replace(/,\s*[A-Z]{2}\s*$/i, "").trim());

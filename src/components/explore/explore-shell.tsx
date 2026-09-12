@@ -34,8 +34,8 @@ import {
 import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
-import type { Messages } from "@/lib/i18n/messages";
-import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
+import { messagesFor, type Messages } from "@/lib/i18n/messages";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import { disciplineColor } from "@/lib/map-visuals";
 import {
@@ -1167,10 +1167,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   );
 }
 
-function disciplineLabel(id: string): string {
-  return DISCIPLINE_LABELS[id as Discipline] || id;
-}
-
 function ListToolbar({
   count,
   pending,
@@ -1286,7 +1282,8 @@ const EventCard = memo(function EventCard({
   active: boolean;
   onSelect: (id: string) => void;
 }) {
-  const discLabel = event.disciplines.map((d) => disciplineLabel(d)).filter(Boolean).join(", ");
+  const t = messagesFor(locale);
+  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
   const df = dateFnsLocale(locale);
   const dateLabel =
@@ -1294,23 +1291,8 @@ const EventCard = memo(function EventCard({
     (event.endDate && event.endDate !== event.startDate
       ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
       : "");
-  /*
-    One line under the name, the same on a phone and on a desktop. The level is
-    gone from it — almost every race is "Local", so the word was a column of
-    noise — and so is who it is for: "Amateur · Masters" is true of nearly all
-    of them and tells you nothing about which one to pick. The discipline is
-    the fact that actually sorts one race from another.
-  */
-  const meta = [
-    dateLabel,
-    event.location?.municipality || event.location?.name || "—",
-    event.location?.countryCode,
-    distanceLabel,
-    discLabel,
-    event.series?.name,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
+  const extraLabel = [discLabel, event.series?.name].filter(Boolean).join(" · ");
 
   return (
     <Item
@@ -1331,6 +1313,7 @@ const EventCard = memo(function EventCard({
       <button
         type="button"
         data-event-id={event.id}
+        aria-pressed={active}
         onClick={() => onSelect(event.id)}
         className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
@@ -1361,7 +1344,12 @@ const EventCard = memo(function EventCard({
           >
             <span className="truncate">{event.name}</span>
           </ItemTitle>
-          <span className="line-clamp-1 text-xs leading-snug text-muted-foreground">{meta}</span>
+          <span className="flex min-w-0 items-center gap-2 text-xs leading-relaxed">
+            <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
+            <span className="truncate text-muted-foreground">{placeLabel}</span>
+            {distanceLabel && <span className="ml-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
+          </span>
+          <span className="block h-4 truncate text-[11px] leading-4 text-muted-foreground">{extraLabel}</span>
         </ItemContent>
       </button>
     </Item>

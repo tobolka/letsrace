@@ -12,6 +12,7 @@ import { PlanSetup } from "@/components/account/plan-setup";
 import { PlanTodo } from "@/components/account/plan-todo";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -104,6 +105,7 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
 export function PlanHome({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const [ready, setReady] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [members, setMembers] = useState<PlannerMember[]>([]);
@@ -119,121 +121,129 @@ export function PlanHome({ locale }: { locale: string }) {
   const fillRef = useRef<HTMLDivElement>(null);
 
   async function load() {
-    const supabase = createBrowserSupabase();
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) {
-      setAuthed(false);
+    setLoadFailed(false);
+    setReady(false);
+    try {
+      const supabase = createBrowserSupabase();
+      const { data: auth, error: authError } = await supabase.auth.getUser();
+      if (authError && authError.name !== "AuthSessionMissingError") throw authError;
+      if (!auth.user) {
+        setAuthed(false);
+        setReady(true);
+        return;
+      }
+      setAuthed(true);
+      setUserId(auth.user.id);
+
+      const [{ data: mems }, { data: att }, { data: favs }, { data: prefs }] = await Promise.all([
+        supabase
+          .from("family_members")
+          .select("id, name, relationship, is_self")
+          .eq("user_id", auth.user.id)
+          .order("created_at").throwOnError(),
+        supabase
+          .from("event_attendance")
+          .select(`member_id, status, registered, paid, event:events(${EVENT_EMBED})`)
+          .eq("user_id", auth.user.id).throwOnError(),
+        supabase
+          .from("event_favorites")
+          .select(`event:events(${EVENT_EMBED})`)
+          .eq("user_id", auth.user.id).throwOnError(),
+        supabase.from("profiles").select("busy_weekdays").eq("id", auth.user.id).maybeSingle().throwOnError(),
+      ]);
+
+      const { data: blockedRows } = await supabase
+        .from("blocked_days")
+        .select("day, note")
+        .eq("user_id", auth.user.id).throwOnError();
+      setBlocked(Object.fromEntries(((blockedRows ?? []) as BlockedDay[]).map((r) => [r.day, r])));
+
+      const nextEvents: Record<string, PlannerEvent> = {};
+      const nextAtt: Record<string, AttendanceRecord[]> = {};
+      const nextFavs: string[] = [];
+
+      for (const row of (att ?? []) as unknown as {
+        member_id: string;
+        status: string;
+        registered: boolean;
+        paid: boolean;
+        event: EventEmbed | EventEmbed[] | null;
+      }[]) {
+        const ev = unwrap(row.event);
+        if (!ev) continue;
+        nextEvents[ev.id] = toPlannerEvent(ev);
+        nextAtt[ev.id] = [
+          ...(nextAtt[ev.id] ?? []),
+          {
+            member_id: row.member_id,
+            status: row.status,
+            registered: Boolean(row.registered),
+            paid: Boolean(row.paid),
+          },
+        ];
+      }
+
+      for (const row of (favs ?? []) as unknown as { event: EventEmbed | EventEmbed[] | null }[]) {
+        const ev = unwrap(row.event);
+        if (!ev) continue;
+        nextEvents[ev.id] = toPlannerEvent(ev);
+        nextFavs.push(ev.id);
+      }
+
+      setMembers(
+        (mems ?? []).map((m) => ({
+          id: m.id,
+          name: m.name,
+          relationship: m.relationship,
+          isSelf: Boolean(m.is_self),
+        })),
+      );
+      setEventsById(nextEvents);
+      setFavoriteIds(nextFavs);
+      setAttendanceByEvent(nextAtt);
+      setBusyWeekdays(parseWeekdays(prefs?.busy_weekdays));
+
+      // What the ranker needs: where they said they are, and what they have
+      // actually ridden — series to continue and disciplines they turn up for.
+      const [{ data: alertRows }, { data: ridden }] = await Promise.all([
+        supabase
+          .from("race_alerts")
+          .select("id, lat, lng, radius_km")
+          .eq("user_id", auth.user.id)
+          .eq("enabled", true).throwOnError(),
+        supabase
+          .from("event_attendance")
+          .select("event:events(series_id, disciplines)")
+          .eq("user_id", auth.user.id).throwOnError(),
+      ]);
+      const home = (alertRows ?? []).find((a) => a.lat != null && a.lng != null);
+      const riddenSeriesIds = new Set<string>();
+      const riddenDisciplines = new Set<string>();
+      for (const row of (ridden ?? []) as unknown as {
+        event:
+          | { series_id: string | null; disciplines: string[] | null }
+          | { series_id: string | null; disciplines: string[] | null }[]
+          | null;
+      }[]) {
+        const ev = unwrap(row.event);
+        if (!ev) continue;
+        if (ev.series_id) riddenSeriesIds.add(ev.series_id);
+        for (const d of ev.disciplines ?? []) riddenDisciplines.add(d);
+      }
+      setSuggestCtx({
+        home: home ? { lat: Number(home.lat), lng: Number(home.lng) } : null,
+        radiusKm: Number(home?.radius_km ?? 60),
+        riddenSeriesIds,
+        riddenDisciplines,
+        plannedEventIds: new Set(Object.keys(nextEvents)),
+      });
+
+      await loadSeries(nextEvents);
+    } catch {
+      setLoadFailed(true);
+    } finally {
       setReady(true);
-      return;
     }
-    setAuthed(true);
-    setUserId(auth.user.id);
-
-    const [{ data: mems }, { data: att }, { data: favs }, { data: prefs }] = await Promise.all([
-      supabase
-        .from("family_members")
-        .select("id, name, relationship, is_self")
-        .eq("user_id", auth.user.id)
-        .order("created_at"),
-      supabase
-        .from("event_attendance")
-        .select(`member_id, status, registered, paid, event:events(${EVENT_EMBED})`)
-        .eq("user_id", auth.user.id),
-      supabase
-        .from("event_favorites")
-        .select(`event:events(${EVENT_EMBED})`)
-        .eq("user_id", auth.user.id),
-      supabase.from("profiles").select("busy_weekdays").eq("id", auth.user.id).maybeSingle(),
-    ]);
-
-    const { data: blockedRows } = await supabase
-      .from("blocked_days")
-      .select("day, note")
-      .eq("user_id", auth.user.id);
-    setBlocked(Object.fromEntries(((blockedRows ?? []) as BlockedDay[]).map((r) => [r.day, r])));
-
-    const nextEvents: Record<string, PlannerEvent> = {};
-    const nextAtt: Record<string, AttendanceRecord[]> = {};
-    const nextFavs: string[] = [];
-
-    for (const row of (att ?? []) as unknown as {
-      member_id: string;
-      status: string;
-      registered: boolean;
-      paid: boolean;
-      event: EventEmbed | EventEmbed[] | null;
-    }[]) {
-      const ev = unwrap(row.event);
-      if (!ev) continue;
-      nextEvents[ev.id] = toPlannerEvent(ev);
-      nextAtt[ev.id] = [
-        ...(nextAtt[ev.id] ?? []),
-        {
-          member_id: row.member_id,
-          status: row.status,
-          registered: Boolean(row.registered),
-          paid: Boolean(row.paid),
-        },
-      ];
-    }
-
-    for (const row of (favs ?? []) as unknown as { event: EventEmbed | EventEmbed[] | null }[]) {
-      const ev = unwrap(row.event);
-      if (!ev) continue;
-      nextEvents[ev.id] = toPlannerEvent(ev);
-      nextFavs.push(ev.id);
-    }
-
-    setMembers(
-      (mems ?? []).map((m) => ({
-        id: m.id,
-        name: m.name,
-        relationship: m.relationship,
-        isSelf: Boolean(m.is_self),
-      })),
-    );
-    setEventsById(nextEvents);
-    setFavoriteIds(nextFavs);
-    setAttendanceByEvent(nextAtt);
-    setBusyWeekdays(parseWeekdays(prefs?.busy_weekdays));
-
-    // What the ranker needs: where they said they are, and what they have
-    // actually ridden — series to continue and disciplines they turn up for.
-    const [{ data: alertRows }, { data: ridden }] = await Promise.all([
-      supabase
-        .from("race_alerts")
-        .select("id, lat, lng, radius_km")
-        .eq("user_id", auth.user.id)
-        .eq("enabled", true),
-      supabase
-        .from("event_attendance")
-        .select("event:events(series_id, disciplines)")
-        .eq("user_id", auth.user.id),
-    ]);
-    const home = (alertRows ?? []).find((a) => a.lat != null && a.lng != null);
-    const riddenSeriesIds = new Set<string>();
-    const riddenDisciplines = new Set<string>();
-    for (const row of (ridden ?? []) as unknown as {
-      event:
-        | { series_id: string | null; disciplines: string[] | null }
-        | { series_id: string | null; disciplines: string[] | null }[]
-        | null;
-    }[]) {
-      const ev = unwrap(row.event);
-      if (!ev) continue;
-      if (ev.series_id) riddenSeriesIds.add(ev.series_id);
-      for (const d of ev.disciplines ?? []) riddenDisciplines.add(d);
-    }
-    setSuggestCtx({
-      home: home ? { lat: Number(home.lat), lng: Number(home.lng) } : null,
-      radiusKm: Number(home?.radius_km ?? 60),
-      riddenSeriesIds,
-      riddenDisciplines,
-      plannedEventIds: new Set(Object.keys(nextEvents)),
-    });
-
-    await loadSeries(nextEvents);
-    setReady(true);
   }
 
   /**
@@ -338,25 +348,30 @@ export function PlanHome({ locale }: { locale: string }) {
   async function onStatusChange(eventId: string, memberId: string, status: PlanMemberStatus) {
     if (!userId) return;
     setBusyId(eventId);
-    const supabase = createBrowserSupabase();
-    const next = await setMemberPlanStatus({
-      supabase,
-      userId,
-      eventId,
-      memberId,
-      status,
-      rows: attendanceByEvent[eventId] ?? [],
-      favorited: favoriteIds.includes(eventId),
-    });
-    setAttendanceByEvent((prev) => ({ ...prev, [eventId]: next.rows }));
-    setFavoriteIds((prev) =>
-      next.favorited
-        ? prev.includes(eventId)
-          ? prev
-          : [...prev, eventId]
-        : prev.filter((id) => id !== eventId),
-    );
-    setBusyId(null);
+    try {
+      const supabase = createBrowserSupabase();
+      const next = await setMemberPlanStatus({
+        supabase,
+        userId,
+        eventId,
+        memberId,
+        status,
+        rows: attendanceByEvent[eventId] ?? [],
+        favorited: favoriteIds.includes(eventId),
+      });
+      setAttendanceByEvent((prev) => ({ ...prev, [eventId]: next.rows }));
+      setFavoriteIds((prev) =>
+        next.favorited
+          ? prev.includes(eventId)
+            ? prev
+            : [...prev, eventId]
+          : prev.filter((id) => id !== eventId),
+      );
+    } catch {
+      toast.error(t.saveFailed);
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function onDiscard(eventId: string) {
@@ -461,6 +476,14 @@ export function PlanHome({ locale }: { locale: string }) {
       </div>
     );
   }
+
+  if (loadFailed) return (
+    <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-6 py-12">
+      <h1 className="text-xl font-semibold">{t.myCalendar}</h1>
+      <p role="alert" className="text-muted-foreground">{t.loadFailed}</p>
+      <Button onClick={() => void load()}>{t.retry}</Button>
+    </div>
+  );
 
   if (!authed) {
     return (

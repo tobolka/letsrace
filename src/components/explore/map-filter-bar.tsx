@@ -1,5 +1,7 @@
 "use client";
 
+import { disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+
 import { useState, type ComponentType } from "react";
 import dynamic from "next/dynamic";
 import {
@@ -58,12 +60,8 @@ import { familyColor } from "@/lib/map-visuals";
 import {
   AGE_CATEGORY_FILTERS,
   AGE_CATEGORY_LABELS,
-  DISCIPLINE_LABELS,
   DISCIPLINE_TREE,
-  RACE_LEVEL_LABELS,
   RACE_LEVELS,
-  type Discipline,
-  type RaceLevel,
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
@@ -156,10 +154,6 @@ function groupSeriesByCountry(
       (a, b) => b.eventCount - a.eventCount || a.name.localeCompare(b.name),
     ),
   }));
-}
-
-function disciplineLabel(id: string): string {
-  return DISCIPLINE_LABELS[id as Discipline] || id;
 }
 
 export function MapFilterBar({
@@ -292,7 +286,7 @@ export function MapFilterBar({
   const extraMeta: Record<ExtraFilter, { label: string; value?: string }> = {
     discipline: {
       label: messages.typeFilter,
-      value: selectedDisc ? disciplineLabel(selectedDisc) : undefined,
+      value: selectedDisc ? disciplineLabel(selectedDisc, locale) : undefined,
     },
     category: {
       label: messages.categoryFilter,
@@ -308,7 +302,7 @@ export function MapFilterBar({
       value:
         levels.length === 0
           ? undefined
-          : levels.map((id) => RACE_LEVEL_LABELS[id as RaceLevel] || id).join(", "),
+          : levels.map((id) => raceLevelLabel(id, locale)).join(", "),
     },
     country: {
       label: messages.countryFilter,
@@ -413,7 +407,7 @@ export function MapFilterBar({
                   style={{ background: familyColor(opt.id) }}
                   aria-hidden
                 />
-                {opt.label}
+                {disciplineLabel(opt.id, locale)}
               </DropdownMenuRadioItem>
               {opt.children?.map((child) => (
                 <DropdownMenuRadioItem
@@ -426,7 +420,7 @@ export function MapFilterBar({
                     style={{ background: familyColor(child.id) }}
                     aria-hidden
                   />
-                  {child.label}
+                  {disciplineLabel(child.id, locale)}
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuGroup>
@@ -454,7 +448,7 @@ export function MapFilterBar({
           onCheckedChange={() => onLevel(levelId)}
           className={itemClass}
         >
-          {RACE_LEVEL_LABELS[levelId]}
+          {raceLevelLabel(levelId, locale)}
         </DropdownMenuCheckboxItem>
       ));
     }

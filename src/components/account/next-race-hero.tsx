@@ -12,7 +12,7 @@ import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
 import { daysUntil } from "@/lib/plan-actions";
 import type { EventPlan, PlanMemberStatus, PlannerMember } from "@/lib/planner";
-import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 
 /**
  * The race that is actually about to happen, given the room a whole page used
@@ -47,7 +47,7 @@ export function NextRaceHero({
         ? t.nextRaceTomorrow
         : t.nextRaceIn.replace("{n}", String(days));
   const disc =
-    DISCIPLINE_LABELS[(plan.event.disciplines[0] ?? "") as Discipline] || plan.event.disciplines[0];
+    disciplineLabel(plan.event.disciplines[0] ?? "", locale);
   const meta = [
     [plan.event.place, plan.event.countryCode].filter(Boolean).join(" · "),
     disc,

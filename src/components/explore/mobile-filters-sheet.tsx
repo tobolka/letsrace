@@ -1,5 +1,7 @@
 "use client";
 
+import { disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { addDays, endOfMonth, format, parseISO, startOfMonth } from "date-fns";
@@ -23,12 +25,8 @@ import type { Messages } from "@/lib/i18n/messages";
 import {
   AGE_CATEGORY_FILTERS,
   AGE_CATEGORY_LABELS,
-  DISCIPLINE_LABELS,
   DISCIPLINE_TREE,
-  RACE_LEVEL_LABELS,
   RACE_LEVELS,
-  type Discipline,
-  type RaceLevel,
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
@@ -275,7 +273,7 @@ export function MobileFiltersSheet({
                     active={selectedDisc === opt.id}
                     onClick={() => onDiscipline(opt.id)}
                   >
-                    {DISCIPLINE_LABELS[opt.id as Discipline] || opt.label}
+                    {disciplineLabel(opt.id, locale)}
                   </Chip>
                 ))}
               </div>
@@ -305,7 +303,7 @@ export function MobileFiltersSheet({
                 </Chip>
                 {RACE_LEVELS.map((id) => (
                   <Chip key={id} active={levels.includes(id)} onClick={() => onLevel(id)}>
-                    {RACE_LEVEL_LABELS[id as RaceLevel] || id}
+                    {raceLevelLabel(id, locale)}
                   </Chip>
                 ))}
               </div>

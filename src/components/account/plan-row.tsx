@@ -12,7 +12,7 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
 import type { EventPlan, PlanMemberStatus, PlannerMember } from "@/lib/planner";
-import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { cn } from "@/lib/utils";
 
 /**
@@ -55,8 +55,7 @@ export function PlanRow({
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   const disc =
-    DISCIPLINE_LABELS[(plan.event.disciplines[0] ?? "") as Discipline] ||
-    plan.event.disciplines[0];
+    disciplineLabel(plan.event.disciplines[0] ?? "", locale);
   const meta = [
     showDate ? format(parseISO(plan.event.startDate), "EEE d. M.", { locale: df }) : null,
     [plan.event.place, plan.event.countryCode].filter(Boolean).join(" · "),

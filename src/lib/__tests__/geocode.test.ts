@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { geocodeFromGazetteer } from "@/lib/geocode";
+import { cleanGeocodeQuery, geocodeFromGazetteer, geocodePlace } from "@/lib/geocode";
+
+describe("country-only race venues", () => {
+  it.each(["CZ", "SK", "DE", "AT", "PL", "Austria", "Germany", "Slovakia"])(
+    "does not geocode %s as a race start", async (place) => {
+      expect(cleanGeocodeQuery(place).query).toBe("");
+      expect(geocodeFromGazetteer(place)).toBeNull();
+      expect(await geocodePlace(place)).toBeNull();
+    },
+  );
+});
 
 describe("Austrian club names as places", () => {
   it("pins the town hidden in Cycling Austria club + bundesland labels", () => {

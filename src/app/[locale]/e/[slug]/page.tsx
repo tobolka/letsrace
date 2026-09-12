@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { ArrowLeft, ExternalLink, MapPinned } from "lucide-react";
 import { getPublicEventBySlug } from "@/lib/events";
@@ -75,6 +75,7 @@ export default async function EventPage({ params }: Props) {
   const locale = raw as Locale;
   const event = await getPublicEventBySlug(slug);
   if (!event) notFound();
+  if (event.slug !== slug) permanentRedirect(`/${locale}/e/${event.slug}`);
 
   const t = messages[locale];
   const place =

@@ -35,8 +35,8 @@ export function RacePlanControls({
           const row = attendance.find((a) => a.member_id === m.id);
           const status = memberPlanStatus(row ?? null);
           return (
-            <div key={m.id} className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium">{memberLabel(m, t)}</span>
+            <div key={m.id} className="flex flex-wrap items-center justify-between gap-2">
+              <span className="min-w-0 break-words text-sm font-medium">{memberLabel(m, t)}</span>
               <PlanStatusToggle
                 locale={locale}
                 value={status}

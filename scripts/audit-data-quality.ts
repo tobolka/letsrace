@@ -10,7 +10,7 @@
  *
  * Usage: nvm use 22 && npx tsx scripts/audit-data-quality.ts
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { inferClassification } from "../src/lib/taxonomy";
@@ -60,6 +60,7 @@ async function main() {
           "series(name,slug,website_url),locations(municipality,country_code,geocode_status),categories:event_categories(name)",
       )
       .order("start_date")
+      .order("id")
       .range(from, from + 999);
     if (error) throw new Error(error.message);
     rows.push(...((data ?? []) as unknown as Row[]));
@@ -76,10 +77,11 @@ async function main() {
   const sourcesById = new Map<string, string[]>();
   for (let i = 0; i < needSources.length; i += 200) {
     const ids = needSources.slice(i, i + 200).map((r) => r.id);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("event_sources")
       .select("event_id,source_url")
       .in("event_id", ids);
+    if (error) throw new Error(`Source audit failed: ${error.message}`);
     for (const row of data ?? []) {
       const list = sourcesById.get(row.event_id as string) ?? [];
       list.push(row.source_url as string);
@@ -142,7 +144,7 @@ async function main() {
     }
     if (
       c.ageConfidence === "explicit" &&
-      JSON.stringify(c.ageCategories) !== JSON.stringify(r.age_categories ?? [])
+      JSON.stringify([...c.ageCategories].sort()) !== JSON.stringify([...(r.age_categories ?? [])].sort())
     ) {
       ageDisagrees += 1;
     }
@@ -202,6 +204,25 @@ async function main() {
   const ungeocoded = upcoming.filter((r) => r.locations?.geocode_status !== "ok").length;
   console.log(`\n  upcoming without a resolved location     ${ungeocoded} (${pct(ungeocoded, upcoming.length)})`);
   console.log("");
+
+  // A reproducible review queue: same-name rows are candidates, never an
+  // instruction to merge distinct disciplines or age groups automatically.
+  const outputIndex = process.argv.indexOf("--output");
+  if (outputIndex !== -1) {
+    const output = process.argv[outputIndex + 1];
+    if (!output || output.startsWith("--")) throw new Error("--output requires a file path");
+    const summary = (r: Row) => ({ id: r.id, name: r.name, date: r.start_date, country: r.locations?.country_code ?? null });
+    writeFileSync(resolve(output), JSON.stringify({
+      auditedAt: new Date().toISOString(),
+      counts: { total: rows.length, public: pub.length, upcoming: upcoming.length, ungeocoded, nameDateGroups: nameDupes },
+      missingLocations: upcoming.filter((r) => r.locations?.geocode_status !== "ok").map(summary),
+      possibleDuplicates: pub.filter((r) => (byNameDate.get(`${r.start_date}|${r.name.trim().toLowerCase()}`) ?? 0) > 1).map(summary),
+      missingLinks: upcoming.filter((r) => {
+        const urls = resolveEventOutboundUrls({ websiteUrl: r.website_url, registrationUrl: r.registration_url, seriesWebsiteUrl: r.series?.website_url, sourceUrls: sourcesById.get(r.id) ?? [] });
+        return !r.website_url && !r.registration_url && !urls.listingUrl;
+      }).map(summary),
+    }, null, 2) + "\n");
+  }
 }
 
 main().catch((e) => {

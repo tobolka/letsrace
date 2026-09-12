@@ -58,7 +58,7 @@ export function AuthForm({
 }) {
   const t = messagesFor(locale);
   const router = useRouter();
-  const [mode, setMode] = useState<"login" | "register">(initialMode);
+  const [mode, setMode] = useState<"login" | "register" | "recover">(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -70,18 +70,23 @@ export function AuthForm({
     setBusy("google");
     setError("");
     setInfo("");
-    const supabase = await browserSupabase();
-    const origin = window.location.origin;
-    const next = `${window.location.pathname}${window.location.search}`;
-    const { error: err } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
-        queryParams: { prompt: "select_account" },
-      },
-    });
-    if (err) {
-      setError(err.message);
+    try {
+      const supabase = await browserSupabase();
+      const origin = window.location.origin;
+      const next = `${window.location.pathname}${window.location.search}`;
+      const { error: err } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+          queryParams: { prompt: "select_account" },
+        },
+      });
+      if (err) {
+        setError(err.message);
+        setBusy(null);
+      }
+    } catch {
+      setError(t.connectionFailed);
       setBusy(null);
     }
   }
@@ -91,60 +96,81 @@ export function AuthForm({
     setBusy("email");
     setError("");
     setInfo("");
-    const supabase = await browserSupabase();
-    const emailValue = email.trim();
+    try {
+      const supabase = await browserSupabase();
+      const emailValue = email.trim();
 
-    if (mode === "register") {
-      const { data, error: err } = await supabase.auth.signUp({
-        email: emailValue,
-        password,
-        options: { data: { display_name: name.trim() || emailValue.split("@")[0] } },
-      });
-      if (err) {
-        setError(err.message);
-        setBusy(null);
-        return;
-      }
-      const uid = data.user?.id;
-      if (uid && data.session) {
-        await fetch("/api/account/bootstrap", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            displayName: name.trim() || emailValue.split("@")[0],
-          }),
+      if (mode === "recover") {
+        const { error: err } = await supabase.auth.resetPasswordForEmail(emailValue, {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/${locale}/auth/reset-password`)}`,
         });
-      }
-      if (!data.session) {
-        setInfo(t.checkEmailConfirm);
-        setMode("login");
-        setBusy(null);
+        if (err) setError(err.message);
+        else setInfo(t.recoverySent);
         return;
       }
-      if (onSuccess) {
-        onSuccess();
+
+      if (mode === "register") {
+        const { data, error: err } = await supabase.auth.signUp({
+          email: emailValue,
+          password,
+          options: {
+            data: { display_name: name.trim() || emailValue.split("@")[0] },
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/${locale}/account`)}`,
+          },
+        });
+        if (err) {
+          setError(err.message);
+          setBusy(null);
+          return;
+        }
+        const uid = data.user?.id;
+        if (uid && data.session) {
+          await fetch("/api/account/bootstrap", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              displayName: name.trim() || emailValue.split("@")[0],
+            }),
+          });
+        }
+        if (!data.session) {
+          setInfo(t.checkEmailConfirm);
+          setMode("login");
+          setBusy(null);
+          return;
+        }
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          if (window.location.pathname !== `/${locale}/auth/reset-password`) {
+            router.push(`/${locale}/account`);
+          }
+          router.refresh();
+        }
       } else {
-        router.push(`/${locale}/account`);
-        router.refresh();
+        const { error: err } = await supabase.auth.signInWithPassword({
+          email: emailValue,
+          password,
+        });
+        if (err) {
+          setError(err.message);
+          setBusy(null);
+          return;
+        }
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          if (window.location.pathname !== `/${locale}/auth/reset-password`) {
+            router.push(`/${locale}/account`);
+          }
+          router.refresh();
+        }
       }
-    } else {
-      const { error: err } = await supabase.auth.signInWithPassword({
-        email: emailValue,
-        password,
-      });
-      if (err) {
-        setError(err.message);
-        setBusy(null);
-        return;
-      }
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push(`/${locale}/account`);
-        router.refresh();
-      }
+    } catch {
+      setError(t.connectionFailed);
+    } finally {
+      setBusy(null);
     }
-    setBusy(null);
   }
 
   return (
@@ -152,7 +178,7 @@ export function AuthForm({
       {!hideTitle ? (
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">
-            {mode === "register" ? t.createAccount : t.signIn}
+            {mode === "recover" ? t.sendRecovery : mode === "register" ? t.createAccount : t.signIn}
           </h1>
           {reason ? <p className="text-sm text-muted-foreground">{reason}</p> : null}
         </div>
@@ -161,9 +187,14 @@ export function AuthForm({
         type="single"
         variant="outline"
         size="sm"
+        disabled={busy !== null}
         value={mode}
         onValueChange={(v) => {
-          if (v) setMode(v as "login" | "register");
+          if (v) {
+            setMode(v as "login" | "register");
+            setError("");
+            setInfo("");
+          }
         }}
       >
         <ToggleGroupItem value="register">{t.createAccount}</ToggleGroupItem>
@@ -219,7 +250,7 @@ export function AuthForm({
               onChange={(e) => setEmail(e.target.value)}
             />
           </Field>
-          <Field>
+          {mode !== "recover" ? <Field>
             <FieldLabel htmlFor="password">{t.fieldPassword}</FieldLabel>
             <Input
               id="password"
@@ -231,12 +262,17 @@ export function AuthForm({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-          </Field>
+          </Field> : null}
+          {mode === "login" ? (
+            <Button type="button" variant="link" className="min-h-11 self-start px-0" disabled={busy !== null} onClick={() => { setMode("recover"); setError(""); setInfo(""); }}>
+              {t.forgotPassword}
+            </Button>
+          ) : null}
           {error ? <FieldError>{error}</FieldError> : null}
-          {info ? <p className="text-sm text-muted-foreground">{info}</p> : null}
+          {info ? <p role="status" className="text-sm text-muted-foreground">{info}</p> : null}
           <Button type="submit" className="w-full" disabled={busy !== null} aria-busy={busy === "email"}>
             {busy === "email" ? <Spinner data-icon="inline-start" /> : null}
-            {mode === "register" ? t.createAccount : t.signIn}
+            {mode === "recover" ? t.sendRecovery : mode === "register" ? t.createAccount : t.signIn}
           </Button>
         </FieldGroup>
       </form>

@@ -475,7 +475,25 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
     .in("status", [...PUBLIC_EVENT_STATUSES])
     .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data) return null;
+  if (!data) {
+    const { data: alias, error: aliasError } = await supabase
+      .from("events")
+      .select("merged_into_id")
+      .eq("slug", slug)
+      .not("merged_into_id", "is", null)
+      .maybeSingle();
+    if (aliasError) throw new Error(aliasError.message);
+    if (!alias?.merged_into_id) return null;
+    const { data: canonical, error: canonicalError } = await supabase
+      .from("events")
+      .select("slug,merged_into_id")
+      .eq("id", alias.merged_into_id)
+      .maybeSingle();
+    if (canonicalError) throw new Error(canonicalError.message);
+    // Merges flatten aliases. Never follow a corrupt cycle or an unpublished target.
+    if (!canonical?.slug || canonical.slug === slug || canonical.merged_into_id) return null;
+    return getPublicEventBySlug(canonical.slug);
+  }
   const event = mapEventRow(data as Record<string, unknown>);
   if (shouldHideFromMap(event.name, event.status, event.visibility)) return null;
   const { isListedCountry } = await import("@/lib/geo/europe");
