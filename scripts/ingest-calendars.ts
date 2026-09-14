@@ -81,7 +81,18 @@ async function main() {
         kind: row.kind,
         last_extract_status: row.last_extract_status,
       });
-      console.log({ url: out.url, ok: out.ok, events: out.eventsUpserted, strategy: out.strategy, error: out.error, ms: Date.now() - started });
+      // "read" is what the page gave us; "written" is capped per run (250
+      // refreshes), so a healthy second pass over a big calendar writes
+      // fewer than it reads, and a broken render reads few and writes fewer.
+      console.log({
+        url: out.url,
+        ok: out.ok,
+        read: out.eventsExtracted,
+        written: out.eventsUpserted,
+        strategy: out.strategy,
+        error: out.error,
+        ms: Date.now() - started,
+      });
     }
     return;
   }

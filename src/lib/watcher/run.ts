@@ -27,6 +27,8 @@ export type WatchOutcome = {
   ok: boolean;
   unchanged?: boolean;
   eventsUpserted: number;
+  /** Rows the extractor read, before the per-run write caps. */
+  eventsExtracted?: number;
   linksDiscovered: number;
   droppedHidden?: number;
   strategy?: string;
@@ -1186,6 +1188,7 @@ export async function watchOne(row: {
       url: row.url,
       ok: true,
       eventsUpserted: upserted,
+      eventsExtracted: extracted.events.length,
       linksDiscovered,
       droppedHidden,
       strategy: extracted.strategy,

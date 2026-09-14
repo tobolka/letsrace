@@ -15,13 +15,37 @@ type CdpResponse = { id?: number; method?: string; result?: unknown; error?: { m
  * Blazor Server calendar has no public JSON list. Render the grid and bump
  * page size to 500 so one snapshot covers the season.
  */
+/**
+ * The federation calendar is never this short. A render that comes back with
+ * fewer rows had a page turn or the page-size control fail on a slow Blazor
+ * round trip — Radek's first run read one page and wrote seven races.
+ */
+const MIN_PLAUSIBLE_ROWS = 100;
+
 export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
   // Never launch Chrome while Next is bundling or on Vercel (NFT traces spawn).
   if (process.env.NEXT_PHASE === "phase-production-build") return "";
   if (process.env.VERCEL) return "";
   const chrome = await resolveChrome();
   if (!chrome) return "";
+  // One retry: the portal is a shared Blazor server and a slow minute is
+  // common. Two short reads in a row are worth reporting; one is not.
+  let html = await renderOnce(url, chrome);
+  if (countRows(html) < MIN_PLAUSIBLE_ROWS) {
+    const again = await renderOnce(url, chrome);
+    if (countRows(again) > countRows(html)) html = again;
+  }
+  return html;
+}
 
+function countRows(html: string): number {
+  return (html.match(/table-row-selectable/g) ?? []).length;
+}
+
+async function renderOnce(
+  url: string,
+  chrome: NonNullable<Awaited<ReturnType<typeof resolveChrome>>>,
+): Promise<string> {
   const { spawn } = await import(
     /* webpackIgnore: true */
     /* turbopackIgnore: true */
