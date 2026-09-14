@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasCscPublicGrid, parseCscCupListing, parseCscDate, parseCscPublicGrid } from "@/lib/watcher/extractors/csc";
+import { hasCscPublicGrid, parseCscCalendar, parseCscCupListing, parseCscDate, parseCscPublicGrid } from "@/lib/watcher/extractors/csc";
 
 const GRID = `
 <table class="b-table b-datagrid">
@@ -115,5 +115,26 @@ describe("ČSC portal grid", () => {
     expect(events[2]?.name).toMatch(/MČR BMX/);
     expect(events.every((e) => e.discipline?.[0] === "bmx")).toBe(true);
     expect(events.every((e) => e.seriesSlug === "cesky-pohar-bmx")).toBe(true);
+  });
+});
+
+describe("parseCscCalendar on the Blazor error shell", () => {
+  it("fails loudly rather than reporting a season with no races", async () => {
+    // What the portal serves when its Blazor circuit is down, and what every
+    // Vercel run sees, since there is no browser there to render the grid.
+    // Reading this as "zero races" parked the federation calendar for three
+    // weeks each time the cron reached it, with 57 upcoming races behind it.
+    const shell = `<html><head><title>ČSC | Informační systém</title></head>
+      <body><div id="blazor-error-ui">An error has occurred. Reload</div></body></html>`;
+    const prev = process.env.VERCEL;
+    process.env.VERCEL = "1";
+    try {
+      await expect(
+        parseCscCalendar("https://portal.czechcyclingfederation.com/Races/Race/Pub", shell),
+      ).rejects.toThrow(/needs a browser/);
+    } finally {
+      if (prev === undefined) delete process.env.VERCEL;
+      else process.env.VERCEL = prev;
+    }
   });
 });

@@ -57,7 +57,24 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
       /* keep original html */
     }
   }
-  return parseCscPublicGrid(url, pageHtml);
+  const events = parseCscPublicGrid(url, pageHtml);
+  /*
+   * The grid needs a browser to exist, and on Vercel there is none — the
+   * renderer returns nothing there by design. An empty result used to come
+   * back as a successful read of zero races, which the watcher took for the
+   * season ending and parked the federation calendar for three weeks, every
+   * time the cron reached it. Say what actually happened instead, so the run
+   * is recorded as a failure with a reason an admin can act on, and the
+   * three hundred and fifty races already in the catalogue are left alone.
+   */
+  if (events.length === 0 && !hasCscPublicGrid(pageHtml)) {
+    throw new Error(
+      process.env.VERCEL
+        ? "ČSC portal needs a browser to render; run scripts/ingest-calendars.ts locally"
+        : "ČSC portal did not render its calendar grid",
+    );
+  }
+  return events;
 }
 
 export function parseCscPublicGrid(url: string, html: string): ParsedEvent[] {

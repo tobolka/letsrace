@@ -1098,8 +1098,21 @@ export async function watchOne(row: {
       row.kind === "federation" ||
       row.kind === "aggregator" ||
       row.kind === "calendar";
+    /*
+     * An empty read of a calendar that listed races last week is a failed
+     * read, not a season ending. The federation portal is a Blazor app that
+     * sometimes answers with its error shell and no rows; that was taken as
+     * "off season", the source was parked for three weeks, and fifty-seven
+     * upcoming races went unrefreshed. Only a source with nothing ahead of it
+     * in the catalogue is allowed to go quiet.
+     */
+    const stillHasUpcoming =
+      calendarKind && extracted.events.length === 0 && !seasonMismatch
+        ? await sourceHasUpcomingEvents(supabase, row.id)
+        : false;
     const offSeasonEmpty =
-      (calendarKind && extracted.events.length === 0) || seasonMismatch;
+      (calendarKind && extracted.events.length === 0 && !stillHasUpcoming) || seasonMismatch;
+    const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
     const needsReview =
       !offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4);
 
@@ -1127,7 +1140,11 @@ export async function watchOne(row: {
         http_status: fetched.status,
         last_fetched_at: new Date().toISOString(),
         last_changed_at: new Date().toISOString(),
-        last_error: needsReview ? "low confidence or empty extract" : null,
+        last_error: emptyButLive
+          ? "empty read of a source with upcoming races"
+          : needsReview
+            ? "low confidence or empty extract"
+            : null,
         last_extract_status: offSeasonEmpty
           ? "off_season"
           : needsReview
@@ -1135,7 +1152,11 @@ export async function watchOne(row: {
             : "ok",
         // Stay active — retry later instead of permanent pause
         status: "active",
-        next_poll_at: needsReview
+        next_poll_at: emptyButLive
+          ? // Soon, the way a fetch error is retried: the page is up, it
+            // just did not render this time.
+            errorPollAt(1).toISOString()
+          : needsReview
           ? reviewPollAt().toISOString()
           : extracted.strategy?.includes("fci")
             ? // Rotate month windows every ~2h until season is filled
@@ -2164,4 +2185,19 @@ export async function previewUrl(url: string) {
     events: extracted.events,
     childUrls: extracted.childUrls,
   };
+}
+
+/** Does the catalogue still hold races ahead of today that came from this source? */
+async function sourceHasUpcomingEvents(
+  supabase: ReturnType<typeof createServerSupabase>,
+  watchedUrlId: string,
+): Promise<boolean> {
+  const today = new Date().toISOString().slice(0, 10);
+  const { count } = await supabase
+    .from("event_sources")
+    .select("event_id, event:events!inner(id, start_date, visibility)", { count: "exact", head: true })
+    .eq("watched_url_id", watchedUrlId)
+    .eq("event.visibility", "public")
+    .gte("event.start_date", today);
+  return (count ?? 0) > 0;
 }
