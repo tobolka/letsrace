@@ -5,7 +5,9 @@ import { join } from "node:path";
 import { BOT_UA } from "@/lib/watcher/http";
 
 const CSC_PUB = "https://portal.czechcyclingfederation.com/Races/Race/Pub";
-const RENDER_MS = 55_000;
+// Eighteen pages of twenty-five at a Blazor round trip each; 55 s was ending runs
+// on the clock rather than on the last page.
+const RENDER_MS = 90_000;
 
 type CdpResponse = { id?: number; method?: string; result?: unknown; error?: { message?: string } };
 
@@ -60,9 +62,18 @@ export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
       // event is a hint. Twenty seconds on it alone was how a render that
       // finishes at twenty-two seconds counted as "did not render".
       await cdp.wait("Page.loadEventFired", 20_000).catch(() => undefined);
-      await waitForRows(cdp, 1, deadline);
+      /*
+       * Blazor streams the grid in: the first row lands, then the rest, then
+       * the pager and the page-size control. Moving on at the first row read
+       * one race off a calendar of 445 and called it a day — a successful
+       * run of one event. Wait until the row count has stopped changing, and
+       * until the page-size control exists before asking it for everything.
+       */
+      await waitForSettledRows(cdp, deadline);
+      await waitUntil(cdp, `[...document.querySelectorAll("select")].some((s) => [...s.options].some((o) => o.value === "500"))`, Math.min(deadline, Date.now() + 10_000));
       await bumpPageSize(cdp);
-      await sleep(2_000);
+      await sleep(1_000);
+      await waitForSettledRows(cdp, deadline);
       const n = await rowCount(cdp);
       if (typeof n === "number" && n >= 80) {
         const html = await cdp.evaluate("document.documentElement.outerHTML");
@@ -147,9 +158,28 @@ async function rowCount(cdp: Cdp): Promise<number> {
   return typeof n === "number" ? n : 0;
 }
 
-async function waitForRows(cdp: Cdp, min: number, deadline: number): Promise<void> {
+/** Poll a page-side expression until it is truthy, or the deadline passes. */
+async function waitUntil(cdp: Cdp, expr: string, deadline: number): Promise<boolean> {
   while (Date.now() < deadline) {
-    if ((await rowCount(cdp)) >= min) return;
+    if (await cdp.evaluate(expr)) return true;
+    await sleep(300);
+  }
+  return false;
+}
+
+/** At least one row, and the count unchanged across four polls (~1.6 s). */
+async function waitForSettledRows(cdp: Cdp, deadline: number): Promise<void> {
+  let last = -1;
+  let stable = 0;
+  while (Date.now() < deadline) {
+    const n = await rowCount(cdp);
+    if (n >= 1 && n === last) {
+      stable += 1;
+      if (stable >= 4) return;
+    } else {
+      stable = 0;
+    }
+    last = n;
     await sleep(400);
   }
 }
@@ -180,7 +210,16 @@ async function scrapeByPaging(cdp: Cdp, deadline: number): Promise<string> {
       return true;
     })()`);
     if (!moved) break;
-    await sleep(700);
+    // A page turn is a round trip over Blazor's socket; 700 ms fixed was not
+    // always enough, and two short polls in a row read as "stuck". Wait for
+    // the first row to actually change, then for the page to settle.
+    const firstBefore = await cdp.evaluate(`(document.querySelector("tr.table-row-selectable a[href*='/RaceDetail/Race/']") || {}).getAttribute?.("href") || ""`);
+    await waitUntil(
+      cdp,
+      `((document.querySelector("tr.table-row-selectable a[href*='/RaceDetail/Race/']") || {}).getAttribute?.("href") || "") !== ${JSON.stringify(firstBefore)}`,
+      Math.min(deadline, Date.now() + 6_000),
+    );
+    await waitForSettledRows(cdp, Math.min(deadline, Date.now() + 4_000));
   }
   return `<table class="b-table b-datagrid">${[...rows.values()].join("")}</table>`;
 }
