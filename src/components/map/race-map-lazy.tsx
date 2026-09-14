@@ -7,7 +7,7 @@ export type { MapBounds, BoundsChangeReason } from "@/components/map/race-map";
 
 /** The same ground the route's skeleton paints, so the handover is invisible. */
 function MapGround() {
-  return <div aria-hidden className="h-full w-full animate-pulse bg-stone-200" />;
+  return <div aria-hidden className="h-full w-full animate-pulse bg-muted" />;
 }
 
 const RaceMapInner = dynamic(

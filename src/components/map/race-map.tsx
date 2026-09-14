@@ -1544,12 +1544,12 @@ export function RaceMap({
   }, [locating, userPos, mapEpoch]);
 
   return (
-    <div className="relative h-full w-full bg-stone-200">
+    <div className="relative h-full w-full bg-muted">
       <div ref={containerRef} className="absolute inset-0 h-full w-full" />
 
       {locError ? (
         <p
-          className="absolute left-2.5 top-[max(0.75rem,env(safe-area-inset-top))] z-10 max-w-[11rem] rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] text-stone-600 shadow ring-1 ring-stone-200 md:left-auto md:right-2.5 md:top-auto md:bottom-20"
+          className="absolute left-2.5 top-[max(0.75rem,env(safe-area-inset-top))] z-10 max-w-[11rem] rounded-lg bg-card/95 px-2.5 py-1.5 text-xs text-muted-foreground shadow ring-1 ring-border md:left-auto md:right-2.5 md:top-auto md:bottom-20"
           role="status"
           aria-live="polite"
         >

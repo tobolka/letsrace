@@ -54,19 +54,21 @@ export function WelcomeCard({
   }
 
   return (
-    <div
+    <aside
       id="letsrace-welcome"
-      role="dialog"
-      aria-label={messages.introTitle}
+      aria-labelledby="letsrace-welcome-title"
       /**
        * Bottom-right on desktop, top on mobile. The mobile layout gives the
        * bottom half to the race sheet, and a corner card there covered the
        * entire list — the first thing someone should see.
+       *
+       * Not a dialog: it is non-blocking on purpose (race deep-links must stay
+       * usable), so a complementary landmark is honest about the behaviour.
        */
       className="pointer-events-auto fixed inset-x-3 top-16 z-40 overflow-hidden rounded-xl border bg-background/95 shadow-xl backdrop-blur md:inset-x-auto md:bottom-6 md:right-6 md:top-auto md:w-[22rem]"
     >
       {/*
-        Decorative, so it carries no alt text — the dialog is already labelled.
+        Decorative, so it carries no alt text — the card is already labelled.
         Dimensions are set to keep the card from jumping as it loads.
 
         A plain img rather than next/image: the file is already cropped and
@@ -85,7 +87,7 @@ export function WelcomeCard({
         height={112}
         fetchPriority="high"
         decoding="async"
-        className="h-24 w-full object-cover md:h-28"
+        className="h-24 w-full object-cover outline outline-1 outline-black/10 md:h-28"
       />
       <Button
         type="button"
@@ -98,8 +100,15 @@ export function WelcomeCard({
         <X />
       </Button>
       <div className="p-4">
-        <p className="text-sm font-semibold leading-snug">{messages.introTitle}</p>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{messages.introBody}</p>
+        <p
+          id="letsrace-welcome-title"
+          className="text-sm font-semibold leading-snug text-balance"
+        >
+          {messages.introTitle}
+        </p>
+        <p className="mt-1.5 text-sm leading-relaxed text-pretty text-muted-foreground">
+          {messages.introBody}
+        </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Button
             type="button"
@@ -116,6 +125,6 @@ export function WelcomeCard({
           </Button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

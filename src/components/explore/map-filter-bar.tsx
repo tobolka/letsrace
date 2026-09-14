@@ -498,7 +498,7 @@ export function MapFilterBar({
           <DropdownMenuGroup key={group.key}>
             {index > 0 && showSeriesHeaders ? <DropdownMenuSeparator /> : null}
             {showSeriesHeaders ? (
-              <DropdownMenuLabel className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+              <DropdownMenuLabel className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                 {group.label}
               </DropdownMenuLabel>
             ) : null}

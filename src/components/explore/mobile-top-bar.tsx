@@ -99,7 +99,7 @@ export function MobileTopBar({
           <ListFilter className="size-3.5" aria-hidden />
           <span>{filtersLabel}</span>
           {filterCount > 0 ? (
-            <span className="inline-flex min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-semibold text-background tabular-nums">
+            <span className="inline-flex min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[11px] font-semibold text-background tabular-nums">
               {filterCount}
             </span>
           ) : null}

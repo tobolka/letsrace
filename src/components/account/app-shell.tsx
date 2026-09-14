@@ -137,23 +137,23 @@ export function AppShell({
       <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-1 border-b bg-background/85 px-3 backdrop-blur md:px-4">
         <BrandMark href={mapHref} size="sm" className="shrink-0" />
 
-        <nav aria-label={t.account} className="ml-4 hidden items-center gap-0.5 lg:flex">
+        <nav aria-label={t.navPrimary} className="ml-4 hidden items-center gap-0.5 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.href + item.match}
               href={item.href}
               aria-current={isActive(item.match) ? "page" : undefined}
               className={cn(
-                "relative flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
+                "relative flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-[color,background-color,scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
                 isActive(item.match)
                   ? "bg-accent font-medium text-foreground"
                   : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
               )}
             >
-              <item.icon className="size-4" />
+              <item.icon className="size-4" strokeWidth={isActive(item.match) ? 2 : 1.5} />
               {item.label}
               {item.badge > 0 ? (
-                <Badge className="h-4 min-w-4 justify-center px-1 text-[10px] tabular-nums">
+                <Badge className="h-4.5 min-w-4.5 justify-center px-1 text-[11px] tabular-nums">
                   {item.badge > 99 ? "99+" : item.badge}
                 </Badge>
               ) : null}
@@ -176,7 +176,7 @@ export function AppShell({
 
       {/* A phone reaches the bottom of the screen, not a menu in a corner. */}
       <nav
-        aria-label={t.account}
+        aria-label={t.navTabs}
         className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
       >
         {nav.map((item) => {
@@ -187,16 +187,16 @@ export function AppShell({
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "relative flex flex-col items-center gap-0.5 py-2 text-[11px]",
-                active ? "text-foreground" : "text-muted-foreground",
+                "relative flex min-h-12 flex-col items-center justify-center gap-0.5 py-2 text-xs transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
+                active ? "font-medium text-foreground" : "text-muted-foreground",
               )}
             >
-              <item.icon className="size-5" />
+              <item.icon className="size-5" strokeWidth={active ? 2 : 1.5} aria-hidden />
               <span className="max-w-full truncate px-1">{item.label}</span>
               {item.badge > 0 ? (
                 <Badge
                   variant="default"
-                  className="absolute right-[22%] top-1 h-4 min-w-4 justify-center px-1 text-[10px] tabular-nums"
+                  className="absolute right-[22%] top-1 h-4.5 min-w-4.5 justify-center px-1 text-[11px] tabular-nums"
                 >
                   {item.badge > 9 ? "9+" : item.badge}
                 </Badge>

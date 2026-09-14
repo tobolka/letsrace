@@ -832,7 +832,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-background">
+      <a
+        href="#race-list"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 max-md:hidden"
+      >
+        {messages.skipToList}
+      </a>
+      <a
+        href="#race-list-mobile"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 md:hidden"
+      >
+        {messages.skipToList}
+      </a>
+      <h1 className="sr-only">{messages.introTitle}</h1>
+
       <div
         className="absolute inset-0"
         style={{ "--map-sheet-inset": `${mapPadding.bottom}px` } as CSSProperties}
@@ -843,7 +857,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             // between the two is invisible. Bare "Loading map…" text in the
             // middle of the screen was the one part of the load that announced
             // itself, and it announced a wait rather than progress.
-            <div className="h-full w-full animate-pulse bg-stone-200" role="status">
+            <div className="h-full w-full animate-pulse bg-muted" role="status">
               <span className="sr-only">{messages.mapLoading}</span>
             </div>
           }
@@ -951,7 +965,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onSort={setListSort}
           />
           <Separator />
-          <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
+          <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
+            <div ref={listRef} className="min-h-0">
             {listView === "empty" ? (
               <Empty className="border-0 p-6 md:p-8">
                 <EmptyHeader>
@@ -992,7 +1007,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   : null}
               </ItemGroup>
             )}
-          </div>
+            </div>
+          </main>
         </Card>
 
         {selected && (
@@ -1043,7 +1059,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               onSort={setListSort}
             />
 
-            <div ref={mobileListRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div
+              id="race-list-mobile"
+              ref={mobileListRef}
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain md:hidden"
+            >
               {listView === "empty" ? (
                 <Empty className="border-0 p-6">
                   <EmptyHeader>
@@ -1308,7 +1328,7 @@ const EventCard = memo(function EventCard({
         // `muted/50` over a near-white ground was a shade nobody could see. The
         // race you picked is the one thing on this list worth finding again
         // after you look away from it.
-        active && "bg-stone-200/80 hover:bg-stone-200/80 dark:bg-stone-800",
+        active && "bg-muted hover:bg-muted dark:bg-muted",
       )}
     >
       <button
@@ -1347,8 +1367,8 @@ const EventCard = memo(function EventCard({
           </ItemTitle>
           <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed">
             <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
-            <span className="truncate text-muted-foreground">{metadataLabel}</span>
-            {distanceLabel && <span className="ml-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
+            <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
+            {distanceLabel && <span className="ms-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
           </span>
         </ItemContent>
       </button>

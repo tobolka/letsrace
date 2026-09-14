@@ -18,8 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export default function Loading() {
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-stone-100">
-      <div className="absolute inset-0 animate-pulse bg-stone-200" aria-hidden />
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-background">
+      <div className="absolute inset-0 animate-pulse bg-muted" aria-hidden />
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3">
         <Skeleton className="size-9 rounded-full" />
@@ -50,7 +50,7 @@ export default function Loading() {
       {/* Phone: the chrome lives in a bottom sheet, so the shell does too. */}
       <div className="absolute inset-x-0 bottom-0 z-20 md:hidden">
         <div className="rounded-t-2xl bg-card pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(28,25,23,.12)]">
-          <div className="mx-auto mt-2 mb-3 h-1 w-10 rounded-full bg-stone-200" aria-hidden />
+          <div className="mx-auto mt-2 mb-3 h-1 w-10 rounded-full bg-muted" aria-hidden />
           <div className="flex items-center gap-2 px-3 pb-2">
             <BrandMark mark="lr" size="sm" className="shrink-0 px-0.5" />
             <Skeleton className="h-8 w-28 shrink-0 rounded-md" />
