@@ -55,7 +55,11 @@ export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
       await cdp.send("Page.enable");
       await cdp.send("Runtime.enable");
       await cdp.send("Page.navigate", { url });
-      await cdp.wait("Page.loadEventFired", 20_000);
+      // Blazor keeps a connection open while it boots, and `load` can arrive
+      // late or not at all. The rows are what we are waiting for; the load
+      // event is a hint. Twenty seconds on it alone was how a render that
+      // finishes at twenty-two seconds counted as "did not render".
+      await cdp.wait("Page.loadEventFired", 20_000).catch(() => undefined);
       await waitForRows(cdp, 1, deadline);
       await bumpPageSize(cdp);
       await sleep(2_000);

@@ -42,6 +42,7 @@ export function hasCscPublicGrid(html: string): boolean {
  */
 export async function parseCscCalendar(url: string, html: string): Promise<ParsedEvent[]> {
   let pageHtml = html;
+  let renderError: string | null = null;
   if (!hasCscPublicGrid(pageHtml) && process.env.NEXT_PHASE !== "phase-production-build") {
     try {
       const host = new URL(url).hostname.replace(/^www\./, "");
@@ -53,8 +54,9 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
         );
         pageHtml = await renderCscPublicCalendar(url);
       }
-    } catch {
-      /* keep original html */
+    } catch (e) {
+      // Keep the original html; say why the render failed further down.
+      renderError = e instanceof Error ? e.message : String(e);
     }
   }
   const events = parseCscPublicGrid(url, pageHtml);
@@ -71,7 +73,7 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
     throw new Error(
       process.env.VERCEL
         ? "ČSC portal needs a browser to render; run scripts/ingest-calendars.ts locally"
-        : "ČSC portal did not render its calendar grid",
+        : `ČSC portal did not render its calendar grid${renderError ? `: ${renderError}` : ""}`,
     );
   }
   return events;

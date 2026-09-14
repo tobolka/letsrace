@@ -57,6 +57,34 @@ const TARGETS = [
 
 async function main() {
   const supabase = createServerSupabase();
+  // The usage line has promised a url fragment since the file was written and
+  // the loop below ignored it. With one, run the matching sources already in
+  // the table and nothing else — which is how the federation portal, which
+  // needs a browser and so can only be read from a machine that has one,
+  // gets refreshed by hand.
+  const fragment = process.argv[2]?.trim();
+  if (fragment) {
+    const { data: rows } = await supabase
+      .from("watched_urls")
+      .select("*")
+      .ilike("url", `%${fragment}%`)
+      .order("url");
+    for (const row of rows ?? []) {
+      console.log("watching", row.url, "…");
+      const started = Date.now();
+      const out = await watchOne({
+        id: row.id,
+        url: row.url,
+        etag: null,
+        last_modified: null,
+        content_hash: null,
+        kind: row.kind,
+        last_extract_status: row.last_extract_status,
+      });
+      console.log({ url: out.url, ok: out.ok, events: out.eventsUpserted, strategy: out.strategy, error: out.error, ms: Date.now() - started });
+    }
+    return;
+  }
   for (const t of TARGETS) {
     let { data: row, error } = await supabase
       .from("watched_urls")
