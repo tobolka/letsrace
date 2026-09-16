@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { locales, messages, type Locale } from "@/lib/i18n/messages";
+import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
 export const DEFAULT_OG_ALT = `${messages.en.introTitle} · Let's Race`;
@@ -159,10 +159,17 @@ export function fillCopy(
     .replace(/\{count\}/g, String(vars.count ?? ""));
 }
 
+/**
+ * One entry per locale plus `x-default`, which names the page a visitor with no
+ * matching language should get. Without it Google has to guess which of the
+ * four is the fallback for the bare domain — and it guessed the redirecting
+ * root over `/en`.
+ */
 export function localeAlternates(path = ""): Record<string, string> {
   const base = getSiteUrl();
   const suffix = path.startsWith("/") ? path : path ? `/${path}` : "";
-  return Object.fromEntries(locales.map((l) => [l, `${base}/${l}${suffix}`]));
+  const entries = locales.map((l) => [l, `${base}/${l}${suffix}`] as const);
+  return Object.fromEntries([...entries, ["x-default", `${base}/${defaultLocale}${suffix}`]]);
 }
 
 export function absoluteUrl(path: string): string {

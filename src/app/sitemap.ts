@@ -3,28 +3,22 @@ import { defaultLocale, locales } from "@/lib/i18n/messages";
 import { listSitemapEvents, listSitemapSeries } from "@/lib/events";
 import { listQualifyingHubs } from "@/lib/discipline-hubs";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
-import { absoluteUrl, getSiteUrl } from "@/lib/seo";
+import { absoluteUrl, localeAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = getSiteUrl();
   const now = new Date();
+  // The bare domain is not listed: it redirects to `/${defaultLocale}`, and
+  // putting it here at priority 1 nominated a redirect as the canonical home
+  // page over the one the page itself declares.
   const entries: MetadataRoute.Sitemap = [
-    {
-      url: base,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1,
-    },
     {
       url: absoluteUrl(`/${defaultLocale}`),
       lastModified: now,
       changeFrequency: "hourly",
-      priority: 0.9,
-      alternates: {
-        languages: Object.fromEntries(locales.map((l) => [l, absoluteUrl(`/${l}`)])),
-      },
+      priority: 1,
+      alternates: { languages: localeAlternates() },
     },
   ];
 

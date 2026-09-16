@@ -33,7 +33,7 @@ export const viewport: Viewport = {
  * on every request.
  *
  * Google is verified by DNS TXT instead: the site is registered as a Domain
- * property, which accepts nothing else, and the root path 307s to /en so a tag
+ * property, which accepts nothing else, and the root path 308s to /en so a tag
  * there would never be read anyway. The env override below still works if that
  * ever changes.
  */
