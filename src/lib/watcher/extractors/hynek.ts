@@ -101,10 +101,15 @@ export function canonicalizeSeries(raw: string): { name: string; slug: string } 
     "mtb bundesliga": "MTB Bundesliga",
     "prima cup xcm czech cup": "Prima Cup & XCM Czech Cup",
     primacup: "Prima Cup",
+    // The list page labels it "TBC SÉRIE"; the code table already knows the
+    // canonical slug, and a second slug meant a second series row.
+    "tbc serie": HYNEK_SERIES.tbc!.name,
+    tbc: HYNEK_SERIES.tbc!.name,
   };
   for (const [k, name] of Object.entries(aliases)) {
     if (key === k || key.includes(k)) {
-      return { name, slug: slugifySeries(name) };
+      const known = Object.values(HYNEK_SERIES).find((v) => v.name === name);
+      return { name, slug: known?.slug ?? slugifySeries(name) };
     }
   }
   // Reject discipline / stage labels that aren't real series

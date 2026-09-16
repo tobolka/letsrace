@@ -638,7 +638,7 @@ export async function watchOne(row: {
           if (hostnameOf(child).includes("tbcserie.cz")) {
             try {
               const path = new URL(child).pathname;
-              if (!/^\/?$/.test(path) && !/\/kalendar-?20\d{2}/i.test(path)) continue;
+              if (!/^\/?$/.test(path) && !/^\/kalendar-?20\d{2}\/?$/i.test(path)) continue;
             } catch {
               continue;
             }

@@ -99,7 +99,14 @@ export function parseMaratonTbcRows(html: string, sourceUrl: string): ParsedEven
     if (!startDate) return;
     const place = cells[2] || "Jižní Čechy";
     const nameRaw = cells[3] || `TBC — ${place}`;
-    const name = nameRaw.replace(/\s*\(TBC série\)\s*/i, "").trim() || `TBC — ${place}`;
+    // The season's points-registration row sits in the terminovka too, dated
+    // like the opener and placed at "TBC". It is a form, not a race.
+    if (/^tbc$/i.test(place) || /přihláška do bodování/i.test(nameRaw)) return;
+    const name =
+      nameRaw
+        .replace(/\s*\(TBC série\)\s*/i, "")
+        .replace(/\s*-\s*přihláška\s*$/i, "")
+        .trim() || `TBC — ${place}`;
 
     const webHref = $(tr).find('a[href*="http"]').last().attr("href");
     let websiteUrl = "https://www.tbcserie.cz/";
@@ -161,11 +168,10 @@ export function discoverTbcCalendarUrls(html: string, baseUrl: string): string[]
 export async function parseTbcSerie(url: string, html: string): Promise<ParsedEvent[]> {
   const events = parseTbcSerieCalendar(url, html);
 
-  // Homepage / empty 2026 page: pull published TBC rows from maraton.cz
-  const needsFallback =
-    events.length === 0 ||
-    /kalendar-?2026/i.test(url) ||
-    /tbcserie\.cz\/?$/i.test(new URL(url).pathname);
+  // A season page with no races yet (or the homepage) falls back to the TBC
+  // rows maraton.cz has published. A populated calendar is the source of
+  // truth, and a single race page has nothing to fall back to.
+  const needsFallback = events.length === 0 && !/\/zavod-/i.test(url);
 
   if (needsFallback) {
     try {
