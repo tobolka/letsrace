@@ -361,6 +361,10 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
+  const isXcm = /\/maraton/i.test(url);
+  const seriesSlug = isXcm ? "cesky-pohar-mtb-xcm" : "cesky-pohar-mtb";
+  const seriesName = isXcm ? "Český pohár MTB XCM" : "Český pohár MTB";
+  const listing = isXcm ? "https://www.poharmtb.cz/maraton" : "https://www.poharmtb.cz/cross-country";
 
   $("table.race-table tbody tr").each((_, tr) => {
     const $tr = $(tr);
@@ -371,13 +375,16 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
     if (!place) return;
     const tag = $tr.find(".tag").text().replace(/\s+/g, " ").trim();
     const name = venue ? `${place} — ${venue}` : place;
-    const disc: Discipline[] = /xcc/i.test(tag) ? ["xcc"] : ["xco"];
+    const disc: Discipline[] = isXcm
+      ? ["xcm"]
+      : /xcc/i.test(tag)
+        ? ["xcc"]
+        : ["xco"];
 
-    const externalId = `poharmtb-${dates.start}-${normalizeName(place)}`;
+    const externalId = `poharmtb-${isXcm ? "xcm" : "xco"}-${dates.start}-${normalizeName(place)}`;
     if (seen.has(externalId)) return;
     seen.add(externalId);
 
-    const listing = "https://www.poharmtb.cz/cross-country";
     let regulationsUrl: string | undefined;
     let websiteUrl: string | undefined;
     $tr.find("td.links a[href]").each((_, a) => {
@@ -400,7 +407,11 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
 
     events.push({
       externalId,
-      name: /mčr|mcr/i.test(tag) ? `MČR — ${name}` : `ČP MTB — ${name}`,
+      name: /mčr|mcr/i.test(tag)
+        ? `MČR — ${name}`
+        : isXcm
+          ? `ČP MTB XCM — ${name}`
+          : `ČP MTB — ${name}`,
       startDate: dates.start,
       endDate: dates.end,
       placeText: place,
@@ -409,8 +420,8 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
       audience: "mixed",
       // The championship rounds sit in the cup calendar on the site, and
       // that is how riders read the season — one series, the MČR named as such.
-      seriesName: "Český pohár MTB",
-      seriesSlug: "cesky-pohar-mtb",
+      seriesName,
+      seriesSlug,
       seriesWebsite: "https://www.poharmtb.cz/",
       sourceUrl,
       websiteUrl: websiteUrl || listing,
@@ -418,6 +429,66 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
       confidence: 0.9,
     });
   });
+
+  // XCM season page is prose + a calendar <ul>, not the XCO race-table.
+  if (isXcm && !events.length) {
+    const MONTHS: Record<string, string> = {
+      ledna: "01",
+      února: "02",
+      unora: "02",
+      března: "03",
+      brezna: "03",
+      dubna: "04",
+      května: "05",
+      kvetna: "05",
+      června: "06",
+      cervna: "06",
+      července: "07",
+      cervence: "07",
+      srpna: "08",
+      září: "09",
+      zari: "09",
+      října: "10",
+      rijna: "10",
+      listopadu: "11",
+      prosince: "12",
+    };
+    $("ul li").each((_, li) => {
+      const $li = $(li);
+      const text = $li.text().replace(/\s+/g, " ").trim();
+      const m = text.match(
+        /(\d{1,2})\.\s*(ledna|února|unora|března|brezna|dubna|května|kvetna|června|cervna|července|cervence|srpna|září|zari|října|rijna|listopadu|prosince)\s*[-–]\s*(.+)/i,
+      );
+      if (!m) return;
+      const month = MONTHS[m[2]!.toLowerCase()];
+      if (!month) return;
+      const start = `2026-${month}-${m[1]!.padStart(2, "0")}`;
+      const rest = m[3]!.replace(/\s*\/\s*.*$/, "").trim();
+      const placeMatch = rest.match(/,\s*\*?([^*]+?)\s*\*?\s*$/);
+      const place = (placeMatch?.[1] || rest.split(",")[1] || rest).replace(/\*/g, "").trim();
+      const raceName = rest.replace(/,\s*\*?[^*]+?\*?\s*$/, "").replace(/\*/g, "").trim() || rest;
+      const href = absHref($li.find("a[href]").first().attr("href"), url);
+      const isMcr = /mistrovství|mčr/i.test(raceName);
+      const externalId = `poharmtb-xcm-${start}-${normalizeName(place || raceName)}`;
+      if (seen.has(externalId)) return;
+      seen.add(externalId);
+      events.push({
+        externalId,
+        name: isMcr ? `MČR XCM — ${raceName}` : `ČP MTB XCM — ${raceName}`,
+        startDate: start,
+        placeText: place || raceName,
+        countryHint: "CZ",
+        discipline: ["xcm"],
+        audience: "mixed",
+        seriesName,
+        seriesSlug,
+        seriesWebsite: "https://www.poharmtb.cz/",
+        sourceUrl: href || url,
+        websiteUrl: href || listing,
+        confidence: 0.88,
+      });
+    });
+  }
 
   return events;
 }

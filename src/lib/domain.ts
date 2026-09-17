@@ -52,10 +52,15 @@ export type ParsedEvent = {
    * distinguishes an RTF from a race knows better than a guess from the title.
    */
   eventType?: import("@/lib/taxonomy").EventType;
-  /** Link event into a series (Talent Cup, KPŽ, …) */
+  /** Link event into a series (Talent Cup, KPŽ, …) — primary badge. */
   seriesName?: string;
   seriesSlug?: string;
   seriesWebsite?: string;
+  /**
+   * Extra series that also count this race (ČP Enduro inside Czech Enduro
+   * Series, a partner round in two cups, …). Never steals the primary badge.
+   */
+  alsoSeries?: { name?: string; slug: string; website?: string }[];
   lat?: number;
   lng?: number;
   confidence: number;

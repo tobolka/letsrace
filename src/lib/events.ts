@@ -111,7 +111,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     .select(
       `${EVENT_LIST_COLUMNS},
        ${locationSelect},
-       series:series(id, name, slug, visibility, website_url, age_categories),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
     )
     .order("start_date", { ascending: true })
@@ -176,7 +176,11 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
       .eq("slug", filters.seriesSlug)
       .maybeSingle();
     if (series?.id && series.visibility !== "hidden") {
-      query = query.eq("series_id", series.id);
+      const { eventIdsForSeries } = await import("@/lib/catalog/event-series");
+      const memberIds = await eventIdsForSeries(supabase, series.id as string);
+      if (!memberIds.length) return [];
+      // Cap OR-list size; a series calendar is never thousands of rows.
+      query = query.in("id", memberIds.slice(0, 500));
     } else {
       return [];
     }
@@ -414,7 +418,7 @@ export async function getSeriesBySlug(
     .select(
       `${EVENT_LIST_COLUMNS},
        location:locations!inner(id, name, municipality, country_code, lat, lng),
-       series:series(id, name, slug, visibility, website_url, age_categories),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
     )
     .eq("series_id", row.id)
@@ -436,7 +440,7 @@ export async function getEventById(id: string) {
   const { data, error } = await supabase
     .from("events")
     .select(
-      `*, location:locations(*), series:series(*), categories:event_categories(*),
+      `*, location:locations(*), series:series!events_series_id_fkey(*), categories:event_categories(*),
        overrides:event_overrides(*), sources:event_sources(*)`,
     )
     .eq("id", id)
@@ -450,7 +454,7 @@ export async function getEventBySlug(slug: string) {
   const { data, error } = await supabase
     .from("events")
     .select(
-      `*, location:locations(*), series:series(*), categories:event_categories(*),
+      `*, location:locations(*), series:series!events_series_id_fkey(*), categories:event_categories(*),
        overrides:event_overrides(*), sources:event_sources(*)`,
     )
     .eq("slug", slug)
@@ -472,7 +476,7 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
     .select(
       `${EVENT_LIST_COLUMNS},
        location:locations(id, name, municipality, country_code, lat, lng),
-       series:series(id, name, slug, visibility, website_url, age_categories),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
     )
     .eq("slug", slug)

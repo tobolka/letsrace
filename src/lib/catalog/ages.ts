@@ -80,7 +80,7 @@ export async function fillEmptyAgeCategories(opts?: {
   let query = supabase
     .from("events")
     .select(
-      "id, name, start_date, audience, age_categories, level, class_label, disciplines, series:series(name, slug, age_categories, audience_hint)",
+      "id, name, start_date, audience, age_categories, level, class_label, disciplines, series:series!events_series_id_fkey(name, slug, age_categories, audience_hint)",
     )
     .eq("visibility", "public")
     .in("status", [...ACTIVE_EVENT_STATUSES])

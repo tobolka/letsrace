@@ -258,7 +258,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     const { data } = await supabase
       .from("events")
       .select(
-        "id, name, slug, start_date, end_date, series_id, series:series(id, name, slug), location:locations(name, municipality)",
+        "id, name, slug, start_date, end_date, series_id, series:series!events_series_id_fkey(id, name, slug), location:locations(name, municipality)",
       )
       .in("series_id", seriesIds)
       .gte("start_date", `${year}-01-01`)

@@ -74,7 +74,7 @@ type Row = {
  * fetched afterwards for the few hundred races that actually end up in a pair.
  */
 const COLUMNS =
-  "id, name, start_date, end_date, disciplines, website_url, registration_url, fingerprint, series_id, location:locations(lat, lng, name, municipality, country_code), series:series(name)";
+  "id, name, start_date, end_date, disciplines, website_url, registration_url, fingerprint, series_id, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name)";
 
 /** PostgREST answers at most a thousand rows however large the limit is. */
 const PAGE = 1000;

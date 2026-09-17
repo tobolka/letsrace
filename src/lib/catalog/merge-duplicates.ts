@@ -314,7 +314,7 @@ export async function mergePublicDuplicates(opts?: {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series(name)",
+        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name)",
       )
       .eq("visibility", "public")
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -333,7 +333,7 @@ export async function mergePublicDuplicates(opts?: {
   const { data: ongoing } = await supabase
     .from("events")
     .select(
-      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series(name)",
+      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name)",
     )
     .eq("visibility", "public")
     .in("status", [...ACTIVE_EVENT_STATUSES])

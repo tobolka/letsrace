@@ -1692,7 +1692,7 @@ async function upsertParsedEvent(
     const spanEnd = (ev.endDate ?? ev.startDate).slice(0, 10);
 
     const eventCols =
-      "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series(name), location:locations(lat, lng, name, municipality, country_code), sources:event_sources(source_url)";
+      "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series!events_series_id_fkey(name), location:locations(lat, lng, name, municipality, country_code), sources:event_sources(source_url)";
 
     const { data: nearbyDays } = await supabase
       .from("events")
@@ -2112,6 +2112,7 @@ async function upsertParsedEvent(
   }
 
   // Attach / create series (Talent Cup, KPŽ, …)
+  let attachedSeriesId: string | undefined;
   if (ev.seriesName || ev.seriesSlug) {
     const seriesId = await resolveSeriesId(supabase, ev, classified, publicRaceUrl);
     if (
@@ -2119,7 +2120,25 @@ async function upsertParsedEvent(
       !lockedFields.includes("series_id") &&
       (await seriesAcceptsSource(supabase, seriesId, watchedUrl))
     ) {
-      payload.series_id = seriesId;
+      // Already has another primary → keep it and join as a secondary membership.
+      if (existingId) {
+        const { data: cur } = await supabase
+          .from("events")
+          .select("series_id")
+          .eq("id", existingId)
+          .maybeSingle();
+        if (cur?.series_id && cur.series_id !== seriesId) {
+          const { attachSecondarySeries } = await import("@/lib/catalog/event-series");
+          await attachSecondarySeries(supabase, existingId, seriesId, "watcher");
+          attachedSeriesId = seriesId;
+        } else {
+          payload.series_id = seriesId;
+          attachedSeriesId = seriesId;
+        }
+      } else {
+        payload.series_id = seriesId;
+        attachedSeriesId = seriesId;
+      }
     }
   }
 
@@ -2221,6 +2240,25 @@ async function upsertParsedEvent(
         audience: c.audience ?? ev.audience ?? null,
       })),
     );
+  }
+
+  // Explicit secondary memberships from the parser (alsoSeries).
+  if (ev.alsoSeries?.length) {
+    const { attachSecondarySeries } = await import("@/lib/catalog/event-series");
+    for (const extra of ev.alsoSeries) {
+      const extraParsed: ParsedEvent = {
+        ...ev,
+        seriesName: extra.name || extra.slug,
+        seriesSlug: extra.slug,
+        seriesWebsite: extra.website,
+        alsoSeries: undefined,
+      };
+      const sid = await resolveSeriesId(supabase, extraParsed, classified, publicRaceUrl);
+      if (!sid) continue;
+      if (!(await seriesAcceptsSource(supabase, sid, watchedUrl))) continue;
+      if (sid === attachedSeriesId || sid === payload.series_id) continue;
+      await attachSecondarySeries(supabase, eventId, sid, "watcher");
+    }
   }
 
   return eventId;
