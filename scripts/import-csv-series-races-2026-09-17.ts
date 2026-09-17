@@ -130,8 +130,9 @@ async function main() {
         if (n > bestPreview.count) {
           bestPreview = { url, count: n, strategy: p.strategy || "", events: p.events || [] };
         }
-      } catch (e: any) {
-        console.log(`  preview ERR ${url} ${e.message}`);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(`  preview ERR ${url} ${msg}`);
       }
     }
 
@@ -143,7 +144,15 @@ async function main() {
         "series",
         `CSV import 2026-09-17 — ${t.csv}`,
       );
-      const result = await watchOne(row as any);
+      const result = await watchOne({
+        id: row.id as string,
+        url: row.url as string,
+        etag: (row.etag as string | null) ?? null,
+        last_modified: (row.last_modified as string | null) ?? null,
+        content_hash: (row.content_hash as string | null) ?? null,
+        kind: (row.kind as string | undefined) ?? "series",
+        last_extract_status: (row.last_extract_status as string | null) ?? null,
+      });
       written = result?.eventsUpserted ?? 0;
       extracted = result?.eventsExtracted ?? 0;
       console.log(
@@ -193,8 +202,9 @@ async function main() {
       const listed = await listEvents({ seriesSlug: t.slug });
       dbCount = listed.length;
       rounds = listed.map((e) => `${e.startDate} ${e.name}`);
-    } catch (e: any) {
-      console.log("  listEvents ERR", e.message);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.log("  listEvents ERR", msg);
     }
 
     const status =

@@ -213,8 +213,9 @@ async function main() {
     try {
       const p = await previewUrl(row.web);
       events = p.events || [];
-    } catch (e: any) {
-      console.log(`SKIP ${slug} preview error: ${e.message?.slice(0, 60)}`);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.log(`SKIP ${slug} preview error: ${msg.slice(0, 60)}`);
       continue;
     }
     if (!events.length) continue;

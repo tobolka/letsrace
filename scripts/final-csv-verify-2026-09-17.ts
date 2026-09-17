@@ -91,8 +91,9 @@ async function main() {
     if (s) {
       try {
         races = await listEvents({ seriesSlug: row.slug });
-      } catch (e: any) {
-        console.log(row.slug, "list ERR", e.message);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(row.slug, "list ERR", msg);
       }
     }
     totalRaces += races.length;

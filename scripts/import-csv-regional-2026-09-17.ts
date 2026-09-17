@@ -381,12 +381,21 @@ async function main() {
             // Let watchOne assign series via parser seriesSlug / official-host rules.
             // Do NOT bulk-attach every previewed event — federation calendars return
             // mixed series and would over-link (pzkol.pl, cyklistikaszc.sk, …).
-            const result = await watchOne(watched as any);
+            const result = await watchOne({
+              id: watched.id as string,
+              url: watched.url as string,
+              etag: (watched.etag as string | null) ?? null,
+              last_modified: (watched.last_modified as string | null) ?? null,
+              content_hash: (watched.content_hash as string | null) ?? null,
+              kind: (watched.kind as string | undefined) ?? "series",
+              last_extract_status: (watched.last_extract_status as string | null) ?? null,
+            });
             upserted = result?.eventsUpserted ?? 0;
           }
         }
-      } catch (e: any) {
-        strategy = `error:${e.message?.slice(0, 80)}`;
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        strategy = `error:${msg.slice(0, 80)}`;
       }
     }
 
