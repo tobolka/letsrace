@@ -54,6 +54,13 @@ export const DISCIPLINE_LABELS: Record<Discipline, string> = {
   other: "Other",
 };
 
+/**
+ * Always-visible explore chips — parent families only. Leaves stay in the full
+ * discipline menu.
+ */
+export const QUICK_DISCIPLINE_FILTERS = ["mtb", "road", "gravel", "cx"] as const;
+export type QuickDisciplineFilter = (typeof QUICK_DISCIPLINE_FILTERS)[number];
+
 /** High-level families used as filter parents. Gravel is a sibling of MTB, not a child. */
 export const DISCIPLINE_TREE: {
   id: Discipline;

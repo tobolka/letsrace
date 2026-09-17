@@ -427,7 +427,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   function setDiscipline(value: string) {
-    const next = filters.disciplines[0] === value ? [] : [value];
+    const current = filters.disciplines[0];
+    const next = current === value ? [] : [value];
     void setFilters({ disciplines: next });
     refetch({ disciplines: next });
   }
@@ -1264,11 +1265,14 @@ function ListToolbar({
   messages: Messages;
   onSort: (sort: EventSort) => void;
 }) {
+  const sortItemClass =
+    "transition-[transform,background-color,color,box-shadow] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-foreground data-[state=on]:[@media(hover:hover)_and_(pointer:fine)]:hover:text-background";
+
   const distanceItem = (
     <ToggleGroupItem
       value="distance"
       disabled={!distanceEnabled}
-      className={cn(!distanceEnabled && "disabled:pointer-events-auto")}
+      className={cn(sortItemClass, !distanceEnabled && "disabled:pointer-events-auto")}
       aria-label={
         distanceEnabled
           ? messages.sortDistance
@@ -1286,11 +1290,6 @@ function ListToolbar({
         aria-live="polite"
         aria-busy={pending}
       >
-        {/* Until the map has fetched its own set there is no count, and the
-            bare noun on its own — "races", with nothing in front of it — reads
-            as a label whose value went missing. A placeholder says "counting"
-            the way the rows below it do, and makes the spinner beside it
-            redundant; that is for a refetch, when a count is already showing. */}
         {count == null ? (
           <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" />
         ) : (
@@ -1316,7 +1315,9 @@ function ListToolbar({
           }}
           aria-label={messages.sortBy}
         >
-          <ToggleGroupItem value="date">{messages.date}</ToggleGroupItem>
+          <ToggleGroupItem value="date" className={sortItemClass}>
+            {messages.date}
+          </ToggleGroupItem>
           {distanceEnabled ? (
             distanceItem
           ) : (
@@ -1386,11 +1387,11 @@ const EventCard = memo(function EventCard({
       className={cn(
         // `active:` is the press itself. On a phone there is no hover, and a
         // row that does nothing until the card slides up feels like a miss.
-        "rounded-none border-0 px-4 py-3 hover:bg-accent/50 active:bg-accent",
+        "rounded-none border-0 px-4 py-3 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
         // `muted/50` over a near-white ground was a shade nobody could see. The
         // race you picked is the one thing on this list worth finding again
         // after you look away from it.
-        active && "bg-muted hover:bg-muted dark:bg-muted",
+        active && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
       )}
     >
       <button

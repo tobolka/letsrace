@@ -61,6 +61,7 @@ import {
   AGE_CATEGORY_FILTERS,
   AGE_CATEGORY_LABELS,
   DISCIPLINE_TREE,
+  QUICK_DISCIPLINE_FILTERS,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -326,11 +327,22 @@ export function MapFilterBar({
   // Mobile: every extra filter is a chip (horizontal scroll). Nested
   // submenus behind “+ Filtr” are unusable on a phone.
   const pinAll = allFilters || hideSearch;
-  const shownExtras = pinAll ? EXTRA_ORDER : visible;
+  // Family quick chips cover mtb/road/gravel/cx — only keep the discipline
+  // extra when a leaf (XCO, …) is selected so the subtype stays editable.
+  const shownExtras = (pinAll ? EXTRA_ORDER : visible).filter((id) => {
+    if (id !== "discipline") return true;
+    if (pinAll) return true;
+    const d = disciplines[0];
+    if (!d) return false;
+    return !(QUICK_DISCIPLINE_FILTERS as readonly string[]).includes(d);
+  });
   const availableToAdd = pinAll
     ? []
     : EXTRA_ORDER.filter((id) => {
-        if (visible.includes(id)) return false;
+        if (shownExtras.includes(id)) return false;
+        // Discipline stays reachable for subtypes even when a family chip is on.
+        if (id === "discipline" && disciplines.length > 0) return true;
+        if (visible.includes(id) && id !== "discipline") return false;
         if (id === "series" && visibleSeries.length === 0) return false;
         if (id === "country" && countryCodes.length === 0) return false;
         return true;

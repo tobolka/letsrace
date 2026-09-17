@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  * lights up on hover gives a finger nothing back at all.
  */
 const pillClass =
-  "h-10 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3.5 text-sm font-medium text-foreground shadow-none touch-manipulation hover:bg-muted/80 active:bg-muted";
+  "h-10 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3.5 text-sm font-medium text-foreground shadow-none touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80";
 
 export function MobileTopBar({
   weekendLabel,
@@ -82,7 +82,10 @@ export function MobileTopBar({
           type="button"
           variant="outline"
           size="sm"
-          className={cn(pillClass, weekendActive && "bg-muted")}
+          className={cn(
+            pillClass,
+            weekendActive && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+          )}
           aria-pressed={weekendActive}
           onClick={onWeekend}
         >
@@ -140,7 +143,7 @@ export function MobileTopBar({
         type="button"
         variant={searchActive ? "secondary" : "outline"}
         size="icon"
-        className="size-10 shrink-0 rounded-full border-border/80 touch-manipulation active:bg-muted"
+        className="size-10 shrink-0 rounded-full border-border/80 touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80"
         aria-label={searchLabel}
         aria-pressed={searchActive}
         onClick={onSearch}

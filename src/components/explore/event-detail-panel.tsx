@@ -102,7 +102,10 @@ export function EventDetailPanel({
   }, [embedded]);
 
   // Brief y-axis hop when the selected race changes — same card, new content.
+  // Skip in the mobile sheet: Vaul already moved it, and a keyframe hop on
+  // every pin tap fights the sheet and restarts from zero mid-browse.
   useEffect(() => {
+    if (embedded) return;
     const el = cardRef.current;
     if (!el) return;
     if (prevEventIdRef.current === event.id) return;
@@ -115,7 +118,7 @@ export function EventDetailPanel({
     // Restart the keyframes even when the class was already applied.
     void el.offsetWidth;
     el.classList.add("event-detail-jump");
-  }, [event.id, dragging]);
+  }, [event.id, dragging, embedded]);
 
   useEffect(() => {
     const el = cardRef.current;
