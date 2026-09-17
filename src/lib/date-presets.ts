@@ -45,3 +45,15 @@ export function nextWeekendRange(now = new Date()): { from: string; to: string }
   to.setDate(to.getDate() + 7);
   return { from: iso(from), to: iso(to) };
 }
+
+export function thisMonthRange(now = new Date()): { from: string; to: string } {
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
+  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  return { from: iso(from), to: iso(to) };
+}
+
+export function nextMonthRange(now = new Date()): { from: string; to: string } {
+  const from = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const to = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+  return { from: iso(from), to: iso(to) };
+}

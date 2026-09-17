@@ -49,6 +49,12 @@ import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import { thisWeekendRange } from "@/lib/date-presets";
+import {
+  readExploreFilterPrefs,
+  storedExploreFiltersToPatch,
+  urlHasExploreFilterParams,
+  writeExploreFilterPrefs,
+} from "@/lib/explore-filter-storage";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
 import { SITE_NAME } from "@/lib/seo";
@@ -247,6 +253,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }, [locale]);
 
   const [filters, setFilters] = useQueryStates(exploreSearchParams);
+  const [prefsReady, setPrefsReady] = useState(false);
 
   function selectEvent(id: string | null) {
     setSelectedId(id);
@@ -592,6 +599,58 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       }
     })();
   }
+
+  useEffect(() => {
+    if (prefsReady) return;
+    if (urlHasExploreFilterParams(window.location.search)) {
+      setPrefsReady(true);
+      return;
+    }
+    const stored = readExploreFilterPrefs();
+    if (!stored) {
+      setPrefsReady(true);
+      return;
+    }
+    const patch = storedExploreFiltersToPatch(stored);
+    let cancelled = false;
+    void setFilters(patch).then(() => {
+      if (cancelled) return;
+      void refetch(patch);
+      if (patch.sort === "distance") setLocateSeq((n) => n + 1);
+      setPrefsReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // Restore once on mount; refetch/setFilters are stable enough for this pass.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefsReady]);
+
+  useEffect(() => {
+    if (!prefsReady) return;
+    writeExploreFilterPrefs({
+      q: filters.q,
+      categories: filters.categories,
+      disciplines: filters.disciplines,
+      levels: filters.levels,
+      series: filters.series,
+      country: filters.country,
+      sort: filters.sort,
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+    });
+  }, [
+    prefsReady,
+    filters.q,
+    filters.categories,
+    filters.disciplines,
+    filters.levels,
+    filters.series,
+    filters.country,
+    filters.sort,
+    filters.dateFrom,
+    filters.dateTo,
+  ]);
 
   async function flyToPlace(q: string, gen: number): Promise<boolean> {
     placeAbortRef.current?.abort();
