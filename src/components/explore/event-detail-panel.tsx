@@ -269,28 +269,31 @@ export function EventDetailPanel({
     ...secondaryLinks,
   ];
 
+  // Registration / website already have their own buttons — repeating
+  // "Registration link available" in the footer just cluttered the card.
+  const showTrustLabel = trust === "calendar" || trust === "low";
   const trustRow = (
-    <div className="flex w-full items-center gap-2 px-1" title={t.trustExplanation}>
+    <div className="flex w-full min-w-0 items-center gap-2 px-1" title={t.trustExplanation}>
       <p className="sr-only" aria-live="polite">
         {linkCopied ? t.linkCopied : ""}
       </p>
       <p
         className={cn(
-          "min-w-0 flex-1 text-xs leading-snug",
+          "min-w-0 flex-1 truncate text-xs leading-snug",
           trust === "low" ? "text-destructive" : "text-muted-foreground",
         )}
       >
-        {trustText}
+        {showTrustLabel ? trustText : null}
         {checkedText && event.lastSeenAt ? (
           <>
-            <span aria-hidden> · </span>
+            {showTrustLabel ? <span aria-hidden> · </span> : null}
             <time className="tabular-nums" dateTime={event.lastSeenAt}>
               {checkedText}
             </time>
           </>
         ) : null}
       </p>
-      <div className="ml-auto flex items-center gap-0.5">
+      <div className="ml-auto flex shrink-0 items-center gap-0.5">
         <Toggle
           pressed={linkCopied}
           size="lg"
@@ -312,10 +315,12 @@ export function EventDetailPanel({
       ref={cardRef}
       aria-labelledby="race-detail-title"
       className={cn(
-        "pointer-events-auto w-full gap-0 overflow-hidden py-0",
+        // overflow-x-hidden: long series chips / nowrap buttons used to force a
+        // horizontal scrollbar while the card was dragged around the map.
+        "pointer-events-auto w-full max-w-[min(320px,calc(100vw-1.5rem))] gap-0 overflow-x-hidden overflow-y-hidden py-0",
         dragging && "select-none",
         embedded
-          ? "flex h-full min-h-0 flex-col border-0 shadow-none"
+          ? "flex h-full min-h-0 max-w-none flex-col border-0 shadow-none"
           : "absolute z-10 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
       )}
       style={embedded ? undefined : { left: offset.x, top: offset.y }}
@@ -354,7 +359,9 @@ export function EventDetailPanel({
             className="w-[3px] shrink-0 self-stretch rounded-full"
             style={{ background: disciplineColor(event.disciplines) }}
           />
-          <span className="min-w-0">{event.name}</span>
+          <span className="min-w-0 break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
+            {event.name}
+          </span>
         </CardTitle>
         <CardAction className="ml-auto self-center">
           <Button
@@ -377,7 +384,7 @@ export function EventDetailPanel({
          * the sheet up to find out whether a race had an entry link.
          */
         className={cn(
-          "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4",
+          "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4",
           embedded
             ? "py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             : "py-3",
@@ -454,13 +461,26 @@ export function EventDetailPanel({
                   type="button"
                   variant="outline"
                   size="xs"
+                  title={event.series.name}
+                  className="max-w-full min-w-0 shrink justify-start overflow-hidden"
                   onClick={() => onSelectSeries(event.series!.slug)}
                 >
-                  {event.series.name}
+                  <span className="truncate">{event.series.name}</span>
                 </Button>
               ) : (
-                <Button asChild variant="outline" size="xs">
-                  <Link href={`/${locale}?series=${event.series.slug}`}>{event.series.name}</Link>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="xs"
+                  className="max-w-full min-w-0 shrink justify-start overflow-hidden"
+                >
+                  <Link
+                    href={`/${locale}?series=${event.series.slug}`}
+                    title={event.series.name}
+                    className="min-w-0"
+                  >
+                    <span className="truncate">{event.series.name}</span>
+                  </Link>
                 </Button>
               )}
             </MetaRow>
@@ -469,22 +489,26 @@ export function EventDetailPanel({
 
 
         {actionLinks.length > 0 && !embedded ? (
-          <ButtonGroup orientation="vertical" className={cn("w-full", embedded ? "mt-3" : "mt-4")}>
+          <ButtonGroup
+            orientation="vertical"
+            className={cn("w-full min-w-0 max-w-full", embedded ? "mt-3" : "mt-4")}
+          >
             {actionLinks.map((link, index) => (
               <Button
                 key={link.href}
                 asChild
                 variant={index === 0 ? "default" : "outline"}
-                className="w-full"
+                className="w-full min-w-0 max-w-full shrink"
               >
                 <a
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEnter(link.kind)}
+                  className="min-w-0"
                 >
                   <ExternalLink data-icon="inline-start" />
-                  {link.label}
+                  <span className="truncate">{link.label}</span>
                 </a>
               </Button>
             ))}
@@ -492,17 +516,26 @@ export function EventDetailPanel({
         ) : actionLinks.length === 0 ? (
           <p className={cn("text-sm text-muted-foreground", embedded ? "mt-3" : "mt-4")}>{t.noOnlineEntry}</p>
         ) : (
-          <ButtonGroup orientation="vertical" className={cn("w-full", embedded ? "mt-3" : "mt-4")}>
+          <ButtonGroup
+            orientation="vertical"
+            className={cn("w-full min-w-0 max-w-full", embedded ? "mt-3" : "mt-4")}
+          >
             {secondaryLinks.map((link) => (
-              <Button key={link.href} asChild variant="outline" className="w-full">
+              <Button
+                key={link.href}
+                asChild
+                variant="outline"
+                className="w-full min-w-0 max-w-full shrink"
+              >
                 <a
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEnter(link.kind)}
+                  className="min-w-0"
                 >
                   <ExternalLink data-icon="inline-start" />
-                  {link.label}
+                  <span className="truncate">{link.label}</span>
                 </a>
               </Button>
             ))}
@@ -534,11 +567,11 @@ function MetaRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <span className="shrink-0 text-muted-foreground [&_svg]:size-4" aria-hidden>
         {icon}
       </span>
-      <div className="flex min-w-0 flex-wrap items-center gap-1">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1 overflow-hidden">
         <span className="sr-only">{label}</span>
         {children}
       </div>

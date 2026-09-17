@@ -14,6 +14,10 @@ const SKIP =
 const AGGREGATOR_HOST =
   /(?:^|\.)(sumator\.cz|hynekmusil\.cz|eventivsport\.com|mtbs\.cz|velokal\.de|radsport-events\.de)$/i;
 
+/** Known wrong / leaked regulations pages that got attached across unrelated races. */
+const REGULATIONS_BLOCKLIST =
+  /(?:^|\.)volynskytriatlon\.cz$/i;
+
 function hostOf(url: string): string | null {
   try {
     return new URL(url).hostname.replace(/^www\./i, "").toLowerCase();
@@ -46,6 +50,8 @@ export function isRegulationsUrl(url: string | null | undefined): boolean {
   const u = (url || "").trim();
   if (!u || !/^https?:\/\//i.test(u)) return false;
   if (isAggregatorHost(u) || isRegistrationPlatformUrl(u) || SKIP.test(u)) return false;
+  const host = hostOf(u);
+  if (host && REGULATIONS_BLOCKLIST.test(host)) return false;
   return REGULATIONS_PATH.test(u) || isPdf(u);
 }
 
@@ -54,11 +60,12 @@ function scoreCandidate(url: string, text: string, pageHost: string): number {
   if (SKIP.test(blob) || SKIP.test(url)) return -100;
   if (isRegistrationPlatformUrl(url)) return -100;
   if (isAggregatorHost(url)) return -50;
+  const host = hostOf(url);
+  if (host && REGULATIONS_BLOCKLIST.test(host)) return -100;
   let s = 0;
   if (REGULATIONS_PATH.test(url)) s += 6;
   if (REGULATIONS_TEXT.test(text)) s += 5;
   if (isPdf(url)) s += 4;
-  const host = hostOf(url);
   if (host && host === pageHost) s += 1;
   return s;
 }
@@ -122,8 +129,15 @@ export function preferRegulationsUrl(
   incoming: string | null | undefined,
   existing: string | null | undefined,
 ): string | null {
-  const a = (incoming || "").trim() || null;
-  const b = (existing || "").trim() || null;
+  const clean = (u: string | null | undefined) => {
+    const t = (u || "").trim() || null;
+    if (!t) return null;
+    const host = hostOf(t);
+    if (host && REGULATIONS_BLOCKLIST.test(host)) return null;
+    return t;
+  };
+  const a = clean(incoming);
+  const b = clean(existing);
   if (!a) return b;
   if (!b) return a;
   if (isPdf(a) && !isPdf(b)) return a;

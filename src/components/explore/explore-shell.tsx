@@ -1366,7 +1366,7 @@ const EventCard = memo(function EventCard({
             // any truncation inside it.
             className="w-full min-w-0 text-sm leading-snug"
           >
-            <span className="truncate">{event.name}</span>
+            <span className="block min-w-0 truncate">{event.name}</span>
           </ItemTitle>
           <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed">
             <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>

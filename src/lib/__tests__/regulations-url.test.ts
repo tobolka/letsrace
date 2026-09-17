@@ -69,11 +69,14 @@ describe("regulations / propozice links", () => {
     ).toBe("https://club.cz/files/propozice.pdf");
   });
 
-  it("fills parsed events that have no regulations URL yet", () => {
-    const html = `<a href="/wordpress/propozice/">Propozice</a>`;
-    const events = attachRegulationsUrl("http://vangillerncup.cz/", html, [
-      { name: "Van Gillern", regulationsUrl: undefined },
-    ]);
-    expect(events[0]?.regulationsUrl).toContain("propozice");
+  it("rejects leaked Volyňský triathlon propozice on unrelated races", () => {
+    expect(isRegulationsUrl("https://volynskytriatlon.cz/propozice-zavodu/")).toBe(false);
+    expect(
+      preferRegulationsUrl(
+        "https://www.ctauthorcup.cz/propozice-trasy/",
+        "https://volynskytriatlon.cz/propozice-zavodu/",
+      ),
+    ).toBe("https://www.ctauthorcup.cz/propozice-trasy/");
+    expect(preferRegulationsUrl(null, "https://volynskytriatlon.cz/propozice-zavodu/")).toBeNull();
   });
 });
