@@ -177,3 +177,10 @@ describe("isIsoDay", () => {
     }
   });
 });
+
+describe("camp sites as venues", () => {
+  it("keeps a race whose venue is a campground", () => {
+    expect(isNonRaceEventName("Kemp Ejpovice - GOLF OPEN BIKE RACE - Časovka")).toBe(false);
+    expect(isNonRaceEventName("MTB kemp pro děti Ejpovice")).toBe(true);
+  });
+});

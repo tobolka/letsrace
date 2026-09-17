@@ -79,6 +79,10 @@ export function isNonRaceEventName(name: string): boolean {
 
   if (isJunkListingName(name)) return true;
 
+  // "Kemp Ejpovice - GOLF OPEN BIKE RACE - Časovka": the camp site is the
+  // venue, and the rest of the name says it is a race.
+  if (/\bkemp\b/.test(t) && /\b(race|xco|xcc|xcm|casovka|zavod)\b/.test(t)) return false;
+
   return (
     /\bkemp(y|u|ik)?\b/.test(t) ||
     /(^|[^a-z])camps?([^a-z]|$)/.test(t) ||
