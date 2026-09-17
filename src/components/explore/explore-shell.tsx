@@ -571,7 +571,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         const focusSlug = filters.e;
         setEvents((prev) => {
           const next = reuseUnchanged(prev, data);
-          if (!focusSlug) return next;
+          // A series or country is a find, and a race outside it has no place
+          // in the answer — a German kids' cup was sitting under Dětský MTB Cup
+          // because it had been open when the filter was picked.
+          if (!focusSlug || series || country) return next;
           const kept =
             next.find((e) => e.slug === focusSlug) ?? prev.find((e) => e.slug === focusSlug);
           if (!kept || next.some((e) => e.id === kept.id)) return next;

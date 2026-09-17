@@ -137,6 +137,16 @@ function isSameListing(url: string, listingUrl: string): boolean {
   }
 }
 
+/** Prima Cup rounds whose title names the course, not the town. */
+const PRIMA_COURSE_TOWNS: Record<string, string> = {
+  "gocarovy schody": "Hradec Králové",
+  "silesia bike marathon": "Opava",
+  "podkrkonossky maraton": "Lázně Bělohrad",
+  "mtb trilogy": "Teplice nad Metují",
+  "ceskopetrovicka koolna": "České Petrovice",
+  "harrachov": "Harrachov",
+};
+
 /** Prima Cup listing (`/zavody-2026/`) — dates live on each race page. */
 export async function parsePrimaCup(url: string, html: string): Promise<ParsedEvent[]> {
   const $ = cheerio.load(html);
@@ -158,7 +168,10 @@ export async function parsePrimaCup(url: string, html: string): Promise<ParsedEv
     cards.push({ href, name });
   });
 
-  const unique = cards.filter((c) => /\/(26-[a-z0-9]+|pm-20\d{2})\/?$/i.test(c.href));
+  // Every card on the season listing is a round. Most live at /26-xx/, but a
+  // partner race keeps its own slug (freedom-race, pm-2026) and dropping those
+  // hid a third of the series.
+  const unique = cards.filter((c) => /\/[a-z0-9-]+\/?$/i.test(new URL(c.href).pathname));
   const pages = unique.slice(0, 16);
 
   const parsed = await mapPool(pages, 3, async (card): Promise<ParsedEvent | null> => {
@@ -177,7 +190,19 @@ export async function parsePrimaCup(url: string, html: string): Promise<ParsedEv
       const headingNamed = body.match(
         /harmonogram[^.]{0,80}?(\d{1,2})\.\s*([A-Za-záčďéěíňóřšťúůýž]+)/i,
       );
+      // Partner races say "Datum konání: 16. května 2026" (sometimes with the
+      // year glued on) and nothing else.
+      const datumNamed = body.match(
+        /datum\s+kon[áa]n[íi]\s*:?\s*(\d{1,2})\.\s*([A-Za-záčďéěíňóřšťúůýž]+?)\s*(20\d{2})/i,
+      );
+      const datumNumeric = body.match(
+        /datum\s+kon[áa]n[íi]\s*:?\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/i,
+      );
       const startDate =
+        (datumNamed ? parseCzNamed(`${datumNamed[1]}. ${datumNamed[2]} ${datumNamed[3]}`) : null) ||
+        (datumNumeric
+          ? parseCzIso(`${datumNumeric[1]}.${datumNumeric[2]}.${datumNumeric[3]}`)?.start
+          : null) ||
         (weekendNamed
           ? parseCzNamed(
               `${weekendNamed[1]}. ${weekendNamed[2]} ${weekendNamed[3] || yearHint}`,
@@ -193,11 +218,18 @@ export async function parsePrimaCup(url: string, html: string): Promise<ParsedEv
           : null);
       if (!startDate) return null;
 
+      // Partner pages name the town ("Místo: Opava"); the rest are named for
+      // it once the sponsor comes off, except the few whose title is a course.
+      const misto = body.match(/M[íi]sto\s*:\s*([A-ZÁ-Ž][^.:]{1,40}?)(?=\s+[A-ZÁ-Ž][a-zá-ž]+\s|\s*$)/);
+      const titleKey = normalizeName(card.name.replace(/\s*20\d{2}\s*$/, ""));
+      const courseTown = Object.entries(PRIMA_COURSE_TOWNS).find(([k]) => titleKey.includes(k))?.[1];
       const place =
+        courseTown ||
+        misto?.[1]?.trim() ||
         card.name
           .replace(/\s*20\d{2}\s*$/, "")
           .replace(
-            /^(BEST|Silesia|BAIC|TCHIBO|KupKolo\.cz|FILIPA|LEADER FOX|YATE|Českopetrovická)\s+/i,
+            /^(BEST|Silesia|BAIC|TCHIBO COFFIZZ|TCHIBO|KupKolo\.cz|FILIPA|LEADER FOX|YATE|Českopetrovická)\s+/i,
             "",
           )
           .trim() || card.name;
@@ -375,8 +407,10 @@ export function parsePoharMtb(url: string, html: string): ParsedEvent[] {
       countryHint: "CZ",
       discipline: disc,
       audience: "mixed",
-      seriesName: /mčr|mcr/i.test(tag) ? "MČR MTB" : "Český pohár MTB",
-      seriesSlug: /mčr|mcr/i.test(tag) ? "mcr-mtb" : "cesky-pohar-mtb",
+      // The championship rounds sit in the cup calendar on the site, and
+      // that is how riders read the season — one series, the MČR named as such.
+      seriesName: "Český pohár MTB",
+      seriesSlug: "cesky-pohar-mtb",
       seriesWebsite: "https://www.poharmtb.cz/",
       sourceUrl,
       websiteUrl: websiteUrl || listing,

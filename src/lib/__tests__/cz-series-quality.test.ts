@@ -46,7 +46,9 @@ describe("ČP MTB calendar", () => {
     expect(events[0]?.websiteUrl).not.toMatch(/\.pdf(\?|$)/i);
     expect(events[0]?.sourceUrl).not.toBe("https://www.poharmtb.cz/cross-country");
     expect(new Set(events.map((e) => e.sourceUrl)).size).toBe(2);
-    expect(events[1]?.seriesSlug).toBe("mcr-mtb");
+    // The MČR round stays in the cup calendar, named as the championship.
+    expect(events[1]?.seriesSlug).toBe("cesky-pohar-mtb");
+    expect(events[1]?.name).toMatch(/^MČR/);
     expect(events[1]?.discipline).toEqual(["xcc"]);
   });
 });

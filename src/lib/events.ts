@@ -141,7 +141,12 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   // oldest first: a Europe-wide view answered with 999 races, every one of
   // them already run, and not a single upcoming one. A race finder's floor is
   // today unless a caller asks to look back on purpose.
-  query = query.gte("start_date", dateFrom ?? new Date().toISOString().slice(0, 10));
+  // A series is read as a season, not a window: someone opening Prima Cup in
+  // September wants the rounds already run beside the ones to come, so the
+  // floor drops to the start of the year instead of today.
+  const today = new Date().toISOString().slice(0, 10);
+  const floor = filters.seriesSlug ? `${today.slice(0, 4)}-01-01` : today;
+  query = query.gte("start_date", dateFrom ?? floor);
   if (dateTo) query = query.lte("start_date", dateTo);
   if (filters.audience?.length === 1) {
     query = query.eq("audience", filters.audience[0]);

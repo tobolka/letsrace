@@ -637,7 +637,7 @@ export function MapFilterBar({
                 <DropdownMenuContent
                   align="start"
                   className={cn(
-                    "max-h-[min(60dvh,20rem)] overflow-y-auto",
+                    "max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-gutter:stable]",
                     id === "series" ? "w-72 max-w-[calc(100vw-1.5rem)]" : "w-56",
                   )}
                   collisionPadding={12}
@@ -690,7 +690,8 @@ export function MapFilterBar({
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent
                         className={cn(
-                          "max-h-80 overflow-y-auto",
+                          // The scrollbar took the column the counts sit in.
+                          "max-h-80 overflow-y-auto [scrollbar-gutter:stable]",
                           id === "series" ? "w-72" : "w-56",
                         )}
                       >
