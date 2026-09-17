@@ -118,12 +118,11 @@ const MONTHS: Record<string, number> = {
   dezember: 12,
   grudzien: 12,
   grudnia: 12,
-  // Polish nominative / genitive extras
+  // Polish nominative / genitive extras (marca already above)
   stycznia: 1,
   styczen: 1,
   lutego: 2,
   luty: 2,
-  marca: 3,
   marzec: 3,
   kwietnia: 4,
   kwiecien: 4,

@@ -145,7 +145,9 @@ async function safeAttach(
   let attached = 0;
   for (const ev of events) {
     if (!ev.startDate || !ev.name) continue;
-    const fp = fingerprint({ startDate: ev.startDate, name: ev.name, lat: ev.lat, lng: ev.lng });
+    const startDate = ev.startDate;
+    const name = ev.name;
+    const fp = fingerprint({ startDate, name, lat: ev.lat, lng: ev.lng });
     let eventId: string | null = null;
     const { data: byFp } = await sb
       .from("events")
@@ -155,7 +157,7 @@ async function safeAttach(
       .maybeSingle();
     if (byFp) eventId = byFp.id as string;
     if (!eventId) {
-      const tokens = normalizeName(ev.name)
+      const tokens = normalizeName(name)
         .split(" ")
         .filter((t) => t.length > 3)
         .slice(0, 2);
@@ -163,12 +165,12 @@ async function safeAttach(
         const { data: day } = await sb
           .from("events")
           .select("id, name")
-          .eq("start_date", ev.startDate)
+          .eq("start_date", startDate)
           .is("merged_into_id", null)
           .ilike("name", `%${tokens.join("%")}%`)
           .limit(8);
         const hit =
-          (day || []).find((d) => normalizeName(d.name) === normalizeName(ev.name)) ||
+          (day || []).find((d) => normalizeName(d.name ?? "") === normalizeName(name)) ||
           ((day || []).length === 1 ? day![0] : null);
         if (hit) eventId = hit.id as string;
       }
