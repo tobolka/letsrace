@@ -208,6 +208,33 @@ time,
   .letsrace-date-cal .rdp-root {
     --rdp-animation_duration: 0s;
   }
+
+  .event-detail-jump {
+    animation: none !important;
+  }
+}
+
+/*
+ * Desktop race card: a short upward hop when you pick another pin / list row,
+ * so the panel reads as “new race” without remounting (which would reset drag).
+ */
+@keyframes event-detail-jump {
+  0% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  70% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.event-detail-jump {
+  animation: event-detail-jump 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /*

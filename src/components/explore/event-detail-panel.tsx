@@ -88,6 +88,7 @@ export function EventDetailPanel({
   const offsetRef = useRef({ x: DEFAULT_X, y: DEFAULT_Y });
   const [offset, setOffset] = useState({ x: DEFAULT_X, y: DEFAULT_Y });
   const [dragging, setDragging] = useState(false);
+  const prevEventIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (embedded) return;
@@ -99,6 +100,33 @@ export function EventDetailPanel({
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [embedded]);
+
+  // Brief y-axis hop when the selected race changes — same card, new content.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    if (prevEventIdRef.current === event.id) return;
+    prevEventIdRef.current = event.id;
+    if (dragging || dragRef.current) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    el.classList.remove("event-detail-jump");
+    // Restart the keyframes even when the class was already applied.
+    void el.offsetWidth;
+    el.classList.add("event-detail-jump");
+  }, [event.id, dragging]);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const onEnd = (e: AnimationEvent) => {
+      if (e.animationName !== "event-detail-jump") return;
+      el.classList.remove("event-detail-jump");
+    };
+    el.addEventListener("animationend", onEnd);
+    return () => el.removeEventListener("animationend", onEnd);
+  }, []);
 
   function onHeaderPointerDown(e: PointerEvent<HTMLDivElement>) {
     if (embedded || e.button !== 0) return;
@@ -114,6 +142,8 @@ export function EventDetailPanel({
     setDragging(true);
     e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
+    // Don't let a leftover jump transform fight the drag translate.
+    cardRef.current?.classList.remove("event-detail-jump");
   }
 
   function onHeaderPointerMove(e: PointerEvent<HTMLDivElement>) {
