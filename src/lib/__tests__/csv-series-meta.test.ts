@@ -30,4 +30,10 @@ describe("csv-series-meta", () => {
     const d = disciplinesFromCsv("MIX", "MTB XCM + silnice");
     expect(d).toEqual(expect.arrayContaining(["mtb", "xcm", "road"]));
   });
+
+  it("maps gravel series", () => {
+    expect(disciplinesFromCsv("GRAVEL", "národní pohár / gravel race")).toEqual(
+      expect.arrayContaining(["gravel"]),
+    );
+  });
 });

@@ -9,6 +9,7 @@ export function disciplinesFromCsv(disciplina: string, podtyp: string): Discipli
   const out = new Set<Discipline>();
 
   if (/cyklokros|\bcx\b/.test(blob)) out.add("cx");
+  if (/\bgravel\b/.test(blob)) out.add("gravel");
   if (/\bmtb\b|horské|horsky/.test(blob) || /xco|xcc|xcm|xce|enduro|\bdh\b|dhi|downhill|bikerally|blind/.test(blob)) {
     out.add("mtb");
   }

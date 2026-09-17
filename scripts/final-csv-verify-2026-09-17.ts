@@ -69,7 +69,17 @@ const ROWS: { csv: string; slug: string; web: string; expected: number | null; n
 
 async function main() {
   const supabase = createServerSupabase();
-  const out = [];
+  const out: Array<
+    (typeof ROWS)[number] & {
+      exists: boolean;
+      seriesName: string | null;
+      websiteDb: string | null;
+      disciplines: unknown;
+      dbCount: number;
+      status: string;
+      rounds: string[];
+    }
+  > = [];
   let totalRaces = 0;
   for (const row of ROWS) {
     const { data: s } = await supabase
