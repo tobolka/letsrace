@@ -129,7 +129,20 @@ function parseCzechRaceDate(raw: string): { start: string; end?: string } | null
   return null;
 }
 
+/** "KRALOVICE" → "Kralovice"; a place already in mixed case is left alone. */
+function titleCasePlace(raw: string): string {
+  const p = raw.replace(/^(?:xco|xcc|xc|mtb|kemp)\s+/i, "").trim();
+  if (p !== p.toLocaleUpperCase("cs")) return p;
+  return p
+    .toLocaleLowerCase("cs")
+    .replace(/(^|[\s-])(\p{L})/gu, (m, sep, ch) => sep + ch.toLocaleUpperCase("cs"));
+}
+
 function placeFromTitle(name: string): string {
+  return titleCasePlace(placeTokenFromTitle(name));
+}
+
+function placeTokenFromTitle(name: string): string {
   const n = name.replace(/^[\s\-–—]+/, "").trim();
   // "XCO obce LITOHLAVY" / "XCO města KRALOVICE"
   const labeled = n.match(
@@ -208,8 +221,12 @@ export function parseHynekSeriesCalendar(url: string, html: string): ParsedEvent
     if (!nameCell) return;
     if (/článek|clanek|pozvánka|pozvanka|stránky převedeny/i.test(nameCell)) return;
 
-    const name = nameCell.replace(/\s+/g, " ").trim();
-    if (isNonRaceEventName(name)) return;
+    const name = nameCell.replace(/^[\s\-–—]+/, "").replace(/\s+/g, " ").trim();
+    // "Kemp Ejpovice" is a venue, not a camp: a dated row with a race word in
+    // it is a round even when the name trips the non-race filter.
+    if (isNonRaceEventName(name) && !/\b(race|xco|xcc|xc|časovka|casovka|bike)\b/i.test(name)) {
+      return;
+    }
     const externalId = `${series.slug}-${dates.start}-${normalizeName(name)}`.slice(0, 120);
     if (seen.has(externalId)) return;
     seen.add(externalId);

@@ -357,7 +357,7 @@ export async function watchOne(row: {
     let upserted = 0;
     // Bounded parallelism for DB upserts (same-host sources stay polite upstream)
     const upsertResults = await mapPool(toUpsert, 4, async (ev) =>
-      upsertParsedEvent(ev, row.id, row.kind),
+      upsertParsedEvent(ev, row.id, row.kind, row.url),
     );
     upserted = upsertResults.filter(Boolean).length;
 
@@ -1422,10 +1422,57 @@ async function resolveSeriesId(
   return undefined;
 }
 
+/**
+ * A series we read from its own site is filled by that site alone.
+ *
+ * Hynek's calendar, sumator and the federation portal all label their rows
+ * with the series they belong to, and each of them is a little wrong: a
+ * Saturday and a Sunday row for one weekend, an awards night, a race that
+ * left the series a year ago. Let them attach and a series of eight rounds
+ * shows twenty-five. They may still enrich a round the official calendar
+ * created — that goes through dedup — but they cannot add one.
+ *
+ * Only series whose website host is itself an active source are guarded;
+ * a series nobody reads officially is still built from whoever lists it.
+ */
+const officialHostCache = new Map<string, { host: string | null; at: number }>();
+async function seriesAcceptsSource(
+  supabase: ReturnType<typeof createServerSupabase>,
+  seriesId: string,
+  watchedUrl: string | undefined,
+): Promise<boolean> {
+  if (!watchedUrl) return true;
+  const cached = officialHostCache.get(seriesId);
+  let official: string | null;
+  if (cached && Date.now() - cached.at < 10 * 60_000) {
+    official = cached.host;
+  } else {
+    const { data: series } = await supabase
+      .from("series")
+      .select("website_url")
+      .eq("id", seriesId)
+      .maybeSingle();
+    const host = hostnameOf((series?.website_url as string | null) ?? "").replace(/^www\./, "");
+    official = null;
+    if (host) {
+      const { count } = await supabase
+        .from("watched_urls")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active")
+        .ilike("url", `%${host}%`);
+      if (count) official = host;
+    }
+    officialHostCache.set(seriesId, { host: official, at: Date.now() });
+  }
+  if (!official) return true;
+  return hostnameOf(watchedUrl).replace(/^www\./, "") === official;
+}
+
 async function upsertParsedEvent(
   ev: ParsedEvent,
   watchedUrlId: string,
   watchedKind?: string,
+  watchedUrl?: string,
 ) {
   const { isIngestibleDate, inferClassification, audienceFromAgeCategories } = await import(
     "@/lib/taxonomy"
@@ -2067,7 +2114,11 @@ async function upsertParsedEvent(
   // Attach / create series (Talent Cup, KPŽ, …)
   if (ev.seriesName || ev.seriesSlug) {
     const seriesId = await resolveSeriesId(supabase, ev, classified, publicRaceUrl);
-    if (seriesId && !lockedFields.includes("series_id")) {
+    if (
+      seriesId &&
+      !lockedFields.includes("series_id") &&
+      (await seriesAcceptsSource(supabase, seriesId, watchedUrl))
+    ) {
       payload.series_id = seriesId;
     }
   }
