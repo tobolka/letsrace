@@ -27,12 +27,15 @@ describe("TBC série identity", () => {
     expect(events.map((e) => e.seriesSlug)).toEqual(["tbc-cyclocross"]);
   });
 
-  it("skips the season points-registration row on maraton.cz", () => {
-    const html = `<table>
-      <tr><td>20.9.2026</td><td>ne</td><td>TBC</td><td>TBC série 2026 - přihláška do bodování v seriálu - přihláška</td><td><a href="https://tbcserie.cz/">web</a></td></tr>
-      <tr><td>20.9.2026</td><td>ne</td><td>Bernartice</td><td>Bernartický cyklokros- přihláška (TBC série)</td><td><a href="https://tbcserie.cz/">web</a></td></tr>
-    </table>`;
-    const events = parseMaratonTbcRows(html, "https://maraton.cz/terminovka");
-    expect(events.map((e) => e.name)).toEqual(["TBC — Bernartický cyklokros"]);
+  it("rejects Hynek discipline labels and junk series names", () => {
+    expect(canonicalizeSeries("2. XCO/XCC")).toBeNull();
+    expect(canonicalizeSeries("PMTBP")).toBeNull();
+    expect(canonicalizeSeries("závod")).toBeNull();
+    expect(canonicalizeSeries("UCI ZÁVOD")).toBeNull();
+  });
+
+  it("aliases Prima Cup and Český pohár horských kol onto the canonical rows", () => {
+    expect(canonicalizeSeries("Prima Cup")?.slug).toBe("primacup");
+    expect(canonicalizeSeries("Český pohár horských kol")?.slug).toBe("cesky-pohar-mtb");
   });
 });

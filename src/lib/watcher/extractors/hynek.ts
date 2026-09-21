@@ -101,10 +101,19 @@ export function canonicalizeSeries(raw: string): { name: string; slug: string } 
     "mtb bundesliga": "MTB Bundesliga",
     "prima cup xcm czech cup": HYNEK_SERIES.prima!.name,
     primacup: HYNEK_SERIES.prima!.name,
+    // normalizeName strips the word "cup", so "Prima Cup" becomes "prima".
+    prima: HYNEK_SERIES.prima!.name,
+    "prima cup": HYNEK_SERIES.prima!.name,
     // The list page labels it "TBC SÉRIE"; the code table already knows the
     // canonical slug, and a second slug meant a second series row.
     "tbc serie": HYNEK_SERIES.tbc!.name,
     tbc: HYNEK_SERIES.tbc!.name,
+    "cesky pohar horskych kol": HYNEK_SERIES["čpXC"]!.name,
+    // "Český pohár MTB" → "cesky pohar" after MTB is stripped.
+    "cesky pohar": HYNEK_SERIES["čpXC"]!.name,
+    "ppk hk": "Pohár KV kraje HK",
+    "pkk hk": "Pohár KV kraje HK",
+    "pohar kv kraje hk": "Pohár KV kraje HK",
   };
   for (const [k, name] of Object.entries(aliases)) {
     if (key === k || key.includes(k)) {
@@ -115,7 +124,8 @@ export function canonicalizeSeries(raw: string): { name: string; slug: string } 
   // Reject discipline / stage labels that aren't real series
   if (
     /^(xcm|xc|xco|xcc|dh|edr|track|silnice|road|gravel|akce|event|4x|mtbo)(\/.*)?$/i.test(stripped) ||
-    /^xco\/xcc/i.test(stripped)
+    /^xco\/xcc/i.test(stripped) ||
+    /^\d+\s*[./]?\s*(xcm|xco|xcc|dh|edr)/i.test(stripped)
   ) {
     return null;
   }
@@ -125,7 +135,13 @@ export function canonicalizeSeries(raw: string): { name: string; slug: string } 
     .replace(/TALENT/gi, "Talent")
     .replace(/\s+/g, " ")
     .trim();
-  if (/^track$/i.test(name) || /^edr$/i.test(name)) return null;
+  if (
+    /^track$/i.test(name) ||
+    /^edr$/i.test(name) ||
+    /^(zavod|uci zavod|pmtbp|sport base|cyclox|czech cups)/i.test(normalizeName(name))
+  ) {
+    return null;
+  }
   return { name, slug: slugifySeries(name) };
 }
 
