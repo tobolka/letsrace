@@ -314,6 +314,55 @@ export function seriesAliasTokens(name: string): string[] {
   return SERIES_ALIAS_RULES.filter((r) => r.re.test(s)).map((r) => r.token);
 }
 
+/**
+ * Multilingual national-championship identity.
+ *
+ * Federations publish "Mistrzostwa Polski …" while aggregators ship the English
+ * "Polish National Championships - XCM". Bigram similarity between those is
+ * ~0.2, so same-day + same-place never clears the merge threshold on its own.
+ * A shared country token restores the match — but only when both titles are
+ * championships of the *same* country (PL vs CZ stays apart).
+ */
+const NATIONAL_CHAMPIONSHIP_TOKENS: { re: RegExp; token: string }[] = [
+  {
+    re: /\bmistrzostwa\s+polski\b|\bpolish\s+national\s+champ|\bnational\s+championships?\s+of\s+poland\b/i,
+    token: "nat:pl",
+  },
+  {
+    re: /\bmistrovstv[ií]\s+(?:republiky|cr|ceske|ceska|ceska\s+republiky)|\bm[cč]r\b|\bczech\s+national\s+champ|\bnational\s+championships?\s+of\s+(?:the\s+)?czech/i,
+    token: "nat:cz",
+  },
+  {
+    re: /\bmajstrovstv[aá]\s+slovenska|\bmsr\b|\bslovak\s+national\s+champ|\bnational\s+championships?\s+of\s+slovakia/i,
+    token: "nat:sk",
+  },
+  {
+    re: /\bdeutsche\s+meisterschaft|\bgerman\s+national\s+champ|\bnational\s+championships?\s+of\s+germany|\bdm\s+(?:mtb|xco|xcm|rennrad|radcross)/i,
+    token: "nat:de",
+  },
+  {
+    re: /\b(?:oesterreichische|osterreichische|österreichische)\s+meisterschaft|\baustrian\s+national\s+champ|\bnational\s+championships?\s+of\s+austria|\bom\s+(?:mtb|xco|xcm)/i,
+    token: "nat:at",
+  },
+  {
+    re: /\bcampionat[oi]\s+italian|\bitalian\s+national\s+champ|\bnational\s+championships?\s+of\s+italy/i,
+    token: "nat:it",
+  },
+  {
+    re: /\bcampeonato\s+de\s+espana|\bspanish\s+national\s+champ|\bnational\s+championships?\s+of\s+spain/i,
+    token: "nat:es",
+  },
+  {
+    re: /\bchampionnats?\s+de\s+france|\bfrench\s+national\s+champ|\bnational\s+championships?\s+of\s+france/i,
+    token: "nat:fr",
+  },
+];
+
+export function nationalChampionshipTokens(name: string): string[] {
+  const s = fold(name);
+  return NATIONAL_CHAMPIONSHIP_TOKENS.filter((r) => r.re.test(s)).map((r) => r.token);
+}
+
 /** Titles that are basically just a UCI class / empty after cleaning. */
 export function isWeakRaceName(name: string): boolean {
   const folded = fold(name)
@@ -730,6 +779,26 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
         reasons.push("venue_format_mirror");
       }
     }
+  }
+
+  /*
+   * Same national championship, two languages. Federations keep the local name;
+   * UCI/aggregator calendars translate it. Require a shared country token and a
+   * shared discipline family so "Mistrzostwa Polski XCM" does not eat a road
+   * national championship staged at the same ski centre.
+   */
+  const natA = nationalChampionshipTokens(a.name);
+  const natB = nationalChampionshipTokens(b.name);
+  const sharedNat = natA.find((t) => natB.includes(t));
+  if (
+    sharedNat &&
+    near &&
+    sameDay &&
+    sharesDisciplineFamily(a.disciplines, b.disciplines) &&
+    !reasons.includes("same_canonical_name")
+  ) {
+    score += 22;
+    reasons.push("national_championship_mirror");
   }
 
   /*

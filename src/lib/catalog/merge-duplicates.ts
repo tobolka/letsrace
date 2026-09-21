@@ -418,6 +418,7 @@ export async function mergePublicDuplicates(opts?: {
       reasons.includes("same_canonical_name") ||
       reasons.includes("name_sim_high") ||
       (reasons.includes("name_substring") && reasons.includes("name_sim_mid")) ||
+      reasons.includes("national_championship_mirror") ||
       reasons.includes("weak_name_absorbed") ||
       reasons.includes("venue_format_mirror") ||
       sameSeriesRound;

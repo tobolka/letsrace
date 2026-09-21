@@ -297,3 +297,71 @@ describe("rounds of one cup", () => {
     expect(score).toBeGreaterThanOrEqual(DEDUP_THRESHOLD);
   });
 });
+
+describe("national championship mirrors", () => {
+  const jakuszyce = {
+    startDate: "2026-09-26",
+    endDate: "2026-09-26",
+    lat: 50.82,
+    lng: 15.45,
+    placeText: "Szklarska Poręba - Jakuszyce",
+    countryCode: "PL",
+  };
+
+  it("merges the Polish federation title with the English aggregator title", () => {
+    // Bigram similarity between these is ~0.2 — without a country token they
+    // sit at score 40 under the 50 threshold and stay as three pins on one hill.
+    const { score, reasons } = scoreDuplicate(
+      {
+        ...jakuszyce,
+        name: "Mistrzostwa Polski w Maratonie MTB W ramach 12. Rowerowego Biegu Piastów",
+        disciplines: ["xcm"],
+      },
+      {
+        ...jakuszyce,
+        name: "Polish National Championships - XCM",
+        disciplines: ["mtb", "xcm"],
+      },
+    );
+    expect(reasons).toContain("national_championship_mirror");
+    expect(score).toBeGreaterThanOrEqual(DEDUP_THRESHOLD);
+  });
+
+  it("merges two Polish listings of the same mistrzostwa", () => {
+    const { score, reasons } = scoreDuplicate(
+      {
+        ...jakuszyce,
+        name: "Mistrzostwa Polski w Maratonie MTB W ramach 12. Rowerowego Biegu Piastów",
+        disciplines: ["xcm"],
+      },
+      {
+        ...jakuszyce,
+        name: "Mistrzostwa Polski w Maratonie MTB / PKO Rowerowy Bieg Piastów",
+        disciplines: ["mtb"],
+      },
+    );
+    expect(score).toBeGreaterThanOrEqual(DEDUP_THRESHOLD);
+    expect(reasons).toEqual(
+      expect.arrayContaining(["same_day", "same_place", "same_discipline"]),
+    );
+  });
+
+  it("does not fuse a Polish championship with a Czech one", () => {
+    const { score } = scoreDuplicate(
+      {
+        ...jakuszyce,
+        name: "Mistrzostwa Polski w Maratonie MTB",
+        disciplines: ["xcm"],
+      },
+      {
+        startDate: "2026-09-26",
+        name: "Mistrovství ČR XCM",
+        lat: 50.82,
+        lng: 15.45,
+        placeText: "Szklarska Poręba - Jakuszyce",
+        disciplines: ["xcm"],
+      },
+    );
+    expect(score).toBeLessThan(DEDUP_THRESHOLD);
+  });
+});
