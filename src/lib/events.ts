@@ -392,9 +392,12 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
     const id = row.series_id as string;
     tally.set(id, (tally.get(id) ?? 0) + 1);
   }
+  // One-off "series" with a single race clutter the cup filter — keep real
+  // multi-round cups (≥2). Deep links to a one-race series still work via
+  // getSeriesBySlug / ?series=… on the events API.
   return (series ?? [])
     .map((s) => mapSeriesRow(s as Record<string, unknown>, tally.get(s.id as string) ?? 0))
-    .filter((s) => s.eventCount > 0)
+    .filter((s) => s.eventCount >= 2)
     .filter((s) => !s.countryCode || isListedCountry(s.countryCode))
     .sort((a, b) => b.eventCount - a.eventCount || a.name.localeCompare(b.name, "cs"));
 }
