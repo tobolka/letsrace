@@ -64,7 +64,7 @@ const ROWS: { csv: string; slug: string; web: string; expected: number | null; n
   { csv: "Peklo Severu Road", slug: "peklo-severu-road", web: "https://www.pekloseveruroad.cz/", expected: 4 },
   { csv: "JANEV Cup", slug: "janev-cup", web: "https://www.cyklokros.cz/", expected: 8 },
   { csv: "TBC série", slug: "tbc-cyclocross", web: "https://www.tbcserie.cz/", expected: 11 },
-  { csv: "Oderský pohár", slug: "odersky-pohar", web: "https://www.kolarna.eu/k/zavody/", expected: 12 },
+  { csv: "Oderský pohár", slug: "odersky-pohar", web: "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/", expected: 12 },
 ];
 
 async function main() {

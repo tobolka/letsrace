@@ -81,7 +81,7 @@ const TARGETS: Target[] = [
   { csv: "Peklo Severu Road", slug: "peklo-severu-road", official: ["https://www.pekloseveruroad.cz/"], fallback: ["https://sumator.cz/cup/peklo-severu-road-2026"], expected: 4 },
   { csv: "JANEV Cup", slug: "janev-cup", official: ["https://www.cyklokros.cz/janev-cup-2026"], expected: 8 },
   { csv: "TBC série", slug: "tbc-cyclocross", official: ["https://tbcserie.cz/kalendar-2026"], expected: 11 },
-  { csv: "Oderský pohár", slug: "odersky-pohar", official: ["https://www.kolarna.eu/k/zavody/"], expected: 12 },
+  { csv: "Oderský pohár", slug: "odersky-pohar", official: ["https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/"], expected: 12 },
 ];
 
 async function ensureWatched(url: string, kind: string, notes: string) {
