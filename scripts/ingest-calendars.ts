@@ -93,6 +93,7 @@ async function main() {
         error: out.error,
         ms: Date.now() - started,
       });
+      if (!out.ok) process.exitCode = 1;
     }
     return;
   }

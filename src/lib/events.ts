@@ -97,11 +97,6 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     filters.east != null &&
     filters.north != null;
   const bySeries = Boolean(filters.seriesSlug);
-  const byCountry = Boolean(filters.countryCodes?.length);
-  // Without bbox, unfiltered Europe is huge — keep a higher cap but prefer bbox
-  // queries. A thousand is the real ceiling whatever is asked for: PostgREST
-  // answers no more than that in one page, so 1200 only read as a bigger cap.
-  const limit = bySeries ? 400 : hasBbox || byCountry ? 1000 : 800;
   const locationSelect = bySeries
     ? "location:locations(id, name, municipality, country_code, lat, lng)"
     : "location:locations!inner(id, name, municipality, country_code, lat, lng)";
@@ -115,7 +110,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
        sources:event_sources(source_url)`,
     )
     .order("start_date", { ascending: true })
-    .limit(limit);
+    .order("id", { ascending: true });
 
   if (!bySeries) {
     query = query.in("location.country_code", [...PUBLIC_COUNTRY_CODES]);
@@ -222,10 +217,18 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   } = await import("@/lib/event-visibility");
   query = query.in("status", [...PUBLIC_EVENT_STATUSES]).eq("visibility", PUBLIC_VISIBILITY);
 
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
+  // PostgREST returns at most 1,000 rows per request. The old 800/1,000-row
+  // cap silently hid later races on broad maps and searches, even though the
+  // database held them. Stable ordering keeps pages from overlapping.
+  const data: Record<string, unknown>[] = [];
+  for (let from = 0; ; from += 1000) {
+    const page = await query.range(from, from + 999);
+    if (page.error) throw new Error(page.error.message);
+    data.push(...((page.data ?? []) as Record<string, unknown>[]));
+    if (!page.data || page.data.length < 1000) break;
+  }
 
-  let rows = (data ?? [])
+  let rows = data
     .map(mapEventRow)
     .filter((e) => {
       if (shouldHideFromMap(e.name, e.status, e.visibility)) return false;

@@ -58,6 +58,17 @@ export async function runDueWatches(
   const nowIso = new Date().toISOString();
   const claimUntil = new Date(Date.now() + CLAIM_MS).toISOString();
 
+  // A terminated serverless invocation cannot reach watchOne's catch block.
+  // Its source claim expires, but the ingest_runs row otherwise says "running"
+  // forever. A normal watch is bounded to five minutes; thirty minutes is well
+  // beyond both that budget and the local browser-rendered federation scan.
+  const abandonedBefore = new Date(Date.now() - 30 * 60_000).toISOString();
+  const { error: abandonedError } = await supabase.from("ingest_runs")
+    .update({ finished_at: nowIso, ok: false, error: "Abandoned: scan did not finish within 30 minutes" })
+    .is("finished_at", null)
+    .lt("started_at", abandonedBefore);
+  if (abandonedError) console.error("Could not close abandoned ingest runs", abandonedError);
+
   async function claimDue(kinds: readonly string[], take: number) {
     if (take <= 0) return [];
     const { data: due, error } = await supabase
@@ -70,8 +81,14 @@ export async function runDueWatches(
       .limit(Math.max(take * 3, 40));
     if (error) throw new Error(error.message);
     const dumpHost = /federciclismo\.it|eventivsport\.com|ffc\.fr|ffvelo\.fr/i;
-    const rest = (due ?? []).filter((row) => !dumpHost.test(row.url as string));
-    const dumps = (due ?? []).filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
+    // The ČSC Blazor grid is rendered by a local Chrome scan. Vercel cannot
+    // render it; claiming it here only overwrites a successful local scan with
+    // a known error and makes the health signal misleading.
+    const eligible = (due ?? []).filter((row) =>
+      !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races\/Race\/Pub/i.test(row.url as string))
+    );
+    const rest = eligible.filter((row) => !dumpHost.test(row.url as string));
+    const dumps = eligible.filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
     const ranked = [...rest, ...dumps].slice(0, take);
     const claimed: NonNullable<typeof due> = [];
     for (const row of ranked) {

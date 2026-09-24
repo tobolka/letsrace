@@ -319,6 +319,17 @@ export function pickExplorePacks(salt: number, packs = COUNTRY_PACKS): CountryPa
   return chosen;
 }
 
+/** Search both the current season and the first published races next year. */
+export function exploreQueriesForPacks(packs: CountryPack[], salt: number, year = YEAR): string[] {
+  return packs.flatMap((pack) => {
+    const current = pickRotated(pack.queries, 1, salt);
+    const dated = pack.queries.filter((query) => query.includes(String(year)));
+    const next = pickRotated(dated, 1, salt + 1)
+      .map((query) => query.replaceAll(String(year), String(year + 1)));
+    return [...current, ...next];
+  });
+}
+
 function unwrapSearchHref(href: string): string | null {
   try {
     const u = new URL(href, "https://duckduckgo.com");
@@ -453,7 +464,7 @@ export async function runExplore(opts?: {
   const supabase = createServerSupabase();
   const salt = Math.floor(Date.now() / (6 * 60 * 60 * 1000));
   const packs = pickExplorePacks(salt);
-  const queries = packs.flatMap((p) => pickRotated(p.queries, 2, salt));
+  const queries = exploreQueriesForPacks(packs, salt);
   const crtSuffix = pickRotated(
     packs.flatMap((p) => p.crt),
     1,

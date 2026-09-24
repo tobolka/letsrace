@@ -85,6 +85,12 @@ export function canonicalizeSeries(raw: string): { name: string; slug: string } 
   const stripped = raw.replace(/^\d+\.\s*/, "").replace(/\|/g, "").trim();
   if (!stripped || stripped.length < 2) return null;
 
+  // The homepage calls the official World Cup "UCI cycloX World Cup". Without
+  // this alias it creates a second series and links the same rounds twice.
+  if (/^uci\s*cyclo[\s-]?x\s*world\s*cup$/i.test(stripped)) {
+    return { name: "UCI Cyclo-cross World Cup", slug: HYNEK_SERIES.uciX!.slug };
+  }
+
   const key = normalizeName(stripped);
   const aliases: Record<string, string> = {
     "talent cup": "Talent Cup",

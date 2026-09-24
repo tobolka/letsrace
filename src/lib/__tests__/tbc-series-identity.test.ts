@@ -13,6 +13,10 @@ describe("TBC série identity", () => {
     expect(canonicalizeSeries("3. TBC série")?.slug).toBe("tbc-cyclocross");
   });
 
+  it("uses one World Cup series for the Hynek homepage and series page", () => {
+    expect(canonicalizeSeries("3. UCI cycloX World Cup")?.slug).toBe("uci-cx-world-cup");
+  });
+
   it("files a Hynek calendar row under tbc-cyclocross", () => {
     const html = `
       <div>Dnes je pondělí, 7.9.2026, svátek má Regína</div>

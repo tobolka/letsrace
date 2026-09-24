@@ -91,7 +91,17 @@ export async function getSourceHealth(): Promise<SourceHealthReport> {
     });
   }
 
-  stalled.sort((a, b) => (b.daysSinceFetch ?? 9999) - (a.daysSinceFetch ?? 9999));
+  // The verifier only has time for a subset. Known errors must go first;
+  // otherwise a large off-season backlog can hide a failing official calendar.
+  const priority: Record<StalledSource["reason"], number> = {
+    erroring: 0,
+    "not read recently": 1,
+    "never read": 2,
+    "quiet but listing races": 3,
+  };
+  stalled.sort((a, b) =>
+    priority[a.reason] - priority[b.reason] || (b.daysSinceFetch ?? 0) - (a.daysSinceFetch ?? 0)
+  );
   return {
     activeCalendars: rows.length,
     stalled,

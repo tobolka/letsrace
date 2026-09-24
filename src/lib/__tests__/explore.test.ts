@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canonicalExploreUrl,
+  exploreQueriesForPacks,
   looksLikeIndependentRaceUrl,
   pickExplorePacks,
   scoreRacePage,
@@ -9,6 +10,14 @@ import {
 import { parseVanGillern, parseKonarovickyKoren, parseJesenickySnek, parseBratislavaMtbMaraton } from "@/lib/watcher/extractors/cz-calendars";
 
 describe("race website explorer", () => {
+  it("searches for 2027 races before the year changes", () => {
+    const queries = exploreQueriesForPacks([
+      { id: "cz", queries: ["MTB 2026 Česko", "gravel 2026 Česko"], crt: [] },
+    ], 0, 2026);
+    expect(queries).toHaveLength(2);
+    expect(queries[0]).toContain("2026");
+    expect(queries[1]).toContain("2027");
+  });
   it("canonicalizes WordPress homes to the origin", () => {
     expect(canonicalExploreUrl("http://vangillerncup.cz/wordpress/?utm_source=fb")).toBe(
       "http://vangillerncup.cz",

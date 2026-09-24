@@ -57,7 +57,7 @@ async function main() {
       .from("events")
       .select(
         "id,name,start_date,disciplines,age_categories,level,visibility,website_url,registration_url,fingerprint," +
-          "series(name,slug,website_url),locations(municipality,country_code,geocode_status),categories:event_categories(name)",
+          "series:series!events_series_id_fkey(name,slug,website_url),locations(municipality,country_code,geocode_status),categories:event_categories(name)",
       )
       .order("start_date")
       .order("id")

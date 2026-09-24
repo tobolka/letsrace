@@ -21,10 +21,10 @@ const IT_MONTHS: Record<string, string> = {
 
 /** Safety cap per watch invocation (≈20 races/page). */
 const MAX_PAGES_PER_RUN = 80;
-/** How many calendar months to cover in one run (rotated across crons). */
+/** How many calendar months to cover in one daily run. */
 const MONTHS_PER_RUN = 3;
-/** Look-ahead from the current month (rest of season + a bit). */
-const HORIZON_MONTHS = 8;
+/** Look ahead far enough to cover the following calendar year. */
+const HORIZON_MONTHS = 16;
 
 function parseItalianDate(raw: string): string | null {
   const m = raw
@@ -37,11 +37,14 @@ function parseItalianDate(raw: string): string | null {
   return `${m[3]}-${mon}-${m[1]!.padStart(2, "0")}`;
 }
 
-function mapFciDiscipline(text: string): Discipline[] {
+export function mapFciDiscipline(text: string): Discipline[] {
   const t = text.toLowerCase();
-  if (/fuoristrada|mtb|mountain|cross.?country|enduro|downhill/.test(t)) return ["xco"];
-  if (/pista|track/.test(t)) return ["other"];
-  if (/ciclocross|cyclo/.test(t)) return ["cx"];
+  if (/ciclocross|cyclo[- ]?cross/.test(t)) return ["cx"];
+  if (/downhill|discesa|\bdh\b/.test(t)) return ["dh"];
+  if (/enduro/.test(t)) return ["enduro"];
+  if (/cross.?country|\bxco\b/.test(t)) return ["xco"];
+  if (/fuoristrada|mtb|mountain/.test(t)) return ["mtb"];
+  if (/pista|track/.test(t)) return ["track"];
   if (/gravel/.test(t)) return ["gravel"];
   if (/strada|road|gran.?premio|amatoriale/.test(t)) return ["road"];
   return ["road"];
@@ -67,11 +70,12 @@ function monthEndUtc(year: number, monthIndex: number): Date {
  */
 export function fciWindowsForRun(now = new Date()): { start: Date; end: Date }[] {
   const base = monthStartUtc(now.getUTCFullYear(), now.getUTCMonth());
-  // Slot changes about every 2h (matches vercel cron)
-  const slot = Math.floor(Date.now() / (2 * 60 * 60 * 1000));
-  const startOffset = (slot * MONTHS_PER_RUN) % HORIZON_MONTHS;
+  // Daily cron must advance by a whole run. A 2-hour slot advanced by 12
+  // between runs and repeatedly skipped the same future months.
+  const day = Math.floor(now.getTime() / (24 * 60 * 60 * 1000));
+  const startOffset = (day * MONTHS_PER_RUN) % HORIZON_MONTHS;
   const windows: { start: Date; end: Date }[] = [];
-  for (let i = 0; i < HORIZON_MONTHS && windows.length < MONTHS_PER_RUN; i++) {
+  for (let i = 0; i < HORIZON_MONTHS; i++) {
     const off = (startOffset + i) % HORIZON_MONTHS;
     const t = new Date(base);
     t.setUTCMonth(t.getUTCMonth() + off);
@@ -203,23 +207,19 @@ async function fetchPages(
 /**
  * Italian FCI race calendar.
  * Default site UI is only ~1 month; we query StartDt/EndDt and paginate fully
- * across rotating 2-month windows so the whole season fills in over successive crons.
+ * across rotating months so the following year fills in over successive daily crons.
  */
 export async function parseFederciclismo(_url: string, _html: string): Promise<ParsedEvent[]> {
-  const base = monthStartUtc(new Date().getUTCFullYear(), new Date().getUTCMonth());
-  const slot = Math.floor(Date.now() / (2 * 60 * 60 * 1000));
-  const startOffset = (slot * MONTHS_PER_RUN) % HORIZON_MONTHS;
+  void _url;
+  void _html;
+  const windows = fciWindowsForRun();
   const pageBudget = Math.floor(MAX_PAGES_PER_RUN / MONTHS_PER_RUN);
   const byKey = new Map<string, ParsedEvent>();
   let filled = 0;
 
-  // Walk horizon from rotated offset; keep going past empty months until we fill MONTHS_PER_RUN
-  for (let i = 0; i < HORIZON_MONTHS && filled < MONTHS_PER_RUN; i++) {
-    const off = (startOffset + i) % HORIZON_MONTHS;
-    const t = new Date(base);
-    t.setUTCMonth(t.getUTCMonth() + off);
-    const start = monthStartUtc(t.getUTCFullYear(), t.getUTCMonth());
-    const end = monthEndUtc(t.getUTCFullYear(), t.getUTCMonth());
+  // Empty windows do not consume the per-run page budget.
+  for (const { start, end } of windows) {
+    if (filled >= MONTHS_PER_RUN) break;
     const events = await fetchPages(start, end, pageBudget);
     if (!events.length) continue;
     for (const ev of events) byKey.set(ev.externalId, ev);

@@ -70,9 +70,10 @@ async function main() {
       .from("events")
       .select(
         "id,name,start_date,disciplines,age_categories,audience,level,class_label,uci_class,visibility,event_type," +
-          "series(name,slug),locations(municipality,country_code),overrides:event_overrides(locked_fields),categories:event_categories(name)",
+          "series:series!events_series_id_fkey(name,slug),locations(municipality,country_code),overrides:event_overrides(locked_fields),categories:event_categories(name)",
       )
       .order("start_date")
+      .order("id")
       .range(from, from + 999);
     if (error) throw new Error(error.message);
     rows.push(...((data ?? []) as unknown as Row[]));

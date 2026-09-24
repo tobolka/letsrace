@@ -14,4 +14,6 @@ export LANG=cs_CZ.UTF-8
 
 echo "=== $(date '+%Y-%m-%d %H:%M:%S') start (node $(node -v 2>/dev/null || echo missing))"
 npx tsx scripts/ingest-calendars.ts portal.czechcyclingfederation.com/Races
-echo "=== $(date '+%Y-%m-%d %H:%M:%S') done (exit $?)"
+exit_code=$?
+echo "=== $(date '+%Y-%m-%d %H:%M:%S') done (exit $exit_code)"
+exit "$exit_code"

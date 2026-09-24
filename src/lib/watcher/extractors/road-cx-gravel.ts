@@ -151,11 +151,29 @@ export function parseSuperprestige(url: string, html: string): ParsedEvent[] {
 }
 
 export function parseUciCxWorldCup(url: string, html: string): ParsedEvent[] {
-  return parseFlandersCards(url, html, {
+  const events = parseFlandersCards(url, html, {
     seriesName: "UCI Cyclo-cross World Cup",
     seriesSlug: "uci-cx-world-cup",
     idPrefix: "uci-cx-wc",
   });
+  // UCI's 2026/27 schedule names junior and U23 World Cup races only at these
+  // five rounds. Other host programmes may include youth support races, but
+  // those are not World Cup age categories.
+  const youthWorldCupRounds = new Set([
+    "2026-11-29", // Tábor
+    "2026-12-20", // Koksijde
+    "2026-12-29", // Besançon
+    "2027-01-17", // Benidorm
+    "2027-01-24", // Hoogerheide
+  ]);
+  for (const event of events) {
+    if (event.startDate >= "2026-11-27" && event.startDate <= "2027-01-24") {
+      event.ageCategories = youthWorldCupRounds.has(event.startDate)
+        ? ["junior", "u23", "elite"]
+        : ["elite"];
+    }
+  }
+  return events;
 }
 
 const UEC_SKIP = /indoor|cycle-ball|cycle ball|trials/i;
