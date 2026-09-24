@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { format, parseISO } from "date-fns";
 import { ImageResponse } from "next/og";
 import { getPublicEventBySlug } from "@/lib/events";
@@ -7,6 +9,10 @@ import { eventSeoCopy } from "@/lib/seo";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const wordmark = `data:image/svg+xml;base64,${readFileSync(
+  join(process.cwd(), "public/brand/lets-race.svg"),
+).toString("base64")}`;
 
 function resolveLocale(raw?: string): Locale {
   return locales.includes(raw as Locale) ? (raw as Locale) : defaultLocale;
@@ -46,19 +52,9 @@ export default async function EventOgImage({
           fontFamily: "ui-sans-serif, system-ui, sans-serif",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            fontSize: 56,
-            letterSpacing: "-0.04em",
-            fontWeight: 900,
-            fontStyle: "italic",
-            color: "#c81d25",
-            lineHeight: 0.9,
-          }}
-        >
-          Let&apos;s Race
-        </div>
+        {/* The supplied path wordmark renders identically on every server. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={wordmark} alt="Let's Race" width={398} height={60} />
         <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 980 }}>
           <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.03em" }}>
             {title}

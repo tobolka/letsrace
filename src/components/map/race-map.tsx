@@ -135,6 +135,7 @@ function pinTipContent(name: string, meta: string) {
 }
 
 const RACES_SOURCE = "letsrace-races";
+const FALLBACK_LAYER = "letsrace-races-fallback";
 const SHADOW_LAYER = "letsrace-races-shadow";
 const GLOW_LAYER = "letsrace-races-glow";
 const PIN_LAYER = "letsrace-races-pin";
@@ -205,7 +206,7 @@ let familyIcons: Promise<void> | null = null;
  * discipline we could not read.
  */
 function loadFamilyIcons(): Promise<void> {
-  familyIcons ??= Promise.all([
+  familyIcons ??= Promise.allSettled([
     ...Object.keys(DISCIPLINE_FAMILY_COLORS).map(async (family) => {
       const glyph = await loadGlyph(DISCIPLINE_FAMILY_ICONS[family]);
       const canvas = document.createElement("canvas");
@@ -231,9 +232,7 @@ function loadFamilyIcons(): Promise<void> {
       pinBitmaps[family] = ctx.getImageData(0, 0, PIN_RASTER, PIN_RASTER);
     }),
     bakeCountBadges(),
-  ])
-    .then(() => undefined)
-    .catch(() => undefined);
+  ]).then(() => undefined);
   return familyIcons;
 }
 
@@ -245,7 +244,6 @@ function loadFamilyIcons(): Promise<void> {
  * one image per count rather than one layer that can render any.
  */
 async function bakeCountBadges(): Promise<void> {
-  await document.fonts.ready;
   for (const id of BADGE_IDS) {
     const canvas = document.createElement("canvas");
     canvas.width = BADGE_RASTER;
@@ -1107,8 +1105,10 @@ export function RaceMap({
 
   // Pins: one GeoJSON source and four thin circle layers, drawn by the GPU.
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || mapEpoch === 0) return;
+    const currentMap = mapRef.current;
+    if (!currentMap || mapEpoch === 0) return;
+    const map: MapLibreMap = currentMap;
+    let cancelled = false;
 
     window.clearTimeout(hoverTimerRef.current);
     hoverPopupRef.current?.remove();
@@ -1127,23 +1127,62 @@ export function RaceMap({
     const popup = hoverPopupRef.current;
     const data = raceFeatures(events, localeRef.current, expandedKey);
 
-    function install() {
-      const existing = map!.getSource(RACES_SOURCE);
+    const tapPin = (f: GeoJSON.Feature | MapGeoJSONFeature) => {
+      window.clearTimeout(hoverTimerRef.current);
+      popup.remove();
+      const count = Number(f.properties?.count ?? 1);
+      if (count > 1) {
+        setExpandedKey((f.properties?.stack as string) ?? null);
+        return;
+      }
+      const id = f.properties?.id as string | undefined;
+      if (id) onSelectRef.current(id);
+    };
+    tapPinRef.current = tapPin;
+
+    function installSource() {
+      const existing = map.getSource(RACES_SOURCE);
       if (existing) {
         (existing as GeoJSONSource).setData(data);
         return;
       }
 
-      map!.addSource(RACES_SOURCE, {
+      map.addSource(RACES_SOURCE, {
         type: "geojson",
         data,
         // The event id is a string, and feature state needs a feature id.
         promoteId: "id",
       });
 
+      // The list can arrive before the icon images. Draw the races immediately
+      // so a slow image request can never leave an otherwise loaded map blank.
+      map.addLayer({
+        id: FALLBACK_LAYER,
+        type: "circle",
+        source: RACES_SOURCE,
+        paint: {
+          "circle-radius": 11,
+          "circle-color": ["get", "color"],
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+      map.on("click", FALLBACK_LAYER, (e) => {
+        if (map.getLayer(PIN_LAYER) && map.queryRenderedFeatures(e.point, { layers: [PIN_LAYER] }).length) {
+          return;
+        }
+        const f = e.features?.[0];
+        if (f) tapPinRef.current?.(f);
+      });
+    }
+
+    function install() {
+      installSource();
+      if (map.getLayer(PIN_LAYER)) return;
+
       // A soft disc under the pin, standing in for the drop shadow the DOM
       // markers had. Circles cannot carry a box-shadow, but they can be blurred.
-      map!.addLayer({
+      map.addLayer({
         id: SHADOW_LAYER,
         type: "circle",
         source: RACES_SOURCE,
@@ -1160,7 +1199,7 @@ export function RaceMap({
       // and a halo around the outside is what a map does for "this one"
       // anyway. Radius zero when nothing is selected, so the layer costs
       // nothing until it is needed.
-      map!.addLayer({
+      map.addLayer({
         id: GLOW_LAYER,
         type: "circle",
         source: RACES_SOURCE,
@@ -1178,7 +1217,7 @@ export function RaceMap({
       // Overlap is allowed on purpose — a race is never dropped from the map
       // just because a neighbour got there first. The offset is what fans a
       // stack out; it is zero for everything else.
-      map!.addLayer({
+      map.addLayer({
         id: PIN_LAYER,
         type: "symbol",
         source: RACES_SOURCE,
@@ -1193,7 +1232,7 @@ export function RaceMap({
 
       // How many races are hiding under this one. Only ever on a collapsed
       // stack: fanned out, each pin speaks for itself.
-      map!.addLayer({
+      map.addLayer({
         id: BADGE_LAYER,
         type: "symbol",
         source: RACES_SOURCE,
@@ -1211,23 +1250,9 @@ export function RaceMap({
         },
       });
 
-      const tapPin = (f: GeoJSON.Feature | MapGeoJSONFeature) => {
-        window.clearTimeout(hoverTimerRef.current);
-        popup.remove();
-        // A stack opens before it can be picked from. Anything else is a race.
-        const count = Number(f.properties?.count ?? 1);
-        if (count > 1) {
-          setExpandedKey((f.properties?.stack as string) ?? null);
-          return;
-        }
-        const id = f.properties?.id as string | undefined;
-        if (id) onSelectRef.current(id);
-      };
-      tapPinRef.current = tapPin;
-
       map!.on("click", PIN_LAYER, (e) => {
         const f = e.features?.[0];
-        if (f) tapPin(f);
+        if (f) tapPinRef.current?.(f);
       });
 
       map!.on("mousemove", PIN_LAYER, (e) => {
@@ -1255,6 +1280,9 @@ export function RaceMap({
         window.clearTimeout(hoverTimerRef.current);
         popup.remove();
       });
+      if (Object.keys(DISCIPLINE_FAMILY_COLORS).every((family) => map.hasImage(family))) {
+        map.setLayoutProperty(FALLBACK_LAYER, "visibility", "none");
+      }
     }
 
     // The icons have to exist before the symbol layer asks for them, or
@@ -1263,19 +1291,40 @@ export function RaceMap({
     // a few milliseconds on the first map and nothing on every one after.
     function installWithIcons() {
       void loadFamilyIcons().then(() => {
-        if (!mapRef.current) return;
-        registerFamilyIcons(map!);
+        if (cancelled || mapRef.current !== map) return;
+        registerFamilyIcons(map);
         install();
       });
     }
 
-    if (map.isStyleLoaded()) installWithIcons();
-    else map.once("load", installWithIcons);
+    function installSourceAndIcons() {
+      if (cancelled || mapRef.current !== map) return;
+      if (!map.isStyleLoaded()) return;
+      map.off("load", installSourceAndIcons);
+      map.off("idle", installSourceAndIcons);
+      installSource();
+      installWithIcons();
+    }
+
+    // A style may temporarily report "not loaded" while a source is fetching.
+    // `load` fires only once, so an update made after that moment must not wait
+    // for another `load` event that will never arrive.
+    if (map.getSource(RACES_SOURCE)) installSource();
+    if (map.isStyleLoaded()) installSourceAndIcons();
+    else {
+      map.on("load", installSourceAndIcons);
+      map.on("idle", installSourceAndIcons);
+    }
 
     (window as unknown as { __letsraceMarkerCount?: number }).__letsraceMarkerCount =
       data.features.length;
 
     requestAnimationFrame(() => map.resize());
+    return () => {
+      cancelled = true;
+      map.off("load", installSourceAndIcons);
+      map.off("idle", installSourceAndIcons);
+    };
   }, [events, mapEpoch, expandedKey]);
 
   // Selection: two feature-state writes, not a walk over every pin.

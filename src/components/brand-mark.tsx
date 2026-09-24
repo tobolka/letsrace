@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SITE_NAME } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -16,26 +17,26 @@ export function BrandMark({
   mark?: "full" | "lr";
   className?: string;
 }) {
-  const word = (
+  const word = mark === "full" ? (
+    <Image
+      src="/brand/lets-race.svg"
+      alt={SITE_NAME}
+      width={size === "sm" ? 159 : 179}
+      height={size === "sm" ? 24 : 27}
+      unoptimized
+      className={className}
+    />
+  ) : (
     <span
       className={cn(
         "font-black italic leading-none tracking-[-0.04em]",
         tone === "inverse" ? "text-white" : "text-brand",
-        // The initials are italic, so their ink sits right of the box that gets
-        // centred — measured at 1.6px right and 0.5px high on a 44px button.
-        // Nudged back by that, in em, so it holds at any size.
-        mark === "lr" && "translate-x-[-0.097em] translate-y-[-0.032em]",
-        mark === "lr"
-          ? size === "sm"
-            ? "text-[1.05rem]"
-            : "text-[1.2rem]"
-          : size === "sm"
-            ? "text-[1.35rem]"
-            : "text-[1.6rem]",
+        "translate-x-[-0.097em] translate-y-[-0.032em]",
+        size === "sm" ? "text-[1.05rem]" : "text-[1.2rem]",
         className,
       )}
     >
-      {mark === "lr" ? "LR" : SITE_NAME}
+      LR
     </span>
   );
 
