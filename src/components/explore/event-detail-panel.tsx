@@ -354,7 +354,7 @@ export function EventDetailPanel({
         dragging && "select-none",
         embedded
           ? "flex h-full min-h-0 max-w-none flex-col border-0 shadow-none"
-          : "absolute z-10 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
+          : "absolute z-40 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
       )}
       style={embedded ? undefined : { left: offset.x, top: offset.y }}
     >
@@ -364,9 +364,14 @@ export function EventDetailPanel({
          * two rows and lets the close button span both, so the button centred
          * across a header the title only ever filled the top half of — which
          * is why the name sat visibly above the cross next to it.
+         *
+         * twMerge drops `grid` for `flex` but keeps grid-rows / grid-cols
+         * leftovers; clear them so CardAction's col-start cannot fight the row.
          */
         className={cn(
-          "flex shrink-0 flex-row items-center gap-2 border-b px-4 py-3 [.border-b]:pb-3",
+          "flex shrink-0 flex-row items-start gap-2 border-b px-4 py-3 [.border-b]:pb-3",
+          "grid-cols-none grid-rows-none",
+          embedded && "py-2 [.border-b]:pb-2",
           !embedded && "cursor-grab touch-none select-none",
           dragging && "cursor-grabbing",
         )}
@@ -389,25 +394,26 @@ export function EventDetailPanel({
               spelled out and it can run to two lines. */}
           <span
             aria-hidden
-            className="w-[3px] shrink-0 self-stretch rounded-full"
+            className="mt-1 w-[3px] shrink-0 self-stretch rounded-full"
             style={{ background: disciplineColor(event.disciplines) }}
           />
-          <span className="min-w-0 break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
+          <span className="min-w-0 flex-1 break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
             {event.name}
           </span>
         </CardTitle>
-        <CardAction className="ml-auto self-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={embedded ? "size-11" : undefined}
-            onClick={onClose}
-            aria-label={t.close}
-          >
-            <X />
-          </Button>
-        </CardAction>
+        {!embedded ? (
+          <CardAction className="col-auto row-auto ml-auto shrink-0 self-start justify-self-auto">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              aria-label={t.close}
+            >
+              <X />
+            </Button>
+          </CardAction>
+        ) : null}
       </CardHeader>
 
       <CardContent
@@ -600,11 +606,19 @@ function MetaRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-2">
-      <span className="shrink-0 text-muted-foreground [&_svg]:size-4" aria-hidden>
+    <div className="grid min-w-0 grid-cols-[1rem_minmax(0,1fr)] items-start gap-x-2.5">
+      {/*
+        A fixed 1rem track — not shrink-wrapped flex. Lucide defaults to 24px
+        and a bare shrink-0 span let the SVG paint into the badge column, so
+        “Silnice” sat on top of the bike.
+      */}
+      <span
+        className="mt-0.5 flex size-4 items-center justify-center text-muted-foreground [&_svg]:size-4"
+        aria-hidden
+      >
         {icon}
       </span>
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1 overflow-hidden">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         <span className="sr-only">{label}</span>
         {children}
       </div>

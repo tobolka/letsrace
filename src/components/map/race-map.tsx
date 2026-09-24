@@ -157,6 +157,7 @@ const BADGE_LAYER = "letsrace-races-badge";
  */
 const PIN_BOX_PX = 40;
 const PIN_RASTER = PIN_BOX_PX * 3;
+const MOBILE_PIN_BOX_PX = 48;
 /** The visible disc, and the coloured part of it inside its white ring. */
 const PIN_DISC_PX = 26;
 const PIN_FILL_PX = 22;
@@ -173,6 +174,37 @@ const OFFSET_UNITS = PIN_RASTER / PIN_BOX_PX;
 
 /** How far off a pin a finger may land and still mean it. */
 const NEAR_MISS_PX = 14;
+
+function pinBoxPx() {
+  return window.matchMedia("(max-width: 767px)").matches ? MOBILE_PIN_BOX_PX : PIN_BOX_PX;
+}
+
+function nearestRaceFeature(
+  map: MapLibreMap,
+  features: MapGeoJSONFeature[],
+  point: { x: number; y: number },
+): MapGeoJSONFeature | undefined {
+  const iconScale = pinBoxPx() / PIN_RASTER;
+  let nearest: MapGeoJSONFeature | undefined;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+  for (const feature of features) {
+    const coords = (feature.geometry as GeoJSON.Point).coordinates;
+    const projected = map.project([coords[0]!, coords[1]!]);
+    const rawOffset = feature.properties?.offset;
+    let offset = rawOffset;
+    if (typeof rawOffset === "string") {
+      try { offset = JSON.parse(rawOffset); } catch { offset = null; }
+    }
+    const dx = Array.isArray(offset) ? Number(offset[0]) * iconScale : 0;
+    const dy = Array.isArray(offset) ? Number(offset[1]) * iconScale : 0;
+    const distance = Math.hypot(projected.x + dx - point.x, projected.y + dy - point.y);
+    if (distance < nearestDistance) {
+      nearest = feature;
+      nearestDistance = distance;
+    }
+  }
+  return nearest;
+}
 
 /**
  * MapLibre hands the click a MouseEvent whichever way it was made. A touch
@@ -357,7 +389,7 @@ function stackKey(lng: number, lat: number): string {
  * town with twenty-six needs a wide circle, and gets one.
  */
 function fanRadius(n: number): number {
-  const needed = (PIN_DISC_PX + 4) / (2 * Math.sin(Math.PI / n));
+  const needed = (PIN_DISC_PX * (pinBoxPx() / PIN_BOX_PX) + 4) / (2 * Math.sin(Math.PI / n));
   return Math.min(140, Math.max(24, needed));
 }
 
@@ -570,8 +602,8 @@ function boundsAround(lng: number, lat: number, radiusKm: number) {
  * Never open on the whole continent.
  *
  * `fitBounds` has a ceiling but no floor, so a 200 km reach fitted into what a
- * phone leaves once the sheet has taken its half — a strip about 350 by 380
- * pixels — settles at zoom 5.5. That is Hamburg to Vienna in one frame, every
+ * phone leaves once the sheet has taken its initial space settles at zoom 5.5.
+ * That is Hamburg to Vienna in one frame, every
  * race a dot in one blob, and it is what "find my location" did on a phone.
  */
 const MIN_FIT_ZOOM = 7;
@@ -1016,26 +1048,19 @@ export function RaceMap({
       if (target instanceof Element && target.closest(".letsrace-locate-ctrl, .maplibregl-ctrl")) {
         return;
       }
-      // Pins are geometry now, so there is no element to look for: ask the map
-      // whether the click landed on one before treating it as background.
-      if (map.getLayer(PIN_LAYER) && map.queryRenderedFeatures(e.point, { layers: [PIN_LAYER] }).length) {
-        return;
-      }
-      // A thumb lands near a pin more often than on it. Before calling the
-      // tap a miss, look a finger's width around it: a near miss used to close
-      // the card you had open, which read as the map closing things on its
-      // own. Only on a touch — a mouse is precise and should stay so.
-      if (map.getLayer(PIN_LAYER) && e.originalEvent instanceof MouseEvent && isTouchPointer(e.originalEvent)) {
-        const r = NEAR_MISS_PX;
-        const near = map.queryRenderedFeatures(
-          [
-            [e.point.x - r, e.point.y - r],
-            [e.point.x + r, e.point.y + r],
-          ],
-          { layers: [PIN_LAYER] },
-        );
-        if (near.length) {
-          tapPinRef.current?.(near[0]!);
+      const hitLayers = [PIN_LAYER, FALLBACK_LAYER].filter((id) => map.getLayer(id));
+      if (hitLayers.length) {
+        const touch = e.originalEvent instanceof MouseEvent && isTouchPointer(e.originalEvent);
+        const r = touch ? NEAR_MISS_PX : 0;
+        const candidates = touch
+          ? map.queryRenderedFeatures(
+              [[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]],
+              { layers: hitLayers },
+            )
+          : map.queryRenderedFeatures(e.point, { layers: hitLayers });
+        const nearest = nearestRaceFeature(map, candidates, e.point);
+        if (nearest) {
+          tapPinRef.current?.(nearest);
           return;
         }
       }
@@ -1061,8 +1086,21 @@ export function RaceMap({
     });
 
     let resizeSyncTimer = 0;
+    let lastPinBoxPx = pinBoxPx();
     const resize = () => {
       map.resize();
+      const nextPinBoxPx = pinBoxPx();
+      if (nextPinBoxPx !== lastPinBoxPx) {
+        lastPinBoxPx = nextPinBoxPx;
+        const mobile = nextPinBoxPx === MOBILE_PIN_BOX_PX;
+        if (map.getLayer(PIN_LAYER)) map.setLayoutProperty(PIN_LAYER, "icon-size", nextPinBoxPx / PIN_RASTER);
+        if (map.getLayer(BADGE_LAYER)) map.setLayoutProperty(BADGE_LAYER, "icon-size", (mobile ? 19 : BADGE_PX) / BADGE_RASTER);
+        for (const id of [FALLBACK_LAYER, SHADOW_LAYER]) {
+          if (map.getLayer(id)) map.setPaintProperty(id, "circle-radius", mobile ? 14 : 11);
+        }
+        if (map.getLayer(GLOW_LAYER)) map.setPaintProperty(GLOW_LAYER, "circle-radius", ["case", SELECTED, mobile ? 22 : 18, 0]);
+        setExpandedKey(null);
+      }
       window.clearTimeout(resizeSyncTimer);
       resizeSyncTimer = window.setTimeout(() => {
         if (map.loaded()) emitBounds(map, "sync");
@@ -1161,18 +1199,11 @@ export function RaceMap({
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": 11,
+          "circle-radius": pinBoxPx() === MOBILE_PIN_BOX_PX ? 14 : 11,
           "circle-color": ["get", "color"],
           "circle-stroke-width": 2,
           "circle-stroke-color": "#ffffff",
         },
-      });
-      map.on("click", FALLBACK_LAYER, (e) => {
-        if (map.getLayer(PIN_LAYER) && map.queryRenderedFeatures(e.point, { layers: [PIN_LAYER] }).length) {
-          return;
-        }
-        const f = e.features?.[0];
-        if (f) tapPinRef.current?.(f);
       });
     }
 
@@ -1187,7 +1218,7 @@ export function RaceMap({
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": 11,
+          "circle-radius": pinBoxPx() === MOBILE_PIN_BOX_PX ? 14 : 11,
           "circle-color": "rgba(28,25,23,0.35)",
           "circle-blur": 0.5,
           "circle-translate": [0, 1],
@@ -1204,7 +1235,7 @@ export function RaceMap({
         type: "circle",
         source: RACES_SOURCE,
         paint: {
-          "circle-radius": ["case", SELECTED, 18, 0],
+          "circle-radius": ["case", SELECTED, pinBoxPx() === MOBILE_PIN_BOX_PX ? 22 : 18, 0],
           "circle-color": ["get", "color"],
           "circle-opacity": ["case", SELECTED, 0.28, 0],
           "circle-stroke-width": ["case", SELECTED, 2, 0],
@@ -1223,7 +1254,7 @@ export function RaceMap({
         source: RACES_SOURCE,
         layout: {
           "icon-image": ["get", "icon"],
-          "icon-size": PIN_BOX_PX / PIN_RASTER,
+          "icon-size": pinBoxPx() / PIN_RASTER,
           "icon-offset": ["get", "offset"],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
@@ -1243,16 +1274,11 @@ export function RaceMap({
             "lr-count-",
             ["case", [">", ["get", "count"], 9], "more", ["to-string", ["get", "count"]]],
           ],
-          "icon-size": BADGE_PX / BADGE_RASTER,
+          "icon-size": (pinBoxPx() === MOBILE_PIN_BOX_PX ? 19 : BADGE_PX) / BADGE_RASTER,
           "icon-offset": [11 * (BADGE_RASTER / BADGE_PX), -11 * (BADGE_RASTER / BADGE_PX)],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         },
-      });
-
-      map!.on("click", PIN_LAYER, (e) => {
-        const f = e.features?.[0];
-        if (f) tapPinRef.current?.(f);
       });
 
       map!.on("mousemove", PIN_LAYER, (e) => {

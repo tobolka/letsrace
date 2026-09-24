@@ -15,7 +15,7 @@
  *
  *   - The list is permanent. It cannot be dismissed, it can be resized, and
  *     only its handle resizes it. Tapping the map does nothing to it.
- *   - The card is a second sheet above the list. It opens at half height,
+ *   - The card is a second sheet above the list. It opens at a compact height,
  *     drags up to full, drags down to close, and when it closes the list is
  *     exactly where it was.
  *
@@ -27,13 +27,13 @@
  * between them get the stacking without the fight.
  */
 import type { ReactNode } from "react";
-import { Map as MapIcon } from "lucide-react";
+import { Map as MapIcon, X } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHandle, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const LIST_PEEK = "112px";
-export const HALF = 0.5;
+export const COMPACT = 0.42;
 export const FULL = 0.92;
 
 /**
@@ -83,7 +83,7 @@ export const MODAL_SURFACE = cn(
  * Sizing the content to this is what puts a card's last row at the bottom of
  * the screen and lets the list scroll to its end. Without it the list's
  * scroll box thought it had twice the height it could show, and the last
- * screenful of rows could never be scrolled into view at half height.
+ * screenful of rows could never be scrolled into view at the compact stop.
  */
 export function visibleContentHeight(snap: number | string, viewportH: number): number {
   const shown = typeof snap === "number" ? snap * viewportH : Number.parseFloat(snap) || 0;
@@ -95,16 +95,20 @@ function Visible({
   snap,
   viewportH,
   handleLabel,
+  closeLabel,
+  onClose,
   children,
 }: {
   snap: number | string;
   viewportH: number;
   handleLabel: string;
+  closeLabel?: string;
+  onClose?: () => void;
   children: ReactNode;
 }) {
   return (
     <div className={CARD} style={{ height: visibleContentHeight(snap, viewportH) }}>
-      <GrabZone label={handleLabel} />
+      <GrabZone label={handleLabel} closeLabel={closeLabel} onClose={onClose} />
       <div className="flex min-h-0 flex-1 flex-col pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {children}
       </div>
@@ -121,9 +125,17 @@ function Visible({
  * whole width, the pill sits centred in it with air above and below, and the
  * first row of content starts under that air rather than against the pill.
  */
-function GrabZone({ label }: { label: string }) {
+function GrabZone({
+  label,
+  closeLabel,
+  onClose,
+}: {
+  label: string;
+  closeLabel?: string;
+  onClose?: () => void;
+}) {
   return (
-    <div className="flex h-11 shrink-0 items-center justify-center">
+    <div className="relative flex h-11 shrink-0 items-center justify-center">
       {/* Inline, because vaul ships unlayered CSS for [data-vaul-handle] that
           sets a 5px height, and unlayered rules beat any utility class. */}
       <DrawerHandle
@@ -131,6 +143,18 @@ function GrabZone({ label }: { label: string }) {
         className="m-0 w-full py-0"
         style={{ width: "100%", height: 44, background: "transparent" }}
       />
+      {onClose ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute right-1 top-0 z-10 size-11 rounded-full touch-manipulation active:bg-muted"
+          onClick={onClose}
+          aria-label={closeLabel}
+        >
+          <X className="size-5" aria-hidden />
+        </Button>
+      ) : null}
     </div>
   );
 }
@@ -168,13 +192,13 @@ export function MobileListSheet({
        * Only the grab zone moves the sheet. vaul's own rule is that content
        * may scroll only when the sheet sits at translate 0 — the snap point
        * `1` — and at every other snap any movement of the finger is a drag.
-       * With snaps at half and 0.92 the sheet is never at zero, so the list
+       * With snaps at 0.42 and 0.92 the sheet is never at zero, so the list
        * could not be scrolled by touch at all: every attempt resized it.
        * Handle-only is the model Apple Maps uses, and it is unambiguous —
        * the pill resizes, everything else scrolls and taps.
        */
       handleOnly
-      snapPoints={[LIST_PEEK, HALF, FULL]}
+      snapPoints={[LIST_PEEK, COMPACT, FULL]}
       activeSnapPoint={snap}
       setActiveSnapPoint={(point) => {
         if (point != null) onSnap(point);
@@ -198,7 +222,7 @@ export function MobileListSheet({
                 type="button"
                 size="lg"
                 className="pointer-events-auto h-11 rounded-full px-5 shadow-lg touch-manipulation"
-                onClick={() => onSnap(HALF)}
+                onClick={() => onSnap(COMPACT)}
               >
                 <MapIcon data-icon="inline-start" />
                 {mapLabel}
@@ -219,6 +243,7 @@ export function MobileDetailSheet({
   onClose,
   title,
   handleLabel,
+  closeLabel,
   children,
 }: {
   open: boolean;
@@ -228,6 +253,7 @@ export function MobileDetailSheet({
   onClose: () => void;
   title: string;
   handleLabel: string;
+  closeLabel: string;
   children: ReactNode;
 }) {
   return (
@@ -248,7 +274,7 @@ export function MobileDetailSheet({
       // Same rule as the list, for the same reason: the card's content
       // scrolls, the pill resizes or closes.
       handleOnly
-      snapPoints={[HALF, FULL]}
+      snapPoints={[COMPACT, FULL]}
       activeSnapPoint={snap}
       setActiveSnapPoint={(point) => {
         if (typeof point === "number") onSnap(point);
@@ -256,7 +282,7 @@ export function MobileDetailSheet({
     >
       <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, "z-30")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
-        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel}>
+        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel} closeLabel={closeLabel} onClose={onClose}>
           {children}
         </Visible>
       </DrawerContent>

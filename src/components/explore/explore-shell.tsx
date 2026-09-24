@@ -19,7 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Card } from "@/components/ui/card";
 import {
   FULL,
-  HALF,
+  COMPACT,
   LIST_PEEK,
   MobileDetailSheet,
   MobileListSheet,
@@ -242,10 +242,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [mobileSheetReady, setMobileSheetReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [listSnap, setListSnap] = useState<number | string>(HALF);
-  // A tapped pin opens the card at half height, the way Maps does it: the map
-  // stays on screen above it, and dragging up is how you ask for the rest.
-  const [detailSnap, setDetailSnap] = useState<number>(HALF);
+  const [listSnap, setListSnap] = useState<number | string>(COMPACT);
+  // A tapped pin opens the card at compact height. The map stays visible above
+  // it, and dragging up reveals the rest.
+  const [detailSnap, setDetailSnap] = useState<number>(COMPACT);
 
   const fallbackCenter = useMemo(() => {
     const c = coldStartCenter(locale);
@@ -271,10 +271,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const selectFromList = useCallback((id: string) => {
     selectEventRef.current(id);
   }, []);
-  // The card opens at half height whichever way a race was picked — a row in
+  // The card opens at compact height whichever way a race was picked — a row in
   // the list or a pin on the map — so it never comes up covering the map.
   const selectFromSheet = useCallback((id: string) => {
-    setDetailSnap(HALF);
+    setDetailSnap(COMPACT);
     selectEventRef.current(id);
   }, []);
 
@@ -879,7 +879,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const weekendLabel = isThisWeekend
     ? messages.thisWeekend
     : filters.dateFrom && filters.dateTo
-      ? `${format(parseISO(filters.dateFrom), "d MMM", { locale: df })} – ${format(parseISO(filters.dateTo), "d MMM", { locale: df })}`
+      ? filters.dateFrom === filters.dateTo
+        ? format(parseISO(filters.dateFrom), "d MMM", { locale: df })
+        : `${format(parseISO(filters.dateFrom), "d MMM", { locale: df })} – ${format(parseISO(filters.dateTo), "d MMM", { locale: df })}`
       : filters.dateFrom
         ? format(parseISO(filters.dateFrom), "d MMM", { locale: df })
         : messages.date;
@@ -1176,6 +1178,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onClose={() => selectEvent(null)}
             title={selected?.name ?? ""}
             handleLabel={detailSnap === FULL ? messages.sheetCollapse : messages.sheetExpand}
+            closeLabel={messages.close}
           >
             {selected ? (
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
@@ -1187,7 +1190,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   onSelectSeries={(slug) => {
                     applySeries(slug);
                     selectEvent(null);
-                    setListSnap(HALF);
+                    setListSnap(COMPACT);
                   }}
                 />
               </div>
