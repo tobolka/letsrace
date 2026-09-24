@@ -21,8 +21,8 @@ export function BrandMark({
     <Image
       src="/brand/lets-race.svg"
       alt={SITE_NAME}
-      width={size === "sm" ? 159 : 179}
-      height={size === "sm" ? 24 : 27}
+      width={size === "sm" ? 145 : 160}
+      height={size === "sm" ? 22 : 24}
       unoptimized
       className={className}
     />
