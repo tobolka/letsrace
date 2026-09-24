@@ -72,6 +72,7 @@ export default async function LocalePage({
         rel="preload"
         as="image"
         href="/intro-race.webp"
+        imageSrcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
         fetchPriority="high"
       />
       <ExploreShell

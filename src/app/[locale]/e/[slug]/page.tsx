@@ -60,6 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       localeKey: locale,
       imagePath: `/${locale}/e/${event.slug}/opengraph-image`,
       imageAlt: `${event.name} — ${SITE_NAME}`,
+      imageSize: { width: 1200, height: 630 },
     }),
   };
 }

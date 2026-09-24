@@ -7,9 +7,16 @@ const { readFileSync } = require("node:fs");
 const { join } = require("node:path");
 
 const root = join(__dirname, "..");
-const photo = join(root, "public/og-race.jpg");
-const logo = readFileSync(join(root, "public/brand/lets-race.svg"));
+const photo = join(root, "public/og-race-v2.png");
+// A brighter red holds up better against the dark photograph in small previews.
+const logo = Buffer.from(
+  readFileSync(join(root, "public/brand/lets-race.svg"), "utf8")
+    .replaceAll("#C81D25", "#F32B38"),
+);
 const output = join(root, "public/og");
+const width = 1600;
+const height = 840;
+const scale = width / 1200;
 const cards = {
   en: {
     title: ["Every cycling race, on one", "map"],
@@ -26,7 +33,7 @@ const cards = {
     ],
   },
   pl: {
-    title: ["Wszystkie wyścigi kolarskie", "na jednej mapie"],
+    title: ["Wszystkie wyścigi", "kolarskie na jednej mapie"],
     description: [
       "Szosa, gravel, MTB, przełaje i wyścigi dla dzieci w Europie",
       "Środkowej. Zaplanuj sezon dla siebie, rodziny lub drużyny.",
@@ -52,7 +59,7 @@ function textOverlay({ title, description }) {
   const detail = description
     .map((line, i) => `<text x="73" y="${515 + i * 35}" class="detail">${escape(line)}</text>`)
     .join("");
-  return Buffer.from(`<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  return Buffer.from(`<svg width="${width}" height="${height}" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
     <defs><linearGradient id="shade"><stop stop-color="#000" stop-opacity=".25"/>
       <stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient></defs>
     <rect width="1200" height="630" fill="#000" fill-opacity=".43"/>
@@ -65,12 +72,16 @@ function textOverlay({ title, description }) {
 
 async function render(name, copy) {
   const card = await sharp(photo)
-    .resize(1200, 630, { fit: "cover" })
+    .resize(width, height, { fit: "cover" })
     .composite([
       { input: textOverlay(copy), left: 0, top: 0 },
-      { input: await sharp(logo).resize({ width: 245 }).png().toBuffer(), left: 73, top: 86 },
+      {
+        input: await sharp(logo).resize({ width: Math.round(245 * scale) }).png().toBuffer(),
+        left: Math.round(73 * scale),
+        top: Math.round(86 * scale),
+      },
     ])
-    .jpeg({ quality: 88, mozjpeg: true })
+    .jpeg({ quality: 94, chromaSubsampling: "4:4:4", mozjpeg: true })
     .toBuffer();
   await sharp(card).toFile(join(output, `home-${name}.jpg`));
 }
@@ -78,6 +89,12 @@ async function render(name, copy) {
 (async () => {
   for (const [locale, copy] of Object.entries(cards)) await render(locale, copy);
   await render("default", cards.en);
+  await Promise.all([1, 2].map(async (density) => {
+    await sharp(photo)
+      .resize(352 * density, 112 * density, { fit: "cover" })
+      .webp({ quality: 88 })
+      .toFile(join(root, `public/intro-race${density === 2 ? "@2x" : ""}.webp`));
+  }));
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;

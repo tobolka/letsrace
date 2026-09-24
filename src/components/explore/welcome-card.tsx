@@ -72,7 +72,7 @@ export function WelcomeCard({
         Dimensions are set to keep the card from jumping as it loads.
 
         A plain img rather than next/image: the file is already cropped and
-        encoded to the size it is shown at, 27 KB, and next/image is used
+        encoded to the size it is shown at, and next/image is used
         nowhere else in the app — pulling the component in for one banner would
         cost more than it saves.
 
@@ -82,6 +82,7 @@ export function WelcomeCard({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/intro-race.webp"
+        srcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
         alt=""
         width={352}
         height={112}

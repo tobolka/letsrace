@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 
-export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
+export const OG_IMAGE_SIZE = { width: 1600, height: 840 } as const;
 export const DEFAULT_OG_ALT = `${messages.en.introTitle} · Let's Race`;
-export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
+export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image?v=2";
 
 /** Locale home pages use `generateImageMetadata` with id `default`. */
 export function localeOgImagePath(locale: string): string {
-  return `/${locale}/opengraph-image/default`;
+  return `/${locale}/opengraph-image/default?v=2`;
 }
 
 /** Production URL used for canonicals, sitemap, and Open Graph. */
@@ -190,6 +190,7 @@ type SocialCardParams = {
   ogTitle?: string;
   imagePath?: string;
   imageAlt?: string;
+  imageSize?: { width: number; height: number };
 };
 
 /**
@@ -206,13 +207,14 @@ export function socialCard({
   ogTitle,
   imagePath = DEFAULT_OG_IMAGE_PATH,
   imageAlt = DEFAULT_OG_ALT,
+  imageSize = OG_IMAGE_SIZE,
 }: SocialCardParams): Pick<Metadata, "openGraph" | "twitter"> {
   const imageUrl = absoluteUrl(imagePath);
   const images = [
     {
       url: imageUrl,
-      width: OG_IMAGE_SIZE.width,
-      height: OG_IMAGE_SIZE.height,
+      width: imageSize.width,
+      height: imageSize.height,
       alt: imageAlt,
     },
   ];

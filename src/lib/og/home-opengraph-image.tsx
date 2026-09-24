@@ -3,11 +3,10 @@ import { join } from "node:path";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { seoCopy } from "@/lib/seo";
 
-export const size = { width: 1200, height: 630 };
+export const size = { width: 1600, height: 840 };
 /**
  * JPEG, not the PNG next/og hands back. The card is mostly a photograph, which
- * is the one thing PNG cannot compress: the same image was 1.2 MB as PNG and is
- * a tenth of that as JPEG. Scrapers fetch this on every share and some refuse
+ * is the one thing PNG cannot compress efficiently. Scrapers fetch this on every share and some refuse
  * anything over a megabyte.
  *
  * The bytes are baked under `public/og/` rather than rendered through `sharp`
@@ -46,8 +45,7 @@ export default async function HomeOpenGraphImage({
   return new Response(jpeg, {
     headers: {
       "Content-Type": contentType,
-      // The card only changes when the copy does, and scrapers re-fetch often.
-      "Cache-Control": "public, max-age=86400, s-maxage=604800, immutable",
+      "Cache-Control": "public, max-age=3600, s-maxage=86400",
     },
   });
 }
