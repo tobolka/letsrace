@@ -7,7 +7,7 @@ import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
-import { Panel } from "@/components/account/panel";
+import { PAGE_WIDTH } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
 
@@ -38,10 +38,9 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
 
   if (!ready) {
     return (
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-4 w-80" />
-        <Skeleton className="h-64 w-full" />
+      <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <Skeleton className="h-96 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
   }
@@ -61,22 +60,25 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      {!embedded && <h1 className="text-xl font-semibold">{t.alertTitle}</h1>}
-      <p className="max-w-2xl text-sm text-muted-foreground">{t.alertHelp}</p>
+    <div className={embedded ? "flex w-full flex-col gap-5" : `${PAGE_WIDTH}`}>
+      {!embedded && <h1 className="text-2xl font-semibold tracking-tight">{t.alertTitle}</h1>}
 
       {/* Same split as the plan, so the left edge does not jump between tabs:
           what you are setting on the left, what it has produced beside it. */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-        <div className="flex min-w-0 flex-col gap-6">
-          <Panel title={t.alertPlacesTitle} bodyClassName="p-4">
-            <AlertSettings
-              locale={locale}
-              userId={userId}
-              preferredDisciplines={preferredDisciplines}
-            />
-          </Panel>
-        </div>
+        <section aria-labelledby="alert-places" className="flex min-w-0 flex-col gap-3">
+          <div>
+            <h2 id="alert-places" className="text-sm font-semibold">
+              {t.alertPlacesTitle}
+            </h2>
+            <p className="mt-0.5 max-w-2xl text-sm text-pretty text-muted-foreground">{t.alertHelp}</p>
+          </div>
+          <AlertSettings
+            locale={locale}
+            userId={userId}
+            preferredDisciplines={preferredDisciplines}
+          />
+        </section>
         <aside className="min-w-0 lg:sticky lg:top-20">
           <AlertInbox locale={locale} userId={userId} />
         </aside>
@@ -84,4 +86,3 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
     </div>
   );
 }
-

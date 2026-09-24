@@ -1,4 +1,11 @@
-import { DISCIPLINE_LABELS, RACE_LEVEL_LABELS, type Discipline, type RaceLevel } from "@/lib/taxonomy";
+import {
+  AGE_CATEGORY_LABELS,
+  DISCIPLINE_LABELS,
+  RACE_LEVEL_LABELS,
+  type AgeCategory,
+  type Discipline,
+  type RaceLevel,
+} from "@/lib/taxonomy";
 
 const disciplines: Record<string, Partial<Record<Discipline, string>>> = {
   cs: { road: "Silnice", road_race: "Silniční závod", tt: "Časovka", criterium: "Kritérium", hill_climb: "Do vrchu", cx: "Cyklokros", track: "Dráha", dh: "Sjezd", other: "Ostatní" },
@@ -10,6 +17,17 @@ const levels: Record<string, Partial<Record<RaceLevel, string>>> = {
   sk: { local: "Miestne", regional: "Regionálne", national: "Národné", continental: "Kontinentálne", international: "Medzinárodné", world_cup: "Svetový pohár", european_championship: "Majstrovstvá Európy", world_championship: "Majstrovstvá sveta" },
   pl: { local: "Lokalne", regional: "Regionalne", national: "Krajowe", continental: "Kontynentalne", international: "Międzynarodowe", world_cup: "Puchar świata", european_championship: "Mistrzostwa Europy", world_championship: "Mistrzostwa świata" },
 };
+
+// The U-numbers and "U23" read the same in every language; only the words move.
+const ageCategories: Record<string, Partial<Record<AgeCategory, string>>> = {
+  cs: { kids: "Děti", youth: "Mládež", junior: "Junioři", elite: "Elite", amateur: "Amatéři", masters: "Masters" },
+  sk: { kids: "Deti", youth: "Mládež", junior: "Juniori", elite: "Elite", amateur: "Amatéri", masters: "Masters" },
+  pl: { kids: "Dzieci", youth: "Młodzież", junior: "Juniorzy", elite: "Elita", amateur: "Amatorzy", masters: "Masters" },
+};
+
+export function ageCategoryLabel(id: string, locale: string): string {
+  return ageCategories[locale]?.[id as AgeCategory] ?? AGE_CATEGORY_LABELS[id as AgeCategory] ?? id;
+}
 
 export function disciplineLabel(id: string, locale: string): string {
   return disciplines[locale]?.[id as Discipline] ?? DISCIPLINE_LABELS[id as Discipline] ?? id;

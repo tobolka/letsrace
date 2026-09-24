@@ -5,13 +5,8 @@ import { format, parseISO } from "date-fns";
 import { ArrowLeft, ExternalLink, MapPinned } from "lucide-react";
 import { getPublicEventBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import {
-  DISCIPLINE_LABELS,
-  RACE_LEVEL_LABELS,
-  formatEventCategoryLabel,
-  type Discipline,
-  type RaceLevel,
-} from "@/lib/taxonomy";
+import { formatEventCategoryLabel } from "@/lib/taxonomy";
+import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { BrandMark } from "@/components/brand-mark";
 import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
@@ -45,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = place ? `${event.name} · ${place}` : event.name;
   const disc = event.disciplines
     .slice(0, 3)
-    .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
+    .map((d) => disciplineLabel(d, locale))
     .filter(Boolean)
     .join(", ");
   const description = [date, place, disc, seo.findOnSite].filter(Boolean).join(" · ");
@@ -82,21 +77,23 @@ export default async function EventPage({ params }: Props) {
     [event.location?.municipality || event.location?.name, event.location?.countryCode]
       .filter(Boolean)
       .join(" · ") || "—";
+  // In the reader's language: "sobota 26. září 2026", not "Saturday 26 September".
+  const df = dateFnsLocale(locale);
   const dateLabel =
-    format(parseISO(event.startDate), "EEEE d MMMM yyyy") +
+    format(parseISO(event.startDate), "EEEE PPP", { locale: df }) +
     (event.endDate && event.endDate !== event.startDate
-      ? ` – ${format(parseISO(event.endDate), "d MMMM yyyy")}`
+      ? ` – ${format(parseISO(event.endDate), "PPP", { locale: df })}`
       : "");
-  const whoLabel = formatEventCategoryLabel(event, {
-    kids: t.kids,
-    youth: t.youth,
-    adults: t.adults,
-  });
+  const whoLabel = formatEventCategoryLabel(
+    event,
+    { kids: t.kids, youth: t.youth, adults: t.adults },
+    (id) => ageCategoryLabel(id, locale),
+  );
   const discLabel = event.disciplines
-    .map((d) => DISCIPLINE_LABELS[d as Discipline] || d)
+    .map((d) => disciplineLabel(d, locale))
     .filter(Boolean)
     .join(" · ");
-  const levelLabel = RACE_LEVEL_LABELS[event.level as RaceLevel] || event.level;
+  const levelLabel = event.level ? raceLevelLabel(event.level, locale) : null;
   const mapHref = eventMapPath(locale, event);
   const enterUrl = event.registrationUrl || event.websiteUrl || event.listingUrl;
   const enterLabel = event.registrationUrl

@@ -49,7 +49,7 @@ export function SeriesProgressCard({
             return (
               <Item
                 key={s.seriesId}
-                variant="outline"
+                variant="muted"
                 // The card lives in a narrow rail, so this never goes to a row:
                 // the name, the pips and the button each get the full width.
                 className="flex-col items-stretch"

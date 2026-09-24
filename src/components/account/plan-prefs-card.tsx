@@ -10,6 +10,7 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { ISO_WEEKDAYS } from "@/lib/plan-prefs";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { DISCIPLINE_TREE } from "@/lib/taxonomy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 
 function weekdayLabel(isoDay: number, locale: string) {
   return format(parseISO(`2026-08-${16 + isoDay}`), "EEE", { locale: dateFnsLocale(locale) });
@@ -71,7 +72,7 @@ export function PlanPrefsFields({
         >
           {DISCIPLINE_TREE.map((opt) => (
             <ToggleGroupItem key={opt.id} value={opt.id}>
-              {opt.label}
+              {disciplineLabel(opt.id, locale)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>

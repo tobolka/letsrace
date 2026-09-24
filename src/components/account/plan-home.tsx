@@ -5,10 +5,13 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { AuthForm } from "@/components/account/auth-form";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
+import { DayPickerButton } from "@/components/account/day-picker-button";
 import { NextRaceHero } from "@/components/account/next-race-hero";
+import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanSeason } from "@/components/account/plan-season";
 import { PlanSetup } from "@/components/account/plan-setup";
+import { PlanSummary } from "@/components/account/plan-summary";
 import { PlanTodo } from "@/components/account/plan-todo";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +41,7 @@ import {
 import type { SuggestionContext } from "@/lib/plan-suggestions";
 import { persist } from "@/lib/account/save";
 import { toast } from "sonner";
+import { BellRing, Compass } from "lucide-react";
 
 const EVENT_EMBED =
   "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, location:locations(name, municipality, country_code)";
@@ -125,7 +129,17 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
       setAuthed(true);
       setUserId(auth.user.id);
 
-      const [{ data: mems }, { data: att }, { data: favs }, { data: prefs }] = await Promise.all([
+      // One round trip for everything the page needs, not four in a row: the
+      // blocked days and the ranker's inputs do not depend on the plan, so
+      // waiting for it before asking for them only added latency.
+      const [
+        { data: mems },
+        { data: att },
+        { data: favs },
+        { data: prefs },
+        { data: blockedRows },
+        { data: alertRows },
+      ] = await Promise.all([
         supabase
           .from("family_members")
           .select("id, name, relationship, is_self")
@@ -140,12 +154,17 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
           .select(`event:events(${EVENT_EMBED})`)
           .eq("user_id", auth.user.id).throwOnError(),
         supabase.from("profiles").select("busy_weekdays").eq("id", auth.user.id).maybeSingle().throwOnError(),
+        supabase
+          .from("blocked_days")
+          .select("day, note")
+          .eq("user_id", auth.user.id).throwOnError(),
+        supabase
+          .from("race_alerts")
+          .select("id, lat, lng, radius_km")
+          .eq("user_id", auth.user.id)
+          .eq("enabled", true).throwOnError(),
       ]);
 
-      const { data: blockedRows } = await supabase
-        .from("blocked_days")
-        .select("day, note")
-        .eq("user_id", auth.user.id).throwOnError();
       setBlocked(Object.fromEntries(((blockedRows ?? []) as BlockedDay[]).map((r) => [r.day, r])));
 
       const nextEvents: Record<string, PlannerEvent> = {};
@@ -195,30 +214,15 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
 
       // What the ranker needs: where they said they are, and what they have
       // actually ridden — series to continue and disciplines they turn up for.
-      const [{ data: alertRows }, { data: ridden }] = await Promise.all([
-        supabase
-          .from("race_alerts")
-          .select("id, lat, lng, radius_km")
-          .eq("user_id", auth.user.id)
-          .eq("enabled", true).throwOnError(),
-        supabase
-          .from("event_attendance")
-          .select("event:events(series_id, disciplines)")
-          .eq("user_id", auth.user.id).throwOnError(),
-      ]);
+      // The attendance rows already carry both; asking again was a fifth query.
       const home = (alertRows ?? []).find((a) => a.lat != null && a.lng != null);
       const riddenSeriesIds = new Set<string>();
       const riddenDisciplines = new Set<string>();
-      for (const row of (ridden ?? []) as unknown as {
-        event:
-          | { series_id: string | null; disciplines: string[] | null }
-          | { series_id: string | null; disciplines: string[] | null }[]
-          | null;
-      }[]) {
-        const ev = unwrap(row.event);
+      for (const id of Object.keys(nextAtt)) {
+        const ev = nextEvents[id];
         if (!ev) continue;
-        if (ev.series_id) riddenSeriesIds.add(ev.series_id);
-        for (const d of ev.disciplines ?? []) riddenDisciplines.add(d);
+        if (ev.seriesId) riddenSeriesIds.add(ev.seriesId);
+        for (const d of ev.disciplines) riddenDisciplines.add(d);
       }
       setSuggestCtx({
         home: home ? { lat: Number(home.lat), lng: Number(home.lng) } : null,
@@ -334,6 +338,13 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   );
   const actions = useMemo(() => planActions(plans, { members, today }), [plans, members, today]);
   const nextRace = plans.find((p) => (p.event.endDate ?? p.event.startDate) >= today) ?? null;
+  const upcomingCount = plans.length - past.length;
+  // Ridden, not merely saved: a past race counts once somebody was on it.
+  const riddenThisYear = past.filter(
+    (p) =>
+      p.event.startDate.startsWith(today.slice(0, 4)) &&
+      Object.values(p.memberStatus).some((s) => s !== "none"),
+  ).length;
 
   async function onStatusChange(eventId: string, memberId: string, status: PlanMemberStatus) {
     if (!userId) return;
@@ -451,11 +462,23 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   }
 
   if (!ready) {
-    return (
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <Skeleton className="h-7 w-40" />
-        <Skeleton className="h-36 w-full rounded-xl" />
-        <Skeleton className="h-24 w-full rounded-xl" />
+    // The shape of the page that is about to arrive, so nothing jumps when it does.
+    return section === "recommendations" ? (
+      <div className="flex w-full flex-col gap-5">
+        <Skeleton className="h-9 w-48" />
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <Skeleton className="h-80 w-full rounded-xl" />
+          <Skeleton className="h-48 w-full rounded-xl" />
+        </div>
+      </div>
+    ) : (
+      <div className={PAGE_WIDTH}>
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <Skeleton className="h-20 w-full rounded-xl" />
+        <Skeleton className="h-96 w-full rounded-xl" />
       </div>
     );
   }
@@ -489,11 +512,15 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   const suggestTo = pickedDay ?? addDaysIso(today, 30);
 
   if (section === "recommendations") return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-sm">{t.date}<input type="date" aria-label={t.date} value={pickedDay ?? ""} onChange={(e) => setPickedDay(e.target.value || null)} className="h-10 rounded-md border bg-background px-3" /></label>
-        {pickedDay && <Button variant="ghost" onClick={() => setPickedDay(null)}>{t.suggestSoon}</Button>}
-        <Button asChild variant="ghost" className="sm:ml-auto"><Link href={`/${locale}/account/recommendations?tab=watching`}>{t.discoverConfigure}</Link></Button>
+    <div className="flex w-full flex-col gap-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <DayPickerButton locale={locale} value={pickedDay} onChange={setPickedDay} />
+        <Button asChild variant="ghost" className="sm:ml-auto">
+          <Link href={`/${locale}/account/recommendations?tab=watching`}>
+            <BellRing data-icon="inline-start" />
+            {t.discoverConfigure}
+          </Link>
+        </Button>
       </div>
       <PlanSetup locale={locale} hasPeople={members.length > 0} hasPlace={Boolean(suggestCtx?.home)} hasRace={plans.length > 0} onSetHome={onSetHome} />
       <div className="grid items-start gap-5 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -536,11 +563,22 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      <header className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">{t.myCalendar}</h1><p className="mt-1 text-sm text-muted-foreground">{t.accountPlanDescription}</p></div>          <Button asChild variant="outline" className="h-auto min-h-10 whitespace-normal">
-            <Link href={`/${locale}/account/recommendations${pickedDay ? `?day=${pickedDay}` : ""}`}>{pickedDay ? `${t.accountDayRecommendations} · ${format(parseISO(pickedDay), "d. M.")}` : t.accountDiscover}</Link>
+    <div className={PAGE_WIDTH}>
+      <PageHeader
+        title={t.myCalendar}
+        description={t.accountPlanDescription}
+        actions={
+          <Button asChild variant="outline">
+            <Link href={`/${locale}/account/recommendations${pickedDay ? `?day=${pickedDay}` : ""}`}>
+              <Compass data-icon="inline-start" />
+              {pickedDay
+                ? `${t.accountDayRecommendations} · ${format(parseISO(pickedDay), "d. M.")}`
+                : t.accountDiscover}
+            </Link>
           </Button>
-</header>
+        }
+      />
+
       <PlanSetup
         locale={locale}
         hasPeople={members.length > 0}
@@ -549,10 +587,20 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
         onSetHome={(place) => onSetHome(place)}
       />
 
+      {plans.length > 0 ? (
+        <PlanSummary
+          locale={locale}
+          nextRace={nextRace}
+          upcoming={upcomingCount}
+          todo={actions.length}
+          ridden={riddenThisYear}
+        />
+      ) : null}
+
       {/*
         The next race used to be a card the height of a phone screen, above a
         list of jobs, above the season — so the season, which is the reason
-        this page exists, started below the fold. It is one line now, and the
+        this page exists, started below the fold. It is one card now, and the
         season starts under it.
       */}
       {nextRace ? (
@@ -565,17 +613,16 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
             void onStatusChange(nextRace.event.id, memberId, status)
           }
         />
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          {plans.length === 0 ? t.planEmpty : t.planNoUpcomingBody}{" "}
-          <Link href={`/${locale}`} className="text-foreground underline underline-offset-4">
-            {t.viewOnMap}
-          </Link>
-        </p>
-      )}
+      ) : null}
 
-      {/* Keep attendance tasks beside the original season views. */}
-      <div className={`grid gap-6 [&>*]:min-w-0 ${actions.length ? "lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start" : ""}`}>
+      {/* The jobs beside the season, for as long as there is anything ahead. */}
+      <div
+        className={
+          upcomingCount > 0
+            ? "grid gap-6 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
+            : "grid gap-6 [&>*]:min-w-0"
+        }
+      >
         <PlanSeason
           locale={locale}
           plans={plans}
@@ -593,8 +640,8 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
           onDiscard={(eventId) => void onDiscard(eventId)}
         />
 
-        <aside className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20">
-          {actions.length > 0 ? (
+        {upcomingCount > 0 ? (
+          <aside className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20">
             <PlanTodo
               locale={locale}
               actions={actions}
@@ -605,10 +652,8 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
               }
               onDiscard={(eventId) => void onDiscard(eventId)}
             />
-          ) : null}
-
-
-        </aside>
+          </aside>
+        ) : null}
       </div>
     </div>
   );

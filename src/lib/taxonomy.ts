@@ -431,12 +431,14 @@ export function matchesAgeCategoryFilter(
 export function formatEventCategoryLabel(
   event: { audience?: string | null; ageCategories?: string[] | null },
   audienceLabels: { kids: string; youth: string; adults: string },
+  /** Localises the chip names; without it they stay in English. */
+  categoryLabel: (id: AgeCategory) => string = (id) => AGE_CATEGORY_LABELS[id],
 ): string {
   const ages = event.ageCategories ?? [];
   if (ages.length) {
     const chips: string[] = [];
     for (const f of AGE_CATEGORY_FILTERS) {
-      if (f.expands.some((x) => ages.includes(x))) chips.push(f.label);
+      if (f.expands.some((x) => ages.includes(x))) chips.push(categoryLabel(f.id));
     }
     return chips.join(" · ");
   }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { MapPin, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { markWelcomeSeen, WELCOME_SEEN_KEY } from "@/lib/welcome";
+import { hasAuthCookie, markWelcomeSeen, WELCOME_SEEN_KEY } from "@/lib/welcome";
 
 /**
  * What this app is, said once.
@@ -37,7 +37,7 @@ export function WelcomeCard({
 
   useEffect(() => {
     try {
-      if (window.localStorage.getItem(WELCOME_SEEN_KEY) === "1") {
+      if (window.localStorage.getItem(WELCOME_SEEN_KEY) === "1" || hasAuthCookie()) {
         document.documentElement.dataset.welcomeSeen = "1";
         setShow(false);
       }

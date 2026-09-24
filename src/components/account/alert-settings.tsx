@@ -13,16 +13,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Plus } from "lucide-react";
+import { MapPin, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { AlertPreview } from "@/components/account/alert-preview";
+import { Panel } from "@/components/account/panel";
 import { PlacePicker } from "@/components/account/place-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -35,6 +35,8 @@ import {
   clampRadiusKm,
 } from "@/lib/race-alerts";
 import { DISCIPLINE_TREE } from "@/lib/taxonomy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
+import { cn } from "@/lib/utils";
 
 type AlertRow = {
   id: string;
@@ -128,19 +130,16 @@ export function AlertSettings({
 
   return (
     <div className="flex flex-col gap-4">
-      {!ready ? <Skeleton className="h-24 w-full" /> : null}
+      {!ready ? <Skeleton className="h-64 w-full rounded-xl" /> : null}
 
       {rows.map((row) => (
-        <Card key={row.id}>
-          <CardContent className="pt-6">
-            <AlertCard
-              locale={locale}
-              row={row}
-              onPatch={(next) => void patch(row.id, next)}
-              onRemove={() => void removeAlert(row.id)}
-            />
-          </CardContent>
-        </Card>
+        <AlertCard
+          key={row.id}
+          locale={locale}
+          row={row}
+          onPatch={(next) => void patch(row.id, next)}
+          onRemove={() => void removeAlert(row.id)}
+        />
       ))}
 
       {ready && rows.length > 0 ? (
@@ -154,25 +153,21 @@ export function AlertSettings({
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <Card className="mt-3">
-              <CardContent className="pt-6">
-                <PlacePicker
-                  locale={locale}
-                  onPick={(place) => {
-                    setAdding(false);
-                    void createAlert(place);
-                  }}
-                />
-              </CardContent>
-            </Card>
+            <Panel className="mt-3">
+              <PlacePicker
+                locale={locale}
+                onPick={(place) => {
+                  setAdding(false);
+                  void createAlert(place);
+                }}
+              />
+            </Panel>
           </CollapsibleContent>
         </Collapsible>
       ) : ready ? (
-        <Card>
-          <CardContent className="pt-6">
-            <PlacePicker locale={locale} onPick={(place) => void createAlert(place)} />
-          </CardContent>
-        </Card>
+        <Panel description={t.alertNoPlace}>
+          <PlacePicker locale={locale} onPick={(place) => void createAlert(place)} />
+        </Panel>
       ) : null}
     </div>
   );
@@ -194,24 +189,28 @@ function AlertCard({
   const switchId = `alert-on-${row.id}`;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate font-medium">{row.label || t.myLocation}</p>
-          <p className="text-xs tabular-nums text-muted-foreground">
-            {t.alertRadius} {t.alertRadiusKm.replace("{n}", String(row.radius_km))}
-          </p>
-        </div>
-        <Field orientation="horizontal" className="w-auto items-center">
-          <FieldLabel htmlFor={switchId}>{t.alertEnabled}</FieldLabel>
+    <Panel
+      className={cn(!row.enabled && "bg-card/60")}
+      title={
+        <span className="flex min-w-0 items-center gap-2">
+          <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="truncate">{row.label || t.myLocation}</span>
+        </span>
+      }
+      actions={
+        <Field orientation="horizontal" className="w-auto items-center gap-2">
+          <FieldLabel htmlFor={switchId} className="text-xs font-normal text-muted-foreground">
+            {t.alertEnabled}
+          </FieldLabel>
           <Switch
             id={switchId}
             checked={row.enabled}
             onCheckedChange={(on) => onPatch({ enabled: on })}
           />
         </Field>
-      </div>
-
+      }
+      bodyClassName={cn("flex flex-col gap-5 p-4 transition-opacity", !row.enabled && "opacity-60")}
+    >
       <Field>
         <FieldLabel>{t.alertRadius}</FieldLabel>
         <ToggleGroup
@@ -235,9 +234,7 @@ function AlertCard({
 
       <Field>
         <FieldLabel>{t.alertDisciplines}</FieldLabel>
-        <FieldDescription>
-          {discs.length === 0 ? t.alertAllDisciplines : null}
-        </FieldDescription>
+        {discs.length === 0 ? <FieldDescription>{t.alertAllDisciplines}</FieldDescription> : null}
         <ToggleGroup
           type="multiple"
           variant="outline"
@@ -249,13 +246,13 @@ function AlertCard({
         >
           {DISCIPLINE_TREE.map((opt) => (
             <ToggleGroupItem key={opt.id} value={opt.id}>
-              {opt.label}
+              {disciplineLabel(opt.id, locale)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
       </Field>
 
-      <div className="rounded-lg border bg-muted/30 p-3">
+      <div className="rounded-lg bg-muted/50 p-3">
         <AlertPreview
           locale={locale}
           lat={Number(row.lat)}
@@ -269,7 +266,8 @@ function AlertCard({
         {/* Destroying something is not the widest, most central control on a
             card; it sits at the end of the row like every other afterthought. */}
         <AlertDialogTrigger asChild>
-          <Button type="button" variant="ghost" size="sm" className="self-end text-muted-foreground">
+          <Button type="button" variant="ghost" size="sm" className="-mb-1 self-end text-muted-foreground">
+            <Trash2 data-icon="inline-start" />
             {t.alertRemove}
           </Button>
         </AlertDialogTrigger>
@@ -285,6 +283,6 @@ function AlertCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </Panel>
   );
 }

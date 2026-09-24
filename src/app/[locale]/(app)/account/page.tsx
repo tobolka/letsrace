@@ -1,6 +1,19 @@
+import type { Metadata } from "next";
+import { messagesFor } from "@/lib/i18n/messages";
+import { SITE_NAME } from "@/lib/seo";
 import { PlanHome } from "@/components/account/plan-home";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  // The locale layout sets a plain title, which drops the root template.
+  return { title: { absolute: `${messagesFor(locale).myCalendar} · ${SITE_NAME}` }, robots: { index: false } };
+}
 
 /**
  * The account is the plan.

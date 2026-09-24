@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Compass, Users, UserRound } from "lucide-react";
+import { CalendarDays, Compass, Settings, Users } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { AccountCommand } from "@/components/account/account-command";
 import { MapAccountButton } from "@/components/explore/map-account-button";
@@ -72,14 +72,27 @@ export function AppShell({
         if (row.status !== "none" && !row.paid) unsettled.add(row.event_id);
       }
 
+      // The same set the inbox shows: one per race, and only races still ahead.
+      // Counting raw deliveries said "11" over a list of six.
       let alerts = 0;
       if (alertRows && alertRows.length > 0) {
-        const { count } = await supabase
+        const { data: hits } = await supabase
           .from("race_alert_deliveries")
-          .select("*", { count: "exact", head: true })
+          .select("event_id, event:events(start_date, end_date)")
           .in("alert_id", alertRows.map((a) => a.id))
           .gte("created_at", since.toISOString());
-        alerts = count ?? 0;
+        const fresh = new Set<string>();
+        for (const hit of (hits ?? []) as unknown as {
+          event_id: string;
+          event:
+            | { start_date: string; end_date: string | null }
+            | { start_date: string; end_date: string | null }[]
+            | null;
+        }[]) {
+          const ev = Array.isArray(hit.event) ? hit.event[0] : hit.event;
+          if (ev && (ev.end_date ?? ev.start_date) >= today) fresh.add(hit.event_id);
+        }
+        alerts = fresh.size;
       }
       if (alive) setCounts({ action: unsettled.size, alerts });
     })();
@@ -118,7 +131,7 @@ export function AppShell({
     {
       href: `/${locale}/account/settings`,
       label: t.accountSettings,
-      icon: UserRound,
+      icon: Settings,
       match: "/account/settings",
       badge: 0,
     },

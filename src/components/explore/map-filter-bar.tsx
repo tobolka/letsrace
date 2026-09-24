@@ -1,6 +1,6 @@
 "use client";
 
-import { disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
 import { useState, type ComponentType } from "react";
 import dynamic from "next/dynamic";
@@ -59,7 +59,6 @@ import type { Messages } from "@/lib/i18n/messages";
 import { familyColor } from "@/lib/map-visuals";
 import {
   AGE_CATEGORY_FILTERS,
-  AGE_CATEGORY_LABELS,
   DISCIPLINE_TREE,
   QUICK_DISCIPLINE_FILTERS,
   RACE_LEVELS,
@@ -295,7 +294,7 @@ export function MapFilterBar({
         categories.length === 0
           ? undefined
           : categories
-              .map((id) => AGE_CATEGORY_LABELS[id as keyof typeof AGE_CATEGORY_LABELS] || id)
+              .map((id) => ageCategoryLabel(id, locale))
               .join(", "),
     },
     level: {
@@ -448,7 +447,7 @@ export function MapFilterBar({
           onCheckedChange={() => onCategory(opt.id)}
           className={itemClass}
         >
-          {opt.label}
+          {ageCategoryLabel(opt.id, locale)}
         </DropdownMenuCheckboxItem>
       ));
     }

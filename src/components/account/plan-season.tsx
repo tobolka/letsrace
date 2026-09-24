@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, Rows3, Undo2 } from "lucide-react";
+import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, List, Sheet, Undo2 } from "lucide-react";
 import { PlanAgenda } from "@/components/account/plan-agenda";
 import { Panel } from "@/components/account/panel";
 import { PlanMonthView } from "@/components/account/plan-month-view";
+import { PlanRaces } from "@/components/account/plan-races";
 import { PlanRow } from "@/components/account/plan-row";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -21,7 +22,9 @@ import {
   type PlannerMember,
 } from "@/lib/planner";
 
-const VIEWS = ["list", "calendar"] as const;
+// "list" is the day-per-row sheet; it kept its name so links already out
+// there with `?view=list` still open it.
+const VIEWS = ["races", "list", "calendar"] as const;
 
 /**
  * The season, and it is the page's centre of gravity.
@@ -67,7 +70,8 @@ export function PlanSeason({
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   const today = todayIso();
-  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("list"));
+  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
+  const upcoming = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
   const [month, setMonth] = useState(() => monthStart(selected ?? today));
 
   return (
@@ -85,18 +89,32 @@ export function PlanSeason({
             variant="outline"
             size="xs"
           >
-            <ToggleGroupItem value="list">
-              <Rows3 data-icon="inline-start" />
-              {t.planViewList}
+            <ToggleGroupItem value="races" aria-label={t.planViewRaces}>
+              <List data-icon="inline-start" />
+              <span className="max-sm:sr-only">{t.planViewRaces}</span>
             </ToggleGroupItem>
-            <ToggleGroupItem value="calendar">
+            <ToggleGroupItem value="list" aria-label={t.planViewList}>
+              <Sheet data-icon="inline-start" />
+              <span className="max-sm:sr-only">{t.planViewList}</span>
+            </ToggleGroupItem>
+            <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
               <CalendarDays data-icon="inline-start" />
-              {t.planViewCalendar}
+              <span className="max-sm:sr-only">{t.planViewCalendar}</span>
             </ToggleGroupItem>
           </ToggleGroup>
         }
       >
-        {view === "calendar" ? (
+        {view === "races" ? (
+          <PlanRaces
+            locale={locale}
+            upcoming={upcoming}
+            hasPast={past.length > 0}
+            members={members}
+            busyId={busyId}
+            onStatusChange={onStatusChange}
+            onDiscard={onDiscard}
+          />
+        ) : view === "calendar" ? (
           <>
             <div className="flex items-center gap-2 border-b px-4 py-2">
               <Button
@@ -156,7 +174,7 @@ export function PlanSeason({
           />
         )}
 
-        {selected ? (
+        {selected && view !== "races" ? (
           <DayBar
             locale={locale}
             day={selected}
@@ -168,8 +186,13 @@ export function PlanSeason({
 
       {past.length > 0 ? (
         <details className="group">
-          <summary className="cursor-pointer list-none text-xs text-muted-foreground underline-offset-4 hover:underline">
-            {t.planPast} · <span className="tabular-nums">{past.length}</span>
+          <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-md py-1 text-sm text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
+            <ChevronRight
+              className="size-4 transition-transform duration-150 group-open:rotate-90 motion-reduce:transition-none"
+              aria-hidden
+            />
+            {t.planPast}
+            <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums">{past.length}</span>
           </summary>
           <div className="mt-2 divide-y overflow-hidden rounded-xl border bg-card shadow-sm">
             {past.map((plan) => (

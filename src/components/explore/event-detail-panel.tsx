@@ -40,7 +40,7 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
-import { disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
 
@@ -192,11 +192,11 @@ export function EventDetailPanel({
       ? UCI_CLASS_LABELS[event.uciClass as UciClass] || event.uciClass.toUpperCase()
       : null) ||
     (event.classLabel && event.classLabel !== RACE_LEVEL_LABELS[levelKey] ? event.classLabel : raceLevelLabel(levelKey, locale));
-  const whoLabel = formatEventCategoryLabel(event, {
-    kids: t.kids,
-    youth: t.youth,
-    adults: t.adults,
-  });
+  const whoLabel = formatEventCategoryLabel(
+    event,
+    { kids: t.kids, youth: t.youth, adults: t.adults },
+    (id) => ageCategoryLabel(id, locale),
+  );
   const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
   const discChips = event.disciplines
     .slice(0, 4)

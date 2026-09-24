@@ -1,12 +1,26 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { Compass, BellRing, ArrowUpRight } from "lucide-react";
+import { Compass, BellRing, MapPinned } from "lucide-react";
+import { isMatch } from "date-fns";
 import { PlanHome } from "@/components/account/plan-home";
 import { AlertsPanel } from "@/components/account/alerts-panel";
+import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
+import { Button } from "@/components/ui/button";
 import { messagesFor } from "@/lib/i18n/messages";
+import { SITE_NAME } from "@/lib/seo";
 import { cn } from "@/lib/utils";
-import { isMatch } from "date-fns";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  // The locale layout sets a plain title, which drops the root template.
+  return { title: { absolute: `${messagesFor(locale).accountDiscover} · ${SITE_NAME}` }, robots: { index: false } };
+}
 
 export default async function RecommendationsPage({ params, searchParams }: {
   params: Promise<{ locale: string }>;
@@ -18,18 +32,49 @@ export default async function RecommendationsPage({ params, searchParams }: {
   const watching = query.tab === "watching";
   const base = `/${locale}/account/recommendations`;
   const suffix = day ? `day=${day}&` : "";
+  const tabs = [
+    { active: !watching, label: t.discoverForYou, href: `${base}${day ? `?day=${day}` : ""}`, icon: Compass },
+    { active: watching, label: t.discoverWatching, href: `${base}?${suffix}tab=watching`, icon: BellRing },
+  ];
+
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 sm:gap-8">
-      <header className="relative overflow-hidden rounded-3xl border border-brand/10 bg-gradient-to-br from-brand/5 via-card to-card p-6 sm:p-9">
-        <div className="mb-5 flex items-center gap-2 text-xs font-semibold tracking-wide text-brand"><Compass className="size-4" />{t.accountDiscover}</div>
-        <div className="flex flex-wrap items-end justify-between gap-5">
-          <div className="max-w-xl"><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t.discoverHeadline}</h1><p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">{t.discoverDescription}</p></div>
-          <Link href={`/${locale}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-80">{t.viewOnMap}<ArrowUpRight className="size-4" /></Link>
-        </div>
-      </header>
-      <nav aria-label={t.accountDiscover} className="flex w-fit max-w-full gap-1 rounded-full border bg-muted/50 p-1">
-        {[{active: !watching, label: t.discoverForYou, href: `${base}${day ? `?day=${day}` : ""}`, icon: Compass}, {active: watching, label: t.discoverWatching, href: `${base}?${suffix}tab=watching`, icon: BellRing}].map((item) => <Link key={item.label} href={item.href} aria-current={item.active ? "page" : undefined} className={cn("inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-medium transition-colors sm:px-6", item.active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}><item.icon className="size-4 shrink-0" />{item.label}</Link>)}
-      </nav>
+    <div className={PAGE_WIDTH}>
+      <PageHeader
+        title={t.discoverHeadline}
+        description={t.discoverDescription}
+        actions={
+          <Button asChild variant="outline">
+            <Link href={`/${locale}`}>
+              <MapPinned data-icon="inline-start" />
+              {t.viewOnMap}
+            </Link>
+          </Button>
+        }
+      >
+        {/* Two views of one question, so a segmented control rather than two
+            pages: the same bar the map's Date / Distance switch uses. */}
+        <nav
+          aria-label={t.accountDiscover}
+          className="flex w-fit max-w-full gap-0.5 rounded-lg border bg-muted/60 p-0.5"
+        >
+          {tabs.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              aria-current={item.active ? "page" : undefined}
+              className={cn(
+                "inline-flex min-h-9 items-center justify-center gap-2 rounded-md px-3.5 text-sm font-medium transition-colors [@media(pointer:coarse)]:min-h-11",
+                item.active
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <item.icon className="size-4 shrink-0" aria-hidden />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </PageHeader>
       {watching ? <AlertsPanel locale={locale} embedded /> : <PlanHome key={day ?? "all"} locale={locale} section="recommendations" day={day} />}
     </div>
   );

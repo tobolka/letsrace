@@ -61,32 +61,32 @@ export function MailPrefs({ locale, userId }: { locale: string; userId: string }
     if (ok) toast.success(t.alertSaved);
   }
 
-  if (!ready) return <Skeleton className="h-36 w-full" />;
+  if (!ready) return <Skeleton className="h-40 w-full rounded-xl" />;
 
   return (
-    <div className="flex flex-col gap-5 rounded-xl border bg-card p-4">
-        <Field orientation="horizontal" className="items-start justify-between gap-4">
-          <div className="min-w-0">
-            <FieldLabel htmlFor="plan-mail">{t.planMail}</FieldLabel>
-            <FieldDescription>{t.planMailHelp}</FieldDescription>
-          </div>
-          <Switch
-            id="plan-mail"
-            checked={planMail}
-            onCheckedChange={(on) => void patch({ plan_mail: on })}
-          />
-        </Field>
-        <Field orientation="horizontal" className="items-start justify-between gap-4">
-          <div className="min-w-0">
-            <FieldLabel htmlFor="digest-mail">{t.digestMail}</FieldLabel>
-            <FieldDescription>{t.digestMailHelp}</FieldDescription>
-          </div>
-          <Switch
-            id="digest-mail"
-            checked={digestMail}
-            onCheckedChange={(on) => void patch({ digest_mail: on })}
-          />
-        </Field>
+    <div className="divide-y rounded-xl border bg-card shadow-sm">
+      <Field orientation="horizontal" className="items-start justify-between gap-4 p-4">
+        <div className="min-w-0">
+          <FieldLabel htmlFor="plan-mail">{t.planMail}</FieldLabel>
+          <FieldDescription>{t.planMailHelp}</FieldDescription>
+        </div>
+        <Switch
+          id="plan-mail"
+          checked={planMail}
+          onCheckedChange={(on) => void patch({ plan_mail: on })}
+        />
+      </Field>
+      <Field orientation="horizontal" className="items-start justify-between gap-4 p-4">
+        <div className="min-w-0">
+          <FieldLabel htmlFor="digest-mail">{t.digestMail}</FieldLabel>
+          <FieldDescription>{t.digestMailHelp}</FieldDescription>
+        </div>
+        <Switch
+          id="digest-mail"
+          checked={digestMail}
+          onCheckedChange={(on) => void patch({ digest_mail: on })}
+        />
+      </Field>
     </div>
   );
 }

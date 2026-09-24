@@ -3,6 +3,17 @@
 import { useEffect, useState } from "react";
 import { CalendarPlus, Check, Copy, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -102,7 +113,7 @@ export function CalendarFeed({
     }
   }
 
-  if (!ready) return <Skeleton className="h-40 w-full" />;
+  if (!ready) return <Skeleton className="h-28 w-full" />;
   if (failed || !token) return (
     <div className="flex flex-col gap-3 rounded-lg border p-4">
       <p role="alert" className="text-sm text-muted-foreground">{t.loadFailed}</p>
@@ -135,17 +146,28 @@ export function CalendarFeed({
               {t.feedGoogle}
             </a>
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            className="ml-auto"
-            disabled={busy}
-            onClick={() => void regenerate()}
-          >
-            <RefreshCw data-icon="inline-start" />
-            {t.feedRegenerate}
-          </Button>
+          {/* Every calendar already subscribed stops updating the moment this
+              runs, so it asks first instead of doing it on a stray click. */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button type="button" size="sm" variant="ghost" className="ml-auto" disabled={busy}>
+                <RefreshCw data-icon="inline-start" />
+                {t.feedRegenerate}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t.feedRegenerateTitle}</AlertDialogTitle>
+                <AlertDialogDescription>{t.feedRegenerateBody}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
+                <AlertDialogAction onClick={() => void regenerate()}>
+                  {t.feedRegenerate}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <p className="text-xs text-muted-foreground">{t.feedWarn}</p>

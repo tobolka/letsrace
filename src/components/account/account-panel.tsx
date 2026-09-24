@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { LogOut, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { persist } from "@/lib/account/save";
 import { AuthForm } from "@/components/account/auth-form";
 import { CalendarFeed } from "@/components/account/calendar-feed";
-import { Panel } from "@/components/account/panel";
+import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
 import { MailPrefs } from "@/components/account/mail-prefs";
 import { PlanPrefsFields, notifyPrefsSaved, saveMemberPrefs } from "@/components/account/plan-prefs-card";
 import {
@@ -24,10 +24,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Field,
   FieldGroup,
@@ -65,6 +69,20 @@ function initials(name: string) {
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+/**
+ * A colour per person, the same every visit: a family of grey "RT" discs reads
+ * as a list of accounts, and the point of this page is telling people apart.
+ */
+function riderTint(name: string): React.CSSProperties {
+  let hash = 0;
+  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  const hue = hash % 360;
+  return {
+    background: `oklch(0.93 0.045 ${hue})`,
+    color: `oklch(0.38 0.09 ${hue})`,
+  };
 }
 
 function roleLabel(rel: string, t: Messages) {
@@ -205,6 +223,7 @@ export function AccountPanel({
     setBirthYear("");
     setRelationship("rider");
     toast.success(t.profilesAdded);
+    setAdding(false);
     await load();
     setBusy(false);
   }
@@ -242,10 +261,15 @@ export function AccountPanel({
 
   if (!ready) {
     return (
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-4 w-56" />
-        <Skeleton className="h-64 w-full" />
+      <div className={PAGE_WIDTH}>
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Skeleton className="h-64 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
       </div>
     );
   }
@@ -264,146 +288,185 @@ export function AccountPanel({
     );
   }
 
-  return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 [&>*]:max-w-3xl">
-      {/*
-        The nav says which page this is, and said it three times over: once as
-        the tab, once as a heading, once as the title of the only card on the
-        page. The heading stays for a screen reader and the card is gone — a
-        card around the entire contents of a page is a border drawn inside a
-        border.
-      */}
-      <h1 className="text-xl font-semibold">{section === "riders" ? t.profilesTitle : t.accountSettings}</h1>
-
-      {section === "settings" ? (
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
-          <p className="min-w-0 truncate">
-            <span className="text-muted-foreground">{t.accountSignedIn} </span>
-            <span className="font-medium">{email}</span>
-          </p>
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            {t.signOut}
-          </button>
-        </div>
-      ) : null}
-
-      {section === "settings" && userId ? (
-        <>
-          <Panel title={t.alertMailTitle}>
-            <MailPrefs locale={locale} userId={userId} />
-          </Panel>
-          <Panel title={t.feedTitle} description={t.feedBody}>
-            <CalendarFeed locale={locale} userId={userId} bare />
-          </Panel>
-        </>
-      ) : null}
-
-      {section === "riders" ? (
-        <Panel title={t.profilesTitle} description={t.profilesHelp} bodyClassName="flex flex-col gap-4 p-4">
-          {members.length === 0 ? null : (
-            <div className="flex flex-col gap-3">
-              {members.map((m) => (
-                /*
-                 * What a rider is, and everything the plan knows about them, on
-                 * one card. The days they cannot ride and the racing they turn
-                 * up for used to be behind a "Kdy může" toggle, which left this
-                 * page as one name and a button on an empty screen — and left
-                 * the two settings that make the suggestions work unset.
-                 */
-                <div key={m.id} className="rounded-xl border bg-card">
-                  <div className="flex flex-wrap items-center gap-3 border-b px-4 py-3">
-                    <Avatar size="sm">
-                      <AvatarFallback>{initials(m.name) || "?"}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="flex flex-wrap items-center gap-2 font-medium">
-                        {m.name}
-                        {m.is_self ? <Badge variant="secondary">{t.planSelf}</Badge> : null}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {/* The "you" badge already says it; repeating the role reads as a stutter. */}
-                        {[
-                          m.is_self ? null : roleLabel(m.relationship, t),
-                          m.birth_year
-                            ? t.profilesBorn.replace("{n}", String(m.birth_year))
-                            : null,
-                          ridesByMember[m.id]
-                            ? t.accountRidesThisYear.replace("{n}", String(ridesByMember[m.id]))
-                            : null,
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
-                    </div>
-                    {!m.is_self ? (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            {t.remove}
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{t.confirmRemove}</AlertDialogTitle>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
-                            <AlertDialogAction
-                              variant="destructive"
-                              onClick={() => void removeMember(m.id)}
-                            >
-                              {t.remove}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    ) : null}
-                  </div>
-                  <div className="px-4 py-3">
-                    <PlanPrefsFields
-                      locale={locale}
-                      busyWeekdays={m.busy_weekdays}
-                      preferredDisciplines={m.preferred_disciplines}
-                      onBusyChange={(days) => void patchMember(m, { busy_weekdays: days })}
-                      onDisciplinesChange={(discs) =>
-                        void patchMember(m, { preferred_disciplines: discs })
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
+  if (section === "settings") {
+    return (
+      <div className={PAGE_WIDTH}>
+        <PageHeader title={t.accountSettings} />
+        {/*
+          Label on the left, the thing itself on the right — the shape every
+          settings page has, because it lets you scan the left column for the
+          section you came for instead of reading every card top to bottom.
+        */}
+        <div className="flex flex-col">
+          <SettingsSection title={t.account} description={t.settingsAccountBody}>
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+              <Avatar size="lg">
+                <AvatarFallback style={riderTint(email ?? "")}>
+                  {(email ?? "?").slice(0, 1).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-muted-foreground">{t.accountSignedIn}</p>
+                <p className="truncate text-sm font-medium">{email}</p>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={() => void signOut()}>
+                <LogOut data-icon="inline-start" />
+                {t.signOut}
+              </Button>
             </div>
-          )}
+          </SettingsSection>
+          {userId ? (
+            <>
+              <SettingsSection title={t.alertMailTitle} description={t.settingsMailBody}>
+                <MailPrefs locale={locale} userId={userId} />
+              </SettingsSection>
+              <SettingsSection title={t.feedTitleShort} description={t.feedBody}>
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
+                  <CalendarFeed locale={locale} userId={userId} bare />
+                </div>
+              </SettingsSection>
+            </>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
 
-          <Collapsible open={adding || members.length === 0} onOpenChange={setAdding}>
-            {members.length > 0 ? (
-              <CollapsibleTrigger asChild>
-                <Button type="button" variant="outline" size="sm" className="w-fit">
-                  <Plus data-icon="inline-start" />
-                  {t.profilesAdd}
-                </Button>
-              </CollapsibleTrigger>
-            ) : null}
-            <CollapsibleContent className={members.length > 0 ? "pt-4" : undefined}>
+  return (
+    <div className={PAGE_WIDTH}>
+      <PageHeader
+        title={t.profilesTitle}
+        description={t.profilesHelp}
+        actions={
+          <Button type="button" onClick={() => setAdding(true)}>
+            <Plus data-icon="inline-start" />
+            {t.profilesAdd}
+          </Button>
+        }
+      />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {members.map((m) => (
+          /*
+           * What a rider is, and everything the plan knows about them, on one
+           * card. The days they cannot ride and the racing they turn up for
+           * used to be behind a "Kdy může" toggle, which left this page as one
+           * name and a button on an empty screen — and left the two settings
+           * that make the suggestions work unset.
+           */
+          <section
+            key={m.id}
+            aria-labelledby={`rider-${m.id}`}
+            className="overflow-clip rounded-xl border bg-card shadow-sm"
+          >
+            <div className="flex items-center gap-3 border-b px-4 py-3">
+              <Avatar size="lg">
+                <AvatarFallback className="text-sm font-semibold" style={riderTint(m.name)}>
+                  {initials(m.name) || "?"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <h2 id={`rider-${m.id}`} className="flex min-w-0 items-center gap-2 font-semibold">
+                  <span className="truncate">{m.name}</span>
+                  {m.is_self ? <Badge variant="secondary">{t.planSelf}</Badge> : null}
+                </h2>
+                <p className="truncate text-xs text-muted-foreground">
+                  {/* The "you" badge already says it; repeating the role reads as a stutter. */}
+                  {[
+                    m.is_self ? null : roleLabel(m.relationship, t),
+                    m.birth_year ? t.profilesBorn.replace("{n}", String(m.birth_year)) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ") || " "}
+                </p>
+              </div>
+              {/* The year so far, as a number you can read across the grid. */}
+              <div className="shrink-0 text-right">
+                <p className="text-lg font-semibold leading-none tabular-nums">
+                  {ridesByMember[m.id] ?? 0}
+                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{t.planStatRidden}</p>
+              </div>
+              {!m.is_self ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="-mr-1.5 text-muted-foreground"
+                      aria-label={`${t.remove} — ${m.name}`}
+                      title={t.remove}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t.confirmRemove}</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
+                      <AlertDialogAction
+                        variant="destructive"
+                        onClick={() => void removeMember(m.id)}
+                      >
+                        {t.remove}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : null}
+            </div>
+            <div className="px-4 py-4">
+              <PlanPrefsFields
+                locale={locale}
+                busyWeekdays={m.busy_weekdays}
+                preferredDisciplines={m.preferred_disciplines}
+                onBusyChange={(days) => void patchMember(m, { busy_weekdays: days })}
+                onDisciplinesChange={(discs) =>
+                  void patchMember(m, { preferred_disciplines: discs })
+                }
+              />
+            </div>
+          </section>
+        ))}
+
+        {/* The next card in the grid is the one you have not made yet. */}
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-center text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          <span className="flex size-10 items-center justify-center rounded-full border bg-background">
+            <Plus className="size-5" aria-hidden />
+          </span>
+          <span className="text-sm font-medium text-foreground">{t.profilesAdd}</span>
+          <span className="text-xs">{t.ridersAddBody}</span>
+        </button>
+      </div>
+
+      <Dialog open={adding} onOpenChange={setAdding}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t.profilesAdd}</DialogTitle>
+            <DialogDescription>{t.ridersAddBody}</DialogDescription>
+          </DialogHeader>
           <form onSubmit={(e) => void addMember(e)}>
             <FieldGroup className="gap-4">
-              <div className="grid gap-4 sm:grid-cols-3">
-                <Field>
-                  <FieldLabel htmlFor="rider-name">{t.fieldName}</FieldLabel>
-                  <Input
-                    id="rider-name"
-                    required
-                    name="name"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Alex…"
-                  />
-                </Field>
+              <Field>
+                <FieldLabel htmlFor="rider-name">{t.fieldName}</FieldLabel>
+                <Input
+                  id="rider-name"
+                  required
+                  autoFocus
+                  name="name"
+                  autoComplete="off"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Alex…"
+                />
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel htmlFor="rider-rel">{t.fieldRelationship}</FieldLabel>
                   <Select value={relationship} onValueChange={setRelationship}>
@@ -426,24 +489,53 @@ export function AccountPanel({
                     id="rider-year"
                     name="birthYear"
                     inputMode="numeric"
-                    autoComplete="bday-year"
+                    pattern="(19|20)[0-9]{2}"
+                    maxLength={4}
+                    autoComplete="off"
                     spellCheck={false}
                     value={birthYear}
-                    onChange={(e) => setBirthYear(e.target.value)}
+                    onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ""))}
                     placeholder="2016…"
                   />
                 </Field>
               </div>
-              <Button type="submit" disabled={busy} aria-busy={busy}>
-                {busy ? <Spinner data-icon="inline-start" /> : null}
-                {t.profilesAdd}
-              </Button>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">
+                    {t.cancel}
+                  </Button>
+                </DialogClose>
+                <Button type="submit" disabled={busy || !name.trim()} aria-busy={busy}>
+                  {busy ? <Spinner data-icon="inline-start" /> : <Plus data-icon="inline-start" />}
+                  {t.profilesAdd}
+                </Button>
+              </DialogFooter>
             </FieldGroup>
           </form>
-            </CollapsibleContent>
-          </Collapsible>
-        </Panel>
-      ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+function SettingsSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="grid gap-3 border-t py-6 first:border-t-0 first:pt-0 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-10">
+      <div className="min-w-0">
+        <h2 className="text-sm font-semibold">{title}</h2>
+        {description ? (
+          <p className="mt-1 text-sm text-pretty text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
+      <div className="min-w-0 max-w-2xl">{children}</div>
+    </section>
   );
 }

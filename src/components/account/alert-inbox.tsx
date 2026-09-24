@@ -16,6 +16,7 @@ import { asLocale } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { ensureFavorite } from "@/lib/planner-db";
+import { todayIso } from "@/lib/date-presets";
 import { toast } from "sonner";
 
 type Hit = {
@@ -60,6 +61,7 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
       }
       const since = new Date();
       since.setDate(since.getDate() - 14);
+      const today = todayIso();
       const { data } = await supabase
         .from("race_alert_deliveries")
         .select("distance_km, event:events(id, name, slug, start_date, end_date)")
@@ -82,6 +84,8 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
       }[]) {
         const ev = unwrap(row.event);
         if (!ev || seen.has(ev.id)) continue;
+        // A match for a race that has already been run is not news any more.
+        if ((ev.end_date ?? ev.start_date) < today) continue;
         seen.add(ev.id);
         out.push({
           id: ev.id,

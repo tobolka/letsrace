@@ -1,6 +1,6 @@
 "use client";
 
-import { disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
@@ -24,7 +24,6 @@ import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
 import {
   AGE_CATEGORY_FILTERS,
-  AGE_CATEGORY_LABELS,
   DISCIPLINE_TREE,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
@@ -290,7 +289,7 @@ export function MobileFiltersSheet({
                     active={categories.includes(opt.id)}
                     onClick={() => onCategory(opt.id)}
                   >
-                    {AGE_CATEGORY_LABELS[opt.id as keyof typeof AGE_CATEGORY_LABELS] || opt.label}
+                    {ageCategoryLabel(opt.id, locale)}
                   </Chip>
                 ))}
               </div>
