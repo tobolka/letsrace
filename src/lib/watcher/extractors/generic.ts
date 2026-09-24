@@ -30,6 +30,9 @@ const MONTHS_CS: Record<string, string> = {
 };
 
 export function extractGeneric(url: string, html: string): ParsedEvent[] {
+  // RoadCup's season index lists many races. Treating its heading as one race
+  // invented a "RoadCup 2027" event on the first date found in the table.
+  if (/roadcycling\.cz\/roadcup\/rocnik-20\d{2}(?:\/|$)/i.test(url)) return [];
   const $ = cheerio.load(html);
   const title =
     $('meta[property="og:title"]').attr("content") ||
@@ -37,18 +40,21 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
     $("title").text().trim();
   const text = $("body").text().replace(/\s+/g, " ");
 
-  const iso = text.match(/20\d{2}-\d{2}-\d{2}/);
-  const cs = text.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/);
-  const csWord = text.match(/(\d{1,2})\.\s*([A-Za-zÁ-ž]+)\s+(20\d{2})/);
-
-  let startDate = "";
-  if (iso) startDate = iso[0];
-  else if (cs) {
-    startDate = `${cs[3]}-${cs[2].padStart(2, "0")}-${cs[1].padStart(2, "0")}`;
-  } else if (csWord) {
-    const m = MONTHS_CS[csWord[2].toLowerCase()];
-    if (m) startDate = `${csWord[3]}-${m}-${csWord[1].padStart(2, "0")}`;
-  }
+  const validDay = (day: string): boolean => {
+    const parsed = new Date(`${day}T12:00:00Z`);
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === day;
+  };
+  const iso = [...text.matchAll(/20\d{2}-\d{2}-\d{2}/g)]
+    .map((match) => match[0]).find(validDay);
+  const cs = [...text.matchAll(/(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})/g)]
+    .map((match) => `${match[3]}-${match[2]!.padStart(2, "0")}-${match[1]!.padStart(2, "0")}`)
+    .find(validDay);
+  const csWord = [...text.matchAll(/(\d{1,2})\.\s*([A-Za-zÁ-ž]+)\s+(20\d{2})/g)]
+    .map((match) => {
+      const month = MONTHS_CS[match[2]!.toLowerCase()];
+      return month ? `${match[3]}-${month}-${match[1]!.padStart(2, "0")}` : "";
+    }).find(validDay);
+  const startDate = iso || cs || csWord || "";
 
   const name = title.replace(/\s*[|\-–].*$/, "").trim().slice(0, 140);
   if (!startDate || !name) return [];

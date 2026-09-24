@@ -3,7 +3,7 @@ import { inferClassification, inferDisciplines, inferEventType } from "@/lib/tax
 import { resolveLevel } from "@/lib/classify-level";
 import { fold, hasToken, hasTokenFollowedBy } from "@/lib/text-match";
 import { isNonCyclingEventName, hasCyclingSignal, looksLikeRunningEvent } from "@/lib/sport-gate";
-import { isSiteIdentityName } from "@/lib/watcher/extractors/generic";
+import { extractGeneric, isSiteIdentityName } from "@/lib/watcher/extractors/generic";
 import { isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
 import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 import { isSeparateRace } from "@/lib/catalog/merge-duplicates";
@@ -156,6 +156,20 @@ describe("age categories", () => {
 });
 
 describe("generic extractor guard", () => {
+  it("ignores impossible dates instead of failing a watched source", () => {
+    const url = "https://www.mazurymtb.pl/";
+    const page = (body: string) => `<html><head><title>Łaciate Mazury MTB</title></head><body>${body}</body></html>`;
+    expect(extractGeneric(url, page("2026-27-09"))).toEqual([]);
+    expect(extractGeneric(url, page("2026-27-09; 27.09.2026"))[0]?.startDate)
+      .toBe("2026-09-27");
+  });
+
+  it("does not turn a RoadCup season index into a single race", () => {
+    const html = "<html><title>RoadCup 2027</title><body>Peklo Severu 20.09.2027 Tour de Brdy 01.05.2027</body></html>";
+    expect(extractGeneric("https://www.roadcycling.cz/roadcup/rocnik-2027", html))
+      .toEqual([]);
+  });
+
   it("drops titles that name the site rather than a race", () => {
     const junk: [string, string][] = [
       ["Domů", "https://pohardrahanskevrchoviny.cz"],

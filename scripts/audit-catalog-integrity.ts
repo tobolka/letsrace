@@ -91,6 +91,13 @@ async function main() {
   const recentRuns = runs.filter((r) => Date.parse(r.started_at) >= now.getTime() - 24 * 60 * 60_000);
   const nextYear = String(now.getUTCFullYear() + 1);
   const nextYearSources = active.filter((w) => w.url.includes(nextYear));
+  const samePlaceDay = new Map<string, Event[]>();
+  for (const event of publicFuture) {
+    if (event.location?.lat == null || event.location?.lng == null) continue;
+    const key = `${event.start_date}:${event.location.lat.toFixed(3)}:${event.location.lng.toFixed(3)}`;
+    samePlaceDay.set(key, [...(samePlaceDay.get(key) ?? []), event]);
+  }
+  const sharedPlaceDay = [...samePlaceDay.entries()].filter(([, group]) => group.length > 1);
 
   const report = {
     auditedAt: now.toISOString(), today,
@@ -110,6 +117,12 @@ async function main() {
     visibilityReasons: Object.fromEntries(Object.entries(reasons).map(([key, rows]) => [key, { count: rows.length, examples: rows.slice(0, 8).map((e) => ({ id: e.id, date: e.start_date, name: e.name })) }])),
     upcomingMissingDiscipline: publicFuture.filter((e) => !e.disciplines?.length).length,
     upcomingMissingAges: publicFuture.filter((e) => !e.age_categories?.length).length,
+    sharedPlaceDayCandidates: {
+      groups: sharedPlaceDay.length,
+      examples: sharedPlaceDay.slice(0, 12).map(([key, group]) => ({
+        key, events: group.map((event) => ({ id: event.id, name: event.name })),
+      })),
+    },
     seriesIntegrity: {
       primaryMissing: primaryMissing.length, primaryMismatch: primaryMismatch.length,
       orphanLinks: orphanLinks.length, mergedLinks: mergedLinks.length, hiddenSeriesLinks: hiddenSeriesLinks.length,
