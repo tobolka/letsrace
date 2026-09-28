@@ -1,6 +1,7 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { isIngestibleDate } from "@/lib/taxonomy";
 import { fetchText } from "@/lib/watcher/http";
+import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 
 /** Cycling group on my.raceresult.com/events: Cycling, Bike Tour, MTB, CX, BMX. */
 export const RR_CYCLING_TYPES = [11, 22, 2, 20, 13] as const;
@@ -150,16 +151,52 @@ export function parseRaceresultListPayload(data: unknown, _sourceUrl: string): P
   return out;
 }
 
+/**
+ * The organiser's own site, from the event page's JSON-LD `organizer.url`.
+ *
+ * The listing API only knows the raceresult page, which is the entry form. A
+ * rider who wants the route, the start times or the parking has to find the
+ * organiser's site on their own; raceresult already names it.
+ */
+export function raceresultOrganizerUrl(html: string): string | null {
+  for (const m of html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const data = JSON.parse(m[1]!) as { organizer?: { url?: unknown } };
+      const url = typeof data.organizer?.url === "string" ? data.organizer.url.trim() : "";
+      if (!/^https?:\/\//i.test(url) || isRegistrationPlatformUrl(url)) continue;
+      return url;
+    } catch {
+      /* next block */
+    }
+  }
+  return null;
+}
+
+/** Upcoming races only — the past ones are a thousand pages nobody will open. */
+async function attachOrganizerUrls(events: ParsedEvent[], today: string): Promise<void> {
+  const queue = events.filter((e) => e.startDate >= today);
+  const worker = async () => {
+    for (let ev = queue.shift(); ev; ev = queue.shift()) {
+      const res = await fetchText(ev.sourceUrl!, { timeoutMs: 15_000 }).catch(() => null);
+      const organizer = res?.ok ? raceresultOrganizerUrl(res.text) : null;
+      if (organizer) ev.websiteUrl = organizer;
+    }
+  };
+  await Promise.all(Array.from({ length: 3 }, worker));
+}
+
 /** Listing at https://my.raceresult.com/events/ — cycling in CZ/DE/SK/AT/PL. */
 export async function parseRaceresultEvents(url: string, html: string): Promise<ParsedEvent[]> {
   const trimmed = html.trim();
+  let events: ParsedEvent[] | null = null;
   if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
     try {
-      return parseRaceresultListPayload(JSON.parse(trimmed), url);
+      events = parseRaceresultListPayload(JSON.parse(trimmed), url);
     } catch {
       /* fetch live list */
     }
   }
-  const payload = await fetchRaceresultFilteredList();
-  return parseRaceresultListPayload(payload, url);
+  events ??= parseRaceresultListPayload(await fetchRaceresultFilteredList(), url);
+  await attachOrganizerUrls(events, new Date().toISOString().slice(0, 10));
+  return events;
 }

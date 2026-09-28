@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseRaceresultListPayload } from "@/lib/watcher/extractors/raceresult";
+import {
+  parseRaceresultListPayload,
+  raceresultOrganizerUrl,
+} from "@/lib/watcher/extractors/raceresult";
+import { preferDeeperOfficialUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 
 describe("RaceResult events listing", () => {
   it("does not turn a country-only listing into a precise venue", () => {
@@ -77,5 +81,34 @@ describe("RaceResult events listing", () => {
     expect(events[1]?.discipline).toEqual(["dh"]);
     expect(events[0]?.registrationUrl).toBe("https://my.raceresult.com/393563/");
     expect(events[0]?.countryHint).toBe("SK");
+  });
+
+  it("reads the organiser's site from the event page JSON-LD", () => {
+    const html = `<script type="application/ld+json">
+      {"@type":"Event","name":"30. SZ-Fahrradfest Dresden",
+       "organizer":{"@type":"Organization","name":"DDV Mediengruppe","url":"https://www.sz-fahrradfest.de/"}}
+    </script>`;
+    expect(raceresultOrganizerUrl(html)).toBe("https://www.sz-fahrradfest.de/");
+    expect(
+      raceresultOrganizerUrl(
+        `<script type="application/ld+json">{"organizer":{"url":"https://my.raceresult.com/1/"}}</script>`,
+      ),
+    ).toBeNull();
+  });
+
+  it("keeps the organiser's site when a raceresult crawl comes back", () => {
+    expect(
+      preferDeeperOfficialUrl("https://my.raceresult.com/386744/", "http://www.sz-fahrradfest.de"),
+    ).toBe("http://www.sz-fahrradfest.de");
+    expect(
+      preferDeeperOfficialUrl("http://www.sz-fahrradfest.de", "https://my.raceresult.com/386744/"),
+    ).toBe("http://www.sz-fahrradfest.de");
+    const out = resolveEventOutboundUrls({
+      websiteUrl: "http://www.sz-fahrradfest.de",
+      registrationUrl: "https://my.raceresult.com/386744/",
+      sourceUrls: ["https://my.raceresult.com/386744/", "https://radsport-events.de/events/2024"],
+    });
+    expect(out.websiteUrl).toBe("http://www.sz-fahrradfest.de");
+    expect(out.registrationUrl).toBe("https://my.raceresult.com/386744/");
   });
 });

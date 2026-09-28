@@ -1,4 +1,8 @@
-import { pickRegistrationUrl, isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
+import {
+  pickRegistrationUrl,
+  isAccountOrNewsletterUrl,
+  isRegistrationPlatformUrl,
+} from "@/lib/watcher/registration-url";
 import { isRegulationsUrl } from "@/lib/watcher/regulations-url";
 
 /** Aggregator calendars — never show these as the race “Website” link. */
@@ -123,6 +127,13 @@ export function preferDeeperOfficialUrl(
   if (!prev) return next;
   if (isRegulationsUrl(prev) && !isRegulationsUrl(next)) return next;
   if (isRegulationsUrl(next) && !isRegulationsUrl(prev)) return prev;
+  // Two calendars that both carry a race used to take turns: radsport-events
+  // wrote the organiser's site, raceresult's next crawl wrote its own entry
+  // page back over it, and the card lost its only "more info" link. An entry
+  // platform already has the Register button; the website slot is for the
+  // organiser.
+  if (isRegistrationPlatformUrl(prev) && !isRegistrationPlatformUrl(next)) return next;
+  if (isRegistrationPlatformUrl(next) && !isRegistrationPlatformUrl(prev)) return prev;
   try {
     const a = new URL(next);
     const b = new URL(prev);
