@@ -191,21 +191,21 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   if (filters.eventTypes?.length) {
     query = query.in("event_type", filters.eventTypes);
   }
-  if (filters.q) {
-    const q = filters.q.trim().replace(/[%_,.()]/g, " ").replace(/\s+/g, " ").trim();
-    if (q) {
-      const { data: seriesHits } = await supabase
-        .from("series")
-        .select("id")
-        .eq("visibility", "public")
-        .ilike("name", `%${q}%`);
-      const seriesIds = (seriesHits ?? []).map((s) => s.id as string);
-      if (seriesIds.length) {
-        query = query.or(`name.ilike.%${q}%,series_id.in.(${seriesIds.join(",")})`);
-      } else {
-        query = query.ilike("name", `%${q}%`);
-      }
-    }
+  if (filters.q?.trim()) {
+    // "prazky pohar" is Pražský MTB pohár: the database folds diacritics,
+    // matches every word against the race and its series names in any order,
+    // and only when nothing matches does it forgive a typo per word
+    // (supabase/migrations/*_search_levenshtein_fallback.sql).
+    const { data: hits, error } = await supabase.rpc("search_event_ids", {
+      q: filters.q,
+      date_from: dateFrom ?? floor,
+      date_to: dateTo ?? null,
+      max_results: 500,
+    });
+    if (error) throw new Error(error.message);
+    const ids = ((hits ?? []) as { event_id: string }[]).map((h) => h.event_id);
+    if (!ids.length) return [];
+    query = query.in("id", ids);
   }
 
   // Public explore: races only (hide camps, cancelled, manually hidden)
