@@ -35,7 +35,8 @@ import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor, type Messages } from "@/lib/i18n/messages";
-import { disciplineLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { List as ListIcon, Map as MapIcon } from "lucide-react";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import { disciplineColor } from "@/lib/map-visuals";
 import {
@@ -48,7 +49,7 @@ import {
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import { thisWeekendRange } from "@/lib/date-presets";
+import { thisWeekendRange, todayIso } from "@/lib/date-presets";
 import {
   readExploreFilterPrefs,
   storedExploreFiltersToPatch,
@@ -100,6 +101,20 @@ const MobileSearchSheet = dynamic(
     })),
 );
 
+const MAP_PANEL_W = 400;
+const MIN_PANEL_W = 340;
+/** Room kept on the right in list mode for the detail card. */
+const DETAIL_STRIP = 344;
+
+function panelFullWidth() {
+  return Math.max(MAP_PANEL_W, window.innerWidth - 12 - DETAIL_STRIP);
+}
+/** Wider than this and the panel is a list, narrower and it is a panel. */
+function panelSnapWidth() {
+  if (typeof window === "undefined") return 560;
+  return Math.min(560, (panelFullWidth() + MAP_PANEL_W) / 2);
+}
+
 const WEEKEND_DEFAULT = thisWeekendRange();
 const exploreSearchParams = {
   q: parseAsString.withDefault(""),
@@ -112,27 +127,12 @@ const exploreSearchParams = {
   dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
   e: parseAsString.withDefault(""),
   sort: parseAsString.withDefault(""),
+  view: parseAsString.withDefault(""),
   west: parseAsString,
   south: parseAsString,
   east: parseAsString,
   north: parseAsString,
 };
-
-function seriesListQuery(filters: {
-  dateFrom: string;
-  dateTo: string;
-  categories: string[];
-  disciplines: string[];
-  levels: string[];
-}) {
-  const params = new URLSearchParams();
-  if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
-  if (filters.dateTo) params.set("dateTo", filters.dateTo);
-  for (const a of filters.categories) params.append("categories", a);
-  for (const d of filters.disciplines) params.append("disciplines", d);
-  for (const l of filters.levels) params.append("levels", l);
-  return params.toString();
-}
 
 const seriesResultCache = new Map<string, SeriesOption[]>();
 const seriesInflight = new Map<string, Promise<SeriesOption[]>>();
@@ -284,7 +284,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     if (hit && hit.id !== selectedId) setSelectedId(hit.id);
   }, [filters.e, events, selectedId]);
 
-  const seriesQuery = seriesListQuery(filters);
+  // The cup and country pickers list what exists, not what survives the other
+  // filters — "kids" on a single weekend left them empty and the menu bare.
+  const seriesQuery = "";
   useEffect(() => {
     let alive = true;
     void loadSeriesList(seriesQuery)
@@ -561,6 +563,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (country) params.set("country", country);
       if (dateFrom) params.set("dateFrom", dateFrom);
       if (dateTo) params.set("dateTo", dateTo);
+      if (!dateFrom && !dateTo) params.set("anyDate", "1");
       categories.forEach((a) => params.append("categories", a));
       disciplines.forEach((d) => params.append("disciplines", d));
       levels.forEach((l) => params.append("levels", l));
@@ -703,13 +706,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     // race that is in the catalogue. Only when no race matches is the text
     // treated as a place to go to.
     lastPlacedQ.current = "";
-    // A search is a find, not a filter: the date window goes too, so a race in
-    // October is not missing just because the bar still said "this weekend".
-    // Clearing it rather than ignoring it keeps the chip honest about what ran.
-    void setFilters({ dateFrom: "", dateTo: "" });
+    // A search is a find, not a filter: the date window widens to upcoming, so
+    // a race in October is not missing just because the bar still said "this
+    // weekend". Any date stays one click away for looking back.
+    const upcoming = todayIso();
+    void setFilters({ dateFrom: upcoming, dateTo: "" });
     const hits = await refetch({
       q: trimmed,
-      dateFrom: "",
+      dateFrom: upcoming,
       dateTo: "",
       skipBounds: true,
       fitMap: true,
@@ -783,6 +787,17 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   // Desktop: side panels. Mobile: bottom sheet over a usable map.
   const [isDesktop, setIsDesktop] = useState(false);
+  // Desktop only: the panel grows over the whole map into a table. The map
+  // stays mounted underneath, so switching back lands exactly where you were.
+  const listMode = filters.view === "list";
+  const setListMode = (on: boolean) => void setFilters({ view: on ? "list" : null });
+  // The panel's width in map mode, and the live width while its edge is being
+  // dragged. Past SNAP_W the drop lands in list mode; dragging back below it
+  // lands in map mode again.
+  const [mapWidth, setMapWidth] = useState(MAP_PANEL_W);
+  const [dragW, setDragW] = useState<number | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const panelWide = dragW != null ? dragW >= panelSnapWidth() : listMode;
   const [viewportH, setViewportH] = useState(800);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -830,7 +845,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         left: 12,
       };
     }
-    const listW = 400 + 12 + 12;
+    const listW = mapWidth + 12 + 12;
     const detailW = selected ? 320 + 12 : 0;
     return {
       top: 16,
@@ -838,9 +853,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       bottom: 56,
       left: listW + detailW + 64,
     };
-  }, [selected, isDesktop, viewportH, deferredListSnap, deferredDetailSnap]);
+  }, [selected, isDesktop, viewportH, deferredListSnap, deferredDetailSnap, mapWidth]);
 
-  function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean }) {
+  function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean; wide?: boolean }) {
     return (
       <MapFilterBar
         key={filterBarReset}
@@ -856,6 +871,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         seriesList={seriesList}
         hideSearch={opts?.hideSearch}
         allFilters={opts?.allFilters}
+        wide={opts?.wide}
         onPreset={setDateRange}
         onCategory={toggleCategory}
         onDiscipline={setDiscipline}
@@ -1015,10 +1031,29 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
-        <Card className="pointer-events-auto flex h-full w-[400px] flex-col gap-0 overflow-hidden py-0 shadow-lg">
-          <Header locale={locale} />
+        <div
+          ref={panelRef}
+          className={cn(
+            "relative h-full min-w-0 shrink-0",
+            dragW == null &&
+              "transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+          )}
+          style={{
+            width:
+              dragW ?? (listMode ? `calc(100% - ${DETAIL_STRIP}px)` : mapWidth),
+          }}
+        >
+        <Card className="pointer-events-auto flex h-full w-full min-w-0 flex-col gap-0 overflow-hidden py-0 shadow-lg">
+          <Header
+            locale={locale}
+            wide={panelWide}
+            mode={panelWide ? "list" : "map"}
+            onMode={(m) => setListMode(m === "list")}
+            mapLabel={messages.navMap}
+            listLabel={messages.navList}
+          />
           <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
-            {renderFilterBar()}
+            {renderFilterBar({ wide: panelWide })}
           </div>
           <Separator />
           <ListToolbar
@@ -1031,7 +1066,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           />
           <Separator />
           <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
-            <div ref={listRef} className="min-h-0">
+            <div ref={listRef} className="@container min-h-0">
             {listView === "empty" ? (
               <Empty className="border-0 p-6 md:p-8">
                 <EmptyHeader>
@@ -1060,6 +1095,15 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 {listView === "rows"
                   ? sortedEvents.map((event) => (
                   <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
+                  {panelWide ? (
+                    <EventRowWide
+                      event={event}
+                      locale={locale}
+                      distanceKm={eventDistanceKm(event, userOrigin)}
+                      active={event.id === selectedId}
+                      onSelect={selectFromList}
+                    />
+                  ) : (
                   <EventCard
                     event={event}
                     locale={locale}
@@ -1067,6 +1111,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     active={event.id === selectedId}
                     onSelect={selectFromList}
                   />
+                  )}
                   </div>
                     ))
                   : null}
@@ -1075,6 +1120,46 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             </div>
           </main>
         </Card>
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label={messages.resizePanel}
+          tabIndex={0}
+          className="pointer-events-auto absolute inset-y-0 -right-2 z-10 w-4 cursor-col-resize touch-none outline-none"
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            setDragW(panelRef.current?.getBoundingClientRect().width ?? mapWidth);
+          }}
+          onPointerMove={(e) => {
+            if (dragW == null) return;
+            setDragW(Math.min(panelFullWidth(), Math.max(MIN_PANEL_W, e.clientX - 12)));
+          }}
+          onPointerUp={() => {
+            if (dragW == null) return;
+            if (dragW >= panelSnapWidth()) {
+              setListMode(true);
+            } else {
+              setMapWidth(Math.round(dragW));
+              setListMode(false);
+            }
+            setDragW(null);
+          }}
+          onPointerCancel={() => setDragW(null)}
+          onKeyDown={(e) => {
+            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+            e.preventDefault();
+            const next = mapWidth + (e.key === "ArrowRight" ? 24 : -24);
+            if (listMode) {
+              if (e.key === "ArrowLeft") setListMode(false);
+            } else if (next >= panelSnapWidth()) {
+              setListMode(true);
+            } else {
+              setMapWidth(Math.max(MIN_PANEL_W, next));
+            }
+          }}
+        >
+        </div>
+        </div>
 
         {selected && (
           <EventDetailPanel
@@ -1082,6 +1167,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             locale={locale}
             onClose={() => selectEvent(null)}
             onSelectSeries={applySeries}
+            dockRight={listMode}
+            leftX={mapWidth + 24}
           />
         )}
       </div>
@@ -1335,15 +1422,58 @@ function ListToolbar({
   );
 }
 
-function Header({ locale, compact }: { locale: string; compact?: boolean }) {
+function Header({
+  locale,
+  compact,
+  wide,
+  mode,
+  onMode,
+  mapLabel,
+  listLabel,
+}: {
+  locale: string;
+  compact?: boolean;
+  wide?: boolean;
+  mode: "map" | "list";
+  onMode: (mode: "map" | "list") => void;
+  mapLabel: string;
+  listLabel: string;
+}) {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-between border-b px-3",
+        "flex shrink-0 items-center justify-between gap-2 border-b px-3 transition-[padding] duration-300 motion-reduce:transition-none",
         compact ? "h-11" : "h-12",
       )}
     >
       <BrandMark href={`/${locale}`} size={compact ? "sm" : "md"} />
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        size="sm"
+        value={mode}
+        onValueChange={(value) => {
+          if (value === "map" || value === "list") onMode(value);
+        }}
+        aria-label={`${mapLabel} / ${listLabel}`}
+      >
+        <ToggleGroupItem
+          value="map"
+          aria-label={mapLabel}
+          className="gap-1.5 px-2.5 data-[state=on]:bg-foreground data-[state=on]:text-background"
+        >
+          <MapIcon className="size-4" aria-hidden />
+          {wide ? mapLabel : null}
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="list"
+          aria-label={listLabel}
+          className="gap-1.5 px-2.5 data-[state=on]:bg-foreground data-[state=on]:text-background"
+        >
+          <ListIcon className="size-4" aria-hidden />
+          {wide ? listLabel : null}
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   );
 }
@@ -1390,7 +1520,7 @@ const EventCard = memo(function EventCard({
       className={cn(
         // `active:` is the press itself. On a phone there is no hover, and a
         // row that does nothing until the card slides up feels like a miss.
-        "rounded-none border-0 px-4 py-3 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
+        "rounded-none border-0 px-4 py-3 max-md:py-2 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
         // `muted/50` over a near-white ground was a shade nobody could see. The
         // race you picked is the one thing on this list worth finding again
         // after you look away from it.
@@ -1417,7 +1547,7 @@ const EventCard = memo(function EventCard({
         />
         {/* Without this a flex child refuses to shrink below its content, and
             `truncate` on the rows inside does nothing but overflow. */}
-        <ItemContent className="min-w-0 gap-0.5">
+        <ItemContent className="min-w-0 gap-0.5 max-md:gap-0">
           {/*
             One line, cut with an ellipsis. The list is rebuilt when the map
             settles on its real bounds, and cards that change height as their
@@ -1431,7 +1561,7 @@ const EventCard = memo(function EventCard({
           >
             <span className="block min-w-0 truncate">{event.name}</span>
           </ItemTitle>
-          <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed">
+          <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug">
             <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
             <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
             {distanceLabel && <span className="ms-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
@@ -1439,5 +1569,93 @@ const EventCard = memo(function EventCard({
         </ItemContent>
       </button>
     </Item>
+  );
+});
+
+
+/**
+ * The same race as a table row, for the full-width list. Columns appear as the
+ * panel gets wider (container queries, so an open detail panel that squeezes
+ * the list drops the extras instead of truncating everything).
+ */
+const EventRowWide = memo(function EventRowWide({
+  event,
+  locale,
+  distanceKm: km,
+  active,
+  onSelect,
+}: {
+  event: EventListItem;
+  locale: string;
+  distanceKm?: number | null;
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
+  const t = messagesFor(locale);
+  const df = dateFnsLocale(locale);
+  const start = parseISO(event.startDate);
+  const dateLabel =
+    format(start, "d MMM", { locale: df }) +
+    (event.endDate && event.endDate !== event.startDate
+      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
+      : "");
+  const place = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode]
+    .filter(Boolean)
+    .join(" · ");
+  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
+  const level = event.level ? raceLevelLabel(event.level, locale) : "";
+  const ages = event.ageCategories.slice(0, 3).map((a) => ageCategoryLabel(a, locale)).join(", ");
+  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
+  const sub = [event.series?.name, event.classLabel].filter(Boolean).join(" · ");
+
+  return (
+    <button
+      type="button"
+      data-event-id={event.id}
+      aria-pressed={active}
+      onClick={() => onSelect(event.id)}
+      className={cn(
+        "relative grid w-full items-center gap-x-4 px-5 py-2.5 text-left touch-manipulation",
+        "grid-cols-[5.5rem_minmax(0,1fr)_minmax(0,0.8fr)_4rem]",
+        "@3xl:grid-cols-[5.5rem_minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_4rem]",
+        "@5xl:grid-cols-[5.5rem_minmax(0,1.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_minmax(0,1fr)_4rem]",
+        "active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
+        active && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+      )}
+    >
+      <span
+        aria-hidden
+        className="absolute inset-y-2 left-2 w-[3px] rounded-full"
+        style={{ background: disciplineColor(event.disciplines) }}
+      />
+      <span className="min-w-0">
+        <time dateTime={event.startDate} className="block truncate text-sm font-medium tabular-nums">
+          {dateLabel}
+        </time>
+        <span className="block truncate text-xs text-muted-foreground">
+          {format(start, "EEE", { locale: df })}
+        </span>
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-medium leading-snug">{event.name}</span>
+        {sub ? <span className="block truncate text-xs text-muted-foreground">{sub}</span> : null}
+      </span>
+      <span className="min-w-0 truncate text-sm text-muted-foreground" title={place}>
+        {place}
+      </span>
+      <span className="hidden min-w-0 truncate text-sm text-muted-foreground @3xl:block" title={discLabel}>
+        {discLabel}
+      </span>
+      <span className="hidden min-w-0 @5xl:block">
+        <span className="block truncate text-sm">{level}</span>
+        {ages ? <span className="block truncate text-xs text-muted-foreground">{ages}</span> : null}
+      </span>
+      <span
+        className="text-right text-xs tabular-nums text-muted-foreground"
+        title={distanceLabel ? t.distanceFromOrigin : undefined}
+      >
+        {distanceLabel ? `↗ ${distanceLabel}` : ""}
+      </span>
+    </button>
   );
 });

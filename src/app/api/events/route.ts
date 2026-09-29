@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
     eventTypes: sp.getAll("eventType").filter(Boolean),
     dateFrom: sp.get("dateFrom") || undefined,
     dateTo: sp.get("dateTo") || undefined,
+    anyDate: sp.get("anyDate") === "1",
     west,
     south,
     east,

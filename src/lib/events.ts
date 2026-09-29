@@ -69,6 +69,8 @@ export type EventFilters = {
   eventTypes?: string[];
   dateFrom?: string;
   dateTo?: string;
+  /** Look back on purpose: no "today" floor when the date filter is empty. */
+  anyDate?: boolean;
   west?: number;
   south?: number;
   east?: number;
@@ -140,7 +142,11 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   // September wants the rounds already run beside the ones to come, so the
   // floor drops to the start of the year instead of today.
   const today = new Date().toISOString().slice(0, 10);
-  const floor = filters.seriesSlug ? `${today.slice(0, 4)}-01-01` : today;
+  const floor = filters.anyDate
+    ? "1900-01-01"
+    : filters.seriesSlug
+      ? `${today.slice(0, 4)}-01-01`
+      : today;
   query = query.gte("start_date", dateFrom ?? floor);
   if (dateTo) query = query.lte("start_date", dateTo);
   if (filters.audience?.length === 1) {

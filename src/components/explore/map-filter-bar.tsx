@@ -60,7 +60,6 @@ import { familyColor } from "@/lib/map-visuals";
 import {
   AGE_CATEGORY_FILTERS,
   DISCIPLINE_TREE,
-  QUICK_DISCIPLINE_FILTERS,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -181,6 +180,7 @@ export function MapFilterBar({
   onSearchSubmit,
   hideSearch = false,
   allFilters = false,
+  wide = false,
 }: {
   messages: Messages;
   locale: string;
@@ -207,6 +207,8 @@ export function MapFilterBar({
   hideSearch?: boolean;
   /** Mobile chip row: pin every extra filter, not only active ones. */
   allFilters?: boolean;
+  /** Full-width list mode: every filter pinned, chips wrap instead of scroll. */
+  wide?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
@@ -325,23 +327,13 @@ export function MapFilterBar({
   const visible = EXTRA_ORDER.filter(hasValue);
   // Mobile: every extra filter is a chip (horizontal scroll). Nested
   // submenus behind “+ Filtr” are unusable on a phone.
-  const pinAll = allFilters || hideSearch;
-  // Family quick chips cover mtb/road/gravel/cx — only keep the discipline
-  // extra when a leaf (XCO, …) is selected so the subtype stays editable.
-  const shownExtras = (pinAll ? EXTRA_ORDER : visible).filter((id) => {
-    if (id !== "discipline") return true;
-    if (pinAll) return true;
-    const d = disciplines[0];
-    if (!d) return false;
-    return !(QUICK_DISCIPLINE_FILTERS as readonly string[]).includes(d);
-  });
+  const pinAll = allFilters || hideSearch || wide;
+  const shownExtras = pinAll ? EXTRA_ORDER : visible;
   const availableToAdd = pinAll
     ? []
     : EXTRA_ORDER.filter((id) => {
         if (shownExtras.includes(id)) return false;
-        // Discipline stays reachable for subtypes even when a family chip is on.
-        if (id === "discipline" && disciplines.length > 0) return true;
-        if (visible.includes(id) && id !== "discipline") return false;
+        if (visible.includes(id)) return false;
         if (id === "series" && visibleSeries.length === 0) return false;
         if (id === "country" && countryCodes.length === 0) return false;
         return true;
@@ -535,13 +527,15 @@ export function MapFilterBar({
     <div
       className={cn(
         "pointer-events-auto flex items-center gap-1.5",
-        pinAll ? "w-max" : "w-full",
+        pinAll && !wide ? "w-max" : "w-full",
       )}
     >
       <div
         className={cn(
           "flex items-center gap-1.5",
-          pinAll
+          wide
+            ? "min-w-0 flex-1 flex-wrap"
+            : pinAll
             ? "flex-nowrap"
             : "min-w-0 flex-1 flex-wrap max-md:flex-nowrap max-md:overflow-x-auto",
         )}

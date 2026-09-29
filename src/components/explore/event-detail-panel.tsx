@@ -66,6 +66,8 @@ export function EventDetailPanel({
   locale,
   onSelectSeries,
   embedded = false,
+  dockRight = false,
+  leftX = DEFAULT_X,
 }: {
   event: EventListItem;
   onClose: () => void;
@@ -73,6 +75,10 @@ export function EventDetailPanel({
   onSelectSeries?: (slug: string) => void;
   /** Flat layout inside the mobile bottom sheet (no outer card chrome). */
   embedded?: boolean;
+  /** Full-width list mode: sit in the strip reserved at the right edge. */
+  dockRight?: boolean;
+  /** Where the card starts when it sits beside the panel. */
+  leftX?: number;
 }) {
   const t = messagesFor(locale);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -89,6 +95,17 @@ export function EventDetailPanel({
   const [offset, setOffset] = useState({ x: DEFAULT_X, y: DEFAULT_Y });
   const [dragging, setDragging] = useState(false);
   const prevEventIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (embedded) return;
+    // Docked: the list leaves a strip on the right, so start there. Undocked
+    // returns to the default beside the 400px panel. Dragging still works.
+    const x = dockRight ? Math.max(12, window.innerWidth - 320 - 12) : leftX;
+    // Docked, it starts below the account button that floats top-right.
+    const next = clampPanelPos(x, dockRight ? 64 : DEFAULT_Y, cardRef.current);
+    offsetRef.current = next;
+    setOffset(next);
+  }, [dockRight, embedded, leftX]);
 
   useEffect(() => {
     if (embedded) return;
