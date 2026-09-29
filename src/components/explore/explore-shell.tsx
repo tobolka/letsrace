@@ -1520,7 +1520,7 @@ const EventCard = memo(function EventCard({
       className={cn(
         // `active:` is the press itself. On a phone there is no hover, and a
         // row that does nothing until the card slides up feels like a miss.
-        "rounded-none border-0 px-4 py-3 max-md:py-2 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
+        "rounded-none border-0 px-4 py-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
         // `muted/50` over a near-white ground was a shade nobody could see. The
         // race you picked is the one thing on this list worth finding again
         // after you look away from it.

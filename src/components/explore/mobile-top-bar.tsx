@@ -13,12 +13,12 @@ import type { EventSort } from "@/lib/geo/distance";
 import { cn } from "@/lib/utils";
 
 /**
- * Forty pixels tall, not thirty-six, and pressing one says so. These are the
+ * Thirty-six points tall — the list needs the room — and pressing one says so. These are the
  * controls a thumb uses most, in a row it reaches across; a chip that only
  * lights up on hover gives a finger nothing back at all.
  */
 const pillClass =
-  "h-10 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3.5 text-sm font-medium text-foreground shadow-none touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80";
+  "h-9 shrink-0 gap-1 rounded-full border border-border/80 bg-background px-3.5 text-sm font-medium text-foreground shadow-none touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80";
 
 export function MobileTopBar({
   weekendLabel,
@@ -65,7 +65,7 @@ export function MobileTopBar({
   const sortLabel = sort === "distance" ? sortDistanceShort : sortDateShort;
 
   return (
-    <div className="flex items-center gap-2 px-3 pt-1 pb-2">
+    <div className="flex items-center gap-2 px-3 pb-1.5">
       {/*
         The strip scrolls, and a pill cut dead at the container edge reads as a
         broken layout rather than as more content. Fade the last few pixels so
@@ -143,7 +143,7 @@ export function MobileTopBar({
         type="button"
         variant={searchActive ? "secondary" : "outline"}
         size="icon"
-        className="size-10 shrink-0 rounded-full border-border/80 touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80"
+        className="size-9 shrink-0 rounded-full border-border/80 touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80"
         aria-label={searchLabel}
         aria-pressed={searchActive}
         onClick={onSearch}

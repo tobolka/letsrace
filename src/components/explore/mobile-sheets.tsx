@@ -33,7 +33,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const LIST_PEEK = "112px";
-export const COMPACT = 0.42;
+export const COMPACT = 0.5;
 export const FULL = 0.92;
 
 /**
@@ -109,7 +109,7 @@ function Visible({
   return (
     <div className={CARD} style={{ height: visibleContentHeight(snap, viewportH) }}>
       <GrabZone label={handleLabel} closeLabel={closeLabel} onClose={onClose} />
-      <div className="flex min-h-0 flex-1 flex-col pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="flex min-h-0 flex-1 flex-col pb-[max(0px,calc(env(safe-area-inset-bottom)-0.5rem))]">
         {children}
       </div>
     </div>
@@ -135,13 +135,20 @@ function GrabZone({
   onClose?: () => void;
 }) {
   return (
-    <div className="relative flex h-11 shrink-0 items-center justify-center">
+    <div
+      className={cn(
+        "relative flex shrink-0 items-center justify-center",
+        // The list only needs a strip to grab; the detail card carries a close
+        // button that wants the full touch height.
+        onClose ? "h-11" : "h-7",
+      )}
+    >
       {/* Inline, because vaul ships unlayered CSS for [data-vaul-handle] that
           sets a 5px height, and unlayered rules beat any utility class. */}
       <DrawerHandle
         aria-label={label}
         className="m-0 w-full py-0"
-        style={{ width: "100%", height: 44, background: "transparent" }}
+        style={{ width: "100%", height: onClose ? 44 : 28, background: "transparent" }}
       />
       {onClose ? (
         <Button
