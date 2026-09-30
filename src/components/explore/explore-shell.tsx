@@ -1370,8 +1370,8 @@ function ListToolbar({
  */
 function Header({ locale }: { locale: string }) {
   return (
-    <div className="flex h-12 shrink-0 items-center border-b px-3">
-      <BrandMark href={`/${locale}`} size="md" />
+    <div className="flex h-12 shrink-0 items-center border-b px-4">
+      <BrandMark href={`/${locale}`} size="xs" />
     </div>
   );
 }

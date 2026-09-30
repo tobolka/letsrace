@@ -27,8 +27,8 @@ export default function Loading() {
       {/* Desktop: the panel Card, mirroring ExploreShell's own chrome. */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-20 hidden md:flex">
         <div className="flex h-full w-[400px] flex-col overflow-hidden border-r bg-card">
-          <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
-            <BrandMark size="md" />
+          <div className="flex h-12 shrink-0 items-center justify-between border-b px-4">
+            <BrandMark size="xs" />
             <Skeleton className="size-7 rounded-md" />
           </div>
           <div className="relative flex min-h-12 shrink-0 items-center gap-2 px-3 py-2">

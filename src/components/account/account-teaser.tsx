@@ -3,11 +3,9 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { format, startOfWeek, addDays } from "date-fns";
 import { Check } from "lucide-react";
 import { TeaserArt } from "@/components/account/teasers/teaser-art";
 import { Button } from "@/components/ui/button";
-import { dateFnsLocale } from "@/lib/i18n/dates";
 import { teaserMessagesFor, type TeaserKey } from "@/lib/i18n/teasers";
 
 const AuthDialog = dynamic(() =>
@@ -33,12 +31,11 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
   const m = teaserMessagesFor(locale);
   const copy = m.teasers[kind];
   const [open, setOpen] = useState(false);
-  const df = dateFnsLocale(locale);
-  const monday = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const weekdays = Array.from({ length: 7 }, (_, i) => format(addDays(monday, i), "EEEEE", { locale: df }));
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-10 py-6 md:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
+    // Pinned to the top of the page like every other page's heading, not
+    // floated in the middle of the screen; text and photo centre on each other.
+    <div className="mx-auto grid w-full max-w-6xl items-center gap-10 md:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14">
       <div className="flex max-w-xl flex-col gap-6">
         <span className="w-fit rounded-full border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
           {copy.eyebrow}
@@ -72,12 +69,7 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
         </div>
       </div>
 
-      <TeaserArt
-        kind={kind}
-        art={m.art}
-        weekdays={weekdays}
-        month={format(new Date(), "LLLL", { locale: df })}
-      />
+      <TeaserArt kind={kind} art={m.art} />
 
       {open ? (
         <AuthDialog open onClose={() => setOpen(false)} onSuccess={() => setOpen(false)} locale={locale} />

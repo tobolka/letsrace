@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Radar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,7 +19,17 @@ type Row = {
   location: { municipality?: string | null; name?: string | null; lat?: number | null; lng?: number | null } | null;
 };
 
-type Hit = { id: string; slug: string; name: string; startDate: string; endDate: string | null; km: number };
+export type Hit = {
+  id: string;
+  slug: string;
+  name: string;
+  startDate: string;
+  endDate: string | null;
+  km: number;
+  lat: number;
+  lng: number;
+  disciplines: string[];
+};
 
 /**
  * What this setting would actually have caught.
@@ -34,16 +44,21 @@ export function AlertPreview({
   lng,
   radiusKm,
   disciplines,
+  onHits,
 }: {
   locale: string;
   lat: number;
   lng: number;
   radiusKm: number;
   disciplines: string[];
+  /** Everything caught, for whoever draws it — the map beside this. */
+  onHits?: (hits: Hit[]) => void;
 }) {
   const t = messagesFor(locale);
   const loc = asLocale(locale);
   const [hits, setHits] = useState<Hit[] | null>(null);
+  const onHitsRef = useRef(onHits);
+  onHitsRef.current = onHits;
 
   useEffect(() => {
     let alive = true;
@@ -83,10 +98,16 @@ export function AlertPreview({
               startDate: row.startDate,
               endDate: row.endDate,
               km,
+              lat: p.lat,
+              lng: p.lng,
+              disciplines: row.disciplines ?? [],
             });
           }
           matched.sort((a, b) => a.km - b.km || a.startDate.localeCompare(b.startDate));
-          if (alive) setHits(matched);
+          if (alive) {
+            setHits(matched);
+            onHitsRef.current?.(matched);
+          }
         } catch {
           if (alive) setHits([]);
         }

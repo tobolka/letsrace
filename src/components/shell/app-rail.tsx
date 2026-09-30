@@ -38,9 +38,9 @@ const AuthDialog = dynamic(() =>
 
 function NavGroup({ items, carry }: { items: NavItem[]; carry?: ReturnType<typeof useCarryFilters> }) {
   return (
-    <SidebarGroup>
+    <SidebarGroup className="px-0 py-1">
       <SidebarGroupContent>
-        <SidebarMenu>
+        <SidebarMenu className="items-center gap-1">
           {items.map((item) => (
             <SidebarMenuItem key={item.key}>
               <SidebarMenuButton asChild isActive={item.active} tooltip={item.label}>
@@ -85,7 +85,7 @@ function UserMenu({ locale }: { locale: string }) {
 
   return (
     <>
-      <SidebarMenu>
+      <SidebarMenu className="items-center">
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -143,13 +143,18 @@ export function AppSidebar({ locale }: { locale: string }) {
   const counts = useNavCounts(pathname);
 
   return (
-    <Sidebar variant="inset" collapsible="icon" aria-label={t.navPrimary}>
-      <SidebarContent className="gap-0 pt-1">
+    <Sidebar
+      variant="inset"
+      collapsible="icon"
+      aria-label={t.navPrimary}
+      className="p-0 py-1.5 md:group-data-[collapsible=icon]:w-14"
+    >
+      <SidebarContent className="gap-0 pt-2">
         <NavGroup items={exploreNav(locale, t, pathname)} carry={carry} />
-        <SidebarSeparator className="mx-auto w-5" />
+        <SidebarSeparator className="mx-auto my-1.5 data-[orientation=horizontal]:w-8" />
         <NavGroup items={profileNav(locale, t, pathname, counts)} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="items-center px-0 pb-2.5">
         <UserMenu locale={locale} />
       </SidebarFooter>
     </Sidebar>

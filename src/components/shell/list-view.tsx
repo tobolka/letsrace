@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { EventCard, EventRowWide } from "@/components/explore/event-rows";
+import { useEffect, useMemo, useState } from "react";
+import { EventCard } from "@/components/explore/event-rows";
+import { ColumnPicker } from "@/components/shell/column-picker";
+import { RaceTable } from "@/components/shell/race-table";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { ExploreFilterBar } from "@/components/shell/explore-filter-bar";
 import { RacePreview } from "@/components/shell/race-preview";
@@ -17,6 +19,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { eventDistanceKm, sortEvents, type EventSort } from "@/lib/geo/distance";
 import { messagesFor } from "@/lib/i18n/messages";
 import { listViewState } from "@/lib/list-view-state";
+import { DEFAULT_LAYOUT, readLayout, writeLayout, type ColumnLayout, type ListColumn } from "@/lib/list-columns";
 
 /**
  * Every race that matches, on a page of its own.
@@ -43,6 +46,28 @@ export function ListView({ locale }: { locale: string }) {
   );
   const view = listViewState({ settled: feed.settled, count: rows.length });
 
+  const [layout, setLayoutState] = useState<ColumnLayout>(DEFAULT_LAYOUT);
+  // Read after mount: the server renders the default and local storage only
+  // exists here.
+  useEffect(() => setLayoutState(readLayout()), []);
+  function setLayout(next: ColumnLayout | null) {
+    setLayoutState(next ?? DEFAULT_LAYOUT);
+    writeLayout(next);
+  }
+  const columns = layout.order.filter((c) => !layout.hidden.includes(c));
+  const labels: Record<ListColumn, string> = {
+    date: t.colDate,
+    name: t.colName,
+    place: t.colPlace,
+    country: t.colCountry,
+    discipline: t.colDiscipline,
+    level: t.colLevel,
+    categories: t.colCategories,
+    series: t.colSeries,
+    distance: t.colDistance,
+  };
+  const isDefault = JSON.stringify(layout) === JSON.stringify(DEFAULT_LAYOUT);
+
   function setSort(next: EventSort) {
     void setFilters({ sort: next === "distance" ? "distance" : null });
     // Choosing distance is what asks for the position, as it is on the map.
@@ -67,6 +92,18 @@ export function ListView({ locale }: { locale: string }) {
               {feed.loading ? <Spinner className="size-3.5" /> : null}
             </span>
           </span>
+          <div className="flex items-center gap-1">
+          {isMobile ? null : (
+            <ColumnPicker
+              layout={layout}
+              labels={labels}
+              title={t.listColumns}
+              resetLabel={t.listColumnsReset}
+              isDefault={isDefault}
+              onChange={setLayout}
+              onReset={() => setLayout(null)}
+            />
+          )}
           <ToggleGroup
             type="single"
             variant="outline"
@@ -84,9 +121,10 @@ export function ListView({ locale }: { locale: string }) {
               {t.sortDistance}
             </ToggleGroupItem>
           </ToggleGroup>
+          </div>
         </div>
 
-        <div id="race-list" tabIndex={-1} className="@container min-h-0 flex-1 overflow-y-auto outline-none">
+        <div id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none [&>[data-slot=table-container]]:overflow-x-visible">
           {view === "empty" ? (
             <Empty className="border-0 p-8">
               <EmptyHeader>
@@ -100,32 +138,39 @@ export function ListView({ locale }: { locale: string }) {
               </EmptyContent>
             </Empty>
           ) : (
-            <ItemGroup>
-              {view === "skeleton" ? <ListSkeleton rows={10} /> : null}
-              {view === "rows"
-                ? rows.map((event) => (
+            <>
+              {view === "skeleton" ? (
+                <ItemGroup>
+                  <ListSkeleton rows={10} />
+                </ItemGroup>
+              ) : null}
+              {view === "rows" && isMobile ? (
+                <ItemGroup>
+                  {rows.map((event) => (
                     <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
-                      {isMobile ? (
-                        <EventCard
-                          event={event}
-                          locale={locale}
-                          distanceKm={eventDistanceKm(event, origin)}
-                          active={event.id === selectedId}
-                          onSelect={setSelectedId}
-                        />
-                      ) : (
-                        <EventRowWide
-                          event={event}
-                          locale={locale}
-                          distanceKm={eventDistanceKm(event, origin)}
-                          active={event.id === selectedId}
-                          onSelect={setSelectedId}
-                        />
-                      )}
+                      <EventCard
+                        event={event}
+                        locale={locale}
+                        distanceKm={eventDistanceKm(event, origin)}
+                        active={event.id === selectedId}
+                        onSelect={setSelectedId}
+                      />
                     </div>
-                  ))
-                : null}
-            </ItemGroup>
+                  ))}
+                </ItemGroup>
+              ) : null}
+              {view === "rows" && !isMobile ? (
+                <RaceTable
+                  events={rows}
+                  columns={columns}
+                  labels={labels}
+                  locale={locale}
+                  origin={origin}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                />
+              ) : null}
+            </>
           )}
         </div>
       </section>

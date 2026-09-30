@@ -7,7 +7,7 @@ import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
-import { PAGE_WIDTH } from "@/components/account/panel";
+import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
 
@@ -61,25 +61,21 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
 
   return (
     <div className={embedded ? "flex w-full flex-col gap-5" : `${PAGE_WIDTH}`}>
-      {!embedded && <h1 className="text-2xl font-semibold tracking-tight">{t.alertTitle}</h1>}
+      {!embedded ? <PageHeader title={t.discoverWatching} description={t.alertHelp} /> : null}
 
-      {/* Same split as the plan, so the left edge does not jump between tabs:
-          what you are setting on the left, what it has produced beside it. */}
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      {/* The places on the left, each with its map; what they have caught beside them. */}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
         <section aria-labelledby="alert-places" className="flex min-w-0 flex-col gap-3">
-          <div>
-            <h2 id="alert-places" className="text-sm font-semibold">
-              {t.alertPlacesTitle}
-            </h2>
-            <p className="mt-0.5 max-w-2xl text-sm text-pretty text-muted-foreground">{t.alertHelp}</p>
-          </div>
+          <h2 id="alert-places" className="text-sm font-semibold">
+            {t.alertPlacesTitle}
+          </h2>
           <AlertSettings
             locale={locale}
             userId={userId}
             preferredDisciplines={preferredDisciplines}
           />
         </section>
-        <aside className="min-w-0 lg:sticky lg:top-20">
+        <aside className="min-w-0 xl:sticky xl:top-6">
           <AlertInbox locale={locale} userId={userId} />
         </aside>
       </div>

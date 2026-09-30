@@ -31,7 +31,7 @@ export function Panel({
     // `overflow-clip`, not `overflow-hidden`: hidden makes the card a scroll
     // container, and a sticky table heading inside one sticks to the card —
     // which never scrolls — instead of under the app bar.
-    <section className={cn("overflow-clip rounded-xl border bg-card shadow-sm", className)}>
+    <section className={cn("overflow-clip rounded-xl border bg-card", className)}>
       {title || actions ? (
         <div className="flex min-h-11 items-center justify-between gap-2 border-b px-4 py-2">
           <h2 className="truncate text-sm font-semibold">{title}</h2>

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Bookmark, CalendarDays, Compass, List, Map, Settings, Users } from "lucide-react";
+import { BellRing, Bookmark, CalendarDays, Compass, List, Map, Settings, Users } from "lucide-react";
 import type { Messages } from "@/lib/i18n/messages";
 
 export type NavItem = {
@@ -61,7 +61,14 @@ export function profileNav(
       href: `${base}/recommendations`,
       label: t.accountDiscover,
       icon: Compass,
-      active: pathname.startsWith(`${base}/recommendations`) || pathname.startsWith(`${base}/alerts`),
+      active: pathname.startsWith(`${base}/recommendations`),
+    },
+    {
+      key: "alerts",
+      href: `${base}/alerts`,
+      label: t.discoverWatching,
+      icon: BellRing,
+      active: pathname.startsWith(`${base}/alerts`),
       badge: counts.alerts,
     },
     {

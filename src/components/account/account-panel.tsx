@@ -290,16 +290,16 @@ export function AccountPanel({
 
   if (section === "settings") {
     return (
-      <div className={PAGE_WIDTH}>
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-10 md:pt-6">
         <PageHeader title={t.accountSettings} />
         {/*
-          Label on the left, the thing itself on the right — the shape every
-          settings page has, because it lets you scan the left column for the
-          section you came for instead of reading every card top to bottom.
+          One column, a heading over each group and the group in a flat
+          bordered box — read top to bottom like a form rather than scanned
+          across two columns, which on a page this short only spread it out.
         */}
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-10">
           <SettingsSection title={t.account} description={t.settingsAccountBody}>
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border p-4">
               <Avatar size="lg">
                 <AvatarFallback style={riderTint(email ?? "")}>
                   {(email ?? "?").slice(0, 1).toUpperCase()}
@@ -321,7 +321,7 @@ export function AccountPanel({
                 <MailPrefs locale={locale} userId={userId} />
               </SettingsSection>
               <SettingsSection title={t.feedTitleShort} description={t.feedBody}>
-                <div className="rounded-xl border bg-card p-4 shadow-sm">
+                <div className="rounded-xl border p-4">
                   <CalendarFeed locale={locale} userId={userId} bare />
                 </div>
               </SettingsSection>
@@ -357,7 +357,7 @@ export function AccountPanel({
           <section
             key={m.id}
             aria-labelledby={`rider-${m.id}`}
-            className="overflow-clip rounded-xl border bg-card shadow-sm"
+            className="overflow-clip rounded-xl border bg-card"
           >
             <div className="flex items-center gap-3 border-b px-4 py-3">
               <Avatar size="lg">
@@ -528,14 +528,14 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="grid gap-3 border-t py-6 first:border-t-0 first:pt-0 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-10">
+    <section className="flex flex-col gap-3">
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold">{title}</h2>
+        <h2 className="text-base font-semibold">{title}</h2>
         {description ? (
-          <p className="mt-1 text-sm text-pretty text-muted-foreground">{description}</p>
+          <p className="mt-0.5 text-sm text-pretty text-muted-foreground">{description}</p>
         ) : null}
       </div>
-      <div className="min-w-0 max-w-2xl">{children}</div>
+      <div className="min-w-0">{children}</div>
     </section>
   );
 }

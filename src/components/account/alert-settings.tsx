@@ -21,7 +21,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { AlertPreview } from "@/components/account/alert-preview";
+import { AlertPreview, type Hit } from "@/components/account/alert-preview";
+import { RadiusMap } from "@/components/account/radius-map";
+import { disciplineColor } from "@/lib/map-visuals";
 import { Panel } from "@/components/account/panel";
 import { PlacePicker } from "@/components/account/place-picker";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -187,10 +189,10 @@ function AlertCard({
   const t = messagesFor(locale);
   const discs = row.disciplines ?? [];
   const switchId = `alert-on-${row.id}`;
+  const [hits, setHits] = useState<Hit[]>([]);
 
   return (
     <Panel
-      className={cn(!row.enabled && "bg-card/60")}
       title={
         <span className="flex min-w-0 items-center gap-2">
           <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -198,91 +200,98 @@ function AlertCard({
         </span>
       }
       actions={
-        <Field orientation="horizontal" className="w-auto items-center gap-2">
-          <FieldLabel htmlFor={switchId} className="text-xs font-normal text-muted-foreground">
-            {t.alertEnabled}
-          </FieldLabel>
-          <Switch
-            id={switchId}
-            checked={row.enabled}
-            onCheckedChange={(on) => onPatch({ enabled: on })}
-          />
-        </Field>
+        <>
+          <Field orientation="horizontal" className="w-auto items-center gap-2">
+            <FieldLabel htmlFor={switchId} className="text-xs font-normal text-muted-foreground">
+              {t.alertEnabled}
+            </FieldLabel>
+            <Switch id={switchId} checked={row.enabled} onCheckedChange={(on) => onPatch({ enabled: on })} />
+          </Field>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button type="button" variant="ghost" size="icon-sm" aria-label={t.alertRemove} className="text-muted-foreground">
+                <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t.confirmRemoveAlert}</AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={onRemove}>
+                  {t.alertRemove}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       }
-      bodyClassName={cn("flex flex-col gap-5 p-4 transition-opacity", !row.enabled && "opacity-60")}
+      bodyClassName="grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]"
     >
-      <Field>
-        <FieldLabel>{t.alertRadius}</FieldLabel>
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          spacing={1}
-          value={String(row.radius_km)}
-          onValueChange={(v) => {
-            if (v) onPatch({ radius_km: clampRadiusKm(Number(v)) });
-          }}
-          className="flex flex-wrap"
-        >
-          {ALERT_RADIUS_PRESETS.map((km) => (
-            <ToggleGroupItem key={km} value={String(km)} className="tabular-nums">
-              {t.alertRadiusKm.replace("{n}", String(km))}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </Field>
+      {/* What you set on the left, what it covers on the right. */}
+      <div className={cn("flex flex-col gap-5 p-4 transition-opacity", !row.enabled && "opacity-60")}>
+        <Field>
+          <FieldLabel>{t.alertRadius}</FieldLabel>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            spacing={1}
+            value={String(row.radius_km)}
+            onValueChange={(v) => {
+              if (v) onPatch({ radius_km: clampRadiusKm(Number(v)) });
+            }}
+            className="flex flex-wrap"
+          >
+            {ALERT_RADIUS_PRESETS.map((km) => (
+              <ToggleGroupItem key={km} value={String(km)} className="tabular-nums">
+                {t.alertRadiusKm.replace("{n}", String(km))}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </Field>
 
-      <Field>
-        <FieldLabel>{t.alertDisciplines}</FieldLabel>
-        {discs.length === 0 ? <FieldDescription>{t.alertAllDisciplines}</FieldDescription> : null}
-        <ToggleGroup
-          type="multiple"
-          variant="outline"
-          size="sm"
-          spacing={1}
-          value={discs}
-          onValueChange={(next) => onPatch({ disciplines: next })}
-          className="flex w-full flex-wrap"
-        >
-          {DISCIPLINE_TREE.map((opt) => (
-            <ToggleGroupItem key={opt.id} value={opt.id}>
-              {disciplineLabel(opt.id, locale)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </Field>
+        <Field>
+          <FieldLabel>{t.alertDisciplines}</FieldLabel>
+          {discs.length === 0 ? <FieldDescription>{t.alertAllDisciplines}</FieldDescription> : null}
+          <ToggleGroup
+            type="multiple"
+            variant="outline"
+            size="sm"
+            spacing={1}
+            value={discs}
+            onValueChange={(next) => onPatch({ disciplines: next })}
+            className="flex w-full flex-wrap"
+          >
+            {DISCIPLINE_TREE.map((opt) => (
+              <ToggleGroupItem key={opt.id} value={opt.id}>
+                {disciplineLabel(opt.id, locale)}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </Field>
 
-      <div className="rounded-lg bg-muted/50 p-3">
-        <AlertPreview
-          locale={locale}
-          lat={Number(row.lat)}
-          lng={Number(row.lng)}
-          radiusKm={row.radius_km}
-          disciplines={discs}
-        />
+        <div className="border-t pt-4">
+          <AlertPreview
+            locale={locale}
+            lat={Number(row.lat)}
+            lng={Number(row.lng)}
+            radiusKm={row.radius_km}
+            disciplines={discs}
+            onHits={setHits}
+          />
+        </div>
       </div>
 
-      <AlertDialog>
-        {/* Destroying something is not the widest, most central control on a
-            card; it sits at the end of the row like every other afterthought. */}
-        <AlertDialogTrigger asChild>
-          <Button type="button" variant="ghost" size="sm" className="-mb-1 self-end text-muted-foreground">
-            <Trash2 data-icon="inline-start" />
-            {t.alertRemove}
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t.confirmRemoveAlert}</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={onRemove}>
-              {t.alertRemove}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <RadiusMap
+        lat={Number(row.lat)}
+        lng={Number(row.lng)}
+        radiusKm={row.radius_km}
+        muted={!row.enabled}
+        races={hits.map((h) => ({ id: h.id, lat: h.lat, lng: h.lng, color: disciplineColor(h.disciplines) }))}
+        className="min-h-72 w-full border-t lg:border-t-0 lg:border-l"
+      />
     </Panel>
   );
 }

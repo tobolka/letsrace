@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, ChevronRight, List, Sheet, Undo2 } from "lucide-react";
+import { CalendarDays, CalendarOff, List, Sheet, Undo2 } from "lucide-react";
 import { PlanAgenda } from "@/components/account/plan-agenda";
 import { Panel } from "@/components/account/panel";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
-import { PlanRow } from "@/components/account/plan-row";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -152,34 +151,6 @@ export function PlanSeason({
         ) : null}
       </Panel>
 
-      {past.length > 0 ? (
-        <details className="group">
-          <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-md py-1 text-sm text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
-            <ChevronRight
-              className="size-4 transition-transform duration-150 group-open:rotate-90 motion-reduce:transition-none"
-              aria-hidden
-            />
-            {t.planPast}
-            <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums">{past.length}</span>
-          </summary>
-          <div className="mt-2 divide-y overflow-hidden rounded-xl border bg-card shadow-sm">
-            {past.map((plan) => (
-              <PlanRow
-                key={plan.event.id}
-                locale={locale}
-                plan={plan}
-                members={members}
-                muted
-                busy={busyId === plan.event.id}
-                onStatusChange={(memberId, status) =>
-                  onStatusChange(plan.event.id, memberId, status)
-                }
-                onDiscard={() => onDiscard(plan.event.id)}
-              />
-            ))}
-          </div>
-        </details>
-      ) : null}
     </div>
   );
 }

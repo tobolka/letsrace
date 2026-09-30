@@ -9,13 +9,13 @@ import type {
   Marker,
   PaddingOptions,
   Popup,
-  StyleSpecification,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { loadMapLibre, type MapLibreModule } from "@/lib/maplibre";
+import { MAP_STYLE } from "@/lib/map-style";
 import {
   DISCIPLINE_FAMILY_COLORS,
   DISCIPLINE_FAMILY_ICONS,
@@ -83,23 +83,6 @@ const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
  * The cost is that labels are baked in, so they no longer rotate with the map,
  * and zooming between levels is briefly soft.
  */
-const MAP_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    carto: {
-      type: "raster",
-      tiles: ["https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{ratio}.png"],
-      tileSize: 256,
-      maxzoom: 20,
-      // Ours to write, so ours to get right: these are the only links on the
-      // page that were taking the map away with them.
-      attribution:
-        '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>, ' +
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
-    },
-  },
-  layers: [{ id: "carto", type: "raster", source: "carto" }],
-};
 
 function hideMarineNames(map: MapLibreMap) {
   for (const id of ["watername_ocean", "watername_sea"]) {

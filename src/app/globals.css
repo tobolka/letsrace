@@ -31,6 +31,12 @@ html[data-welcome-seen="1"] #letsrace-welcome {
   --input: #e7e5e4;
   --ring: #1c1917;
   --radius: 0.625rem;
+  /* The app frame: the rail and the hairline around the page sheet. */
+  --shell-rail: #eceee9;
+  --shell-rail-accent: #dfe2db;
+  --shell-rail-border: #dcdfd7;
+  --shell-sheet-edge: rgb(35 42 30 / 0.07);
+  --shell-sheet-lift: rgb(35 42 30 / 0.04);
   --sidebar: #fafaf9;
   --sidebar-foreground: #44403c;
   --sidebar-primary: #1c1917;
@@ -282,6 +288,11 @@ time,
   --border: #332c25;
   --input: #332c25;
   --ring: #a8a29e;
+  --shell-rail: #12140f;
+  --shell-rail-accent: #23261f;
+  --shell-rail-border: #2a2d25;
+  --shell-sheet-edge: rgb(255 255 255 / 0.06);
+  --shell-sheet-lift: rgb(0 0 0 / 0.3);
   --sidebar: #1a1611;
   --sidebar-foreground: #d6d3d1;
   --sidebar-primary: #f5f5f4;

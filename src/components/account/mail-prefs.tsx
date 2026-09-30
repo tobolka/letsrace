@@ -64,7 +64,7 @@ export function MailPrefs({ locale, userId }: { locale: string; userId: string }
   if (!ready) return <Skeleton className="h-40 w-full rounded-xl" />;
 
   return (
-    <div className="divide-y rounded-xl border bg-card shadow-sm">
+    <div className="divide-y rounded-xl border">
       <Field orientation="horizontal" className="items-start justify-between gap-4 p-4">
         <div className="min-w-0">
           <FieldLabel htmlFor="plan-mail">{t.planMail}</FieldLabel>

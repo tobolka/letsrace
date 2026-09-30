@@ -11,7 +11,7 @@ export function BrandMark({
   className,
 }: {
   href?: string;
-  size?: "sm" | "md";
+  size?: "xs" | "sm" | "md";
   tone?: "brand" | "inverse";
   /** `lr` = compact red initials for tight chrome (mobile sheet). */
   mark?: "full" | "lr";
@@ -21,8 +21,8 @@ export function BrandMark({
     <Image
       src="/brand/lets-race.svg"
       alt={SITE_NAME}
-      width={size === "sm" ? 145 : 160}
-      height={size === "sm" ? 22 : 24}
+      width={size === "xs" ? 118 : size === "sm" ? 145 : 160}
+      height={size === "xs" ? 18 : size === "sm" ? 22 : 24}
       unoptimized
       className={className}
     />

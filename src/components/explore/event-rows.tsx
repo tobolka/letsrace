@@ -5,7 +5,7 @@ import { format, parseISO } from "date-fns";
 import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
-import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
  * column again in English. Shown as-is it put "Local" under the name and
  * "Místní" beside it; a class label that is only a level becomes that level.
  */
-function levelFromClassLabel(label: string | null): RaceLevel | null {
+export function levelFromClassLabel(label: string | null): RaceLevel | null {
   if (!label) return null;
   const folded = label.trim().toLowerCase();
   for (const [id, name] of Object.entries(RACE_LEVEL_LABELS)) {
@@ -119,95 +119,5 @@ export const EventCard = memo(function EventCard({
         </ItemContent>
       </button>
     </Item>
-  );
-});
-
-
-/**
- * The same race as a table row, for the full-width list. Columns appear as the
- * panel gets wider (container queries, so an open detail panel that squeezes
- * the list drops the extras instead of truncating everything).
- */
-export const EventRowWide = memo(function EventRowWide({
-  event,
-  locale,
-  distanceKm: km,
-  active,
-  onSelect,
-}: {
-  event: EventListItem;
-  locale: string;
-  distanceKm?: number | null;
-  active: boolean;
-  onSelect: (id: string) => void;
-}) {
-  const t = messagesFor(locale);
-  const df = dateFnsLocale(locale);
-  const start = parseISO(event.startDate);
-  const dateLabel =
-    format(start, "d MMM", { locale: df }) +
-    (event.endDate && event.endDate !== event.startDate
-      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
-      : "");
-  const place = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode]
-    .filter(Boolean)
-    .join(" · ");
-  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
-  const classLevel = levelFromClassLabel(event.classLabel);
-  const levelId = event.level ?? classLevel;
-  const level = levelId ? raceLevelLabel(levelId, locale) : "";
-  const ages = event.ageCategories.slice(0, 3).map((a) => ageCategoryLabel(a, locale)).join(", ");
-  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
-  const sub = [event.series?.name, classLevel ? null : event.classLabel].filter(Boolean).join(" · ");
-
-  return (
-    <button
-      type="button"
-      data-event-id={event.id}
-      aria-pressed={active}
-      onClick={() => onSelect(event.id)}
-      className={cn(
-        "relative grid w-full items-center gap-x-4 px-5 py-2.5 text-left touch-manipulation",
-        "grid-cols-[5.5rem_minmax(0,1fr)_minmax(0,0.8fr)_4rem]",
-        "@3xl:grid-cols-[5.5rem_minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_4rem]",
-        "@5xl:grid-cols-[5.5rem_minmax(0,1.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_minmax(0,1fr)_4rem]",
-        "active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
-        active && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
-      )}
-    >
-      <span
-        aria-hidden
-        className="absolute inset-y-2 left-2 w-[3px] rounded-full"
-        style={{ background: disciplineColor(event.disciplines) }}
-      />
-      <span className="min-w-0">
-        <time dateTime={event.startDate} className="block truncate text-sm font-medium tabular-nums">
-          {dateLabel}
-        </time>
-        <span className="block truncate text-xs text-muted-foreground">
-          {format(start, "EEE", { locale: df })}
-        </span>
-      </span>
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-medium leading-snug">{event.name}</span>
-        {sub ? <span className="block truncate text-xs text-muted-foreground">{sub}</span> : null}
-      </span>
-      <span className="min-w-0 truncate text-sm text-muted-foreground" title={place}>
-        {place}
-      </span>
-      <span className="hidden min-w-0 truncate text-sm text-muted-foreground @3xl:block" title={discLabel}>
-        {discLabel}
-      </span>
-      <span className="hidden min-w-0 @5xl:block">
-        <span className="block truncate text-sm">{level}</span>
-        {ages ? <span className="block truncate text-xs text-muted-foreground">{ages}</span> : null}
-      </span>
-      <span
-        className="text-right text-xs tabular-nums text-muted-foreground"
-        title={distanceLabel ? t.distanceFromOrigin : undefined}
-      >
-        {distanceLabel ? `↗ ${distanceLabel}` : ""}
-      </span>
-    </button>
   );
 });

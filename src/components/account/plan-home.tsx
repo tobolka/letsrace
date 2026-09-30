@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { AuthForm } from "@/components/account/auth-form";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
@@ -11,7 +10,6 @@ import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanSeason } from "@/components/account/plan-season";
 import { PlanSetup } from "@/components/account/plan-setup";
-import { PlanSummary } from "@/components/account/plan-summary";
 import { PlanTodo } from "@/components/account/plan-todo";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +39,6 @@ import {
 import type { SuggestionContext } from "@/lib/plan-suggestions";
 import { persist } from "@/lib/account/save";
 import { toast } from "sonner";
-import { BellRing, Compass } from "lucide-react";
 
 const EVENT_EMBED =
   "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, location:locations(name, municipality, country_code)";
@@ -339,12 +336,6 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   const actions = useMemo(() => planActions(plans, { members, today }), [plans, members, today]);
   const nextRace = plans.find((p) => (p.event.endDate ?? p.event.startDate) >= today) ?? null;
   const upcomingCount = plans.length - past.length;
-  // Ridden, not merely saved: a past race counts once somebody was on it.
-  const riddenThisYear = past.filter(
-    (p) =>
-      p.event.startDate.startsWith(today.slice(0, 4)) &&
-      Object.values(p.memberStatus).some((s) => s !== "none"),
-  ).length;
 
   async function onStatusChange(eventId: string, memberId: string, status: PlanMemberStatus) {
     if (!userId) return;
@@ -515,12 +506,6 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     <div className="flex w-full flex-col gap-5">
       <div className="flex flex-wrap items-center gap-2">
         <DayPickerButton locale={locale} value={pickedDay} onChange={setPickedDay} />
-        <Button asChild variant="ghost" className="sm:ml-auto">
-          <Link href={`/${locale}/account/recommendations?tab=watching`}>
-            <BellRing data-icon="inline-start" />
-            {t.discoverConfigure}
-          </Link>
-        </Button>
       </div>
       <PlanSetup locale={locale} hasPeople={members.length > 0} hasPlace={Boolean(suggestCtx?.home)} hasRace={plans.length > 0} onSetHome={onSetHome} />
       <div className="grid items-start gap-5 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -564,20 +549,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
 
   return (
     <div className={PAGE_WIDTH}>
-      <PageHeader
-        title={t.myCalendar}
-        description={t.accountPlanDescription}
-        actions={
-          <Button asChild variant="outline">
-            <Link href={`/${locale}/account/recommendations${pickedDay ? `?day=${pickedDay}` : ""}`}>
-              <Compass data-icon="inline-start" />
-              {pickedDay
-                ? `${t.accountDayRecommendations} · ${format(parseISO(pickedDay), "d. M.")}`
-                : t.accountDiscover}
-            </Link>
-          </Button>
-        }
-      />
+      <PageHeader title={t.myCalendar} description={t.accountPlanDescription} />
 
       <PlanSetup
         locale={locale}
@@ -587,15 +559,6 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
         onSetHome={(place) => onSetHome(place)}
       />
 
-      {plans.length > 0 ? (
-        <PlanSummary
-          locale={locale}
-          nextRace={nextRace}
-          upcoming={upcomingCount}
-          todo={actions.length}
-          ridden={riddenThisYear}
-        />
-      ) : null}
 
       {/*
         The next race used to be a card the height of a phone screen, above a
