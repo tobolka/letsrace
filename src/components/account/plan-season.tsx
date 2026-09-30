@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, History, List, Undo2 } from "lucide-react";
+import { CalendarDays, CalendarOff, History, List, Sheet, Undo2 } from "lucide-react";
+import { PlanAgenda } from "@/components/account/plan-agenda";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
@@ -20,10 +21,9 @@ import {
   type PlannerMember,
 } from "@/lib/planner";
 
-// What is ahead, what has been, and the month. The day-per-row sheet that
-// used to be a fourth view was the same races again with the riders as
-// columns; the calendar carries its one extra job, marking a day as taken.
-const VIEWS = ["upcoming", "past", "calendar"] as const;
+// What is ahead, what has been, the season as a sheet — a day per row, a
+// rider per column (it keeps the `list` value old links use) — and the month.
+const VIEWS = ["upcoming", "past", "list", "calendar"] as const;
 
 /**
  * The season, and it is the page's centre of gravity.
@@ -76,7 +76,28 @@ export function PlanSeason({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {view === "calendar" ? (
+      {view === "list" ? (
+        <>
+          <PlanAgenda
+            locale={locale}
+            plans={plans}
+            members={members}
+            blocked={blocked}
+            busyWeekdays={busyWeekdays}
+            selected={selected}
+            onSelectDay={onSelectDay}
+            onSetNote={onSetNote}
+          />
+          {selected ? (
+            <DayBar
+              locale={locale}
+              day={selected}
+              note={blocked[selected]?.note ?? null}
+              onSetNote={(note) => onSetNote(selected, note)}
+            />
+          ) : null}
+        </>
+      ) : view === "calendar" ? (
         <>
           <MonthToolbar locale={locale} month={month} onMonth={setMonth} />
           <PlanMonthView
@@ -218,6 +239,10 @@ export function PlanViewToggle({ locale }: { locale: string }) {
       <ToggleGroupItem value="past" aria-label={t.planViewPast}>
         <History data-icon="inline-start" />
         <span className="max-sm:sr-only">{t.planViewPast}</span>
+      </ToggleGroupItem>
+      <ToggleGroupItem value="list" aria-label={t.planViewList}>
+        <Sheet data-icon="inline-start" />
+        <span className="max-sm:sr-only">{t.planViewList}</span>
       </ToggleGroupItem>
       <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
         <CalendarDays data-icon="inline-start" />

@@ -66,7 +66,7 @@ const MARKS: Record<string, string> = {
   uml: "\u0308", acute: "\u0301", grave: "\u0300", circ: "\u0302", tilde: "\u0303",
   ring: "\u030a", cedil: "\u0327", caron: "\u030c",
 };
-const ENTITY = /&(#x[0-9a-f]+|#\d+|[a-z]+);/gi;
+const ENTITY_ALL = /&(#x[0-9a-f]+|#\d+|[a-z]+);/gi;
 
 function decodeEntity(match: string, body: string): string {
   if (body[0] === "#") {
@@ -84,7 +84,7 @@ export function repairText<T extends string | null | undefined>(value: T): T {
   let out: string = value;
   if (out.includes("&")) {
     // Twice, for markup escaped twice over: "&amp;ndash;".
-    out = out.replace(ENTITY, decodeEntity).replace(ENTITY, decodeEntity);
+    out = out.replace(ENTITY_ALL, decodeEntity).replace(ENTITY_ALL, decodeEntity);
   }
   if (!C1.test(out) && !C0.test(out)) return out as T;
   C1.lastIndex = 0;
