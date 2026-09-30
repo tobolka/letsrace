@@ -25,6 +25,7 @@ import {
 } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
+import { messagesFor } from "@/lib/i18n/messages";
 
 let maplibre: MapLibreModule;
 
@@ -83,6 +84,15 @@ const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
  * The cost is that labels are baked in, so they no longer rotate with the map,
  * and zooming between levels is briefly soft.
  */
+
+/** Whether this browser can draw the map at all (MapLibre 5+ needs WebGL 2). */
+function hasWebGL2(): boolean {
+  try {
+    return Boolean(document.createElement("canvas").getContext("webgl2"));
+  } catch {
+    return false;
+  }
+}
 
 function hideMarineNames(map: MapLibreMap) {
   for (const id of ["watername_ocean", "watername_sea"]) {
@@ -707,6 +717,7 @@ export function RaceMap({
   const fitSeqRef = useRef(0);
   const destSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
+  const [noWebgl, setNoWebgl] = useState(false);
   /**
    * Which pile of races is currently fanned out, keyed by its shared point.
    * One at a time: two open fans over the same map would be a puzzle, not a
@@ -927,6 +938,16 @@ export function RaceMap({
           filter: drop-shadow(0 -1px 0 rgba(28,25,23,.08));
         }
       `;
+
+    // No WebGL 2, no map: MapLibre would log the failure, hand back a map with
+    // no painter, and the first resize would throw — taking the whole page,
+    // list and all, down with it. Say so instead and leave the list working.
+    if (!hasWebGL2()) {
+      setNoWebgl(true);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     void loadMapLibre().then((ml) => {
     if (cancelled || !containerRef.current) return;
@@ -1604,6 +1625,11 @@ export function RaceMap({
   return (
     <div className="relative h-full w-full bg-muted">
       <div ref={containerRef} className="absolute inset-0 h-full w-full" />
+      {noWebgl ? (
+        <p className="absolute inset-x-6 top-1/2 mx-auto max-w-sm -translate-y-1/2 text-center text-sm text-muted-foreground" role="status">
+          {messagesFor(locale).mapUnsupported}
+        </p>
+      ) : null}
 
       {locError ? (
         <p
