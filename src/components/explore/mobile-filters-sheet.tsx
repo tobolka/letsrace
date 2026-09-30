@@ -111,7 +111,13 @@ export function MobileFiltersSheet({
   onSeries,
   onCountry,
   onReset,
+  hideDate = false,
+  extra,
 }: {
+  /** The calendar picks its dates by month, so it has no date section. */
+  hideDate?: boolean;
+  /** One more section first in the sheet — the list's distance filter. */
+  extra?: React.ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   messages: Messages;
@@ -219,6 +225,8 @@ export function MobileFiltersSheet({
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
           <div className="flex flex-col gap-6">
+            {extra}
+            {hideDate ? null : (
             <Section title={messages.date}>
               <div className="flex flex-wrap gap-2">
                 {datePresets.map((p) => (
@@ -258,8 +266,9 @@ export function MobileFiltersSheet({
                 </div>
               ) : null}
             </Section>
+            )}
 
-            <Separator />
+            {hideDate && !extra ? null : <Separator />}
 
             <Section title={messages.typeFilter}>
               <div className="flex flex-wrap gap-2">
