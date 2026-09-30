@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Bell, CalendarCheck, CalendarDays, Check, List, LogIn, LogOut, User, UserRound } from "lucide-react";
+import { Check, LogIn, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,139 +16,72 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { carryFilterQuery } from "@/lib/explore-params";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import { locales, type Messages } from "@/lib/i18n/messages";
 
+export async function signOutAndRefresh(router: ReturnType<typeof useRouter>) {
+  const { createBrowserSupabase } = await import("@/lib/supabase/browser");
+  await createBrowserSupabase().auth.signOut();
+  router.refresh();
+}
+
 /**
- * The account, and everything else behind it.
+ * The account menu floating over the map on a phone.
  *
- * There used to be two: a person icon on the map for the account, and a "…" in
- * the panel header for language, feedback and submitting a race. Two menus
- * means guessing which one holds the thing you want, and the "…" was the one
- * nobody opens. Maps put one control in the corner and everything under it —
- * so this is that control, clickable whether or not anyone is signed in.
+ * On a desktop the same menu sits at the foot of the sidebar. A phone's map
+ * has no sidebar and no tab bar — its sheet owns the bottom edge — so the menu
+ * keeps a corner of the map there.
  */
 export function MapAccountButton({
   locale,
   messages,
-  variant = "overlay",
   onSignIn,
   onSubmitRace,
   onFeedback,
 }: {
   locale: string;
   messages: Messages;
-  /**
-   * "overlay" floats over the map and needs its own shadow; "bar" sits in the
-   * account pages' top bar, where the bar already provides the surface. Same
-   * control, same menu, either way — so the two halves of the app are not two
-   * apps.
-   */
-  variant?: "overlay" | "bar";
-  /** Absent where there is no sign-in dialog to open: the menu links instead. */
   onSignIn?: () => void;
-  /** Absent outside the map, where these dialogs do not exist. */
   onSubmitRace?: () => void;
   onFeedback?: () => void;
 }) {
   const router = useRouter();
-  const [authed, setAuthed] = useState<boolean | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    let unsubscribe: (() => void) | undefined;
-    // The auth client is a quarter of a megabyte and nothing on screen needs it
-    // until we know who is signed in, so it is fetched after the page is up
-    // rather than shipped with it.
-    void (async () => {
-      const { createBrowserSupabase } = await import("@/lib/supabase/browser");
-      if (!alive) return;
-      const supabase = createBrowserSupabase();
-      const { data } = await supabase.auth.getUser();
-      if (!alive) return;
-      setAuthed(Boolean(data.user));
-      setEmail(data.user?.email ?? null);
-      const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-        if (!alive) return;
-        setAuthed(Boolean(session?.user));
-        setEmail(session?.user?.email ?? null);
-      });
-      unsubscribe = () => sub.subscription.unsubscribe();
-      if (!alive) unsubscribe();
-    })();
-    return () => {
-      alive = false;
-      unsubscribe?.();
-    };
-  }, []);
-
-  async function signOut() {
-    const { createBrowserSupabase } = await import("@/lib/supabase/browser");
-    await createBrowserSupabase().auth.signOut();
-    router.refresh();
-  }
+  const { authed, email } = useAuthUser();
 
   return (
-    <div className="pointer-events-auto flex items-center gap-2">
-      {/*
-        The wide button is the one thing worth a whole button: the plan when
-        you are in, the way in when you are not. It waits until auth is known —
-        a "Sign in" that flips to "Our plan" a second later reads as a glitch —
-        while the menu beside it is there from the first frame.
-      */}
-      {/* On a phone's map this is the way into the plan; from `md` up the rail's
-          bookmark says it, and so does the account's own bar. */}
-      {authed === true && variant === "overlay" ? (
-        <Button asChild size="sm" className="shadow-md md:hidden">
-          <Link href={`/${locale}/account`}>
-            <CalendarCheck /> {messages.myCalendar}
-          </Link>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          size="icon"
+          variant="secondary"
+          aria-label={messages.account}
+          className="pointer-events-auto rounded-full shadow-md"
+        >
+          <User />
         </Button>
-      ) : null}
-      {authed === false && onSignIn ? (
-        <Button size="sm" onClick={onSignIn} className="shadow-md">
-          <LogIn /> {messages.signIn}
-        </Button>
-      ) : null}
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            size="icon"
-            variant={variant === "bar" ? "ghost" : "secondary"}
-            aria-label={messages.account}
-            className={variant === "bar" ? "rounded-full" : "rounded-full shadow-md"}
-          >
-            <User />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <AccountMenuItems
-            authed={authed}
-            email={email}
-            locale={locale}
-            messages={messages}
-            showViews={variant === "overlay"}
-            onSignIn={onSignIn}
-            onSubmitRace={onSubmitRace}
-            onFeedback={onFeedback}
-            onSignOut={() => void signOut()}
-          />
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <AccountMenuItems
+          authed={authed}
+          email={email}
+          locale={locale}
+          messages={messages}
+          onSignIn={onSignIn}
+          onSubmitRace={onSubmitRace}
+          onFeedback={onFeedback}
+          onSignOut={() => void signOutAndRefresh(router)}
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 /**
  * The same page, in another language.
  *
- * Switching used to go to `/en` — the map back at its opening view, with the
- * dates, the filters and whatever race was open all thrown away. Only the
- * first segment of the path is the language; everything after it, and the whole
- * query string, is where you were.
+ * Only the first segment of the path is the language; everything after it, and
+ * the whole query string, is where you were.
  */
 function useLocaleHref(): (next: string) => string {
   const pathname = usePathname() || "/";
@@ -164,14 +96,19 @@ function useLocaleHref(): (next: string) => string {
   };
 }
 
-/** The same menu wherever it is opened from — the map corner or the panel
- *  header — so there is one place to add to and nothing to keep in step. */
+/**
+ * What is left for the account menu once the navigation carries the pages.
+ *
+ * The plan, discovery, riders and settings each have their own place in the
+ * sidebar, so repeating them here only made two ways to the same door. The
+ * menu keeps what has nowhere else to live: who is signed in, the language,
+ * the two ways to write to us, and the way out.
+ */
 export function AccountMenuItems({
   authed,
   email,
   locale,
   messages,
-  showViews = false,
   onSignIn,
   onSubmitRace,
   onFeedback,
@@ -181,45 +118,15 @@ export function AccountMenuItems({
   email: string | null;
   locale: string;
   messages: Messages;
-  /**
-   * On a phone the map has no tab bar — its sheet owns the bottom edge — so the
-   * other views are reached from here instead. Hidden from `md` up, where the
-   * rail is on screen.
-   */
-  showViews?: boolean;
   onSignIn?: () => void;
   onSubmitRace?: () => void;
   onFeedback?: () => void;
   onSignOut: () => void;
 }) {
   const localeHref = useLocaleHref();
-  const carry = carryFilterQuery(useSearchParams());
 
   return (
     <>
-      {showViews ? (
-        <>
-          <DropdownMenuGroup className="md:hidden">
-            <DropdownMenuItem asChild>
-              <Link href={`/${locale}/list${carry}`}>
-                <List /> {messages.navList}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/${locale}/schedule${carry}`}>
-                <CalendarDays /> {messages.navSchedule}
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator className="md:hidden" />
-        </>
-      ) : null}
-
-      {/*
-        Whose account this is. A menu that offers "Sign out" without saying who
-        would be signed out is a menu you have to test to understand — and when
-        nobody is signed in, saying so is what explains why the rest is short.
-      */}
       {authed !== null ? (
         <>
           <div className="px-2 py-1.5">
@@ -250,29 +157,6 @@ export function AccountMenuItems({
                 </Link>
               </DropdownMenuItem>
             )}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-        </>
-      ) : null}
-
-      {authed === true ? (
-        <>
-          <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-              <Link href={`/${locale}/account`}>
-                <CalendarCheck /> {messages.myCalendar}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/${locale}/account/alerts`}>
-                <Bell /> {messages.alertTitle}
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/${locale}/account/settings`}>
-                <UserRound /> {messages.account}
-              </Link>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
         </>

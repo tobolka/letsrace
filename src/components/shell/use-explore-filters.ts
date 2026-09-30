@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useQueryStates } from "nuqs";
+import { parseAsInteger, useQueryState, useQueryStates } from "nuqs";
 import type { SeriesOption } from "@/components/explore/map-filter-bar";
 import { INT_COUNTRY, seriesCountryKey } from "@/components/explore/map-filter-bar";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
-import { filterSearchParams } from "@/lib/explore-params";
+import { filterSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
+import { useUserOrigin } from "@/hooks/use-user-origin";
 import {
   readExploreFilterPrefs,
   storedExploreFiltersToPatch,
@@ -29,6 +30,22 @@ export function useExploreFilters() {
   const [ready, setReady] = useState(false);
   const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
   const [resetKey, setResetKey] = useState(0);
+  const [radius, setRadiusParam] = useQueryState(RADIUS_PARAM, parseAsInteger);
+  const place = useUserOrigin();
+  const { status: placeStatus, locate } = place;
+
+  // A link that carries a distance asks for the position the one time it has to.
+  useEffect(() => {
+    if (radius != null && placeStatus === "idle") locate();
+  }, [radius, placeStatus, locate]);
+
+  function setRadius(km: number | null) {
+    void setRadiusParam(km);
+    if (km != null && place.status !== "ready") place.locate();
+  }
+
+  /** The distance in force: a radius only means something once we know where from. */
+  const near = radius != null && place.origin ? { origin: place.origin, km: radius } : null;
 
   // Same rule as the map: a URL that names filters wins; a bare visit gets what
   // the last visit left behind.
@@ -125,6 +142,7 @@ export function useExploreFilters() {
   function reset() {
     const w = thisWeekendRange();
     setResetKey((n) => n + 1);
+    void setRadiusParam(null);
     void setFilters({
       q: null,
       categories: [],
@@ -137,5 +155,17 @@ export function useExploreFilters() {
     });
   }
 
-  return { filters, setFilters, ready, seriesList, resetKey, actions, reset };
+  return {
+    filters,
+    setFilters,
+    ready,
+    seriesList,
+    resetKey,
+    actions,
+    reset,
+    radius,
+    setRadius,
+    near,
+    place,
+  };
 }

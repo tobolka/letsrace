@@ -13,28 +13,23 @@ export type NavItem = {
 };
 
 /**
- * The three ways of looking at the races. They carry the filters between them,
- * so `carry` is the query string of whichever view you are leaving.
+ * The three ways of looking at the races. Links between them carry the filters
+ * along when clicked (`useCarryFilters`).
  */
-export function exploreNav(
-  locale: string,
-  t: Messages,
-  pathname: string,
-  carry: string,
-): NavItem[] {
+export function exploreNav(locale: string, t: Messages, pathname: string): NavItem[] {
   const base = `/${locale}`;
   return [
-    { key: "map", href: `${base}${carry}`, label: t.navMap, icon: Map, active: pathname === base },
+    { key: "map", href: base, label: t.navMap, icon: Map, active: pathname === base },
     {
       key: "list",
-      href: `${base}/list${carry}`,
+      href: `${base}/list`,
       label: t.navList,
       icon: List,
       active: pathname.startsWith(`${base}/list`),
     },
     {
       key: "schedule",
-      href: `${base}/schedule${carry}`,
+      href: `${base}/schedule`,
       label: t.navSchedule,
       icon: CalendarDays,
       active: pathname.startsWith(`${base}/schedule`),

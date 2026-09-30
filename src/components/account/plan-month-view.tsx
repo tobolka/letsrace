@@ -2,31 +2,31 @@
 
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import { CalendarOff } from "lucide-react";
+import { Check, MapPin, X } from "lucide-react";
+import { MonthCalendar, type CalendarItem } from "@/components/calendar/month-calendar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
-import { monthGrid, type MonthDay } from "@/lib/plan-month";
 import { isBusyIsoDate } from "@/lib/plan-prefs";
-import { plansOnIsoDate, type BlockedDay, type EventPlan } from "@/lib/planner";
-import { cn } from "@/lib/utils";
-
-/** How many races fit in a cell before it says "+2". */
-const PER_CELL = 3;
+import type { BlockedDay, EventPlan, PlannerMember } from "@/lib/planner";
 
 /**
- * The month, with every day on it.
+ * The plan's month, on the app's one calendar.
  *
- * A row of weekends could not hold a Wednesday criterium and could not tell a
- * month with one race from a month with five. Here a race sits on its own day,
- * the free weekends are still the holes you scan for, and a day you have
- * already spoken for is greyed rather than silently counted as free.
+ * The same grid the race calendar uses — dots on the days races run, "+N"
+ * opening the day — with what only the plan knows laid over it: days already
+ * spoken for are greyed and say why, and a race opens a card with who is going
+ * and whether it is paid for, instead of the catalogue's card.
  */
 export function PlanMonthView({
   locale,
   month,
   plans,
+  members,
   busyWeekdays,
   blocked,
   selectedDay,
@@ -36,115 +36,126 @@ export function PlanMonthView({
   /** Any date in the month being shown. */
   month: string;
   plans: EventPlan[];
+  members: PlannerMember[];
   busyWeekdays: number[];
   blocked: Record<string, BlockedDay>;
   selectedDay: string | null;
-  onPickDay: (day: MonthDay) => void;
+  onPickDay: (iso: string) => void;
+}) {
+  const t = messagesFor(locale);
+  const items: CalendarItem[] = plans.map((p) => ({
+    id: p.event.id,
+    name: p.event.name,
+    startDate: p.event.startDate,
+    endDate: p.event.endDate,
+    color: disciplineColor(p.event.disciplines),
+    meta: [p.event.place, p.event.countryCode].filter(Boolean).join(" · "),
+  }));
+  const byId = new Map(plans.map((p) => [p.event.id, p]));
+
+  return (
+    <MonthCalendar
+      locale={locale}
+      month={month}
+      items={items}
+      selectedDay={selectedDay}
+      onPickDay={onPickDay}
+      dayInfo={(iso) => {
+        const taken = blocked[iso];
+        const busy = isBusyIsoDate(iso, busyWeekdays);
+        if (!taken && !busy) return undefined;
+        return { muted: true, note: taken ? taken.note || t.weekendTaken : undefined };
+      }}
+      renderDetail={(id, close) => {
+        const plan = byId.get(id);
+        return plan ? <PlanRaceCard locale={locale} plan={plan} members={members} onClose={close} /> : null;
+      }}
+    />
+  );
+}
+
+/** A race in the plan, floating over its day: when, where, who, and what is left to do. */
+function PlanRaceCard({
+  locale,
+  plan,
+  members,
+  onClose,
+}: {
+  locale: string;
+  plan: EventPlan;
+  members: PlannerMember[];
+  onClose: () => void;
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
-  const weeks = monthGrid(month);
-  // Monday-first weekday headings, taken from the first row so they follow the
-  // reader's locale rather than a hard-coded list.
-  const headings = weeks[0]!.map((d) => format(parseISO(d.iso), "EEEEEE", { locale: df }));
+  const { event } = plan;
+  const going = members.filter((m) => plan.goingMemberIds.includes(m.id));
+  const date =
+    format(parseISO(event.startDate), "EEEE d. MMMM", { locale: df }) +
+    (event.endDate && event.endDate !== event.startDate
+      ? ` – ${format(parseISO(event.endDate), "d. MMMM", { locale: df })}`
+      : "");
 
   return (
-    <div>
-      <div className="grid grid-cols-7 border-b bg-muted/50">
-        {headings.map((label, i) => (
-          <div
-            key={label + i}
-            className={cn(
-              "px-2 py-1.5 text-center text-[11px] font-medium uppercase tracking-wide",
-              i >= 5 ? "text-foreground" : "text-muted-foreground",
-            )}
-          >
-            {label}
+    <Card className="w-80 gap-0 border-0 py-0 shadow-none">
+      <CardHeader className="flex flex-row items-start gap-2 border-b px-4 py-3 [.border-b]:pb-3">
+        <CardTitle className="flex min-w-0 flex-1 items-stretch gap-2.5 text-base leading-snug">
+          <span
+            aria-hidden
+            className="mt-1 w-[3px] shrink-0 self-stretch rounded-full"
+            style={{ background: disciplineColor(event.disciplines) }}
+          />
+          <span className="min-w-0">{event.name}</span>
+        </CardTitle>
+        <CardAction>
+          <Button type="button" variant="ghost" size="icon-sm" aria-label={t.close} onClick={onClose}>
+            <X />
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 px-4 py-3 text-sm">
+        <p className="first-letter:uppercase">{date}</p>
+        {event.place ? (
+          <p className="flex items-center gap-1.5 text-muted-foreground">
+            <MapPin className="size-4" aria-hidden />
+            {[event.place, event.countryCode].filter(Boolean).join(" · ")}
+          </p>
+        ) : null}
+        {going.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">{t.planGoing}:</span>
+            {going.map((m) => (
+              <Badge key={m.id} variant="secondary">
+                {m.name}
+              </Badge>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-7">
-        {weeks.flat().map((day, i) => {
-          const dayPlans = plansOnIsoDate(plans, day.iso);
-          const taken = blocked[day.iso];
-          const isBusy = isBusyIsoDate(day.iso, busyWeekdays);
-          const blockedHere = Boolean(taken);
-          return (
-            <button
-              key={day.iso}
-              type="button"
-              onClick={() => onPickDay(day)}
-              aria-current={day.isToday ? "date" : undefined}
-              className={cn(
-                "flex min-h-24 flex-col gap-1 border-r border-b p-1.5 text-left align-top transition-colors",
-                // The last column and the last row would draw a line on the
-                // card's own border.
-                i % 7 === 6 && "border-r-0",
-                i >= weeks.flat().length - 7 && "border-b-0",
-                day.inMonth ? "bg-card" : "bg-muted/20",
-                // The weekend is the part of the row people plan around, so it
-                // is shaded rather than outlined — an outline on two cells of
-                // seven reads as an error, not as emphasis.
-                day.isWeekend && day.inMonth && "bg-stone-200/55 dark:bg-stone-900/50",
-                (isBusy || blockedHere) && "bg-muted/60",
-                day.iso === selectedDay && "bg-brand/8 inset-ring inset-ring-brand/40",
-                "hover:bg-accent/60",
-              )}
-            >
-              <span
-                className={cn(
-                  "flex size-5 shrink-0 items-center justify-center rounded-full text-xs tabular-nums",
-                  day.inMonth ? "text-foreground" : "text-muted-foreground/60",
-                  day.isToday && "bg-brand font-semibold text-white",
-                )}
-              >
-                {day.day}
-              </span>
-
-              {dayPlans.slice(0, PER_CELL).map((plan) => (
-                <Link
-                  key={plan.event.id}
-                  href={eventMapPath(locale, {
-                    slug: plan.event.slug,
-                    startDate: plan.event.startDate,
-                    endDate: plan.event.endDate,
-                  })}
-                  title={plan.event.name}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex min-w-0 items-center gap-1 rounded py-0.5 text-[11px] leading-tight hover:bg-accent sm:px-1"
-                >
-                  <span
-                    aria-hidden
-                    className="size-1.5 shrink-0 rounded-full"
-                    style={{ background: disciplineColor(plan.event.disciplines) }}
-                  />
-                  {/* Seven columns across a phone leaves fifty pixels a cell,
-                      which is not enough for a race name and is enough for the
-                      dot that says a race is there. The list view is the one
-                      that reads on a phone. */}
-                  <span className="hidden truncate sm:inline">{plan.event.name}</span>
-                </Link>
-              ))}
-              {dayPlans.length > PER_CELL ? (
-                <span className="px-1 text-[11px] text-muted-foreground">
-                  +{dayPlans.length - PER_CELL}
-                </span>
-              ) : null}
-
-              {dayPlans.length === 0 && blockedHere ? (
-                <span
-                  className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground sm:px-1"
-                  title={taken!.note || t.weekendTaken}
-                >
-                  <CalendarOff className="size-3 shrink-0" aria-hidden />
-                  <span className="hidden truncate sm:inline">{taken!.note || t.weekendTaken}</span>
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+        ) : null}
+        <div className="flex flex-wrap gap-1.5">
+          <Badge variant={plan.registered ? "secondary" : "outline"} className="gap-1">
+            {plan.registered ? <Check className="text-emerald-600" /> : null}
+            {t.planRegistered}
+          </Badge>
+          <Badge variant={plan.paid ? "secondary" : "outline"} className="gap-1">
+            {plan.paid ? <Check className="text-emerald-600" /> : null}
+            {t.planPaid}
+          </Badge>
+        </div>
+      </CardContent>
+      <CardFooter className="border-t px-4 py-2 [.border-t]:pt-2">
+        <Button asChild variant="outline" size="sm" className="w-full">
+          <Link
+            href={eventMapPath(locale, {
+              slug: event.slug,
+              startDate: event.startDate,
+              endDate: event.endDate,
+            })}
+          >
+            <MapPin data-icon="inline-start" />
+            {t.viewOnMap}
+          </Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

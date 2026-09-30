@@ -1,14 +1,13 @@
-import { Suspense } from "react";
-import { AppRail, MobileTabBar } from "@/components/shell/app-rail";
+import { AppSidebar, MobileTabBar } from "@/components/shell/app-rail";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 /**
- * One frame for everything you do inside the app: the map, the list, the
- * schedule and the profile.
+ * One frame for everything inside the app: the map, the list, the calendar and
+ * the profile.
  *
- * A rail down the left on a desktop and tabs along the bottom on a phone; the
- * page beside it scrolls on its own. The rail reads the query string to carry
- * the filters between views, which makes it a dynamic part of a static layout,
- * so it sits under a Suspense boundary of its own and never holds the page.
+ * shadcn's inset sidebar, collapsed to its icons: a grey rail, and the page as
+ * a white sheet laid on the grey beside it. On a phone the rail becomes tabs
+ * along the bottom.
  */
 export default async function ShellLayout({
   children,
@@ -19,16 +18,19 @@ export default async function ShellLayout({
 }) {
   const { locale } = await params;
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-background md:flex-row">
-      <Suspense fallback={<div aria-hidden className="hidden w-14 shrink-0 border-r bg-card md:block" />}>
-        <AppRail locale={locale} />
-      </Suspense>
-      <div id="shell-stage" className="relative min-h-0 min-w-0 flex-1 overflow-auto">
-        {children}
-      </div>
-      <Suspense fallback={null}>
-        <MobileTabBar locale={locale} />
-      </Suspense>
-    </div>
+    <SidebarProvider
+      open={false}
+      // The rail is the page's grey; the sheet laid on it is the card's white.
+      style={{ "--sidebar": "var(--background)", "--sidebar-accent": "var(--border)" } as React.CSSProperties}
+      className="h-dvh min-h-0 overflow-hidden max-md:flex-col"
+    >
+      <AppSidebar locale={locale} />
+      <SidebarInset className="min-h-0 overflow-hidden bg-card md:border md:border-sidebar-border">
+        <div id="shell-stage" className="relative min-h-0 flex-1 overflow-auto">
+          {children}
+        </div>
+      </SidebarInset>
+      <MobileTabBar locale={locale} />
+    </SidebarProvider>
   );
 }

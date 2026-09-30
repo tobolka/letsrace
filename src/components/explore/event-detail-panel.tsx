@@ -44,8 +44,8 @@ import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/ta
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
 
-/** Must match the desktop list card in explore-shell (width + overlay padding + gap). */
-const DEFAULT_X = 12 + 400 + 12;
+/** Must match the desktop list panel in explore-shell (width + gap). */
+const DEFAULT_X = 400 + 12;
 const DEFAULT_Y = 12;
 const DRAG_MARGIN = 12;
 
@@ -80,6 +80,7 @@ export function EventDetailPanel({
   locale,
   onSelectSeries,
   embedded = false,
+  anchored = false,
   dockRight = false,
   leftX = DEFAULT_X,
 }: {
@@ -89,6 +90,12 @@ export function EventDetailPanel({
   onSelectSeries?: (slug: string) => void;
   /** Flat layout inside the mobile bottom sheet (no outer card chrome). */
   embedded?: boolean;
+  /**
+   * The map's card, held by something else — a popover over a calendar day.
+   * Same header, close button and footer, but it neither drags nor places
+   * itself: whatever holds it decides where it goes.
+   */
+  anchored?: boolean;
   /** Full-width list mode: sit in the strip reserved at the right edge. */
   dockRight?: boolean;
   /** Where the card starts when it sits beside the panel. */
@@ -111,7 +118,7 @@ export function EventDetailPanel({
   const prevEventIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (embedded) return;
+    if (embedded || anchored) return;
     // Docked: the list leaves a strip on the right, so start there. Undocked
     // returns to the default beside the 400px panel. Dragging still works.
     const x = dockRight ? Math.max(12, stageSize(cardRef.current).w - 320 - 12) : leftX;
@@ -119,10 +126,10 @@ export function EventDetailPanel({
     const next = clampPanelPos(x, dockRight ? 64 : DEFAULT_Y, cardRef.current);
     offsetRef.current = next;
     setOffset(next);
-  }, [dockRight, embedded, leftX]);
+  }, [dockRight, embedded, anchored, leftX]);
 
   useEffect(() => {
-    if (embedded) return;
+    if (embedded || anchored) return;
     const onResize = () => {
       const next = clampPanelPos(offsetRef.current.x, offsetRef.current.y, cardRef.current);
       offsetRef.current = next;
@@ -130,13 +137,13 @@ export function EventDetailPanel({
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [embedded]);
+  }, [embedded, anchored]);
 
   // Brief y-axis hop when the selected race changes — same card, new content.
   // Skip in the mobile sheet: Vaul already moved it, and a keyframe hop on
   // every pin tap fights the sheet and restarts from zero mid-browse.
   useEffect(() => {
-    if (embedded) return;
+    if (embedded || anchored) return;
     const el = cardRef.current;
     if (!el) return;
     if (prevEventIdRef.current === event.id) return;
@@ -149,7 +156,7 @@ export function EventDetailPanel({
     // Restart the keyframes even when the class was already applied.
     void el.offsetWidth;
     el.classList.add("event-detail-jump");
-  }, [event.id, dragging, embedded]);
+  }, [event.id, dragging, embedded, anchored]);
 
   useEffect(() => {
     const el = cardRef.current;
@@ -163,7 +170,7 @@ export function EventDetailPanel({
   }, []);
 
   function onHeaderPointerDown(e: PointerEvent<HTMLDivElement>) {
-    if (embedded || e.button !== 0) return;
+    if (embedded || anchored || e.button !== 0) return;
     if ((e.target as HTMLElement).closest("button, a, input")) return;
     const pos = offsetRef.current;
     dragRef.current = {
@@ -385,9 +392,11 @@ export function EventDetailPanel({
         dragging && "select-none",
         embedded
           ? "flex h-full min-h-0 max-w-none flex-col border-0 shadow-none"
-          : "absolute z-40 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
+          : anchored
+            ? "flex w-[320px] max-h-[min(72dvh,36rem)] flex-col border-0 shadow-none"
+            : "absolute z-40 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
       )}
-      style={embedded ? undefined : { left: offset.x, top: offset.y }}
+      style={embedded || anchored ? undefined : { left: offset.x, top: offset.y }}
     >
       <CardHeader
         /*
@@ -403,7 +412,7 @@ export function EventDetailPanel({
           "flex shrink-0 flex-row items-start gap-2 border-b px-4 py-3 [.border-b]:pb-3",
           "grid-cols-none grid-rows-none",
           embedded && "py-2 [.border-b]:pb-2",
-          !embedded && "cursor-grab touch-none select-none",
+          !embedded && !anchored && "cursor-grab touch-none select-none",
           dragging && "cursor-grabbing",
         )}
         onPointerDown={onHeaderPointerDown}

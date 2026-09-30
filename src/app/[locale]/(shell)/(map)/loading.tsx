@@ -1,6 +1,5 @@
 import { BrandMark } from "@/components/brand-mark";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -13,21 +12,21 @@ import { Skeleton } from "@/components/ui/skeleton";
  *
  * Every measurement here is copied from the component it stands in for, not
  * approximated: the same h-12 header, the same md wordmark, the same 400px
- * panel at the same inset, the same 90px list rows. A skeleton that is nearly
+ * panel against the same edge, the same 90px list rows. A skeleton that is nearly
  * right is worse than none — the swap becomes a flinch.
  */
 export default function Loading() {
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-background">
+    <div className="absolute inset-0 overflow-hidden bg-background">
       <div className="absolute inset-0 animate-pulse bg-muted" aria-hidden />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3 md:hidden">
         <Skeleton className="size-9 rounded-full" />
       </div>
 
       {/* Desktop: the panel Card, mirroring ExploreShell's own chrome. */}
-      <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
-        <Card className="flex h-full w-[400px] flex-col gap-0 overflow-hidden py-0 shadow-lg">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-20 hidden md:flex">
+        <div className="flex h-full w-[400px] flex-col overflow-hidden border-r bg-card">
           <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
             <BrandMark size="md" />
             <Skeleton className="size-7 rounded-md" />
@@ -44,7 +43,7 @@ export default function Loading() {
           <div className="flex flex-1 flex-col overflow-hidden">
             <ListSkeleton rows={8} />
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Phone: the chrome lives in a bottom sheet, so the shell does too. */}

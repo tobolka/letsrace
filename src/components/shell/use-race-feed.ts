@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { EventListItem } from "@/lib/events";
+import { boxAround } from "@/hooks/use-user-origin";
+import { eventDistanceKm } from "@/lib/geo/distance";
+
+export type Near = { origin: { lat: number; lng: number }; km: number };
 
 export type FeedQuery = {
   q: string;
@@ -14,8 +18,17 @@ export type FeedQuery = {
   dateTo: string;
 };
 
-function toParams(query: FeedQuery): string {
+function toParams(query: FeedQuery, near: Near | null): string {
   const params = new URLSearchParams();
+  // Ask the database for the box around you, so the thousand-row ceiling is
+  // spent on races that can be near; the circle is cut exactly below.
+  if (near) {
+    const box = boxAround(near.origin, near.km);
+    params.set("west", box.west.toFixed(4));
+    params.set("south", box.south.toFixed(4));
+    params.set("east", box.east.toFixed(4));
+    params.set("north", box.north.toFixed(4));
+  }
   if (query.q.trim()) params.set("q", query.q.trim());
   if (query.series) params.set("series", query.series);
   if (query.country) params.set("country", query.country);
@@ -36,13 +49,14 @@ function toParams(query: FeedQuery): string {
  * and the one in flight is aborted, so typing in the search box or clicking
  * through several chips settles on the last answer instead of racing to it.
  */
-export function useRaceFeed(query: FeedQuery, enabled: boolean) {
+export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | null = null) {
   const [events, setEvents] = useState<EventListItem[]>([]);
   const [settled, setSettled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   // A plain string, so the effect below re-runs exactly when the query does.
-  const qs = toParams(query);
+  const qs = toParams(query, near);
+  const nearKey = near ? `${near.origin.lat},${near.origin.lng},${near.km}` : "";
   const first = useRef(true);
 
   useEffect(() => {
@@ -59,7 +73,14 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean) {
           return (await res.json()) as EventListItem[];
         })
         .then((data) => {
-          setEvents(data);
+          setEvents(
+            near
+              ? data.filter((e) => {
+                  const km = eventDistanceKm(e, near.origin);
+                  return km != null && km <= near.km;
+                })
+              : data,
+          );
           setFailed(false);
           setSettled(true);
           setLoading(false);
@@ -75,7 +96,9 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean) {
       window.clearTimeout(timer);
       ac.abort();
     };
-  }, [qs, enabled]);
+    // `near` is read inside; `nearKey` is its identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qs, enabled, nearKey]);
 
   return { events, settled, loading, failed };
 }

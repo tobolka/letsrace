@@ -29,11 +29,11 @@ import { listViewState } from "@/lib/list-view-state";
 export function ListView({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const state = useExploreFilters();
-  const { filters, setFilters, ready, reset } = state;
-  const feed = useRaceFeed(filters, ready);
+  const { filters, setFilters, ready, reset, near, place } = state;
+  const feed = useRaceFeed(filters, ready, near);
   const isMobile = useIsMobile();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [origin, setOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const origin = place.origin;
 
   const sort: EventSort = filters.sort === "distance" && origin ? "distance" : "date";
   const rows = useMemo(() => sortEvents(feed.events, sort, origin), [feed.events, sort, origin]);
@@ -46,19 +46,13 @@ export function ListView({ locale }: { locale: string }) {
   function setSort(next: EventSort) {
     void setFilters({ sort: next === "distance" ? "distance" : null });
     // Choosing distance is what asks for the position, as it is on the map.
-    if (next === "distance" && !origin && "geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setOrigin({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => void setFilters({ sort: null }),
-        { maximumAge: 300_000, timeout: 10_000 },
-      );
-    }
+    if (next === "distance" && !origin) place.locate();
   }
 
   return (
     <div className="absolute inset-0 flex">
       <section className="flex min-w-0 flex-1 flex-col">
-        <SectionHeader locale={locale} title={t.navList}>
+        <SectionHeader title={t.navList}>
           <ExploreFilterBar locale={locale} state={state} />
         </SectionHeader>
 

@@ -9,7 +9,24 @@ import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/ta
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
+import { RACE_LEVEL_LABELS, type RaceLevel } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+
+/**
+ * The level a class label merely names, if it does.
+ *
+ * Many sources file a race's class as "Local" or "Regional", which is the level
+ * column again in English. Shown as-is it put "Local" under the name and
+ * "Místní" beside it; a class label that is only a level becomes that level.
+ */
+function levelFromClassLabel(label: string | null): RaceLevel | null {
+  if (!label) return null;
+  const folded = label.trim().toLowerCase();
+  for (const [id, name] of Object.entries(RACE_LEVEL_LABELS)) {
+    if (name.toLowerCase() === folded || id === folded) return id as RaceLevel;
+  }
+  return null;
+}
 
 /**
  * One race in the list.
@@ -136,10 +153,12 @@ export const EventRowWide = memo(function EventRowWide({
     .filter(Boolean)
     .join(" · ");
   const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
-  const level = event.level ? raceLevelLabel(event.level, locale) : "";
+  const classLevel = levelFromClassLabel(event.classLabel);
+  const levelId = event.level ?? classLevel;
+  const level = levelId ? raceLevelLabel(levelId, locale) : "";
   const ages = event.ageCategories.slice(0, 3).map((a) => ageCategoryLabel(a, locale)).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
-  const sub = [event.series?.name, event.classLabel].filter(Boolean).join(" · ");
+  const sub = [event.series?.name, classLevel ? null : event.classLabel].filter(Boolean).join(" · ");
 
   return (
     <button

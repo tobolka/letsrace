@@ -2,7 +2,7 @@
 
 import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
-import { useState, type ComponentType } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import {
   addDays,
@@ -182,6 +182,7 @@ export function MapFilterBar({
   allFilters = false,
   wide = false,
   hideDate = false,
+  extra,
 }: {
   messages: Messages;
   locale: string;
@@ -212,6 +213,8 @@ export function MapFilterBar({
   wide?: boolean;
   /** The schedule picks its dates by month, so it has no date control. */
   hideDate?: boolean;
+  /** More chips, placed after the date — the list's distance filter. */
+  extra?: ReactNode;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
@@ -620,6 +623,7 @@ export function MapFilterBar({
           </PopoverContent>
         </Popover>
         )}
+        {extra}
 
         {shownExtras.map((id) => {
           const Icon = FILTER_ICONS[id];

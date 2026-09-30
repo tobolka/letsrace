@@ -1,108 +1,195 @@
 "use client";
 
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { usePathname, useRouter } from "next/navigation";
+import { UserRound } from "lucide-react";
+import { AccountMenuItems, signOutAndRefresh } from "@/components/explore/map-account-button";
 import { exploreNav, profileNav, type NavItem } from "@/components/shell/nav-items";
-import { useCarriedQuery } from "@/components/shell/use-carried-query";
+import { useCarryFilters } from "@/components/shell/use-carried-query";
 import { useNavCounts } from "@/components/shell/use-nav-counts";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import { messagesFor } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
 
-function RailLink({ item }: { item: NavItem }) {
+const SubmitRaceModal = dynamic(() =>
+  import("@/components/explore/submit-race-modal").then((m) => ({ default: m.SubmitRaceModal })),
+);
+const FeedbackModal = dynamic(() =>
+  import("@/components/explore/feedback-modal").then((m) => ({ default: m.FeedbackModal })),
+);
+const AuthDialog = dynamic(() =>
+  import("@/components/account/auth-dialog").then((m) => ({ default: m.AuthDialog })),
+);
+
+function NavGroup({ items, carry }: { items: NavItem[]; carry?: ReturnType<typeof useCarryFilters> }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Link
-          href={item.href}
-          aria-label={item.label}
-          aria-current={item.active ? "page" : undefined}
-          className={cn(
-            "relative flex size-10 items-center justify-center rounded-xl transition-[color,background-color,scale] duration-150 ease-out touch-manipulation active:scale-[0.94] motion-reduce:transition-none motion-reduce:active:scale-100",
-            item.active
-              ? "bg-accent text-foreground"
-              : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
-          )}
-        >
-          <item.icon className="size-5" strokeWidth={item.active ? 2.25 : 1.5} aria-hidden />
-          {item.badge ? (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-medium leading-none text-white tabular-nums">
-              {item.badge > 9 ? "9+" : item.badge}
-            </span>
-          ) : null}
-        </Link>
-      </TooltipTrigger>
-      <TooltipContent side="right">{item.label}</TooltipContent>
-    </Tooltip>
+    <SidebarGroup>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) => (
+            <SidebarMenuItem key={item.key}>
+              <SidebarMenuButton asChild isActive={item.active} tooltip={item.label}>
+                <Link
+                  href={item.href}
+                  aria-current={item.active ? "page" : undefined}
+                  onClick={carry?.(item.href)}
+                >
+                  <item.icon strokeWidth={item.active ? 2.25 : 1.75} />
+                  <span>{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+              {item.badge ? (
+                // The sidebar hides its own badge when it collapses to icons,
+                // and icons are all this one ever shows — so the count rides
+                // on the corner of the icon instead.
+                <span className="pointer-events-none absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
+                  {item.badge > 9 ? "9+" : item.badge}
+                </span>
+              ) : null}
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}
+
+function initials(email: string | null): string {
+  if (!email) return "";
+  const name = email.split("@")[0] ?? "";
+  const parts = name.split(/[._-]+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || name.slice(0, 2).toUpperCase();
+}
+
+/** Who is signed in, at the foot of the sidebar, with everything that is theirs. */
+function UserMenu({ locale }: { locale: string }) {
+  const t = messagesFor(locale);
+  const router = useRouter();
+  const { authed, email } = useAuthUser();
+  const [dialog, setDialog] = useState<"auth" | "submit" | "feedback" | null>(null);
+
+  return (
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton size="lg" tooltip={email ?? t.account} className="justify-center">
+                <Avatar size="sm" className="size-8">
+                  <AvatarFallback
+                    className={cn(
+                      "text-xs font-medium",
+                      authed ? "bg-foreground text-background" : "bg-sidebar-accent text-muted-foreground",
+                    )}
+                  >
+                    {authed && email ? initials(email) : <UserRound className="size-4" />}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="sr-only">{t.account}</span>
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="right" align="end" sideOffset={8} className="w-60">
+              <AccountMenuItems
+                authed={authed}
+                email={email}
+                locale={locale}
+                messages={t}
+                onSignIn={() => setDialog("auth")}
+                onSubmitRace={() => setDialog("submit")}
+                onFeedback={() => setDialog("feedback")}
+                onSignOut={() => void signOutAndRefresh(router)}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+      {dialog === "submit" ? <SubmitRaceModal open onClose={() => setDialog(null)} messages={t} /> : null}
+      {dialog === "feedback" ? <FeedbackModal open onClose={() => setDialog(null)} /> : null}
+      {dialog === "auth" ? (
+        <AuthDialog open onClose={() => setDialog(null)} onSuccess={() => setDialog(null)} locale={locale} />
+      ) : null}
+    </>
   );
 }
 
 /**
- * The left rail: three ways to look at the races, then the profile.
+ * The sidebar: three ways to look at the races, then everything that is yours,
+ * then you.
  *
- * Icons only, with the name on hover — the same shape as the tools this app is
- * used next to. The three views come first because they share one set of
- * filters, and the links between them carry that query along; the profile sits
- * under a rule because it is somewhere else.
+ * Icons only, with the name on hover — the shape of the tools this app is used
+ * next to. The three views share one set of filters and the links between them
+ * carry it along; the profile's pages sit under a rule because they are
+ * somewhere else; the account itself is at the foot, where it always is.
  */
-export function AppRail({ locale }: { locale: string }) {
+export function AppSidebar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
-  const carry = useCarriedQuery();
+  const carry = useCarryFilters();
   const counts = useNavCounts(pathname);
-  const explore = exploreNav(locale, t, pathname, carry);
-  const profile = profileNav(locale, t, pathname, counts);
 
   return (
-    <nav
-      aria-label={t.navPrimary}
-      className="hidden w-14 shrink-0 flex-col items-center gap-1 border-r bg-card py-3 md:flex"
-    >
-      {explore.map((item) => (
-        <RailLink key={item.key} item={item} />
-      ))}
-      <Separator className="my-2 w-6" />
-      {profile.map((item) => (
-        <RailLink key={item.key} item={item} />
-      ))}
-    </nav>
+    <Sidebar variant="inset" collapsible="icon" aria-label={t.navPrimary}>
+      <SidebarContent className="gap-0 pt-1">
+        <NavGroup items={exploreNav(locale, t, pathname)} carry={carry} />
+        <SidebarSeparator className="mx-auto w-5" />
+        <NavGroup items={profileNav(locale, t, pathname, counts)} />
+      </SidebarContent>
+      <SidebarFooter>
+        <UserMenu locale={locale} />
+      </SidebarFooter>
+    </Sidebar>
   );
 }
 
 /**
  * The same destinations for a phone: four tabs along the bottom. The profile is
- * one tab; what is behind it is a row of links at the top of its own pages.
- * Not shown over the map — the map's sheet owns that edge, and the map's
- * account menu carries the way to the other views instead.
+ * one tab; its pages are a row of links at the top of its own screens. Not shown
+ * over the map — the map's sheet owns that edge.
  */
 export function MobileTabBar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
-  const carry = useCarriedQuery();
+  const carry = useCarryFilters();
   const counts = useNavCounts(pathname);
   if (pathname === `/${locale}`) return null;
-  const explore = exploreNav(locale, t, pathname, carry);
-  const profile: NavItem = {
-    key: "profile",
-    href: `/${locale}/account`,
-    label: t.navProfileGroup,
-    icon: profileNav(locale, t, pathname, counts)[0].icon,
-    active: pathname.startsWith(`/${locale}/account`),
-    badge: counts.action + counts.alerts,
-  };
-  const items = [...explore, profile];
+  const items: NavItem[] = [
+    ...exploreNav(locale, t, pathname),
+    {
+      key: "profile",
+      href: `/${locale}/account`,
+      label: t.navProfileGroup,
+      icon: UserRound,
+      active: pathname.startsWith(`/${locale}/account`),
+      badge: counts.action + counts.alerts,
+    },
+  ];
 
   return (
     <nav
       aria-label={t.navTabs}
-      className="z-30 grid shrink-0 grid-cols-4 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="z-30 grid shrink-0 grid-cols-4 border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       {items.map((item) => (
         <Link
           key={item.key}
           href={item.href}
           aria-current={item.active ? "page" : undefined}
+          onClick={item.key === "profile" ? undefined : carry(item.href)}
           className={cn(
             "relative flex min-h-12 flex-col items-center justify-center gap-0.5 py-2 text-xs transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
             item.active ? "font-medium text-foreground" : "text-muted-foreground",
@@ -111,7 +198,7 @@ export function MobileTabBar({ locale }: { locale: string }) {
           <item.icon className="size-5" strokeWidth={item.active ? 2 : 1.5} aria-hidden />
           <span className="max-w-full truncate px-1">{item.label}</span>
           {item.badge ? (
-            <span className="absolute right-[26%] top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-medium leading-none text-white tabular-nums">
+            <span className="absolute top-1 right-[26%] flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
               {item.badge > 9 ? "9+" : item.badge}
             </span>
           ) : null}

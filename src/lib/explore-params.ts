@@ -34,7 +34,15 @@ export const exploreSearchParams = {
   north: parseAsString,
 };
 
-const FILTER_KEYS = Object.keys(filterSearchParams);
+/**
+ * The distance from you. The list and the calendar filter by it; the map has a
+ * camera for that, so it is not one of the map's filters — but it still rides
+ * along between views, so going map → list → calendar keeps it.
+ */
+export const RADIUS_PARAM = "radius";
+export const RADIUS_OPTIONS = [10, 25, 50, 100, 200] as const;
+
+const FILTER_KEYS = [...Object.keys(filterSearchParams), RADIUS_PARAM];
 
 /**
  * The query string to put on a link to another view.

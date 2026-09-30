@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, List, Sheet, Undo2 } from "lucide-react";
+import { CalendarDays, CalendarOff, ChevronRight, List, Sheet, Undo2 } from "lucide-react";
 import { PlanAgenda } from "@/components/account/plan-agenda";
 import { Panel } from "@/components/account/panel";
 import { PlanMonthView } from "@/components/account/plan-month-view";
+import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
 import { PlanRow } from "@/components/account/plan-row";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
-import { addMonths, monthStart, type MonthDay } from "@/lib/plan-month";
+import { monthStart } from "@/lib/plan-month";
 import {
   type BlockedDay,
   type EventPlan,
@@ -68,7 +69,6 @@ export function PlanSeason({
   onDiscard: (eventId: string) => void;
 }) {
   const t = messagesFor(locale);
-  const df = dateFnsLocale(locale);
   const today = todayIso();
   const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
   const upcoming = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
@@ -116,49 +116,17 @@ export function PlanSeason({
           />
         ) : view === "calendar" ? (
           <>
-            <div className="flex items-center gap-2 border-b px-4 py-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon-sm"
-                aria-label={format(parseISO(addMonths(month, -1)), "LLLL yyyy", { locale: df })}
-                onClick={() => setMonth(addMonths(month, -1))}
-              >
-                <ChevronLeft />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon-sm"
-                aria-label={format(parseISO(addMonths(month, 1)), "LLLL yyyy", { locale: df })}
-                onClick={() => setMonth(addMonths(month, 1))}
-              >
-                <ChevronRight />
-              </Button>
-              <p className="text-sm font-medium tabular-nums first-letter:uppercase">
-                {format(parseISO(month), "LLLL yyyy", { locale: df })}
-              </p>
-              {month !== monthStart(today) ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="ml-auto"
-                  onClick={() => setMonth(monthStart(today))}
-                >
-                  {t.planToday}
-                </Button>
-              ) : null}
-            </div>
+            <MonthToolbar locale={locale} month={month} onMonth={setMonth} />
 
             <PlanMonthView
               locale={locale}
               month={month}
               plans={plans}
+              members={members}
               busyWeekdays={busyWeekdays}
               blocked={blocked}
               selectedDay={selected}
-              onPickDay={(day: MonthDay) => onSelectDay(day.iso)}
+              onPickDay={onSelectDay}
             />
           </>
         ) : (

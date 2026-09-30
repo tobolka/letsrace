@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Card } from "@/components/ui/card";
 import {
   FULL,
   COMPACT,
@@ -807,15 +806,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         left: 12,
       };
     }
-    const listW = mapWidth + 12 + 12;
+    // The panel sits beside the map now, not on it, so only the race card
+    // floats over the camera's left edge.
     const detailW = selected ? 320 + 12 : 0;
     return {
       top: 16,
       right: 56,
       bottom: 56,
-      left: listW + detailW + 64,
+      left: detailW + 48,
     };
-  }, [selected, isDesktop, viewportH, deferredListSnap, deferredDetailSnap, mapWidth]);
+  }, [selected, isDesktop, viewportH, deferredListSnap, deferredDetailSnap]);
 
   function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean; wide?: boolean }) {
     return (
@@ -875,7 +875,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-background">
+    <div className="absolute inset-0 overflow-hidden bg-background">
       <a
         href="#race-list"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 max-md:hidden"
@@ -891,8 +891,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       <h1 className="sr-only">{messages.introTitle}</h1>
 
       <div
-        className="absolute inset-0"
-        style={{ "--map-sheet-inset": `${mapPadding.bottom}px` } as CSSProperties}
+        className="absolute inset-y-0 right-0"
+        style={
+          {
+            left: isDesktop ? (dragW ?? mapWidth) : 0,
+            "--map-sheet-inset": `${mapPadding.bottom}px`,
+          } as CSSProperties
+        }
       >
         <Suspense
           fallback={
@@ -982,7 +987,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             <BrandMark mark="lr" size="sm" tone="inverse" className="px-0" />
           </Link>
         </Button>
+        {/* A desktop keeps the account at the foot of the sidebar. */}
         <span aria-hidden className="hidden md:block" />
+        <div className="md:hidden">
         <MapAccountButton
           locale={locale}
           messages={messages}
@@ -990,13 +997,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onSubmitRace={() => setSubmitOpen(true)}
           onFeedback={() => setFeedbackOpen(true)}
         />
+        </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-20 hidden items-start p-3 md:flex md:gap-3">
+      <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
         <div
           ref={panelRef}
           className={cn(
-            "relative h-full min-w-0 shrink-0",
+            "absolute inset-y-0 left-0 min-w-0",
             dragW == null &&
               "transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
           )}
@@ -1005,7 +1013,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               dragW ?? mapWidth,
           }}
         >
-        <Card className="pointer-events-auto flex h-full w-full min-w-0 flex-col gap-0 overflow-hidden py-0 shadow-lg">
+        <div className="pointer-events-auto flex h-full w-full min-w-0 flex-col overflow-hidden border-r bg-card">
           <Header locale={locale} />
           <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
             {renderFilterBar()}
@@ -1064,7 +1072,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             )}
             </div>
           </main>
-        </Card>
+        </div>
         <div
           role="separator"
           aria-orientation="vertical"
@@ -1078,7 +1086,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onPointerMove={(e) => {
             if (dragW == null) return;
             const left = document.getElementById("shell-stage")?.getBoundingClientRect().left ?? 0;
-            setDragW(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, e.clientX - left - 12)));
+            setDragW(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, e.clientX - left)));
           }}
           onPointerUp={() => {
             if (dragW == null) return;
@@ -1102,7 +1110,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             locale={locale}
             onClose={() => selectEvent(null)}
             onSelectSeries={applySeries}
-                        leftX={mapWidth + 24}
+                        leftX={mapWidth + 12}
           />
         )}
       </div>
