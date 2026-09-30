@@ -24,9 +24,8 @@ export function teaserForPath(pathname: string): TeaserKey {
 /**
  * What a page of the profile is for, shown to somebody who has not signed in.
  *
- * One centred column: the picture of the feature first, then the promise, what
- * it gets you and the one button — read top to bottom like an empty state
- * that sells, not a landing page split into halves that never lined up.
+ * The picture of the feature beside the promise, what it gets you and the one
+ * button.
  */
 export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKey }) {
   const m = teaserMessagesFor(locale);
@@ -37,7 +36,9 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
   const weekdays = Array.from({ length: 7 }, (_, i) => format(addDays(monday, i), "EEEEE", { locale: df }));
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col items-center py-4 text-center md:pt-6 md:pb-12">
+    // The picture on the left, the promise on the right, centred on each
+    // other; on a phone the picture stacks on top.
+    <div className="mx-auto grid w-full max-w-5xl items-center gap-10 py-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-14 md:pt-10 md:pb-12">
       <TeaserArt
         kind={kind}
         art={m.art}
@@ -46,36 +47,36 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
       />
 
       {/*
-        Three groups, spaced as groups: the heading block sits well clear of the
-        picture, its eyebrow, title and body tight to each other; the points
-        closer to the body than to the button; the button with room of its own.
+        Three groups, spaced as groups: eyebrow, title and body tight to each
+        other; the points closer to the body than to the button; the button
+        with room of its own.
       */}
-      <div className="mt-12 flex max-w-lg flex-col items-center">
+      <div className="flex flex-col items-start">
         <span className="text-xs font-semibold tracking-[0.08em] text-brand uppercase">{copy.eyebrow}</span>
         <h1 className="mt-3 text-3xl leading-tight font-semibold tracking-tight text-balance md:text-4xl">
           {copy.title}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-pretty text-muted-foreground">{copy.body}</p>
-      </div>
 
-      <ul className="mt-8 flex flex-col gap-3 text-left">
-        {copy.points.map((point) => (
-          <li key={point} className="flex items-start gap-3 text-sm">
-            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
-              <Check className="size-3" strokeWidth={3} aria-hidden />
-            </span>
-            {point}
-          </li>
-        ))}
-      </ul>
+        <ul className="mt-8 flex flex-col gap-3">
+          {copy.points.map((point) => (
+            <li key={point} className="flex items-start gap-3 text-sm">
+              <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
+                <Check className="size-3" strokeWidth={3} aria-hidden />
+              </span>
+              {point}
+            </li>
+          ))}
+        </ul>
 
-      <div className="mt-10 flex flex-wrap justify-center gap-3">
-        <Button size="lg" onClick={() => setOpen(true)}>
-          {m.cta}
-        </Button>
-        <Button asChild size="lg" variant="ghost">
-          <Link href={`/${locale}`}>{m.browse}</Link>
-        </Button>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <Button size="lg" onClick={() => setOpen(true)}>
+            {m.cta}
+          </Button>
+          <Button asChild size="lg" variant="ghost">
+            <Link href={`/${locale}`}>{m.browse}</Link>
+          </Button>
+        </div>
       </div>
 
       {open ? (

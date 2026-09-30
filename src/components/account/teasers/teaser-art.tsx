@@ -31,7 +31,7 @@ export function TeaserArt({
   return (
     <div
       aria-hidden
-      className="relative flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl bg-muted select-none sm:h-80"
+      className="relative flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl bg-muted select-none sm:h-80 md:aspect-[5/4] md:h-auto"
     >
       {kind === "plan" ? <PlanArt art={art} weekdays={weekdays} month={month} /> : null}
       {kind === "discover" ? <DiscoverArt art={art} /> : null}
