@@ -22,6 +22,7 @@ type Notification = {
 type Submission = {
   id: string;
   url: string;
+  kind?: "race" | "series";
   note: string | null;
   status: string;
   created_at: string;
@@ -214,6 +215,9 @@ export function SubmissionsInbox({
               return (
                 <Row key={`s-${s.id}`} kind="submission" when={s.created_at} open={entry.open}>
                   <ItemTitle className="flex items-start gap-1">
+                    <Badge variant={s.kind === "series" ? "default" : "secondary"} className="mt-0.5 shrink-0">
+                      {s.kind === "series" ? "Series" : "Race"}
+                    </Badge>
                     <span className="min-w-0 break-all">{s.url}</span>
                     <OpenUrlButton href={firstOpenableUrl(s.url)} label="Open submitted URL" />
                   </ItemTitle>

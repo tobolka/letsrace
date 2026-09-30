@@ -24,12 +24,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid url" }, { status: 400 });
   }
 
+  const kind = body.kind === "series" ? "series" : "race";
+
   const user = await requireSessionUser();
   const supabase = createServerSupabase();
   const { data: sub, error } = await supabase
     .from("race_submissions")
     .insert({
       url,
+      kind,
       note: typeof body.note === "string" ? body.note.slice(0, 2000) : null,
       user_id: user?.id ?? null,
       status: "pending",
@@ -40,10 +43,11 @@ export async function POST(req: NextRequest) {
 
   await supabase.from("admin_notifications").insert({
     kind: "race_submission",
-    title: "New race URL submitted",
+    title: kind === "series" ? "New series URL submitted" : "New race URL submitted",
     body: url,
     payload: {
       submissionId: sub.id,
+      kind,
       url,
       note: typeof body.note === "string" ? body.note.slice(0, 2000) : null,
       userId: user?.id ?? null,
