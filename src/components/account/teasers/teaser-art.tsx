@@ -36,7 +36,7 @@ export function TeaserArt({
   return (
     <div
       aria-hidden
-      className="@container relative aspect-[4/3] w-full overflow-hidden rounded-3xl border bg-muted/40 select-none"
+      className="@container relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-muted/40 select-none"
     >
       <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)] [background-size:14px_14px]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,var(--background)_0%,transparent_65%)] opacity-70" />
@@ -130,7 +130,7 @@ function PlanArt({ art, weekdays, month }: { art: Art; weekdays: string[]; month
           <Badge className="bg-brand text-[10px] text-white">{art.inDays(12)}</Badge>
         </div>
         <div className="mt-2.5">
-          <RaceLine name="Bike Cup Beskydy" meta="Frenštát pod Radhoštěm · XCO" color={C.mtb} />
+          <RaceLine name={art.planRace.name} meta={art.planRace.meta} color={C.mtb} />
         </div>
         <div className="mt-3 flex gap-1.5">
           <Badge className="gap-1 bg-primary text-[10px] text-primary-foreground">
@@ -150,7 +150,7 @@ function PlanArt({ art, weekdays, month }: { art: Art; weekdays: string[]; month
 
       <Float className="top-6 right-6 flex items-center gap-2 rounded-full py-1.5 pr-3 pl-1.5" style={at(1500)}>
         <span className="flex -space-x-1.5">
-          {["E", "J"].map((i, k) => (
+          {art.riders.slice(0, 2).map((n) => n.slice(0, 1)).map((i, k) => (
             <Avatar key={i} className="size-6 ring-2 ring-card">
               <AvatarFallback className={cn("text-[10px] font-semibold", TINT[k])}>{i}</AvatarFallback>
             </Avatar>
@@ -202,7 +202,7 @@ function DiscoverArt({ art }: { art: Art }) {
           <span className="text-[11px] font-medium">{art.newRace}</span>
         </div>
         <div className="mt-2.5">
-          <RaceLine name="Jizerský MTB pohár" meta={art.kmAway(18)} color={C.mtb} />
+          <RaceLine name={art.alertRace} meta={art.kmAway(18)} color={C.mtb} />
         </div>
         <Badge variant="secondary" className="mt-2.5 text-[10px]">{art.matches}</Badge>
       </Float>
@@ -211,15 +211,12 @@ function DiscoverArt({ art }: { art: Art }) {
 }
 
 function RidersArt({ art }: { art: Art }) {
-  const riders = [
-    { i: "EN", n: "Ema", cat: "U11" },
-    { i: "JN", n: "Jakub", cat: "U15" },
-    { i: "PN", n: "Petr", cat: "Masters" },
-  ];
+  const cats = ["U11", "U15", "Masters"];
+  const riders = art.riders.map((n, k) => ({ i: n.slice(0, 1), n, cat: cats[k]! }));
   return (
     <>
       {riders.map((r, k) => (
-        <Float key={r.i} className="left-4 flex w-[162px] items-center gap-2.5 p-2.5" style={{ top: 42 + k * 74, ...at(100 + k * 150) }}>
+        <Float key={r.n} className="left-4 flex w-[162px] items-center gap-2.5 p-2.5" style={{ top: 42 + k * 74, ...at(100 + k * 150) }}>
           <Avatar className="size-8">
             <AvatarFallback className={cn("text-[11px] font-semibold", TINT[k])}>{r.i}</AvatarFallback>
           </Avatar>
@@ -256,15 +253,15 @@ function RidersArt({ art }: { art: Art }) {
             <Mountain className="size-4" style={{ color: C.mtb }} />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-semibold">Dětský MTB Cup</p>
-            <p className="truncate text-[11px] text-muted-foreground">Hradec Králové</p>
+            <p className="truncate text-[13px] font-semibold">{art.familyRace.name}</p>
+            <p className="truncate text-[11px] text-muted-foreground">{art.familyRace.place}</p>
           </div>
         </div>
         <div className="teaser-fill mt-3 flex items-center gap-2" style={after(1900)}>
           <span className="flex -space-x-2">
             {riders.slice(0, 2).map((r, k) => (
-              <Avatar key={r.i} className="size-6 ring-2 ring-card">
-                <AvatarFallback className={cn("text-[10px] font-semibold", TINT[k])}>{r.i[0]}</AvatarFallback>
+              <Avatar key={r.n} className="size-6 ring-2 ring-card">
+                <AvatarFallback className={cn("text-[10px] font-semibold", TINT[k])}>{r.i}</AvatarFallback>
               </Avatar>
             ))}
           </span>

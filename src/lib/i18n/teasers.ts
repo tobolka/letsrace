@@ -23,6 +23,11 @@ type TeaserMessages = {
     kmAway: (n: number) => string;
     matches: string;
     going: string;
+    /** Sample races and riders, local to the language's market. */
+    planRace: { name: string; meta: string };
+    alertRace: string;
+    familyRace: { name: string; place: string };
+    riders: [string, string, string];
   };
 };
 
@@ -77,6 +82,10 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
       kmAway: (n) => `${n} km od vás`,
       matches: "Sedí na XCO · U11",
       going: "jedou",
+      planRace: { name: "Bike Cup Beskydy", meta: "Frenštát pod Radhoštěm · XCO" },
+      alertRace: "Jizerský MTB pohár",
+      familyRace: { name: "Dětský MTB Cup", place: "Hradec Králové" },
+      riders: ["Ema", "Jakub", "Petr"],
     },
   },
   en: {
@@ -123,6 +132,10 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
       kmAway: (n) => `${n} km away`,
       matches: "Fits XCO · U11",
       going: "going",
+      planRace: { name: "Tour de Tirol", meta: "Söll · Marathon" },
+      alertRace: "Alpine Gravel Challenge",
+      familyRace: { name: "Kids MTB Cup", place: "Innsbruck" },
+      riders: ["Emma", "Jack", "Peter"],
     },
   },
   pl: {
@@ -169,6 +182,10 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
       kmAway: (n) => `${n} km od ciebie`,
       matches: "Pasuje: XCO · U11",
       going: "jadą",
+      planRace: { name: "Bike Maraton Szklarska", meta: "Szklarska Poręba · XCM" },
+      alertRace: "Liga MTB Junior",
+      familyRace: { name: "Puchar Dzieci MTB", place: "Wrocław" },
+      riders: ["Ewa", "Jan", "Piotr"],
     },
   },
   sk: {
@@ -215,6 +232,10 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
       kmAway: (n) => `${n} km od vás`,
       matches: "Sedí na XCO · U11",
       going: "idú",
+      planRace: { name: "Tatranský MTB maratón", meta: "Poprad · XCM" },
+      alertRace: "Slovenský pohár XCO",
+      familyRace: { name: "Detský MTB pohár", place: "Žilina" },
+      riders: ["Ema", "Jakub", "Peter"],
     },
   },
 };
