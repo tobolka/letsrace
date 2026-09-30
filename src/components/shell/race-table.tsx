@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { format, parseISO } from "date-fns";
-import { levelFromClassLabel } from "@/components/explore/event-rows";
+import { levelFromClassLabel, UnconfirmedAges } from "@/components/explore/event-rows";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { EventListItem } from "@/lib/events";
 import { countryDisplayName } from "@/lib/geo/europe";
@@ -177,6 +177,9 @@ const Row = memo(function Row({
               />
             ) : null}
             {text}
+            {col === "name" && event.ageMatch === "possible" ? (
+              <UnconfirmedAges locale={locale} className="ml-2 align-middle" />
+            ) : null}
           </TableCell>
         );
       })}

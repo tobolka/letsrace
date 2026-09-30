@@ -23,6 +23,12 @@ export type EventListItem = {
   formats: string[];
   audience: string;
   ageCategories: string[];
+  /** 'explicit' when a source stated the categories, 'default' when guessed. */
+  ageConfidence: "explicit" | "default" | null;
+  /** Set when a category filter is on: 'possible' marks an unconfirmed fit. */
+  ageMatch?: "match" | "possible";
+  /** Set with it: 0 confirmed … 3 guessed otherwise — lists sort by it first. */
+  ageRank?: number;
   status: string;
   visibility: string;
   eventType: string;
@@ -63,6 +69,8 @@ export type EventFilters = {
   disciplines?: string[];
   levels?: string[];
   ageCategories?: string[];
+  /** Only races whose stated categories fit — hide the unconfirmed ones. */
+  ageStrict?: boolean;
   seriesSlug?: string;
   countryCodes?: string[];
   season?: string;
@@ -79,7 +87,7 @@ export type EventFilters = {
   polygon?: [number, number][];
 };
 
-const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
 
 /** `YYYY-MM-DD`, and a real day — the only date shape this catalogue stores. */
 export function isIsoDay(value: string | null | undefined): value is string {
@@ -163,11 +171,20 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   if (filters.ageCategories?.length) {
     const { expandAgeCategoryFilter } = await import("@/lib/taxonomy");
     const expanded = expandAgeCategoryFilter(filters.ageCategories);
+    // A coarse cut only: a race with no categories of its own may borrow its
+    // series' set, and one we know nothing about is not ours to hide — both
+    // are decided per row below, once the series is joined.
     if (!filters.q) {
-      const parts = [`age_categories.ov.{${expanded.join(",")}}`];
-      if (filters.ageCategories.includes("kids")) parts.push("audience.eq.kids");
-      if (filters.ageCategories.includes("youth")) parts.push("audience.eq.youth");
-      query = parts.length > 1 ? query.or(parts.join(",")) : query.overlaps("age_categories", expanded);
+      query = query.or(
+        [
+          `age_categories.ov.{${expanded.join(",")}}`,
+          "age_categories.is.null",
+          "age_categories.eq.{}",
+          // Only a stated list may rule a race out here; guesses go through.
+          "age_confidence.is.null",
+          "age_confidence.eq.default",
+        ].join(","),
+      );
     }
   }
   if (filters.seriesSlug) {
@@ -244,8 +261,12 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     });
 
   if (filters.ageCategories?.length) {
-    const { matchesAgeCategoryFilter } = await import("@/lib/taxonomy");
-    rows = rows.filter((e) => matchesAgeCategoryFilter(e, filters.ageCategories!));
+    const { ageCategoryMatch, ageMatchRank } = await import("@/lib/taxonomy");
+    rows = rows.flatMap((e) => {
+      const m = ageCategoryMatch(e, filters.ageCategories!);
+      if (m === "no" || (m === "possible" && filters.ageStrict)) return [];
+      return [{ ...e, ageMatch: m, ageRank: ageMatchRank(e, filters.ageCategories!) }];
+    });
   }
 
   if (filters.disciplines?.length) {
@@ -650,6 +671,12 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
       if (own.length) return own;
       return (series?.age_categories as string[]) ?? [];
     })(),
+    // A set borrowed from the series is the series' claim, not this race's.
+    ageConfidence: ((row.age_categories as string[]) ?? []).length
+      ? ((row.age_confidence as "explicit" | "default" | null) ?? null)
+      : ((series?.age_categories as string[]) ?? []).length
+        ? "default"
+        : null,
     status: String(row.status),
     visibility: String(row.visibility ?? "public"),
     eventType: String(row.event_type ?? "race"),

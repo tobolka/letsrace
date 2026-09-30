@@ -72,11 +72,14 @@ export function sortByDistanceFrom<T extends Located>(
   });
 }
 
-export function sortEvents<T extends Located>(
+export function sortEvents<T extends Located & { ageRank?: number }>(
   events: T[],
   sort: EventSort,
   origin: { lat: number; lng: number } | null,
 ): T[] {
-  if (sort === "distance") return sortByDistanceFrom(events, origin);
-  return sortByStartDate(events);
+  const sorted = sort === "distance" ? sortByDistanceFrom(events, origin) : sortByStartDate(events);
+  // With a category filter on, confirmed fits come before guesses and
+  // unknowns; the chosen order holds inside each group (the sort is stable).
+  if (!sorted.some((e) => e.ageRank != null)) return sorted;
+  return [...sorted].sort((a, b) => (a.ageRank ?? 0) - (b.ageRank ?? 0));
 }

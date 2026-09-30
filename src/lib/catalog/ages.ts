@@ -92,7 +92,12 @@ export async function fillEmptyAgeCategories(opts?: {
   const { data: rows, error } = await query;
   if (error) throw new Error(error.message);
 
-  const patches: { id: string; age_categories: string[]; audience: string }[] = [];
+  const patches: {
+    id: string;
+    age_categories: string[];
+    audience: string;
+    age_confidence: "explicit" | "default";
+  }[] = [];
   let stillUnknown = 0;
   for (const row of (rows ?? []) as unknown as EventRow[]) {
     if (!emptyAges(row.age_categories)) continue;
@@ -106,6 +111,8 @@ export async function fillEmptyAgeCategories(opts?: {
         audience:
           series?.audience_hint ||
           audienceFromAgeCategories(seriesAges as AgeCategory[]),
+        // Borrowed from the series, whose own set may itself be a guess.
+        age_confidence: "default",
       });
       continue;
     }
@@ -128,6 +135,7 @@ export async function fillEmptyAgeCategories(opts?: {
       id: row.id,
       age_categories: classified.ageCategories,
       audience: classified.audience,
+      age_confidence: classified.ageConfidence === "explicit" ? "explicit" : "default",
     });
   }
 
@@ -138,6 +146,7 @@ export async function fillEmptyAgeCategories(opts?: {
       .update({
         age_categories: patch.age_categories,
         audience: patch.audience,
+        age_confidence: patch.age_confidence,
         updated_at: now,
       })
       .eq("id", patch.id);

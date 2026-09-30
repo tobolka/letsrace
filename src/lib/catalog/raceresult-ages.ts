@@ -80,6 +80,8 @@ export async function fillRaceResultAgeCategories(opts?: {
         .from("events")
         .update({
           age_categories: ages,
+          // Read off the source's own category list.
+          age_confidence: "explicit",
           audience: audienceFromAgeCategories(ages as AgeCategory[]),
           updated_at: new Date().toISOString(),
         })

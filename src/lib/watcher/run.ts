@@ -1773,7 +1773,7 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, status, visibility, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, age_confidence, status, visibility, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -1929,6 +1929,7 @@ async function upsertParsedEvent(
     class_label?: string | null;
     audience?: string | null;
     age_categories?: string[] | null;
+    age_confidence?: string | null;
     status?: string | null;
     visibility?: string | null;
     website_url?: string | null;
@@ -2019,8 +2020,21 @@ async function upsertParsedEvent(
           classified.ageConfidence === "explicit" ? classified.ageCategories : [],
         )
       : null;
+  // What a guess may do to a stored set depends on where that set came from:
+  // stated categories are never widened by a default — a gravel race's
+  // stated "U11" does not grow "amateur, masters" because it is gravel.
+  const existingExplicit =
+    existingRow?.age_confidence === "explicit" && (existingRow.age_categories ?? []).length > 0;
   const mergedAgeCategories =
-    statedAges ?? unionText(existingRow?.age_categories, classified.ageCategories);
+    statedAges ??
+    (existingExplicit
+      ? (existingRow!.age_categories as string[])
+      : unionText(existingRow?.age_categories, classified.ageCategories));
+  const ageConfidence = statedAges?.length || existingExplicit
+    ? "explicit"
+    : mergedAgeCategories.length
+      ? "default"
+      : null;
   const mergedAudience = mergedAgeCategories.length
     ? audienceFromAgeCategories(
         mergedAgeCategories as import("@/lib/taxonomy").AgeCategory[],
@@ -2036,6 +2050,7 @@ async function upsertParsedEvent(
     formats: classified.formats,
     audience: mergedAudience,
     age_categories: mergedAgeCategories,
+    age_confidence: ageConfidence,
     // A source that distinguishes an RTF from a race knows better than a guess
     // from the title; only fall back to the classifier when it says nothing.
     event_type: ev.eventType ?? classified.eventType,

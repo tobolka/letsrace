@@ -183,6 +183,8 @@ export function MapFilterBar({
   wide = false,
   hideDate = false,
   extra,
+  ageStrict = false,
+  onAgeStrict,
 }: {
   messages: Messages;
   locale: string;
@@ -213,6 +215,9 @@ export function MapFilterBar({
   wide?: boolean;
   /** The schedule picks its dates by month, so it has no date control. */
   hideDate?: boolean;
+  /** Only races whose stated categories fit; unconfirmed ones hidden. */
+  ageStrict?: boolean;
+  onAgeStrict?: (on: boolean) => void;
   /** More chips, placed after the date — the list's distance filter. */
   extra?: ReactNode;
 }) {
@@ -438,16 +443,39 @@ export function MapFilterBar({
       );
     }
     if (id === "category") {
-      return AGE_CATEGORY_FILTERS.map((opt) => (
-        <DropdownMenuCheckboxItem
-          key={opt.id}
-          checked={categories.includes(opt.id)}
-          onCheckedChange={() => onCategory(opt.id)}
-          className={itemClass}
-        >
-          {ageCategoryLabel(opt.id, locale)}
-        </DropdownMenuCheckboxItem>
-      ));
+      return (
+        <>
+          {AGE_CATEGORY_FILTERS.map((opt) => (
+            <DropdownMenuCheckboxItem
+              key={opt.id}
+              checked={categories.includes(opt.id)}
+              onCheckedChange={() => onCategory(opt.id)}
+              onSelect={(e) => e.preventDefault()}
+              className={itemClass}
+            >
+              {ageCategoryLabel(opt.id, locale)}
+            </DropdownMenuCheckboxItem>
+          ))}
+          {onAgeStrict ? (
+            <>
+              <DropdownMenuSeparator />
+              {/* Off by default: races whose organisers never said who may
+                  start stay in, marked, rather than vanishing. */}
+              <DropdownMenuCheckboxItem
+                checked={ageStrict}
+                onCheckedChange={(v) => onAgeStrict(v === true)}
+                onSelect={(e) => e.preventDefault()}
+                className={itemClass}
+              >
+                <span className="flex flex-col">
+                  <span>{messages.ageStrict}</span>
+                  <span className="text-xs text-muted-foreground">{messages.ageStrictHelp}</span>
+                </span>
+              </DropdownMenuCheckboxItem>
+            </>
+          ) : null}
+        </>
+      );
     }
     if (id === "level") {
       return RACE_LEVELS.map((levelId) => (

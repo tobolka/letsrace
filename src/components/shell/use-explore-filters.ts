@@ -137,6 +137,7 @@ export function useExploreFilters() {
       void setFilters({ q, ...(widen ? { dateFrom: todayIso(), dateTo: "" } : {}) });
     },
     onSearchSubmit: () => undefined,
+    onAgeStrict: (on: boolean) => void setFilters({ ageStrict: on ? true : null }),
   };
 
   function reset() {
@@ -148,6 +149,7 @@ export function useExploreFilters() {
       categories: [],
       disciplines: [],
       levels: [],
+      ageStrict: null,
       series: null,
       country: null,
       dateFrom: w.from,

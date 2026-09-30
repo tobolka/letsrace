@@ -115,6 +115,7 @@ export async function fillFciAgeCategories(opts?: {
         const ages = parseFciCategories(fciAdmittedText(html));
         if (ages.length) {
           patch.age_categories = ages;
+          patch.age_confidence = "explicit";
           patch.audience = audienceFromAgeCategories(ages as AgeCategory[]);
         }
       }

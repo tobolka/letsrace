@@ -513,11 +513,20 @@ export function EventDetailPanel({
         <div className={cn("flex flex-col", embedded ? "mt-2.5 gap-1.5" : "mt-4 gap-2.5")}>
           <MetaRow icon={<UserRound />} label={t.audience}>
             {whoChips.length > 0 ? (
-              whoChips.map((chip) => (
-                <Badge key={chip} variant="outline">
-                  {chip}
-                </Badge>
-              ))
+              <>
+                {whoChips.map((chip) => (
+                  <Badge key={chip} variant="outline" className={event.ageConfidence === "explicit" ? undefined : "border-dashed"}>
+                    {chip}
+                  </Badge>
+                ))}
+                {/* Our guess from the level or discipline, not the organiser's
+                    list — said so, rather than shown as fact. */}
+                {event.ageConfidence === "explicit" ? null : (
+                  <span className="text-xs text-muted-foreground" title={t.ageUnconfirmedHelp}>
+                    {t.ageGuessed}
+                  </span>
+                )}
+              </>
             ) : (
               <span className="text-sm text-muted-foreground">{t.whoUnknown}</span>
             )}

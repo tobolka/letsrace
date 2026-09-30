@@ -427,6 +427,54 @@ export function matchesAgeCategoryFilter(
   return false;
 }
 
+export type AgeMatch = "match" | "possible" | "no";
+
+/**
+ * How a race answers a category filter, given what we actually know.
+ *
+ * - `match`: the source stated its categories and one of them is selected.
+ * - `possible`: we do not know — no categories at all, or only a guess that
+ *   happens to fit. Shown, marked as unconfirmed, because hiding it would be
+ *   us deciding something nobody told us.
+ * - `no`: the source stated categories and none is selected, or the guess
+ *   says plainly otherwise (a gran fondo is not a kids race).
+ *
+ * A guess may make a race likely; only a stated list may make it certain.
+ */
+export function ageCategoryMatch(
+  event: { audience?: string | null; ageCategories?: string[] | null; ageConfidence?: string | null },
+  selected: string[],
+): AgeMatch {
+  if (!selected.length) return "match";
+  const ages = event.ageCategories ?? [];
+  if (!ages.length) return "possible";
+  const expanded = new Set(expandAgeCategoryFilter(selected));
+  const hit = ages.some((c) => expanded.has(c));
+  if (event.ageConfidence === "explicit") return hit ? "match" : "no";
+  // A guess never rules a race out — the point of the filter is to find a
+  // race, and a gravel race we assumed was for adults may well run a kids'
+  // lap. The guess only decides how far down the list it sits.
+  return "possible";
+}
+
+/**
+ * Order within a category filter: confirmed first, then races whose guess
+ * fits, then the ones we know nothing about, then guesses that point
+ * elsewhere. Date stays the order inside each tier.
+ */
+export function ageMatchRank(
+  event: { ageCategories?: string[] | null; ageConfidence?: string | null },
+  selected: string[],
+): number {
+  const ages = event.ageCategories ?? [];
+  const expanded = new Set(expandAgeCategoryFilter(selected));
+  const hit = ages.some((c) => expanded.has(c));
+  if (event.ageConfidence === "explicit" && hit) return 0;
+  if (ages.length && hit) return 1;
+  if (!ages.length) return 2;
+  return 3;
+}
+
 /** Labels aligned with Category filter chips. Empty = we don't know — don't guess. */
 export function formatEventCategoryLabel(
   event: { audience?: string | null; ageCategories?: string[] | null },

@@ -56,6 +56,7 @@ export function ExploreFilterBar({
       q={filters.q}
       wide
       hideDate={hideDate}
+      ageStrict={filters.ageStrict}
       extra={<DistanceFilter locale={locale} radius={radius} status={place.status} onRadius={setRadius} />}
       {...actions}
     />
@@ -178,6 +179,8 @@ function MobileFilterRow({
           onClearCategories={actions.onClearCategories}
           onSeries={actions.onSeries}
           onCountry={actions.onCountry}
+          ageStrict={filters.ageStrict}
+          onAgeStrict={actions.onAgeStrict}
           onReset={reset}
         />
       ) : null}

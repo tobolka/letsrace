@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { CircleHelp } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 import type { EventListItem } from "@/lib/events";
@@ -113,6 +114,7 @@ export const EventCard = memo(function EventCard({
           </ItemTitle>
           <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug">
             <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
+            {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
             <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
             {distanceLabel && <span className="ms-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
           </span>
@@ -121,3 +123,23 @@ export const EventCard = memo(function EventCard({
     </Item>
   );
 });
+
+/**
+ * Shown while a category filter is on, on a race that is in the list only
+ * because we cannot rule it out: the organiser never said who may start.
+ */
+export function UnconfirmedAges({ locale, className }: { locale: string; className?: string }) {
+  const t = messagesFor(locale);
+  return (
+    <span
+      title={t.ageUnconfirmedHelp}
+      className={cn(
+        "inline-flex shrink-0 items-center gap-1 rounded-full border border-dashed px-1.5 text-[10px] leading-4 text-muted-foreground",
+        className,
+      )}
+    >
+      <CircleHelp className="size-3" aria-hidden />
+      {t.ageUnconfirmed}
+    </span>
+  );
+}
