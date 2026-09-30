@@ -64,7 +64,7 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
     };
   }
 
-  const html = await res.text();
+  const html = decodeBody(new Uint8Array(await res.arrayBuffer()), res.headers.get("content-type"));
   const hash = createHash("sha256").update(html).digest("hex");
   return {
     html,
@@ -74,6 +74,49 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
     hash,
     unchanged: Boolean(opts.contentHash && opts.contentHash === hash),
   };
+}
+
+/**
+ * Bytes to text in the page's own charset.
+ *
+ * `Response.text()` is always UTF-8. A Czech shop on Windows-1250 says so in its
+ * header and its `<meta>`, and read as UTF-8 its "Š" (0x8A) is not a character
+ * at all: "CYKLOŠVEC s.r.o." came through as "CYKLO\uFFFDVEC s.r.o." — and the
+ * replacement character also got it past `isSiteIdentityName`, which could no
+ * longer see the shop's own domain in its title, so it was listed as a race
+ * again every few days.
+ *
+ * Bytes that are valid UTF-8 are read as UTF-8 whatever the page claims: plenty
+ * of servers still send a stock "charset=iso-8859-1" in front of UTF-8 pages,
+ * which `text()` used to get right by accident, and non-ASCII text in a single-
+ * byte charset is almost never valid UTF-8 by chance. Otherwise the header
+ * wins, then a `<meta>` in the first few KB. A label the runtime does not know
+ * falls back to UTF-8 rather than throwing.
+ */
+export function decodeBody(bytes: Uint8Array, contentType?: string | null): string {
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    /* not UTF-8 — use the charset the page declares */
+  }
+  const head = new TextDecoder("latin1").decode(bytes.subarray(0, 4096));
+  const labels = [
+    contentType?.match(/charset\s*=\s*["']?([\w.:-]+)/i)?.[1],
+    head.match(/<meta[^>]+charset\s*=\s*["']?([\w.:-]+)/i)?.[1],
+    head.match(/^<\?xml[^>]+encoding\s*=\s*["']([\w.:-]+)/i)?.[1],
+  ];
+  for (const label of labels) {
+    if (!label) continue;
+    try {
+      const decoder = new TextDecoder(label.trim());
+      // Already shown not to be UTF-8, so a UTF-8 label is the one that is wrong.
+      if (decoder.encoding === "utf-8") continue;
+      return decoder.decode(bytes);
+    } catch {
+      /* unknown label — try the next one */
+    }
+  }
+  return new TextDecoder("utf-8").decode(bytes);
 }
 
 const CURL_TLS_FALLBACK_HOSTS = new Set(["zapadoceskaamaterskaliga.cz"]);

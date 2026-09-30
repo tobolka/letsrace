@@ -10,6 +10,7 @@ import {
   type DedupEvent,
 } from "@/lib/dedup";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
+import { looksLikeTextFragment } from "@/lib/text";
 
 export type MergeDuplicateRow = {
   id: string;
@@ -271,7 +272,7 @@ function isJunkPair(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
   return false;
 }
 
-function winner(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDuplicateRow {
+export function mergeKeeper(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDuplicateRow {
   const urlScore = (url: string | null) => {
     if (!url) return 0;
     try {
@@ -283,12 +284,15 @@ function winner(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDuplicateRow {
       return 10;
     }
   };
+  // The keeper keeps its own name, so a row named with a slice of page text
+  // must never keep: every link and series it holds is worth less than a title.
   const score = (r: MergeDuplicateRow) =>
     urlScore(r.website_url) +
     (r.registration_url ? 40 : 0) +
     (r.series_id ? 30 : 0) +
     (r.sources?.length ?? 0) * 5 +
-    (preferEventName(r.name, r === a ? b.name : a.name) === r.name ? 8 : 0);
+    (preferEventName(r.name, r === a ? b.name : a.name) === r.name ? 8 : 0) -
+    (looksLikeTextFragment(r.name) ? 1000 : 0);
   return score(a) >= score(b) ? a : b;
 }
 
@@ -487,7 +491,7 @@ export async function mergePublicDuplicates(opts?: {
     // chain resolves into as many merges as the scorer actually supports.
     let pool = [...new Map(list.map((r) => [r.id, r])).values()];
     while (pool.length > 1) {
-      const keep = pool.reduce((a, b) => winner(a, b));
+      const keep = pool.reduce((a, b) => mergeKeeper(a, b));
       const rest: MergeDuplicateRow[] = [];
       for (const drop of pool) {
         if (drop.id === keep.id) continue;
@@ -534,7 +538,7 @@ export async function mergePublicDuplicates(opts?: {
           reasons.includes("name_sim_high");
         if (!nameClose) continue;
         if (isJunkPair(a, b)) continue;
-        const keep = winner(a, b);
+        const keep = mergeKeeper(a, b);
         const drop = keep.id === a.id ? b : a;
         if (merges.some((m) => m.drop.id === drop.id)) continue;
         merges.push({
