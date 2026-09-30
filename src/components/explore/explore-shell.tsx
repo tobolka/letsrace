@@ -1125,7 +1125,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         )}
       </div>
 
-      {mobileSheetReady ? (
+      {/* Phone only. Mounted on a desktop, the hidden card still opened a
+          dialog layer with every race, and that layer locks the page. */}
+      {mobileSheetReady && !isDesktop ? (
         <>
           <MobileListSheet
             snap={listSnap}

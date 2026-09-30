@@ -26,7 +26,7 @@
  * full screen every time a race was tapped. Two siblings with a z-index
  * between them get the stacking without the fight.
  */
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Map as MapIcon, X } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHandle, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
@@ -168,6 +168,25 @@ function GrabZone({
   );
 }
 
+/**
+ * Give the page its clicks back while a non-modal sheet is open.
+ *
+ * vaul renders a Radix dialog, which is modal whatever `modal` says, and a
+ * modal layer sets `pointer-events: none` on the body. vaul undoes that only
+ * when the sheet opens itself; opened from outside — a race picked on the map —
+ * the lock stayed, and the tab bar and everything else outside the card went
+ * dead until a reload.
+ */
+function useUnlockBody(open: boolean) {
+  useEffect(() => {
+    if (!open) return;
+    const frame = requestAnimationFrame(() => {
+      document.body.style.pointerEvents = "auto";
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
+}
+
 export function MobileListSheet({
   snap,
   onSnap,
@@ -185,6 +204,7 @@ export function MobileListSheet({
   mapLabel: string;
   children: ReactNode;
 }) {
+  useUnlockBody(true);
   return (
     <Drawer
       open
@@ -265,6 +285,7 @@ export function MobileDetailSheet({
   closeLabel: string;
   children: ReactNode;
 }) {
+  useUnlockBody(open);
   return (
     <Drawer
       open={open}
