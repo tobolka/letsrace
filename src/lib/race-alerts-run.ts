@@ -2,10 +2,14 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
 import { todayIso } from "@/lib/date-presets";
 import { eventMapPath } from "@/lib/event-url";
-import { getSiteUrl, SITE_NAME } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/seo";
+import { renderEmail, renderEmailText, type EmailContent } from "@/lib/email/layout";
+import { emailFooterLinks } from "@/lib/email/links";
+import { disciplineColor } from "@/lib/map-visuals";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
 import { formatDistanceKm } from "@/lib/geo/distance";
-import { escapeHtml, sendResendEmail } from "@/lib/mail";
+import { sendResendEmail } from "@/lib/mail";
 import { matchAlert, type AlertCandidate, type AlertMatch, type RaceAlert } from "@/lib/race-alerts";
 import { parseWeekdays } from "@/lib/plan-prefs";
 import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -93,39 +97,47 @@ function toCandidate(row: {
   };
 }
 
-function emailHtml(
+/** The alert email: the new races for one watched area, nearest dates first. */
+export function alertEmail(
   locale: string,
-  alert: RaceAlert,
+  alert: Pick<RaceAlert, "id" | "label" | "radiusKm">,
   matches: AlertMatch[],
-): { subject: string; html: string } {
+): { subject: string; html: string; text: string; headers?: Record<string, string> } {
   const t = messagesFor(locale);
   const loc = asLocale(locale);
   const origin = getSiteUrl();
   const place = alert.label || t.myLocation;
-  const subject = t.alertEmailSubject
-    .replace("{n}", String(matches.length))
-    .replace("{place}", place)
-    .replace("{km}", String(alert.radiusKm));
-  const rows = matches
-    .map((m) => {
-      const href = `${origin}${eventMapPath(loc, { slug: m.event.slug, startDate: m.event.startDate })}`;
-      const where = [m.event.place, m.event.countryCode].filter(Boolean).join(" · ");
-      const dist = formatDistanceKm(m.km, loc);
-      return `<tr>
-        <td style="padding:10px 0;border-bottom:1px solid #e7e5e4;">
-          <a href="${href}" style="color:#c81d25;font-weight:600;text-decoration:none;">${escapeHtml(m.event.name)}</a>
-          <div style="color:#57534d;font-size:13px;margin-top:2px;">${escapeHtml(m.event.startDate)} · ${escapeHtml(where)} · ${escapeHtml(dist)}</div>
-        </td>
-      </tr>`;
-    })
-    .join("");
-  const html = `<div style="font-family:ui-sans-serif,system-ui,sans-serif;max-width:520px;color:#1c1917;">
-    <p style="font-weight:800;font-style:italic;letter-spacing:-0.04em;color:#c81d25;font-size:22px;margin:0 0 12px;">${SITE_NAME}</p>
-    <p style="margin:0 0 16px;color:#57534d;">${escapeHtml(t.alertEmailIntro.replace("{place}", place).replace("{km}", String(alert.radiusKm)))}</p>
-    <table style="width:100%;border-collapse:collapse;">${rows}</table>
-    <p style="margin:20px 0 0;font-size:12px;color:#a8a29e;">${escapeHtml(t.alertEmailFooter)}</p>
-  </div>`;
-  return { subject, html };
+  const fill = (s: string) =>
+    s.replace("{n}", String(matches.length)).replace("{place}", place).replace("{km}", String(alert.radiusKm));
+  const links = emailFooterLinks(loc, { kind: "alert", id: alert.id });
+  const content: EmailContent = {
+    locale: loc,
+    preheader: fill(t.emailPreheaderAlert),
+    heading: fill(t.alertEmailSubject),
+    intro: fill(t.alertEmailIntro),
+    sections: [
+      {
+        races: matches.map((m) => ({
+          name: m.event.name,
+          href: `${origin}${eventMapPath(loc, { slug: m.event.slug, startDate: m.event.startDate })}`,
+          date: m.event.startDate,
+          color: disciplineColor(m.event.disciplines),
+          meta: [
+            [m.event.place, m.event.countryCode].filter(Boolean).join(" · "),
+            m.event.disciplines.map((d) => disciplineLabel(d, loc)).filter(Boolean).slice(0, 2).join(", "),
+            formatDistanceKm(m.km, loc),
+          ]
+            .filter(Boolean)
+            .join(" · "),
+        })),
+      },
+    ],
+    cta: { label: t.alertEmailCta, href: `${origin}/${loc}/account/recommendations` },
+    reason: fill(t.alertEmailFooter),
+    manage: links.manage,
+    unsubscribe: links.unsubscribe,
+  };
+  return { subject: fill(t.alertEmailSubject), html: renderEmail(content), text: renderEmailText(content), headers: links.headers };
 }
 
 export async function runRaceAlerts(now = new Date()) {
@@ -224,11 +236,13 @@ export async function runRaceAlerts(now = new Date()) {
   const emailedIds: string[] = [];
   for (const g of grouped.values()) {
     g.matches.sort((a, b) => a.event.startDate.localeCompare(b.event.startDate) || a.km - b.km);
-    const mail = emailHtml(g.alert.locale || "cs", g.alert, g.matches);
+    const mail = alertEmail(g.alert.locale || "cs", g.alert, g.matches);
     const ok = await sendResendEmail({
       to: g.email,
       subject: mail.subject,
       html: mail.html,
+      text: mail.text,
+      headers: mail.headers,
       idempotencyKey: `race-alert/${g.alert.id}/${today}/${g.matches.map((m) => m.event.id).join(",")}`,
     });
     if (ok) {

@@ -1,0 +1,1 @@
+{{ if eq .Data.locale "en" }}Reset your Let's Race password{{ else if eq .Data.locale "pl" }}Zresetuj hasło do Let's Race{{ else if eq .Data.locale "sk" }}Obnovenie hesla pre Let's Race{{ else }}Obnovení hesla pro Let's Race{{ end }}

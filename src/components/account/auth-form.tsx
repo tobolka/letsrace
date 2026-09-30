@@ -114,7 +114,7 @@ export function AuthForm({
           email: emailValue,
           password,
           options: {
-            data: { display_name: name.trim() || emailValue.split("@")[0] },
+            data: { display_name: name.trim() || emailValue.split("@")[0], locale },
             emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/${locale}/account`)}`,
           },
         });

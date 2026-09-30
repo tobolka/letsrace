@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{{ if eq .Data.locale "en" }}Set a new password{{ else if eq .Data.locale "pl" }}Ustaw nowe hasło{{ else if eq .Data.locale "sk" }}Nastavte nové heslo{{ else }}Nastavte si nové heslo{{ end }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f4;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;">
+  <tr><td align="center" style="padding:32px 12px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+      <tr><td style="padding:0 4px 18px;">
+        <a href="{{ .SiteURL }}" style="text-decoration:none;"><img src="{{ .SiteURL }}/email/lets-race@2x.png" width="132" height="20" alt="Let's Race" style="display:block;border:0;height:20px;width:132px;"></a>
+      </td></tr>
+      <tr><td style="background:#ffffff;border:1px solid #e7e5e4;border-radius:16px;padding:32px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr><td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:22px;line-height:28px;font-weight:700;letter-spacing:-0.02em;color:#0c0a09;">{{ if eq .Data.locale "en" }}Set a new password{{ else if eq .Data.locale "pl" }}Ustaw nowe hasło{{ else if eq .Data.locale "sk" }}Nastavte nové heslo{{ else }}Nastavte si nové heslo{{ end }}</td></tr>
+          <tr><td style="padding:10px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:22px;color:#44403c;">{{ if eq .Data.locale "en" }}Someone asked to reset the password for this account. If it was you, choose a new one below.{{ else if eq .Data.locale "pl" }}Ktoś poprosił o zresetowanie hasła do tego konta. Jeśli to ty, ustaw nowe poniżej.{{ else if eq .Data.locale "sk" }}Niekto požiadal o obnovenie hesla k tomuto účtu. Ak ste to boli vy, nastavte si nové nižšie.{{ else }}Někdo požádal o obnovení hesla k tomuto účtu. Pokud jste to byli vy, nastavte si nové níže.{{ end }}</td></tr>
+          <tr><td style="padding:26px 0 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:10px;background:#1c1917;">
+              <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 22px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">{{ if eq .Data.locale "en" }}Choose a new password{{ else if eq .Data.locale "pl" }}Ustaw nowe hasło{{ else if eq .Data.locale "sk" }}Nastaviť nové heslo{{ else }}Nastavit nové heslo{{ end }}</a>
+            </td></tr></table>
+          </td></tr>
+          <tr><td style="padding:24px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#78716c;">{{ if eq .Data.locale "en" }}Or paste this link into your browser:{{ else if eq .Data.locale "pl" }}Albo wklej ten link do przeglądarki:{{ else if eq .Data.locale "sk" }}Alebo vložte tento odkaz do prehliadača:{{ else }}Nebo vložte tento odkaz do prohlížeče:{{ end }}<br><a href="{{ .ConfirmationURL }}" style="color:#78716c;word-break:break-all;">{{ .ConfirmationURL }}</a></td></tr>
+        </table>
+      </td></tr>
+      <tr><td style="padding:20px 8px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#a8a29e;">{{ if eq .Data.locale "en" }}If you didn't ask for this, you can ignore this email.{{ else if eq .Data.locale "pl" }}Jeśli to nie ty, zignoruj ten e-mail.{{ else if eq .Data.locale "sk" }}Ak ste o to nežiadali, tento e-mail ignorujte.{{ else }}Pokud jste o nic nežádali, tento e-mail ignorujte.{{ end }}<br>Let's Race · letsrace.cz</td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

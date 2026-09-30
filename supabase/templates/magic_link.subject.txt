@@ -1,0 +1,1 @@
+{{ if eq .Data.locale "en" }}Your Let's Race sign-in link{{ else if eq .Data.locale "pl" }}Twój link do logowania w Let's Race{{ else if eq .Data.locale "sk" }}Váš odkaz na prihlásenie do Let's Race{{ else }}Váš odkaz pro přihlášení do Let's Race{{ end }}

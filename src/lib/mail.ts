@@ -11,6 +11,9 @@ export async function sendResendEmail(opts: {
   to: string;
   subject: string;
   html: string;
+  /** The plain-text part; mail without one reads as bulk to spam filters. */
+  text?: string;
+  headers?: Record<string, string>;
   idempotencyKey: string;
 }): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
@@ -28,6 +31,9 @@ export async function sendResendEmail(opts: {
       to: [opts.to],
       subject: opts.subject,
       html: opts.html,
+      ...(opts.text ? { text: opts.text } : {}),
+      ...(process.env.RESEND_REPLY_TO ? { reply_to: process.env.RESEND_REPLY_TO } : {}),
+      ...(opts.headers ? { headers: opts.headers } : {}),
     }),
   });
   if (!res.ok) {

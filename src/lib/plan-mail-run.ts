@@ -4,7 +4,10 @@ import { readAllRows } from "@/lib/supabase/read-all";
 import { todayIso } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
-import { escapeHtml, sendResendEmail } from "@/lib/mail";
+import { sendResendEmail } from "@/lib/mail";
+import { renderEmail, renderEmailText, type EmailContent, type EmailSection } from "@/lib/email/layout";
+import { emailFooterLinks } from "@/lib/email/links";
+import { disciplineColor } from "@/lib/map-visuals";
 import { eventPagePath } from "@/lib/event-url";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { parseWeekdays } from "@/lib/plan-prefs";
@@ -16,9 +19,9 @@ import {
   pragueIsoDate,
   type DigestNearby,
 } from "@/lib/plan-digest";
-import { mergeEventPlans, type PlannerAttendance, type PlannerEvent } from "@/lib/planner";
+import { mergeEventPlans, type EventPlan, type PlannerAttendance, type PlannerEvent } from "@/lib/planner";
 import { matchAlert, type AlertCandidate, type RaceAlert } from "@/lib/race-alerts";
-import { getSiteUrl, SITE_NAME } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/seo";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import type { PlanChangeKind } from "@/lib/plan-changes";
 import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -99,14 +102,6 @@ function toCandidate(row: EventRow): AlertCandidate {
   };
 }
 
-function brandWrap(body: string, footer: string): string {
-  return `<div style="font-family:ui-sans-serif,system-ui,sans-serif;max-width:520px;color:#1c1917;">
-    <p style="font-weight:800;font-style:italic;letter-spacing:-0.04em;color:#c81d25;font-size:22px;margin:0 0 12px;">${SITE_NAME}</p>
-    ${body}
-    <p style="margin:20px 0 0;font-size:12px;color:#a8a29e;">${escapeHtml(footer)}</p>
-  </div>`;
-}
-
 function disciplineLabel(ids: string): string {
   return ids
     .split(",")
@@ -142,92 +137,104 @@ function changeLine(
   return t.planChangeDisciplineBody.replace("{discipline}", disciplineLabel(payload.to ?? ""));
 }
 
-type Notice = {
+export type Notice = {
   event: { id: string; name: string; slug: string; startDate: string; endDate: string | null };
   kind: PlanChangeKind;
   payload: Record<string, string>;
   changeId: string;
 };
 
-function planChangeEmail(locale: string, notices: Notice[]): { subject: string; html: string } {
+type Mail = { subject: string; html: string; text: string; headers?: Record<string, string> };
+
+function flagFor(kind: PlanChangeKind, t: ReturnType<typeof messagesFor>): string {
+  if (kind === "cancelled") return t.planChangeFlagCancelled;
+  if (kind === "registration") return t.planChangeFlagRegistration;
+  if (kind === "discipline") return t.planChangeFlagDiscipline;
+  return t.planChangeFlagDate;
+}
+
+/** What changed on races in someone's plan: one row per race, the change flagged. */
+export function planChangeEmail(locale: string, userId: string, notices: Notice[]): Mail {
   const t = messagesFor(locale);
   const loc = asLocale(locale);
   const origin = getSiteUrl();
   const kinds = [...new Set(notices.map((n) => n.kind))];
   const subject =
-    notices.length === 1 && kinds.length === 1
-      ? subjectForChange(kinds[0]!, t)
-      : t.planChangeSubjectMany;
-  const rows = notices
-    .map((n) => {
-      const href = `${origin}${eventPagePath(loc, n.event.slug)}`;
-      const detail = changeLine(n.kind, n.payload, loc, t);
-      return `<tr>
-        <td style="padding:10px 0;border-bottom:1px solid #e7e5e4;">
-          <a href="${href}" style="color:#c81d25;font-weight:600;text-decoration:none;">${escapeHtml(n.event.name)}</a>
-          <div style="color:#57534d;font-size:13px;margin-top:2px;">${escapeHtml(detail)}</div>
-        </td>
-      </tr>`;
-    })
-    .join("");
-  const cta = `${origin}/${loc}/calendar`;
-  const html = brandWrap(
-    `<p style="margin:0 0 16px;color:#57534d;">${escapeHtml(notices.length === 1 ? subjectForChange(notices[0]!.kind, t) : t.planChangeIntroMany)}</p>
-    <table style="width:100%;border-collapse:collapse;">${rows}</table>
-    <p style="margin:16px 0 0;"><a href="${cta}" style="color:#c81d25;font-weight:600;text-decoration:none;">${escapeHtml(t.planChangeCta)}</a></p>`,
-    t.planMailFooter,
-  );
-  return { subject, html };
+    notices.length === 1 && kinds.length === 1 ? subjectForChange(kinds[0]!, t) : t.planChangeSubjectMany;
+  const links = emailFooterLinks(loc, { kind: "plan", id: userId });
+  const content: EmailContent = {
+    locale: loc,
+    preheader: t.emailPreheaderChange,
+    heading: subject,
+    intro: notices.length === 1 ? undefined : t.planChangeIntroMany,
+    sections: [
+      {
+        races: notices.map((n) => ({
+          name: n.event.name,
+          href: `${origin}${eventPagePath(loc, n.event.slug)}`,
+          // A moved race is shown on the day it moved to.
+          date: n.kind === "date" && n.payload.to ? n.payload.to : n.event.startDate,
+          flag: flagFor(n.kind, t),
+          meta: changeLine(n.kind, n.payload, loc, t),
+        })),
+      },
+    ],
+    cta: { label: t.planChangeCta, href: `${origin}/${loc}/account` },
+    reason: t.planMailFooter,
+    manage: links.manage,
+    unsubscribe: links.unsubscribe,
+  };
+  return { subject, html: renderEmail(content), text: renderEmailText(content), headers: links.headers };
 }
 
-function digestEmail(
-  locale: string,
-  digest: ReturnType<typeof buildWeeklyDigest>,
-): { subject: string; html: string } {
+/** Wednesday's look at the weekend: what is on, what is not settled, what is free. */
+export function digestEmail(locale: string, userId: string, digest: ReturnType<typeof buildWeeklyDigest>): Mail {
   const t = messagesFor(locale);
   const loc = asLocale(locale);
   const origin = getSiteUrl();
-  const cta = `${origin}/${loc}/calendar`;
-  const raceLink = (slug: string, name: string, startDate: string) => {
-    const href = `${origin}${eventPagePath(loc, slug)}`;
-    return `<div style="padding:6px 0;">
-      <a href="${href}" style="color:#c81d25;font-weight:600;text-decoration:none;">${escapeHtml(name)}</a>
-      <span style="color:#57534d;font-size:13px;"> · ${escapeHtml(formatDay(startDate, loc))}</span>
-    </div>`;
-  };
-  const sections: string[] = [];
-  sections.push(`<p style="margin:0 0 4px;font-weight:600;">${escapeHtml(t.digestThisWeekend)}</p>`);
-  if (digest.thisWeekend.length === 0) {
-    sections.push(`<p style="margin:0 0 16px;color:#57534d;">${escapeHtml(t.digestThisFree)}</p>`);
-  } else {
-    sections.push(
-      `<div style="margin:0 0 16px;">${digest.thisWeekend.map((p) => raceLink(p.event.slug, p.event.name, p.event.startDate)).join("")}</div>`,
-    );
-  }
-  if (digest.needsAction.length > 0) {
-    sections.push(`<p style="margin:0 0 4px;font-weight:600;">${escapeHtml(t.digestNeedsAction)}</p>`);
-    sections.push(
-      `<div style="margin:0 0 16px;">${digest.needsAction.map((p) => raceLink(p.event.slug, p.event.name, p.event.startDate)).join("")}</div>`,
-    );
-  }
-  if (digest.nextWeekendFree) {
-    sections.push(`<p style="margin:0 0 16px;color:#57534d;">${escapeHtml(t.digestNextFree)}</p>`);
-  }
+  const race = (p: EventPlan) => ({
+    name: p.event.name,
+    href: `${origin}${eventPagePath(loc, p.event.slug)}`,
+    date: p.event.startDate,
+    color: disciplineColor(p.event.disciplines),
+    meta: [[p.event.place, p.event.countryCode].filter(Boolean).join(" · "), disciplineLabel(p.event.disciplines.join(","))]
+      .filter(Boolean)
+      .join(" · "),
+  });
+  const sections: EmailSection[] = [
+    digest.thisWeekend.length === 0
+      ? { title: t.digestThisWeekend, text: t.digestThisFree }
+      : { title: t.digestThisWeekend, races: digest.thisWeekend.map(race) },
+  ];
+  if (digest.needsAction.length > 0) sections.push({ title: t.digestNeedsAction, races: digest.needsAction.map(race) });
   if (digest.nearby) {
     const n = digest.nearby;
-    const dist = formatDistanceKm(n.km, loc);
-    const where = [n.place, dist].filter(Boolean).join(" · ");
-    sections.push(`<p style="margin:0 0 4px;font-weight:600;">${escapeHtml(t.digestNearby)}</p>`);
-    sections.push(
-      `<div style="margin:0 0 16px;">${raceLink(n.slug, n.name, n.startDate)}<div style="color:#57534d;font-size:13px;">${escapeHtml(where)}</div></div>`,
-    );
+    sections.push({
+      title: t.digestNearby,
+      races: [
+        {
+          name: n.name,
+          href: `${origin}${eventPagePath(loc, n.slug)}`,
+          date: n.startDate,
+          meta: [n.place, formatDistanceKm(n.km, loc)].filter(Boolean).join(" · "),
+        },
+      ],
+    });
   }
-  const html = brandWrap(
-    `<p style="margin:0 0 16px;color:#57534d;">${escapeHtml(t.digestIntro)}</p>${sections.join("")}
-    <p style="margin:16px 0 0;"><a href="${cta}" style="color:#c81d25;font-weight:600;text-decoration:none;">${escapeHtml(t.digestCta)}</a></p>`,
-    t.planMailFooter,
-  );
-  return { subject: t.digestSubject, html };
+  if (digest.nextWeekendFree) sections.push({ text: t.digestNextFree });
+  const links = emailFooterLinks(loc, { kind: "digest", id: userId });
+  const content: EmailContent = {
+    locale: loc,
+    preheader: t.emailPreheaderDigest,
+    heading: t.digestSubject,
+    intro: t.digestIntro,
+    sections,
+    cta: { label: t.digestCta, href: `${origin}/${loc}/account` },
+    reason: t.planMailFooter,
+    manage: links.manage,
+    unsubscribe: links.unsubscribe,
+  };
+  return { subject: t.digestSubject, html: renderEmail(content), text: renderEmailText(content), headers: links.headers };
 }
 
 export async function runPlanChangeMails(now = new Date()) {
@@ -348,11 +355,13 @@ export async function runPlanChangeMails(now = new Date()) {
   let emailed = 0;
   const stamped: string[] = [];
   for (const [userId, g] of grouped) {
-    const mail = planChangeEmail(g.locale, g.notices);
+    const mail = planChangeEmail(g.locale, userId, g.notices);
     const ok = await sendResendEmail({
       to: g.email,
       subject: mail.subject,
       html: mail.html,
+      text: mail.text,
+      headers: mail.headers,
       idempotencyKey: `plan-change/${userId}/${g.notices.map((n) => n.changeId).sort().join(",")}`,
     });
     if (ok) {
@@ -551,11 +560,13 @@ export async function runWeeklyDigest(now = new Date()) {
     if (!digestHasContent(digest, upcoming.length > 0)) continue;
 
     const locale = (user.locale as string | null) || "cs";
-    const mail = digestEmail(locale, digest);
+    const mail = digestEmail(locale, userId, digest);
     const ok = await sendResendEmail({
       to: user.email as string,
       subject: mail.subject,
       html: mail.html,
+      text: mail.text,
+      headers: mail.headers,
       idempotencyKey: `plan-digest/${userId}/${weekKey}`,
     });
     if (!ok) continue;
