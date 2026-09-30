@@ -37,7 +37,7 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
   const weekdays = Array.from({ length: 7 }, (_, i) => format(addDays(monday, i), "EEEEE", { locale: df }));
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-8 py-4 text-center md:py-10">
+    <div className="mx-auto flex w-full max-w-xl flex-col items-center py-4 text-center md:pt-6 md:pb-12">
       <TeaserArt
         kind={kind}
         art={m.art}
@@ -45,13 +45,20 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
         month={format(new Date(), "LLLL", { locale: df })}
       />
 
-      <div className="flex flex-col items-center gap-3">
-        <span className="text-xs font-medium tracking-wide text-brand uppercase">{copy.eyebrow}</span>
-        <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">{copy.title}</h1>
-        <p className="text-base text-pretty text-muted-foreground">{copy.body}</p>
+      {/*
+        Three groups, spaced as groups: the heading block sits well clear of the
+        picture, its eyebrow, title and body tight to each other; the points
+        closer to the body than to the button; the button with room of its own.
+      */}
+      <div className="mt-12 flex max-w-lg flex-col items-center">
+        <span className="text-xs font-semibold tracking-[0.08em] text-brand uppercase">{copy.eyebrow}</span>
+        <h1 className="mt-3 text-3xl leading-tight font-semibold tracking-tight text-balance md:text-4xl">
+          {copy.title}
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-pretty text-muted-foreground">{copy.body}</p>
       </div>
 
-      <ul className="flex flex-col gap-2.5 text-left">
+      <ul className="mt-8 flex flex-col gap-3 text-left">
         {copy.points.map((point) => (
           <li key={point} className="flex items-start gap-3 text-sm">
             <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
@@ -62,7 +69,7 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
         ))}
       </ul>
 
-      <div className="flex flex-wrap justify-center gap-2">
+      <div className="mt-10 flex flex-wrap justify-center gap-3">
         <Button size="lg" onClick={() => setOpen(true)}>
           {m.cta}
         </Button>
