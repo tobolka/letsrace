@@ -37,8 +37,9 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
 
   return (
     // The picture on the left, the promise on the right, centred on each
-    // other; on a phone the picture stacks on top.
-    <div className="mx-auto grid w-full max-w-5xl items-center gap-10 py-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-14 md:pt-10 md:pb-12">
+    // other and in the page — a touch above true centre, where the eye puts
+    // it (the extra padding underneath). On a phone the picture stacks on top.
+    <div className="m-auto grid w-full max-w-5xl items-center gap-10 py-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-14 md:pt-6 md:pb-16">
       <TeaserArt
         kind={kind}
         art={m.art}
