@@ -204,7 +204,7 @@ export function PlanAgenda({
                     onClick={() => onSelectDay(day)}
                     className={cn(
                       "group/row cursor-default align-middle",
-                      weekend && "bg-stone-200/45 dark:bg-stone-900/50",
+                      weekend && "bg-muted",
                       (note || busy) && "bg-muted/60",
                       past && "opacity-55",
                       selected === day && "bg-brand/8 inset-ring inset-ring-brand/40",

@@ -35,15 +35,22 @@ html[data-welcome-seen="1"] #letsrace-welcome {
   --border: oklch(0.923 0.003 48.717);
   --input: oklch(0.923 0.003 48.717);
   --ring: oklch(0.709 0.01 56.259);
-  --sidebar: oklch(0.985 0.001 106.423);
+  /* The rail is one step down Stone's scale from the page (stone-100), and
+     its active item one more (stone-200) — the same steps the chips use. */
+  --sidebar: oklch(0.97 0.001 106.424);
   --sidebar-foreground: oklch(0.147 0.004 49.25);
   --sidebar-primary: oklch(0.216 0.006 56.043);
   --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-accent: oklch(0.97 0.001 106.424);
+  --sidebar-accent: oklch(0.923 0.003 48.717);
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
   --brand: #c81d25;
+  /* The page sheet's lift, mixed from the foreground so it stays on the scale. */
+  --shell-sheet-shadow:
+    0 0 0 1px color-mix(in oklch, var(--foreground) 6%, transparent),
+    0 1px 2px color-mix(in oklch, var(--foreground) 4%, transparent),
+    0 4px 16px -4px color-mix(in oklch, var(--foreground) 6%, transparent);
 }
 
 @theme inline {

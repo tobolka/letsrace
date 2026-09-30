@@ -28,11 +28,12 @@ export default async function ShellLayout({
       <AppSidebar locale={locale} />
       <SidebarInset
         className={
-          // The sheet sits 6px off the window on three sides and flush with the
-          // rail on the fourth, with a hairline and no shadow.
-          // A real border, not a ring: a ring is drawn outside the box, and on
-          // the left the fixed rail painted over it.
-          "min-h-0 overflow-hidden bg-background md:peer-data-[variant=inset]:m-1.5 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0 md:peer-data-[variant=inset]:rounded-[10px] md:border md:border-sidebar-border md:peer-data-[variant=inset]:shadow-none"
+          // The page is a white sheet laid on the rail's grey: 8px off the window
+          // on three sides, flush with the rail on the fourth, lifted by a
+          // hairline outline and a soft shadow rather than a drawn border.
+          // It sits above the rail (z-20) so that outline is not painted over
+          // on its left edge by the fixed rail.
+          "relative z-20 min-h-0 overflow-hidden bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-(--shell-sheet-shadow)"
         }
       >
         <div id="shell-stage" className="relative min-h-0 flex-1 overflow-auto">
