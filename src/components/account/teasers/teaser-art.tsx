@@ -31,7 +31,7 @@ export function TeaserArt({
   return (
     <div
       aria-hidden
-      className="relative flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl bg-muted select-none sm:h-80 md:aspect-[5/4] md:h-auto"
+      className="relative flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl bg-muted/50 select-none sm:h-80 md:aspect-[5/4] md:h-auto"
     >
       {/* The cards a size down, so they sit in the grey with air around them. */}
       <div className="absolute inset-0 scale-[0.85]">
