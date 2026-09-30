@@ -1486,6 +1486,24 @@ async function seriesAcceptsSource(
   return hostnameOf(watchedUrl).replace(/^www\./, "") === official;
 }
 
+const CC_TLDS = new Set([
+  "cz", "sk", "pl", "de", "at", "ch", "it", "fr", "be", "nl", "lu", "si", "hr", "hu",
+  "es", "pt", "dk", "se", "no", "fi", "ie", "ro", "bg", "rs", "ba", "lt", "lv", "ee", "gr",
+]);
+
+/** The country a site's domain names: "stevenscup.de" is German. */
+export function countryFromDomain(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    const tld = host.split(".").pop() ?? "";
+    if (tld === "uk") return "GB";
+    return CC_TLDS.has(tld) ? tld.toUpperCase() : null;
+  } catch {
+    return null;
+  }
+}
+
 async function upsertParsedEvent(
   ev: ParsedEvent,
   watchedUrlId: string,
@@ -1505,6 +1523,14 @@ async function upsertParsedEvent(
   const titleCountry = countryCodeFromName(ev.name);
   if (titleCountry && titleCountry !== ev.countryHint) {
     ev = { ...ev, countryHint: titleCountry };
+  }
+  // A source that names no country is read by its domain, not taken to be
+  // Czech: every STEVENS Cup round from stevenscup.de was geocoded to Czechia
+  // ("#03 - Bad Harzburg", 74 km from Prague) and so never met the German
+  // listing of the same race.
+  if (!ev.countryHint) {
+    const fromDomain = countryFromDomain(watchedUrl) ?? countryFromDomain(ev.sourceUrl);
+    if (fromDomain) ev = { ...ev, countryHint: fromDomain };
   }
 
   const supabase = createServerSupabase();

@@ -1425,6 +1425,21 @@ export function extractEmbeddedGps(raw: string): GeocodeResult | null {
   return { lat, lng };
 }
 
+/**
+ * The gazetteer, but only for the country a stored place is in. Folding strips the
+ * diacritics that told two towns apart: Polish "Sobótka" by Wrocław became
+ * Czech "Sobotka" by Jičín, and every Polish race there sat in Bohemia.
+ */
+function gazetteerIn(query: string, countryCode?: string | null): GeocodeResult | null {
+  const hit = gazetteerLookup(query);
+  if (!hit) return null;
+  // "CZ" was long the default for any place without a country, so it does
+  // not rule out the Slovak town the gazetteer finds. Anything else was said.
+  const cc = (countryCode || "").toUpperCase();
+  if (cc && cc !== "CZ" && hit.countryCode && hit.countryCode.toUpperCase() !== cc) return null;
+  return hit;
+}
+
 function gazetteerLookup(query: string): GeocodeResult | null {
   const key = fold(query);
   if (GAZETTEER[key]) {
@@ -1959,7 +1974,7 @@ export async function geocodePendingLocations(
     const cacheKey = `${fold(query)}|${countryCode}`;
     let geo = seen.get(cacheKey);
     if (geo === undefined) {
-      geo = gazetteerLookup(query);
+      geo = gazetteerIn(query, countryCode);
       if (!geo) {
         if (nominatimCalls > 0) await new Promise((r) => setTimeout(r, 1100));
         try {
@@ -1993,7 +2008,7 @@ export async function geocodePendingLocations(
         const retryKey = `${fold(simple)}|${countryCode}|retry`;
         let retry = seen.get(retryKey);
         if (retry === undefined) {
-          retry = gazetteerLookup(simple);
+          retry = gazetteerIn(simple, countryCode);
           if (!retry) {
             if (nominatimCalls > 0) await new Promise((r) => setTimeout(r, 1100));
             try {
