@@ -6,9 +6,10 @@ import { AuthForm } from "@/components/account/auth-form";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { DayPickerButton } from "@/components/account/day-picker-button";
 import { NextRaceHero } from "@/components/account/next-race-hero";
-import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
+import { PAGE_WIDTH } from "@/components/account/panel";
 import type { PickedPlace } from "@/components/account/place-picker";
-import { PlanSeason } from "@/components/account/plan-season";
+import { PlanSeason, PlanViewToggle } from "@/components/account/plan-season";
+import { SectionHeader } from "@/components/shell/section-header";
 import { PlanSetup } from "@/components/account/plan-setup";
 import { PlanTodo } from "@/components/account/plan-todo";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
@@ -547,74 +548,74 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     </div>
   );
 
-  return (
-    <div className={PAGE_WIDTH}>
-      <PageHeader title={t.myCalendar} description={t.accountPlanDescription} />
-
-      <PlanSetup
+  const season = (
+    <PlanSeason
+      locale={locale}
+      plans={plans}
+      past={past}
+      members={members}
+      busyWeekdays={busyWeekdays}
+      blocked={blocked}
+      selected={pickedDay}
+      busyId={busyId}
+      onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
+      onSetNote={(day, note) => onSetNote(day, note)}
+      onStatusChange={(eventId, memberId, status) => void onStatusChange(eventId, memberId, status)}
+      onDiscard={(eventId) => void onDiscard(eventId)}
+    />
+  );
+  const hero = nextRace ? (
+    <NextRaceHero
+      locale={locale}
+      plan={nextRace}
+      members={members}
+      busy={busyId === nextRace.event.id}
+      onStatusChange={(memberId, status) => void onStatusChange(nextRace.event.id, memberId, status)}
+    />
+  ) : null;
+  const todo =
+    upcomingCount > 0 ? (
+      <PlanTodo
         locale={locale}
-        hasPeople={members.length > 0}
-        hasPlace={Boolean(suggestCtx?.home)}
-        hasRace={plans.length > 0}
-        onSetHome={(place) => onSetHome(place)}
+        actions={actions}
+        members={members}
+        busyId={busyId}
+        onStatusChange={(eventId, memberId, status) => void onStatusChange(eventId, memberId, status)}
+        onDiscard={(eventId) => void onDiscard(eventId)}
       />
+    ) : null;
 
-
-      {/*
-        The next race used to be a card the height of a phone screen, above a
-        list of jobs, above the season — so the season, which is the reason
-        this page exists, started below the fold. It is one card now, and the
-        season starts under it.
-      */}
-      {nextRace ? (
-        <NextRaceHero
-          locale={locale}
-          plan={nextRace}
-          members={members}
-          busy={busyId === nextRace.event.id}
-          onStatusChange={(memberId, status) =>
-            void onStatusChange(nextRace.event.id, memberId, status)
-          }
-        />
-      ) : null}
-
-      {/* The jobs beside the season, for as long as there is anything ahead. */}
-      <div
-        className={
-          upcomingCount > 0
-            ? "grid gap-6 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
-            : "grid gap-6 [&>*]:min-w-0"
-        }
-      >
-        <PlanSeason
-          locale={locale}
-          plans={plans}
-          past={past}
-          members={members}
-          busyWeekdays={busyWeekdays}
-          blocked={blocked}
-          selected={pickedDay}
-          busyId={busyId}
-          onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
-          onSetNote={(day, note) => onSetNote(day, note)}
-          onStatusChange={(eventId, memberId, status) =>
-            void onStatusChange(eventId, memberId, status)
-          }
-          onDiscard={(eventId) => void onDiscard(eventId)}
-        />
-
-        {upcomingCount > 0 ? (
-          <aside className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-20">
-            <PlanTodo
-              locale={locale}
-              actions={actions}
-              members={members}
-              busyId={busyId}
-              onStatusChange={(eventId, memberId, status) =>
-                void onStatusChange(eventId, memberId, status)
-              }
-              onDiscard={(eventId) => void onDiscard(eventId)}
-            />
+  /*
+   * The same frame as the race list and the calendar: the section's name with
+   * the view switch beside it, the season across the whole sheet under it, and
+   * — on a wide screen — what is next and what is left to do in a column on
+   * the right, where the list keeps its race card.
+   */
+  return (
+    <div className="flex min-h-full flex-col md:absolute md:inset-0">
+      <SectionHeader title={t.myCalendar} actions={<PlanViewToggle locale={locale} />} />
+      <div className="flex min-h-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col md:overflow-y-auto">
+          <PlanSetup
+            locale={locale}
+            hasPeople={members.length > 0}
+            hasPlace={Boolean(suggestCtx?.home)}
+            hasRace={plans.length > 0}
+            onSetHome={(place) => onSetHome(place)}
+            className="border-b px-4 py-4 md:px-6"
+          />
+          {hero || todo ? (
+            <div className="flex flex-col gap-4 border-b p-4 lg:hidden">
+              {hero}
+              {todo}
+            </div>
+          ) : null}
+          {season}
+        </div>
+        {hero || todo ? (
+          <aside className="hidden w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l p-4 lg:flex">
+            {hero}
+            {todo}
           </aside>
         ) : null}
       </div>

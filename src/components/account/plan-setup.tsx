@@ -22,12 +22,15 @@ export function PlanSetup({
   hasPlace,
   hasRace,
   onSetHome,
+  className,
 }: {
   locale: string;
   hasPeople: boolean;
   hasPlace: boolean;
   hasRace: boolean;
   onSetHome: (place: PickedPlace) => Promise<void> | void;
+  /** Around the card — the page decides the gutter it sits in. */
+  className?: string;
 }) {
   const t = messagesFor(locale);
   const [pickingPlace, setPickingPlace] = useState(false);
@@ -76,6 +79,7 @@ export function PlanSetup({
   const done = steps.filter((s) => s.done).length;
 
   return (
+    <div className={className}>
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{t.planSetupTitle}</CardTitle>
@@ -118,5 +122,6 @@ export function PlanSetup({
         </ItemGroup>
       </CardContent>
     </Card>
+    </div>
   );
 }

@@ -31,6 +31,7 @@ export function PlanMonthView({
   blocked,
   selectedDay,
   onPickDay,
+  fill = false,
 }: {
   locale: string;
   /** Any date in the month being shown. */
@@ -41,6 +42,7 @@ export function PlanMonthView({
   blocked: Record<string, BlockedDay>;
   selectedDay: string | null;
   onPickDay: (iso: string) => void;
+  fill?: boolean;
 }) {
   const t = messagesFor(locale);
   const items: CalendarItem[] = plans.map((p) => ({
@@ -60,6 +62,7 @@ export function PlanMonthView({
       items={items}
       selectedDay={selectedDay}
       onPickDay={onPickDay}
+      fill={fill}
       dayInfo={(iso) => {
         const taken = blocked[iso];
         const busy = isBusyIsoDate(iso, busyWeekdays);

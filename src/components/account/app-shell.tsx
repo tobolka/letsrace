@@ -77,7 +77,14 @@ export function AppShell({
         </nav>
       ) : null}
 
-      <main className="flex flex-1 flex-col p-4 md:p-8">
+      {/* The plan is a working view like the list and the calendar, so it takes
+          the whole sheet; the other profile pages are documents with margins. */}
+      <main
+        className={cn(
+          "flex flex-1 flex-col",
+          authed && pathname === `/${locale}/account` ? "p-0" : "p-4 md:p-8",
+        )}
+      >
         {authed === null ? (
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-4" aria-busy>
             <Skeleton className="h-8 w-48" />

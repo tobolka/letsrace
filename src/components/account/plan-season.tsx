@@ -5,7 +5,6 @@ import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { CalendarDays, CalendarOff, List, Sheet, Undo2 } from "lucide-react";
 import { PlanAgenda } from "@/components/account/plan-agenda";
-import { Panel } from "@/components/account/panel";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
@@ -67,42 +66,13 @@ export function PlanSeason({
   onStatusChange: (eventId: string, memberId: string, status: PlanMemberStatus) => void;
   onDiscard: (eventId: string) => void;
 }) {
-  const t = messagesFor(locale);
   const today = todayIso();
-  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
+  const [view] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
   const upcoming = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
   const [month, setMonth] = useState(() => monthStart(selected ?? today));
 
   return (
-    <div className="flex flex-col gap-5">
-      <Panel
-        title={t.weekendBoardTitle}
-        bodyClassName="p-0"
-        actions={
-          <ToggleGroup
-            type="single"
-            value={view}
-            onValueChange={(v) => {
-              if (v) void setView(v as (typeof VIEWS)[number]);
-            }}
-            variant="outline"
-            size="xs"
-          >
-            <ToggleGroupItem value="races" aria-label={t.planViewRaces}>
-              <List data-icon="inline-start" />
-              <span className="max-sm:sr-only">{t.planViewRaces}</span>
-            </ToggleGroupItem>
-            <ToggleGroupItem value="list" aria-label={t.planViewList}>
-              <Sheet data-icon="inline-start" />
-              <span className="max-sm:sr-only">{t.planViewList}</span>
-            </ToggleGroupItem>
-            <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
-              <CalendarDays data-icon="inline-start" />
-              <span className="max-sm:sr-only">{t.planViewCalendar}</span>
-            </ToggleGroupItem>
-          </ToggleGroup>
-        }
-      >
+    <div className="flex min-h-0 flex-1 flex-col">
         {view === "races" ? (
           <PlanRaces
             locale={locale}
@@ -126,6 +96,7 @@ export function PlanSeason({
               blocked={blocked}
               selectedDay={selected}
               onPickDay={onSelectDay}
+              fill
             />
           </>
         ) : (
@@ -149,8 +120,6 @@ export function PlanSeason({
             onSetNote={(note) => onSetNote(selected, note)}
           />
         ) : null}
-      </Panel>
-
     </div>
   );
 }
@@ -227,5 +196,39 @@ function DayBar({
         </Button>
       )}
     </div>
+  );
+}
+
+/**
+ * The three views of the season, for the page header — the same place the
+ * list and the calendar keep their controls. It shares the `view` query
+ * parameter with `PlanSeason`, so the two never disagree.
+ */
+export function PlanViewToggle({ locale }: { locale: string }) {
+  const t = messagesFor(locale);
+  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
+  return (
+    <ToggleGroup
+      type="single"
+      value={view}
+      onValueChange={(v) => {
+        if (v) void setView(v as (typeof VIEWS)[number]);
+      }}
+      variant="outline"
+      size="sm"
+    >
+      <ToggleGroupItem value="races" aria-label={t.planViewRaces}>
+        <List data-icon="inline-start" />
+        <span className="max-sm:sr-only">{t.planViewRaces}</span>
+      </ToggleGroupItem>
+      <ToggleGroupItem value="list" aria-label={t.planViewList}>
+        <Sheet data-icon="inline-start" />
+        <span className="max-sm:sr-only">{t.planViewList}</span>
+      </ToggleGroupItem>
+      <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
+        <CalendarDays data-icon="inline-start" />
+        <span className="max-sm:sr-only">{t.planViewCalendar}</span>
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }
