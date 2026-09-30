@@ -6,10 +6,13 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import * as cheerio from "cheerio";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { fingerprint, normalizeName, slugifyEvent } from "../src/lib/domain";
 import { attachEventSeries, attachSecondarySeries } from "../src/lib/catalog/event-series";
 import { listEvents } from "../src/lib/events";
+import { looksLikeTextFragment } from "../src/lib/text";
+import { decodeBody } from "../src/lib/watcher/http";
 
 function loadEnv() {
   const raw = readFileSync(resolve(process.cwd(), ".env.local"), "utf8");
@@ -19,7 +22,8 @@ function loadEnv() {
     if (!process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, "");
   }
 }
-loadEnv();
+const RUN_DIRECTLY = /scrape-doplnene-html/.test(process.argv[1] ?? "");
+if (RUN_DIRECTLY) loadEnv();
 
 const DRY = process.argv.includes("--dry");
 const limitIdx = process.argv.indexOf("--limit");
@@ -168,23 +172,29 @@ function parseCsv(path: string) {
   });
 }
 
-function stripHtml(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/(p|div|tr|li|h\d|td|th)>/gi, "\n")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+/**
+ * Page text, one block per line. Cheerio decodes every entity; the regex strip
+ * this replaced knew three, so "&auml;" and "&ndash;" went into race names, and
+ * a ">" inside an attribute value survived as the first character of one.
+ */
+export function stripHtml(html: string): string {
+  const $ = cheerio.load(
+    html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|div|tr|li|h\d|td|th)>/gi, "$&\n"),
+  );
+  $("script, style, noscript").remove();
+  return $.root()
+    .text()
+    .replace(/\u00a0/g, " ")
     .replace(/[ \t]+/g, " ")
-    .replace(/\n+/g, "\n");
+    .replace(/ *\n[\s]*/g, "\n");
 }
+
+/** Longest a name found beside a date may be before it is the window, not a title. */
+const MAX_NAME = 80;
 
 type Found = { start: string; end?: string; name: string };
 
-function extractEvents(text: string, seriesName: string): Found[] {
+export function extractEvents(text: string, seriesName: string): Found[] {
   const out: Found[] = [];
   const seen = new Set<string>();
 
@@ -195,6 +205,11 @@ function extractEvents(text: string, seriesName: string): Found[] {
       .replace(/^[\s\-–—|:·•]+|[\s\-–—|:·•]+$/g, "")
       .slice(0, 120);
     if (clean.length < 4) return;
+    // The name is whatever text sits beside the date. When it fills the window
+    // or carries the page's chrome with it, it is not what the race is called:
+    // this pass once named 540 rows "Kaumberger Bergzeitfahren Kaumberg
+    // Ergebnisse Rudi Bike Race Ochsenburg 28.06.2026 Ergebnisse „Mucki".
+    if (clean.length > MAX_NAME || looksLikeTextFragment(clean)) return;
     if (/cookie|privacy|newsletter|login|registr|javascript|browser/i.test(clean)) return;
     if (/vyhlášení|vyhlaseni|galavečer|galavec|abschlussfeier|awards night/i.test(clean) && !/závod|race|cup|maraton/i.test(clean))
       return;
@@ -331,7 +346,7 @@ async function fetchText(url: string): Promise<string> {
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const ct = res.headers.get("content-type") || "";
-  const buf = await res.text();
+  const buf = decodeBody(new Uint8Array(await res.arrayBuffer()), ct);
   if (ct.includes("text/calendar") || buf.startsWith("BEGIN:VCALENDAR")) return buf;
   if (url.toLowerCase().endsWith(".pdf") || ct.includes("pdf")) {
     // skip binary PDF for now
@@ -584,7 +599,9 @@ async function main() {
   console.log("\n=== SUMMARY ===", { processed, dry: DRY, counts });
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (RUN_DIRECTLY) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

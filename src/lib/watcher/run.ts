@@ -20,6 +20,7 @@ import {
 } from "@/lib/watcher/core";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
+import { looksLikeTextFragment } from "@/lib/text";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -2077,6 +2078,11 @@ async function upsertParsedEvent(
     payload.visibility = "hidden";
     payload.event_type = "training";
   } else if (skipDump && !lockedFields.includes("visibility")) {
+    payload.visibility = "hidden";
+  } else if (!existingId && looksLikeTextFragment(ev.name)) {
+    // A new row named with a slice of page text ("CYKLO�VEC s.r.o.",
+    // "> Sa, | 09.00&ndash;17.00 Uhr …") is kept for its sources but not shown;
+    // an existing row keeps its own, better name through preferEventName.
     payload.visibility = "hidden";
   } else if (
     existingRow?.visibility === "hidden" &&

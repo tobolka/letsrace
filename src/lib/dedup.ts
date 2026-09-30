@@ -1,5 +1,6 @@
 import { normalizeName } from "@/lib/domain";
 import { disciplineFamily } from "@/lib/taxonomy";
+import { looksLikeTextFragment } from "@/lib/text";
 
 /** Haversine distance in km */
 export function distanceKm(
@@ -986,6 +987,12 @@ function genderConflict(aName: string, bName: string): boolean {
  * venue: the Nové Město round of the Czech Cup ended up called "Český pohár XCO
  * Bedřichov" — a real round, 300 km and three months away. A title that names
  * where the race actually is beats one that names somewhere else.
+ *
+ * A slice of page text never wins. A date-first scrape named rows "> Sa, |
+ * 09.00&ndash;17.00 Uhr MUD MASTER CYCLOCROSS Mittelk&auml;rnten von Mountain
+ * Sport Union Kl"; on length alone
+ * that beat "MUD MASTER CYCLOCROSS Mittelkärnten" in every merge and on every
+ * watcher run, so the federation's clean title could never take the row back.
  */
 export function preferEventName(a: string, b: string, placeText?: string | null): string {
   const place = fold(placeText ?? "")
@@ -994,6 +1001,7 @@ export function preferEventName(a: string, b: string, placeText?: string | null)
     .filter((t) => t.length >= 4);
   const score = (n: string) => {
     let s = n.trim().length;
+    if (looksLikeTextFragment(n)) s -= 1000;
     if (isWeakRaceName(n)) s -= 40;
     if (/^\d{1,2}\.\s/.test(n.trim())) s -= 35;
     if (seriesAliasTokens(n).length) s += 25;
