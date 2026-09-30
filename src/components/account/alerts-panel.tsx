@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertInbox } from "@/components/account/alert-inbox";
 import { AlertSettings } from "@/components/account/alert-settings";
 import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
-import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/components/account/panel";
+import { Button } from "@/components/ui/button";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
 
@@ -60,25 +62,23 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
   }
 
   return (
-    <div className={embedded ? "flex w-full flex-col gap-5" : `${PAGE_WIDTH}`}>
-      {!embedded ? <PageHeader title={t.discoverWatching} description={t.alertHelp} /> : null}
-
-      {/* The places on the left, each with its map; what they have caught beside them. */}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
-        <section aria-labelledby="alert-places" className="flex min-w-0 flex-col gap-3">
-          <h2 id="alert-places" className="text-sm font-semibold">
-            {t.alertPlacesTitle}
-          </h2>
-          <AlertSettings
-            locale={locale}
-            userId={userId}
-            preferredDisciplines={preferredDisciplines}
-          />
-        </section>
-        <aside className="min-w-0 xl:sticky xl:top-6">
-          <AlertInbox locale={locale} userId={userId} />
-        </aside>
-      </div>
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      {!embedded ? (
+        <div className="flex flex-col gap-3">
+          <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit text-muted-foreground">
+            <Link href={`/${locale}/account/recommendations`}>
+              <ArrowLeft data-icon="inline-start" />
+              {t.backToDiscover}
+            </Link>
+          </Button>
+          <PageHeader title={t.areasTitle} description={t.areasBody} />
+        </div>
+      ) : null}
+      {/*
+        Settings only. What these areas turn up is on Discover, where the rest
+        of the suggestions are; this page is where you say where to look.
+      */}
+      <AlertSettings locale={locale} userId={userId} preferredDisciplines={preferredDisciplines} />
     </div>
   );
 }

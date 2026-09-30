@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { isMatch } from "date-fns";
 import { PlanHome } from "@/components/account/plan-home";
-import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
+import Link from "next/link";
+import { MapPin } from "lucide-react";
+import { PageHeader } from "@/components/account/panel";
+import { Button } from "@/components/ui/button";
 import { messagesFor } from "@/lib/i18n/messages";
 import { SITE_NAME } from "@/lib/seo";
 
@@ -29,8 +32,19 @@ export default async function RecommendationsPage({ params, searchParams }: {
   const day = query.day && /^\d{4}-\d{2}-\d{2}$/.test(query.day) && isMatch(query.day, "yyyy-MM-dd") ? query.day : undefined;
 
   return (
-    <div className={PAGE_WIDTH}>
-      <PageHeader title={t.discoverHeadline} description={t.discoverDescription} />
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+      <PageHeader
+        title={t.accountDiscover}
+        description={t.discoverIntro}
+        actions={
+          <Button asChild variant="outline">
+            <Link href={`/${locale}/account/alerts`}>
+              <MapPin data-icon="inline-start" />
+              {t.areasTitle}
+            </Link>
+          </Button>
+        }
+      />
       <PlanHome key={day ?? "all"} locale={locale} section="recommendations" day={day} />
     </div>
   );

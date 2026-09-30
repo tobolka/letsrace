@@ -3,7 +3,7 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import { CalendarPlus, Compass, MapPinned } from "lucide-react";
+import { CalendarPlus, Compass, History, MapPinned } from "lucide-react";
 import { PlanRow } from "@/components/account/plan-row";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
@@ -23,15 +23,22 @@ export function PlanRaces({
   locale,
   upcoming,
   hasPast,
+  past = false,
+  notes,
   members,
   busyId,
   onStatusChange,
   onDiscard,
 }: {
   locale: string;
+  /** The races to list, in the order to list them. */
   upcoming: EventPlan[];
   /** Whether anything was ever in the plan — "empty" and "all ridden" read differently. */
   hasPast: boolean;
+  /** The history rather than what is ahead: quieter rows, its own empty state. */
+  past?: boolean;
+  /** What each race is waiting for, by event id. */
+  notes?: Record<string, string>;
   members: PlannerMember[];
   busyId: string | null;
   onStatusChange: (eventId: string, memberId: string, status: PlanMemberStatus) => void;
@@ -39,6 +46,20 @@ export function PlanRaces({
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
+
+  if (upcoming.length === 0 && past) {
+    return (
+      <Empty className="border-0 py-12">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <History />
+          </EmptyMedia>
+          <EmptyTitle>{t.planPastEmpty}</EmptyTitle>
+          <EmptyDescription>{t.planPastEmptyBody}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
 
   if (upcoming.length === 0) {
     return (
@@ -86,6 +107,8 @@ export function PlanRaces({
               locale={locale}
               plan={plan}
               members={members}
+              muted={past}
+              note={notes?.[plan.event.id]}
               busy={busyId === plan.event.id}
               onStatusChange={(memberId, status) => onStatusChange(plan.event.id, memberId, status)}
               onDiscard={() => onDiscard(plan.event.id)}

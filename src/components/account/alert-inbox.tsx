@@ -104,7 +104,7 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
   }, [userId]);
 
   return (
-    <Panel title={t.alertInbox} description={t.alertInboxHelp} bodyClassName="p-2">
+    <Panel title={t.discoverNewTitle} description={t.discoverNewBody} bodyClassName="p-2">
       <>
         {hits === null ? (
           <div className="flex flex-col gap-2">

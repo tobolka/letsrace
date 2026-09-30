@@ -32,6 +32,7 @@ export function FreeWeekendSuggestions({
   to,
   context,
   title,
+  actions,
   onAdd,
 }: {
   locale: string;
@@ -40,6 +41,8 @@ export function FreeWeekendSuggestions({
   to: string;
   context: SuggestionContext;
   title?: string;
+  /** Controls in the section's title bar — the day picker. */
+  actions?: React.ReactNode;
   onAdd: (eventId: string) => Promise<void> | void;
 }) {
   const t = messagesFor(locale);
@@ -109,7 +112,7 @@ export function FreeWeekendSuggestions({
   if (!hasHome) return null;
 
   return (
-    <Panel title={title ?? t.suggestTitle} description={t.suggestBody} bodyClassName="p-2">
+    <Panel title={title ?? t.suggestTitle} description={t.suggestBody} actions={actions} bodyClassName="p-2">
       <>
         {items === null ? (
           <div className="flex flex-col gap-2">

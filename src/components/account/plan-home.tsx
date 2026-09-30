@@ -2,16 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
+import { AlertInbox } from "@/components/account/alert-inbox";
 import { AuthForm } from "@/components/account/auth-form";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { DayPickerButton } from "@/components/account/day-picker-button";
-import { NextRaceHero } from "@/components/account/next-race-hero";
 import { PAGE_WIDTH } from "@/components/account/panel";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanSeason, PlanViewToggle } from "@/components/account/plan-season";
 import { SectionHeader } from "@/components/shell/section-header";
 import { PlanSetup } from "@/components/account/plan-setup";
-import { PlanTodo } from "@/components/account/plan-todo";
+import { planActionNote } from "@/components/account/plan-action-note";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -335,8 +335,6 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     [plans, today],
   );
   const actions = useMemo(() => planActions(plans, { members, today }), [plans, members, today]);
-  const nextRace = plans.find((p) => (p.event.endDate ?? p.event.startDate) >= today) ?? null;
-  const upcomingCount = plans.length - past.length;
 
   async function onStatusChange(eventId: string, memberId: string, status: PlanMemberStatus) {
     if (!userId) return;
@@ -503,13 +501,17 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   const suggestFrom = pickedDay ?? today;
   const suggestTo = pickedDay ?? addDaysIso(today, 30);
 
+  /*
+   * Discover is one feed, read top to bottom, most time-sensitive first: what
+   * just appeared near you, what would fill a free weekend, which series you
+   * could carry on. The areas these come from are set on their own page,
+   * linked from the header — results here, settings there.
+   */
   if (section === "recommendations") return (
-    <div className="flex w-full flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <DayPickerButton locale={locale} value={pickedDay} onChange={setPickedDay} />
-      </div>
+    <div className="flex w-full flex-col gap-8">
       <PlanSetup locale={locale} hasPeople={members.length > 0} hasPlace={Boolean(suggestCtx?.home)} hasRace={plans.length > 0} onSetHome={onSetHome} />
-      <div className="grid items-start gap-5 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      {userId ? <AlertInbox locale={locale} userId={userId} /> : null}
+      <div className="flex flex-col gap-8 [&>*]:min-w-0">
           {suggestCtx ? (
             <FreeWeekendSuggestions
               key={`${suggestFrom}-${suggestTo}`}
@@ -517,6 +519,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
               from={suggestFrom}
               to={suggestTo}
               context={suggestCtx}
+              actions={<DayPickerButton locale={locale} value={pickedDay} onChange={setPickedDay} />}
               title={
                 pickedDay
                   ? t.suggestForDay.replace(
@@ -548,76 +551,47 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     </div>
   );
 
-  const season = (
-    <PlanSeason
-      locale={locale}
-      plans={plans}
-      past={past}
-      members={members}
-      busyWeekdays={busyWeekdays}
-      blocked={blocked}
-      selected={pickedDay}
-      busyId={busyId}
-      onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
-      onSetNote={(day, note) => onSetNote(day, note)}
-      onStatusChange={(eventId, memberId, status) => void onStatusChange(eventId, memberId, status)}
-      onDiscard={(eventId) => void onDiscard(eventId)}
-    />
-  );
-  const hero = nextRace ? (
-    <NextRaceHero
-      locale={locale}
-      plan={nextRace}
-      members={members}
-      busy={busyId === nextRace.event.id}
-      onStatusChange={(memberId, status) => void onStatusChange(nextRace.event.id, memberId, status)}
-    />
-  ) : null;
-  const todo =
-    upcomingCount > 0 ? (
-      <PlanTodo
-        locale={locale}
-        actions={actions}
-        members={members}
-        busyId={busyId}
-        onStatusChange={(eventId, memberId, status) => void onStatusChange(eventId, memberId, status)}
-        onDiscard={(eventId) => void onDiscard(eventId)}
-      />
-    ) : null;
+  // What each race is waiting for, on its own row — the plan's to-do list is
+  // the plan itself, not a second list beside it naming the same races.
+  const notes = Object.fromEntries(actions.map((a) => [a.plan.event.id, planActionNote(a, locale)]));
 
   /*
-   * The same frame as the race list and the calendar: the section's name with
-   * the view switch beside it, the season across the whole sheet under it, and
-   * — on a wide screen — what is next and what is left to do in a column on
-   * the right, where the list keeps its race card.
+   * The same frame as the race list and the calendar: the section's name, one
+   * line on what this page is for, the view switch — then the races across
+   * the whole sheet. Each upcoming race says what it is waiting for, and its
+   * riders' switches say "going → entered → paid" in words.
    */
   return (
     <div className="flex min-h-full flex-col md:absolute md:inset-0">
-      <SectionHeader title={t.myCalendar} actions={<PlanViewToggle locale={locale} />} />
-      <div className="flex min-h-0 flex-1">
-        <div className="flex min-w-0 flex-1 flex-col md:overflow-y-auto">
-          <PlanSetup
-            locale={locale}
-            hasPeople={members.length > 0}
-            hasPlace={Boolean(suggestCtx?.home)}
-            hasRace={plans.length > 0}
-            onSetHome={(place) => onSetHome(place)}
-            className="border-b px-4 py-4 md:px-6"
-          />
-          {hero || todo ? (
-            <div className="flex flex-col gap-4 border-b p-4 lg:hidden">
-              {hero}
-              {todo}
-            </div>
-          ) : null}
-          {season}
-        </div>
-        {hero || todo ? (
-          <aside className="hidden w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l p-4 lg:flex">
-            {hero}
-            {todo}
-          </aside>
-        ) : null}
+      <SectionHeader
+        title={t.myCalendar}
+        meta={<span className="hidden truncate lg:inline">{t.planIntro}</span>}
+        actions={<PlanViewToggle locale={locale} />}
+      />
+      <div className="flex min-w-0 flex-1 flex-col md:overflow-y-auto">
+        <PlanSetup
+          locale={locale}
+          hasPeople={members.length > 0}
+          hasPlace={Boolean(suggestCtx?.home)}
+          hasRace={plans.length > 0}
+          onSetHome={(place) => onSetHome(place)}
+          className="border-b px-4 py-4 md:px-6"
+        />
+        <PlanSeason
+          locale={locale}
+          plans={plans}
+          past={past}
+          members={members}
+          busyWeekdays={busyWeekdays}
+          blocked={blocked}
+          selected={pickedDay}
+          busyId={busyId}
+          notes={notes}
+          onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
+          onSetNote={(day, note) => onSetNote(day, note)}
+          onStatusChange={(eventId, memberId, status) => void onStatusChange(eventId, memberId, status)}
+          onDiscard={(eventId) => void onDiscard(eventId)}
+        />
       </div>
     </div>
   );

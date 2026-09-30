@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, List, Sheet, Undo2 } from "lucide-react";
-import { PlanAgenda } from "@/components/account/plan-agenda";
+import { CalendarDays, CalendarOff, History, List, Undo2 } from "lucide-react";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
@@ -21,9 +20,10 @@ import {
   type PlannerMember,
 } from "@/lib/planner";
 
-// "list" is the day-per-row sheet; it kept its name so links already out
-// there with `?view=list` still open it.
-const VIEWS = ["races", "list", "calendar"] as const;
+// What is ahead, what has been, and the month. The day-per-row sheet that
+// used to be a fourth view was the same races again with the riders as
+// columns; the calendar carries its one extra job, marking a day as taken.
+const VIEWS = ["upcoming", "past", "calendar"] as const;
 
 /**
  * The season, and it is the page's centre of gravity.
@@ -51,6 +51,7 @@ export function PlanSeason({
   onSetNote,
   onStatusChange,
   onDiscard,
+  notes,
 }: {
   locale: string;
   /** Every race in the plan, past and future — both views show both. */
@@ -65,61 +66,54 @@ export function PlanSeason({
   onSetNote: (day: string, note: string) => Promise<void> | void;
   onStatusChange: (eventId: string, memberId: string, status: PlanMemberStatus) => void;
   onDiscard: (eventId: string) => void;
+  /** What each upcoming race is waiting for, by event id. */
+  notes?: Record<string, string>;
 }) {
   const today = todayIso();
-  const [view] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
+  const [view] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("upcoming"));
   const upcoming = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
   const [month, setMonth] = useState(() => monthStart(selected ?? today));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-        {view === "races" ? (
-          <PlanRaces
+      {view === "calendar" ? (
+        <>
+          <MonthToolbar locale={locale} month={month} onMonth={setMonth} />
+          <PlanMonthView
             locale={locale}
-            upcoming={upcoming}
-            hasPast={past.length > 0}
-            members={members}
-            busyId={busyId}
-            onStatusChange={onStatusChange}
-            onDiscard={onDiscard}
-          />
-        ) : view === "calendar" ? (
-          <>
-            <MonthToolbar locale={locale} month={month} onMonth={setMonth} />
-
-            <PlanMonthView
-              locale={locale}
-              month={month}
-              plans={plans}
-              members={members}
-              busyWeekdays={busyWeekdays}
-              blocked={blocked}
-              selectedDay={selected}
-              onPickDay={onSelectDay}
-              fill
-            />
-          </>
-        ) : (
-          <PlanAgenda
-            locale={locale}
+            month={month}
             plans={plans}
             members={members}
-            blocked={blocked}
             busyWeekdays={busyWeekdays}
-            selected={selected}
-            onSelectDay={onSelectDay}
-            onSetNote={onSetNote}
+            blocked={blocked}
+            selectedDay={selected}
+            onPickDay={onSelectDay}
+            fill
           />
-        )}
-
-        {selected && view !== "races" ? (
-          <DayBar
-            locale={locale}
-            day={selected}
-            note={blocked[selected]?.note ?? null}
-            onSetNote={(note) => onSetNote(selected, note)}
-          />
-        ) : null}
+          {selected ? (
+            <DayBar
+              locale={locale}
+              day={selected}
+              note={blocked[selected]?.note ?? null}
+              onSetNote={(note) => onSetNote(selected, note)}
+            />
+          ) : null}
+        </>
+      ) : (
+        <PlanRaces
+          locale={locale}
+          // Newest first in the history: the race you just rode is the one you
+          // come to mark in.
+          upcoming={view === "past" ? [...past].reverse() : upcoming}
+          past={view === "past"}
+          hasPast={past.length > 0}
+          notes={view === "past" ? undefined : notes}
+          members={members}
+          busyId={busyId}
+          onStatusChange={onStatusChange}
+          onDiscard={onDiscard}
+        />
+      )}
     </div>
   );
 }
@@ -206,7 +200,7 @@ function DayBar({
  */
 export function PlanViewToggle({ locale }: { locale: string }) {
   const t = messagesFor(locale);
-  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("races"));
+  const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("upcoming"));
   return (
     <ToggleGroup
       type="single"
@@ -217,13 +211,13 @@ export function PlanViewToggle({ locale }: { locale: string }) {
       variant="outline"
       size="sm"
     >
-      <ToggleGroupItem value="races" aria-label={t.planViewRaces}>
+      <ToggleGroupItem value="upcoming" aria-label={t.planViewUpcoming}>
         <List data-icon="inline-start" />
-        <span className="max-sm:sr-only">{t.planViewRaces}</span>
+        <span className="max-sm:sr-only">{t.planViewUpcoming}</span>
       </ToggleGroupItem>
-      <ToggleGroupItem value="list" aria-label={t.planViewList}>
-        <Sheet data-icon="inline-start" />
-        <span className="max-sm:sr-only">{t.planViewList}</span>
+      <ToggleGroupItem value="past" aria-label={t.planViewPast}>
+        <History data-icon="inline-start" />
+        <span className="max-sm:sr-only">{t.planViewPast}</span>
       </ToggleGroupItem>
       <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
         <CalendarDays data-icon="inline-start" />

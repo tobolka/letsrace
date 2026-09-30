@@ -11,15 +11,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return { title: { absolute: `${messagesFor(locale).discoverWatching} · ${SITE_NAME}` }, robots: { index: false } };
+  return { title: { absolute: `${messagesFor(locale).areasTitle} · ${SITE_NAME}` }, robots: { index: false } };
 }
 
 /**
- * Race alerts, on a page of their own.
+ * Your areas: the places Discover and the alert emails look around.
  *
- * They were a tab inside Discover, which put a setting you make once behind a
- * page you visit to browse — and gave that page two buttons that both said
- * "set up alerts". The sidebar has room for it, so it has its own place.
+ * This is Discover's settings page, reached from Discover's header — not a
+ * section of its own. Alerts used to be one, with a feed that duplicated
+ * Discover's; the feed now lives on Discover and only the settings are here.
  */
 export default async function AlertsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BellRing, Bookmark, CalendarDays, Compass, List, Map, Settings, Users } from "lucide-react";
+import { Bookmark, CalendarDays, Compass, List, Map, Settings, Users } from "lucide-react";
 import type { Messages } from "@/lib/i18n/messages";
 
 export type NavItem = {
@@ -62,14 +62,9 @@ export function profileNav(
       href: `${base}/recommendations`,
       label: t.accountDiscover,
       icon: Compass,
-      active: pathname.startsWith(`${base}/recommendations`),
-    },
-    {
-      key: "alerts",
-      href: `${base}/alerts`,
-      label: t.discoverWatching,
-      icon: BellRing,
-      active: pathname.startsWith(`${base}/alerts`),
+      // The areas page is Discover's settings, so Discover stays lit there,
+      // and new races found in those areas are Discover's news.
+      active: pathname.startsWith(`${base}/recommendations`) || pathname.startsWith(`${base}/alerts`),
       badge: counts.alerts,
     },
     {
@@ -87,7 +82,6 @@ export function profileNav(
       active: pathname.startsWith(`${base}/settings`),
     },
   ];
-  // Signed out, Discover and Alerts show the same teaser, so only Discover
-  // stays; settings belong to an account, so they go too.
-  return authed === true ? items : items.filter((i) => i.key !== "alerts" && i.key !== "settings");
+  // Settings belong to an account; signed out there is nothing behind them.
+  return authed === true ? items : items.filter((i) => i.key !== "settings");
 }

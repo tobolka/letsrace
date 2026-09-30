@@ -73,11 +73,13 @@ export function PlanStatusToggle({
                 aria-label={`${label[step]} — ${memberName}, ${eventName}`}
                 aria-pressed={reached}
                 className={cn(
-                  "min-h-11 min-w-11 px-2 sm:min-h-8 sm:min-w-8",
+                  "min-h-11 min-w-11 gap-1.5 px-2 sm:min-h-8 sm:min-w-8 sm:px-2.5",
                   reached && "bg-primary text-primary-foreground hover:bg-primary/90",
                 )}
               >
                 <StepIcon className="size-3.5" aria-hidden />
+                {/* Icons alone were a code to learn; with room, the step says what it is. */}
+                <span className="hidden text-xs sm:inline">{label[step]}</span>
               </ToggleGroupItem>
             </TooltipTrigger>
             <TooltipContent>{label[step]}</TooltipContent>
