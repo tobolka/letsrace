@@ -87,8 +87,7 @@ export function profileNav(
       active: pathname.startsWith(`${base}/settings`),
     },
   ];
-  // Signed out, the profile is one door: the plan, whose teaser says what an
-  // account is for. Four icons that each led to a sign-in pitch said nothing
-  // four times; the other pages' teasers still answer their own links.
-  return authed === true ? items : items.filter((i) => i.key === "plan");
+  // Signed out, Discover and Alerts show the same teaser, so only Discover
+  // stays; settings belong to an account, so they go too.
+  return authed === true ? items : items.filter((i) => i.key !== "alerts" && i.key !== "settings");
 }
