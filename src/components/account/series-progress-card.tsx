@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import { Check, Plus } from "lucide-react";
+import { Check, Plus, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Spinner } from "@/components/ui/spinner";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { Panel } from "@/components/account/panel";
+import { RaceItem } from "@/components/race/race-item";
 import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
 import { eventMapPath } from "@/lib/event-url";
@@ -42,81 +42,67 @@ export function SeriesProgressCard({
 
   return (
     <Panel title={t.seriesTitle} description={t.seriesBody} bodyClassName="p-2">
-      <ItemGroup>
-          {items.map((s) => {
-            const remaining = s.remaining.length;
-            const busy = busyId === s.seriesId;
-            return (
-              <Item
-                key={s.seriesId}
-                variant="muted"
-                // The card lives in a narrow rail, so this never goes to a row:
-                // the name, the pips and the button each get the full width.
-                className="flex-col items-stretch"
-              >
-                <ItemContent className="min-w-0 gap-2">
-                  <ItemTitle className="w-full min-w-0">
-                    {s.seriesSlug ? (
-                      <Link
-                        href={`/${locale}/series/${s.seriesSlug}`}
-                        className="truncate hover:underline"
-                      >
-                        {s.seriesName}
-                      </Link>
-                    ) : (
-                      <span className="truncate">{s.seriesName}</span>
-                    )}
-                  </ItemTitle>
-                  <RoundPips locale={locale} rounds={s.rounds} plannedEventIds={plannedEventIds} />
-                  <ItemDescription className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className="tabular-nums">
-                      {[
-                        t.seriesProgress
-                          .replace("{done}", String(s.inPlan))
-                          .replace("{total}", String(s.total)),
-                        s.next
-                          ? `${t.seriesNext} ${format(parseISO(s.next.startDate), "d. M.", { locale: df })}`
-                          : null,
-                      ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </span>
-                    {s.next ? null : <Badge variant="secondary">{t.seriesDone}</Badge>}
-                  </ItemDescription>
-                </ItemContent>
-                <ItemActions className="justify-stretch [&>*]:w-full">
-                  {remaining === 0 ? (
-                    s.next ? (
-                      <Badge variant="secondary">
-                        <Check className="size-3" aria-hidden /> {t.seriesAllIn}
-                      </Badge>
-                    ) : null
-                  ) : (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      disabled={busy}
-                      onClick={async () => {
-                        setBusyId(s.seriesId);
-                        try {
-                          await onAddRounds(s.remaining.map((r) => r.id));
-                        } finally {
-                          setBusyId(null);
-                        }
-                      }}
-                    >
-                      {busy ? <Spinner /> : <Plus />}
-                      <span className="tabular-nums">
-                        {t.seriesRoundsLeft.replace("{n}", String(remaining))}
-                      </span>
-                    </Button>
-                  )}
-                </ItemActions>
-              </Item>
-            );
-          })}
-      </ItemGroup>
+      <div className="flex flex-col">
+        {items.map((s) => {
+          const remaining = s.remaining.length;
+          const busy = busyId === s.seriesId;
+          const progress = [
+            t.seriesProgress.replace("{done}", String(s.inPlan)).replace("{total}", String(s.total)),
+            s.next ? `${t.seriesNext} ${format(parseISO(s.next.startDate), "d. M.", { locale: df })}` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ");
+          return (
+            <RaceItem
+              key={s.seriesId}
+              locale={locale}
+              // The same row as a race, with a cup where the date would be,
+              // so a series sits in the feed as one of its own.
+              leading={
+                <span className="flex h-[42px] w-11 shrink-0 items-center justify-center rounded-md border border-l-[3px] border-l-brand bg-background">
+                  <Trophy className="size-4 text-muted-foreground" aria-hidden />
+                </span>
+              }
+              title={
+                s.seriesSlug ? (
+                  <Link href={`/${locale}/series/${s.seriesSlug}`} className="block truncate text-sm font-medium hover:underline">
+                    {s.seriesName}
+                  </Link>
+                ) : (
+                  <span className="block truncate text-sm font-medium">{s.seriesName}</span>
+                )
+              }
+              tags={<RoundPips locale={locale} rounds={s.rounds} plannedEventIds={plannedEventIds} />}
+              meta={<span className="tabular-nums">{progress}</span>}
+              action={
+                remaining === 0 ? (
+                  <Badge variant="secondary">
+                    <Check className="size-3" aria-hidden /> {s.next ? t.seriesAllIn : t.seriesDone}
+                  </Badge>
+                ) : (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={async () => {
+                      setBusyId(s.seriesId);
+                      try {
+                        await onAddRounds(s.remaining.map((r) => r.id));
+                      } finally {
+                        setBusyId(null);
+                      }
+                    }}
+                  >
+                    {busy ? <Spinner /> : <Plus />}
+                    <span className="tabular-nums">{t.seriesRoundsLeft.replace("{n}", String(remaining))}</span>
+                  </Button>
+                )
+              }
+            />
+          );
+        })}
+      </div>
     </Panel>
   );
 }
@@ -134,7 +120,7 @@ function RoundPips({
   const today = todayIso();
 
   return (
-    <div className="flex flex-wrap items-center gap-1" aria-hidden={false}>
+    <div className="flex shrink-0 flex-wrap items-center gap-1" aria-hidden={false}>
       {rounds.map((r) => {
         const inPlan = plannedEventIds.has(r.id);
         const isRidden = inPlan && (r.endDate ?? r.startDate) < today;

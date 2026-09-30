@@ -95,3 +95,10 @@ export function PageHeader({
 
 /** Every account page is this wide, so switching tabs never moves the edges. */
 export const PAGE_WIDTH = "mx-auto flex w-full max-w-6xl flex-col gap-6";
+
+/**
+ * The profile's document pages — Discover, Riders, Settings, Your areas — are
+ * one column this wide, starting at the same height, so moving between them
+ * never moves the heading. Their loading skeletons use it too.
+ */
+export const DOC_WIDTH = "mx-auto flex w-full max-w-3xl flex-col gap-8 md:pt-6";

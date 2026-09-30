@@ -1,18 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { format, parseISO } from "date-fns";
-import { dateFnsLocale } from "@/lib/i18n/dates";
-import { CalendarPlus, MapPin, Repeat, Check } from "lucide-react";
+import { MapPin, Repeat } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Panel } from "@/components/account/panel";
+import { AddToPlanButton, RaceItem } from "@/components/race/race-item";
 import { messagesFor } from "@/lib/i18n/messages";
-import { formatDistanceKm } from "@/lib/geo/distance";
-import { eventMapPath } from "@/lib/event-url";
 import {
   rankSuggestions,
   type Suggestion,
@@ -48,7 +42,6 @@ export function FreeWeekendSuggestions({
   const t = messagesFor(locale);
   const [items, setItems] = useState<Suggestion[] | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
-  const [busy, setBusy] = useState<string | null>(null);
   const hasHome = context.home != null;
 
   useEffect(() => {
@@ -122,66 +115,44 @@ export function FreeWeekendSuggestions({
         ) : items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t.suggestNone}</p>
         ) : (
-          <ItemGroup>
+          <div className="flex flex-col">
             {items.map((s) => {
               const Icon = ReasonIcon[s.reason];
-              const isAdded = added.has(s.id);
-              const meta = [
-                s.place,
-                s.distanceKm != null ? formatDistanceKm(s.distanceKm, locale) : null,
-                s.seriesName,
-              ]
-                .filter(Boolean)
-                .join(" · ");
               return (
-                <Item key={s.id} size="sm" className="gap-3 rounded-xl px-3 py-4 transition-colors hover:bg-muted/50">
-                  <time dateTime={s.startDate} className="flex w-12 shrink-0 flex-col items-center rounded-xl border bg-background py-2 text-center"><span className="text-xl font-semibold leading-none tabular-nums">{format(parseISO(s.startDate), "d")}</span><span className="mt-1 text-[10px] font-medium uppercase text-muted-foreground">{format(parseISO(s.startDate), "MMM", { locale: dateFnsLocale(locale) })}</span></time>
-                  <ItemContent className="min-w-0">
-                    <ItemTitle className="w-full min-w-0">
-                      <Link
-                        href={eventMapPath(locale, {
-                          slug: s.slug,
-                          startDate: s.startDate,
-                          endDate: s.endDate,
-                        })}
-                        className="line-clamp-2 text-sm leading-snug hover:underline"
-                      >
-                        {s.name}
-                      </Link>
-                    </ItemTitle>
-                    <ItemDescription className="flex flex-wrap items-center gap-1.5">
-                      <Badge variant={s.reason === "series" ? "default" : "secondary"}>
-                        <Icon className="size-3" aria-hidden /> {reasonLabel[s.reason]}
-                      </Badge>
-                      <span className="truncate">{meta}</span>
-                    </ItemDescription>
-                  </ItemContent>
-                  {/* The card lives in a narrow rail: a labelled button here
-                      left about eight characters for the race name. */}
-                  <Button
-                    type="button"
-                    size="icon-sm"
-                    className="shrink-0"
-                    variant={isAdded ? "ghost" : "secondary"}
-                    disabled={isAdded || busy === s.id}
-                    aria-label={`${isAdded ? t.suggestAdded : t.suggestAdd} — ${s.name}`}
-                    title={isAdded ? t.suggestAdded : t.suggestAdd}
-                    onClick={async () => {
-                      setBusy(s.id);
-                      try {
+                <RaceItem
+                  key={s.id}
+                  locale={locale}
+                  race={{
+                    id: s.id,
+                    slug: s.slug,
+                    name: s.name,
+                    startDate: s.startDate,
+                    endDate: s.endDate,
+                    place: s.place,
+                    countryCode: s.countryCode,
+                    disciplines: s.disciplines,
+                    distanceKm: s.distanceKm,
+                  }}
+                  tags={
+                    <Badge variant={s.reason === "series" ? "default" : "secondary"} className="shrink-0">
+                      <Icon className="size-3" aria-hidden /> {reasonLabel[s.reason]}
+                    </Badge>
+                  }
+                  action={
+                    <AddToPlanButton
+                      locale={locale}
+                      raceName={s.name}
+                      added={added.has(s.id)}
+                      onAdd={async () => {
                         await onAdd(s.id);
                         setAdded((prev) => new Set(prev).add(s.id));
-                      } finally {
-                        setBusy(null);
-                      }
-                    }}
-                  >
-                    {isAdded ? <Check /> : <CalendarPlus />}
-                  </Button>
-                </Item>
+                      }}
+                    />
+                  }
+                />
               );
             })}
-          </ItemGroup>
+          </div>
         )}
       </>
     </Panel>

@@ -6,7 +6,7 @@ import { AlertInbox } from "@/components/account/alert-inbox";
 import { AuthForm } from "@/components/account/auth-form";
 import { FreeWeekendSuggestions } from "@/components/account/free-weekend-suggestions";
 import { DayPickerButton } from "@/components/account/day-picker-button";
-import { PAGE_WIDTH } from "@/components/account/panel";
+import { DocPageSkeleton, PlanPageSkeleton } from "@/components/account/page-skeletons";
 import type { PickedPlace } from "@/components/account/place-picker";
 import { PlanSeason, PlanViewToggle } from "@/components/account/plan-season";
 import { SectionHeader } from "@/components/shell/section-header";
@@ -15,7 +15,6 @@ import { planActionNote } from "@/components/account/plan-action-note";
 import { SeriesProgressCard } from "@/components/account/series-progress-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor } from "@/lib/i18n/messages";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -453,24 +452,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
 
   if (!ready) {
     // The shape of the page that is about to arrive, so nothing jumps when it does.
-    return section === "recommendations" ? (
-      <div className="flex w-full flex-col gap-5">
-        <Skeleton className="h-9 w-48" />
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-          <Skeleton className="h-80 w-full rounded-xl" />
-          <Skeleton className="h-48 w-full rounded-xl" />
-        </div>
-      </div>
-    ) : (
-      <div className={PAGE_WIDTH}>
-        <div className="flex flex-col gap-2">
-          <Skeleton className="h-8 w-40" />
-          <Skeleton className="h-4 w-72" />
-        </div>
-        <Skeleton className="h-20 w-full rounded-xl" />
-        <Skeleton className="h-96 w-full rounded-xl" />
-      </div>
-    );
+    return section === "recommendations" ? <DocPageSkeleton boxes={3} withHeading={false} /> : <PlanPageSkeleton />;
   }
 
   if (loadFailed) return (

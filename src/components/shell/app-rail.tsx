@@ -40,7 +40,7 @@ function NavGroup({ items, carry }: { items: NavItem[]; carry?: ReturnType<typeo
   return (
     <SidebarGroup className="px-0 py-1">
       <SidebarGroupContent>
-        <SidebarMenu className="items-center gap-1">
+        <SidebarMenu className="items-center gap-2">
           {items.map((item) => (
             <SidebarMenuItem key={item.key}>
               <SidebarMenuButton asChild isActive={item.active} tooltip={item.label}>
@@ -152,7 +152,7 @@ export function AppSidebar({ locale }: { locale: string }) {
     >
       <SidebarContent className="gap-0 pt-2">
         <NavGroup items={exploreNav(locale, t, pathname)} carry={carry} />
-        <SidebarSeparator className="mx-auto my-1.5 data-[orientation=horizontal]:w-8" />
+        <SidebarSeparator className="mx-auto my-2.5 data-[orientation=horizontal]:w-8" />
         <NavGroup items={profileNav(locale, t, pathname, counts, authed)} />
       </SidebarContent>
       <SidebarFooter className="items-center px-0 pb-2.5">

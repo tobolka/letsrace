@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { persist } from "@/lib/account/save";
 import { AuthForm } from "@/components/account/auth-form";
 import { CalendarFeed } from "@/components/account/calendar-feed";
-import { PageHeader, PAGE_WIDTH } from "@/components/account/panel";
+import { DOC_WIDTH, PageHeader } from "@/components/account/panel";
 import { MailPrefs } from "@/components/account/mail-prefs";
 import { PlanPrefsFields, notifyPrefsSaved, saveMemberPrefs } from "@/components/account/plan-prefs-card";
 import {
@@ -260,16 +260,16 @@ export function AccountPanel({
   }
 
   if (!ready) {
+    // The page that is about to arrive, in outline: the heading, then the
+    // stacked boxes both Riders and Settings are made of.
     return (
-      <div className={PAGE_WIDTH}>
+      <div className={DOC_WIDTH} aria-busy>
         <div className="flex flex-col gap-2">
           <Skeleton className="h-8 w-40" />
           <Skeleton className="h-4 w-72" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-64 w-full rounded-xl" />
-        </div>
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-xl" />
       </div>
     );
   }
@@ -290,7 +290,7 @@ export function AccountPanel({
 
   if (section === "settings") {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-10 md:pt-6">
+      <div className={DOC_WIDTH}>
         <PageHeader title={t.accountSettings} />
         {/*
           One column, a heading over each group and the group in a flat
@@ -333,19 +333,20 @@ export function AccountPanel({
   }
 
   return (
-    <div className={PAGE_WIDTH}>
+    <div className={DOC_WIDTH}>
       <PageHeader
         title={t.profilesTitle}
         description={t.profilesHelp}
         actions={
-          <Button type="button" onClick={() => setAdding(true)}>
+          <Button type="button" variant="outline" onClick={() => setAdding(true)}>
             <Plus data-icon="inline-start" />
             {t.profilesAdd}
           </Button>
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* One rider under another, the way Settings stacks its groups. */}
+      <div className="flex flex-col gap-4">
         {members.map((m) => (
           /*
            * What a rider is, and everything the plan knows about them, on one
@@ -357,9 +358,9 @@ export function AccountPanel({
           <section
             key={m.id}
             aria-labelledby={`rider-${m.id}`}
-            className="overflow-clip rounded-xl border bg-card"
+            className="overflow-clip rounded-xl border"
           >
-            <div className="flex items-center gap-3 border-b px-4 py-3">
+            <div className="flex items-center gap-3 border-b px-5 py-4">
               <Avatar size="lg">
                 <AvatarFallback className="text-sm font-semibold" style={riderTint(m.name)}>
                   {initials(m.name) || "?"}
@@ -417,7 +418,7 @@ export function AccountPanel({
                 </AlertDialog>
               ) : null}
             </div>
-            <div className="px-4 py-4">
+            <div className="px-5 py-5">
               <PlanPrefsFields
                 locale={locale}
                 busyWeekdays={m.busy_weekdays}
@@ -431,17 +432,19 @@ export function AccountPanel({
           </section>
         ))}
 
-        {/* The next card in the grid is the one you have not made yet. */}
+        {/* The next rider is the one you have not added yet. */}
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-center text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-card hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="flex items-center gap-3 rounded-xl border border-dashed px-5 py-4 text-left text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          <span className="flex size-10 items-center justify-center rounded-full border bg-background">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full border bg-background">
             <Plus className="size-5" aria-hidden />
           </span>
-          <span className="text-sm font-medium text-foreground">{t.profilesAdd}</span>
-          <span className="text-xs">{t.ridersAddBody}</span>
+          <span className="min-w-0">
+            <span className="block text-sm font-medium text-foreground">{t.profilesAdd}</span>
+            <span className="block text-xs">{t.ridersAddBody}</span>
+          </span>
         </button>
       </div>
 

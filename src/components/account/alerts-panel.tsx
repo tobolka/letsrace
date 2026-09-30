@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { AlertSettings } from "@/components/account/alert-settings";
 import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DocPageSkeleton } from "@/components/account/page-skeletons";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { PageHeader } from "@/components/account/panel";
+import { DOC_WIDTH, PageHeader } from "@/components/account/panel";
 import { Button } from "@/components/ui/button";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
@@ -39,12 +39,7 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
   }, []);
 
   if (!ready) {
-    return (
-      <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <Skeleton className="h-96 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
-      </div>
-    );
+    return <DocPageSkeleton boxes={1} />;
   }
 
   if (!userId) {
@@ -62,7 +57,7 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <div className={DOC_WIDTH}>
       {!embedded ? (
         <div className="flex flex-col gap-3">
           <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit text-muted-foreground">

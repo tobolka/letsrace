@@ -4,7 +4,7 @@ import { isMatch } from "date-fns";
 import { PlanHome } from "@/components/account/plan-home";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import { PageHeader } from "@/components/account/panel";
+import { DOC_WIDTH, PageHeader } from "@/components/account/panel";
 import { Button } from "@/components/ui/button";
 import { messagesFor } from "@/lib/i18n/messages";
 import { SITE_NAME } from "@/lib/seo";
@@ -32,7 +32,7 @@ export default async function RecommendationsPage({ params, searchParams }: {
   const day = query.day && /^\d{4}-\d{2}-\d{2}$/.test(query.day) && isMatch(query.day, "yyyy-MM-dd") ? query.day : undefined;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+    <div className={DOC_WIDTH}>
       <PageHeader
         title={t.accountDiscover}
         description={t.discoverIntro}

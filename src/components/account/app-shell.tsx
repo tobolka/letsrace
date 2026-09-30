@@ -8,7 +8,7 @@ import { AccountTeaser, teaserForPath } from "@/components/account/account-tease
 import { profileNav } from "@/components/shell/nav-items";
 import { useNavCounts } from "@/components/shell/use-nav-counts";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DocPageSkeleton, PlanPageSkeleton } from "@/components/account/page-skeletons";
 import { useAuthUser } from "@/hooks/use-auth-user";
 import { messagesFor } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
@@ -82,14 +82,11 @@ export function AppShell({
       <main
         className={cn(
           "flex flex-1 flex-col",
-          authed && pathname === `/${locale}/account` ? "p-0" : "p-4 md:p-8",
+          authed !== false && pathname === `/${locale}/account` ? "p-0" : "p-4 md:p-8",
         )}
       >
         {authed === null ? (
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-4" aria-busy>
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-40 w-full rounded-xl" />
-          </div>
+          pathname === `/${locale}/account` ? <PlanPageSkeleton /> : <DocPageSkeleton />
         ) : authed ? (
           children
         ) : (
