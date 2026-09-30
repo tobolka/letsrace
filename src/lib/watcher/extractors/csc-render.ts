@@ -113,6 +113,145 @@ async function renderOnce(
   }
 }
 
+export type CscRaceDetail = {
+  /** The classes as the portal names them: "Žáci - mladší", "Kadetky". */
+  categories: string[];
+  /** ISO dates, read as the portal writes them (M/D/YYYY). */
+  startDate: string | null;
+  entriesCloseDate: string | null;
+  web: string | null;
+};
+
+/**
+ * Read race pages on the federation portal: the classes each race runs.
+ *
+ * The calendar grid carries none of it. The race page does, in a panel that
+ * Blazor fills only when "Detail závodu" is opened, so each page is rendered,
+ * the panel clicked open, and its text read. One Chrome for the whole batch;
+ * a page that does not open in time is a null, not a failure of the rest.
+ */
+export async function renderCscRaceDetails(
+  urls: string[],
+  opts?: { budgetMs?: number; onPage?: (url: string, detail: CscRaceDetail | null) => Promise<void> | void },
+): Promise<Map<string, CscRaceDetail | null>> {
+  const out = new Map<string, CscRaceDetail | null>();
+  if (!urls.length) return out;
+  if (process.env.NEXT_PHASE === "phase-production-build") return out;
+  if (process.env.VERCEL) return out;
+  const chrome = await resolveChrome();
+  if (!chrome) return out;
+  const { spawn } = await import(
+    /* webpackIgnore: true */
+    /* turbopackIgnore: true */
+    "node:child_process"
+  );
+  const port = 10_000 + Math.floor(Math.random() * 20_000);
+  const profile = await mkdtemp(join(/* turbopackIgnore: true */ tmpdir(), "csc-chrome-"));
+  const proc = spawn(
+    /* turbopackIgnore: true */
+    chrome.path,
+    [
+      ...chrome.args,
+      "--headless=new",
+      "--disable-gpu",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--no-first-run",
+      "--no-default-browser-check",
+      `--user-data-dir=${profile}`,
+      `--remote-debugging-port=${port}`,
+      `--user-agent=${BOT_UA}`,
+      "--window-size=1280,1600",
+      "about:blank",
+    ],
+    { stdio: "ignore" },
+  );
+  const deadline = Date.now() + (opts?.budgetMs ?? 10 * 60_000);
+  try {
+    await waitForJson(port, Math.min(deadline, Date.now() + 20_000));
+    const cdp = await Cdp.connect(await firstPageWs(port), deadline);
+    try {
+      await cdp.send("Page.enable");
+      await cdp.send("Runtime.enable");
+      for (const url of urls) {
+        if (Date.now() > deadline) break;
+        const detail = await readOneRace(cdp, url).catch(() => null);
+        out.set(url, detail);
+        await opts?.onPage?.(url, detail);
+      }
+    } finally {
+      cdp.close();
+    }
+  } finally {
+    await killChrome(proc);
+    await rm(profile, { recursive: true, force: true }).catch(() => undefined);
+  }
+  return out;
+}
+
+const DETAIL_TOGGLE = /^\s*(Detail závodu|Race detail)\s*$/i;
+
+async function readOneRace(cdp: Cdp, url: string): Promise<CscRaceDetail | null> {
+  await cdp.send("Page.navigate", { url });
+  const until = Date.now() + 25_000;
+  const ready = await waitUntil(
+    cdp,
+    `[...document.querySelectorAll("*")].some((el) => el.children.length < 3 && ${DETAIL_TOGGLE}.test(el.textContent || ""))`,
+    until,
+  );
+  if (!ready) return null;
+  // A real click at the toggle, repeated: the page is prerendered, so the
+  // toggle is on screen a second or two before Blazor's circuit is connected,
+  // and a click in that window goes nowhere.
+  const OPEN = `/(Start Date|Datum zahájení|Datum od)\\s*:/i.test(document.body.innerText)`;
+  let opened = false;
+  for (let attempt = 0; attempt < 6 && !opened; attempt++) {
+    const box = (await cdp.evaluate(`(() => {
+      // The label is text; the chevron button beside it is what opens.
+      const el = document.querySelector(".expandable-section button.toggle-button") ||
+        [...document.querySelectorAll("*")].filter((e) => ${DETAIL_TOGGLE}.test(e.textContent || "")).pop();
+      if (!el) return null;
+      el.scrollIntoView({ block: "center" });
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    })()`)) as { x: number; y: number } | null;
+    if (!box) return null;
+    for (const type of ["mousePressed", "mouseReleased"]) {
+      await cdp.send("Input.dispatchMouseEvent", { type, x: box.x, y: box.y, button: "left", clickCount: 1 });
+    }
+    opened = await waitUntil(cdp, OPEN, Date.now() + 2_500);
+  }
+  if (!opened) return null;
+  await sleep(300);
+  const text = await cdp.evaluate("document.body.innerText");
+  return typeof text === "string" ? parseCscRaceDetailText(text) : null;
+}
+
+/** The opened panel, as text: "Category:" then one class a line, until "Start Date:". */
+export function parseCscRaceDetailText(text: string): CscRaceDetail {
+  const block = text.match(/(?:Category|Kategorie)\s*:\s*([\s\S]*?)\n\s*(?:Start Date|Datum zahájení|Datum od)\s*:/i)?.[1] ?? "";
+  const categories = [
+    ...new Set(
+      block
+        .split(/\n/)
+        .map((l) => l.replace(/\s+/g, " ").trim())
+        .filter((l) => l && !/:$/.test(l)),
+    ),
+  ];
+  const date = (label: string) => {
+    const m = text.match(new RegExp(`${label}\\s*:\\s*(\\d{1,2})/(\\d{1,2})/(\\d{4})`, "i"));
+    if (!m) return null;
+    return `${m[3]}-${m[1]!.padStart(2, "0")}-${m[2]!.padStart(2, "0")}`;
+  };
+  const web = text.match(/\bWeb\s*:\s*(https?:\/\/\S+|www\.\S+)/i)?.[1] ?? null;
+  return {
+    categories,
+    startDate: date("Start Date"),
+    entriesCloseDate: date("Entries close date"),
+    web,
+  };
+}
+
 async function resolveChrome(): Promise<{ path: string; args: string[] } | null> {
   const env = process.env.CHROME_PATH?.trim();
   if (env) return { path: env, args: [] };

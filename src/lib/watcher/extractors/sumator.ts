@@ -1,3 +1,4 @@
+import { ageCategoriesFromList } from "@/lib/age-bands";
 import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
@@ -349,6 +350,7 @@ export function parseSumatorRaceDetail(url: string, html: string): ParsedEvent |
   const links = extractSumatorOfficialLinks(html);
   const series = extractSumatorSeries(html);
   const categories = extractSumatorTrails(html);
+  const statedAges = ageCategoriesFromList(categories);
   const sourceUrl = url.split("?")[0]!;
   const websiteUrl = links.websiteUrl;
   const home = officialSiteHome(websiteUrl);
@@ -363,6 +365,9 @@ export function parseSumatorRaceDetail(url: string, html: string): ParsedEvent |
     discipline: disc ? [disc] : undefined,
     audience: categories.some((c) => c.audience === "kids") ? "mixed" : "mixed",
     categories: categories.length ? categories : undefined,
+    // The page lists who may start, with ages: that is a stated answer, not a
+    // guess from the discipline.
+    ageCategories: statedAges.length ? statedAges : undefined,
     sourceUrl,
     websiteUrl,
     registrationUrl: links.registrationUrl,
@@ -424,6 +429,7 @@ async function enrichOfficialWebsites(
         seriesSlug: detail?.seriesSlug || ev.seriesSlug,
         seriesWebsite: home || ev.seriesWebsite,
         categories: detail?.categories?.length ? detail.categories : ev.categories,
+        ageCategories: detail?.ageCategories?.length ? detail.ageCategories : ev.ageCategories,
         childUrls: childUrls.length ? childUrls : ev.childUrls,
         confidence: links.websiteUrl ? Math.max(ev.confidence, 0.92) : ev.confidence,
       };
