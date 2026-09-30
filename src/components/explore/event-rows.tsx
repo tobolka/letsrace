@@ -1,0 +1,194 @@
+"use client";
+
+import { memo } from "react";
+import { format, parseISO } from "date-fns";
+import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
+import type { EventListItem } from "@/lib/events";
+import { messagesFor } from "@/lib/i18n/messages";
+import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { formatDistanceKm } from "@/lib/geo/distance";
+import { dateFnsLocale } from "@/lib/i18n/dates";
+import { disciplineColor } from "@/lib/map-visuals";
+import { cn } from "@/lib/utils";
+
+/**
+ * One race in the list.
+ *
+ * Memoised because the shell re-renders for reasons that have nothing to do
+ * with any race in it — the sheet moving, the map settling — and without this
+ * every visible card was rebuilt each time, in the middle of an animation.
+ */
+export const EventCard = memo(function EventCard({
+  event,
+  locale,
+  distanceKm: km,
+  active,
+  onSelect,
+}: {
+  event: EventListItem;
+  locale: string;
+  distanceKm?: number | null;
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
+  const t = messagesFor(locale);
+  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
+  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
+  const df = dateFnsLocale(locale);
+  const dateLabel =
+    format(parseISO(event.startDate), "d MMM", { locale: df }) +
+    (event.endDate && event.endDate !== event.startDate
+      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
+      : "");
+  const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
+  const extraLabel = [discLabel, event.series?.name].filter(Boolean).join(" · ");
+  const metadataLabel = [placeLabel, extraLabel].filter(Boolean).join(" · ");
+
+  return (
+    <Item
+      asChild
+      size="sm"
+      // The dividing line lives on the listitem wrapper now — inside it this
+      // button is always the last child, so `last:` here would never not match.
+      className={cn(
+        // `active:` is the press itself. On a phone there is no hover, and a
+        // row that does nothing until the card slides up feels like a miss.
+        "rounded-none border-0 px-4 py-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
+        // `muted/50` over a near-white ground was a shade nobody could see. The
+        // race you picked is the one thing on this list worth finding again
+        // after you look away from it.
+        active && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+      )}
+    >
+      <button
+        type="button"
+        data-event-id={event.id}
+        aria-pressed={active}
+        onClick={() => onSelect(event.id)}
+        className="relative w-full scroll-my-2 text-left touch-manipulation"
+      >
+        {/*
+          The discipline used to be a coloured dot beside the date, which on a
+          white list reads as an unread badge — something to clear rather than
+          something to tell races apart by. The same colour runs down the edge
+          of both lines instead, saying as much without asking to be dismissed.
+        */}
+        <span
+          aria-hidden
+          className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full"
+          style={{ background: disciplineColor(event.disciplines) }}
+        />
+        {/* Without this a flex child refuses to shrink below its content, and
+            `truncate` on the rows inside does nothing but overflow. */}
+        <ItemContent className="min-w-0 gap-0.5 max-md:gap-0">
+          {/*
+            One line, cut with an ellipsis. The list is rebuilt when the map
+            settles on its real bounds, and cards that change height as their
+            names change length drag everything below them — which was the
+            whole of this page’s layout shift.
+          */}
+          <ItemTitle
+            // ItemTitle ships `w-fit`, which sizes it to its text and defeats
+            // any truncation inside it.
+            className="w-full min-w-0 text-sm leading-snug"
+          >
+            <span className="block min-w-0 truncate">{event.name}</span>
+          </ItemTitle>
+          <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug">
+            <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
+            <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
+            {distanceLabel && <span className="ms-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
+          </span>
+        </ItemContent>
+      </button>
+    </Item>
+  );
+});
+
+
+/**
+ * The same race as a table row, for the full-width list. Columns appear as the
+ * panel gets wider (container queries, so an open detail panel that squeezes
+ * the list drops the extras instead of truncating everything).
+ */
+export const EventRowWide = memo(function EventRowWide({
+  event,
+  locale,
+  distanceKm: km,
+  active,
+  onSelect,
+}: {
+  event: EventListItem;
+  locale: string;
+  distanceKm?: number | null;
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
+  const t = messagesFor(locale);
+  const df = dateFnsLocale(locale);
+  const start = parseISO(event.startDate);
+  const dateLabel =
+    format(start, "d MMM", { locale: df }) +
+    (event.endDate && event.endDate !== event.startDate
+      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
+      : "");
+  const place = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode]
+    .filter(Boolean)
+    .join(" · ");
+  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
+  const level = event.level ? raceLevelLabel(event.level, locale) : "";
+  const ages = event.ageCategories.slice(0, 3).map((a) => ageCategoryLabel(a, locale)).join(", ");
+  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
+  const sub = [event.series?.name, event.classLabel].filter(Boolean).join(" · ");
+
+  return (
+    <button
+      type="button"
+      data-event-id={event.id}
+      aria-pressed={active}
+      onClick={() => onSelect(event.id)}
+      className={cn(
+        "relative grid w-full items-center gap-x-4 px-5 py-2.5 text-left touch-manipulation",
+        "grid-cols-[5.5rem_minmax(0,1fr)_minmax(0,0.8fr)_4rem]",
+        "@3xl:grid-cols-[5.5rem_minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_4rem]",
+        "@5xl:grid-cols-[5.5rem_minmax(0,1.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_minmax(0,1fr)_4rem]",
+        "active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
+        active && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+      )}
+    >
+      <span
+        aria-hidden
+        className="absolute inset-y-2 left-2 w-[3px] rounded-full"
+        style={{ background: disciplineColor(event.disciplines) }}
+      />
+      <span className="min-w-0">
+        <time dateTime={event.startDate} className="block truncate text-sm font-medium tabular-nums">
+          {dateLabel}
+        </time>
+        <span className="block truncate text-xs text-muted-foreground">
+          {format(start, "EEE", { locale: df })}
+        </span>
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-medium leading-snug">{event.name}</span>
+        {sub ? <span className="block truncate text-xs text-muted-foreground">{sub}</span> : null}
+      </span>
+      <span className="min-w-0 truncate text-sm text-muted-foreground" title={place}>
+        {place}
+      </span>
+      <span className="hidden min-w-0 truncate text-sm text-muted-foreground @3xl:block" title={discLabel}>
+        {discLabel}
+      </span>
+      <span className="hidden min-w-0 @5xl:block">
+        <span className="block truncate text-sm">{level}</span>
+        {ages ? <span className="block truncate text-xs text-muted-foreground">{ages}</span> : null}
+      </span>
+      <span
+        className="text-right text-xs tabular-nums text-muted-foreground"
+        title={distanceLabel ? t.distanceFromOrigin : undefined}
+      >
+        {distanceLabel ? `↗ ${distanceLabel}` : ""}
+      </span>
+    </button>
+  );
+});

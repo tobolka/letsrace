@@ -49,11 +49,25 @@ const DEFAULT_X = 12 + 400 + 12;
 const DEFAULT_Y = 12;
 const DRAG_MARGIN = 12;
 
+/**
+ * The room the card floats in — the map's own box, not the window. With a rail
+ * down the left edge the map is narrower than the window, and a card placed by
+ * window width sat under the map's right edge.
+ */
+function stageSize(el: HTMLElement | null) {
+  const stage = el?.offsetParent as HTMLElement | null;
+  return {
+    w: stage?.clientWidth || window.innerWidth,
+    h: stage?.clientHeight || window.innerHeight,
+  };
+}
+
 function clampPanelPos(x: number, y: number, el: HTMLElement | null) {
   const w = el?.offsetWidth ?? 320;
   const h = el?.offsetHeight ?? 200;
-  const maxX = Math.max(DRAG_MARGIN, window.innerWidth - w - DRAG_MARGIN);
-  const maxY = Math.max(DRAG_MARGIN, window.innerHeight - h - DRAG_MARGIN);
+  const stage = stageSize(el);
+  const maxX = Math.max(DRAG_MARGIN, stage.w - w - DRAG_MARGIN);
+  const maxY = Math.max(DRAG_MARGIN, stage.h - h - DRAG_MARGIN);
   return {
     x: Math.min(maxX, Math.max(DRAG_MARGIN, x)),
     y: Math.min(maxY, Math.max(DRAG_MARGIN, y)),
@@ -100,7 +114,7 @@ export function EventDetailPanel({
     if (embedded) return;
     // Docked: the list leaves a strip on the right, so start there. Undocked
     // returns to the default beside the 400px panel. Dragging still works.
-    const x = dockRight ? Math.max(12, window.innerWidth - 320 - 12) : leftX;
+    const x = dockRight ? Math.max(12, stageSize(cardRef.current).w - 320 - 12) : leftX;
     // Docked, it starts below the account button that floats top-right.
     const next = clampPanelPos(x, dockRight ? 64 : DEFAULT_Y, cardRef.current);
     offsetRef.current = next;

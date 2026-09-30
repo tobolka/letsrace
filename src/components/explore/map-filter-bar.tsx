@@ -181,6 +181,7 @@ export function MapFilterBar({
   hideSearch = false,
   allFilters = false,
   wide = false,
+  hideDate = false,
 }: {
   messages: Messages;
   locale: string;
@@ -209,6 +210,8 @@ export function MapFilterBar({
   allFilters?: boolean;
   /** Full-width list mode: every filter pinned, chips wrap instead of scroll. */
   wide?: boolean;
+  /** The schedule picks its dates by month, so it has no date control. */
+  hideDate?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
@@ -540,6 +543,7 @@ export function MapFilterBar({
             : "min-w-0 flex-1 flex-wrap max-md:flex-nowrap max-md:overflow-x-auto",
         )}
       >
+        {hideDate ? null : (
         <Popover
           open={dateOpen}
           onOpenChange={(next) => {
@@ -615,6 +619,7 @@ export function MapFilterBar({
             </div>
           </PopoverContent>
         </Popover>
+        )}
 
         {shownExtras.map((id) => {
           const Icon = FILTER_ICONS[id];

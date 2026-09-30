@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Bell, CalendarCheck, Check, LogIn, LogOut, User, UserRound } from "lucide-react";
+import { Bell, CalendarCheck, CalendarDays, Check, List, LogIn, LogOut, User, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { carryFilterQuery } from "@/lib/explore-params";
 import { locales, type Messages } from "@/lib/i18n/messages";
 
 /**
@@ -97,10 +98,10 @@ export function MapAccountButton({
         a "Sign in" that flips to "Our plan" a second later reads as a glitch —
         while the menu beside it is there from the first frame.
       */}
-      {/* On the map this is the way into the plan. In the account's own bar the
-          nav already says it, twice over. */}
+      {/* On a phone's map this is the way into the plan; from `md` up the rail's
+          bookmark says it, and so does the account's own bar. */}
       {authed === true && variant === "overlay" ? (
-        <Button asChild size="sm" className="shadow-md">
+        <Button asChild size="sm" className="shadow-md md:hidden">
           <Link href={`/${locale}/account`}>
             <CalendarCheck /> {messages.myCalendar}
           </Link>
@@ -130,6 +131,7 @@ export function MapAccountButton({
             email={email}
             locale={locale}
             messages={messages}
+            showViews={variant === "overlay"}
             onSignIn={onSignIn}
             onSubmitRace={onSubmitRace}
             onFeedback={onFeedback}
@@ -169,6 +171,7 @@ export function AccountMenuItems({
   email,
   locale,
   messages,
+  showViews = false,
   onSignIn,
   onSubmitRace,
   onFeedback,
@@ -178,15 +181,40 @@ export function AccountMenuItems({
   email: string | null;
   locale: string;
   messages: Messages;
+  /**
+   * On a phone the map has no tab bar — its sheet owns the bottom edge — so the
+   * other views are reached from here instead. Hidden from `md` up, where the
+   * rail is on screen.
+   */
+  showViews?: boolean;
   onSignIn?: () => void;
   onSubmitRace?: () => void;
   onFeedback?: () => void;
   onSignOut: () => void;
 }) {
   const localeHref = useLocaleHref();
+  const carry = carryFilterQuery(useSearchParams());
 
   return (
     <>
+      {showViews ? (
+        <>
+          <DropdownMenuGroup className="md:hidden">
+            <DropdownMenuItem asChild>
+              <Link href={`/${locale}/list${carry}`}>
+                <List /> {messages.navList}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/${locale}/schedule${carry}`}>
+                <CalendarDays /> {messages.navSchedule}
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator className="md:hidden" />
+        </>
+      ) : null}
+
       {/*
         Whose account this is. A menu that offers "Sign out" without saying who
         would be signed out is a menu you have to test to understand — and when

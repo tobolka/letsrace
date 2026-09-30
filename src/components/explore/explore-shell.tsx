@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, memo, type CSSProperties, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, type CSSProperties, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
+import { useRouter } from "next/navigation";
+import { useQueryStates } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import {
   INT_COUNTRY,
@@ -31,17 +32,13 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
+import { ItemGroup } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import type { EventListItem } from "@/lib/events";
-import { messagesFor, type Messages } from "@/lib/i18n/messages";
-import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
-import { List as ListIcon, Map as MapIcon } from "lucide-react";
+import type { Messages } from "@/lib/i18n/messages";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
-import { disciplineColor } from "@/lib/map-visuals";
 import {
   eventDistanceKm,
-  formatDistanceKm,
   sortEvents,
   distanceKm,
   type EventSort,
@@ -50,6 +47,8 @@ import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
+import { exploreSearchParams } from "@/lib/explore-params";
+import { loadSeriesList } from "@/lib/series-list";
 import {
   readExploreFilterPrefs,
   storedExploreFiltersToPatch,
@@ -63,6 +62,7 @@ import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
+import { EventCard } from "@/components/explore/event-rows";
 
 const EventDetailPanel = dynamic(
   () =>
@@ -103,59 +103,16 @@ const MobileSearchSheet = dynamic(
 
 const MAP_PANEL_W = 400;
 const MIN_PANEL_W = 340;
-/** Room kept on the right in list mode for the detail card. */
-const DETAIL_STRIP = 344;
+const MAX_PANEL_W = 560;
 
-function panelFullWidth() {
-  return Math.max(MAP_PANEL_W, window.innerWidth - 12 - DETAIL_STRIP);
-}
-/** Wider than this and the panel is a list, narrower and it is a panel. */
-function panelSnapWidth() {
-  if (typeof window === "undefined") return 560;
-  return Math.min(560, (panelFullWidth() + MAP_PANEL_W) / 2);
-}
-
-const WEEKEND_DEFAULT = thisWeekendRange();
-const exploreSearchParams = {
-  q: parseAsString.withDefault(""),
-  categories: parseAsArrayOf(parseAsString).withDefault([]),
-  disciplines: parseAsArrayOf(parseAsString).withDefault([]),
-  levels: parseAsArrayOf(parseAsString).withDefault([]),
-  series: parseAsString.withDefault(""),
-  country: parseAsString.withDefault(""),
-  dateFrom: parseAsString.withDefault(WEEKEND_DEFAULT.from),
-  dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
-  e: parseAsString.withDefault(""),
-  sort: parseAsString.withDefault(""),
-  view: parseAsString.withDefault(""),
-  west: parseAsString,
-  south: parseAsString,
-  east: parseAsString,
-  north: parseAsString,
-};
-
-const seriesResultCache = new Map<string, SeriesOption[]>();
-const seriesInflight = new Map<string, Promise<SeriesOption[]>>();
-
-function loadSeriesList(qs: string): Promise<SeriesOption[]> {
-  const cached = seriesResultCache.get(qs);
-  if (cached) return Promise.resolve(cached);
-  const pending = seriesInflight.get(qs);
-  if (pending) return pending;
-  const p = fetch(`/api/series${qs ? `?${qs}` : ""}`)
-    .then(async (res) => {
-      if (!res.ok) throw new Error(`series ${res.status}`);
-      return res.json() as Promise<SeriesOption[]>;
-    })
-    .then((data) => {
-      seriesResultCache.set(qs, data);
-      return data;
-    })
-    .finally(() => {
-      seriesInflight.delete(qs);
-    });
-  seriesInflight.set(qs, p);
-  return p;
+/**
+ * How wide the panel may be dragged. The full-width list is its own page now
+ * (the rail's second icon), so the panel only ever trades room with the map.
+ */
+function panelMaxWidth() {
+  const stage = document.getElementById("shell-stage");
+  const room = (stage?.clientWidth ?? window.innerWidth) - 12 - 344;
+  return Math.max(MAP_PANEL_W, Math.min(MAX_PANEL_W, room));
 }
 
 type Props = {
@@ -253,6 +210,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }, [locale]);
 
   const [filters, setFilters] = useQueryStates(exploreSearchParams);
+  const router = useRouter();
+
+  // The expanded list used to be a mode of this page. It is a page of its own
+  // now, so a link saved from the old mode lands there with its filters.
+  useEffect(() => {
+    if (filters.view !== "list") return;
+    const params = new URLSearchParams(window.location.search);
+    params.delete("view");
+    for (const key of ["west", "south", "east", "north", "e"]) params.delete(key);
+    const qs = params.toString();
+    router.replace(`/${locale}/list${qs ? `?${qs}` : ""}`);
+  }, [filters.view, locale, router]);
   const [prefsReady, setPrefsReady] = useState(false);
 
   function selectEvent(id: string | null) {
@@ -787,17 +756,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   // Desktop: side panels. Mobile: bottom sheet over a usable map.
   const [isDesktop, setIsDesktop] = useState(false);
-  // Desktop only: the panel grows over the whole map into a table. The map
-  // stays mounted underneath, so switching back lands exactly where you were.
-  const listMode = filters.view === "list";
-  const setListMode = (on: boolean) => void setFilters({ view: on ? "list" : null });
-  // The panel's width in map mode, and the live width while its edge is being
-  // dragged. Past SNAP_W the drop lands in list mode; dragging back below it
-  // lands in map mode again.
+  // The panel's width, and the live width while its edge is being dragged.
   const [mapWidth, setMapWidth] = useState(MAP_PANEL_W);
   const [dragW, setDragW] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const panelWide = dragW != null ? dragW >= panelSnapWidth() : listMode;
   const [viewportH, setViewportH] = useState(800);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -1040,20 +1002,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           )}
           style={{
             width:
-              dragW ?? (listMode ? `calc(100% - ${DETAIL_STRIP}px)` : mapWidth),
+              dragW ?? mapWidth,
           }}
         >
         <Card className="pointer-events-auto flex h-full w-full min-w-0 flex-col gap-0 overflow-hidden py-0 shadow-lg">
-          <Header
-            locale={locale}
-            wide={panelWide}
-            mode={panelWide ? "list" : "map"}
-            onMode={(m) => setListMode(m === "list")}
-            mapLabel={messages.navMap}
-            listLabel={messages.navList}
-          />
+          <Header locale={locale} />
           <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
-            {renderFilterBar({ wide: panelWide })}
+            {renderFilterBar()}
           </div>
           <Separator />
           <ListToolbar
@@ -1095,15 +1050,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                 {listView === "rows"
                   ? sortedEvents.map((event) => (
                   <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
-                  {panelWide ? (
-                    <EventRowWide
-                      event={event}
-                      locale={locale}
-                      distanceKm={eventDistanceKm(event, userOrigin)}
-                      active={event.id === selectedId}
-                      onSelect={selectFromList}
-                    />
-                  ) : (
                   <EventCard
                     event={event}
                     locale={locale}
@@ -1111,7 +1057,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     active={event.id === selectedId}
                     onSelect={selectFromList}
                   />
-                  )}
                   </div>
                     ))
                   : null}
@@ -1132,16 +1077,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           }}
           onPointerMove={(e) => {
             if (dragW == null) return;
-            setDragW(Math.min(panelFullWidth(), Math.max(MIN_PANEL_W, e.clientX - 12)));
+            const left = document.getElementById("shell-stage")?.getBoundingClientRect().left ?? 0;
+            setDragW(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, e.clientX - left - 12)));
           }}
           onPointerUp={() => {
             if (dragW == null) return;
-            if (dragW >= panelSnapWidth()) {
-              setListMode(true);
-            } else {
-              setMapWidth(Math.round(dragW));
-              setListMode(false);
-            }
+            setMapWidth(Math.round(dragW));
             setDragW(null);
           }}
           onPointerCancel={() => setDragW(null)}
@@ -1149,13 +1090,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
             e.preventDefault();
             const next = mapWidth + (e.key === "ArrowRight" ? 24 : -24);
-            if (listMode) {
-              if (e.key === "ArrowLeft") setListMode(false);
-            } else if (next >= panelSnapWidth()) {
-              setListMode(true);
-            } else {
-              setMapWidth(Math.max(MIN_PANEL_W, next));
-            }
+            setMapWidth(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, next)));
           }}
         >
         </div>
@@ -1167,8 +1102,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             locale={locale}
             onClose={() => selectEvent(null)}
             onSelectSeries={applySeries}
-            dockRight={listMode}
-            leftX={mapWidth + 24}
+                        leftX={mapWidth + 24}
           />
         )}
       </div>
@@ -1422,240 +1356,14 @@ function ListToolbar({
   );
 }
 
-function Header({
-  locale,
-  compact,
-  wide,
-  mode,
-  onMode,
-  mapLabel,
-  listLabel,
-}: {
-  locale: string;
-  compact?: boolean;
-  wide?: boolean;
-  mode: "map" | "list";
-  onMode: (mode: "map" | "list") => void;
-  mapLabel: string;
-  listLabel: string;
-}) {
+/**
+ * The panel's title bar. The logo is the map's alone: the other views are named
+ * by what they are, and this is the one place the product introduces itself.
+ */
+function Header({ locale }: { locale: string }) {
   return (
-    <div
-      className={cn(
-        "flex shrink-0 items-center justify-between gap-2 border-b px-3 transition-[padding] duration-300 motion-reduce:transition-none",
-        compact ? "h-11" : "h-12",
-      )}
-    >
-      <BrandMark href={`/${locale}`} size={compact ? "sm" : "md"} />
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
-        value={mode}
-        onValueChange={(value) => {
-          if (value === "map" || value === "list") onMode(value);
-        }}
-        aria-label={`${mapLabel} / ${listLabel}`}
-      >
-        <ToggleGroupItem
-          value="map"
-          aria-label={mapLabel}
-          className="gap-1.5 px-2.5 data-[state=on]:bg-foreground data-[state=on]:text-background"
-        >
-          <MapIcon className="size-4" aria-hidden />
-          {wide ? mapLabel : null}
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="list"
-          aria-label={listLabel}
-          className="gap-1.5 px-2.5 data-[state=on]:bg-foreground data-[state=on]:text-background"
-        >
-          <ListIcon className="size-4" aria-hidden />
-          {wide ? listLabel : null}
-        </ToggleGroupItem>
-      </ToggleGroup>
+    <div className="flex h-12 shrink-0 items-center border-b px-3">
+      <BrandMark href={`/${locale}`} size="md" />
     </div>
   );
 }
-
-/**
- * One race in the list.
- *
- * Memoised because the shell re-renders for reasons that have nothing to do
- * with any race in it — the sheet moving, the map settling — and without this
- * every visible card was rebuilt each time, in the middle of an animation.
- */
-const EventCard = memo(function EventCard({
-  event,
-  locale,
-  distanceKm: km,
-  active,
-  onSelect,
-}: {
-  event: EventListItem;
-  locale: string;
-  distanceKm?: number | null;
-  active: boolean;
-  onSelect: (id: string) => void;
-}) {
-  const t = messagesFor(locale);
-  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
-  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
-  const df = dateFnsLocale(locale);
-  const dateLabel =
-    format(parseISO(event.startDate), "d MMM", { locale: df }) +
-    (event.endDate && event.endDate !== event.startDate
-      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
-      : "");
-  const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
-  const extraLabel = [discLabel, event.series?.name].filter(Boolean).join(" · ");
-  const metadataLabel = [placeLabel, extraLabel].filter(Boolean).join(" · ");
-
-  return (
-    <Item
-      asChild
-      size="sm"
-      // The dividing line lives on the listitem wrapper now — inside it this
-      // button is always the last child, so `last:` here would never not match.
-      className={cn(
-        // `active:` is the press itself. On a phone there is no hover, and a
-        // row that does nothing until the card slides up feels like a miss.
-        "rounded-none border-0 px-4 py-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
-        // `muted/50` over a near-white ground was a shade nobody could see. The
-        // race you picked is the one thing on this list worth finding again
-        // after you look away from it.
-        active && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
-      )}
-    >
-      <button
-        type="button"
-        data-event-id={event.id}
-        aria-pressed={active}
-        onClick={() => onSelect(event.id)}
-        className="relative w-full scroll-my-2 text-left touch-manipulation"
-      >
-        {/*
-          The discipline used to be a coloured dot beside the date, which on a
-          white list reads as an unread badge — something to clear rather than
-          something to tell races apart by. The same colour runs down the edge
-          of both lines instead, saying as much without asking to be dismissed.
-        */}
-        <span
-          aria-hidden
-          className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full"
-          style={{ background: disciplineColor(event.disciplines) }}
-        />
-        {/* Without this a flex child refuses to shrink below its content, and
-            `truncate` on the rows inside does nothing but overflow. */}
-        <ItemContent className="min-w-0 gap-0.5 max-md:gap-0">
-          {/*
-            One line, cut with an ellipsis. The list is rebuilt when the map
-            settles on its real bounds, and cards that change height as their
-            names change length drag everything below them — which was the
-            whole of this page’s layout shift.
-          */}
-          <ItemTitle
-            // ItemTitle ships `w-fit`, which sizes it to its text and defeats
-            // any truncation inside it.
-            className="w-full min-w-0 text-sm leading-snug"
-          >
-            <span className="block min-w-0 truncate">{event.name}</span>
-          </ItemTitle>
-          <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug">
-            <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
-            <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
-            {distanceLabel && <span className="ms-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
-          </span>
-        </ItemContent>
-      </button>
-    </Item>
-  );
-});
-
-
-/**
- * The same race as a table row, for the full-width list. Columns appear as the
- * panel gets wider (container queries, so an open detail panel that squeezes
- * the list drops the extras instead of truncating everything).
- */
-const EventRowWide = memo(function EventRowWide({
-  event,
-  locale,
-  distanceKm: km,
-  active,
-  onSelect,
-}: {
-  event: EventListItem;
-  locale: string;
-  distanceKm?: number | null;
-  active: boolean;
-  onSelect: (id: string) => void;
-}) {
-  const t = messagesFor(locale);
-  const df = dateFnsLocale(locale);
-  const start = parseISO(event.startDate);
-  const dateLabel =
-    format(start, "d MMM", { locale: df }) +
-    (event.endDate && event.endDate !== event.startDate
-      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
-      : "");
-  const place = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode]
-    .filter(Boolean)
-    .join(" · ");
-  const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
-  const level = event.level ? raceLevelLabel(event.level, locale) : "";
-  const ages = event.ageCategories.slice(0, 3).map((a) => ageCategoryLabel(a, locale)).join(", ");
-  const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
-  const sub = [event.series?.name, event.classLabel].filter(Boolean).join(" · ");
-
-  return (
-    <button
-      type="button"
-      data-event-id={event.id}
-      aria-pressed={active}
-      onClick={() => onSelect(event.id)}
-      className={cn(
-        "relative grid w-full items-center gap-x-4 px-5 py-2.5 text-left touch-manipulation",
-        "grid-cols-[5.5rem_minmax(0,1fr)_minmax(0,0.8fr)_4rem]",
-        "@3xl:grid-cols-[5.5rem_minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_4rem]",
-        "@5xl:grid-cols-[5.5rem_minmax(0,1.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_minmax(0,1fr)_4rem]",
-        "active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50",
-        active && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
-      )}
-    >
-      <span
-        aria-hidden
-        className="absolute inset-y-2 left-2 w-[3px] rounded-full"
-        style={{ background: disciplineColor(event.disciplines) }}
-      />
-      <span className="min-w-0">
-        <time dateTime={event.startDate} className="block truncate text-sm font-medium tabular-nums">
-          {dateLabel}
-        </time>
-        <span className="block truncate text-xs text-muted-foreground">
-          {format(start, "EEE", { locale: df })}
-        </span>
-      </span>
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-medium leading-snug">{event.name}</span>
-        {sub ? <span className="block truncate text-xs text-muted-foreground">{sub}</span> : null}
-      </span>
-      <span className="min-w-0 truncate text-sm text-muted-foreground" title={place}>
-        {place}
-      </span>
-      <span className="hidden min-w-0 truncate text-sm text-muted-foreground @3xl:block" title={discLabel}>
-        {discLabel}
-      </span>
-      <span className="hidden min-w-0 @5xl:block">
-        <span className="block truncate text-sm">{level}</span>
-        {ages ? <span className="block truncate text-xs text-muted-foreground">{ages}</span> : null}
-      </span>
-      <span
-        className="text-right text-xs tabular-nums text-muted-foreground"
-        title={distanceLabel ? t.distanceFromOrigin : undefined}
-      >
-        {distanceLabel ? `↗ ${distanceLabel}` : ""}
-      </span>
-    </button>
-  );
-});
