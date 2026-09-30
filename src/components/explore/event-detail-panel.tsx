@@ -523,7 +523,7 @@ export function EventDetailPanel({
                     list — said so, rather than shown as fact. */}
                 {event.ageConfidence === "explicit" ? null : (
                   <span className="text-xs text-muted-foreground" title={t.ageUnconfirmedHelp}>
-                    {t.ageGuessed}
+                    {event.ageConfidence === "previous" ? t.ageLastYear : t.ageGuessed}
                   </span>
                 )}
               </>

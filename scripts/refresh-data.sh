@@ -23,6 +23,8 @@ step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
 step "Regulations (propozice), all"        scripts/fill-regulation-ages.ts --max=1500 --apply
 step "RaceResult, FCI, geocode, defaults"  scripts/fill-source-ages.ts
 step "Duplicates"                          scripts/merge-duplicates.ts
+step "Last year's editions"                scripts/carry-forward-editions.ts --apply
+step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
 step "Coverage after"                      scripts/data-stats.ts
 echo
 echo "=== done $(date '+%H:%M:%S')"

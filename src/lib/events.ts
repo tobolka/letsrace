@@ -24,7 +24,7 @@ export type EventListItem = {
   audience: string;
   ageCategories: string[];
   /** 'explicit' when a source stated the categories, 'default' when guessed. */
-  ageConfidence: "explicit" | "default" | null;
+  ageConfidence: "explicit" | "previous" | "default" | null;
   /** Set when a category filter is on: 'possible' marks an unconfirmed fit. */
   ageMatch?: "match" | "possible";
   /** Set with it: 0 confirmed … 3 guessed otherwise — lists sort by it first. */
@@ -673,7 +673,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     })(),
     // A set borrowed from the series is the series' claim, not this race's.
     ageConfidence: ((row.age_categories as string[]) ?? []).length
-      ? ((row.age_confidence as "explicit" | "default" | null) ?? null)
+      ? ((row.age_confidence as "explicit" | "previous" | "default" | null) ?? null)
       : ((series?.age_categories as string[]) ?? []).length
         ? "default"
         : null,

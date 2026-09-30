@@ -458,8 +458,8 @@ export function ageCategoryMatch(
 }
 
 /**
- * Order within a category filter: confirmed first, then races whose guess
- * fits, then the ones we know nothing about, then guesses that point
+ * Order within a category filter: confirmed first, then last year's list,
+ * then races whose guess fits, then the ones we know nothing about, then guesses that point
  * elsewhere. Date stays the order inside each tier.
  */
 export function ageMatchRank(
@@ -470,9 +470,11 @@ export function ageMatchRank(
   const expanded = new Set(expandAgeCategoryFilter(selected));
   const hit = ages.some((c) => expanded.has(c));
   if (event.ageConfidence === "explicit" && hit) return 0;
-  if (ages.length && hit) return 1;
-  if (!ages.length) return 2;
-  return 3;
+  // Last year's stated list is nearly as good: a race's classes rarely change.
+  if (event.ageConfidence === "previous" && hit) return 1;
+  if (ages.length && hit) return 2;
+  if (!ages.length) return 3;
+  return 4;
 }
 
 /** Labels aligned with Category filter chips. Empty = we don't know — don't guess. */

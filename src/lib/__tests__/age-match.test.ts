@@ -20,9 +20,10 @@ describe("ageCategoryMatch", () => {
   it("ranks confirmed, then fitting guesses, then unknown, then other guesses", () => {
     const sel = ["kids"];
     expect(ageMatchRank({ ageCategories: ["u11"], ageConfidence: "explicit" }, sel)).toBe(0);
-    expect(ageMatchRank({ ageCategories: ["kids"], ageConfidence: "default" }, sel)).toBe(1);
-    expect(ageMatchRank({ ageCategories: [], ageConfidence: null }, sel)).toBe(2);
-    expect(ageMatchRank({ ageCategories: ["amateur"], ageConfidence: "default" }, sel)).toBe(3);
+    expect(ageMatchRank({ ageCategories: ["u11"], ageConfidence: "previous" }, sel)).toBe(1);
+    expect(ageMatchRank({ ageCategories: ["kids"], ageConfidence: "default" }, sel)).toBe(2);
+    expect(ageMatchRank({ ageCategories: [], ageConfidence: null }, sel)).toBe(3);
+    expect(ageMatchRank({ ageCategories: ["amateur"], ageConfidence: "default" }, sel)).toBe(4);
   });
 
   it("expands a group chip to its bands", () => {
