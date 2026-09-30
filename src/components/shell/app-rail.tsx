@@ -49,7 +49,7 @@ function NavGroup({ items, carry }: { items: NavItem[]; carry?: ReturnType<typeo
                   aria-current={item.active ? "page" : undefined}
                   onClick={carry?.(item.href)}
                 >
-                  <item.icon strokeWidth={item.active ? 2.25 : 1.75} />
+                  <item.icon strokeWidth={item.active ? 2.25 : 2} />
                   <span>{item.label}</span>
                 </Link>
               </SidebarMenuButton>
