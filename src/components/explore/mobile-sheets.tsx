@@ -50,7 +50,9 @@ export const FULL = 0.92;
  */
 const FRAME = cn(
   "border-0 bg-transparent shadow-none md:hidden",
-  "data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-2",
+  // On the tab bar, not on the bottom edge: the tabs stay reachable from the
+  // map, the way they are from every other screen.
+  "data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-[calc(var(--mobile-tabbar)+0.5rem)]",
   "data-[vaul-drawer-direction=bottom]:rounded-none data-[vaul-drawer-direction=bottom]:mt-0",
   "data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh]",
 );
@@ -109,7 +111,7 @@ function Visible({
   return (
     <div className={CARD} style={{ height: visibleContentHeight(snap, viewportH) }}>
       <GrabZone label={handleLabel} closeLabel={closeLabel} onClose={onClose} />
-      <div className="flex min-h-0 flex-1 flex-col pb-[max(0px,calc(env(safe-area-inset-bottom)-0.5rem))]">
+      <div className="flex min-h-0 flex-1 flex-col">
         {children}
       </div>
     </div>

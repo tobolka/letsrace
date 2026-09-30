@@ -163,9 +163,9 @@ export function AppSidebar({ locale }: { locale: string }) {
 }
 
 /**
- * The same destinations for a phone: four tabs along the bottom. The profile is
- * one tab; its pages are a row of links at the top of its own screens. Not shown
- * over the map — the map's sheet owns that edge.
+ * The same destinations for a phone: a row of icons along the bottom, the way
+ * Instagram does it — on every screen, the map included, where the race sheet
+ * now rides on top of it. Names are for screen readers; the icons carry it.
  */
 export function MobileTabBar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
@@ -173,7 +173,6 @@ export function MobileTabBar({ locale }: { locale: string }) {
   const carry = useCarryFilters();
   const { authed } = useAuthUser();
   const counts = useNavCounts(pathname, authed);
-  if (pathname === `/${locale}`) return null;
   const items: NavItem[] = [
     ...exploreNav(locale, t, pathname),
     {
@@ -189,23 +188,23 @@ export function MobileTabBar({ locale }: { locale: string }) {
   return (
     <nav
       aria-label={t.navTabs}
-      className="z-30 grid shrink-0 grid-cols-4 border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="relative z-40 grid h-[var(--mobile-tabbar)] shrink-0 grid-cols-4 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       {items.map((item) => (
         <Link
           key={item.key}
           href={item.href}
+          aria-label={item.label}
           aria-current={item.active ? "page" : undefined}
           onClick={item.key === "profile" ? undefined : carry(item.href)}
           className={cn(
-            "relative flex min-h-12 flex-col items-center justify-center gap-0.5 py-2 text-xs transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
-            item.active ? "font-medium text-foreground" : "text-muted-foreground",
+            "relative flex items-center justify-center transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
+            item.active ? "text-foreground" : "text-muted-foreground",
           )}
         >
-          <item.icon className="size-5" strokeWidth={item.active ? 2 : 1.5} aria-hidden />
-          <span className="max-w-full truncate px-1">{item.label}</span>
+          <item.icon className="size-6" strokeWidth={item.active ? 2.25 : 1.75} aria-hidden />
           {item.badge ? (
-            <span className="absolute top-1 right-[26%] flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
+            <span className="absolute top-2 left-1/2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
               {item.badge > 9 ? "9+" : item.badge}
             </span>
           ) : null}

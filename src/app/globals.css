@@ -47,6 +47,8 @@ html[data-welcome-seen="1"] #letsrace-welcome {
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
   --brand: #c81d25;
+  /* The phone's tab bar: every sheet that rises from the bottom sits on it. */
+  --mobile-tabbar: calc(3.25rem + env(safe-area-inset-bottom));
   /* The page sheet's lift, mixed from the foreground so it stays on the scale. */
   --shell-sheet-shadow:
     0 0 0 1px color-mix(in oklch, var(--foreground) 6%, transparent),
