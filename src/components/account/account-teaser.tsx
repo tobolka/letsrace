@@ -62,16 +62,13 @@ export function AccountTeaser({ locale, kind }: { locale: string; kind: TeaserKe
         ))}
       </ul>
 
-      <div className="flex flex-col items-center gap-3">
-        <div className="flex flex-wrap justify-center gap-2">
-          <Button size="lg" onClick={() => setOpen(true)}>
-            {m.cta}
-          </Button>
-          <Button asChild size="lg" variant="ghost">
-            <Link href={`/${locale}`}>{m.browse}</Link>
-          </Button>
-        </div>
-        <p className="text-xs text-muted-foreground">{m.ctaNote}</p>
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button size="lg" onClick={() => setOpen(true)}>
+          {m.cta}
+        </Button>
+        <Button asChild size="lg" variant="ghost">
+          <Link href={`/${locale}`}>{m.browse}</Link>
+        </Button>
       </div>
 
       {open ? (

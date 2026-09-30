@@ -11,7 +11,6 @@ type TeaserCopy = {
 
 type TeaserMessages = {
   cta: string;
-  ctaNote: string;
   browse: string;
   teasers: Record<TeaserKey, TeaserCopy>;
   /** Words inside the illustrations. */
@@ -36,7 +35,6 @@ type TeaserMessages = {
 export const teaserMessages: Record<Locale, TeaserMessages> = {
   cs: {
     cta: "Přihlásit se zdarma",
-    ctaNote: "Účet založíte přes e-mail nebo Google za pár vteřin. Žádný spam.",
     browse: "Nejdřív se podívat na závody",
     teasers: {
       plan: {
@@ -83,7 +81,6 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
   },
   en: {
     cta: "Sign in — it's free",
-    ctaNote: "Create an account with email or Google in seconds. No spam.",
     browse: "Browse races first",
     teasers: {
       plan: {
@@ -130,7 +127,6 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
   },
   pl: {
     cta: "Zaloguj się za darmo",
-    ctaNote: "Konto założysz przez e-mail lub Google w kilka sekund. Bez spamu.",
     browse: "Najpierw przejrzyj wyścigi",
     teasers: {
       plan: {
@@ -177,7 +173,6 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
   },
   sk: {
     cta: "Prihlásiť sa zadarmo",
-    ctaNote: "Účet založíte cez e-mail alebo Google za pár sekúnd. Žiadny spam.",
     browse: "Najprv si pozrieť preteky",
     teasers: {
       plan: {
