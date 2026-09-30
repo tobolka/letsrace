@@ -10,11 +10,8 @@ const EventDetailPanel = dynamic(() =>
 );
 
 /**
- * The race you picked, beside the list on a desktop and over it on a phone.
- *
- * On the map the card floats and can be dragged out of the way of the pins.
- * Here there is nothing to uncover, so it is a fixed column: the list keeps its
- * place and the card never covers a row you are reading.
+ * The race you picked: the same floating card the map and the calendar use on
+ * a desktop, a sheet from the bottom on a phone.
  */
 export function RacePreview({
   event,
@@ -50,17 +47,18 @@ export function RacePreview({
     );
   }
 
+  // The map's own card, floating and draggable, starting against the right
+  // edge so it covers the columns you read least rather than the names.
   return (
-    <aside className="hidden w-[340px] shrink-0 flex-col border-l bg-card md:flex">
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <EventDetailPanel
-          event={event}
-          locale={locale}
-          embedded
-          onClose={onClose}
-          onSelectSeries={onSelectSeries}
-        />
-      </div>
-    </aside>
+    <EventDetailPanel
+      event={event}
+      locale={locale}
+      dockRight
+      // Below the header, the filters and the sort row, so none of the
+      // list's own controls end up under it.
+      dockTop={168}
+      onClose={onClose}
+      onSelectSeries={onSelectSeries}
+    />
   );
 }

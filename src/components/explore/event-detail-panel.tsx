@@ -82,6 +82,7 @@ export function EventDetailPanel({
   embedded = false,
   anchored = false,
   dockRight = false,
+  dockTop = 64,
   leftX = DEFAULT_X,
 }: {
   event: EventListItem;
@@ -98,6 +99,8 @@ export function EventDetailPanel({
   anchored?: boolean;
   /** Full-width list mode: sit in the strip reserved at the right edge. */
   dockRight?: boolean;
+  /** How far down a right-docked card starts — below whatever header is there. */
+  dockTop?: number;
   /** Where the card starts when it sits beside the panel. */
   leftX?: number;
 }) {
@@ -123,10 +126,10 @@ export function EventDetailPanel({
     // returns to the default beside the 400px panel. Dragging still works.
     const x = dockRight ? Math.max(12, stageSize(cardRef.current).w - 320 - 12) : leftX;
     // Docked, it starts below the account button that floats top-right.
-    const next = clampPanelPos(x, dockRight ? 64 : DEFAULT_Y, cardRef.current);
+    const next = clampPanelPos(x, dockRight ? dockTop : DEFAULT_Y, cardRef.current);
     offsetRef.current = next;
     setOffset(next);
-  }, [dockRight, embedded, anchored, leftX]);
+  }, [dockRight, dockTop, embedded, anchored, leftX]);
 
   useEffect(() => {
     if (embedded || anchored) return;
