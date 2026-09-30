@@ -87,7 +87,8 @@ export function profileNav(
       active: pathname.startsWith(`${base}/settings`),
     },
   ];
-  // Settings are the settings of an account; without one there is nothing
-  // behind the gear. The other pages each have a teaser to show instead.
-  return authed === true ? items : items.filter((i) => i.key !== "settings");
+  // Signed out, the profile is one door: the plan, whose teaser says what an
+  // account is for. Four icons that each led to a sign-in pitch said nothing
+  // four times; the other pages' teasers still answer their own links.
+  return authed === true ? items : items.filter((i) => i.key === "plan");
 }
