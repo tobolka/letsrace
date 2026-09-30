@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
@@ -276,6 +277,12 @@ export function AuthForm({
           </Button>
         </FieldGroup>
       </form>
+      <p className="text-xs text-muted-foreground">
+        {t.authPrivacyNote}{" "}
+        <Link href={`/${locale}/privacy`} className="underline underline-offset-2 hover:text-foreground">
+          {t.privacyLink}
+        </Link>
+      </p>
     </div>
   );
 }
