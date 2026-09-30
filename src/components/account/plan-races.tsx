@@ -97,11 +97,11 @@ export function PlanRaces({
         return (
           <Fragment key={plan.event.id}>
             {newMonth ? (
-              <h3 className="border-b bg-muted/40 px-4 py-1.5 text-xs font-semibold tracking-wide first-letter:uppercase [&:not(:first-child)]:border-t">
+              <h3 className="border-b bg-muted/40 px-4 py-2 text-xs font-semibold tracking-wide first-letter:uppercase md:px-6 [&:not(:first-child)]:border-t">
                 {format(parseISO(plan.event.startDate), "LLLL yyyy", { locale: df })}
               </h3>
             ) : (
-              <div className="ml-4 border-t" aria-hidden />
+              <div className="ml-4 border-t md:ml-6" aria-hidden />
             )}
             <PlanRow
               locale={locale}

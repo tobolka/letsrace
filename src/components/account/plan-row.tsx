@@ -91,13 +91,13 @@ export function PlanRow({
   return (
     <div
       className={cn(
-        "relative flex flex-wrap items-center gap-x-4 gap-y-1.5 py-2.5 pl-4 pr-1.5",
+        "relative flex flex-wrap items-center gap-x-4 gap-y-2 py-3.5 pl-4 pr-2 md:pl-6 md:pr-4",
         muted && "opacity-70",
       )}
     >
       <span
         aria-hidden
-        className="absolute inset-y-2.5 left-0 w-[3px] rounded-full"
+        className="absolute inset-y-3.5 left-0 w-[3px] rounded-full md:left-2"
         style={{ background: disciplineColor(plan.event.disciplines) }}
       />
       <div className="flex min-w-0 flex-1 basis-56 items-start gap-1">
@@ -108,7 +108,7 @@ export function PlanRow({
           >
             {plan.event.name}
           </Link>
-          <span className="block truncate text-xs leading-snug text-muted-foreground">
+          <span className="mt-0.5 block truncate text-xs leading-snug text-muted-foreground">
             {note ? <span className="font-medium text-foreground">{note} · </span> : null}
             {meta}
           </span>
