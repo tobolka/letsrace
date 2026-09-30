@@ -140,7 +140,8 @@ export function AppSidebar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
   const carry = useCarryFilters();
-  const counts = useNavCounts(pathname);
+  const { authed } = useAuthUser();
+  const counts = useNavCounts(pathname, authed);
 
   return (
     <Sidebar
@@ -152,7 +153,7 @@ export function AppSidebar({ locale }: { locale: string }) {
       <SidebarContent className="gap-0 pt-2">
         <NavGroup items={exploreNav(locale, t, pathname)} carry={carry} />
         <SidebarSeparator className="mx-auto my-1.5 data-[orientation=horizontal]:w-8" />
-        <NavGroup items={profileNav(locale, t, pathname, counts)} />
+        <NavGroup items={profileNav(locale, t, pathname, counts, authed)} />
       </SidebarContent>
       <SidebarFooter className="items-center px-0 pb-2.5">
         <UserMenu locale={locale} />
@@ -170,7 +171,8 @@ export function MobileTabBar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
   const carry = useCarryFilters();
-  const counts = useNavCounts(pathname);
+  const { authed } = useAuthUser();
+  const counts = useNavCounts(pathname, authed);
   if (pathname === `/${locale}`) return null;
   const items: NavItem[] = [
     ...exploreNav(locale, t, pathname),

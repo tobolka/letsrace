@@ -11,40 +11,39 @@ html[data-welcome-seen="1"] #letsrace-welcome {
 }
 
 :root {
-  --background: #f5f5f4;
-  --foreground: #1c1917;
-  --card: #ffffff;
-  --card-foreground: #1c1917;
-  --popover: #ffffff;
-  --popover-foreground: #1c1917;
-  --primary: #1c1917;
-  --primary-foreground: #fafaf9;
-  --secondary: #f5f5f4;
-  --secondary-foreground: #1c1917;
-  --muted: #f5f5f4;
-  --muted-foreground: #78716c;
-  --accent: #f5f5f4;
-  --accent-foreground: #1c1917;
-  --destructive: #b91c1c;
-  --brand: #c81d25;
-  --border: #e7e5e4;
-  --input: #e7e5e4;
-  --ring: #1c1917;
+  /*
+   * shadcn/ui's Stone theme, verbatim, so every grey in the app — the rail,
+   * the chips, the hover, the hairlines — comes off one scale. The brand red
+   * is the only colour of our own.
+   */
   --radius: 0.625rem;
-  /* The app frame: the rail and the hairline around the page sheet. */
-  --shell-rail: #eceee9;
-  --shell-rail-accent: #dfe2db;
-  --shell-rail-border: #dcdfd7;
-  --shell-sheet-edge: rgb(35 42 30 / 0.07);
-  --shell-sheet-lift: rgb(35 42 30 / 0.04);
-  --sidebar: #fafaf9;
-  --sidebar-foreground: #44403c;
-  --sidebar-primary: #1c1917;
-  --sidebar-primary-foreground: #fafaf9;
-  --sidebar-accent: #f5f5f4;
-  --sidebar-accent-foreground: #1c1917;
-  --sidebar-border: #e7e5e4;
-  --sidebar-ring: #1c1917;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.147 0.004 49.25);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.147 0.004 49.25);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.147 0.004 49.25);
+  --primary: oklch(0.216 0.006 56.043);
+  --primary-foreground: oklch(0.985 0.001 106.423);
+  --secondary: oklch(0.97 0.001 106.424);
+  --secondary-foreground: oklch(0.216 0.006 56.043);
+  --muted: oklch(0.97 0.001 106.424);
+  --muted-foreground: oklch(0.553 0.013 58.071);
+  --accent: oklch(0.97 0.001 106.424);
+  --accent-foreground: oklch(0.216 0.006 56.043);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.923 0.003 48.717);
+  --input: oklch(0.923 0.003 48.717);
+  --ring: oklch(0.709 0.01 56.259);
+  --sidebar: oklch(0.985 0.001 106.423);
+  --sidebar-foreground: oklch(0.147 0.004 49.25);
+  --sidebar-primary: oklch(0.216 0.006 56.043);
+  --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-accent: oklch(0.97 0.001 106.424);
+  --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
+  --sidebar-border: oklch(0.923 0.003 48.717);
+  --sidebar-ring: oklch(0.709 0.01 56.259);
+  --brand: #c81d25;
 }
 
 @theme inline {
@@ -269,36 +268,82 @@ time,
  */
 .dark {
   color-scheme: dark;
-  --background: #16130f;
-  --foreground: #f5f5f4;
-  --card: #1f1b16;
-  --card-foreground: #f5f5f4;
-  --popover: #1f1b16;
-  --popover-foreground: #f5f5f4;
-  --primary: #f5f5f4;
-  --primary-foreground: #1c1917;
-  --secondary: #2a251f;
-  --secondary-foreground: #f5f5f4;
-  --muted: #241f1a;
-  --muted-foreground: #a8a29e;
-  --accent: #2a251f;
-  --accent-foreground: #f5f5f4;
-  --destructive: #ef4444;
+  --background: oklch(0.147 0.004 49.25);
+  --foreground: oklch(0.985 0.001 106.423);
+  --card: oklch(0.216 0.006 56.043);
+  --card-foreground: oklch(0.985 0.001 106.423);
+  --popover: oklch(0.216 0.006 56.043);
+  --popover-foreground: oklch(0.985 0.001 106.423);
+  --primary: oklch(0.923 0.003 48.717);
+  --primary-foreground: oklch(0.216 0.006 56.043);
+  --secondary: oklch(0.268 0.007 34.298);
+  --secondary-foreground: oklch(0.985 0.001 106.423);
+  --muted: oklch(0.268 0.007 34.298);
+  --muted-foreground: oklch(0.709 0.01 56.259);
+  --accent: oklch(0.268 0.007 34.298);
+  --accent-foreground: oklch(0.985 0.001 106.423);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.553 0.013 58.071);
+  --sidebar: oklch(0.216 0.006 56.043);
+  --sidebar-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-accent: oklch(0.268 0.007 34.298);
+  --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.553 0.013 58.071);
   --brand: #e8323b;
-  --border: #332c25;
-  --input: #332c25;
-  --ring: #a8a29e;
-  --shell-rail: #12140f;
-  --shell-rail-accent: #23261f;
-  --shell-rail-border: #2a2d25;
-  --shell-sheet-edge: rgb(255 255 255 / 0.06);
-  --shell-sheet-lift: rgb(0 0 0 / 0.3);
-  --sidebar: #1a1611;
-  --sidebar-foreground: #d6d3d1;
-  --sidebar-primary: #f5f5f4;
-  --sidebar-primary-foreground: #1c1917;
-  --sidebar-accent: #2a251f;
-  --sidebar-accent-foreground: #f5f5f4;
-  --sidebar-border: #332c25;
-  --sidebar-ring: #a8a29e;
+}
+
+/*
+ * The teaser illustrations: each card rises into place once, then drifts a
+ * couple of pixels on a slow loop so the picture reads as alive, not busy.
+ * Nothing moves for anyone who has asked for less motion.
+ */
+@keyframes teaser-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes teaser-drift {
+  /* transform, not translate: Tailwind v4 positions with the translate
+     property, and animating it would throw the card off its spot. */
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes teaser-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.teaser-rise {
+  animation:
+    teaser-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    teaser-drift 6s ease-in-out 900ms infinite;
+}
+.teaser-pulse {
+  animation: teaser-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .teaser-rise,
+  .teaser-pulse {
+    animation: none;
+  }
 }

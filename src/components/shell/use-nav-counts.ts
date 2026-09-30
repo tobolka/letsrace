@@ -12,15 +12,25 @@ export type NavCounts = { action: number; alerts: number };
  * Without it the only way to find out whether anything is outstanding is to go
  * and look. Nothing is fetched for a visitor who is not signed in.
  */
-export function useNavCounts(refreshKey: string | null): NavCounts {
-  const [counts, setCounts] = useState<NavCounts>({ action: 0, alerts: 0 });
+const NONE: NavCounts = { action: 0, alerts: 0 };
+
+/**
+ * `authed` gates the answer as well as the fetch: counts from before a sign-out
+ * must not linger on the icons of somebody who is no longer signed in.
+ */
+export function useNavCounts(refreshKey: string | null, authed: boolean | null): NavCounts {
+  const [counts, setCounts] = useState<NavCounts>(NONE);
 
   useEffect(() => {
     let alive = true;
     void (async () => {
       const supabase = createBrowserSupabase();
       const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user || !alive) return;
+      if (!alive) return;
+      if (!auth.user) {
+        setCounts(NONE);
+        return;
+      }
       const today = todayIso();
       const since = new Date();
       since.setDate(since.getDate() - 14);
@@ -72,7 +82,7 @@ export function useNavCounts(refreshKey: string | null): NavCounts {
     return () => {
       alive = false;
     };
-  }, [refreshKey]);
+  }, [refreshKey, authed]);
 
-  return counts;
+  return authed === true ? counts : NONE;
 }

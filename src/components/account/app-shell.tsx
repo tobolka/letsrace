@@ -30,10 +30,10 @@ export function AppShell({
 }) {
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
-  const counts = useNavCounts(pathname);
   const { authed } = useAuthUser();
+  const counts = useNavCounts(pathname, authed);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const items = profileNav(locale, t, pathname, counts);
+  const items = profileNav(locale, t, pathname, counts, authed);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

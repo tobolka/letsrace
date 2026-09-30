@@ -43,9 +43,10 @@ export function profileNav(
   t: Messages,
   pathname: string,
   counts: { action: number; alerts: number },
+  authed: boolean | null,
 ): NavItem[] {
   const base = `/${locale}/account`;
-  return [
+  const items: NavItem[] = [
     {
       key: "plan",
       href: base,
@@ -86,4 +87,7 @@ export function profileNav(
       active: pathname.startsWith(`${base}/settings`),
     },
   ];
+  // Settings are the settings of an account; without one there is nothing
+  // behind the gear. The other pages each have a teaser to show instead.
+  return authed === true ? items : items.filter((i) => i.key !== "settings");
 }
