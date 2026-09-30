@@ -33,4 +33,22 @@ describe("ageCategoriesFromList", () => {
   it("adds nothing for a list that says nothing about age", () => {
     expect(names(["26 km", "13 km", "Jesenický šnek trasa 3 km"])).toEqual([]);
   });
+
+  it("reads the forms' abbreviations and ignores what is not a class", () => {
+    expect(names(["Ml. žáci", "st. žákyně"])).toEqual(["u13", "u15", "kids", "youth"]);
+    expect(names(["pro ostatní kategorie", "- nejmladší", "Kategorie od 6ti let"])).toEqual([]);
+  });
+
+  it("reads birth years as ages in the race's season", () => {
+    expect(
+      ageCategoriesFromList(
+        [{ name: "Kadeti 2011–2012" }, { name: "Žáci starší 2013 a mladší" }, { name: "Muži E 1966 a starší" }],
+        { refYear: 2026 },
+      ),
+    ).toEqual(["u15", "u17", "youth", "masters"]);
+  });
+
+  it("reads ages written out in the name", () => {
+    expect(names(["muži 15-35 let", "muži 36 let -60 let", "Mini 4-5 let"])).toEqual(["u7", "kids", "amateur", "masters"]);
+  });
 });

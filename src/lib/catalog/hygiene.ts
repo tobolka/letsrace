@@ -2,6 +2,7 @@ import { fillEmptyAgeCategories } from "@/lib/catalog/ages";
 import { mergePublicDuplicates } from "@/lib/catalog/merge-duplicates";
 import { fillFciAgeCategories } from "@/lib/catalog/fci-ages";
 import { fillRaceResultAgeCategories } from "@/lib/catalog/raceresult-ages";
+import { fillRegulationAgeCategories } from "@/lib/catalog/regulation-ages";
 import { mergeDuplicateLocations, type MergeLocationsResult } from "@/lib/catalog/merge-locations";
 import { completePastEvents, type CompletePastResult } from "@/lib/catalog/complete-past";
 
@@ -9,6 +10,7 @@ export type CatalogHygieneResult = {
   ages: { eventsFilled: number; seriesFilled: number; stillUnknown: number };
   fciAges: { attempted: number; filled: number; silent: number; failed: number };
   timingAges: { attempted: number; filled: number; silent: number; failed: number };
+  regulationAges: { attempted: number; filled: number; silent: number; failed: number };
   duplicates: {
     events: number;
     pairs: number;
@@ -36,6 +38,8 @@ export async function runCatalogHygiene(opts?: {
   const fciAges = await fillFciAgeCategories({ max: 40 });
   // Timing platforms name their contests, and the names carry the categories.
   const timingAges = await fillRaceResultAgeCategories({ max: 30 });
+  // Everyone else states them in the propozice; a few are read each run.
+  const regulationAges = await fillRegulationAgeCategories({ max: 20 });
   const duplicates = await mergePublicDuplicates({
     fromDate: new Date().toISOString().slice(0, 10),
     maxMerges: opts?.maxMerges ?? 40,
@@ -45,5 +49,5 @@ export async function runCatalogHygiene(opts?: {
   const locations = await mergeDuplicateLocations({ max: opts?.maxLocationMerges ?? 200 });
   // Yesterday's races stopped being scheduled overnight, so say so.
   const completed = await completePastEvents({ max: opts?.maxCompletions ?? 500 });
-  return { ages, fciAges, timingAges, duplicates, locations, completed };
+  return { ages, fciAges, timingAges, regulationAges, duplicates, locations, completed };
 }

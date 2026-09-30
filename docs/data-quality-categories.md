@@ -27,6 +27,28 @@
 
 Příklad z tohoto víkendu (Praha a okolí do 130 km, Děti a mládež): dřív 1 závod, teď 9, z toho 1 potvrzený.
 
+## Čtení kategorií ze zdrojů (30. 9. 2026, večer)
+
+Tři nové čtečky, které berou kategorie od pořadatele a ukládají je jako `explicit`:
+
+- **Portál ČSC** (`scripts/fill-csc-ages.ts`, jen lokálně, potřebuje Chrome). Vykreslí detail závodu, otevře „Detail závodu“ a přečte seznam tříd. Portál vyplňuje výchozí osmičku tříd (Elite, Junior, Juniorky, Žáci/Žákyně mladší a starší, Ženy) i u závodů, kde ji pořadatel nezměnil. Taková osmička se nebere jako údaj. Výsledek: 17 závodů s kategoriemi, 12 s uzávěrkou přihlášek.
+- **Propozice** (`scripts/fill-regulation-ages.ts`, poběží i v noční údržbě po 20 závodech). Propozice (PDF nebo HTML) najde v `regulations_url` nebo na webu závodu. Kategorie čte jen z krátkých úseků u slova „kategorie“ a potřebuje aspoň dvě konkrétní věkové skupiny. Výsledek: 25 českých a 17 zahraničních závodů (JANEV CUP, TBC, Oderský pohár, CX Bundesliga…).
+- **Sumator**: detail závodu uvádí u každé trasy kategorie s věkem („KI – kadeti, 15–16 let“). Ty se teď převádějí přesně podle věku.
+
+Společný převodník `ageCategoriesFromList` (`src/lib/age-bands.ts`) umí:
+- uvedený věk,
+- ročníky narození podle roku závodu,
+- české a slovenské názvy tříd včetně zkratek („ml. žáci“),
+- U-kategorie,
+- věk u BMX.
+
+**Stav po doplnění (příštích 180 dní):**
+
+| | Bez kategorií | Kategorie ze zdroje |
+|---|---|---|
+| Česko | 44 ze 115 (38 %, ráno 69 %) | 58 (ráno 15) |
+| Vše | 270 z 852 (32 %, ráno 37 %) | 346 (ráno 286) |
+
 ## Mechanismy, jak data zlepšit
 
 Seřazené podle poměru přínos / práce.
