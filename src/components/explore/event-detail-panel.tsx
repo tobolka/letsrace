@@ -5,6 +5,7 @@ import { format, parseISO } from "date-fns";
 import {
   X,
   MapPin,
+  Navigation,
   Trophy,
   Calendar,
   Bike,
@@ -325,6 +326,7 @@ export function EventDetailPanel({
   ]
     .filter(Boolean)
     .join(" · ");
+  const directionsUrl = googleDirectionsUrl(event.location, placeLabel);
 
   const primaryHref = primaryEnter || event.regulationsUrl;
   const primaryLabel = primaryEnterLabel ?? (event.regulationsUrl ? t.regulations : null);
@@ -509,7 +511,18 @@ export function EventDetailPanel({
           </p>
           <p className="flex items-start gap-2 text-sm font-medium">
             <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-            <span className="min-w-0 break-words">{placeLabel || "—"}</span>
+            <span className="min-w-0 flex-1 break-words">{placeLabel || "—"}</span>
+            {directionsUrl ? (
+              // The question asked most often of a race: how long to get
+              // there. Google Maps starts from where you are standing and
+              // plans the route itself, so this is one tap to the answer.
+              <Button asChild variant="outline" size="xs" className="-my-0.5 shrink-0 font-normal">
+                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp}>
+                  <Navigation data-icon="inline-start" />
+                  {t.directions}
+                </a>
+              </Button>
+            ) : null}
           </p>
         </div>
 
@@ -679,4 +692,24 @@ function MetaRow({
       </div>
     </div>
   );
+}
+
+/**
+ * Google Maps directions to a race, from wherever the person is. Without an
+ * origin Maps asks for the current location itself — on a phone and in a
+ * browser alike — and plans the drive; the coordinates are the race's own,
+ * the place's name only when there are none.
+ */
+export function googleDirectionsUrl(
+  location: { lat: number | null; lng: number | null } | null | undefined,
+  placeLabel: string,
+): string | null {
+  const destination =
+    location?.lat != null && location?.lng != null
+      ? `${location.lat},${location.lng}`
+      : placeLabel.trim()
+        ? placeLabel.trim()
+        : null;
+  if (!destination) return null;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}&travelmode=driving`;
 }
