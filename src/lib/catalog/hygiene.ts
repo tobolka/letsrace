@@ -8,6 +8,7 @@ import { fillFciWebsites } from "@/lib/catalog/fci-website";
 import { fillCyclingAustriaDetails } from "@/lib/catalog/cyclingaustria-details";
 import { applySeriesAgesToRounds } from "@/lib/catalog/series-ages";
 import { fillRegistrationLinks } from "@/lib/catalog/registration-links";
+import { fillDisciplinesFromSeries } from "@/lib/catalog/series-disciplines";
 import { mergeDuplicateLocations, type MergeLocationsResult } from "@/lib/catalog/merge-locations";
 import { completePastEvents, type CompletePastResult } from "@/lib/catalog/complete-past";
 
@@ -21,6 +22,7 @@ export type CatalogHygieneResult = {
   austria: { attempted: number; places: number; ages: number; websites: number; silent: number; failed: number };
   seriesAges: { series: number; rounds: number };
   registrationLinks: { attempted: number; filled: number; silent: number; failed: number };
+  seriesDisciplines: { filled: number };
   duplicates: {
     events: number;
     pairs: number;
@@ -60,6 +62,8 @@ export async function runCatalogHygiene(opts?: {
   const seriesAges = await applySeriesAgesToRounds();
   // Where to enter, from the race's own page.
   const registrationLinks = await fillRegistrationLinks({ max: 30 });
+  // A round with no discipline of its own is the series'.
+  const seriesDisciplines = await fillDisciplinesFromSeries();
   const duplicates = await mergePublicDuplicates({
     fromDate: new Date().toISOString().slice(0, 10),
     maxMerges: opts?.maxMerges ?? 40,
@@ -69,5 +73,5 @@ export async function runCatalogHygiene(opts?: {
   const locations = await mergeDuplicateLocations({ max: opts?.maxLocationMerges ?? 200 });
   // Yesterday's races stopped being scheduled overnight, so say so.
   const completed = await completePastEvents({ max: opts?.maxCompletions ?? 500 });
-  return { ages, fciAges, timingAges, regulationAges, previousEditions, fciWebsites, austria, seriesAges, registrationLinks, duplicates, locations, completed };
+  return { ages, fciAges, timingAges, regulationAges, previousEditions, fciWebsites, austria, seriesAges, registrationLinks, seriesDisciplines, duplicates, locations, completed };
 }
