@@ -1,5 +1,5 @@
 #!/bin/bash
-# Full data refresh, meant to run overnight on a machine with Chrome.
+# Full data refresh, meant to run on a machine with Chrome.
 #
 #   bash scripts/refresh-data.sh 2>&1 | tee tmp/refresh-$(date +%F).log
 #
@@ -19,12 +19,15 @@ step() {
 step "Coverage before"                     scripts/data-stats.ts
 step "Official calendars (force-poll)"     scripts/reload-calendars.ts
 step "Everything else that is due"         scripts/drain-due-watches.ts 40
-step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
-step "Regulations (propozice), all"        scripts/fill-regulation-ages.ts --max=1500 --apply
-step "RaceResult, FCI, geocode, defaults"  scripts/fill-source-ages.ts
 step "Duplicates"                          scripts/merge-duplicates.ts
-step "Last year's editions"                scripts/carry-forward-editions.ts --apply
+step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
+step "Austrian race pages"                 scripts/fill-cyclingaustria.ts --max=400 --apply
+step "Race pages and regulations"          scripts/fill-regulation-ages.ts --max=1500 --apply
+step "RaceResult, FCI, defaults"           scripts/fill-source-ages.ts
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
+step "Last year's editions"                scripts/carry-forward-editions.ts --apply
+step "Confirmed series categories"         scripts/apply-series-ages.ts
+step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30
 step "Coverage after"                      scripts/data-stats.ts
 echo
 echo "=== done $(date '+%H:%M:%S')"

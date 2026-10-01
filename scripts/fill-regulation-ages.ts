@@ -16,7 +16,8 @@ async function main() {
   const apply = process.argv.includes("--apply");
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 200);
   const countries = process.argv.slice(2).find((a) => /^[A-Z]{2}(,[A-Z]{2})*$/.test(a))?.split(",");
-  const result = await fillRegulationAgeCategories({ max, countries, dryRun: !apply, log: console.log });
+  const ids = process.argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",");
+  const result = await fillRegulationAgeCategories({ max, countries, ids, dryRun: !apply, log: console.log });
   console.log({ ...result, dry: !apply });
 }
 

@@ -15,6 +15,7 @@ import {
   Plus,
   Radar,
   TriangleAlert,
+  Users,
 } from "lucide-react";
 import { AdminCommand } from "@/components/admin/admin-command";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,7 @@ const WAITING: NavItem[] = [
   { href: "/admin/discovery", label: "Discovery", icon: Radar, exact: false, count: "discovery" },
   { href: "/admin/inbox", label: "Inbox", icon: Inbox, exact: false, count: "inbox" },
   { href: "/admin/duplicates", label: "Duplicates", icon: CopyCheck, exact: false },
+  { href: "/admin/series", label: "Series categories", icon: Users, exact: false },
   {
     href: "/admin/events?missing=website",
     label: "Missing a link",

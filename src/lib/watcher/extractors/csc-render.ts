@@ -252,6 +252,76 @@ export function parseCscRaceDetailText(text: string): CscRaceDetail {
   };
 }
 
+/**
+ * Render ordinary web pages that build themselves in the browser — a race
+ * site made with a JavaScript framework sends an empty shell to a plain fetch,
+ * and its category list exists only after the scripts run. One Chrome for the
+ * batch; local only, like the portal reader.
+ */
+export async function renderPagesHtml(
+  urls: string[],
+  opts?: { settleMs?: number; budgetMs?: number },
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  if (!urls.length) return out;
+  if (process.env.NEXT_PHASE === "phase-production-build") return out;
+  if (process.env.VERCEL) return out;
+  const chrome = await resolveChrome();
+  if (!chrome) return out;
+  const { spawn } = await import(
+    /* webpackIgnore: true */
+    /* turbopackIgnore: true */
+    "node:child_process"
+  );
+  const port = 10_000 + Math.floor(Math.random() * 20_000);
+  const profile = await mkdtemp(join(/* turbopackIgnore: true */ tmpdir(), "page-chrome-"));
+  const proc = spawn(
+    /* turbopackIgnore: true */
+    chrome.path,
+    [
+      ...chrome.args,
+      "--headless=new",
+      "--disable-gpu",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--no-first-run",
+      "--no-default-browser-check",
+      `--user-data-dir=${profile}`,
+      `--remote-debugging-port=${port}`,
+      `--user-agent=${BOT_UA}`,
+      "about:blank",
+    ],
+    { stdio: "ignore" },
+  );
+  const deadline = Date.now() + (opts?.budgetMs ?? 5 * 60_000);
+  try {
+    await waitForJson(port, Math.min(deadline, Date.now() + 20_000));
+    const cdp = await Cdp.connect(await firstPageWs(port), deadline);
+    try {
+      await cdp.send("Page.enable");
+      await cdp.send("Runtime.enable");
+      for (const url of urls) {
+        if (Date.now() > deadline) break;
+        try {
+          await cdp.send("Page.navigate", { url });
+          await cdp.wait("Page.loadEventFired", 20_000).catch(() => undefined);
+          await sleep(opts?.settleMs ?? 2_500);
+          const html = await cdp.evaluate("document.documentElement.outerHTML");
+          if (typeof html === "string") out.set(url, html);
+        } catch {
+          /* next page */
+        }
+      }
+    } finally {
+      cdp.close();
+    }
+  } finally {
+    await killChrome(proc);
+    await rm(profile, { recursive: true, force: true }).catch(() => undefined);
+  }
+  return out;
+}
+
 async function resolveChrome(): Promise<{ path: string; args: string[] } | null> {
   const env = process.env.CHROME_PATH?.trim();
   if (env) return { path: env, args: [] };
