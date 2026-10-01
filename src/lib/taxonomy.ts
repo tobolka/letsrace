@@ -1065,6 +1065,10 @@ export function inferClassification(opts: {
   const disciplines = inferDisciplines(text, opts.disciplines);
   const formats = formatsFromDisciplines(disciplines);
   const ageCategories = new Set(inferAgeCategories(text, opts.categoryNames));
+  // What the name and the category list say is evidence; an audience hint
+  // ("this calendar is a kids' cup") is ours, and must not count as stated —
+  // it made "kids" the stated list of every round of an all-ages cup.
+  const statedFromText = ageCategories.size > 0;
   if (opts.existingAudience === "kids") ageCategories.add("kids");
   if (opts.existingAudience === "youth") ageCategories.add("youth");
 
@@ -1105,7 +1109,7 @@ export function inferClassification(opts: {
 
   if (uciClass && level === "local") level = "national";
 
-  const explicitAges = ageCategories.size > 0;
+  const explicitAges = statedFromText;
   addAgeDefaults(ageCategories, {
     text: t,
     familySeries,

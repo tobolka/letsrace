@@ -27,8 +27,10 @@ export const HYNEK_SERIES: Record<string, { name: string; slug: string; audience
   {
     tc: { name: "Talent Cup", slug: "talent-cup", audience: "kids" },
     kpz: { name: "Kolo pro život", slug: "kolo-pro-zivot", audience: "mixed" },
-    ppkhk: { name: "Pohár Plzeňského kraje HK", slug: "pohar-plz-kraje-hk", audience: "kids" },
-    pkkhk: { name: "Pohár KV kraje HK", slug: "pohar-kv-kraje-hk", audience: "kids" },
+    // Regional cups for every age, from five-year-olds to the over-sixties
+    // (pkk-hk.cz/pravidla) — not kids' series.
+    ppkhk: { name: "Pohár Plzeňského kraje HK", slug: "pohar-plz-kraje-hk", audience: "mixed" },
+    pkkhk: { name: "Pohár KV kraje HK", slug: "pohar-kv-kraje-hk", audience: "mixed" },
     mtbb: { name: "MTB Biatlon", slug: "mtb-biatlon", audience: "mixed" },
     uci: { name: "UCI Championships", slug: "uci-championships", audience: "adults" },
     uciXC: { name: "UCI MTB World Cup", slug: "uci-mtb-world-cup", audience: "adults" },
