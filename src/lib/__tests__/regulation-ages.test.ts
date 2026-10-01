@@ -17,4 +17,9 @@ Chýnov – sobota 3.10.2026`;
   it("reads nothing from a text that never names a class", () => {
     expect(categoriesFromRegulationsText("Startovné 300 Kč, prezentace od 8:00, trať 26 km.").ages).toEqual([]);
   });
+
+  it("reads a registration platform's age fields", () => {
+    const text = "Klasyfikacje\n DZIECI 0-7 LAT\n Wiek\n 0-7\n Opłaty\n JUNIORZY\n Wiek\n 15-18\n MASTERS\n Wiek\n 40-99";
+    expect(categoriesFromRegulationsText(text, 2026).ages).toEqual(["u9", "kids", "junior", "masters"]);
+  });
 });

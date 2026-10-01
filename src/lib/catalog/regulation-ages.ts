@@ -53,6 +53,15 @@ export function categoriesFromRegulationsText(
       if (t && t.length <= 32) tokens.push(t);
     }
   }
+  // Registration platforms give each class an age field instead of a list:
+  // dostartu's "Wiek 0-7", a German "Alter: 13–14". Every one is a class.
+  for (const m of clean.matchAll(/(?:wiek|v[ěe]k|alter|age)\s*:?\s*\n?\s*(\d{1,2})\s*[-–]\s*(\d{1,2})(?!\d)/gi)) {
+    tokens.push(`${m[1]}-${m[2]} let`);
+    if (!quotes.length) quotes.push(m[0].replace(/\s+/g, " "));
+  }
+  for (const m of clean.matchAll(/(?:wiek|v[ěe]k|alter|age)\s*:?\s*\n?\s*(\d{1,2})\s*\+/gi)) {
+    tokens.push(`${m[1]} a více`);
+  }
   const ages = ageCategoriesFromList(tokens.map((name) => ({ name })), { refYear });
   return { ages, quote: quotes.slice(0, 3).join(" … ").slice(0, 400) };
 }
@@ -186,7 +195,11 @@ async function readDocument(url: string): Promise<ReadDoc | null> {
   const html = new TextDecoder("utf-8").decode(doc.bytes);
   const text = htmlText(html);
   // A shell for a script to fill: little text, a script that will write it.
-  const thin = text.replace(/\s+/g, " ").trim().length < 600 && /<script/i.test(html);
+  // Or an app that renders itself (Next, Nuxt, React, Angular): its first
+  // HTML may carry a menu and a footer but not the race.
+  const thin =
+    (text.replace(/\s+/g, " ").trim().length < 600 && /<script/i.test(html)) ||
+    /id="(root|app|__next|__nuxt)"|data-reactroot|ng-version=|__NEXT_DATA__|window\.__NUXT__/i.test(html);
   return { url, text, html, thin };
 }
 

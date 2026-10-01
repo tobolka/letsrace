@@ -23,6 +23,7 @@ step "Duplicates"                          scripts/merge-duplicates.ts
 step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
 step "Austrian race pages"                 scripts/fill-cyclingaustria.ts --max=400 --apply
 step "Race pages and regulations"          scripts/fill-regulation-ages.ts --max=1500 --apply
+step "Entry links from race pages"         scripts/fill-registration-links.ts --max=1500 --apply
 step "RaceResult, FCI, defaults"           scripts/fill-source-ages.ts
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
 step "Last year's editions"                scripts/carry-forward-editions.ts --apply

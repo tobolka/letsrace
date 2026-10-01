@@ -30,6 +30,21 @@ const REGISTRATION_HOSTS = [
   "mylaps.com",
   "racesonline.com",
   "anmeldeservice",
+  "dostartu.pl",
+  "xathlo.com",
+  "datasport.pl",
+  "elektronicznezapisy.pl",
+  "b4sport.pl",
+  "plus-timing.pl",
+  "rad-net.de/anmeldung",
+  "mikatiming",
+  "raceroster.com",
+  "letsdothis.com",
+  "chronotrack.com",
+  "my.sportsoft",
+  "sportident",
+  "racetimer.cz",
+  "casomira",
 ];
 
 const REGISTRATION_PATH =
