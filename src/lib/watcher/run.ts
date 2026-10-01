@@ -163,11 +163,15 @@ export async function watchOne(row: {
     .single();
 
   try {
-    const fetched = await fetchPage(row.url, {
-      etag: row.etag,
-      lastModified: row.last_modified,
-      contentHash: row.content_hash,
-    });
+    // Sources whose adapter reads other pages than the one we watch (a JSON
+    // API, the month and race pages behind a landing page): the watched page
+    // staying the same says nothing, and odjazd.pl's home page stayed the same
+    // while its races changed every day. Always fetched whole, never skipped.
+    const FANS_OUT = /odjazd\.pl|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com/i.test(row.url);
+    const fetched = await fetchPage(
+      row.url,
+      FANS_OUT ? undefined : { etag: row.etag, lastModified: row.last_modified, contentHash: row.content_hash },
+    );
 
     if (fetched.status === 404) {
       // Next-year calendars (`/zavody-2027/`) 404 until published — keep watching.
