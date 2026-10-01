@@ -70,7 +70,6 @@ export type EventFilters = {
   levels?: string[];
   ageCategories?: string[];
   /** Only races whose stated categories fit — hide the unconfirmed ones. */
-  ageStrict?: boolean;
   seriesSlug?: string;
   countryCodes?: string[];
   season?: string;
@@ -264,7 +263,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     const { ageCategoryMatch, ageMatchRank } = await import("@/lib/taxonomy");
     rows = rows.flatMap((e) => {
       const m = ageCategoryMatch(e, filters.ageCategories!);
-      if (m === "no" || (m === "possible" && filters.ageStrict)) return [];
+      if (m === "no") return [];
       return [{ ...e, ageMatch: m, ageRank: ageMatchRank(e, filters.ageCategories!) }];
     });
   }

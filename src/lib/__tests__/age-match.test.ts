@@ -34,3 +34,16 @@ describe("ageCategoryMatch", () => {
     expect(ageCategoryMatch({ ageCategories: [], ageConfidence: null }, [])).toBe("match");
   });
 });
+
+describe("single U-band filters", () => {
+  it("matches a named band, keeps a bare umbrella as a maybe, drops a sibling band", () => {
+    expect(ageCategoryMatch({ ageCategories: ["u11", "kids"], ageConfidence: "explicit" }, ["u11"])).toBe("match");
+    expect(ageCategoryMatch({ ageCategories: ["kids"], ageConfidence: "explicit" }, ["u11"])).toBe("possible");
+    expect(ageCategoryMatch({ ageCategories: ["u7", "kids"], ageConfidence: "explicit" }, ["u11"])).toBe("no");
+  });
+
+  it("puts U13 with youth, not kids", () => {
+    expect(ageCategoryMatch({ ageCategories: ["u13", "youth"], ageConfidence: "explicit" }, ["kids"])).toBe("no");
+    expect(ageCategoryMatch({ ageCategories: ["u13", "youth"], ageConfidence: "explicit" }, ["youth"])).toBe("match");
+  });
+});

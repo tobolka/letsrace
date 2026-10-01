@@ -421,10 +421,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     refetch({ levels: [] });
   }
 
-  function setAgeStrict(on: boolean) {
-    void setFilters({ ageStrict: on ? true : null });
-    refetch({ ageStrict: on });
-  }
 
   function clearCategories() {
     void setFilters({ categories: [] });
@@ -437,7 +433,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     setFilterBarReset((n) => n + 1);
     void setFilters({
       ...(clearSearch ? { q: null, e: null } : {}),
-      ageStrict: null,
       categories: [],
       disciplines: [],
       levels: [],
@@ -541,8 +536,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       categories.forEach((a) => params.append("categories", a));
       disciplines.forEach((d) => params.append("disciplines", d));
       levels.forEach((l) => params.append("levels", l));
-      const ageStrict = (overrides.ageStrict as boolean | undefined) ?? filters.ageStrict;
-      if (ageStrict && categories.length) params.set("ageStrict", "1");
       // Always scope to the current map viewport when we know it — otherwise an
       // unfiltered query hits a global limit and looks emptier than a discipline filter.
       if (b) {
@@ -851,8 +844,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onClearCategories={clearCategories}
         onSeries={setSeries}
         onCountry={setCountry}
-        ageStrict={filters.ageStrict}
-        onAgeStrict={setAgeStrict}
         q={filters.q}
         onQ={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
@@ -1263,8 +1254,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onClearCategories={clearCategories}
           onSeries={setSeries}
           onCountry={setCountry}
-          ageStrict={filters.ageStrict}
-          onAgeStrict={setAgeStrict}
           onReset={() => resetExploreFilters()}
         />
       ) : null}

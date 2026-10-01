@@ -402,12 +402,33 @@ export const AGE_CATEGORY_FILTERS: {
   { id: "masters", label: "Masters", expands: ["masters"] },
 ];
 
+/** The U-bands one can pick on their own, under the group they belong to. */
+export const AGE_BAND_PARENT: Partial<Record<AgeCategory, AgeCategory>> = {
+  u7: "kids",
+  u9: "kids",
+  u11: "kids",
+  u13: "youth",
+  u15: "youth",
+  u17: "youth",
+};
+
+/** The single bands shown under a group in the Category menu. */
+export function ageBandsOf(group: string): AgeCategory[] {
+  return (Object.entries(AGE_BAND_PARENT) as [AgeCategory, AgeCategory][])
+    .filter(([, parent]) => parent === group)
+    .map(([band]) => band);
+}
+
 export function expandAgeCategoryFilter(ids: string[]): string[] {
   const out = new Set<string>();
   for (const id of ids) {
     const group = AGE_CATEGORY_FILTERS.find((g) => g.id === id);
     if (group) group.expands.forEach((x) => out.add(x));
     else out.add(id);
+    // A single band also reaches races that only say "kids" or "youth" —
+    // they may run it; the match decides whether that is a yes or a maybe.
+    const parent = AGE_BAND_PARENT[id as AgeCategory];
+    if (parent) out.add(parent);
   }
   return [...out];
 }
@@ -430,6 +451,26 @@ export function matchesAgeCategoryFilter(
 export type AgeMatch = "match" | "possible" | "no";
 
 /**
+ * How one selected chip meets a race's list: "hit" when the race names it
+ * (or, for a group, any band in it); "umbrella" when a single band is picked
+ * and the race says only its group ("kids") without naming any band in it —
+ * maybe; "miss" otherwise.
+ */
+function chipMeets(ages: string[], id: string): "hit" | "umbrella" | "miss" {
+  const group = AGE_CATEGORY_FILTERS.find((g) => g.id === id);
+  if (group) return group.expands.some((x) => ages.includes(x)) ? "hit" : "miss";
+  if (ages.includes(id)) return "hit";
+  const parent = AGE_BAND_PARENT[id as AgeCategory];
+  if (parent && ages.includes(parent)) {
+    const siblings = Object.entries(AGE_BAND_PARENT)
+      .filter(([, p]) => p === parent)
+      .map(([band]) => band);
+    if (!siblings.some((b) => ages.includes(b))) return "umbrella";
+  }
+  return "miss";
+}
+
+/**
  * How a race answers a category filter, given what we actually know.
  *
  * - `match`: the source stated its categories and one of them is selected.
@@ -448,9 +489,14 @@ export function ageCategoryMatch(
   if (!selected.length) return "match";
   const ages = event.ageCategories ?? [];
   if (!ages.length) return "possible";
-  const expanded = new Set(expandAgeCategoryFilter(selected));
-  const hit = ages.some((c) => expanded.has(c));
-  if (event.ageConfidence === "explicit") return hit ? "match" : "no";
+  const results = selected.map((id) => chipMeets(ages, id));
+  const hit = results.includes("hit");
+  if (event.ageConfidence === "explicit") {
+    if (hit) return "match";
+    // "Kids" stated, U11 asked: the race has children's classes, we do not
+    // know which — kept, as a maybe.
+    return results.includes("umbrella") ? "possible" : "no";
+  }
   // A guess never rules a race out — the point of the filter is to find a
   // race, and a gravel race we assumed was for adults may well run a kids'
   // lap. The guess only decides how far down the list it sits.
@@ -459,20 +505,21 @@ export function ageCategoryMatch(
 
 /**
  * Order within a category filter: confirmed first, then last year's list,
- * then races whose guess fits, then the ones we know nothing about, then guesses that point
- * elsewhere. Date stays the order inside each tier.
+ * then races whose guess fits, then the ones we know nothing about, then
+ * guesses that point elsewhere. Date stays the order inside each tier.
  */
 export function ageMatchRank(
   event: { ageCategories?: string[] | null; ageConfidence?: string | null },
   selected: string[],
 ): number {
   const ages = event.ageCategories ?? [];
-  const expanded = new Set(expandAgeCategoryFilter(selected));
-  const hit = ages.some((c) => expanded.has(c));
+  const results = selected.map((id) => chipMeets(ages, id));
+  const hit = results.includes("hit");
+  const near = hit || results.includes("umbrella");
   if (event.ageConfidence === "explicit" && hit) return 0;
   // Last year's stated list is nearly as good: a race's classes rarely change.
   if (event.ageConfidence === "previous" && hit) return 1;
-  if (ages.length && hit) return 2;
+  if (ages.length && near) return 2;
   if (!ages.length) return 3;
   return 4;
 }

@@ -16,7 +16,6 @@ export type FeedQuery = {
   country: string;
   dateFrom: string;
   dateTo: string;
-  ageStrict?: boolean;
 };
 
 function toParams(query: FeedQuery, near: Near | null): string {
@@ -39,7 +38,6 @@ function toParams(query: FeedQuery, near: Near | null): string {
   query.categories.forEach((v) => params.append("categories", v));
   query.disciplines.forEach((v) => params.append("disciplines", v));
   query.levels.forEach((v) => params.append("levels", v));
-  if (query.ageStrict && query.categories.length) params.set("ageStrict", "1");
   return params.toString();
 }
 

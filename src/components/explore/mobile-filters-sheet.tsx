@@ -1,6 +1,6 @@
 "use client";
 
-import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageBandHint, ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
@@ -19,12 +19,12 @@ import {
 import { MODAL_SURFACE } from "@/components/explore/mobile-sheets";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { thisWeekendRange, nextWeekendRange, todayIso } from "@/lib/date-presets";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
 import {
   AGE_CATEGORY_FILTERS,
+  ageBandsOf,
   DISCIPLINE_TREE,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
@@ -114,12 +114,8 @@ export function MobileFiltersSheet({
   onReset,
   hideDate = false,
   extra,
-  ageStrict = false,
-  onAgeStrict,
 }: {
   /** Only races whose stated categories fit; unconfirmed ones hidden. */
-  ageStrict?: boolean;
-  onAgeStrict?: (on: boolean) => void;
   /** The calendar picks its dates by month, so it has no date section. */
   hideDate?: boolean;
   /** One more section first in the sheet — the list's distance filter. */
@@ -308,15 +304,19 @@ export function MobileFiltersSheet({
                   </Chip>
                 ))}
               </div>
-              {onAgeStrict && categories.length > 0 ? (
-                <label className="mt-1 flex items-start justify-between gap-3 rounded-xl border px-3.5 py-3">
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium">{messages.ageStrict}</span>
-                    <span className="block text-xs text-muted-foreground">{messages.ageStrictHelp}</span>
-                  </span>
-                  <Switch checked={ageStrict} onCheckedChange={(v) => onAgeStrict(v === true)} className="mt-0.5" />
-                </label>
-              ) : null}
+              {/* The single ages, one row per group: U7–U11 for children,
+                  U13–U17 for youth. */}
+              {(["kids", "youth"] as const).map((group) => (
+                <div key={group} className="flex flex-wrap items-center gap-2">
+                  <span className="w-16 shrink-0 text-xs text-muted-foreground">{ageCategoryLabel(group, locale)}</span>
+                  {ageBandsOf(group).map((band) => (
+                    <Chip key={band} active={categories.includes(band)} onClick={() => onCategory(band)}>
+                      {ageCategoryLabel(band, locale)}
+                      <span className="ml-1 text-xs opacity-60">{ageBandHint(band, locale)}</span>
+                    </Chip>
+                  ))}
+                </div>
+              ))}
             </Section>
 
             <Section title={messages.levelFilter}>

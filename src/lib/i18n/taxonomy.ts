@@ -36,3 +36,22 @@ export function disciplineLabel(id: string, locale: string): string {
 export function raceLevelLabel(id: string, locale: string): string {
   return levels[locale]?.[id as RaceLevel] ?? RACE_LEVEL_LABELS[id as RaceLevel] ?? id;
 }
+
+/** The ages a U-band covers, as a parent would say it: "9–10 let". */
+const BAND_AGES: Record<string, [number | null, number]> = {
+  u7: [null, 6],
+  u9: [7, 8],
+  u11: [9, 10],
+  u13: [11, 12],
+  u15: [13, 14],
+  u17: [15, 16],
+};
+
+export function ageBandHint(id: string, locale: string): string {
+  const range = BAND_AGES[id];
+  if (!range) return "";
+  const [from, to] = range;
+  const unit = { cs: "let", sk: "rokov", pl: "lat", en: "yrs" }[locale] ?? "yrs";
+  if (from == null) return { cs: `do ${to} let`, sk: `do ${to} rokov`, pl: `do ${to} lat`, en: `under ${to + 1}` }[locale] ?? `under ${to + 1}`;
+  return `${from}–${to} ${unit}`;
+}

@@ -78,7 +78,6 @@ export async function GET(req: NextRequest) {
     disciplines: disciplines.length ? disciplines : undefined,
     levels: levels.length ? levels : undefined,
     ageCategories: ageCategories.length ? ageCategories : undefined,
-    ageStrict: sp.get("ageStrict") === "1",
     seriesSlug: sp.get("series") || undefined,
     countryCodes: sp.getAll("country").filter(Boolean),
     season: sp.get("season") || undefined,

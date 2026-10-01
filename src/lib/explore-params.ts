@@ -1,4 +1,4 @@
-import { parseAsArrayOf, parseAsBoolean, parseAsString } from "nuqs";
+import { parseAsArrayOf, parseAsString } from "nuqs";
 import { thisWeekendRange } from "@/lib/date-presets";
 
 const WEEKEND_DEFAULT = thisWeekendRange();
@@ -22,7 +22,6 @@ export const filterSearchParams = {
   dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
   sort: parseAsString.withDefault(""),
   /** With a category filter on: hide races whose categories are unconfirmed. */
-  ageStrict: parseAsBoolean.withDefault(false),
 };
 
 /** Filters plus what only the map cares about: the open race and the camera. */

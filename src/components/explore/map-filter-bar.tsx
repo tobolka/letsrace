@@ -1,8 +1,8 @@
 "use client";
 
-import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageBandHint, ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
-import { useState, type ComponentType, type ReactNode } from "react";
+import { Fragment, useState, type ComponentType, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import {
   addDays,
@@ -59,6 +59,7 @@ import type { Messages } from "@/lib/i18n/messages";
 import { familyColor } from "@/lib/map-visuals";
 import {
   AGE_CATEGORY_FILTERS,
+  ageBandsOf,
   DISCIPLINE_TREE,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
@@ -183,8 +184,6 @@ export function MapFilterBar({
   wide = false,
   hideDate = false,
   extra,
-  ageStrict = false,
-  onAgeStrict,
 }: {
   messages: Messages;
   locale: string;
@@ -216,8 +215,6 @@ export function MapFilterBar({
   /** The schedule picks its dates by month, so it has no date control. */
   hideDate?: boolean;
   /** Only races whose stated categories fit; unconfirmed ones hidden. */
-  ageStrict?: boolean;
-  onAgeStrict?: (on: boolean) => void;
   /** More chips, placed after the date — the list's distance filter. */
   extra?: ReactNode;
 }) {
@@ -446,34 +443,31 @@ export function MapFilterBar({
       return (
         <>
           {AGE_CATEGORY_FILTERS.map((opt) => (
-            <DropdownMenuCheckboxItem
-              key={opt.id}
-              checked={categories.includes(opt.id)}
-              onCheckedChange={() => onCategory(opt.id)}
-              onSelect={(e) => e.preventDefault()}
-              className={itemClass}
-            >
-              {ageCategoryLabel(opt.id, locale)}
-            </DropdownMenuCheckboxItem>
-          ))}
-          {onAgeStrict ? (
-            <>
-              <DropdownMenuSeparator />
-              {/* Off by default: races whose organisers never said who may
-                  start stay in, marked, rather than vanishing. */}
+            <Fragment key={opt.id}>
               <DropdownMenuCheckboxItem
-                checked={ageStrict}
-                onCheckedChange={(v) => onAgeStrict(v === true)}
+                checked={categories.includes(opt.id)}
+                onCheckedChange={() => onCategory(opt.id)}
                 onSelect={(e) => e.preventDefault()}
                 className={itemClass}
               >
-                <span className="flex flex-col">
-                  <span>{messages.ageStrict}</span>
-                  <span className="text-xs text-muted-foreground">{messages.ageStrictHelp}</span>
-                </span>
+                {ageCategoryLabel(opt.id, locale)}
               </DropdownMenuCheckboxItem>
-            </>
-          ) : null}
+              {/* The single ages under their group: a parent looking for an
+                  U11 race does not want every race with a kids' lap. */}
+              {ageBandsOf(opt.id).map((band) => (
+                <DropdownMenuCheckboxItem
+                  key={band}
+                  checked={categories.includes(band)}
+                  onCheckedChange={() => onCategory(band)}
+                  onSelect={(e) => e.preventDefault()}
+                  className={cn(itemClass, "pl-12 [&>span]:left-6")}
+                >
+                  {ageCategoryLabel(band, locale)}
+                  <span className="ml-auto pl-3 text-xs text-muted-foreground">{ageBandHint(band, locale)}</span>
+                </DropdownMenuCheckboxItem>
+              ))}
+            </Fragment>
+          ))}
         </>
       );
     }
