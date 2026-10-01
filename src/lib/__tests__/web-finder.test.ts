@@ -16,7 +16,9 @@ describe("web finder", () => {
   it("wants the race's name in the page's address or title, and its season in the text", () => {
     expect(namedByThePage("https://www.perlcross.de/", "Perlcross 2026", "Bauhaus Perlcross")).toBe(true);
     expect(namedByThePage("https://example.com/page", "Welcome", "Bauhaus Perlcross")).toBe(false);
-    expect(pageIsAbout("Bauhaus Perlcross 3.10.2026 in Perl", "Bauhaus Perlcross", "Perl", "2026-10-03")).toBe(true);
+    expect(pageIsAbout("Bauhaus Perlcross 3.10.2026 in Perl, Radcross und Mountainbike", "Bauhaus Perlcross", "Perl", "2026-10-03")).toBe(true);
+    // The right name and year, the wrong sport.
+    expect(pageIsAbout("Galopprennwoche 2026 Bad Harzburg Pferde Gestüt", "Harzburger Galopp", "Bad Harzburg", "2026-10-04")).toBe(false);
     expect(pageIsAbout("Bauhaus Perlcross 2024 results", "Bauhaus Perlcross", "Perl", "2026-10-03")).toBe(false);
   });
 

@@ -23,7 +23,7 @@ export function looksLikeArticleOrListing(url: string): boolean {
   const host = u.hostname.toLowerCase();
   return (
     /\/20\d\d\/\d{1,2}(\/|$)/.test(path) ||
-    /(^|\/)(news|nachrichten|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
+    /(^|\/)(news|neuigkeiten|nieuws|novita|nowosci|aktualnosci|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
     /(^|\.)(stadt|gemeinde|comune|gmina|mesto|obec|city|town|kreis)[a-z0-9-]*\./.test(host) ||
     /(news|zeitung|today|gazzett|corriere|giornale|channel|magazin|journal|presse|sport24|portal|festival|racenotify|friuleventi|audax|ivg\.|leccochannel|klosterlehnin|bad-harzburg)/.test(host)
   );
@@ -129,6 +129,12 @@ export function pageIsAbout(
   if (!words.length) return false;
   const hit = words.filter((w) => t.includes(w)).length;
   if (hit < Math.max(1, Math.ceil(words.length * 0.6))) return false;
+  // About bikes: a stud farm's racing week shares a town and a year with a
+  // cyclocross and nothing else.
+  const cycling = new Set(
+    t.match(/\b(rad\w*|fahrrad\w*|rennrad\w*|\w*cross\w*|mtb|mountainbike\w*|gravel|bike\w*|cycl\w*|cyklo\w*|cyklist\w*|kolo|kola|kolar\w*|rower\w*|kolarst\w*|ciclis\w*|bici\w*|velo|vtt|fietsen|wielren\w*|bmx|enduro|downhill)\b/g) ?? [],
+  );
+  if (cycling.size < 2) return false;
   const [y, m, d] = startDate.split("-").map(Number);
   const dated =
     t.includes(String(y)) ||
@@ -212,6 +218,15 @@ export async function findWebsites(opts?: {
   const result = { attempted: targets.length, found: 0, reviewed: 0, registration: 0, silent: 0, failed: 0 };
   let humanChallenges = 0;
   for (const t of targets) {
+    // A name that is only a town and a round number ("#03 - Bad Harzburg")
+    // names nothing to look for: every site of the town would match.
+    const own = fold(searchableName(t.name))
+      .split(/[^a-z0-9]+/)
+      .filter((w) => w.length >= 4 && !GENERIC.has(w) && !fold(t.municipality ?? "").includes(w));
+    if (!own.length) {
+      result.silent += 1;
+      continue;
+    }
     try {
       const hits = await searchWeb(searchQuery(t.name, t.municipality, t.startDate.slice(0, 4)));
       type Pick = { url: string; kind: "website" | "registration"; confident: boolean };
