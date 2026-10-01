@@ -1496,7 +1496,62 @@ function isTransientStatus(status: number): boolean {
   return status === 429 || status === 408 || status >= 500;
 }
 
+/**
+ * Set once Nominatim has refused us in this process: it rate-limits by IP and
+ * stays shut for a while, and asking again only extends the ban.
+ */
+let nominatimRefused = false;
+
+/**
+ * Photon (komoot), the same OpenStreetMap data behind a different door, for
+ * when Nominatim says 429 — which on a long refresh is most of the night.
+ * It has no country filter, so the answer must be in the country we asked.
+ */
+async function photonSearch(query: string, countryCode: string): Promise<GeocodeResult | null> {
+  const params = new URLSearchParams({ q: query, limit: "5" });
+  let res: Response;
+  try {
+    res = await fetch(`https://photon.komoot.io/api/?${params}`, {
+      headers: { "User-Agent": "LetsRaceBot/0.1 (race calendar; contact@letsrace.cz)", Accept: "application/json" },
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (e) {
+    throw new GeocodeUnavailableError(e instanceof Error ? e.message : "network");
+  }
+  if (isTransientStatus(res.status)) throw new GeocodeUnavailableError(`HTTP ${res.status}`);
+  if (!res.ok) return null;
+  const data = (await res.json()) as {
+    features?: {
+      geometry?: { coordinates?: [number, number] };
+      properties?: { countrycode?: string; name?: string; city?: string; country?: string };
+    }[];
+  };
+  const cc = (countryCode || "").toUpperCase();
+  const hit = (data.features ?? []).find(
+    (f) => f.geometry?.coordinates && (!cc || (f.properties?.countrycode ?? "").toUpperCase() === cc),
+  );
+  if (!hit?.geometry?.coordinates) return null;
+  const [lng, lat] = hit.geometry.coordinates;
+  return {
+    lat,
+    lng,
+    displayName: [hit.properties?.name, hit.properties?.city, hit.properties?.country].filter(Boolean).join(", "),
+    countryCode: (hit.properties?.countrycode ?? cc).toUpperCase(),
+  };
+}
+
 async function nominatimSearch(query: string, countryCode: string): Promise<GeocodeResult | null> {
+  if (nominatimRefused) return photonSearch(query, countryCode);
+  try {
+    return await nominatimOnly(query, countryCode);
+  } catch (e) {
+    if (!(e instanceof GeocodeUnavailableError)) throw e;
+    nominatimRefused = true;
+    return photonSearch(query, countryCode);
+  }
+}
+
+async function nominatimOnly(query: string, countryCode: string): Promise<GeocodeResult | null> {
   const params = new URLSearchParams({
     q: query,
     format: "json",
@@ -1915,6 +1970,10 @@ export async function geocodePendingLocations(
   if (opts?.gazetteerOnly) return gaz;
 
   const supabase = createServerSupabase();
+  // A place that could not be found is asked again a week later, not on
+  // every batch: retried each time, the same forty failures were all a
+  // batch ever saw and the rest of the queue never moved.
+  const retryFailedBefore = new Date(Date.now() - 7 * 86_400_000).toISOString();
   const pendingSince = async (since: string) =>
     supabase
       .from("locations")
@@ -1925,9 +1984,12 @@ export async function geocodePendingLocations(
       // A row can carry `geocode_status = "ok"` and still have no coordinates —
       // a later cleanup nulls the point without touching the status. Trust the
       // missing coordinate, not the label, or such a row is never retried.
-      .or("geocode_status.is.null,geocode_status.neq.skipped")
+      .or(
+        `geocode_status.is.null,geocode_status.eq.pending,geocode_status.eq.ok,and(geocode_status.eq.failed,updated_at.lt.${retryFailedBefore})`,
+      )
       .eq("events.visibility", "public")
       .gte("events.start_date", since)
+      .order("updated_at", { ascending: true })
       .limit(limit);
 
   // A race that has already run will never be looked for on the map, so spend
