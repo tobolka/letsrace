@@ -146,8 +146,8 @@ export async function confirmSeriesAges(seriesId: string, ages: string[], note?:
   const clean = AGE_CATEGORIES.filter((a) => ages.includes(a));
   // The umbrella chips follow the bands, as everywhere else.
   const withUmbrellas = new Set<AgeCategory>(clean);
-  if (clean.some((a) => ["u7", "u9", "u11", "u13"].includes(a))) withUmbrellas.add("kids");
-  if (clean.some((a) => ["u15", "u17"].includes(a))) withUmbrellas.add("youth");
+  if (clean.some((a) => ["u7", "u9", "u11"].includes(a))) withUmbrellas.add("kids");
+  if (clean.some((a) => ["u13", "u15", "u17"].includes(a))) withUmbrellas.add("youth");
   const final = AGE_CATEGORIES.filter((a) => withUmbrellas.has(a));
   const { error } = await supabase
     .from("series")

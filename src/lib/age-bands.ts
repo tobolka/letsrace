@@ -33,8 +33,8 @@ export function ageCategoriesFromList(
   }
   // The umbrella chips, the same way `inferAgeCategories` adds them, so a
   // stated U11 still answers a "Kids" filter.
-  if (["u7", "u9", "u11", "u13"].some((b) => found.has(b as AgeCategory))) found.add("kids");
-  if (found.has("u15") || found.has("u17")) found.add("youth");
+  if (["u7", "u9", "u11"].some((b) => found.has(b as AgeCategory))) found.add("kids");
+  if (["u13", "u15", "u17"].some((b) => found.has(b as AgeCategory))) found.add("youth");
   return AGE_CATEGORIES.filter((c) => found.has(c));
 }
 

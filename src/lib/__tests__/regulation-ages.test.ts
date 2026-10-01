@@ -10,7 +10,7 @@ Národní závod JANEV CUP 2026 pro kategorie žáci, žákyně, kadeti, kadetky
 
 Chýnov – sobota 3.10.2026`;
     expect(categoriesFromRegulationsText(text).ages).toEqual([
-      "u13", "u15", "u17", "kids", "youth", "junior", "u23", "elite",
+      "u13", "u15", "u17", "youth", "junior", "u23", "elite",
     ]);
   });
 

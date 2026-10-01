@@ -393,8 +393,8 @@ export const AGE_CATEGORY_FILTERS: {
   label: string;
   expands: AgeCategory[];
 }[] = [
-  { id: "kids", label: "Kids", expands: ["kids", "u7", "u9", "u11", "u13"] },
-  { id: "youth", label: "Youth", expands: ["youth", "u15", "u17"] },
+  { id: "kids", label: "Kids", expands: ["kids", "u7", "u9", "u11"] },
+  { id: "youth", label: "Youth", expands: ["youth", "u13", "u15", "u17"] },
   { id: "junior", label: "Junior", expands: ["junior"] },
   { id: "u23", label: "U23", expands: ["u23"] },
   { id: "elite", label: "Elite", expands: ["elite"] },
@@ -508,8 +508,10 @@ export function inferAgeCategories(
 
   const addU = (n: AgeCategory) => {
     found.add(n);
-    if (n === "u7" || n === "u9" || n === "u11" || n === "u13") found.add("kids");
-    if (n === "u15" || n === "u17") found.add("youth");
+    // "Kids" is what a parent of a seven-year-old means: up to ten. Pupils
+    // from eleven (U13 — mladší žáci) ride youth races.
+    if (n === "u7" || n === "u9" || n === "u11") found.add("kids");
+    if (n === "u13" || n === "u15" || n === "u17") found.add("youth");
   };
 
   if (/\bu\s*7\b|\bu7\b/.test(blob)) addU("u7");
@@ -520,15 +522,19 @@ export function inferAgeCategories(
   if (/\bu\s*17\b|\bu17\b/.test(blob)) addU("u17");
 
   if (
-    /kids|děti|deti|žák|zak|benjam|naděj|nadej|šneček|snecek/.test(blob) ||
+    /kids|děti|deti|předžá|predza|benjam|naděj|nadej|šneček|snecek/.test(blob) ||
     found.has("u7") ||
     found.has("u9") ||
-    found.has("u11") ||
-    found.has("u13")
+    found.has("u11")
   ) {
     found.add("kids");
   }
-  if (/youth|mládež|mladez|kadet/.test(blob) || found.has("u15") || found.has("u17")) {
+  if (
+    /youth|mládež|mladez|kadet|(?<!před)žák|(?<!pred)zak/.test(blob) ||
+    found.has("u13") ||
+    found.has("u15") ||
+    found.has("u17")
+  ) {
     found.add("youth");
   }
   if (/\bjunior|\bjunioři|\bjuniori|\bjuniors?\b/.test(blob)) found.add("junior");

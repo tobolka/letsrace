@@ -21,7 +21,7 @@ describe("ageCategoriesFromList", () => {
         "Elite", "Junior", "Juniorky", "Kadeti", "Kadetky", "Masters", "U23",
         "Žáci - mladší", "Žáci - starší", "Žákyně - starší", "Ženy", "Žákyně - mladší",
       ]),
-    ).toEqual(["u13", "u15", "u17", "kids", "youth", "junior", "u23", "elite", "masters"]);
+    ).toEqual(["u13", "u15", "u17", "youth", "junior", "u23", "elite", "masters"]);
   });
 
   it("reads kids' classes and bare BMX ages", () => {
@@ -35,7 +35,7 @@ describe("ageCategoriesFromList", () => {
   });
 
   it("reads the forms' abbreviations and ignores what is not a class", () => {
-    expect(names(["Ml. žáci", "st. žákyně"])).toEqual(["u13", "u15", "kids", "youth"]);
+    expect(names(["Ml. žáci", "st. žákyně"])).toEqual(["u13", "u15", "youth"]);
     expect(names(["pro ostatní kategorie", "- nejmladší", "Kategorie od 6ti let"])).toEqual([]);
   });
 
