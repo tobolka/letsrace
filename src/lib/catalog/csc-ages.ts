@@ -55,17 +55,17 @@ export async function fillCscAgeCategories(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "csc_ages");
 
-  const targets: { id: string; name: string; startDate: string; url: string; needsWindow: boolean }[] = [];
+  const targets: { id: string; name: string; startDate: string; url: string; needsWindow: boolean; needsWeb: boolean; needsAges: boolean }[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
     const { data } = await supabase
       .from("events")
-      .select("id, name, start_date, age_categories, age_confidence, registration_closes_at, sources:event_sources(source_url)")
+      .select("id, name, start_date, age_categories, age_confidence, registration_closes_at, website_url, sources:event_sources(source_url)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
       // Anything the source has not stated: nothing at all, or a guess.
-      .or("age_categories.is.null,age_categories.eq.{},age_confidence.is.null,age_confidence.eq.default")
+      .or("age_categories.is.null,age_categories.eq.{},age_confidence.is.null,age_confidence.eq.default,website_url.is.null")
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
@@ -74,6 +74,9 @@ export async function fillCscAgeCategories(opts?: {
       name: string;
       start_date: string;
       registration_closes_at: string | null;
+      website_url: string | null;
+      age_categories: string[] | null;
+      age_confidence: string | null;
       sources: { source_url: string | null }[] | null;
     }[];
     for (const row of rows) {
@@ -86,6 +89,8 @@ export async function fillCscAgeCategories(opts?: {
         startDate: row.start_date,
         url: url.match(/^https?:\/\/[^?#]+/)![0],
         needsWindow: row.registration_closes_at == null,
+        needsWeb: row.website_url == null,
+        needsAges: !(row.age_categories ?? []).length || row.age_confidence !== "explicit",
       });
       if (targets.length >= max) break;
     }
@@ -110,7 +115,13 @@ export async function fillCscAgeCategories(opts?: {
           ? []
           : ageCategoriesFromList(detail.categories.map((name) => ({ name })));
         const patch: Record<string, unknown> = {};
-        if (ages.length) {
+        // The organiser's own site, which the portal lists and we never kept:
+        // a third of Czech races had no link at all.
+        const web = (detail.web ?? "").trim().replace(/[.,;]+$/, "");
+        if (target.needsWeb && web && !/facebook\.com|instagram\.com/i.test(web)) {
+          patch.website_url = /^https?:\/\//i.test(web) ? web : `https://${web.replace(/^\/+/, "")}`;
+        }
+        if (ages.length && target.needsAges) {
           patch.age_categories = ages;
           patch.age_confidence = "explicit";
           patch.audience = audienceFromAgeCategories(ages);
