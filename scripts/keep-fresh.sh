@@ -2,14 +2,18 @@
 # Keep the catalogue fresh from this Mac: a full refresh every few hours,
 # the Mac kept awake while it runs. Stop with Ctrl+C.
 #
-#   bash scripts/keep-fresh.sh          # every 3 hours
+# A run is about 15 minutes once the places are done, mostly the official
+# calendars. Anything shorter than an hour mostly re-reads pages that have
+# not changed (and the sources rate-limit), so an hour is the practical floor.
+#
+#   bash scripts/keep-fresh.sh          # every 2 hours
 #   bash scripts/keep-fresh.sh 2        # every 2 hours
 #
 # Each run is logged to tmp/refresh-<date>-<time>.log.
 set -u
 cd "$(dirname "$0")/.."
 mkdir -p tmp
-HOURS="${1:-3}"
+HOURS="${1:-2}"
 while true; do
   LOG="tmp/refresh-$(date +%F-%H%M).log"
   echo "=== run started $(date '+%F %H:%M'), log: $LOG"
