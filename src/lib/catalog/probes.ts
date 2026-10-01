@@ -14,7 +14,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * one more look.
  */
 
-export type ProbeName = "fci_ages" | "raceresult_ages" | "csc_ages" | "regs_ages" | "fci_website";
+export type ProbeName = "fci_ages" | "raceresult_ages" | "csc_ages" | "regs_ages" | "fci_website" | "ca_details";
 export type ProbeOutcome = "silent" | "failed";
 
 /** How long an answer stands before the page is worth asking again. */

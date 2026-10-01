@@ -1260,7 +1260,9 @@ const COUNTRY_WORDS: { re: RegExp; cc: string }[] = [
   { re: /\b(korea|south korea|jižní korea)\b/i, cc: "KR" },
   { re: /\b(netherlands|nizozemsko|holland|nederland|niederlande)\b/i, cc: "NL" },
   { re: /\b(germany|deutschland|německo|nemecko)\b/i, cc: "DE" },
-  { re: /\b(austria|österreich|rakousko)\b/i, cc: "AT" },
+  // Not inside a word: JavaScript's \b sees "ö" as a non-letter, so
+  // "Niederösterreich" lost its "österreich" and became the town "Nieder".
+  { re: /(?<!\p{L})(austria|österreich|rakousko)(?!\p{L})/iu, cc: "AT" },
   { re: /\b(switzerland|schweiz|švýcarsko|svycarsko)\b/i, cc: "CH" },
   { re: /\b(slovenia|slovenija|slovinsko|slowenien)\b/i, cc: "SI" },
   { re: /\b(slovakia|slovensko)\b/i, cc: "SK" },

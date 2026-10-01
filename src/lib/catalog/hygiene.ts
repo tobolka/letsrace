@@ -5,6 +5,7 @@ import { fillRaceResultAgeCategories } from "@/lib/catalog/raceresult-ages";
 import { fillRegulationAgeCategories } from "@/lib/catalog/regulation-ages";
 import { carryForwardFromPreviousEditions } from "@/lib/catalog/previous-edition";
 import { fillFciWebsites } from "@/lib/catalog/fci-website";
+import { fillCyclingAustriaDetails } from "@/lib/catalog/cyclingaustria-details";
 import { mergeDuplicateLocations, type MergeLocationsResult } from "@/lib/catalog/merge-locations";
 import { completePastEvents, type CompletePastResult } from "@/lib/catalog/complete-past";
 
@@ -15,6 +16,7 @@ export type CatalogHygieneResult = {
   regulationAges: { attempted: number; filled: number; silent: number; failed: number };
   previousEditions: { considered: number; matched: number; ages: number; disciplines: number; websites: number };
   fciWebsites: { attempted: number; filled: number; silent: number; failed: number };
+  austria: { attempted: number; places: number; ages: number; websites: number; silent: number; failed: number };
   duplicates: {
     events: number;
     pairs: number;
@@ -48,6 +50,8 @@ export async function runCatalogHygiene(opts?: {
   const previousEditions = await carryForwardFromPreviousEditions();
   // Italian races carry no website field; the organiser names it anyway.
   const fciWebsites = await fillFciWebsites({ max: 30 });
+  // Austrian calendar rows name only the federal state; the race page says more.
+  const austria = await fillCyclingAustriaDetails({ max: 30 });
   const duplicates = await mergePublicDuplicates({
     fromDate: new Date().toISOString().slice(0, 10),
     maxMerges: opts?.maxMerges ?? 40,
@@ -57,5 +61,5 @@ export async function runCatalogHygiene(opts?: {
   const locations = await mergeDuplicateLocations({ max: opts?.maxLocationMerges ?? 200 });
   // Yesterday's races stopped being scheduled overnight, so say so.
   const completed = await completePastEvents({ max: opts?.maxCompletions ?? 500 });
-  return { ages, fciAges, timingAges, regulationAges, previousEditions, fciWebsites, duplicates, locations, completed };
+  return { ages, fciAges, timingAges, regulationAges, previousEditions, fciWebsites, austria, duplicates, locations, completed };
 }
