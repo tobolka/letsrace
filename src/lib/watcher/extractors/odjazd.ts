@@ -36,14 +36,30 @@ export function isOdjazdHost(host: string): boolean {
 }
 
 /**
- * The week pages carry a schema.org ItemList, but deliberately name every entry
- * after its discipline rather than the race. The race's own page carries a
- * proper SportsEvent, so the list gives us what to fetch and the page gives us
- * the name.
+ * The race ids on odjazd.pl's cycling listings.
+ *
+ * The weekly pages (/tydzien/…) the reader was built on now redirect to the
+ * home page, and the source read nothing: 251 races stopped being watched.
+ * The discipline listings still carry a card for every upcoming race, each
+ * linking its own page, and that page has the full SportsEvent — name, dates,
+ * sport, town — so the listing only has to say which pages to fetch.
  */
-export async function parseOdjazd(): Promise<ParsedEvent[]> {
-  const stubs = new Map<string, ParsedEvent>();
+const LISTING_PAGES = ["/sport/rower", "/dyscyplina/szosa", "/dyscyplina/mtb", "/dyscyplina/gravel", "/dyscyplina/cx", "/dyscyplina/bmx"];
 
+export function raceIdsFromListing(html: string): string[] {
+  return [...new Set([...html.matchAll(/\/wydarzenie\/([0-9a-f]{8}-[0-9a-f-]{27})/gi)].map((m) => m[1]!.toLowerCase()))];
+}
+
+export async function parseOdjazd(): Promise<ParsedEvent[]> {
+  const ids = new Set<string>();
+  for (const path of LISTING_PAGES) {
+    const page = await fetchText(`${ORIGIN}${path}`, { timeoutMs: 20_000 });
+    if (!page.ok || !page.text) continue;
+    raceIdsFromListing(page.text).forEach((id) => ids.add(id));
+  }
+  // The old weekly listing, in case it comes back — it is the only one that
+  // names races far ahead.
+  const stubs = new Map<string, ParsedEvent>();
   for (const week of upcomingWeeks(WEEKS_AHEAD)) {
     const page = await fetchText(`${ORIGIN}/tydzien/${week}`, { timeoutMs: 20_000 });
     if (!page.ok || !page.text) continue;
@@ -52,8 +68,50 @@ export async function parseOdjazd(): Promise<ParsedEvent[]> {
       if (ev && !stubs.has(ev.externalId)) stubs.set(ev.externalId, ev);
     }
   }
+  const known = new Set([...stubs.keys()].map((k) => k.replace(/^odjazd-/, "")));
+  const fresh = [...ids].filter((id) => !known.has(id)).slice(0, MAX_DETAILS);
 
-  return nameFromDetailPages([...stubs.values()]);
+  const detailed = await mapPool<string, ParsedEvent | null>(fresh, 6, async (id) => {
+    try {
+      const url = `${ORIGIN}/wydarzenie/${id}`;
+      const page = await fetchText(url, { timeoutMs: 15_000 });
+      return page.ok && page.text ? eventFromDetail(page.text, url) : null;
+    } catch {
+      return null;
+    }
+  });
+  for (const ev of detailed) if (ev && !stubs.has(ev.externalId)) stubs.set(ev.externalId, ev);
+
+  // Stubs from the old weekly listing still need their name from the page;
+  // races read from their own page already have it.
+  const all = [...stubs.values()];
+  const unnamed = all.filter((e) => !e.name || /^Rower\s*·/i.test(e.name));
+  const named = all.filter((e) => e.name && !/^Rower\s*·/i.test(e.name));
+  return [...named, ...(await nameFromDetailPages(unnamed))];
+}
+
+/** One race from its own page's SportsEvent. */
+export function eventFromDetail(html: string, url: string): ParsedEvent | null {
+  for (const raw of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    let data: unknown;
+    try {
+      data = JSON.parse(raw[1]!);
+    } catch {
+      continue;
+    }
+    const ev = data as ListItem & { "@type"?: string; description?: string };
+    if (ev["@type"] !== "SportsEvent" || !ev.name) continue;
+    const stub = toStub({ ...ev, url, name: ev.description ?? ev.name });
+    if (!stub) return null;
+    const name = ev.name.replace(/\s+/g, " ").trim();
+    if (name.length < 3 || /^Rower\s*·/i.test(name)) return null;
+    return {
+      ...stub,
+      name: name.slice(0, 160),
+      audience: isPolishYouthRace(name) ? "kids" : stub.audience,
+    };
+  }
+  return null;
 }
 
 /** ISO weeks starting with the one containing today. */
@@ -100,7 +158,8 @@ export function toStub(item: ListItem): ParsedEvent | null {
   if (!id || !/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return null;
 
   const endDate = (item.endDate ?? "").slice(0, 10);
-  const label = (item.name ?? "").split("·").pop()?.trim().toLowerCase() ?? "";
+  // "Rower · MTB" in a listing, "Rower · CX — 13 grudnia 2026, …" on a page.
+  const label = (item.name ?? "").split("·").pop()?.split("—")[0]?.trim().toLowerCase() ?? "";
   const discipline = DISCIPLINE[label];
   // odjazd prints "[?]" where an organiser left the venue blank.
   const raw = item.location?.address?.addressLocality || item.location?.name || "";
