@@ -91,16 +91,19 @@ export function PlanRow({
   return (
     <div
       className={cn(
-        "relative flex flex-wrap items-center gap-x-4 gap-y-2 py-3.5 pl-4 pr-2 md:pl-6 md:pr-4",
+        // A row of columns on a wide screen, the same columns as the heading
+        // above; on a phone the name takes a line and the riders wrap under it.
+        "relative flex flex-wrap items-center gap-x-4 gap-y-2 py-3 pl-4 pr-2 md:grid md:gap-x-3 md:pl-6 md:pr-4",
+        "md:[grid-template-columns:var(--plan-cols)]",
         muted && "opacity-70",
       )}
     >
       <span
         aria-hidden
-        className="absolute inset-y-3.5 left-0 w-[3px] rounded-full md:left-2"
+        className="absolute inset-y-3 left-0 w-[3px] rounded-full md:left-2"
         style={{ background: disciplineColor(plan.event.disciplines) }}
       />
-      <div className="flex min-w-0 flex-1 basis-56 items-start gap-1">
+      <div className="flex min-w-0 flex-1 basis-56 items-start gap-1 md:basis-auto">
         <div className="min-w-0 flex-1">
           <Link
             href={href}
@@ -113,28 +116,29 @@ export function PlanRow({
             {meta}
           </span>
         </div>
-        {/* A finger-sized toggle is 44px, and three of them each for two riders
-            plus these two buttons do not fit across a phone. On that width the
-            buttons sit up on the name instead, where there is room. */}
         <div className="flex shrink-0 items-center sm:hidden">{actions}</div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        {members.map((m) => (
-          <div key={m.id} className="flex items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">{memberLabel(m, t)}</span>
-            <PlanStatusToggle
-              locale={locale}
-              value={plan.memberStatus[m.id] ?? "none"}
-              disabled={busy}
-              memberName={memberLabel(m, t)}
-              eventName={plan.event.name}
-              onChange={(next) => onStatusChange(m.id, next)}
-            />
-          </div>
-        ))}
-        <div className="hidden shrink-0 items-center sm:flex">{actions}</div>
-      </div>
+      {members.map((m) => (
+        <div key={m.id} className="flex w-full min-w-0 items-center gap-1.5 md:w-auto">
+          {/* The heading names the rider on a wide screen; on a phone there is none. */}
+          <span className="w-14 shrink-0 truncate text-xs text-muted-foreground md:hidden">{memberLabel(m, t)}</span>
+          <PlanStatusToggle
+            locale={locale}
+            value={plan.memberStatus[m.id] ?? "none"}
+            disabled={busy}
+            memberName={memberLabel(m, t)}
+            eventName={plan.event.name}
+            onChange={(next) => onStatusChange(m.id, next)}
+          />
+        </div>
+      ))}
+      <div className="hidden shrink-0 items-center justify-end sm:flex">{actions}</div>
     </div>
   );
+}
+
+/** The column template the heading and every row share: race, one per rider, actions. */
+export function planColumns(memberCount: number): string {
+  return `minmax(0,1fr) repeat(${memberCount}, minmax(9rem,11rem)) 5rem`;
 }

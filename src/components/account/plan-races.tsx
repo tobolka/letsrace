@@ -4,7 +4,8 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { CalendarPlus, Compass, History, MapPinned } from "lucide-react";
-import { PlanRow } from "@/components/account/plan-row";
+import { PlanRow, planColumns } from "@/components/account/plan-row";
+import { memberLabel } from "@/components/account/race-plan-controls";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -90,7 +91,21 @@ export function PlanRaces({
   }
 
   return (
-    <div>
+    <div style={{ ["--plan-cols" as string]: planColumns(members.length) }}>
+      {/* The columns, named once: the race, then each rider. Phones have no
+          columns — each row carries the rider's name itself. */}
+      <div
+        className="hidden border-b bg-card py-2 pl-6 pr-4 text-xs font-medium text-muted-foreground md:grid md:gap-x-3 md:[grid-template-columns:var(--plan-cols)]"
+        role="row"
+      >
+        <span>{t.planRaceColumn}</span>
+        {members.map((m) => (
+          <span key={m.id} className="truncate">
+            {memberLabel(m, t)}
+          </span>
+        ))}
+        <span aria-hidden />
+      </div>
       {upcoming.map((plan, i) => {
         const newMonth =
           i === 0 || plan.event.startDate.slice(0, 7) !== upcoming[i - 1]!.event.startDate.slice(0, 7);

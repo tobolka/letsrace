@@ -1,21 +1,21 @@
 "use client";
 
 import { Check, CreditCard, User } from "lucide-react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { messagesFor } from "@/lib/i18n/messages";
 import { PLAN_MEMBER_STATUSES, type PlanMemberStatus } from "@/lib/planner";
 import { cn } from "@/lib/utils";
 
 /**
- * Three steps of one commitment, not three independent switches: entering a
- * race means you are going, and paying means you have entered. The pills fill
- * up to where you are, so a row can be read at a glance instead of opened.
+ * Where a rider stands on a race, in one dropdown.
  *
- * Replaces a dropdown that cost two clicks per person per race — six to mark a
- * family paid, on the screen where marking a family paid is the whole point.
+ * Three steps of one commitment — going, entered, paid — and each includes
+ * the one before it. They were three switches per rider on every row, which
+ * on a family of two made twelve buttons per race; a single field per rider
+ * reads as a column and says the one thing that matters: how far along they
+ * are. The trigger fills in as they get further.
  */
-const STEPS = ["going", "registered", "paid"] as const satisfies readonly PlanMemberStatus[];
+const STEPS = ["none", "going", "registered", "paid"] as const satisfies readonly PlanMemberStatus[];
 
 const RANK: Record<PlanMemberStatus, number> = { none: 0, going: 1, registered: 2, paid: 3 };
 
@@ -30,6 +30,7 @@ export function PlanStatusToggle({
   memberName,
   eventName,
   onChange,
+  className,
 }: {
   locale: string;
   value: PlanMemberStatus;
@@ -37,56 +38,57 @@ export function PlanStatusToggle({
   memberName: string;
   eventName: string;
   onChange: (next: PlanMemberStatus) => void;
+  className?: string;
 }) {
   const t = messagesFor(locale);
-  const label: Record<(typeof STEPS)[number], string> = {
+  const label: Record<PlanMemberStatus, string> = {
+    none: t.planNotGoing,
     going: t.planGoing,
     registered: t.planRegistered,
     paid: t.planPaid,
   };
-  const Icon = { going: User, registered: Check, paid: CreditCard };
+  const Icon: Record<PlanMemberStatus, typeof User | null> = {
+    none: null,
+    going: User,
+    registered: Check,
+    paid: CreditCard,
+  };
   const current = planStatusRank(value);
+  const CurrentIcon = Icon[value];
 
   return (
-    <ToggleGroup
-      type="single"
-      size="sm"
-      variant="outline"
-      disabled={disabled}
-      value={value === "none" ? "" : value}
-      onValueChange={(next) => {
-        // Pressing the step you are already on steps back off it, which is how
-        // you undo "paid" without hunting for a "not going" entry in a menu.
-        if (!next) return onChange("none");
-        onChange(next as PlanMemberStatus);
-      }}
-      aria-label={`${memberName} · ${eventName}`}
-    >
-      {STEPS.map((step) => {
-        const StepIcon = Icon[step];
-        const reached = current >= RANK[step];
-        return (
-          <Tooltip key={step}>
-            <TooltipTrigger asChild>
-              <ToggleGroupItem
-                value={step}
-                aria-label={`${label[step]} — ${memberName}, ${eventName}`}
-                aria-pressed={reached}
-                className={cn(
-                  "min-h-11 min-w-11 gap-1.5 px-2 sm:min-h-8 sm:min-w-8 sm:px-2.5",
-                  reached && "bg-primary text-primary-foreground hover:bg-primary/90",
-                )}
-              >
-                <StepIcon className="size-3.5" aria-hidden />
-                {/* Icons alone were a code to learn; with room, the step says what it is. */}
-                <span className="hidden text-xs sm:inline">{label[step]}</span>
-              </ToggleGroupItem>
-            </TooltipTrigger>
-            <TooltipContent>{label[step]}</TooltipContent>
-          </Tooltip>
-        );
-      })}
-    </ToggleGroup>
+    <Select value={value} disabled={disabled} onValueChange={(next) => onChange(next as PlanMemberStatus)}>
+      <SelectTrigger
+        size="sm"
+        aria-label={`${memberName} · ${eventName}`}
+        className={cn(
+          "w-full min-w-0 gap-1.5 font-normal",
+          current === 0 && "text-muted-foreground",
+          current === 1 && "border-foreground/30 bg-muted text-foreground",
+          current === 2 && "border-foreground/60 bg-foreground/10 text-foreground",
+          current === 3 && "border-primary bg-primary text-primary-foreground [&_svg]:!text-primary-foreground",
+          className,
+        )}
+      >
+        <span className="flex min-w-0 items-center gap-1.5">
+          {CurrentIcon ? <CurrentIcon className="size-3.5" aria-hidden /> : null}
+          <span className="truncate">{label[value]}</span>
+        </span>
+      </SelectTrigger>
+      <SelectContent align="end">
+        {STEPS.map((step) => {
+          const StepIcon = Icon[step];
+          return (
+            <SelectItem key={step} value={step}>
+              <span className="flex items-center gap-2">
+                {StepIcon ? <StepIcon className="size-3.5" aria-hidden /> : <span className="size-3.5" aria-hidden />}
+                {label[step]}
+              </span>
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </Select>
   );
 }
 
