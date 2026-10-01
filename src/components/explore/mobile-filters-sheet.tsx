@@ -1,6 +1,6 @@
 "use client";
 
-import { ageBandHint, ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
@@ -24,7 +24,6 @@ import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
 import {
   AGE_CATEGORY_FILTERS,
-  ageBandsOf,
   DISCIPLINE_TREE,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
@@ -301,22 +300,12 @@ export function MobileFiltersSheet({
                     onClick={() => onCategory(opt.id)}
                   >
                     {ageCategoryLabel(opt.id, locale)}
+                    {ageGroupHint(opt.id, locale) ? (
+                      <span className="ml-1 text-xs opacity-60">{ageGroupHint(opt.id, locale)}</span>
+                    ) : null}
                   </Chip>
                 ))}
               </div>
-              {/* The single ages, one row per group: U7–U11 for children,
-                  U13–U17 for youth. */}
-              {(["kids", "youth"] as const).map((group) => (
-                <div key={group} className="flex flex-wrap items-center gap-2">
-                  <span className="w-16 shrink-0 text-xs text-muted-foreground">{ageCategoryLabel(group, locale)}</span>
-                  {ageBandsOf(group).map((band) => (
-                    <Chip key={band} active={categories.includes(band)} onClick={() => onCategory(band)}>
-                      {ageCategoryLabel(band, locale)}
-                      <span className="ml-1 text-xs opacity-60">{ageBandHint(band, locale)}</span>
-                    </Chip>
-                  ))}
-                </div>
-              ))}
             </Section>
 
             <Section title={messages.levelFilter}>

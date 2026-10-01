@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 /** How wide each column is. The name takes whatever is left. */
 const WIDTH: Record<ListColumn, string> = {
   date: "w-36",
-  name: "w-auto min-w-64",
+  name: "w-auto",
   place: "w-48",
   country: "w-36",
   discipline: "w-40",
@@ -25,6 +25,23 @@ const WIDTH: Record<ListColumn, string> = {
   series: "w-56",
   distance: "w-24 text-right",
 };
+
+/** Pixel widths of the fixed columns (w-36 = 144px …), the name at least 256. */
+const MIN_PX: Record<ListColumn, number> = {
+  date: 144,
+  name: 256,
+  place: 192,
+  country: 144,
+  discipline: 160,
+  level: 144,
+  categories: 192,
+  series: 224,
+  distance: 96,
+};
+
+function tableMinWidth(columns: ListColumn[]): number {
+  return columns.reduce((sum, col) => sum + MIN_PX[col], 0);
+}
 
 function cellText(col: ListColumn, event: EventListItem, locale: string, origin: { lat: number; lng: number } | null): string {
   const df = dateFnsLocale(locale);
@@ -88,7 +105,11 @@ export function RaceTable({
   onSelect: (id: string) => void;
 }) {
   return (
-    <Table className="table-fixed">
+    // A fixed layout ignores a column's min-width, so the free column — the
+    // race's name — shrank to nothing on a narrow window and its heading
+    // drew over the next one. The table itself holds the minimum instead,
+    // and scrolls sideways when the window is narrower.
+    <Table className="table-fixed" style={{ minWidth: tableMinWidth(columns) }}>
       <TableHeader className="sticky top-0 z-10 bg-card">
         <TableRow className="hover:bg-transparent">
           {columns.map((col, i) => (

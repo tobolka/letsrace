@@ -1,8 +1,8 @@
 "use client";
 
-import { ageBandHint, ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
-import { Fragment, useState, type ComponentType, type ReactNode } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import {
   addDays,
@@ -59,7 +59,6 @@ import type { Messages } from "@/lib/i18n/messages";
 import { familyColor } from "@/lib/map-visuals";
 import {
   AGE_CATEGORY_FILTERS,
-  ageBandsOf,
   DISCIPLINE_TREE,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
@@ -443,30 +442,17 @@ export function MapFilterBar({
       return (
         <>
           {AGE_CATEGORY_FILTERS.map((opt) => (
-            <Fragment key={opt.id}>
-              <DropdownMenuCheckboxItem
-                checked={categories.includes(opt.id)}
-                onCheckedChange={() => onCategory(opt.id)}
-                onSelect={(e) => e.preventDefault()}
-                className={itemClass}
-              >
-                {ageCategoryLabel(opt.id, locale)}
-              </DropdownMenuCheckboxItem>
-              {/* The single ages under their group: a parent looking for an
-                  U11 race does not want every race with a kids' lap. */}
-              {ageBandsOf(opt.id).map((band) => (
-                <DropdownMenuCheckboxItem
-                  key={band}
-                  checked={categories.includes(band)}
-                  onCheckedChange={() => onCategory(band)}
-                  onSelect={(e) => e.preventDefault()}
-                  className={cn(itemClass, "pl-12 [&>span]:left-6")}
-                >
-                  {ageCategoryLabel(band, locale)}
-                  <span className="ml-auto pl-3 text-xs text-muted-foreground">{ageBandHint(band, locale)}</span>
-                </DropdownMenuCheckboxItem>
-              ))}
-            </Fragment>
+            <DropdownMenuCheckboxItem
+              key={opt.id}
+              checked={categories.includes(opt.id)}
+              onCheckedChange={() => onCategory(opt.id)}
+              onSelect={(e) => e.preventDefault()}
+              className={itemClass}
+            >
+              {ageCategoryLabel(opt.id, locale)}
+              {/* Which classes the group means, in the organisers' terms. */}
+              <span className="ml-auto pl-4 text-xs text-muted-foreground">{ageGroupHint(opt.id, locale)}</span>
+            </DropdownMenuCheckboxItem>
           ))}
         </>
       );

@@ -55,3 +55,25 @@ export function ageBandHint(id: string, locale: string): string {
   if (from == null) return { cs: `do ${to} let`, sk: `do ${to} rokov`, pl: `do ${to} lat`, en: `under ${to + 1}` }[locale] ?? `under ${to + 1}`;
   return `${from}–${to} ${unit}`;
 }
+
+/** What a filter group covers, for its help text: "U7–U11 · do 10 let". */
+export function ageGroupHint(id: string, locale: string): string {
+  const yrs = (a: string) =>
+    ({ cs: `${a} let`, sk: `${a} rokov`, pl: `${a} lat`, en: `${a} yrs` })[locale] ?? `${a} yrs`;
+  const upTo = (n: number) =>
+    ({ cs: `do ${n} let`, sk: `do ${n} rokov`, pl: `do ${n} lat`, en: `up to ${n}` })[locale] ?? `up to ${n}`;
+  switch (id) {
+    case "kids":
+      return `U7–U11 · ${upTo(10)}`;
+    case "youth":
+      return `U13–U17 · ${yrs("11–16")}`;
+    case "junior":
+      return yrs("17–18");
+    case "u23":
+      return yrs("19–22");
+    case "masters":
+      return yrs("35+");
+    default:
+      return "";
+  }
+}
