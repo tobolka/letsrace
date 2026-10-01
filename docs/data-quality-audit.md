@@ -120,3 +120,28 @@ Virtuální jízdy (vRTF, Strava Edition), RTF, brevety a festivaly se míchají
 5. Registrace a uzávěrky z webů a platforem.
 6. Kategorie z radsport-events.de, odjazd.pl a dostartu.pl.
 7. Zdroje pro ručně přidané seriály.
+
+## Stav po opravách (1. 10. 2026)
+
+Hotovo:
+- **A. Poloha**
+  - 19 ručně přidaných kol dostalo místo.
+  - 50 rakouských závodů má místo z detailu cyclingaustria.at.
+  - Oprava „Niederösterreich“ → „Nieder“.
+  - 26 polských závodů z kalendarzrowerowy.pl má místo z detailu.
+  - Pomalé geokódování (`scripts/geocode-slowly.ts`) čeká, dokud neskončí limit Nominatimu.
+  - 15 virtuálních jízd skryto.
+- **B. Duplicity:** nové pravidlo pro stejný závod pod dvěma jmény. 9 sloučeno, zbytek je ve frontě `/admin/duplicates`.
+- **D. Kategorie**
+  - Čtečka v2 čte web závodu, propozice, Google Drive a stránky „Kategorie“, a vykresluje JavaScriptové aplikace.
+  - Kategorie z cyclingaustria.at.
+  - Věková pole registračních platforem.
+  - `/admin/series` pro rozhodnutí o kategoriích celého seriálu.
+- **E. Registrace:** 226 závodů má odkaz na registraci z webu závodu.
+
+Zbývá:
+- **F.** Zdroje pro ručně přidané seriály. U každého je potřeba ověřit, že watcher jeho stránku přečte.
+- **E.** Uzávěrky přihlášek z registračních platforem (RaceResult, sportsoft, dostartu).
+- **D.** Polsko (odjazd.pl kategorie nemá ani po vykreslení) a Švýcarsko. Na zbytek čtení propozic jazykovým modelem.
+
+Data aktuální drží `scripts/keep-fresh.sh`: plný běh každé 3 hodiny, Mac zůstává vzhůru.

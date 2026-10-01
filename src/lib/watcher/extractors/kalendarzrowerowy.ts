@@ -43,7 +43,28 @@ export async function parseKalendarzRowerowy(url: string, html: string): Promise
     const ev = toEvent(pin, days);
     if (ev) events.push(ev);
   }
+  // The calendar names no town; without one the watcher makes no place, and
+  // the race sits nowhere on the map. Each race page says it (JSON-LD), so
+  // read it there — upcoming first, a bounded number per run.
+  const { mapPool } = await import("@/lib/watcher/pool");
+  const today = new Date().toISOString().slice(0, 10);
+  const needing = events
+    .filter((e) => !e.placeText && (e.endDate ?? e.startDate) >= today)
+    .slice(0, 120);
+  await mapPool(needing, 4, async (ev) => {
+    const page = await fetchPage(ev.sourceUrl);
+    const place = page ? placeFromDetail(page) : null;
+    if (place) ev.placeText = place;
+  });
   return events;
+}
+
+/** "Iława, warmiński-mazurskie" from the race page's structured data. */
+export function placeFromDetail(html: string): string | null {
+  const town = html.match(/"addressLocality"\s*:\s*"([^"]{2,80})"/)?.[1];
+  if (!town) return null;
+  const region = html.match(/"addressRegion"\s*:\s*"([^"]{2,80})"/)?.[1];
+  return region ? `${town}, ${region}` : town;
 }
 
 async function fetchPage(url: string): Promise<string | null> {
