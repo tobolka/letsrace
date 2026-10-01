@@ -296,6 +296,95 @@ export function mergeKeeper(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDu
   return score(a) >= score(b) ? a : b;
 }
 
+const GENERIC_WORDS = new Set([
+  "cyclocross", "cross", "cyklokros", "rennen", "race", "racing", "závod", "zavod", "pohar", "pokal",
+  "trofeo", "memorial", "memorial", "grand", "prix", "fondo", "granfondo", "marathon", "maraton",
+  "series", "serie", "seria", "edition", "festival", "challenge", "classic", "campionato", "regionale",
+  "provinciale", "mistrovstvi", "championship", "meisterschaft", "radsport", "cycling", "cicli",
+  "bike", "bikes", "radtourenfahrt", "finale", "final", "kolo", "runde", "round", "tappa", "etappe",
+  "comune", "citta", "stadt", "powered", "presented", "national", "narodni", "international",
+  "mistrzostwa", "wojewodztwa", "kolarstwie", "kolarstwo", "gorskim", "wyscig", "puchar", "krajowego",
+  "podstawowych", "ponadpodstawowych", "uczniow", "szkol", "doroslych", "polski", "vrchu", "jizda",
+  "kraje", "krajsky", "prebor", "kreismeisterschaft", "landesmeisterschaft",
+]);
+const FORMAT_WORDS =
+  /\b(pumptrack|bikros|bmx|xco|xcc|xcm|xce|xcr|downhill|enduro|gravel|cyklokros|cyclocross|silnice|road|casovka|crono|itt|zeitfahren|kriterium|sprint|pista|track|maraton|marathon|junior|juniors|kids|deti|zeny|donne|rosa|women|frauen|hobby|ebike|e-bike)\b/g;
+
+function distinctWords(name: string, places: string[]): Set<string> {
+  const placeWords = new Set(places.flatMap((p) => foldName(p).split(/[^a-z0-9]+/)));
+  return new Set(
+    foldName(name)
+      .split(/[^a-z0-9]+/)
+      .filter((w) => w.length >= 5 && !GENERIC_WORDS.has(w) && !placeWords.has(w) && !/^\d+$/.test(w)),
+  );
+}
+
+/** "#13 - Elmshorn", "#03 – Bad Harzburg": a round number and a town, nothing else. */
+function isBareRound(name: string): boolean {
+  return /^#\s*\d+\s*[-–—]\s*[\p{L} .'()-]+$/u.test(name.trim());
+}
+
+function kmBetween(a: MergeDuplicateRow, b: MergeDuplicateRow): number | null {
+  const la = a.location?.lat;
+  const lb = b.location?.lat;
+  const ga = a.location?.lng;
+  const gb = b.location?.lng;
+  if (la == null || lb == null || ga == null || gb == null) return null;
+  const r = Math.PI / 180;
+  const h =
+    Math.sin(((lb - la) * r) / 2) ** 2 +
+    Math.cos(la * r) * Math.cos(lb * r) * Math.sin(((gb - ga) * r) / 2) ** 2;
+  return 12_742 * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * The same race under two names, by evidence the title scorer does not use.
+ *
+ * Same day, within 2 km, same discipline, and either a distinctive word in
+ * common that is not the town ("Eroica", "Weser-Ems", "Janev", "Tre Valli
+ * Varesine") or one listing that is only a round number and a town ("#13 -
+ * Elmshorn" beside "CycloCross im Stevens-Cup … Elmshorn").
+ *
+ * Two guards keep separate races apart:
+ * - one source never lists the same race twice, so two rows from the same
+ *   calendar stay two races (an Italian day of races for different categories,
+ *   a Pumptrack beside a Bikros on the federation calendar);
+ * - names that state different formats ("XCC" and "XCO", "Pumptrack" and
+ *   "Bikros", a women's race) are different races.
+ */
+export function strongSameRace(a: MergeDuplicateRow, b: MergeDuplicateRow): boolean {
+  if (a.start_date !== b.start_date) return false;
+  const km = kmBetween(a, b);
+  if (km == null || km > 2) return false;
+  const da = a.disciplines ?? [];
+  const db = b.disciplines ?? [];
+  if (da.length && db.length && !da.some((d) => db.includes(d))) return false;
+
+  // Two different series at one place on one day are two races (Cykloman for
+  // adults, Cyklománek for children, up the same hill).
+  if (a.series_id && b.series_id && a.series_id !== b.series_id) return false;
+  const sa = new Set((a.sources ?? []).map((s) => s.watched_url_id).filter(Boolean));
+  if ((b.sources ?? []).some((s) => s.watched_url_id && sa.has(s.watched_url_id))) return false;
+
+  const fa = new Set(foldName(a.name).match(FORMAT_WORDS) ?? []);
+  const fb = new Set(foldName(b.name).match(FORMAT_WORDS) ?? []);
+  if (fa.size && fb.size && ![...fa].some((w) => fb.has(w))) return false;
+
+  // A race for pupils beside one for adults, under one championship title.
+  const AUDIENCE = /dorosl|uczni|dziec|\bkids\b|junior|\bzac|\bdeti\b|masters|senior|jugend|schuler|nachwuchs/g;
+  const aa = [...new Set(foldName(a.name).match(AUDIENCE) ?? [])].sort().join();
+  const ab = [...new Set(foldName(b.name).match(AUDIENCE) ?? [])].sort().join();
+  if (aa !== ab) return false;
+
+  if (isBareRound(a.name) || isBareRound(b.name)) return true;
+  const places = [a.location?.municipality, a.location?.name, b.location?.municipality, b.location?.name].filter(
+    (p): p is string => Boolean(p),
+  );
+  const wa = distinctWords(a.name, places);
+  const wb = distinctWords(b.name, places);
+  return [...wa].some((w) => wb.has(w));
+}
+
 export async function mergePublicDuplicates(opts?: {
   dry?: boolean;
   fromDate?: string;
@@ -318,7 +407,7 @@ export async function mergePublicDuplicates(opts?: {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name)",
+        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id)",
       )
       .eq("visibility", "public")
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -337,7 +426,7 @@ export async function mergePublicDuplicates(opts?: {
   const { data: ongoing } = await supabase
     .from("events")
     .select(
-      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name)",
+      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id)",
     )
     .eq("visibility", "public")
     .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -379,6 +468,10 @@ export async function mergePublicDuplicates(opts?: {
     if (a.id === b.id) return;
     const left = a.id < b.id ? a : b;
     const right = a.id < b.id ? b : a;
+    if (strongSameRace(left, right)) {
+      if (!isJunkPair(left, right)) unite(left.id, right.id);
+      return;
+    }
     const { score, reasons } = scoreDuplicate(asDedup(left), asDedup(right));
     if (score < 50) return;
     const dayOk = reasons.includes("same_day") || reasons.includes("weekend");

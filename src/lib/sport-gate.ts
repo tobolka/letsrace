@@ -122,7 +122,7 @@ export function sportMarkers(name: string, extraText?: string | null): string[] 
  */
 const VIRTUAL_WORLDS = /\bwatopia\b|\bmakuri\b|\bzwift island\b/;
 const PLATFORM_OWN_EVENT =
-  /\btour de zwift\b|\bzwift racing league\b|\bzwift games\b|\bzwift academy\b|\bzts racing\b|\bindieVelo\b|\bmywhoosh\b/;
+  /\btour de zwift\b|\bzwift racing league\b|\bzwift games\b|\bzwift academy\b|\bzts racing\b|\bindievelo\b|\bmywhoosh\b|\bvrtf\b|\bvirtuell?e?\s*(rtf|ausfahrt|radtour)\b|\bvirtual\s*(ride|race|rtf|edition)\b|\bstrava\s*edition\b/;
 
 export function isVirtualRace(name: string, placeText?: string | null): boolean {
   const blob = fold(`${name} ${placeText ?? ""}`);

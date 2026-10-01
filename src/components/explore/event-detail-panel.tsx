@@ -403,7 +403,7 @@ export function EventDetailPanel({
     >
       <CardHeader
         /*
-         * A flex row, not the card's default grid. That grid always lays out
+         * A flex row, centred, not the card's default grid. That grid always lays out
          * two rows and lets the close button span both, so the button centred
          * across a header the title only ever filled the top half of — which
          * is why the name sat visibly above the cross next to it.
@@ -412,7 +412,7 @@ export function EventDetailPanel({
          * leftovers; clear them so CardAction's col-start cannot fight the row.
          */
         className={cn(
-          "flex shrink-0 flex-row items-start gap-2 border-b px-4 py-3 [.border-b]:pb-3",
+          "flex shrink-0 flex-row items-center gap-2 border-b px-4 py-3 [.border-b]:pb-3",
           "grid-cols-none grid-rows-none",
           embedded && "py-2 [.border-b]:pb-2",
           !embedded && !anchored && "cursor-grab touch-none select-none",
@@ -437,7 +437,7 @@ export function EventDetailPanel({
               spelled out and it can run to two lines. */}
           <span
             aria-hidden
-            className="mt-1 w-[3px] shrink-0 self-stretch rounded-full"
+            className="my-0.5 w-[3px] shrink-0 self-stretch rounded-full"
             style={{ background: disciplineColor(event.disciplines) }}
           />
           <span className="min-w-0 flex-1 break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
@@ -445,7 +445,10 @@ export function EventDetailPanel({
           </span>
         </CardTitle>
         {!embedded ? (
-          <CardAction className="col-auto row-auto ml-auto shrink-0 self-start justify-self-auto">
+          // Negative margins: the button is taller than a line of text, and
+          // it must not be what sets the header's height — otherwise a
+          // one-line name sits at the top of a box sized for the cross.
+          <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto shrink-0 self-center justify-self-auto">
             <Button
               type="button"
               variant="ghost"

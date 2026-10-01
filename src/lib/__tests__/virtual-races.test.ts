@@ -4,6 +4,8 @@ import { isVirtualRace } from "@/lib/sport-gate";
 describe("isVirtualRace", () => {
   it("catches the platform's own racing", () => {
     expect(isVirtualRace("MSZ Tour de Zwift 2025", "AT")).toBe(true);
+    expect(isVirtualRace("German Cycling vRTF #21", "Frankfurt/Main")).toBe(true);
+    expect(isVirtualRace("#10 Strava Edition", null)).toBe(true);
     expect(isVirtualRace("3.MSZ Tour de Zwift 2026", "AT")).toBe(true);
     expect(isVirtualRace("ZTS Racing | Season VI", "Watopia")).toBe(true);
     expect(isVirtualRace("Zwift Racing League — Round 3", null)).toBe(true);
