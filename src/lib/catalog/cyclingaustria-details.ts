@@ -40,7 +40,10 @@ export function parseCyclingAustriaDetail(html: string): CyclingAustriaDetail {
     const i = parts.findIndex((p) => label.test(p));
     return i >= 0 ? (parts[i + 1] ?? null) : null;
   };
-  const rawPlace = after(/^(Start\/Ziel|Start|Austragungsort|Ort)$/i);
+  const FIELD_LABEL = /^(datum|beginn|ende|sparte|disziplin|kategorien?|veranstalter|kontakt|rennen\s*\d*|zur[uü]ck.*)/i;
+  let rawPlace = after(/^(Start\/Ziel|Start|Austragungsort|Ort)$/i);
+  // An empty field is followed by the next label ("Datum"), not by a place.
+  if (rawPlace && FIELD_LABEL.test(rawPlace.trim())) rawPlace = null;
   const town = rawPlace
     ? rawPlace.replace(/^\d{4}\s+/, "").replace(/\s*\(.*\)$/, "").split(",")[0]!.trim() || null
     : null;

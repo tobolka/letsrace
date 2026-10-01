@@ -21,6 +21,7 @@ import {
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
 import { looksLikeTextFragment } from "@/lib/text";
+import { isGarbagePlace } from "@/lib/dedup";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -2172,7 +2173,21 @@ async function upsertParsedEvent(
   if (incomingResults) payload.results_url = incomingResults;
 
   if (!lockedFields.includes("location_id") && locationId) {
-    payload.location_id = locationId;
+    // A calendar that names only a federal state or a country must not undo a
+    // town we have since found: the Austrian calendar did, every poll, and
+    // the race page's start town was fetched again an hour later, again and
+    // again, with a new location row each time.
+    let keepCurrentPlace = false;
+    if (existingId && isGarbagePlace(ev.placeText)) {
+      const { data: cur } = await supabase
+        .from("events")
+        .select("location:locations(municipality, lat)")
+        .eq("id", existingId)
+        .maybeSingle();
+      const loc = (cur as { location?: { municipality?: string | null; lat?: number | null } | null } | null)?.location;
+      keepCurrentPlace = Boolean(loc && loc.lat != null && !isGarbagePlace(loc.municipality));
+    }
+    if (!keepCurrentPlace) payload.location_id = locationId;
   }
 
   // Attach / create series (Talent Cup, KPŽ, …)
