@@ -15,6 +15,7 @@ async function main() {
   const { geocodePendingLocations } = await import("../src/lib/geocode");
   const until = Date.now() + Number(process.argv[2] ?? 45) * 60_000;
   let updated = 0;
+  let idle = 0;
   while (Date.now() < until) {
     const r = await geocodePendingLocations(40);
     updated += r.updated;
@@ -23,7 +24,10 @@ async function main() {
       await new Promise((res) => setTimeout(res, 120_000));
       continue;
     }
-    if (!r.attempted) break;
+    // What is left can be places no one can find ("United Kingdom", a
+    // country alone): stop once three batches in a row found nothing.
+    idle = r.updated ? 0 : idle + 1;
+    if (!r.attempted || idle >= 3) break;
     await new Promise((res) => setTimeout(res, 5_000));
   }
   console.log({ updated });
