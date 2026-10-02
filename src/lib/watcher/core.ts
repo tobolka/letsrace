@@ -40,6 +40,23 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
   }
 
   const generic = attachRegulationsUrl(url, html, extractGeneric(url, html));
+  // No parser knows this page and the pattern reader found little: let the
+  // model read it. The watcher only gets here when the page changed.
+  if (generic.length < 2) {
+    const { llmAvailable } = await import("@/lib/llm/anthropic");
+    const { extractWithLlm, calendarBudgetLeft } = await import("@/lib/watcher/extractors/llm-calendar");
+    if (llmAvailable() && calendarBudgetLeft()) {
+      try {
+        const read = await extractWithLlm(url, html);
+        if (read.events.length >= generic.length && read.events.length) {
+          const events = attachRegulationsUrl(url, html, read.events);
+          return { events, strategy: "llm", childUrls: [], confidence: 0.7 };
+        }
+      } catch {
+        // Out of credit or unreachable: the pattern reader's answer stands.
+      }
+    }
+  }
   return {
     events: generic,
     strategy: "generic",

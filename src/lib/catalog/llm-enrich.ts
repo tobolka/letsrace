@@ -16,12 +16,34 @@ const PRICE_OUT = 5;
 const AGGREGATOR = /rideandrest\.net|odjazd\.pl|kalendarzrowerowy|sumator|eventivsport|radsport-events|granfondoguide|facebook\.com|instagram\.com/i;
 const LINK_WORDS = /registr|anmeld|iscri|p[řr]ihl[aá][šs]|zapis|entry|enter|start ?list|startovn|propoz|regulation|ausschreibung|regolamento|regulamin|reglement|kategori|categor|klassen|results|ergebnis|vysledk|výsledk|risultati|wyniki|ticket|sportsoft|raceresult|racetime|datasport|endu|dostartu|sportident|timing|evenZo|\.pdf/i;
 
+const DEADLINE_WORDS =
+  /uz[aá]v[eě]rk|p[řr]ihl[aá][šs]k|registrac|anmeldeschluss|nennschluss|meldeschluss|anmeldung|iscrizion|zapisy|registration|entries close|deadline|online/gi;
+
+/** The lines around words for entering and closing dates, a little of each. */
+export function deadlineWindows(text: string, budget = 2500): string {
+  const flat = text.replace(/[ \t]+/g, " ");
+  let out = "";
+  let last = -1;
+  for (const m of flat.matchAll(DEADLINE_WORDS)) {
+    const i = m.index ?? 0;
+    if (i < last) continue;
+    const a = Math.max(0, i - 150);
+    const b = Math.min(flat.length, i + 250);
+    out += `${flat.slice(a, b)}\n…\n`;
+    last = b;
+    if (out.length > budget) break;
+  }
+  return out.slice(0, budget);
+}
+
 export type Enrichment = {
   isThisRace: boolean;
   disciplines: { value: string; quote: string }[];
   categories: { name: string; quote: string }[];
   registrationUrl: string | null;
   regulationsUrl: string | null;
+  /** When online entry closes, as the page says: ISO date and maybe a time. */
+  entryCloses: { date: string; time: string | null; quote: string } | null;
 };
 
 type Link = { url: string; text: string };
@@ -58,11 +80,12 @@ export function verifyEnrichment(
     categories?: { name?: unknown; quote?: unknown }[];
     registration_url?: unknown;
     regulations_url?: unknown;
+    entry_closes?: { date?: unknown; time?: unknown; quote?: unknown } | null;
   } | null,
   text: string,
   links: Link[],
 ): Enrichment {
-  const empty: Enrichment = { isThisRace: false, disciplines: [], categories: [], registrationUrl: null, regulationsUrl: null };
+  const empty: Enrichment = { isThisRace: false, disciplines: [], categories: [], registrationUrl: null, regulationsUrl: null, entryCloses: null };
   if (!raw) return empty;
   const hay = norm(text);
   const urls = new Set(links.map((l) => l.url));
@@ -75,7 +98,18 @@ export function verifyEnrichment(
     if (q.length >= 3 && hay.includes(q) && !disciplines.some((x) => x.value === v)) disciplines.push({ value: v, quote: d.quote });
   }
   const pick = (u: unknown) => (typeof u === "string" && urls.has(u) ? u : null);
+  let entryCloses: Enrichment["entryCloses"] = null;
+  const ec = raw.entry_closes;
+  if (ec && typeof ec.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(ec.date) && typeof ec.quote === "string") {
+    const q = norm(unquote(ec.quote));
+    const day = String(Number(ec.date.slice(8, 10)));
+    if (q.length >= 6 && hay.includes(q) && new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(q)) {
+      const time = typeof ec.time === "string" && /^\d{1,2}:\d{2}$/.test(ec.time) ? ec.time.padStart(5, "0") : null;
+      entryCloses = { date: ec.date, time, quote: ec.quote };
+    }
+  }
   return {
+    entryCloses,
     isThisRace: raw.is_this_race === true,
     disciplines,
     categories: verifiedCategories({ categories: raw.categories }, text),
@@ -87,11 +121,12 @@ export function verifyEnrichment(
 const SYSTEM =
   "You help catalogue cycling races from the organiser's own web pages. You get the race (name, date, place, what we hold) and text taken from its pages, plus a numbered list of links found on them. " +
   "Answer with JSON only, in exactly this shape: " +
-  '{"is_this_race":true|false,"disciplines":[{"value":"<id>","quote":"<verbatim>"}],"categories":[{"name":"<class as written>","quote":"<verbatim>"}],"registration_url":"<one of the listed links or null>","regulations_url":"<one of the listed links or null>"}. ' +
+  '{"is_this_race":true|false,"disciplines":[{"value":"<id>","quote":"<verbatim>"}],"categories":[{"name":"<class as written>","quote":"<verbatim>"}],"registration_url":"<one of the listed links or null>","regulations_url":"<one of the listed links or null>","entry_closes":{"date":"YYYY-MM-DD","time":"HH:MM or null","quote":"<verbatim>"} or null}. ' +
   "is_this_race is false when the text is about another race, a different year, a series overview that names no round matching this race, or something unrelated. " +
   "Discipline ids: xco (cross-country Olympic), xcc (short track), xce (eliminator), xcm (cross-country marathon / MTB marathon), mtb (other mountain bike), dh, enduro, gravel, road (road ride or race, generic), road_race, tt (time trial), criterium, hill_climb, gran_fondo (mass-start granfondo/marathon on road), cx (cyclocross / přespolní / Querfeldein / ciclocross / przełaj), track, bmx. " +
   "Give the discipline(s) this race is, each with a verbatim quote from the text that shows it. " +
-  "categories: only classes this race states (age classes, sex classes, licence classes). registration_url: the link where a rider enters; regulations_url: the link to the regulations (propozice, Ausschreibung, regolamento). Use a link exactly as listed, or null. " +
+  "categories: only classes this race states (age classes, sex classes, licence classes). registration_url: the link where a rider enters; regulations_url: the link to the regulations (propozice, Ausschreibung, regolamento). Use a link exactly as listed, or null; prefer the race's own regulations document (often a PDF) over a general page. " +
+  "entry_closes: when ONLINE entry / registration closes for this race (uzávěrka přihlášek, Anmeldeschluss, Nennschluss, chiusura iscrizioni, zapisy do, registration closes), only if the text says it, with the quote that contains that date. Not the race date, not late entry on site. " +
   "Every quote must be copied exactly from the text, at most 120 characters. Never guess; leave a list empty rather than invent.";
 
 async function askModel(
@@ -129,6 +164,7 @@ export type EnrichResult = {
   disciplinesSet: number;
   registration: number;
   regulations: number;
+  deadlines: number;
   silent: number;
   failed: number;
   tokensIn: number;
@@ -158,16 +194,16 @@ export async function enrichFromPages(opts?: {
   const supabase = createServerSupabase();
   const max = opts?.max ?? 60;
   const today = new Date().toISOString().slice(0, 10);
-  const skip = await recentlyProbed(supabase, "llm_enrich");
+  const skip = await recentlyProbed(supabase, "llm_v2");
   type Target = {
     id: string; name: string; startDate: string; place: string | null; web: string | null; regs: string | null;
-    disciplines: string[]; existing: string[]; ageConfidence: string | null; registrationUrl: string | null; regulationsUrl: string | null;
+    disciplines: string[]; existing: string[]; ageConfidence: string | null; registrationUrl: string | null; regulationsUrl: string | null; closesAt: string | null;
   };
   const targets: Target[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
     let q = supabase
       .from("events")
-      .select("id, name, start_date, website_url, registration_url, regulations_url, disciplines, age_categories, age_confidence, location:locations(municipality)")
+      .select("id, name, start_date, website_url, registration_url, regulations_url, registration_closes_at, disciplines, age_categories, age_confidence, location:locations(municipality)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -179,7 +215,7 @@ export async function enrichFromPages(opts?: {
     if (opts?.ids?.length) q = q.in("id", opts.ids);
     const { data } = await q;
     const rows = (data ?? []) as unknown as {
-      id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null;
+      id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; registration_closes_at: string | null;
       disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; location: { municipality: string | null } | null;
     }[];
     for (const r of rows) {
@@ -187,21 +223,24 @@ export async function enrichFromPages(opts?: {
       if (!r.website_url || AGGREGATOR.test(r.website_url)) continue;
       // Worth a look only if something is missing or only a guess.
       const needs =
-        r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url;
+        r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url || !r.registration_closes_at;
       if (!needs && !opts?.ids?.length) continue;
       targets.push({
         id: r.id, name: r.name, startDate: r.start_date, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
         disciplines: r.disciplines ?? [], existing: r.age_categories ?? [], ageConfidence: r.age_confidence,
-        registrationUrl: r.registration_url, regulationsUrl: r.regulations_url,
+        registrationUrl: r.registration_url, regulationsUrl: r.regulations_url, closesAt: r.registration_closes_at,
       });
       if (targets.length >= max) break;
     }
     if (rows.length < PAGE) break;
   }
 
-  const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
+  const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, deadlines: 0, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
   const review: string[] = ["kind\tdate\trace\tholds\tmodel says\tevidence"];
-  for (const t of targets) {
+  let stop = false;
+  const deadlines = new Map<string, { t: Target; date: string; time: string | null; quote: string }>();
+  const one = async (t: Target) => {
+    if (stop) return;
     try {
       const hints = hintsFor(t.name, t.startDate, t.place);
       const queue = [t.web, t.regs].filter((u): u is string => Boolean(u)).map(directDocumentUrl);
@@ -217,7 +256,7 @@ export async function enrichFromPages(opts?: {
         if (!doc) continue;
         const flat = doc.text.replace(/\s+/g, " ").trim();
         if (!intro) intro = `--- ${url}\n${flat.slice(0, 2500)}\n`;
-        const part = relevantWindows(doc.text, 5000);
+        const part = relevantWindows(doc.text, 5000) + deadlineWindows(doc.text);
         if (part.length > 200) text += `\n--- ${url}\n${part}`;
         if (doc.html) {
           for (const l of candidateLinks(doc.html, url)) if (!links.some((x) => x.url === l.url)) links.push(l);
@@ -230,8 +269,8 @@ export async function enrichFromPages(opts?: {
       const all = `${intro}${text}`.slice(0, 16_000);
       if (all.length < 300) {
         result.silent += 1;
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_enrich", "silent");
-        continue;
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
+        return;
       }
       const { raw, tokensIn, tokensOut } = await askModel({ name: t.name, startDate: t.startDate, place: t.place, disciplines: t.disciplines, website: t.web }, all, links.slice(0, 40));
       result.tokensIn += tokensIn;
@@ -242,8 +281,8 @@ export async function enrichFromPages(opts?: {
         result.notThisRace += 1;
         review.push(`not-this-race\t${t.startDate}\t${t.name}\t${t.web}\t\t`);
         opts?.log?.(`SKIP ${t.startDate}  ${t.name}  — the page is not about this race (${t.web})`);
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_enrich", "silent");
-        continue;
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
+        return;
       }
       const patch: Record<string, unknown> = {};
       const notes: string[] = [];
@@ -288,25 +327,52 @@ export async function enrichFromPages(opts?: {
         result.regulations += 1;
       }
 
+      // Written after the whole batch: a quote two races share is a hub
+      // page's window, not this race's own.
+      if (v.entryCloses && !t.closesAt && v.entryCloses.date <= t.startDate) deadlines.set(t.id, { t, ...v.entryCloses });
+
       if (!Object.keys(patch).length) {
         result.silent += 1;
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_enrich", "silent");
-        continue;
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
+        return;
       }
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}\n      ${notes.join("\n      ")}`);
-      if (opts?.dryRun) continue;
+      if (opts?.dryRun) return;
       patch.updated_at = new Date().toISOString();
       const { error } = await supabase.from("events").update(patch).eq("id", t.id);
       if (error) {
         result.failed += 1;
-        await recordProbe(supabase, t.id, "llm_enrich", "failed");
-      } else await clearProbe(supabase, t.id, "llm_enrich");
+        await recordProbe(supabase, t.id, "llm_v2", "failed");
+      } else await clearProbe(supabase, t.id, "llm_v2");
     } catch (e) {
       result.failed += 1;
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
-      if (e instanceof Error && /ANTHROPIC_API_KEY|credit balance|API 4(00|01|03|29)/.test(e.message)) break;
-      if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_enrich", "failed");
+      if (e instanceof Error && /ANTHROPIC_API_KEY|credit balance|API 4(01|03)/.test(e.message)) {
+        stop = true;
+        return;
+      }
+      if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "failed");
     }
+  };
+  const { mapPool } = await import("@/lib/watcher/pool");
+  await mapPool(targets, 4, one);
+  const quoteCount = new Map<string, number>();
+  for (const d of deadlines.values()) quoteCount.set(norm(d.quote), (quoteCount.get(norm(d.quote)) ?? 0) + 1);
+  for (const d of deadlines.values()) {
+    const line = `${d.t.startDate}  ${d.t.name}  entry closes ${d.date}${d.time ? ` ${d.time}` : ""}  „${d.quote}“`;
+    if ((quoteCount.get(norm(d.quote)) ?? 0) > 1) {
+      review.push(`shared-deadline\t${d.t.startDate}\t${d.t.name}\t\t${d.date}\t${d.quote}`);
+      opts?.log?.(`SKIP ${line}  — the same window is quoted for another race`);
+      continue;
+    }
+    result.deadlines += 1;
+    opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${line}`);
+    if (opts?.dryRun) continue;
+    await supabase
+      .from("events")
+      .update({ registration_closes_at: `${d.date}T${d.time ?? "00:00"}:00+00:00`, updated_at: new Date().toISOString() })
+      .eq("id", d.t.id)
+      .is("registration_closes_at", null);
   }
   if (opts?.reviewFile && review.length > 1) writeFileSync(opts.reviewFile, review.join("\n") + "\n");
   return result;
