@@ -9,7 +9,7 @@ const PAGE = 1000;
 
 /** Sites that list races or talk about them; the race's own page is elsewhere. */
 const NOT_THE_RACE =
-  /(^|\.)(facebook|instagram|youtube|youtu\.be|twitter|x|tiktok|strava|komoot|wikipedia|google|bing|linkedin|pinterest|tripadvisor|booking|airbnb|reddit|eventbrite|eventim|ticketmaster|allevents|meetup|radsport-events|eventivsport|odjazd|sumator|kalendarzrowerowy|velo-?kalender|velokal|mtbs|bikeboard|rennrad-?news|mtb-?news|granfondoguide|runningcalendar|bikereg|cyclingstage|procyclingstats|uci|ucichallenge|worldcyclingalliance|rad-?net|federciclismo|czechcyclingfederation|pzkol|cyclingaustria|swiss-cycling|cykloserver|cyklistika|bikeshop|decathlon|amazon|ebay|olx|goo|bicitalk|cyclocross24|winspace|meinestadt|vicenzatoday|localgyms|cyklistikaszc|ciclismo|toscana|sportal|sport24|gazzetta|corriere|ilgiorno|ansa|tuttobiciweb|bicisport|cyclingnews|velonews|radsport-news|rad-sport|nachrichten|zeitung|merkur|lokalo|stadtwerke|kalendar|calendar|calendario|kalender|termine|events?|veranstaltungen|eventi|akce|zavody|zavod|wydarzenia|imprezy|tickets?)\./i;
+  /(^|\.)(facebook|instagram|youtube|youtu\.be|twitter|x|tiktok|strava|komoot|wikipedia|google|bing|linkedin|pinterest|tripadvisor|booking|airbnb|reddit|eventbrite|eventim|ticketmaster|allevents|meetup|radsport-events|eventivsport|odjazd|sumator|kalendarzrowerowy|velo-?kalender|velokal|mtbs|bikeboard|rennrad-?news|mtb-?news|granfondoguide|runningcalendar|bikereg|cyclingstage|procyclingstats|uci|ucichallenge|worldcyclingalliance|rad-?net|federciclismo|czechcyclingfederation|pzkol|cyclingaustria|swiss-cycling|cykloserver|cyklistika|bikeshop|decathlon|amazon|ebay|olx|goo|bicitalk|pedaletricolore|radiocorsaweb|gregi|pedaletricolore|radiocorsaweb|gregi|cyclocross24|winspace|meinestadt|vicenzatoday|localgyms|cyklistikaszc|ciclismo|toscana|sportal|sport24|gazzetta|corriere|ilgiorno|ansa|tuttobiciweb|bicisport|cyclingnews|velonews|radsport-news|rad-sport|nachrichten|zeitung|merkur|lokalo|stadtwerke|kalendar|calendar|calendario|kalender|termine|events?|veranstaltungen|eventi|akce|zavody|zavod|wydarzenia|imprezy|tickets?)\./i;
 
 /** An article, a news item or an events calendar: a page about the race, not its own. */
 export function looksLikeArticleOrListing(url: string): boolean {
@@ -25,7 +25,7 @@ export function looksLikeArticleOrListing(url: string): boolean {
     /\/20\d\d\/\d{1,2}(\/|$)/.test(path) ||
     // A report or results page on last year's race, not its home.
     /(resoconto|cronaca|report|risultati|classifica|ordine-d-arrivo|results?|ergebnisse|bericht|wyniki|vysledky|galleria|gallery|fotogalerie|foto|photos?)(\/|\.|-|$)/.test(path) ||
-    /(^|\/)(news|novinky|novinka|zpravodajstvi|oznameni|tiskove-zpravy|aktuality|neuigkeiten|nieuws|novita|nowosci|aktualnosci|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
+    /(^|\/)(news|clanky|clanek|novinky|novinka|zpravodajstvi|oznameni|tiskove-zpravy|aktuality|neuigkeiten|nieuws|novita|nowosci|aktualnosci|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
     /(^|\.)(stadt|gemeinde|comune|gmina|mesto|obec|city|town|kreis)[a-z0-9-]*\./.test(host) ||
     /(news|zeitung|today|gazzett|corriere|giornale|channel|magazin|journal|presse|sport24|portal|festival|racenotify|friuleventi|audax|ivg\.|leccochannel|klosterlehnin|bad-harzburg)/.test(host)
   );
@@ -273,7 +273,7 @@ export async function findWebsites(opts?: {
           // The page must be about this race (its text) and be the race's own
           // (its name or address says so), not a calendar that lists it.
           if (pageIsAbout(text, t.name, t.municipality, t.startDate) && namedByThePage(page.url || hit.url, hit.title, t.name)) {
-            const finalUrl = page.url || hit.url;
+            const finalUrl = (page.url || hit.url).replace(/\/\(X\(\d\)S\([^)]*\)\)\//, "/").replace(/[?&]AspxAutoDetectCookieSupport=1/, "");
             chosen = {
               url: finalUrl,
               kind: platform ? "registration" : "website",
