@@ -199,7 +199,7 @@ export async function fillAgesWithModel(opts?: {
     } catch (e) {
       result.failed += 1;
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
-      if (e instanceof Error && /ANTHROPIC_API_KEY|API 4(01|03|29)/.test(e.message)) break;
+      if (e instanceof Error && /ANTHROPIC_API_KEY|credit balance|API 4(00|01|03|29)/.test(e.message)) break;
       if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_ages", "failed");
     }
   }
