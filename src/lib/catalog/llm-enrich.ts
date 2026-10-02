@@ -510,7 +510,10 @@ export async function enrichFromPages(opts?: {
       if (patch.disciplines) items.push({ id: 2, field: "discipline", value: (patch.disciplines as string[]).join(", "), evidence: v.disciplines.map((d) => around(all, d.quote, 150) || d.quote).join(" … ") });
       if (patch.registration_url) items.push({ id: 3, field: "online entry link", value: String(patch.registration_url), evidence: linkWhere(patch.registration_url) });
       if (patch.regulations_url) items.push({ id: 4, field: "regulations link", value: String(patch.regulations_url), evidence: linkWhere(patch.regulations_url) });
-      const deadline = !opts?.past && v.entryCloses && !t.closesAt && v.entryCloses.date < t.startDate ? v.entryCloses : null;
+      // An entry deadline is in the weeks before the race; a date most of a
+      // year earlier is last edition's (or when entries open).
+      const daysBefore = v.entryCloses ? (Date.parse(t.startDate) - Date.parse(v.entryCloses.date)) / 86_400_000 : -1;
+      const deadline = !opts?.past && v.entryCloses && !t.closesAt && daysBefore > 0 && daysBefore <= 200 ? v.entryCloses : null;
       if (deadline) items.push({ id: 5, field: "online entry closes", value: `${deadline.date}${deadline.time ? ` ${deadline.time}` : ""}`, evidence: around(all, deadline.quote, 300) || deadline.quote });
       if (items.length) {
         const audit = await auditProposals({ name: t.name, startDate: t.startDate, place: t.place }, items);
