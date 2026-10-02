@@ -52,3 +52,17 @@ describe("ageCategoriesFromList", () => {
     expect(names(["muži 15-35 let", "muži 36 let -60 let", "Mini 4-5 let"])).toEqual(["u7", "kids", "amateur", "masters"]);
   });
 });
+
+describe("other federations' class names", () => {
+  it("places Italian, Dutch, Polish and French youth classes", async () => {
+    const { ageCategoriesFromList } = await import("@/lib/age-bands");
+    const one = (n: string) => ageCategoriesFromList([{ name: n }], { refYear: 2026 }).filter((a) => a !== "kids" && a !== "youth");
+    expect(one("Esordienti")).toEqual(["u13", "u15"]);
+    expect(one("Allievi")).toEqual(["u17"]);
+    expect(one("Nieuwelingen")).toEqual(["u17"]);
+    expect(one("Młodzik")).toEqual(["u15"]);
+    expect(one("Juniores")).toEqual(["junior"]);
+    expect(one("Hobby Frauen")).toEqual(["amateur"]);
+    expect(one("Elite e Under 23")).toEqual(["u23"]);
+  });
+});

@@ -85,11 +85,14 @@ function bandForAge(age: number): AgeCategory | null {
 function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategory[] {
   // Without diacritics: JavaScript's \b does not see "ž" or "ě" as letters,
   // so "\bženy\b" never matched, and "zaci" is how half the forms spell it.
-  const name = rawName.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+  // "ł" has no decomposition of its own.
+  const name = rawName.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").replace(/ł/g, "l");
 
   // Named classes that ages alone would put in the wrong place: U23 and the
   // elite are adults, masters are adults of a given age.
-  if (/\bu\s*23\b/.test(name)) return ["u23"];
+  if (/\bu\s*23\b|under\s*23/.test(name)) return ["u23"];
+  // "Hobby Frauen" is a hobby class, not the women's open race.
+  if (/hobby|jedermann|amater|cicloturist|\bfun\b|funklasse/.test(name)) return ["amateur"];
   if (/\belit[ea]?\b/.test(name)) return ["elite"];
   if (/\bmasters?\b|\bveteran|\bsenior/.test(name)) return ["masters"];
 
@@ -121,6 +124,13 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   if (pupils.test(name) && /star|\bst\b\.?/.test(name)) return ["u15"];
   if (pupils.test(name)) return ["u13", "u15"];
   if (/kadet/.test(name)) return ["u17"];
+  // Other federations' youth classes.
+  if (/giovanissim|poussin|pupil|laufrad/.test(name)) return ["u7", "u9", "u11"];
+  if (/\bzak\b|\bzacy\b/.test(name)) return ["u13"];
+  if (/mlodzik|minime/.test(name)) return ["u15"];
+  if (/esordient|benjamin|aspirant|schuler/.test(name)) return ["u13", "u15"];
+  if (/allievi|nieuwelingen|cadet|jugend\b|junior mlodszy|mlodsi junior/.test(name)) return ["u17"];
+  if (/juniores|junioren|juniorinnen|juniori\b|juniorky|junior/.test(name)) return ["junior"];
   if (/junior/.test(name)) return ["junior"];
 
   // BMX and kids' cups list ages bare: "Boys 9-10", "Chlapci 7 a mladší",
