@@ -129,7 +129,7 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   if (/\bzak\b|\bzacy\b/.test(name)) return ["u13"];
   if (/mlodzik|minime/.test(name)) return ["u15"];
   if (/esordient|benjamin|aspirant|schuler/.test(name)) return ["u13", "u15"];
-  if (/allievi|nieuwelingen|cadet|jugend\b|junior mlodszy|mlodsi junior/.test(name)) return ["u17"];
+  if (/alliev[ie]|nieuwelingen|cadet|jugend\b|junior mlodszy|mlodsi junior/.test(name)) return ["u17"];
   if (/juniores|junioren|juniorinnen|juniori\b|juniorky|junior/.test(name)) return ["junior"];
   if (/junior/.test(name)) return ["junior"];
 

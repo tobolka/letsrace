@@ -109,10 +109,32 @@ export async function classesFromDossier(
     model: HAIKU,
     maxTokens: 400,
   });
-  const picked = lines.filter((l) => (json?.lines ?? []).includes(l.n));
-  const names = picked.flatMap((l) => [l.line, ...classesInQuote(l.line), ...l.line.split(/\s[-–]\s|\.\s|\s(?:e|a|und|and|et|i|y|oraz|en)\s/i)]);
-  const ages = ageCategoriesFromList(names.map((name) => ({ name })), { refYear: Number(race.startDate.slice(0, 4)) });
-  return { ages: AGE_CATEGORIES.filter((a) => ages.includes(a)), lines: picked.map(({ line, url }) => ({ line, url })), usage };
+  const picked = lines.filter((l) => (json?.lines ?? []).includes(l.n)).filter((l) => listLike(l.line, l.url));
+  return { ...bandsFromLines(picked, race.startDate), lines: picked.map(({ line, url }) => ({ line, url })), usage };
+}
+
+/**
+ * A line from a class list, not a sentence of prose that happens to say
+ * "Elite": short, or an Italian federation record's own field.
+ */
+export function listLike(line: string, url: string): boolean {
+  if (/federciclismo\.it\/race\/detail/.test(url) && /classe:|categorie ammesse/i.test(line)) return true;
+  if (line.length <= 140) return true;
+  // A long line that enumerates classes ("Master 1 (30-34 J.) - Master 2 …"),
+  // not a paragraph that mentions one.
+  const tokens = line.match(new RegExp(CLASS_LINE.source, "gi")) ?? [];
+  return tokens.length >= 4;
+}
+
+/** Bands named by class-list lines, each line read part by part. */
+export function bandsFromLines(lines: { line: string }[], startDate: string): { ages: AgeCategory[] } {
+  const names = lines.flatMap((l) => [
+    l.line,
+    ...classesInQuote(l.line),
+    ...l.line.split(/\s[-–]\s|\.\s|\s(?:e|a|und|and|et|i|y|oraz|en)\s|(?<=[A-Za-zÀ-ž])-(?=[A-Za-zÀ-ž])/i),
+  ]);
+  const ages = ageCategoriesFromList(names.map((name) => ({ name })), { refYear: Number(startDate.slice(0, 4)) });
+  return { ages: AGE_CATEGORIES.filter((a) => ages.includes(a)) };
 }
 
 /**
