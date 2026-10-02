@@ -44,6 +44,11 @@ const TARGETS = [
     notes: "kalendarzrowerowy.pl — Polish gravel and ultra calendar, pins included",
   },
   {
+    url: "https://rideandrest.net/eventi/",
+    kind: "aggregator",
+    notes: "Ride&Rest — the Italian federation calendar by month, with a page per race",
+  },
+  {
     url: "https://bikeboard.at/termine",
     kind: "aggregator",
     notes: "Bikeboard — AT and DE calendar, tagged by discipline, links the organiser",

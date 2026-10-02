@@ -17,6 +17,7 @@ const AGGREGATOR_HOSTS = [
   "radsport-events.de",
   "jiskra.potocky.cz",
   "mso.swiss",
+  "rideandrest.net",
   // An entry platform, not a race's own page: sportt.cz/race/1540 is where you
   // pay, and it took the place of the organiser's own site on the one race it
   // touched before this was here.

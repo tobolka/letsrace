@@ -167,7 +167,7 @@ export async function watchOne(row: {
     // API, the month and race pages behind a landing page): the watched page
     // staying the same says nothing, and odjazd.pl's home page stayed the same
     // while its races changed every day. Always fetched whole, never skipped.
-    const FANS_OUT = /odjazd\.pl|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com/i.test(row.url);
+    const FANS_OUT = /odjazd\.pl|rideandrest\.net|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com/i.test(row.url);
     const fetched = await fetchPage(
       row.url,
       FANS_OUT ? undefined : { etag: row.etag, lastModified: row.last_modified, contentHash: row.content_hash },
