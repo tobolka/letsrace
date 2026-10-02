@@ -2,7 +2,7 @@
  * Classes for races that state none yet: gather each race's documents, tie
  * them to the edition by its date, let the model point at the class lines,
  * derive the bands from those lines. Every write is kept in event_facts.
- *   LLM_BUDGET_USD=0.5 node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-dossier-classes.ts [--max=700] [--country=CZ] [--again] [--apply]
+ *   LLM_BUDGET_USD=0.5 node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-dossier-classes.ts [--max=700] [--country=CZ] [--again] [--past] [--apply]
  */
 import { readFileSync } from "node:fs";
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, ""); }
@@ -15,6 +15,8 @@ async function main() {
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 700);
   const country = process.argv.find((a) => a.startsWith("--country="))?.slice(10);
   const again = process.argv.includes("--again");
+  // Last season's races: what they stated carries to this year's edition.
+  const past = process.argv.includes("--past");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const { gatherDossier } = await import("../src/lib/catalog/dossier");
   const { classesFromDossier, statable } = await import("../src/lib/catalog/dossier-classes");
@@ -30,7 +32,7 @@ async function main() {
   const rows: Row[] = [];
   for (let from = 0; ; from += 1000) {
     const { data } = await s.from("events").select("id, name, start_date, website_url, registration_url, regulations_url, age_confidence, age_categories, location:locations(municipality, country_code), sources:event_sources(source_url)")
-      .eq("visibility", "public").is("merged_into_id", null).in("status", ["scheduled", "tbc", "confirmed"]).gte("start_date", today).order("start_date").order("id").range(from, from + 999);
+      .eq("visibility", "public").is("merged_into_id", null).in("status", past ? ["scheduled", "tbc", "confirmed", "completed"] : ["scheduled", "tbc", "confirmed"]).gte("start_date", past ? new Date(Date.now() - 400 * 864e5).toISOString().slice(0, 10) : today).lt("start_date", past ? today : "9999-12-31").order("start_date").order("id").range(from, from + 999);
     rows.push(...((data ?? []) as unknown as Row[]));
     if (!data || data.length < 1000) break;
   }
