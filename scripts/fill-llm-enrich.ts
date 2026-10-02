@@ -18,7 +18,7 @@ async function main() {
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 60);
   const ids = process.argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",");
   const reviewFile = `tmp/llm-review-${new Date().toISOString().slice(0, 10)}.tsv`;
-  const r = await enrichFromPages({ max, ids, dryRun: !apply, fixDisciplines: process.argv.includes("--fix-disciplines"), past: process.argv.includes("--past"), reviewFile, log: console.log });
+  const r = await enrichFromPages({ max, ids, dryRun: !apply, fixDisciplines: process.argv.includes("--fix-disciplines"), past: process.argv.includes("--past"), agesOnly: process.argv.includes("--ages"), reviewFile, log: console.log });
   console.log({ ...r, costUsd: Number(r.costUsd.toFixed(3)), dry: !apply, review: reviewFile });
 }
 main().catch((e) => { console.error(e); process.exit(1); });

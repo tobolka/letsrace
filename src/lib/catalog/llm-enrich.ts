@@ -305,6 +305,8 @@ export async function enrichFromPages(opts?: {
   max?: number;
   /** Last season instead of the coming one: what it states carries to this year's edition. */
   past?: boolean;
+  /** Only races whose classes are missing or guessed; ignores the 30-day memory, keeps the page-text one. */
+  agesOnly?: boolean;
   dryRun?: boolean;
   ids?: string[];
   fixDisciplines?: boolean;
@@ -340,7 +342,8 @@ export async function enrichFromPages(opts?: {
       disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; location: { municipality: string | null } | null;
     }[];
     for (const r of rows) {
-      if (skip.has(r.id) && !opts?.ids?.length) continue;
+      if (skip.has(r.id) && !opts?.ids?.length && !opts?.agesOnly) continue;
+      if (opts?.agesOnly && r.age_confidence === "explicit") continue;
       if (!r.website_url || AGGREGATOR.test(r.website_url)) continue;
       // Worth a look only if something is missing or only a guess.
       const needs = opts?.past
