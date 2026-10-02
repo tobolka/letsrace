@@ -654,6 +654,8 @@ export function MapFilterBar({
                     <span className="max-w-[12rem] truncate">
                       {extraMeta[id].value || extraMeta[id].label}
                     </span>
+                    {/* On, in the brand red of the LR mark — the same dot on every screen. */}
+                    {active ? <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" /> : null}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent

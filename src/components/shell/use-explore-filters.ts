@@ -25,6 +25,8 @@ import { loadSeriesList } from "@/lib/series-list";
  * country toggles off when pressed again, and picking a country that the chosen
  * cup does not race in drops the cup.
  */
+const RADIUS_STORAGE_KEY = "letsrace.explore.radius.v1";
+
 export function useExploreFilters() {
   const [filters, setFilters] = useQueryStates(filterSearchParams);
   const [ready, setReady] = useState(false);
@@ -39,7 +41,27 @@ export function useExploreFilters() {
     if (radius != null && placeStatus === "idle") locate();
   }, [radius, placeStatus, locate]);
 
+  // The distance is kept like the other filters, so the list and the
+  // calendar open with the radius last chosen on either.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has(RADIUS_PARAM)) return;
+    try {
+      const saved = Number(localStorage.getItem(RADIUS_STORAGE_KEY));
+      if (saved > 0) void setRadiusParam(saved);
+    } catch {
+      /* storage blocked */
+    }
+    // Restore once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function setRadius(km: number | null) {
+    try {
+      if (km == null) localStorage.removeItem(RADIUS_STORAGE_KEY);
+      else localStorage.setItem(RADIUS_STORAGE_KEY, String(km));
+    } catch {
+      /* storage blocked */
+    }
     void setRadiusParam(km);
     if (km != null && place.status !== "ready") place.locate();
   }
@@ -142,7 +164,7 @@ export function useExploreFilters() {
   function reset() {
     const w = thisWeekendRange();
     setResetKey((n) => n + 1);
-    void setRadiusParam(null);
+    setRadius(null);
     void setFilters({
       q: null,
       categories: [],
