@@ -161,7 +161,7 @@ const SYSTEM =
 /** Spent by this process on calendar pages; a run stops asking past its budget. */
 let spentUsd = 0;
 export function calendarBudgetLeft(): boolean {
-  return spentUsd < Number(process.env.LLM_CALENDAR_BUDGET_USD ?? 1);
+  return spentUsd < Number(process.env.LLM_CALENDAR_BUDGET_USD ?? 0.25);
 }
 
 /**

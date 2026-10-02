@@ -26,6 +26,16 @@ step "Race pages and regulations"          scripts/fill-regulation-ages.ts --max
 step "Entry links from race pages"         scripts/fill-registration-links.ts --max=1500 --apply
 step "RaceResult, FCI, defaults"           scripts/fill-source-ages.ts
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
+# The language model reads race pages once a day, within a small budget:
+# new races, and ones not read for a month. Calendars it reads only when they
+# change (inside the watch steps above, capped per process).
+TODAY=$(date +%F)
+if [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; then
+  LLM_BUDGET_USD=0.3  step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
+  LLM_BUDGET_USD=0.15 step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
+  step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
+  echo "$TODAY" > tmp/.llm-day
+fi
 step "Last year's editions"                scripts/carry-forward-editions.ts --apply
 step "Confirmed series categories"         scripts/apply-series-ages.ts
 step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30

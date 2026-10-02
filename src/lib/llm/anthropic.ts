@@ -45,7 +45,7 @@ export async function askJson<T>(opts: {
 }): Promise<{ json: T | null; usage: LlmUsage; stopReason: string | null }> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new LlmUnavailable("ANTHROPIC_API_KEY is not set");
-  const budget = Number(process.env.LLM_BUDGET_USD ?? 2);
+  const budget = Number(process.env.LLM_BUDGET_USD ?? 0.25);
   if (spent >= budget) throw new LlmUnavailable(`LLM budget of $${budget} for this run is spent`);
   const model = opts.model ?? HAIKU;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
