@@ -246,7 +246,7 @@ export async function findWebsites(opts?: {
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
       // No site of its own: none, or only a calendar's page for it.
-      .or("website_url.is.null,website_url.ilike.%rideandrest.net%,website_url.ilike.%odjazd.pl%,website_url.ilike.%kalendarzrowerowy%,website_url.ilike.%eventivsport%,website_url.ilike.%radsport-events%,website_url.ilike.%granfondoguide%,website_url.ilike.%cyklistikaszc.sk%,website_url.ilike.%cyklokros.cz/kalendar%")
+      .or("website_url.is.null,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*")
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
@@ -343,7 +343,7 @@ export async function findWebsites(opts?: {
             .from("events")
             .update({ [chosen.kind === "registration" ? "registration_url" : "website_url"]: chosen.url, updated_at: new Date().toISOString() })
             .eq("id", t.id)
-            .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.%rideandrest.net%,website_url.ilike.%odjazd.pl%,website_url.ilike.%kalendarzrowerowy%,website_url.ilike.%eventivsport%,website_url.ilike.%radsport-events%,website_url.ilike.%granfondoguide%,website_url.ilike.%cyklistikaszc.sk%,website_url.ilike.%cyklokros.cz/kalendar%");
+            .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*");
           await clearProbe(supabase, t.id, "web_search");
         }
       }
