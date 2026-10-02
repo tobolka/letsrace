@@ -76,8 +76,8 @@ function describe(r: Row): string {
 
 const SYSTEM =
   "You de-duplicate a catalogue of cycling races collected from many calendars. For each numbered pair, decide whether A and B are the SAME event (one race listed twice: by two sources, in two languages, once by its own name and once as a series round, with or without the venue) or DIFFERENT events (even at one venue on one day: a kids' race beside the main race, an e-bike or hobby heat, a different discipline, a ride next to a race, two rounds of different cups, a festival vs one race within it when both are listed on purpose). " +
-  "A multi-day event and one of its days count as the same only when that day IS the event (a listing that gives just the main day). " +
-  "Two races of one festival or weekend are DIFFERENT: a time trial and the mass-start granfondo, an RTF and a brevet, a kick-off ride and a wrap-up ride, different distances listed as their own events, a kids' cup round and the elite race. " +
+  "For riders the catalogue lists events, not every start: an event and a race or distance within it (a festival and its enduro race, a gravel weekend and its 100 km ride, a series round listed by its own name and as the round) at the same venue on overlapping days are the SAME event. " +
+  "They are DIFFERENT when they are separate events that merely share a venue or a weekend: two different organisers, two different series, a kids' cup round on another day, or a different discipline (road race vs. MTB). " +
   "Different towns are different events unless one record clearly has a wrong or vague place. Do not reason your way to 'same' from a shared series or venue alone. " +
   'Answer JSON only: {"pairs":[{"n":1,"verdict":"same|different|unsure","confidence":0.0-1.0,"reason":"short"}]}. Use "unsure" when the records do not let you tell.';
 
