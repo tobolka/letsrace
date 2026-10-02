@@ -28,7 +28,7 @@ async function main() {
   let cost = 0, found = 0;
   const out: string[] = [];
   await mapPool(sample, 4, async (r) => {
-    const docs = await gatherDossier({ startDate: r.start_date, website: r.website_url, registration: r.registration_url, regulations: r.regulations_url, sources: (r.sources ?? []).map((x) => x.source_url).filter((u): u is string => Boolean(u)), render: true }).catch(() => []);
+    const docs = await gatherDossier({ startDate: r.start_date, website: r.website_url, registration: r.registration_url, regulations: r.regulations_url, sources: (r.sources ?? []).map((x) => x.source_url).filter((u): u is string => Boolean(u)), render: process.argv.includes("--render") }).catch(() => []);
     try {
       const got = await classesFromDossier({ name: r.name, startDate: r.start_date, place: r.location?.municipality }, docs);
       cost += got.usage?.costUsd ?? 0;

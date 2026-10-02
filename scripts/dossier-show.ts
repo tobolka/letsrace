@@ -14,7 +14,7 @@ async function main() {
     const { data } = await s.from("events").select("name, start_date, website_url, registration_url, regulations_url, location:locations(municipality), sources:event_sources(source_url)").ilike("name", `%${frag}%`).gte("start_date", new Date().toISOString().slice(0, 10)).is("merged_into_id", null).limit(1);
     const r = (data ?? [])[0] as unknown as { name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; location: { municipality: string | null } | null; sources: { source_url: string | null }[] } | undefined;
     if (!r) continue;
-    const docs = await gatherDossier({ startDate: r.start_date, website: r.website_url, registration: r.registration_url, regulations: r.regulations_url, sources: r.sources.map((x) => x.source_url!).filter(Boolean), render: true });
+    const docs = await gatherDossier({ startDate: r.start_date, website: r.website_url, registration: r.registration_url, regulations: r.regulations_url, sources: r.sources.map((x) => x.source_url!).filter(Boolean), render: process.argv.includes("--render") });
     const ed = editionDocs(docs, r.start_date, [r.name, r.location?.municipality ?? ""]);
     console.log(`\n=== ${r.start_date} ${r.name}`);
     for (const d of docs) console.log(`  ${ed.includes(d) ? "ED" : "  "} ${d.kind.padEnd(12)} date:${d.thisEdition ? "y" : "n"} classes:${String(d.classLines).padStart(3)} len:${d.text.length}  ${d.url.slice(0, 110)}`);

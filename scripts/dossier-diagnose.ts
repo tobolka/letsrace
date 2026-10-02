@@ -38,7 +38,7 @@ async function main() {
       registration: r.registration_url,
       regulations: r.regulations_url,
       sources: (r.sources ?? []).map((x) => x.source_url).filter((u): u is string => Boolean(u)),
-      render: true,
+      render: process.argv.includes("--render"),
     }).catch(() => []);
     const c = r.location?.country_code ?? "?";
     for (const k of [c, "ALL"]) {
