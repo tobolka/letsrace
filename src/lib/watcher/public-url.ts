@@ -118,6 +118,17 @@ function officialDepth(url: string): number {
 }
 
 /** Keep a same-host race page (`/26-hk/`) over a listing, homepage, or /prihlaseni. */
+/** Calendars and listings that give each race a page of their own. */
+const CALENDAR_PAGE_HOSTS = /(^|\.)(odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net|cyklistikaszc\.sk|sumator\.cz|maraton\.cz|velokal\.de)$/i;
+
+export function isCalendarPage(url: string | null | undefined): boolean {
+  try {
+    return CALENDAR_PAGE_HOSTS.test(new URL(url ?? "").hostname.replace(/^www\./, ""));
+  } catch {
+    return false;
+  }
+}
+
 export function preferDeeperOfficialUrl(
   incoming: string | null | undefined,
   existing: string | null | undefined,
@@ -133,6 +144,10 @@ export function preferDeeperOfficialUrl(
   // page back over it, and the card lost its only "more info" link. An entry
   // platform already has the Register button; the website slot is for the
   // organiser.
+  // A calendar's page for the race is a stand-in: once the organiser's own
+  // site is known, the next crawl of the calendar must not write it back.
+  if (isCalendarPage(prev) && !isCalendarPage(next)) return next;
+  if (isCalendarPage(next) && !isCalendarPage(prev)) return prev;
   if (isRegistrationPlatformUrl(prev) && !isRegistrationPlatformUrl(next)) return next;
   if (isRegistrationPlatformUrl(next) && !isRegistrationPlatformUrl(prev)) return prev;
   try {
