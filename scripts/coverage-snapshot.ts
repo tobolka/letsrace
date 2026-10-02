@@ -30,7 +30,8 @@ async function main() {
       .select("disciplines, age_categories, age_confidence, website_url, registration_url, regulations_url, location:locations(country_code, lat)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today).lte("start_date", until).order("id").range(from, from + 999);
-    for (const e of (data ?? []) as any[]) {
+    type E = { disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; website_url: string | null; registration_url: string | null; regulations_url: string | null; location: { country_code: string | null; lat: number | null } | null };
+    for (const e of (data ?? []) as unknown as E[]) {
       for (const c of ["ALL", e.location?.country_code ?? "?"]) {
         add(c, "races");
         if (e.location?.lat != null) add(c, "pin");

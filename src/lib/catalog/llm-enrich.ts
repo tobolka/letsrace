@@ -504,7 +504,6 @@ export async function enrichFromPages(opts?: {
 
       // A second opinion on every proposal before anything is written.
       const items: AuditItem[] = [];
-      const linkText = (u: unknown) => links.find((l) => l.url === u)?.text ?? "";
       const linkWhere = (u: unknown) => {
         const l = links.find((x) => x.url === u);
         return `link label "${l?.text ?? ""}"; the link sits in: "${l?.context ?? ""}"; found while reading ${t.web}`;
