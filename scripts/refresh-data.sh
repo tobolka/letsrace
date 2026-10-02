@@ -30,7 +30,8 @@ step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=60
 # new races, and ones not read for a month. Calendars it reads only when they
 # change (inside the watch steps above, capped per process).
 TODAY=$(date +%F)
-if [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; then
+# Off until the plan in docs/llm-data-plan.md is agreed: LLM_DAILY=1 turns it on.
+if [ "${LLM_DAILY:-0}" = "1" ] && [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; then
   LLM_BUDGET_USD=0.3  step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
   LLM_BUDGET_USD=0.15 step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
   step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply

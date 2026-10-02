@@ -175,7 +175,7 @@ export async function fillAgesWithModel(opts?: {
       result.tokensOut += tokensOut;
       result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000;
       const good = answer ? verifiedCategories(answer, text) : [];
-      const ages = new Set<AgeCategory>(ageCategoriesFromList(good.map((c) => ({ name: c.name })), { refYear: Number(t.startDate.slice(0, 4)) }));
+      const ages = new Set<AgeCategory>(ageCategoriesFromList(good.map((c) => ({ name: c.quote })), { refYear: Number(t.startDate.slice(0, 4)) }));
       const specific = [...ages].filter((a) => !["kids", "youth"].includes(a)).length;
       if (specific < 2) {
         result.silent += 1;

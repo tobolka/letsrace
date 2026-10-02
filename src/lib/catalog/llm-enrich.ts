@@ -7,6 +7,7 @@ import { AGE_CATEGORIES, DISCIPLINES, audienceFromAgeCategories, type AgeCategor
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { CHAMPIONSHIP, directDocumentUrl, hintsFor, readDocument, relatedDocumentLinks } from "@/lib/catalog/regulation-ages";
 import { findRegulationsUrl } from "@/lib/watcher/regulations-url";
+import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
 import { askJson, LlmUnavailable } from "@/lib/llm/anthropic";
 
@@ -35,6 +36,32 @@ export function deadlineWindows(text: string, budget = 2500): string {
   }
   return out.slice(0, budget);
 }
+
+/** What a quote must say for each discipline it is evidence of. */
+export const DISCIPLINE_WORDS: Record<string, RegExp> = {
+  cx: /cyclo.?cross|cyklokros|p[řr]espol|prze[łl]aj|querfeldein|ciclocross|veldrit|\bcx\b|radcross|crossrennen/i,
+  xco: /\bxco\b|cross.?country|olymp/i,
+  xcc: /\bxcc\b|short.?track/i,
+  xce: /\bxce\b|eliminator/i,
+  xcm: /\bxcm\b|marat[oó]n|marathon/i,
+  mtb: /\bmtb\b|mountain.?bike|horsk[eéáý]|bike.?park|\bvtt\b|fuoristrada|g[óo]rsk|bike.?marathon/i,
+  dh: /downhill|\bdh\b|sjezd|discesa/i,
+  enduro: /enduro/i,
+  gravel: /gravel|[šs]otol|szutr|strade bianche|schotter/i,
+  road: /\broad\b|silni[cč]|stra[sß]e|strada|szos|rennrad|\broute\b|radrennen|in linea/i,
+  road_race: /\broad\b|silni[cč]|stra[sß]e|strada|szos|rennrad|radrennen|in linea/i,
+  tt: /time.?trial|[čc]asovk|zeitfahren|crono|jazda na czas|\bitt\b|\btt\b|contre.?la.?montre|tijdrit/i,
+  criterium: /kriterium|criterium/i,
+  hill_climb: /hill.?climb|do vrchu|bergzeitfahren|bergrennen|cronoscalata|podjazd|bergpreis/i,
+  gran_fondo: /gran.?fondo|granfondo|radmarathon|cyklomaraton|mediofondo|sportive/i,
+  track: /\btrack\b|dr[áa]h|bahn|\bpista\b|velodrom/i,
+  bmx: /\bbmx\b/i,
+};
+const REGISTRATION_WORDS = /registr|anmeld|nennung|iscri|p[řr]ihl[aá][šs]|zapis|entry|entries|enter|sign.?up|inscri|tickets?|startpl[aä]tz|meld/i;
+const REGULATIONS_WORDS = /propoz|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|guide|info.?pdf|teilnehmerinfo|rules|pravidl/i;
+/** Pages that sit next to entry links and are not one: schedules, results, galleries. */
+const NOT_A_LINK_FOR = /harmonogram|schedule|zeitplan|programm?e?\b|ergebnis|results?|v[ýy]sledk|wyniki|risultati|classifica|galer|gallery|foto|photo|startlist|startovn[ií] listin|news|aktuality/i;
+const DEADLINE_QUOTE = /uz[aá]v[eě]rk|p[řr]ihl[aá][šs]|registr|anmeld|nennschluss|meldeschluss|iscrizi|zapis|entr|deadline|closes|bis zum|do\s+\d|until|online/i;
 
 export type Enrichment = {
   isThisRace: boolean;
@@ -95,15 +122,26 @@ export function verifyEnrichment(
     const v = d.value.trim().toLowerCase();
     const q = norm(unquote(d.quote));
     if (!(DISCIPLINES as readonly string[]).includes(v) || v === "other") continue;
+    // The quote has to name the discipline, not just be somewhere on the page.
+    const word = DISCIPLINE_WORDS[v];
+    if (!word || !word.test(q)) continue;
     if (q.length >= 3 && hay.includes(q) && !disciplines.some((x) => x.value === v)) disciplines.push({ value: v, quote: d.quote });
   }
-  const pick = (u: unknown) => (typeof u === "string" && urls.has(u) ? u : null);
+  const byUrl = new Map(links.map((l) => [l.url, l]));
+  const pick = (u: unknown, kind: "registration" | "regulations") => {
+    if (typeof u !== "string" || !urls.has(u)) return null;
+    const l = byUrl.get(u)!;
+    const blob = `${l.text} ${u}`;
+    if (NOT_A_LINK_FOR.test(blob)) return null;
+    if (kind === "registration") return isRegistrationPlatformUrl(u) || REGISTRATION_WORDS.test(blob) ? u : null;
+    return /\.pdf(\?|#|$)/i.test(u) || REGULATIONS_WORDS.test(blob) ? u : null;
+  };
   let entryCloses: Enrichment["entryCloses"] = null;
   const ec = raw.entry_closes;
   if (ec && typeof ec.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(ec.date) && typeof ec.quote === "string") {
     const q = norm(unquote(ec.quote));
     const day = String(Number(ec.date.slice(8, 10)));
-    if (q.length >= 6 && hay.includes(q) && new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(q)) {
+    if (q.length >= 6 && hay.includes(q) && DEADLINE_QUOTE.test(q) && new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(q)) {
       const time = typeof ec.time === "string" && /^\d{1,2}:\d{2}$/.test(ec.time) ? ec.time.padStart(5, "0") : null;
       entryCloses = { date: ec.date, time, quote: ec.quote };
     }
@@ -113,8 +151,8 @@ export function verifyEnrichment(
     isThisRace: raw.is_this_race === true,
     disciplines,
     categories: verifiedCategories({ categories: raw.categories }, text),
-    registrationUrl: pick(raw.registration_url),
-    regulationsUrl: pick(raw.regulations_url),
+    registrationUrl: pick(raw.registration_url, "registration"),
+    regulationsUrl: pick(raw.regulations_url, "regulations"),
   };
 }
 
@@ -276,7 +314,7 @@ export async function enrichFromPages(opts?: {
       const notes: string[] = [];
 
       if (t.ageConfidence !== "explicit") {
-        const ages = new Set<AgeCategory>(ageCategoriesFromList(v.categories.map((c) => ({ name: c.name })), { refYear: Number(t.startDate.slice(0, 4)) }));
+        const ages = new Set<AgeCategory>(ageCategoriesFromList(v.categories.map((c) => ({ name: c.quote })), { refYear: Number(t.startDate.slice(0, 4)) }));
         const specific = [...ages].filter((a) => !["kids", "youth"].includes(a)).length;
         if (specific >= 2 && !CHAMPIONSHIP.test(t.name)) {
           if (![...ages].some((a) => ["junior", "u23", "elite", "amateur", "masters"].includes(a))) t.existing.forEach((a) => ages.add(a as AgeCategory));

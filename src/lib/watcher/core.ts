@@ -45,7 +45,8 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
   if (generic.length < 2) {
     const { llmAvailable } = await import("@/lib/llm/anthropic");
     const { extractWithLlm, calendarBudgetLeft } = await import("@/lib/watcher/extractors/llm-calendar");
-    if (llmAvailable() && calendarBudgetLeft()) {
+    // Off until agreed (docs/llm-data-plan.md): LLM_CALENDARS=1 turns it on.
+    if (process.env.LLM_CALENDARS === "1" && llmAvailable() && calendarBudgetLeft()) {
       try {
         const read = await extractWithLlm(url, html);
         if (read.events.length >= generic.length && read.events.length) {
