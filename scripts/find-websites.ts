@@ -22,8 +22,10 @@ async function main() {
   const { appendFileSync, mkdirSync } = await import("node:fs");
   mkdirSync("tmp", { recursive: true });
   const review = `tmp/web-finder-review-${new Date().toISOString().slice(0, 10)}.tsv`;
+  const countries = process.argv.find((a) => a.startsWith("--countries="))?.slice(12).split(",");
   const result = await findWebsites({
     max,
+    countries,
     dryRun: !apply,
     log: console.log,
     // Likely but not sure: a person's call. One line each: id, date, race, link.

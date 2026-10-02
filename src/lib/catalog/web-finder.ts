@@ -203,6 +203,8 @@ export type FoundSite = { id: string; name: string; startDate: string; url: stri
 
 export async function findWebsites(opts?: {
   max?: number;
+  /** Only races in these countries. */
+  countries?: string[];
   dryRun?: boolean;
   delayMs?: number;
   log?: (line: string) => void;
@@ -218,19 +220,22 @@ export async function findWebsites(opts?: {
   for (let from = 0; targets.length < max; from += PAGE) {
     const { data } = await supabase
       .from("events")
-      .select("id, name, start_date, location:locations(municipality)")
+      .select("id, name, start_date, registration_url, website_url, location:locations(municipality, country_code)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
-      .or("website_url.is.null,website_url.ilike.%rideandrest.net%")
-      .is("registration_url", null)
+      // No site of its own: none, or only a calendar's page for it.
+      .or("website_url.is.null,website_url.ilike.%rideandrest.net%,website_url.ilike.%odjazd.pl%,website_url.ilike.%kalendarzrowerowy%,website_url.ilike.%eventivsport%,website_url.ilike.%radsport-events%,website_url.ilike.%granfondoguide%,website_url.ilike.%cyklistikaszc.sk%,website_url.ilike.%cyklokros.cz/kalendar%")
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
-    const rows = (data ?? []) as unknown as { id: string; name: string; start_date: string; location: { municipality: string | null } | null }[];
+    const rows = (data ?? []) as unknown as { id: string; name: string; start_date: string; registration_url: string | null; website_url: string | null; location: { municipality: string | null; country_code: string | null } | null }[];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
+      if (opts?.countries?.length && !opts.countries.includes(row.location?.country_code ?? "")) continue;
+      // With no site at all, an entry page is already somewhere to go.
+      if (!row.website_url && row.registration_url) continue;
       targets.push({ id: row.id, name: row.name, startDate: row.start_date, municipality: row.location?.municipality ?? null });
       if (targets.length >= max) break;
     }
@@ -304,7 +309,7 @@ export async function findWebsites(opts?: {
             .from("events")
             .update({ [chosen.kind === "registration" ? "registration_url" : "website_url"]: chosen.url, updated_at: new Date().toISOString() })
             .eq("id", t.id)
-            .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.%rideandrest.net%");
+            .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.%rideandrest.net%,website_url.ilike.%odjazd.pl%,website_url.ilike.%kalendarzrowerowy%,website_url.ilike.%eventivsport%,website_url.ilike.%radsport-events%,website_url.ilike.%granfondoguide%,website_url.ilike.%cyklistikaszc.sk%,website_url.ilike.%cyklokros.cz/kalendar%");
           await clearProbe(supabase, t.id, "web_search");
         }
       }
