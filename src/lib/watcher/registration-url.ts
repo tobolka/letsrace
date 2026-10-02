@@ -4,6 +4,9 @@
 
 const REGISTRATION_HOSTS = [
   "raceresult.com",
+  "sportstiming.dk",
+  "letsdothis.com",
+  "britishcycling.org.uk/events",
   "my.raceresult.com",
   "datasport.com",
   "datasport.de",

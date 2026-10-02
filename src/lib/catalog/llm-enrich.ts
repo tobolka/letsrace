@@ -9,7 +9,12 @@ import { CHAMPIONSHIP, directDocumentUrl, hintsFor, readDocument, relatedDocumen
 import { findRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
-import { askJson, LlmUnavailable } from "@/lib/llm/anthropic";
+import { askJson, HAIKU, LlmUnavailable } from "@/lib/llm/anthropic";
+import { alreadyRead, markRead, recordFacts, textHash, type Fact } from "@/lib/catalog/facts";
+
+/** Bump when the prompt or the checks change: pages are read again, facts carry it. */
+export const ENRICH_VERSION = "enrich-v3";
+const KIDS_RACE = /kids|kinder|d[ěe]ti|d[ěe]tsk|ml[aá]de|youth|jugend|nachwuchs|giovan|[žz][aá]k|dzieci|mini|pupil|scolair|jeunes|petits/i;
 
 const PAGE = 1000;
 const PRICE_IN = 1;
@@ -298,11 +303,26 @@ export async function enrichFromPages(opts?: {
         if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
         return;
       }
+      // The same text read by the same version gives the same answer: do not pay twice.
+      const hash = textHash(`${ENRICH_VERSION}\n${all}\n${links.map((l) => l.url).join("\n")}`);
+      if (!opts?.ids?.length && (await alreadyRead(supabase, t.web!, ENRICH_VERSION, hash))) {
+        result.silent += 1;
+        return;
+      }
+      /** The page a quote was taken from: the nearest "--- url" header above it. */
+      const sourceOf = (quote: string | undefined | null): string | null => {
+        if (!quote) return t.web;
+        const at = all.toLowerCase().replace(/\s+/g, " ").indexOf(quote.toLowerCase().replace(/\s+/g, " ").slice(0, 40));
+        const head = [...all.slice(0, Math.max(0, at)).matchAll(/--- (\S+)/g)].pop();
+        return head?.[1] ?? t.web;
+      };
+      const facts: Fact[] = [];
       const { raw, tokensIn, tokensOut } = await askModel({ name: t.name, startDate: t.startDate, place: t.place, disciplines: t.disciplines, website: t.web }, all, links.slice(0, 40));
       result.tokensIn += tokensIn;
       result.tokensOut += tokensOut;
       result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000;
       const v = verifyEnrichment(raw, all, links);
+      if (!opts?.dryRun) await markRead(supabase, t.web!, ENRICH_VERSION, hash);
       if (!v.isThisRace) {
         result.notThisRace += 1;
         review.push(`not-this-race\t${t.startDate}\t${t.name}\t${t.web}\t\t`);
@@ -317,13 +337,22 @@ export async function enrichFromPages(opts?: {
         const ages = new Set<AgeCategory>(ageCategoriesFromList(v.categories.map((c) => ({ name: c.quote })), { refYear: Number(t.startDate.slice(0, 4)) }));
         const specific = [...ages].filter((a) => !["kids", "youth"].includes(a)).length;
         if (specific >= 2 && !CHAMPIONSHIP.test(t.name)) {
-          if (![...ages].some((a) => ["junior", "u23", "elite", "amateur", "masters"].includes(a))) t.existing.forEach((a) => ages.add(a as AgeCategory));
+          const adults = [...ages].some((a) => ["junior", "u23", "elite", "amateur", "masters"].includes(a));
           const ordered = AGE_CATEGORIES.filter((a) => ages.has(a));
+          // Only children's classes on a race that is not a children's race:
+          // a kids' page of a bigger event. Stated alone it would hide the race
+          // from every adult; leave it for a person.
+          if (!adults && !KIDS_RACE.test(t.name)) {
+            review.push(`kids-only\t${t.startDate}\t${t.name}\t${t.existing.join(",")}\t${ordered.join(",")}\t${v.categories[0]?.quote ?? ""}`);
+          } else {
           patch.age_categories = ordered;
           patch.age_confidence = "explicit";
           patch.audience = audienceFromAgeCategories(ordered);
-          notes.push(`ages ${ordered.join(",")}  „${v.categories[0]?.quote}“`);
+          notes.push(`ages ${ordered.join(",")}  ${v.categories.map((c) => `„${c.quote}“`).slice(0, 6).join(" ")}`);
+          facts.push({ field: "age_categories", value: ordered, previous: t.existing, sourceUrl: sourceOf(v.categories[0]?.quote), quote: v.categories.map((c) => c.quote).join(" | ").slice(0, 1000) });
+          facts.push({ field: "age_confidence", value: "explicit", previous: t.ageConfidence });
           result.ages += 1;
+          }
         }
       }
 
@@ -332,24 +361,28 @@ export async function enrichFromPages(opts?: {
         if (!t.disciplines.length) {
           patch.disciplines = found;
           notes.push(`discipline ${found.join(",")}  „${v.disciplines[0]!.quote}“`);
+          facts.push({ field: "disciplines", value: found, previous: t.disciplines, sourceUrl: sourceOf(v.disciplines[0]!.quote), quote: v.disciplines.map((d) => d.quote).join(" | ") });
           result.disciplinesSet += 1;
         } else if (!found.some((f) => t.disciplines.includes(f))) {
           review.push(`discipline\t${t.startDate}\t${t.name}\t${t.disciplines.join(",")}\t${found.join(",")}\t${v.disciplines[0]!.quote.replace(/\s+/g, " ")}`);
           if (opts?.fixDisciplines) {
             patch.disciplines = found;
             notes.push(`discipline ${t.disciplines.join(",")} → ${found.join(",")}  „${v.disciplines[0]!.quote}“`);
+            facts.push({ field: "disciplines", value: found, previous: t.disciplines, sourceUrl: sourceOf(v.disciplines[0]!.quote), quote: v.disciplines.map((d) => d.quote).join(" | ") });
             result.disciplinesSet += 1;
           }
         }
       }
       if (v.registrationUrl && !t.registrationUrl) {
         patch.registration_url = v.registrationUrl;
-        notes.push(`registration ${v.registrationUrl}`);
+        notes.push(`registration ${v.registrationUrl}  [${links.find((l) => l.url === v.registrationUrl)?.text ?? ""}]`);
+        facts.push({ field: "registration_url", value: v.registrationUrl, previous: null, sourceUrl: t.web, quote: links.find((l) => l.url === v.registrationUrl)?.text ?? null });
         result.registration += 1;
       }
       if (v.regulationsUrl && !t.regulationsUrl) {
         patch.regulations_url = v.regulationsUrl;
-        notes.push(`regulations ${v.regulationsUrl}`);
+        notes.push(`regulations ${v.regulationsUrl}  [${links.find((l) => l.url === v.regulationsUrl)?.text ?? ""}]`);
+        facts.push({ field: "regulations_url", value: v.regulationsUrl, previous: null, sourceUrl: t.web, quote: links.find((l) => l.url === v.regulationsUrl)?.text ?? null });
         result.regulations += 1;
       }
 
@@ -366,6 +399,7 @@ export async function enrichFromPages(opts?: {
       if (opts?.dryRun) return;
       patch.updated_at = new Date().toISOString();
       const { error } = await supabase.from("events").update(patch).eq("id", t.id);
+      if (!error) await recordFacts(supabase, t.id, facts, { method: "llm", model: HAIKU, version: ENRICH_VERSION });
       if (error) {
         result.failed += 1;
         await recordProbe(supabase, t.id, "llm_v2", "failed");
@@ -394,11 +428,14 @@ export async function enrichFromPages(opts?: {
     result.deadlines += 1;
     opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${line}`);
     if (opts?.dryRun) continue;
-    await supabase
+    const value = `${d.date}T${d.time ?? "00:00"}:00+00:00`;
+    const { data: done } = await supabase
       .from("events")
-      .update({ registration_closes_at: `${d.date}T${d.time ?? "00:00"}:00+00:00`, updated_at: new Date().toISOString() })
+      .update({ registration_closes_at: value, updated_at: new Date().toISOString() })
       .eq("id", d.t.id)
-      .is("registration_closes_at", null);
+      .is("registration_closes_at", null)
+      .select("id");
+    if (done?.length) await recordFacts(supabase, d.t.id, [{ field: "registration_closes_at", value: `${d.date}T${d.time ?? "00:00"}:00+00:00`, previous: null, sourceUrl: d.t.web, quote: d.quote }], { method: "llm", model: HAIKU, version: ENRICH_VERSION });
   }
   if (opts?.reviewFile && review.length > 1) writeFileSync(opts.reviewFile, review.join("\n") + "\n");
   return result;
