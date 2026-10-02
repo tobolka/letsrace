@@ -1,3 +1,4 @@
+import { askJson, llmAvailable, LlmUnavailable, SONNET } from "@/lib/llm/anthropic";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -9,7 +10,7 @@ const PAGE = 1000;
 
 /** Sites that list races or talk about them; the race's own page is elsewhere. */
 const NOT_THE_RACE =
-  /(^|\.)(facebook|instagram|youtube|youtu\.be|twitter|x|tiktok|strava|komoot|wikipedia|google|bing|linkedin|pinterest|tripadvisor|booking|airbnb|reddit|eventbrite|eventim|ticketmaster|allevents|meetup|radsport-events|eventivsport|odjazd|sumator|kalendarzrowerowy|velo-?kalender|velokal|mtbs|bikeboard|rennrad-?news|mtb-?news|granfondoguide|runningcalendar|bikereg|cyclingstage|procyclingstats|uci|ucichallenge|worldcyclingalliance|rad-?net|federciclismo|czechcyclingfederation|pzkol|cyclingaustria|swiss-cycling|cykloserver|cyklistika|bikeshop|decathlon|amazon|ebay|olx|goo|bicitalk|pedaletricolore|radiocorsaweb|gregi|pedaletricolore|radiocorsaweb|gregi|cyclocross24|winspace|meinestadt|vicenzatoday|localgyms|cyklistikaszc|ciclismo|toscana|sportal|sport24|gazzetta|corriere|ilgiorno|ansa|tuttobiciweb|bicisport|cyclingnews|velonews|radsport-news|rad-sport|nachrichten|zeitung|merkur|lokalo|stadtwerke|kalendar|calendar|calendario|kalender|termine|events?|veranstaltungen|eventi|akce|zavody|zavod|wydarzenia|imprezy|tickets?)\./i;
+  /(^|\.)(facebook|instagram|youtube|youtu\.be|twitter|x|tiktok|strava|komoot|wikipedia|google|bing|linkedin|pinterest|tripadvisor|booking|airbnb|reddit|eventbrite|eventim|ticketmaster|allevents|meetup|radsport-events|eventivsport|odjazd|sumator|kalendarzrowerowy|velo-?kalender|velokal|mtbs|bikeboard|rennrad-?news|mtb-?news|granfondoguide|runningcalendar|bikereg|cyclingstage|procyclingstats|uci|ucichallenge|worldcyclingalliance|rad-?net|federciclismo|czechcyclingfederation|pzkol|cyclingaustria|swiss-cycling|cykloserver|cyklistika|bikeshop|decathlon|amazon|ebay|olx|goo|bicitalk|finishers|pedaletricolore|radiocorsaweb|gregi|pedaletricolore|radiocorsaweb|gregi|cyclocross24|winspace|meinestadt|vicenzatoday|localgyms|cyklistikaszc|ciclismo|toscana|sportal|sport24|gazzetta|corriere|ilgiorno|ansa|tuttobiciweb|bicisport|cyclingnews|velonews|radsport-news|rad-sport|nachrichten|zeitung|merkur|lokalo|stadtwerke|kalendar|calendar|calendario|kalender|termine|events?|veranstaltungen|eventi|akce|zavody|zavod|wydarzenia|imprezy|tickets?)\./i;
 
 /** An article, a news item or an events calendar: a page about the race, not its own. */
 export function looksLikeArticleOrListing(url: string): boolean {
@@ -199,6 +200,25 @@ export function isConfidentMatch(
   return words.every((w) => t.includes(w)) && words.every((w) => where.includes(w) || fold(text.slice(0, 200)).includes(w)) && town;
 }
 
+/** Does this page belong to this race? Asked of a model with the page's own text. */
+export async function isTheRacesPage(
+  race: { name: string; startDate: string; municipality: string | null },
+  page: { url: string; title: string; text: string },
+): Promise<boolean> {
+  const { json } = await askJson<{ verdict?: string }>({
+    system:
+      "You decide whether a web page is the right link for a cycling race in a race calendar. " +
+      'Answer JSON only: {"verdict":"race_page|organiser_page|registration_page|other"}. ' +
+      "race_page: the race's own site or its page for this edition. organiser_page: the club or organiser's site whose page is about this race. registration_page: where riders enter this race. " +
+      "other: a town or tourism page (even one describing the race), a news article, a calendar, aggregator or results platform that lists many events (finishers.com, ahotu, raceraves…), " +
+      "a venue's, sports centre's or club's general front page where this race is only one item among others, another race, or another year only. When unsure, answer other.",
+    user: `Race: ${race.name}\nDate: ${race.startDate}\nPlace: ${race.municipality ?? "?"}\n\nPage: ${page.url}\nTitle: ${page.title}\nText: ${page.text.replace(/\s+/g, " ").slice(0, 2500)}`,
+    maxTokens: 60,
+    model: SONNET,
+  });
+  return ["race_page", "organiser_page", "registration_page"].includes(json?.verdict ?? "");
+}
+
 export type FoundSite = { id: string; name: string; startDate: string; url: string; kind: "website" | "registration"; confident: boolean };
 
 export async function findWebsites(opts?: {
@@ -256,7 +276,7 @@ export async function findWebsites(opts?: {
     }
     try {
       const hits = await searchWeb(searchQuery(t.name, t.municipality, t.startDate.slice(0, 4)));
-      type Pick = { url: string; kind: "website" | "registration"; confident: boolean };
+      type Pick = { url: string; kind: "website" | "registration"; confident: boolean; text: string; title: string };
       let chosen = null as Pick | null;
       let likely = null as Pick | null;
       for (const hit of hits.slice(0, 6)) {
@@ -283,6 +303,8 @@ export async function findWebsites(opts?: {
               url: finalUrl,
               kind: platform ? "registration" : "website",
               confident: platform || isConfidentMatch(finalUrl, text, t.name, t.municipality),
+              text,
+              title: hit.title,
             };
             // Keep looking for a sure one if this is only a likely one.
             if (chosen.confident) break;
@@ -292,6 +314,18 @@ export async function findWebsites(opts?: {
         } catch {
           /* next result */
         }
+      }
+      // A reader checks the page before it is saved: this race's own page, or
+      // its organiser's page about this edition — not a town's tourism page,
+      // a sports centre's front page or a calendar.
+      const candidate = chosen ?? likely;
+      if (candidate && llmAvailable()) {
+        const ok = await isTheRacesPage(t, candidate).catch((e) => {
+          if (e instanceof LlmUnavailable) throw e;
+          return false;
+        });
+        chosen = ok ? { ...candidate, confident: true } : null;
+        likely = null;
       }
       if (!chosen && likely) {
         result.reviewed += 1;
