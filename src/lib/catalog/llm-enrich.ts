@@ -228,7 +228,7 @@ const AUDIT_SYSTEM =
   "Drop when it belongs to another event or another year, is a general page (spectator tickets, venue or admission rules, merchandise, accommodation, a login), " +
   "is an on-site check-in or briefing time rather than when online entry closes, or is an early-bird price date. " +
   "A link on the race's own site or series site that is labelled as entry / registration / regulations counts, even without a date beside it, unless something points to another event or year. " +
-  "Classes are our age bands, not the race's names: kids = up to U11, youth = U13 to U17, junior = 17-18, u23, elite = open men/women, amateur = hobby/open/unlicensed, masters = 35+. Keep a class value when every band in it is shown by the evidence and no band the evidence shows is missing. " +
+  "Classes are our age bands, not the race's names: u7, u9, u11, u13, u15, u17 are the youth age groups (u11 = 9-10 years, u17 = 15-16), kids = any of u7-u11, youth = any of u13-u17, junior = 17-18, u23, elite = open men/women, amateur = hobby/open/unlicensed, masters = 35+. Keep a class value when every band in it is shown by the evidence and no band the evidence shows is missing. " +
   'Answer JSON only: {"items":[{"id":1,"keep":true,"why":"short"}]}.';
 
 /** Text around where a quote or a link label sits on the pages. */
