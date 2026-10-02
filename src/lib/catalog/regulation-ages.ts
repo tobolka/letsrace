@@ -14,7 +14,7 @@ const MAX_BYTES = 8 * 1024 * 1024;
 const CATEGORY_HEAD =
   /kategori[eíiay]|kategór|categor(?:y|ies|ie|ia|ías|ias)|klassen|altersklass|wertungsklass|klasy|klasyfikac/gi;
 
-const CHAMPIONSHIP =
+export const CHAMPIONSHIP =
   /\bm[čc]r\b|mistrovstv[ií]\s+(česk|čr|cr)|majstrovstv[áa]\s+(slovensk|sr)|mistrzostwa\s+polski|deutsche\s+meisterschaft|national\s+championship|campionato\s+italiano|world\s+cup|weltcup|uci\s/i;
 
 /** Where a regulations document moves on from the classes to something else. */
@@ -185,9 +185,9 @@ export function relatedDocumentLinks(
     .map((f) => ({ url: f.url, near: f.score >= 6 }));
 }
 
-type ReadDoc = { url: string; text: string; html: string | null; thin: boolean };
+export type ReadDoc = { url: string; text: string; html: string | null; thin: boolean };
 
-async function readDocument(url: string): Promise<ReadDoc | null> {
+export async function readDocument(url: string): Promise<ReadDoc | null> {
   const doc = await fetchBytes(url);
   if (!doc) return null;
   if (isPdf(doc.type, doc.bytes, url)) return { url, text: await pdfText(doc.bytes), html: null, thin: false };
@@ -203,7 +203,7 @@ async function readDocument(url: string): Promise<ReadDoc | null> {
   return { url, text, html, thin };
 }
 
-function hintsFor(name: string, startDate: string, municipality: string | null): string[] {
+export function hintsFor(name: string, startDate: string, municipality: string | null): string[] {
   const [, m, d] = startDate.split("-").map(Number);
   const words = name
     .toLowerCase()
