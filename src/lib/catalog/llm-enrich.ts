@@ -1,16 +1,16 @@
 import * as cheerio from "cheerio";
 import { writeFileSync } from "node:fs";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
+import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 import { AGE_CATEGORIES, DISCIPLINES, audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { CHAMPIONSHIP, directDocumentUrl, hintsFor, readDocument, relatedDocumentLinks } from "@/lib/catalog/regulation-ages";
 import { findRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
+import { askJson, LlmUnavailable } from "@/lib/llm/anthropic";
 
 const PAGE = 1000;
-const MODEL = "claude-haiku-4-5-20251001";
 const PRICE_IN = 1;
 const PRICE_OUT = 5;
 const AGGREGATOR = /rideandrest\.net|odjazd\.pl|kalendarzrowerowy|sumator|eventivsport|radsport-events|granfondoguide|facebook\.com|instagram\.com/i;
@@ -134,27 +134,11 @@ async function askModel(
   text: string,
   links: Link[],
 ): Promise<{ raw: Parameters<typeof verifyEnrichment>[0]; tokensIn: number; tokensOut: number }> {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error("ANTHROPIC_API_KEY is not set");
   const user =
     `Race: ${race.name}\nDate: ${race.startDate}\nPlace: ${race.place ?? "unknown"}\nWe currently hold discipline: ${race.disciplines.join(", ") || "none"}\n` +
     `Website: ${race.website ?? "none"}\n\nLinks:\n${links.map((l) => `${l.url}  [${l.text}]`).join("\n") || "(none)"}\n\nText:\n${text}`;
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 900, system: SYSTEM, messages: [{ role: "user", content: user }] }),
-    signal: AbortSignal.timeout(60_000),
-  });
-  if (!res.ok) throw new Error(`Anthropic API ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const body = (await res.json()) as { content?: { type: string; text?: string }[]; usage?: { input_tokens?: number; output_tokens?: number } };
-  const out = (body.content ?? []).filter((c) => c.type === "text").map((c) => c.text ?? "").join("");
-  let raw: Parameters<typeof verifyEnrichment>[0] = null;
-  try {
-    raw = JSON.parse(out.slice(out.indexOf("{"), out.lastIndexOf("}") + 1));
-  } catch {
-    raw = null;
-  }
-  return { raw, tokensIn: body.usage?.input_tokens ?? 0, tokensOut: body.usage?.output_tokens ?? 0 };
+  const { json, usage } = await askJson<NonNullable<Parameters<typeof verifyEnrichment>[0]>>({ system: SYSTEM, user, maxTokens: 900, timeoutMs: 60_000 });
+  return { raw: json, tokensIn: usage.tokensIn, tokensOut: usage.tokensOut };
 }
 
 export type EnrichResult = {
@@ -347,11 +331,11 @@ export async function enrichFromPages(opts?: {
       if (error) {
         result.failed += 1;
         await recordProbe(supabase, t.id, "llm_v2", "failed");
-      } else await clearProbe(supabase, t.id, "llm_v2");
+      } else await recordProbe(supabase, t.id, "llm_v2", "silent");
     } catch (e) {
       result.failed += 1;
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
-      if (e instanceof Error && /ANTHROPIC_API_KEY|credit balance|API 4(01|03)/.test(e.message)) {
+      if (e instanceof LlmUnavailable) {
         stop = true;
         return;
       }

@@ -7,10 +7,13 @@
  */
 
 export const HAIKU = "claude-haiku-4-5-20251001";
+/** For judgement calls where a wrong yes costs more than the tokens. */
+export const SONNET = "claude-sonnet-5-5";
 
 /** Dollars per million tokens, input and output. */
 const PRICES: Record<string, [number, number]> = {
   [HAIKU]: [1, 5],
+  [SONNET]: [3, 15],
 };
 
 export type LlmUsage = { tokensIn: number; tokensOut: number; costUsd: number };
@@ -27,6 +30,12 @@ export function addUsage(a: LlmUsage, b: LlmUsage): LlmUsage {
 
 export const NO_USAGE: LlmUsage = { tokensIn: 0, tokensOut: 0, costUsd: 0 };
 
+/** Spent by this process. Every request checks it against LLM_BUDGET_USD. */
+let spent = 0;
+export function llmSpent(): number {
+  return spent;
+}
+
 export async function askJson<T>(opts: {
   system: string;
   user: string;
@@ -36,6 +45,8 @@ export async function askJson<T>(opts: {
 }): Promise<{ json: T | null; usage: LlmUsage; stopReason: string | null }> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new LlmUnavailable("ANTHROPIC_API_KEY is not set");
+  const budget = Number(process.env.LLM_BUDGET_USD ?? 2);
+  if (spent >= budget) throw new LlmUnavailable(`LLM budget of $${budget} for this run is spent`);
   const model = opts.model ?? HAIKU;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -71,6 +82,7 @@ export async function askJson<T>(opts: {
   } catch {
     json = null;
   }
+  spent += (tokensIn * pin + tokensOut * pout) / 1_000_000;
   return {
     json,
     usage: { tokensIn, tokensOut, costUsd: (tokensIn * pin + tokensOut * pout) / 1_000_000 },
