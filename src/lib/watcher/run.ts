@@ -21,7 +21,7 @@ import {
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
 import { looksLikeTextFragment } from "@/lib/text";
-import { isGarbagePlace } from "@/lib/dedup";
+import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -1848,7 +1848,7 @@ async function upsertParsedEvent(
     let lng = ev.lng ?? null;
     let country = ev.countryHint ?? "CZ";
     let geocodeStatus = lat != null ? "ok" : "pending";
-    let geocodeQuery = ev.placeText;
+    let geocodeQuery = dedupeCommaParts(ev.placeText);
     if (lat == null) {
       try {
         const { geocodeFromGazetteer, cleanGeocodeQuery } = await import("@/lib/geocode");

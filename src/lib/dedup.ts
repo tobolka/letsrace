@@ -526,6 +526,21 @@ export function datesCompatible(a: DateSpan, b: DateSpan, maxGap = 1): boolean {
   return true;
 }
 
+/** "Gliwice, Gliwice" is "Gliwice": a calendar that gives the town as both the venue and the town. */
+export function dedupeCommaParts(place: string): string {
+  const seen = new Set<string>();
+  return place
+    .split(",")
+    .map((p) => p.trim())
+    .filter((p) => {
+      const k = fold(p);
+      if (!k || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .join(", ");
+}
+
 export function isGarbagePlace(place?: string | null): boolean {
   const p = fold(place || "")
     .replace(/[^a-z0-9\s]/g, " ")
@@ -534,7 +549,7 @@ export function isGarbagePlace(place?: string | null): boolean {
   return (
     !p ||
     /^(uci\s*(c[123]|cn|hc)|unknown|silnice)$/.test(p) ||
-    /^(czechia|czech republic|cesko|ceska republika|poland|polsko|slovakia|slovensko|austria|rakousko|germany|nemecko|italy|italie|hungary|madarsko)$/.test(
+    /^(czechia|czech republic|cesko|ceska republika|poland|polsko|slovakia|slovensko|austria|rakousko|autriche|osterreich|germany|nemecko|allemagne|deutschland|italy|italie|italia|italien|hungary|madarsko|switzerland|suisse|schweiz|svycarsko|france|frankreich|francie|spain|espagne|spanien|belgium|belgique|belgien|netherlands|pays bas|niederlande|united kingdom|royaume uni|great britain|slovenia|slovenie|portugal|croatia|croatie|greece|grece)$/.test(
       p,
     ) ||
     // A province is not a venue. The Austrian federation's calendar gives the
