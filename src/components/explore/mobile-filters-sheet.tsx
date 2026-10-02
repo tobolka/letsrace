@@ -299,7 +299,7 @@ export function MobileFiltersSheet({
             <Section title={messages.categoryFilter}>
               <div className="flex flex-wrap gap-2">
                 <Chip active={categories.length === 0} onClick={onClearCategories}>
-                  {messages.clearFilter}
+                  {messages.filterAll}
                 </Chip>
                 {AGE_CATEGORY_FILTERS.map((opt) => (
                   <Chip
@@ -319,7 +319,7 @@ export function MobileFiltersSheet({
             <Section title={messages.levelFilter}>
               <div className="flex flex-wrap gap-2">
                 <Chip active={levels.length === 0} onClick={onClearLevels}>
-                  {messages.clearFilter}
+                  {messages.filterAll}
                 </Chip>
                 {RACE_LEVELS.map((id) => (
                   <Chip key={id} active={levels.includes(id)} onClick={() => onLevel(id)}>
