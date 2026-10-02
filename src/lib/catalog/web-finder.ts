@@ -223,7 +223,7 @@ export async function findWebsites(opts?: {
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
-      .is("website_url", null)
+      .or("website_url.is.null,website_url.ilike.%rideandrest.net%")
       .is("registration_url", null)
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
@@ -304,7 +304,7 @@ export async function findWebsites(opts?: {
             .from("events")
             .update({ [chosen.kind === "registration" ? "registration_url" : "website_url"]: chosen.url, updated_at: new Date().toISOString() })
             .eq("id", t.id)
-            .is(chosen.kind === "registration" ? "registration_url" : "website_url", null);
+            .or(chosen.kind === "registration" ? "registration_url.is.null" : "website_url.is.null,website_url.ilike.%rideandrest.net%");
           await clearProbe(supabase, t.id, "web_search");
         }
       }
