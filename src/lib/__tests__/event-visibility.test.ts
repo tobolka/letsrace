@@ -195,3 +195,12 @@ describe("listings that are not bike races", () => {
     expect(isNonRaceEventName("Magstadter Radcross")).toBe(false);
   });
 });
+
+describe("a calendar's heading is not a race", () => {
+  it("rejects calendar page titles", async () => {
+    const { isJunkListingName } = await import("@/lib/event-visibility");
+    expect(isJunkListingName("Kalendář závodů v Karlovarském kraji")).toBe(true);
+    expect(isJunkListingName("Kalendarz imprez rowerowych 2026")).toBe(true);
+    expect(isJunkListingName("Kalendář Cup Brno")).toBe(false);
+  });
+});
