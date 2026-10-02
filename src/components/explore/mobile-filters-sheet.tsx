@@ -11,6 +11,7 @@ import { seriesCountryKey, INT_COUNTRY, type SeriesOption } from "@/components/e
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHandle,
@@ -217,11 +218,18 @@ export function MobileFiltersSheet({
           <DrawerTitle className="text-left text-base font-semibold">
             {messages.addFilter}
           </DrawerTitle>
-          {activeExtras > 0 ? (
-            <Button type="button" variant="ghost" size="sm" className="h-11 px-3" onClick={onReset}>
-              {messages.clearFilters}
-            </Button>
-          ) : null}
+          <div className="flex items-center gap-1">
+            {activeExtras > 0 ? (
+              <Button type="button" variant="ghost" size="sm" className="h-11 px-3" onClick={onReset}>
+                {messages.clearFilters}
+              </Button>
+            ) : null}
+            <DrawerClose asChild>
+              <Button type="button" variant="ghost" size="icon" className="-mr-2 size-10 rounded-full" aria-label={messages.close}>
+                <X className="size-4" aria-hidden />
+              </Button>
+            </DrawerClose>
+          </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">

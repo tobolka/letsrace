@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { format, parseISO } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -109,6 +109,14 @@ export function MonthCalendar({
   const byId = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
   const close = () => setOpen(null);
 
+  // On a phone the day's races are listed under the month, not in a popover
+  // that has no room: today when it is in this month, else the first day with races.
+  const [phoneDay, setPhoneDay] = useState<string | null>(null);
+  const [phoneDetail, setPhoneDetail] = useState<string | null>(null);
+  const today = days.find((d) => d.isToday && d.inMonth)?.iso;
+  const firstWithRaces = days.find((d) => d.inMonth && (byDay.get(d.iso)?.length ?? 0) > 0)?.iso;
+  const activeDay = phoneDay && days.some((d) => d.iso === phoneDay) ? phoneDay : (today ?? firstWithRaces ?? null);
+
   return (
     <div className={cn("flex min-h-0 flex-col", fill && "flex-1", className)}>
       <div className="grid shrink-0 grid-cols-7 border-b">
@@ -125,7 +133,7 @@ export function MonthCalendar({
         ))}
       </div>
 
-      <div className={cn("grid grid-cols-7", fill && "flex-1 auto-rows-fr")}>
+      <div className={cn("grid shrink-0 grid-cols-7", fill && !isMobile && "flex-1 auto-rows-fr")}>
         {days.map((day, i) => {
           const list = byDay.get(day.iso) ?? [];
           const info = dayInfo?.(day.iso);
@@ -133,6 +141,46 @@ export function MonthCalendar({
           const shown = isMobile ? [] : list.slice(0, PER_CELL);
           const extra = list.length - shown.length;
           const openDay = () => setOpen({ kind: "day", iso: day.iso, detailId: null });
+
+          if (isMobile) {
+            const picked = day.iso === activeDay;
+            return (
+              <button
+                key={day.iso}
+                type="button"
+                role="gridcell"
+                aria-selected={picked}
+                aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
+                onClick={() => {
+                  onPickDay?.(day.iso);
+                  setPhoneDay(day.iso);
+                  setPhoneDetail(null);
+                }}
+                className={cn(
+                  "flex min-h-12 min-w-0 flex-col items-center gap-1 border-r border-b py-1.5 transition-colors",
+                  i % 7 === 6 && "border-r-0",
+                  !day.inMonth && "bg-muted/40",
+                  day.isWeekend && day.inMonth && "bg-muted/25",
+                  info?.muted && "bg-muted/60",
+                  (picked || day.iso === selectedDay) && "bg-accent",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex size-6 items-center justify-center rounded-full text-xs tabular-nums",
+                    !day.inMonth && "text-muted-foreground",
+                    day.isToday && "bg-brand font-semibold text-white",
+                    picked && !day.isToday && "bg-foreground font-semibold text-background",
+                  )}
+                >
+                  {day.day}
+                </span>
+                {list.length > 0 ? (
+                  <span className="text-[10px] leading-none font-medium tabular-nums text-muted-foreground">{list.length}</span>
+                ) : null}
+              </button>
+            );
+          }
 
           return (
             <Popover key={day.iso} open={dayOpen} onOpenChange={(next) => !next && close()}>
@@ -269,6 +317,55 @@ export function MonthCalendar({
           );
         })}
       </div>
+
+      {isMobile && activeDay ? (
+        <div className="flex flex-col border-t">
+          {phoneDetail && byId.has(phoneDetail) ? (
+            <div className="flex flex-col">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="m-1 w-fit capitalize text-muted-foreground"
+                onClick={() => setPhoneDetail(null)}
+              >
+                <ChevronLeft data-icon="inline-start" />
+                {format(parseISO(activeDay), "EEEE d. MMMM", { locale: df })}
+              </Button>
+              {renderDetail(phoneDetail, () => setPhoneDetail(null))}
+            </div>
+          ) : (
+            <>
+              {/* Stays in view while the day's races scroll under it. */}
+              <div className="sticky top-0 z-10 border-b bg-background px-4 py-2.5 text-sm font-semibold first-letter:uppercase">
+                {format(parseISO(activeDay), "EEEE d. MMMM", { locale: df })}
+                <span className="ml-2 font-normal text-muted-foreground tabular-nums">{byDay.get(activeDay)?.length ?? 0}</span>
+              </div>
+              {(byDay.get(activeDay) ?? []).length === 0 ? (
+                <p className="px-4 pb-4 text-sm text-muted-foreground">{t.scheduleEmptyDay}</p>
+              ) : (
+                <ul className="flex flex-col pb-4">
+                  {(byDay.get(activeDay) ?? []).map((item) => (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() => setPhoneDetail(item.id)}
+                        className="flex w-full min-w-0 items-start gap-2.5 px-4 py-2.5 text-left transition-colors active:bg-accent"
+                      >
+                        <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: item.color }} />
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-medium">{item.name}</span>
+                          {item.meta ? <span className="block truncate text-xs text-muted-foreground">{item.meta}</span> : null}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -334,38 +431,63 @@ export function MonthToolbar({
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   const current = monthStart(formatIsoDate(new Date()));
+  // The months as pills in a row that scrolls sideways: the season at a
+  // glance, and any month one tap away instead of a click per month.
+  const selected = monthStart(month);
+  const months = useMemo(() => {
+    const list: string[] = [];
+    for (let i = -1; i <= 12; i++) list.push(addMonths(current, i));
+    if (!list.includes(selected)) {
+      list.push(selected);
+      list.sort();
+    }
+    return list;
+  }, [current, selected]);
+  const rowRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = rowRef.current?.querySelector<HTMLElement>('[aria-current="true"]');
+    el?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+  }, [selected]);
+
   return (
-    <div className="flex shrink-0 items-center gap-2 border-b px-4 py-2 md:px-6">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        aria-label={t.schedulePrevMonth}
-        onClick={() => onMonth(addMonths(month, -1))}
+    <div className="flex shrink-0 items-center gap-2 border-b py-2">
+      <div
+        ref={rowRef}
+        role="tablist"
+        aria-label={t.navSchedule}
+        className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto overscroll-x-contain px-4 [-ms-overflow-style:none] [scrollbar-width:none] md:px-6 [&::-webkit-scrollbar]:hidden"
+        // Both edges fade, so a pill under the edge reads as "more this way",
+        // not as a row cut off.
+        style={{
+          maskImage: "linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent)",
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent)",
+        }}
       >
-        <ChevronLeft />
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        aria-label={t.scheduleNextMonth}
-        onClick={() => onMonth(addMonths(month, 1))}
-      >
-        <ChevronRight />
-      </Button>
-      <h2 className="min-w-0 truncate text-sm font-semibold tabular-nums first-letter:uppercase" aria-live="polite">
-        {format(parseISO(monthStart(month)), "LLLL yyyy", { locale: df })}
-      </h2>
-      {busy}
-      <div className="ml-auto flex items-center gap-2">
-        {children}
-        {monthStart(month) !== current ? (
-          <Button type="button" variant="ghost" size="sm" onClick={() => onMonth(current)}>
-            {t.scheduleToday}
-          </Button>
-        ) : null}
+        {months.map((m) => {
+          const d = parseISO(m);
+          const active = m === selected;
+          const label = format(d, d.getFullYear() === new Date().getFullYear() ? "LLLL" : "LLLL yyyy", { locale: df });
+          return (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-current={active ? "true" : undefined}
+              onClick={() => onMonth(m)}
+              className={cn(
+                "h-8 shrink-0 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap first-letter:uppercase transition-colors touch-manipulation",
+                active ? "border-foreground bg-foreground text-background" : "border-border/80 bg-background hover:bg-muted/80",
+                m === current && !active && "border-foreground/40",
+              )}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
+      {busy}
+      {children ? <div className="flex items-center gap-2">{children}</div> : null}
     </div>
   );
 }

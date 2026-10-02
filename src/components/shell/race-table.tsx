@@ -9,6 +9,7 @@ import { countryDisplayName } from "@/lib/geo/europe";
 import { eventDistanceKm, formatDistanceKm } from "@/lib/geo/distance";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { UCI_CLASS_LABELS, type UciClass } from "@/lib/taxonomy";
 import type { ListColumn } from "@/lib/list-columns";
 import { disciplineColor } from "@/lib/map-visuals";
 import { cn } from "@/lib/utils";
@@ -67,7 +68,8 @@ function cellText(col: ListColumn, event: EventListItem, locale: string, origin:
     case "level": {
       const classLevel = levelFromClassLabel(event.classLabel);
       const id = event.level ?? classLevel;
-      return [id ? raceLevelLabel(id, locale) : "", classLevel ? "" : event.classLabel].filter(Boolean).join(" · ");
+      const uci = event.uciClass ? `UCI ${UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}` : "";
+      return [uci, id ? raceLevelLabel(id, locale) : "", classLevel ? "" : event.classLabel].filter(Boolean).join(" · ");
     }
     case "categories":
       return event.ageCategories.map((a) => ageCategoryLabel(a, locale)).join(", ");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LogOut, Plus, Trash2 } from "lucide-react";
+import { LogOut, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { persist } from "@/lib/account/save";
 import { AuthForm } from "@/components/account/auth-form";
@@ -193,6 +193,51 @@ export function AccountPanel({
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const [editing, setEditing] = useState<Member | null>(null);
+
+  function startEdit(m: Member) {
+    setEditing(m);
+    setName(m.name);
+    setRelationship(m.relationship || "rider");
+    setBirthYear(m.birth_year ? String(m.birth_year) : "");
+  }
+
+  function closeDialog(open: boolean) {
+    if (open) return;
+    setAdding(false);
+    if (editing) {
+      setEditing(null);
+      setName("");
+      setBirthYear("");
+      setRelationship("rider");
+    }
+  }
+
+  async function saveMember(e: React.FormEvent) {
+    if (!editing) return addMember(e);
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setBusy(true);
+    const supabase = createBrowserSupabase();
+    const ok = await persist(
+      supabase
+        .from("family_members")
+        .update({
+          name: trimmed,
+          // Your own row stays "you"; only the others have a role.
+          ...(editing.is_self ? {} : { relationship }),
+          birth_year: birthYear ? Number(birthYear) : null,
+        })
+        .eq("id", editing.id),
+      { locale },
+    );
+    setBusy(false);
+    if (!ok) return;
+    closeDialog(false);
+    await load();
+  }
 
   async function addMember(e: React.FormEvent) {
     e.preventDefault();
@@ -388,6 +433,16 @@ export function AccountPanel({
                 </p>
                 <p className="mt-1 text-[11px] text-muted-foreground">{t.planStatRidden}</p>
               </div>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="-mr-1.5 text-muted-foreground"
+                aria-label={`${t.ridersEdit} — ${m.name}`}
+                title={t.ridersEdit}
+                onClick={() => startEdit(m)}
+              >
+                <Pencil />
+              </Button>
               {!m.is_self ? (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -448,13 +503,13 @@ export function AccountPanel({
         </button>
       </div>
 
-      <Dialog open={adding} onOpenChange={setAdding}>
+      <Dialog open={adding || editing != null} onOpenChange={closeDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t.profilesAdd}</DialogTitle>
-            <DialogDescription>{t.ridersAddBody}</DialogDescription>
+            <DialogTitle>{editing ? t.ridersEdit : t.profilesAdd}</DialogTitle>
+            {editing ? null : <DialogDescription>{t.ridersAddBody}</DialogDescription>}
           </DialogHeader>
-          <form onSubmit={(e) => void addMember(e)}>
+          <form onSubmit={(e) => void saveMember(e)}>
             <FieldGroup className="gap-4">
               <Field>
                 <FieldLabel htmlFor="rider-name">{t.fieldName}</FieldLabel>
@@ -470,7 +525,7 @@ export function AccountPanel({
                 />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field>
+                <Field className={editing?.is_self ? "hidden" : undefined}>
                   <FieldLabel htmlFor="rider-rel">{t.fieldRelationship}</FieldLabel>
                   <Select value={relationship} onValueChange={setRelationship}>
                     <SelectTrigger id="rider-rel" className="w-full">
@@ -509,8 +564,8 @@ export function AccountPanel({
                   </Button>
                 </DialogClose>
                 <Button type="submit" disabled={busy || !name.trim()} aria-busy={busy}>
-                  {busy ? <Spinner data-icon="inline-start" /> : <Plus data-icon="inline-start" />}
-                  {t.profilesAdd}
+                  {busy ? <Spinner data-icon="inline-start" /> : editing ? null : <Plus data-icon="inline-start" />}
+                  {editing ? t.ridersSave : t.profilesAdd}
                 </Button>
               </DialogFooter>
             </FieldGroup>

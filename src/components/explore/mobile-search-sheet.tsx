@@ -5,6 +5,7 @@ import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerHandle,
   DrawerTitle,
@@ -45,9 +46,14 @@ export function MobileSearchSheet({
     >
       <DrawerContent className={MODAL_SURFACE}>
         <DrawerHandle />
-        <DrawerTitle className="px-4 pb-2 text-left text-base font-semibold">
-          {messages.search}
-        </DrawerTitle>
+        <div className="flex items-center justify-between gap-3 px-4 pb-2">
+          <DrawerTitle className="text-left text-base font-semibold">{messages.search}</DrawerTitle>
+          <DrawerClose asChild>
+            <Button type="button" variant="ghost" size="icon" className="-mr-2 size-10 rounded-full" aria-label={messages.close}>
+              <X className="size-4" aria-hidden />
+            </Button>
+          </DrawerClose>
+        </div>
         <form
           className="flex flex-col gap-3 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
           onSubmit={(e) => {

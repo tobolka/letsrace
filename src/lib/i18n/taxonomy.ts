@@ -61,7 +61,8 @@ export function ageGroupHint(id: string, locale: string): string {
   const yrs = (a: string) =>
     ({ cs: `${a} let`, sk: `${a} rokov`, pl: `${a} lat`, en: `${a} yrs` })[locale] ?? `${a} yrs`;
   const upTo = (n: number) =>
-    ({ cs: `do ${n} let`, sk: `do ${n} rokov`, pl: `do ${n} lat`, en: `up to ${n}` })[locale] ?? `up to ${n}`;
+    ({ cs: `do ${n} let`, sk: `do ${n} rokov`, pl: `do ${n} lat`, en: `up to ${n} yrs` })[locale] ?? `up to ${n} yrs`;
+  const anyAge = ({ cs: "každý věk", sk: "každý vek", pl: "każdy wiek", en: "any age" })[locale] ?? "any age";
   switch (id) {
     case "kids":
       return upTo(10);
@@ -71,6 +72,10 @@ export function ageGroupHint(id: string, locale: string): string {
       return yrs("17–18");
     case "u23":
       return yrs("19–22");
+    case "elite":
+      return yrs("19+");
+    case "amateur":
+      return anyAge;
     case "masters":
       return yrs("35+");
     default:

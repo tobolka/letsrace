@@ -7,6 +7,7 @@ import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
+import { UCI_CLASS_LABELS, type UciClass } from "@/lib/taxonomy";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -59,7 +60,9 @@ export const EventCard = memo(function EventCard({
       ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
       : "");
   const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
-  const extraLabel = [discLabel, event.series?.name].filter(Boolean).join(" · ");
+  // The UCI class is what a licensed rider looks for first: "C1", "1.2".
+  const uciLabel = event.uciClass ? `UCI ${UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}` : null;
+  const extraLabel = [uciLabel, discLabel, event.series?.name].filter(Boolean).join(" · ");
   const metadataLabel = [placeLabel, extraLabel].filter(Boolean).join(" · ");
 
   return (

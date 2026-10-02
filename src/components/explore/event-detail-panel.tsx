@@ -18,6 +18,7 @@ import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
 import {
   RACE_LEVEL_LABELS,
+  AGE_CATEGORIES,
   UCI_CLASS_LABELS,
   formatEventCategoryLabel,
   type RaceLevel,
@@ -41,7 +42,7 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
-import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
 
@@ -240,6 +241,11 @@ export function EventDetailPanel({
     (id) => ageCategoryLabel(id, locale),
   );
   const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
+  // The ages a chip stands for, by its label: "Junior" → "17–18 let".
+  const ageHintFor = (label: string) => {
+    const id = AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
+    return id ? ageGroupHint(id, locale) : "";
+  };
   const discChips = event.disciplines
     .slice(0, 4)
     .map((d) => disciplineLabel(d, locale))
@@ -531,7 +537,12 @@ export function EventDetailPanel({
             {whoChips.length > 0 ? (
               <>
                 {whoChips.map((chip) => (
-                  <Badge key={chip} variant="outline" className={event.ageConfidence === "explicit" ? undefined : "border-dashed"}>
+                  <Badge
+                    key={chip}
+                    variant="outline"
+                    title={ageHintFor(chip) || undefined}
+                    className={event.ageConfidence === "explicit" ? undefined : "border-dashed"}
+                  >
                     {chip}
                   </Badge>
                 ))}

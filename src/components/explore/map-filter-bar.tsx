@@ -451,7 +451,7 @@ export function MapFilterBar({
             >
               {ageCategoryLabel(opt.id, locale)}
               {/* Which classes the group means, in the organisers' terms. */}
-              <span className="ml-auto pl-4 text-xs whitespace-nowrap text-muted-foreground">{ageGroupHint(opt.id, locale)}</span>
+              <span className="ml-auto pl-4 text-right text-xs whitespace-nowrap tabular-nums text-muted-foreground">{ageGroupHint(opt.id, locale)}</span>
             </DropdownMenuCheckboxItem>
           ))}
         </>

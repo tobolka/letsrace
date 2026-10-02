@@ -3,18 +3,17 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { format, parseISO } from "date-fns";
-import { LocateFixed, Search, SlidersHorizontal } from "lucide-react";
+import { LocateFixed } from "lucide-react";
+import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { MapFilterBar } from "@/components/explore/map-filter-bar";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import type { useExploreFilters } from "@/components/shell/use-explore-filters";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { RADIUS_OPTIONS } from "@/lib/explore-params";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
-import { cn } from "@/lib/utils";
 
 const MobileFiltersSheet = dynamic(() =>
   import("@/components/explore/mobile-filters-sheet").then((m) => ({ default: m.MobileFiltersSheet })),
@@ -103,27 +102,30 @@ function MobileFilterRow({
     (filters.series ? 1 : 0) +
     (radius != null ? 1 : 0);
 
-  const pill = "h-10 rounded-full px-4 touch-manipulation";
 
+  // The very row the map uses — the same pills, the same "Filter" with its
+  // count, the same search — so every screen reads alike.
   return (
-    <div className="flex items-center gap-2">
-      <Button type="button" variant="secondary" className={cn(pill, "min-w-0 flex-1 justify-start")} onClick={() => setFiltersOpen(true)}>
-        <SlidersHorizontal data-icon="inline-start" />
-        <span className="truncate">{hideDate ? t.addFilter : dateLabel}</span>
-        {count > 0 ? (
-          <Badge className="ml-auto h-5 min-w-5 justify-center px-1.5 tabular-nums">{count}</Badge>
-        ) : null}
-      </Button>
-      <Button
-        type="button"
-        variant={filters.q.trim() ? "default" : "secondary"}
-        size="icon"
-        className="size-10 shrink-0 rounded-full touch-manipulation"
-        aria-label={t.search}
-        onClick={() => setSearchOpen(true)}
-      >
-        <Search />
-      </Button>
+    <div>
+      <MobileTopBar
+        className="px-0 pb-0"
+        hideWeekend={hideDate}
+        weekendLabel={dateLabel}
+        weekendActive={isThisWeekend}
+        onWeekend={() => {
+          if (isThisWeekend) {
+            setFiltersOpen(true);
+            return;
+          }
+          actions.onPreset(weekend.from, weekend.to);
+        }}
+        filtersLabel={t.addFilter}
+        filterCount={count}
+        onFilters={() => setFiltersOpen(true)}
+        searchLabel={t.search}
+        searchActive={Boolean(filters.q.trim())}
+        onSearch={() => setSearchOpen(true)}
+      />
 
       {filtersOpen ? (
         <MobileFiltersSheet

@@ -3,6 +3,8 @@
 import * as React from "react"
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui"
 
+import { XIcon } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -62,7 +64,17 @@ function AlertDialogContent({
           className
         )}
         {...props}
-      />
+      >
+        {props.children}
+        {/* Every window here closes the same way: a cross in the corner. */}
+        <AlertDialogPrimitive.Cancel
+          data-slot="alert-dialog-close"
+          aria-label="Close"
+          className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden [&_svg]:size-4"
+        >
+          <XIcon />
+        </AlertDialogPrimitive.Cancel>
+      </AlertDialogPrimitive.Content>
     </AlertDialogPortal>
   )
 }

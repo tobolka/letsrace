@@ -39,7 +39,12 @@ export function MobileTopBar({
   sortNeedsLocationLabel,
   distanceEnabled,
   onSort,
+  hideWeekend,
+  className,
 }: {
+  /** The calendar shows a month; a date pill would only contradict it. */
+  hideWeekend?: boolean;
+  className?: string;
   weekendLabel: string;
   weekendActive: boolean;
   onWeekend: () => void;
@@ -49,23 +54,24 @@ export function MobileTopBar({
   searchLabel: string;
   searchActive: boolean;
   onSearch: () => void;
-  sort: EventSort;
-  sortByLabel: string;
-  sortDateLabel: string;
-  sortDistanceLabel: string;
+  /** Without `onSort` there is no sort pill: the list has its own toggle. */
+  sort?: EventSort;
+  sortByLabel?: string;
+  sortDateLabel?: string;
+  sortDistanceLabel?: string;
   /** Short forms for the pill; the menu keeps the full wording. */
-  sortDateShort: string;
-  sortDistanceShort: string;
-  sortNeedsLocationLabel: string;
-  distanceEnabled: boolean;
-  onSort: (sort: EventSort) => void;
+  sortDateShort?: string;
+  sortDistanceShort?: string;
+  sortNeedsLocationLabel?: string;
+  distanceEnabled?: boolean;
+  onSort?: (sort: EventSort) => void;
 }) {
   // "Řadit dle vzdálenosti" does not fit a pill on a 375px screen — it was
   // clipped mid-word, and the search button behind it sat off-screen.
   const sortLabel = sort === "distance" ? sortDistanceShort : sortDateShort;
 
   return (
-    <div className="flex items-center gap-2 px-3 pb-1.5">
+    <div className={cn("flex items-center gap-2 px-3 pb-1.5", className)}>
       {/*
         The strip scrolls, and a pill cut dead at the container edge reads as a
         broken layout rather than as more content. Fade the last few pixels so
@@ -78,19 +84,21 @@ export function MobileTopBar({
           WebkitMaskImage: "linear-gradient(to right, black calc(100% - 20px), transparent)",
         }}
       >
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={cn(
-            pillClass,
-            weekendActive && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
-          )}
-          aria-pressed={weekendActive}
-          onClick={onWeekend}
-        >
-          <span className="truncate">{weekendLabel}</span>
-        </Button>
+        {hideWeekend ? null : (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={cn(
+              pillClass,
+              weekendActive && "bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+            )}
+            aria-pressed={weekendActive}
+            onClick={onWeekend}
+          >
+            <span className="truncate">{weekendLabel}</span>
+          </Button>
+        )}
         <Button
           type="button"
           variant="outline"
@@ -107,6 +115,7 @@ export function MobileTopBar({
             </span>
           ) : null}
         </Button>
+        {onSort ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -124,7 +133,7 @@ export function MobileTopBar({
             <DropdownMenuRadioGroup
               value={sort}
               onValueChange={(value) => {
-                if (value === "date" || value === "distance") onSort(value);
+                if (value === "date" || value === "distance") onSort?.(value);
               }}
             >
               <DropdownMenuRadioItem value="date">{sortDateLabel}</DropdownMenuRadioItem>
@@ -138,6 +147,7 @@ export function MobileTopBar({
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+        ) : null}
       </div>
       <Button
         type="button"
