@@ -96,7 +96,11 @@ export function isNonRaceEventName(name: string): boolean {
     /\bpremiazione\b/.test(t) ||
     /\b(prize[\s-]?giv|awards?\s+(ceremon|night|dinner|evening|gala))\b/.test(t) ||
     /\bgala\s*(night|dinner|evening|abend)\b/.test(t) ||
-    /\b(vecirek|after[\s-]?part[yi])\b/.test(t)
+    /\b(vecirek|after[\s-]?part[yi])\b/.test(t) ||
+    // A riding course, an add-on to book with an entry, a triathlon: listed
+    // by the same calendars, but nothing a rider enters as a bike race.
+    /fahrtechnik|technikkurs|techniktraining|zusatzbuchung/.test(t) ||
+    /\btriathl?on\b|triathlon/.test(t)
   );
 }
 

@@ -184,3 +184,14 @@ describe("camp sites as venues", () => {
     expect(isNonRaceEventName("MTB kemp pro děti Ejpovice")).toBe(true);
   });
 });
+
+describe("listings that are not bike races", () => {
+  it("hides riding courses, add-on bookings and triathlons", async () => {
+    const { isNonRaceEventName } = await import("@/lib/event-visibility");
+    expect(isNonRaceEventName('MTB-Fahrtechnikkurs "Allround", Nürnberg #5')).toBe(true);
+    expect(isNonRaceEventName("OchsenkopfGravel 2026 - Zusatzbuchungen")).toBe(true);
+    expect(isNonRaceEventName("Frankfurt Citytriathlon")).toBe(true);
+    expect(isNonRaceEventName("Hugenotten Duathlon")).toBe(false);
+    expect(isNonRaceEventName("Magstadter Radcross")).toBe(false);
+  });
+});
