@@ -185,6 +185,8 @@ export type EnrichResult = {
  */
 export async function enrichFromPages(opts?: {
   max?: number;
+  /** Last season instead of the coming one: what it states carries to this year's edition. */
+  past?: boolean;
   dryRun?: boolean;
   ids?: string[];
   fixDisciplines?: boolean;
@@ -206,8 +208,9 @@ export async function enrichFromPages(opts?: {
       .select("id, name, start_date, website_url, registration_url, regulations_url, registration_closes_at, disciplines, age_categories, age_confidence, location:locations(municipality)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
-      .in("status", [...ACTIVE_EVENT_STATUSES])
-      .gte("start_date", today)
+      .in("status", opts?.past ? [...ACTIVE_EVENT_STATUSES, "completed"] : [...ACTIVE_EVENT_STATUSES])
+      .gte("start_date", opts?.past ? new Date(Date.now() - 400 * 86_400_000).toISOString().slice(0, 10) : today)
+      .lt("start_date", opts?.past ? today : "9999-12-31")
       .not("website_url", "is", null)
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
@@ -222,8 +225,9 @@ export async function enrichFromPages(opts?: {
       if (skip.has(r.id) && !opts?.ids?.length) continue;
       if (!r.website_url || AGGREGATOR.test(r.website_url)) continue;
       // Worth a look only if something is missing or only a guess.
-      const needs =
-        r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url || !r.registration_closes_at;
+      const needs = opts?.past
+        ? r.age_confidence !== "explicit" || !(r.disciplines ?? []).length
+        : r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url || !r.registration_closes_at;
       if (!needs && !opts?.ids?.length) continue;
       targets.push({
         id: r.id, name: r.name, startDate: r.start_date, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
@@ -329,7 +333,7 @@ export async function enrichFromPages(opts?: {
 
       // Written after the whole batch: a quote two races share is a hub
       // page's window, not this race's own.
-      if (v.entryCloses && !t.closesAt && v.entryCloses.date <= t.startDate) deadlines.set(t.id, { t, ...v.entryCloses });
+      if (!opts?.past && v.entryCloses && !t.closesAt && v.entryCloses.date <= t.startDate) deadlines.set(t.id, { t, ...v.entryCloses });
 
       if (!Object.keys(patch).length) {
         result.silent += 1;
