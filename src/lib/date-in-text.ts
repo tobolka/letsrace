@@ -26,6 +26,8 @@ export function textNamesDate(rawText: string, iso: string): boolean {
   const D = `0?${d}`;
   const M = `0?${m}`;
   if (new RegExp(`${y}-0?${m}-0?${d}(\\D|$)`).test(t)) return true;
+  // American, as the Czech federation's portal renders it: "10/3/2026".
+  if (new RegExp(`(^|[^\\d])0?${m}/0?${d}/${y}(?!\\d)`).test(t)) return true;
   if (new RegExp(`(^|[^\\d])${D}\\s*[./]\\s*${M}\\s*[./]?\\s*(${y}|${String(y).slice(2)}(?!\\d))?(?!\\s*[./]?\\s*\\d)`).test(t)) {
     // "3.10." alone could be another year's; fine — the year is checked below.
     return true;

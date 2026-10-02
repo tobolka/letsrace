@@ -185,6 +185,40 @@ export function relatedDocumentLinks(
     .map((f) => ({ url: f.url, near: f.score >= 6 }));
 }
 
+/** Word, RTF or OpenDocument: propozice are often a .doc on the club's site. */
+function isOfficeDocument(type: string, bytes: Uint8Array, url: string): boolean {
+  if (/msword|officedocument\.wordprocessing|rtf|opendocument\.text/i.test(type)) return true;
+  if (/\.(docx?|rtf|odt)(\?|$)/i.test(url)) return true;
+  // The old binary Word header.
+  return bytes[0] === 0xd0 && bytes[1] === 0xcf && bytes[2] === 0x11 && bytes[3] === 0xe0;
+}
+
+/**
+ * Text of an office document, through macOS `textutil` where the reader runs
+ * on a Mac; elsewhere nothing (a garbled byte dump is worse than no text).
+ */
+async function officeText(bytes: Uint8Array, url: string): Promise<string | null> {
+  if (process.platform !== "darwin" || process.env.VERCEL) return null;
+  const { mkdtemp, writeFile, readFile, rm } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { execFile } = await import("node:child_process");
+  const ext = (url.match(/\.(docx?|rtf|odt)(\?|$)/i)?.[1] ?? (bytes[0] === 0x50 ? "docx" : "doc")).toLowerCase();
+  const dir = await mkdtemp(join(tmpdir(), "letsrace-doc-"));
+  try {
+    const src = join(dir, `in.${ext}`);
+    await writeFile(src, bytes);
+    await new Promise<void>((ok, fail) =>
+      execFile("/usr/bin/textutil", ["-convert", "txt", "-encoding", "UTF-8", "-output", join(dir, "out.txt"), src], { timeout: 20_000 }, (e) => (e ? fail(e) : ok())),
+    );
+    return await readFile(join(dir, "out.txt"), "utf8");
+  } catch {
+    return null;
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+}
+
 export type ReadDoc = { url: string; text: string; html: string | null; thin: boolean };
 
 export async function readDocument(url: string): Promise<ReadDoc | null> {
@@ -192,6 +226,10 @@ export async function readDocument(url: string): Promise<ReadDoc | null> {
   if (!doc) return null;
   if (isPdf(doc.type, doc.bytes, url)) return { url, text: await pdfText(doc.bytes), html: null, thin: false };
   if (/text\/plain/.test(doc.type)) return { url, text: new TextDecoder("utf-8").decode(doc.bytes), html: null, thin: false };
+  if (isOfficeDocument(doc.type, doc.bytes, url)) {
+    const text = await officeText(doc.bytes, url);
+    return text ? { url, text, html: null, thin: false } : null;
+  }
   const html = new TextDecoder("utf-8").decode(doc.bytes);
   const text = htmlText(html);
   // A shell for a script to fill: little text, a script that will write it.

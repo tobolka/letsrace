@@ -11,6 +11,7 @@ describe("textNamesDate", () => {
     expect(textNamesDate("October 3rd, 2026", "2026-10-03")).toBe(true);
     expect(textNamesDate("13.10.2026", "2026-10-03")).toBe(false);
     expect(textNamesDate("3.11.2026", "2026-10-03")).toBe(false);
+    expect(textNamesDate("Start Date: 10/3/2026", "2026-10-03")).toBe(true);
   });
   it("knows last year's page from this year's", () => {
     expect(textNamesEdition("Rennen am 3.10.2025", "2026-10-03")).toBe(false);

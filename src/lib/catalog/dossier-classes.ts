@@ -19,7 +19,7 @@ export function editionDocs(docs: DossierDoc[], startDate: string, names: string
   const datedHosts = new Set(docs.filter((d) => d.thisEdition && d.kind !== "listing").map((d) => host(d.url)));
   return docs.filter((d) => {
     // Results, a platform's front page, a calendar of many races: not this race's classes.
-    if (RESULTS.test(d.url) || platformRoot(d.url) || distinctDates(d.text) > 8) return false;
+    if (RESULTS.test(d.url) || platformRoot(d.url) || distinctDates(d.text) > 25) return false;
     // A binary Word file read as text, or another broken extract.
     if (garbled(d.text)) return false;
     // The kids' page of a race that is not a kids' race.
@@ -90,7 +90,8 @@ const SYSTEM =
   "You get numbered lines taken from one cycling race's own documents (its site, entry page, regulations). " +
   "Return the numbers of the lines that name a class (category) a rider can enter in THIS race: age groups, U-classes, birth-year classes, elite/hobby/masters, men/women classes. " +
   "Leave out prize lists, results, start times that do not name a class, other events' classes, and general federation tables not tied to this race. " +
-  'Answer JSON only: {"lines":[numbers]}. If none, {"lines":[]}.';
+  'Also say whether THIS race is only for children or youth (a kids\' cup, a youth series), as the lines show it. ' +
+  'Answer JSON only: {"lines":[numbers],"youth_only":true|false}. If none, {"lines":[],"youth_only":false}.';
 
 /**
  * The classes a race states, found by pointing: the model only says which of
@@ -100,17 +101,17 @@ const SYSTEM =
 export async function classesFromDossier(
   race: { name: string; startDate: string; place?: string | null },
   docs: DossierDoc[],
-): Promise<{ ages: AgeCategory[]; lines: { line: string; url: string }[]; usage: LlmUsage | null }> {
+): Promise<{ ages: AgeCategory[]; lines: { line: string; url: string }[]; youthOnly?: boolean; usage: LlmUsage | null }> {
   const lines = candidateLines(editionDocs(docs, race.startDate, [race.name, race.place ?? ""]));
   if (lines.length < 2) return { ages: [], lines: [], usage: null };
-  const { json, usage } = await askJson<{ lines?: number[] }>({
+  const { json, usage } = await askJson<{ lines?: number[]; youth_only?: boolean }>({
     system: SYSTEM,
     user: `Race: ${race.name}, ${race.startDate}\n\n${lines.map((l) => `${l.n}. ${l.line}`).join("\n")}`,
     model: HAIKU,
     maxTokens: 400,
   });
   const picked = lines.filter((l) => (json?.lines ?? []).includes(l.n)).filter((l) => listLike(l.line, l.url));
-  return { ...bandsFromLines(picked, race.startDate), lines: picked.map(({ line, url }) => ({ line, url })), usage };
+  return { ...bandsFromLines(picked, race.startDate), lines: picked.map(({ line, url }) => ({ line, url })), youthOnly: json?.youth_only === true, usage };
 }
 
 /**
@@ -143,10 +144,12 @@ export function bandsFromLines(lines: { line: string }[], startDate: string): { 
  * Juniores"); an adult band unless the race is a children's race. A partial
  * list stated as the whole would hide the race from everyone left out.
  */
-export function statable(race: { name: string }, found: { ages: AgeCategory[]; lines: { line: string; url: string }[] }): boolean {
+export function statable(race: { name: string }, found: { ages: AgeCategory[]; lines: { line: string; url: string }[]; youthOnly?: boolean }): boolean {
   const specific = found.ages.filter((a) => a !== "kids" && a !== "youth");
   const adults = found.ages.some((a) => ["junior", "u23", "elite", "amateur", "masters"].includes(a));
   const fciRecord = found.lines.some((l) => /federciclismo\.it\/race\/detail/.test(l.url) && /classe:|categorie ammesse/i.test(l.line));
   if (fciRecord && specific.length >= 1) return true;
-  return found.lines.length >= 2 && specific.length >= 2 && (adults || KIDS_RACE.test(race.name));
+  // Children's classes alone only for a children's race: by its name, or by
+  // its own documents (a kids' series the name does not reveal).
+  return found.lines.length >= 2 && specific.length >= 2 && (adults || KIDS_RACE.test(race.name) || found.youthOnly === true);
 }

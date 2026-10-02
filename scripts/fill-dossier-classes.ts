@@ -2,17 +2,19 @@
  * Classes for races that state none yet: gather each race's documents, tie
  * them to the edition by its date, let the model point at the class lines,
  * derive the bands from those lines. Every write is kept in event_facts.
- *   LLM_BUDGET_USD=0.5 node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-dossier-classes.ts [--max=700] [--apply]
+ *   LLM_BUDGET_USD=0.5 node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-dossier-classes.ts [--max=700] [--country=CZ] [--again] [--apply]
  */
 import { readFileSync } from "node:fs";
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, ""); }
 
 const VERSION = "dossier-classes-v1";
-type Row = { id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; age_confidence: string | null; age_categories: string[] | null; location: { municipality: string | null } | null; sources: { source_url: string | null }[] | null };
+type Row = { id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; age_confidence: string | null; age_categories: string[] | null; location: { municipality: string | null; country_code: string | null } | null; sources: { source_url: string | null }[] | null };
 
 async function main() {
   const apply = process.argv.includes("--apply");
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 700);
+  const country = process.argv.find((a) => a.startsWith("--country="))?.slice(10);
+  const again = process.argv.includes("--again");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const { gatherDossier } = await import("../src/lib/catalog/dossier");
   const { classesFromDossier, statable } = await import("../src/lib/catalog/dossier-classes");
@@ -27,12 +29,15 @@ async function main() {
   const skip = await recentlyProbed(s, "dossier_classes");
   const rows: Row[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data } = await s.from("events").select("id, name, start_date, website_url, registration_url, regulations_url, age_confidence, age_categories, location:locations(municipality), sources:event_sources(source_url)")
+    const { data } = await s.from("events").select("id, name, start_date, website_url, registration_url, regulations_url, age_confidence, age_categories, location:locations(municipality, country_code), sources:event_sources(source_url)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", ["scheduled", "tbc", "confirmed"]).gte("start_date", today).order("start_date").order("id").range(from, from + 999);
     rows.push(...((data ?? []) as unknown as Row[]));
     if (!data || data.length < 1000) break;
   }
-  const targets = rows.filter((r) => r.age_confidence !== "explicit" && !skip.has(r.id) && !CHAMPIONSHIP.test(r.name)).slice(0, max);
+  const targets = rows
+    .filter((r) => r.age_confidence !== "explicit" && (again || !skip.has(r.id)) && !CHAMPIONSHIP.test(r.name))
+    .filter((r) => !country || r.location?.country_code === country)
+    .slice(0, max);
   const result = { targets: targets.length, stated: 0, notSafe: 0, nothing: 0, failed: 0, costUsd: 0 };
   let stop = false;
   await mapPool(targets, 4, async (r) => {
