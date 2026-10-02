@@ -25,7 +25,7 @@ export function looksLikeArticleOrListing(url: string): boolean {
     /\/20\d\d\/\d{1,2}(\/|$)/.test(path) ||
     // A report or results page on last year's race, not its home.
     /(resoconto|cronaca|report|risultati|classifica|ordine-d-arrivo|results?|ergebnisse|bericht|wyniki|vysledky|galleria|gallery|fotogalerie|foto|photos?)(\/|\.|-|$)/.test(path) ||
-    /(^|\/)(news|neuigkeiten|nieuws|novita|nowosci|aktualnosci|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
+    /(^|\/)(news|novinky|novinka|zpravodajstvi|oznameni|tiskove-zpravy|aktuality|neuigkeiten|nieuws|novita|nowosci|aktualnosci|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
     /(^|\.)(stadt|gemeinde|comune|gmina|mesto|obec|city|town|kreis)[a-z0-9-]*\./.test(host) ||
     /(news|zeitung|today|gazzett|corriere|giornale|channel|magazin|journal|presse|sport24|portal|festival|racenotify|friuleventi|audax|ivg\.|leccochannel|klosterlehnin|bad-harzburg)/.test(host)
   );

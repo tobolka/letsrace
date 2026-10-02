@@ -34,4 +34,8 @@ describe("web finder", () => {
     expect(namesAnotherEdition("https://rideandrest.net/manifestazione/40-campionato-intersociale-memorial-alcide-besana/", '40° CAMPIONATO INTERSOCIALE "MEMORIAL ALCIDE BESANA"', "2026-10-04")).toBe(false);
     expect(namesAnotherEdition("https://x.cz/zavod-2025/", "Závod", "2026-05-01")).toBe(true);
   });
+
+  it("rejects Czech news paths", () => {
+    expect(looksLikeArticleOrListing("https://www.stredoceskysvazcyklistiky.cz/novinky/stredocesky-pohar-v-cyklokrosu-2026-startuje-jiz-4-rijna:a170.htm")).toBe(true);
+  });
 });
