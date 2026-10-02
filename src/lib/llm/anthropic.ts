@@ -54,8 +54,9 @@ export async function askJson<T>(opts: {
     body: JSON.stringify({
       model,
       max_tokens: opts.maxTokens ?? 1000,
-      system: opts.system,
-      messages: [{ role: "user", content: opts.user }],
+      system: opts.system.toWellFormed(),
+      // Lone surrogates from a broken page make the body invalid JSON.
+      messages: [{ role: "user", content: opts.user.toWellFormed() }],
     }),
     signal: AbortSignal.timeout(opts.timeoutMs ?? 120_000),
   });

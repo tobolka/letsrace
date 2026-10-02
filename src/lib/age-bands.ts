@@ -139,7 +139,7 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   if (/cruiser/.test(name)) return ["amateur"];
 
   // Adult open classes.
-  if (/\bmuzi\b|\bzeny\b|\bmen\b|\bwomen\b/.test(name)) return ["elite"];
+  if (/\bmuzi\b|\bzeny\b|\bmen\b|\bwomen\b|\bherren\b|\bdamen\b|\bmanner\b|\bfrauen\b|\bhommes\b|\bfemmes\b|\buomini\b|\bdonne\b|\bmezczyzni\b|\bkobiety\b/.test(name)) return ["elite"];
   if (/hobby|amater|prichozi|\bopen\b/.test(name)) return ["amateur"];
   return [];
 }

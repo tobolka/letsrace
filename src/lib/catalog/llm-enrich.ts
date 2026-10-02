@@ -8,8 +8,9 @@ import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { CHAMPIONSHIP, directDocumentUrl, hintsFor, readDocument, relatedDocumentLinks } from "@/lib/catalog/regulation-ages";
 import { findRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
+import { isAggregatorUrl, isDumpListingUrl } from "@/lib/watcher/public-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
-import { askJson, HAIKU, LlmUnavailable } from "@/lib/llm/anthropic";
+import { askJson, HAIKU, SONNET, LlmUnavailable, type LlmUsage } from "@/lib/llm/anthropic";
 import { alreadyRead, markRead, recordFacts, textHash, type Fact } from "@/lib/catalog/facts";
 
 /** Bump when the prompt or the checks change: pages are read again, facts carry it. */
@@ -65,8 +66,26 @@ export const DISCIPLINE_WORDS: Record<string, RegExp> = {
 const REGISTRATION_WORDS = /registr|anmeld|nennung|iscri|p[řr]ihl[aá][šs]|zapis|entry|entries|enter|sign.?up|inscri|tickets?|startpl[aä]tz|meld/i;
 const REGULATIONS_WORDS = /propoz|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|guide|info.?pdf|teilnehmerinfo|rules|pravidl/i;
 /** Pages that sit next to entry links and are not one: schedules, results, galleries. */
-const NOT_A_LINK_FOR = /harmonogram|schedule|zeitplan|programm?e?\b|ergebnis|results?|v[ýy]sledk|wyniki|risultati|classifica|galer|gallery|foto|photo|startlist|startovn[ií] listin|news|aktuality/i;
+const NOT_A_LINK_FOR = /harmonogram|schedule|zeitplan|programm?e?\b|ergebnis|results?|v[ýy]sledk|wyniki|risultati|classifica|galer|gallery|foto|photo|startlist|startovn[ií] listin|news|aktuality|admission|authori[sz]ation|extras|merch|shop|hotel|accommodation|unterkunft|ubytov|parking|volunteer|helfer|press|media|sponsor|login|mein-konto|account/i;
 const DEADLINE_QUOTE = /uz[aá]v[eě]rk|p[řr]ihl[aá][šs]|registr|anmeld|nennschluss|meldeschluss|iscrizi|zapis|entr|deadline|closes|bis zum|do\s+\d|until|online/i;
+
+/**
+ * A quote as the class names in it: "Herren/Damen/Junioren m/w /Senioren" is
+ * four classes, "B 35-42" in a list of age groups is 35 to 42 years.
+ */
+export function classesInQuote(quote: string): string[] {
+  // "Men A 18-34 years" is an age group of men, not the open men's class.
+  const hasAges = /\d{2}\s*[-–]\s*\d{2}|\d{2}\s*\+/.test(quote);
+  return quote
+    .split(/\s*[\/,;|·•]\s*|\s{2,}/)
+    .map((p) => p.trim())
+    .filter((p) => p.length >= 1)
+    .filter((p) => !(hasAges && /^(men|women|herren|damen|m[äa]nner|frauen|mu[žz]i|[žz]eny|uomini|donne|hommes|femmes)$/i.test(p)))
+    .map((p) => {
+      const m = p.match(/^[A-Za-z]{0,3}\s*(\d{2})\s*[-–]\s*(\d{2})$/);
+      return m && Number(m[1]) >= 10 && Number(m[1]) < Number(m[2]) ? `${p} years` : p;
+    });
+}
 
 export type Enrichment = {
   isThisRace: boolean;
@@ -78,7 +97,7 @@ export type Enrichment = {
   entryCloses: { date: string; time: string | null; quote: string } | null;
 };
 
-type Link = { url: string; text: string };
+type Link = { url: string; text: string; context?: string };
 
 /** The links on a page that may lead to entering, the regulations or the classes. */
 export function candidateLinks(html: string, base: string): Link[] {
@@ -96,11 +115,16 @@ export function candidateLinks(html: string, base: string): Link[] {
     const text = $(a).text().replace(/\s+/g, " ").trim().slice(0, 80);
     if (!LINK_WORDS.test(`${text} ${url}`)) return;
     if (/facebook\.com|instagram\.com|youtube\.com|twitter\.com|linkedin\.com|wa\.me|whatsapp/i.test(url)) return;
-    if (!out.has(url)) out.set(url, { url, text });
+    // What the link sits in: the line, list item or block around it.
+    const block = $(a).closest("li, p, tr, td, dd, h1, h2, h3, h4, section, article, div");
+    const context = (block.length ? block.text() : $(a).parent().text()).replace(/\s+/g, " ").trim().slice(0, 400);
+    if (!out.has(url)) out.set(url, { url, text, context });
   });
   return [...out.values()].slice(0, 40);
 }
 
+const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+const GENERIC_NAME = /^(race|rennen|zavod|zavody|cup|pohar|kolo|serie|series|gran|fondo|memorial|trofeo|premio|grand|prix|cross|cyklokros|mtb|gravel|road|2026|2027)$/;
 const norm = (s: string) => s.normalize("NFC").toLowerCase().replace(/\s+/g, " ").trim();
 const unquote = (s: string) => s.replace(/^[„"“'«]+|[”"“'»]+$/g, "");
 
@@ -108,6 +132,7 @@ const unquote = (s: string) => s.replace(/^[„"“'«]+|[”"“'»]+$/g, "");
 export function verifyEnrichment(
   raw: {
     is_this_race?: unknown;
+    page_about?: unknown;
     disciplines?: { value?: unknown; quote?: unknown }[];
     categories?: { name?: unknown; quote?: unknown }[];
     registration_url?: unknown;
@@ -116,6 +141,8 @@ export function verifyEnrichment(
   } | null,
   text: string,
   links: Link[],
+  /** The race's date: a link naming another season is not this edition's. */
+  startDate?: string,
 ): Enrichment {
   const empty: Enrichment = { isThisRace: false, disciplines: [], categories: [], registrationUrl: null, regulationsUrl: null, entryCloses: null };
   if (!raw) return empty;
@@ -138,6 +165,12 @@ export function verifyEnrichment(
     const l = byUrl.get(u)!;
     const blob = `${l.text} ${u}`;
     if (NOT_A_LINK_FOR.test(blob)) return null;
+    // A link that names another season is last year's form or rules.
+    if (startDate) {
+      const y = Number(startDate.slice(0, 4));
+      const ok = new Set([y, y + 1, ...(Number(startDate.slice(5, 7)) <= 3 ? [y - 1] : [])]);
+      if ((blob.match(/(?<!\d)20\d\d(?!\d)/g) ?? []).some((n) => !ok.has(Number(n)))) return null;
+    }
     if (kind === "registration") return isRegistrationPlatformUrl(u) || REGISTRATION_WORDS.test(blob) ? u : null;
     return /\.pdf(\?|#|$)/i.test(u) || REGULATIONS_WORDS.test(blob) ? u : null;
   };
@@ -146,14 +179,17 @@ export function verifyEnrichment(
   if (ec && typeof ec.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(ec.date) && typeof ec.quote === "string") {
     const q = norm(unquote(ec.quote));
     const day = String(Number(ec.date.slice(8, 10)));
-    if (q.length >= 6 && hay.includes(q) && DEADLINE_QUOTE.test(q) && new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(q)) {
-      const time = typeof ec.time === "string" && /^\d{1,2}:\d{2}$/.test(ec.time) ? ec.time.padStart(5, "0") : null;
+    const earlyBird = /v[čc]asn|early|fr[üu]hbucher|sconto|zl?[ae]v|discount|rabatt|reduced|poplatek|startovn[eé]|price|cena|preis|prezzo|op[łl]at/i.test(q) && !/uz[aá]v[eě]rk|schluss|closes|chiusura|koniec|konec|end of/i.test(q);
+    if (q.length >= 6 && hay.includes(q) && !earlyBird && DEADLINE_QUOTE.test(q) && new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(q)) {
+      let time = typeof ec.time === "string" && /^\d{1,2}:\d{2}$/.test(ec.time) ? ec.time.padStart(5, "0") : null;
+      if (time && Number(time.slice(0, 2)) >= 24) time = "23:59";
       entryCloses = { date: ec.date, time, quote: ec.quote };
     }
   }
   return {
     entryCloses,
-    isThisRace: raw.is_this_race === true,
+    // A series or organiser page counts: it is where this race's links live.
+    isThisRace: raw.is_this_race === true || raw.page_about === "this_race" || raw.page_about === "series_or_organiser",
     disciplines,
     categories: verifiedCategories({ categories: raw.categories }, text),
     registrationUrl: pick(raw.registration_url, "registration"),
@@ -164,8 +200,8 @@ export function verifyEnrichment(
 const SYSTEM =
   "You help catalogue cycling races from the organiser's own web pages. You get the race (name, date, place, what we hold) and text taken from its pages, plus a numbered list of links found on them. " +
   "Answer with JSON only, in exactly this shape: " +
-  '{"is_this_race":true|false,"disciplines":[{"value":"<id>","quote":"<verbatim>"}],"categories":[{"name":"<class as written>","quote":"<verbatim>"}],"registration_url":"<one of the listed links or null>","regulations_url":"<one of the listed links or null>","entry_closes":{"date":"YYYY-MM-DD","time":"HH:MM or null","quote":"<verbatim>"} or null}. ' +
-  "is_this_race is false when the text is about another race, a different year, a series overview that names no round matching this race, or something unrelated. " +
+  '{"page_about":"this_race|series_or_organiser|other_race|unrelated","disciplines":[{"value":"<id>","quote":"<verbatim>"}],"categories":[{"name":"<class as written>","quote":"<verbatim>"}],"registration_url":"<one of the listed links or null>","regulations_url":"<one of the listed links or null>","entry_closes":{"date":"YYYY-MM-DD","time":"HH:MM or null","quote":"<verbatim>"} or null}. ' +
+  "page_about: this_race when the text is about this race; series_or_organiser when it is the site of the series or club that runs it (its calendar, entry and rules pages count); other_race when it is about a different race or another year's edition only; unrelated otherwise. " +
   "Discipline ids: xco (cross-country Olympic), xcc (short track), xce (eliminator), xcm (cross-country marathon / MTB marathon), mtb (other mountain bike), dh, enduro, gravel, road (road ride or race, generic), road_race, tt (time trial), criterium, hill_climb, gran_fondo (mass-start granfondo/marathon on road), cx (cyclocross / přespolní / Querfeldein / ciclocross / przełaj), track, bmx. " +
   "Give the discipline(s) this race is, each with a verbatim quote from the text that shows it. " +
   "categories: only classes this race states (age classes, sex classes, licence classes). registration_url: the link where a rider enters; regulations_url: the link to the regulations (propozice, Ausschreibung, regolamento). Use a link exactly as listed, or null; prefer the race's own regulations document (often a PDF) over a general page. " +
@@ -184,6 +220,55 @@ async function askModel(
   return { raw: json, tokensIn: usage.tokensIn, tokensOut: usage.tokensOut };
 }
 
+type AuditItem = { id: number; field: string; value: string; evidence: string };
+
+const AUDIT_SYSTEM =
+  "You check values another assistant extracted for one cycling race from its web pages. For each item decide keep or drop. " +
+  "Keep only when the evidence clearly shows the value is right for THIS race and THIS edition (its name and date). " +
+  "Drop when it belongs to another event or another year, is a general page (spectator tickets, venue or admission rules, merchandise, accommodation, a login), " +
+  "is an on-site check-in or briefing time rather than when online entry closes, or is an early-bird price date. " +
+  "A link on the race's own site or series site that is labelled as entry / registration / regulations counts, even without a date beside it, unless something points to another event or year. " +
+  "Classes are our age bands, not the race's names: kids = up to U11, youth = U13 to U17, junior = 17-18, u23, elite = open men/women, amateur = hobby/open/unlicensed, masters = 35+. Keep a class value when every band in it is shown by the evidence and no band the evidence shows is missing. " +
+  'Answer JSON only: {"items":[{"id":1,"keep":true,"why":"short"}]}.';
+
+/** Text around where a quote or a link label sits on the pages. */
+function around(all: string, needle: string, span = 350): string {
+  if (!needle) return "";
+  const flat = all.replace(/\s+/g, " ");
+  const at = flat.toLowerCase().indexOf(needle.toLowerCase().replace(/\s+/g, " ").slice(0, 60));
+  if (at < 0) return "";
+  return flat.slice(Math.max(0, at - span), at + needle.length + span);
+}
+
+/**
+ * A second, stronger reader looks at each proposed value with its evidence and
+ * keeps only what clearly belongs to this race. The first reader finds; this
+ * one is paid to say no.
+ */
+async function auditProposals(
+  race: { name: string; startDate: string; place: string | null },
+  items: AuditItem[],
+): Promise<{ keep: Set<number>; why: Map<number, string>; usage: LlmUsage | null }> {
+  if (!items.length) return { keep: new Set(), why: new Map(), usage: null };
+  const user =
+    `Race: ${race.name}\nDate: ${race.startDate}\nPlace: ${race.place ?? "unknown"}\n\n` +
+    items.map((i) => `${i.id}. ${i.field} = ${i.value}\nEvidence: ${i.evidence.slice(0, 1200)}`).join("\n\n");
+  const { json, usage } = await askJson<{ items?: { id?: number; keep?: boolean; why?: string }[] }>({
+    system: AUDIT_SYSTEM,
+    user,
+    model: SONNET,
+    maxTokens: 600,
+  });
+  const keep = new Set<number>();
+  const why = new Map<number, string>();
+  for (const r of json?.items ?? []) {
+    if (typeof r.id !== "number") continue;
+    if (r.keep === true) keep.add(r.id);
+    why.set(r.id, r.why ?? "");
+  }
+  return { keep, why, usage };
+}
+
 export type EnrichResult = {
   attempted: number;
   notThisRace: number;
@@ -192,6 +277,12 @@ export type EnrichResult = {
   registration: number;
   regulations: number;
   deadlines: number;
+  /** Proposals the second reader turned down, and what it cost. */
+  auditDropped: number;
+  /** Races where the model proposed each field, and where the checks let it through. */
+  proposed: Record<string, number>;
+  passedRules: Record<string, number>;
+  auditUsd: number;
   silent: number;
   failed: number;
   tokensIn: number;
@@ -266,7 +357,7 @@ export async function enrichFromPages(opts?: {
     if (rows.length < PAGE) break;
   }
 
-  const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, deadlines: 0, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
+  const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, deadlines: 0, auditDropped: 0, auditUsd: 0, proposed: {}, passedRules: {}, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
   const review: string[] = ["kind\tdate\trace\tholds\tmodel says\tevidence"];
   let stop = false;
   const deadlines = new Map<string, { t: Target; date: string; time: string | null; quote: string }>();
@@ -321,7 +412,29 @@ export async function enrichFromPages(opts?: {
       result.tokensIn += tokensIn;
       result.tokensOut += tokensOut;
       result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000;
-      const v = verifyEnrichment(raw, all, links);
+      const v = verifyEnrichment(raw, all, links, t.startDate);
+      // On a calendar or federation page many races share the links: one
+      // counts only if its label or its line names this race or its town.
+      if (isDumpListingUrl(t.web) || isAggregatorUrl(t.web) || /kalend|calendar|termine|veranstaltungen/i.test(t.web ?? "")) {
+        const own = [...new Set(fold(`${t.name} ${t.place ?? ""}`).split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !GENERIC_NAME.test(w)))];
+        const names = (u: string | null) => {
+          const l = links.find((x) => x.url === u);
+          const blob = fold(`${l?.text ?? ""} ${l?.context ?? ""} ${u ?? ""}`);
+          return own.some((w) => blob.includes(w));
+        };
+        if (v.registrationUrl && !names(v.registrationUrl)) v.registrationUrl = null;
+        if (v.regulationsUrl && !names(v.regulationsUrl)) v.regulationsUrl = null;
+      }
+      for (const [k, n] of Object.entries({
+        classes: [raw?.categories?.length ?? 0, v.categories.length],
+        discipline: [raw?.disciplines?.length ?? 0, v.disciplines.length],
+        registration: [raw?.registration_url ? 1 : 0, v.registrationUrl ? 1 : 0],
+        regulations: [raw?.regulations_url ? 1 : 0, v.regulationsUrl ? 1 : 0],
+        deadline: [raw?.entry_closes?.date ? 1 : 0, v.entryCloses ? 1 : 0],
+      })) {
+        result.proposed[k] = (result.proposed[k] ?? 0) + (n[0] ? 1 : 0);
+        result.passedRules[k] = (result.passedRules[k] ?? 0) + (n[1] ? 1 : 0);
+      }
       if (!opts?.dryRun) await markRead(supabase, t.web!, ENRICH_VERSION, hash);
       if (!v.isThisRace) {
         result.notThisRace += 1;
@@ -334,7 +447,7 @@ export async function enrichFromPages(opts?: {
       const notes: string[] = [];
 
       if (t.ageConfidence !== "explicit") {
-        const ages = new Set<AgeCategory>(ageCategoriesFromList(v.categories.map((c) => ({ name: c.quote })), { refYear: Number(t.startDate.slice(0, 4)) }));
+        const ages = new Set<AgeCategory>(ageCategoriesFromList(v.categories.flatMap((c) => (/\d{2}\s*[-–]\s*\d{2}/.test(c.quote) ? classesInQuote(c.quote) : [c.quote, ...classesInQuote(c.quote)])).map((name) => ({ name })), { refYear: Number(t.startDate.slice(0, 4)) }));
         const specific = [...ages].filter((a) => !["kids", "youth"].includes(a)).length;
         if (specific >= 2 && !CHAMPIONSHIP.test(t.name)) {
           const adults = [...ages].some((a) => ["junior", "u23", "elite", "amateur", "masters"].includes(a));
@@ -386,9 +499,61 @@ export async function enrichFromPages(opts?: {
         result.regulations += 1;
       }
 
-      // Written after the whole batch: a quote two races share is a hub
-      // page's window, not this race's own.
-      if (!opts?.past && v.entryCloses && !t.closesAt && v.entryCloses.date <= t.startDate) deadlines.set(t.id, { t, ...v.entryCloses });
+      // A second opinion on every proposal before anything is written.
+      const items: AuditItem[] = [];
+      const linkText = (u: unknown) => links.find((l) => l.url === u)?.text ?? "";
+      const linkWhere = (u: unknown) => {
+        const l = links.find((x) => x.url === u);
+        return `link label "${l?.text ?? ""}"; the link sits in: "${l?.context ?? ""}"; found while reading ${t.web}`;
+      };
+      if (patch.age_categories) items.push({ id: 1, field: "classes", value: (patch.age_categories as string[]).join(", "), evidence: v.categories.map((c) => around(all, c.quote, 120) || c.quote).join(" … ") });
+      if (patch.disciplines) items.push({ id: 2, field: "discipline", value: (patch.disciplines as string[]).join(", "), evidence: v.disciplines.map((d) => around(all, d.quote, 150) || d.quote).join(" … ") });
+      if (patch.registration_url) items.push({ id: 3, field: "online entry link", value: String(patch.registration_url), evidence: linkWhere(patch.registration_url) });
+      if (patch.regulations_url) items.push({ id: 4, field: "regulations link", value: String(patch.regulations_url), evidence: linkWhere(patch.regulations_url) });
+      const deadline = !opts?.past && v.entryCloses && !t.closesAt && v.entryCloses.date < t.startDate ? v.entryCloses : null;
+      if (deadline) items.push({ id: 5, field: "online entry closes", value: `${deadline.date}${deadline.time ? ` ${deadline.time}` : ""}`, evidence: around(all, deadline.quote, 300) || deadline.quote });
+      if (items.length) {
+        const audit = await auditProposals({ name: t.name, startDate: t.startDate, place: t.place }, items);
+        if (audit.usage) result.auditUsd += audit.usage.costUsd;
+        const dropped = (id: number) => !audit.keep.has(id);
+        const note = (id: number, what: string) => {
+          result.auditDropped += 1;
+          review.push(`audit-dropped\t${t.startDate}\t${t.name}\t${what}\t\t${audit.why.get(id) ?? ""}`);
+          opts?.log?.(`  DROP ${t.name}: ${what} — ${audit.why.get(id) ?? ""}`);
+        };
+        if (patch.age_categories && dropped(1)) {
+          note(1, `classes ${(patch.age_categories as string[]).join(",")}`);
+          delete patch.age_categories; delete patch.age_confidence; delete patch.audience;
+          result.ages -= 1;
+          for (let i = facts.length - 1; i >= 0; i--) if (facts[i]!.field.startsWith("age_")) facts.splice(i, 1);
+          notes.splice(0, notes.length, ...notes.filter((n) => !n.startsWith("ages ")));
+        }
+        if (patch.disciplines && dropped(2)) {
+          note(2, `discipline ${(patch.disciplines as string[]).join(",")}`);
+          delete patch.disciplines;
+          result.disciplinesSet -= 1;
+          for (let i = facts.length - 1; i >= 0; i--) if (facts[i]!.field === "disciplines") facts.splice(i, 1);
+          notes.splice(0, notes.length, ...notes.filter((n) => !n.startsWith("discipline ")));
+        }
+        if (patch.registration_url && dropped(3)) {
+          note(3, `registration ${patch.registration_url}`);
+          delete patch.registration_url;
+          result.registration -= 1;
+          for (let i = facts.length - 1; i >= 0; i--) if (facts[i]!.field === "registration_url") facts.splice(i, 1);
+          notes.splice(0, notes.length, ...notes.filter((n) => !n.startsWith("registration ")));
+        }
+        if (patch.regulations_url && dropped(4)) {
+          note(4, `regulations ${patch.regulations_url}`);
+          delete patch.regulations_url;
+          result.regulations -= 1;
+          for (let i = facts.length - 1; i >= 0; i--) if (facts[i]!.field === "regulations_url") facts.splice(i, 1);
+          notes.splice(0, notes.length, ...notes.filter((n) => !n.startsWith("regulations ")));
+        }
+        // Written after the whole batch: a quote two races share is a hub
+        // page's window, not this race's own.
+        if (deadline && !dropped(5)) deadlines.set(t.id, { t, ...deadline });
+        else if (deadline) note(5, `entry closes ${deadline.date}`);
+      }
 
       if (!Object.keys(patch).length) {
         result.silent += 1;
@@ -416,6 +581,7 @@ export async function enrichFromPages(opts?: {
   };
   const { mapPool } = await import("@/lib/watcher/pool");
   await mapPool(targets, 4, one);
+  result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000 + result.auditUsd;
   const quoteCount = new Map<string, number>();
   for (const d of deadlines.values()) quoteCount.set(norm(d.quote), (quoteCount.get(norm(d.quote)) ?? 0) + 1);
   for (const d of deadlines.values()) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { verifyEnrichment } from "@/lib/catalog/llm-enrich";
+import { classesInQuote, verifyEnrichment } from "@/lib/catalog/llm-enrich";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 
 const text = "Harmonogram zawodów. Kategorie: M2 1997-2007 (19-29 lat). G-Cyclocross Gullegem. Zapisy online do 10.10.2026. Dyscyplina: Przełaj";
@@ -38,5 +38,15 @@ describe("verifyEnrichment", () => {
   it("keeps an entry deadline only from a quote about entering", () => {
     const ok = verifyEnrichment({ is_this_race: true, entry_closes: { date: "2026-10-10", quote: "Zapisy online do 10.10.2026" } }, text, links);
     expect(ok.entryCloses?.date).toBe("2026-10-10");
+  });
+
+  it("splits a quote into its classes and reads bare age ranges", () => {
+    const names = ["Platz 1-3 Herren/Damen/Junioren m/w /Senioren", "Men  A 18-34 years", "B 35-42"].flatMap((q) => [q, ...classesInQuote(q)]);
+    expect(ageCategoriesFromList(names.map((name) => ({ name })), { refYear: 2027 })).toEqual(["junior", "elite", "amateur", "masters"]);
+  });
+
+  it("does not take an early-bird price date for the entry deadline", () => {
+    const t = "Poplatek za včasnou registraci (do 19.9.2026) je: 600 Kč";
+    expect(verifyEnrichment({ page_about: "this_race", entry_closes: { date: "2026-09-19", quote: t } }, t, []).entryCloses).toBeNull();
   });
 });
