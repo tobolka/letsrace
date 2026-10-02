@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isConfidentMatch, looksLikeArticleOrListing, namedByThePage, pageIsAbout, searchQuery } from "@/lib/catalog/web-finder";
+import { isConfidentMatch, looksLikeArticleOrListing, namedByThePage, namesAnotherEdition, pageIsAbout, searchQuery } from "@/lib/catalog/web-finder";
 
 describe("web finder", () => {
   it("asks for the race, its town and its year", () => {
@@ -25,5 +25,13 @@ describe("web finder", () => {
   it("writes only sure finds", () => {
     expect(isConfidentMatch("https://www.perlcross.de/", "Bauhaus Perlcross in Perl 2026", "Bauhaus Perlcross", "Perl")).toBe(true);
     expect(isConfidentMatch("https://x.com/a/b/c/perlcross", "Bauhaus Perlcross in Perl", "Bauhaus Perlcross", "Perl")).toBe(false);
+  });
+
+  it("rejects a report on another edition", () => {
+    const url = "https://www.fcicomo.it/amatori-34-campionato-intersociale-memorial-alcide-besana-resoconto/";
+    expect(looksLikeArticleOrListing(url)).toBe(true);
+    expect(namesAnotherEdition(url.replace("-resoconto", ""), '40° CAMPIONATO INTERSOCIALE "MEMORIAL ALCIDE BESANA"', "2026-10-04")).toBe(true);
+    expect(namesAnotherEdition("https://rideandrest.net/manifestazione/40-campionato-intersociale-memorial-alcide-besana/", '40° CAMPIONATO INTERSOCIALE "MEMORIAL ALCIDE BESANA"', "2026-10-04")).toBe(false);
+    expect(namesAnotherEdition("https://x.cz/zavod-2025/", "Závod", "2026-05-01")).toBe(true);
   });
 });

@@ -23,10 +23,32 @@ export function looksLikeArticleOrListing(url: string): boolean {
   const host = u.hostname.toLowerCase();
   return (
     /\/20\d\d\/\d{1,2}(\/|$)/.test(path) ||
+    // A report or results page on last year's race, not its home.
+    /(resoconto|cronaca|report|risultati|classifica|ordine-d-arrivo|results?|ergebnisse|bericht|wyniki|vysledky|galleria|gallery|fotogalerie|foto|photos?)(\/|\.|-|$)/.test(path) ||
     /(^|\/)(news|neuigkeiten|nieuws|novita|nowosci|aktualnosci|aktuell|aktuelles|artikel|article|articles|blog|presse|press|noticias|notizie|aktualnosci|aktuality|clanek|zpravy|zprávy|magazin|termine|veranstaltungen|veranstaltungskalender|kalender|calendar|calendario|kalendar|events?|eventi|evento|eventos|wydarzenie|wydarzenia|imprezy|akce|tickets?)(\/|\.|-|$)/.test(path) ||
     /(^|\.)(stadt|gemeinde|comune|gmina|mesto|obec|city|town|kreis)[a-z0-9-]*\./.test(host) ||
     /(news|zeitung|today|gazzett|corriere|giornale|channel|magazin|journal|presse|sport24|portal|festival|racenotify|friuleventi|audax|ivg\.|leccochannel|klosterlehnin|bad-harzburg)/.test(host)
   );
+}
+
+/**
+ * An address that carries another year or another edition number than the
+ * race's: ".../amatori-34-campionato-..." is not the 40th.
+ */
+export function namesAnotherEdition(url: string, name: string, startDate: string): boolean {
+  let path: string;
+  try {
+    path = decodeURIComponent(new URL(url).pathname).toLowerCase();
+  } catch {
+    return false;
+  }
+  const year = startDate.slice(0, 4);
+  const years = path.match(/(?<![0-9])20\d\d(?![0-9])/g) ?? [];
+  if (years.some((y) => y !== year)) return true;
+  const own = name.match(/(\d{1,3})\s*(?:°|º|\.|ª|th|st|nd|rd|\b(?:ro[cč]n[ií]k|edizione|edition))/i)?.[1];
+  if (!own) return false;
+  const inUrl = [...path.matchAll(/(?:^|[/-])(\d{1,3})(?:-(?:campionato|trofeo|gran|memorial|edizione|edition|rocnik|cup|coppa|premio)|\/)/g)].map((m) => m[1]);
+  return inUrl.length > 0 && !inUrl.includes(own);
 }
 
 export function searchableName(name: string): string {
@@ -243,6 +265,7 @@ export async function findWebsites(opts?: {
         if (!platform && NOT_THE_RACE.test(`${host}.`)) continue;
         if (/\.(pdf|docx?|jpg|png)(\?|$)/i.test(hit.url)) continue;
         if (!platform && looksLikeArticleOrListing(hit.url)) continue;
+        if (!platform && namesAnotherEdition(hit.url, t.name, t.startDate)) continue;
         try {
           const page = await fetch(hit.url, { headers: { "user-agent": BOT_UA }, redirect: "follow", signal: AbortSignal.timeout(12_000) });
           if (!page.ok || !/html/i.test(page.headers.get("content-type") ?? "")) continue;
