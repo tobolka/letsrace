@@ -282,7 +282,7 @@ export function MobileFiltersSheet({
             <Section title={messages.typeFilter}>
               <div className="flex flex-wrap gap-2">
                 <Chip active={!selectedDisc} onClick={onClearDisciplines}>
-                  {messages.clearFilter}
+                  {messages.filterAll}
                 </Chip>
                 {DISCIPLINE_TREE.map((opt) => (
                   <Chip
