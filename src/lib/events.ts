@@ -212,6 +212,10 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   }
   if (filters.eventTypes?.length) {
     query = query.in("event_type", filters.eventTypes);
+  } else {
+    // A recreational ride, a výšlap or an RTF is not a race: the catalogue
+    // keeps them, the race views do not show them.
+    query = query.neq("event_type", "ride");
   }
   if (filters.q?.trim()) {
     // "prazky pohar" is Pražský MTB pohár: the database folds diacritics,

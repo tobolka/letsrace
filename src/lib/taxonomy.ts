@@ -990,7 +990,7 @@ const COACHED_SESSION =
   /fahrtechnik|fahrsicherheit|technikkurs|\bkurs\b|\bworkshop\b|szkolenie|skoleni|trainingslager|fahrtechnikkurs/;
 
 const NON_COMPETITIVE_RIDE =
-  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevet|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b|rajd\s+rowerow|\bturystyczn|wycieczka\s+rowerow|przejazd\s+rowerow/;
+  /\bpedalata|\bciclopedalata|cicloturistic|cicloraduno|biciclettata|passeggiata\s+(in\s+)?bici|randonn|\bbrevet|escursionistic|gioco\s+ciclismo|gi?[mn]kana|non\s+competitiv|\bludico\b|\bcyclotouris|\bvolksradfahren\b|rajd\s+rowerow|\bturystyczn|wycieczka\s+rowerow|przejazd\s+rowerow|v[yý][sš]lap|vyj[ií][zž][dď]k|cyklov[yý]let|lou[cč]en[ií]\s+s\s+l[eé]tem|\brtf\b|\bctf\b|\bgtf\b|radtour|radwander|\bslowup\b|\bsportive\b|\baudax\b|\beroica\b/;
 
 export function inferEventType(opts: {
   name: string;

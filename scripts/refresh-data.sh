@@ -34,6 +34,7 @@ TODAY=$(date +%F)
 if [ "${LLM_DAILY:-0}" = "1" ] && [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; then
   LLM_BUDGET_USD=0.3  step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
   LLM_BUDGET_USD=0.15 step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
+  LLM_BUDGET_USD=0.05 step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
   step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
   echo "$TODAY" > tmp/.llm-day
 fi

@@ -1804,7 +1804,7 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, age_confidence, status, visibility, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, age_confidence, status, visibility, event_type, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -2084,7 +2084,11 @@ async function upsertParsedEvent(
     age_confidence: ageConfidence,
     // A source that distinguishes an RTF from a race knows better than a guess
     // from the title; only fall back to the classifier when it says nothing.
-    event_type: ev.eventType ?? classified.eventType,
+    // Nor does a title guess undo a race already judged a ride (by a reader
+    // that saw more than the title).
+    event_type:
+      ev.eventType ??
+      ((existingRow as { event_type?: string | null } | null)?.event_type === "ride" ? "ride" : classified.eventType),
     competition_type: classified.competitionType,
     season: classified.season || mergedStart.slice(0, 4),
     timezone: timezoneForCountry(ev.countryHint),
