@@ -16,8 +16,8 @@ mkdir -p tmp
 HOURS="${1:-2}"
 # The model's daily work (a few cents a day, each step capped) and its reading
 # of calendars no parser knows. Set to 0 to run without the model.
-export LLM_DAILY="${LLM_DAILY:-1}"
-export LLM_CALENDARS="${LLM_CALENDARS:-1}"
+export LLM_DAILY="${LLM_DAILY:-0}"
+export LLM_CALENDARS="${LLM_CALENDARS:-0}"
 while true; do
   LOG="tmp/refresh-$(date +%F-%H%M).log"
   echo "=== run started $(date '+%F %H:%M'), log: $LOG"
