@@ -196,7 +196,13 @@ export async function researchRaces(opts?: {
       const facts: { field: string; value: string; previous: string | null; sourceUrl: string; quote?: string }[] = [];
       const consider = async (field: "website_url" | "registration_url" | "regulations_url", url: string | null | undefined, current: string | null) => {
         if (!url || current) return;
-        const hit = seen.get(norm(url));
+        if (!/^https?:\/\//i.test(url)) {
+          if (!/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(url)) return;
+          url = `https://${url}`;
+        }
+        // A site's front page whose deeper pages the search returned came from the search too.
+        const front = (() => { try { const u = new URL(url); return u.pathname.replace(/\/+$/, "") === "" ? host(url) : null; } catch { return null; } })();
+        const hit = seen.get(norm(url)) ?? (front ? asked.results.find((r) => host(r.url) === front) : undefined);
         if (!hit) {
           result.rejected += 1;
           opts?.log?.(`  NOT IN RESULTS ${field}: ${url}`);
