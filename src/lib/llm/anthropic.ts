@@ -90,3 +90,75 @@ export async function askJson<T>(opts: {
     stopReason: body.stop_reason ?? null,
   };
 }
+
+/** Dollars per web search the API runs for the model. */
+const SEARCH_USD = 0.01;
+
+export type SearchResult = { url: string; title: string };
+
+/**
+ * Ask Claude to search the web and answer in JSON. Returns every result the
+ * searches brought back, so the caller can hold the answer to them: a URL the
+ * model gives that no search returned is a URL it made up.
+ */
+export async function askWithSearch<T>(opts: {
+  system: string;
+  user: string;
+  model?: string;
+  maxSearches?: number;
+  maxTokens?: number;
+  timeoutMs?: number;
+}): Promise<{ json: T | null; results: SearchResult[]; searches: number; usage: LlmUsage }> {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new LlmUnavailable("ANTHROPIC_API_KEY is not set");
+  const budget = Number(process.env.LLM_BUDGET_USD ?? 0.25);
+  if (spent >= budget) throw new LlmUnavailable(`LLM budget of $${budget} for this run is spent`);
+  const model = opts.model ?? HAIKU;
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    body: JSON.stringify({
+      model,
+      max_tokens: opts.maxTokens ?? 800,
+      system: opts.system.toWellFormed(),
+      messages: [{ role: "user", content: opts.user.toWellFormed() }],
+      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: opts.maxSearches ?? 3 }],
+    }),
+    signal: AbortSignal.timeout(opts.timeoutMs ?? 180_000),
+  });
+  if (!res.ok) {
+    const body = (await res.text()).slice(0, 300);
+    if (res.status === 401 || res.status === 403 || /credit balance/i.test(body)) throw new LlmUnavailable(`Anthropic API ${res.status}: ${body}`);
+    throw new Error(`Anthropic API ${res.status}: ${body}`);
+  }
+  const body = (await res.json()) as {
+    content?: { type: string; text?: string; content?: unknown }[];
+    usage?: { input_tokens?: number; output_tokens?: number; server_tool_use?: { web_search_requests?: number } };
+  };
+  const results: SearchResult[] = [];
+  for (const block of body.content ?? []) {
+    if (block.type !== "web_search_tool_result" || !Array.isArray(block.content)) continue;
+    for (const r of block.content as { type?: string; url?: string; title?: string }[]) {
+      if (r.type === "web_search_result" && r.url) results.push({ url: r.url, title: r.title ?? "" });
+    }
+  }
+  // The answer is the text after the last search.
+  const blocks = body.content ?? [];
+  const lastTool = blocks.map((b) => b.type).lastIndexOf("web_search_tool_result");
+  const out = blocks.slice(lastTool + 1).filter((c) => c.type === "text").map((c) => c.text ?? "").join("");
+  let json: T | null = null;
+  try {
+    const start = out.indexOf("{");
+    const end = out.lastIndexOf("}");
+    if (start >= 0 && end > start) json = JSON.parse(out.slice(start, end + 1)) as T;
+  } catch {
+    json = null;
+  }
+  const [pin, pout] = PRICES[model] ?? [3, 15];
+  const tokensIn = body.usage?.input_tokens ?? 0;
+  const tokensOut = body.usage?.output_tokens ?? 0;
+  const searches = body.usage?.server_tool_use?.web_search_requests ?? 0;
+  const costUsd = (tokensIn * pin + tokensOut * pout) / 1_000_000 + searches * SEARCH_USD;
+  spent += costUsd;
+  return { json, results, searches, usage: { tokensIn, tokensOut, costUsd } };
+}
