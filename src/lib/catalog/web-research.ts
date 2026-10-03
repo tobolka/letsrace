@@ -107,7 +107,7 @@ async function isOwnPage(t: Target, page: { url: string; title: string; text: st
       "no: a calendar or aggregator listing many races, a news or results article, a town or tourism page, a different race, or only another year's edition. " +
       'Answer JSON only: {"verdict":"yes|no","reason":"short"}',
     user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\n\nPage: ${page.url}\nTitle: ${page.title}\nText: ${aroundName(page.text, t.name)}`,
-    maxTokens: 120,
+    maxTokens: 400,
     model: SONNET,
   });
   return { yes: json?.verdict === "yes", reason: json?.reason ?? "" };
@@ -235,7 +235,13 @@ export async function researchRaces(opts?: {
         }
         const about = pageIsAbout(text, t.name, t.municipality, t.startDate);
         const named = namesTheRace(text, t.name);
-        const ok = field === "registration_url" ? (about || (platform && named)) : about;
+        // A front page often has no date on it: for the site, naming the race
+        // (in its text or its address) is enough here, the auditor decides.
+        const inHost = nameWords(t.name).some((w) => w.length >= 5 && fold(h).replace(/[^a-z0-9]/g, "").includes(w));
+        const ok =
+          field === "registration_url" ? about || (platform && named)
+          : field === "website_url" ? about || named || inHost
+          : about;
         if (!ok) {
           result.rejected += 1;
           opts?.log?.(`  NOT THIS RACE ${field}: ${url}`);
