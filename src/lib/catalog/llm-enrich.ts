@@ -324,6 +324,8 @@ export async function enrichFromPages(opts?: {
   agesOnly?: boolean;
   dryRun?: boolean;
   ids?: string[];
+  /** With ids: still skip a page whose text and links are as they were when last read. */
+  keepMemory?: boolean;
   fixDisciplines?: boolean;
   reviewFile?: string;
   log?: (line: string) => void;
@@ -414,7 +416,7 @@ export async function enrichFromPages(opts?: {
       }
       // The same text read by the same version gives the same answer: do not pay twice.
       const hash = textHash(`${ENRICH_VERSION}\n${all}\n${links.map((l) => l.url).join("\n")}`);
-      if (!opts?.ids?.length && (await alreadyRead(supabase, t.web!, ENRICH_VERSION, hash))) {
+      if ((!opts?.ids?.length || opts?.keepMemory) && (await alreadyRead(supabase, t.web!, ENRICH_VERSION, hash))) {
         result.silent += 1;
         return;
       }

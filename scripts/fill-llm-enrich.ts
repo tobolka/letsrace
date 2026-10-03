@@ -1,7 +1,7 @@
 /**
  * Discipline, categories, entry and regulations links, read from a race's own
  * pages by a language model that must quote the page.
- *   node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-llm-enrich.ts [--max=60] [--ids=a,b] [--fix-disciplines] [--past] [--apply]
+ *   node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-llm-enrich.ts [--max=60] [--ids=a,b [--keep-memory]] [--fix-disciplines] [--past] [--apply]
  * Needs ANTHROPIC_API_KEY in .env.local. Prints tokens and cost.
  * Disagreements about the discipline go to tmp/llm-review-<date>.tsv.
  */
@@ -18,7 +18,7 @@ async function main() {
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 60);
   const ids = process.argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",");
   const reviewFile = `tmp/llm-review-${new Date().toISOString().slice(0, 10)}.tsv`;
-  const r = await enrichFromPages({ max, ids, dryRun: !apply, fixDisciplines: process.argv.includes("--fix-disciplines"), past: process.argv.includes("--past"), agesOnly: process.argv.includes("--ages"), reviewFile, log: console.log });
+  const r = await enrichFromPages({ max, ids, keepMemory: process.argv.includes("--keep-memory"), dryRun: !apply, fixDisciplines: process.argv.includes("--fix-disciplines"), past: process.argv.includes("--past"), agesOnly: process.argv.includes("--ages"), reviewFile, log: console.log });
   console.log({ ...r, costUsd: Number(r.costUsd.toFixed(3)), dry: !apply, review: reviewFile });
 }
 main().catch((e) => { console.error(e); process.exit(1); });
