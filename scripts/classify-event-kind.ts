@@ -21,7 +21,7 @@ type Row = { id: string; name: string; event_type: string | null; disciplines: s
 async function main() {
   const apply = process.argv.includes("--apply");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
-  const { askJson, SONNET } = await import("../src/lib/llm/anthropic");
+  const { askJson, SONNET, LlmUnavailable } = await import("../src/lib/llm/anthropic");
   const { recordFacts } = await import("../src/lib/catalog/facts");
   const s = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
@@ -40,7 +40,15 @@ async function main() {
   for (let i = 0; i < rows.length; i += 40) {
     const batch = rows.slice(i, i + 40);
     const user = batch.map((r, k) => `${k + 1}. ${r.name} | type: ${r.event_type ?? "?"} | ${(r.disciplines ?? []).join(",")} | series: ${r.series?.name ?? "-"} | site: ${host(r.website_url)} | listed at: ${[...new Set(r.sources.map((x) => host(x.source_url)))].join(", ")}`).join("\n");
-    const { json, usage } = await askJson<{ items?: { n?: number; kind?: string }[] }>({ system: SYSTEM, user, model: SONNET, maxTokens: 1500 });
+    let answer;
+    try {
+      answer = await askJson<{ items?: { n?: number; kind?: string }[] }>({ system: SYSTEM, user, model: SONNET, maxTokens: 1500 });
+    } catch (e) {
+      // The run's budget is spent: the rest waits for tomorrow.
+      if (e instanceof LlmUnavailable) { console.log(`stopped: ${e.message}`); break; }
+      throw e;
+    }
+    const { json, usage } = answer;
     tally.cost += usage.costUsd;
     for (const v of json?.items ?? []) {
       const r = typeof v.n === "number" ? batch[v.n - 1] : undefined;

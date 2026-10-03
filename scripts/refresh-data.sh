@@ -37,7 +37,7 @@ if [ "${LLM_DAILY:-0}" = "1" ] && [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY
   LLM_BUDGET_USD=0.1  step "Organisers' sites, searched"     scripts/find-websites.ts --max=80 --apply
   LLM_BUDGET_USD=0.03 step "Races linked to their series"    scripts/link-series.ts --apply
   LLM_BUDGET_USD=0.1  step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
-  LLM_BUDGET_USD=0.05 step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
+  LLM_BUDGET_USD=0.1  step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
   step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
   echo "$TODAY" > tmp/.llm-day
 fi
