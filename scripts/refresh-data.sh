@@ -26,11 +26,12 @@ step "Race pages and regulations"          scripts/fill-regulation-ages.ts --max
 step "Entry links from race pages"         scripts/fill-registration-links.ts --max=1500 --apply
 step "RaceResult, FCI, defaults"           scripts/fill-source-ages.ts
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
+step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --apply
 # The language model reads race pages once a day, within a small budget:
 # new races, and ones not read for a month. Calendars it reads only when they
 # change (inside the watch steps above, capped per process).
 TODAY=$(date +%F)
-# Off until the plan in docs/llm-data-plan.md is agreed: LLM_DAILY=1 turns it on.
+# LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
 if [ "${LLM_DAILY:-0}" = "1" ] && [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; then
   LLM_BUDGET_USD=0.15 step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
   LLM_BUDGET_USD=0.1  step "Classes from each race's documents" scripts/fill-dossier-classes.ts --max=300 --render --apply
