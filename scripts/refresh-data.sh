@@ -33,9 +33,11 @@ step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --app
 TODAY=$(date +%F)
 # LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
 if [ "${LLM_DAILY:-0}" = "1" ] && [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; then
+  # Sites first (Brave search, a model only picks among the results), so the
+  # reader below reads the new ones the same day.
+  LLM_BUDGET_USD=0.1  step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
   LLM_BUDGET_USD=0.15 step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
   LLM_BUDGET_USD=0.1  step "Classes from each race's documents" scripts/fill-dossier-classes.ts --max=300 --render --apply
-  LLM_BUDGET_USD=0.1  step "Organisers' sites, searched"     scripts/find-websites.ts --max=80 --apply
   LLM_BUDGET_USD=0.03 step "Races linked to their series"    scripts/link-series.ts --apply
   LLM_BUDGET_USD=0.1  step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
   LLM_BUDGET_USD=0.1  step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
