@@ -23,6 +23,9 @@ const PRICE_OUT = 5;
 const AGGREGATOR = /rideandrest\.net|odjazd\.pl|kalendarzrowerowy|sumator|eventivsport|radsport-events|granfondoguide|facebook\.com|instagram\.com/i;
 const LINK_WORDS = /registr|anmeld|iscri|p[řr]ihl[aá][šs]|zapis|entry|enter|start ?list|startovn|propoz|regulation|ausschreibung|regolamento|regulamin|reglement|kategori|categor|klassen|results|ergebnis|vysledk|výsledk|risultati|wyniki|ticket|sportsoft|raceresult|racetime|datasport|endu|dostartu|sportident|timing|evenZo|\.pdf/i;
 
+/** Entry and timing platforms: their host alone says what a link is. */
+const PLATFORM_HOST = /sportsoft|raceresult|racetime|datasport|endu\.net|dostartu|sportident|timing|evenzo|sportstiming|letsdothis|racevisuals|competit|protimer|maratonczyk|nasecasomira|sportt\.cz|4timing|chronotrack|mikatiming|webscorer/i;
+
 const DEADLINE_WORDS =
   /uz[aá]v[eě]rk|p[řr]ihl[aá][šs]k|registrac|anmeldeschluss|nennschluss|meldeschluss|anmeldung|iscrizion|zapisy|registration|entries close|deadline|online/gi;
 
@@ -113,14 +116,26 @@ export function candidateLinks(html: string, base: string): Link[] {
       return;
     }
     const text = $(a).text().replace(/\s+/g, " ").trim().slice(0, 80);
-    if (!LINK_WORDS.test(`${text} ${url}`)) return;
+    // The words are looked for in the link's text and path, not its host: a
+    // host like mtb-guentersleben.de ("enter") or an enduro club's ("endu")
+    // would let every link of the site through and crowd out the real one.
+    let where = url;
+    try {
+      const u = new URL(url);
+      where = `${u.pathname}${u.search}`;
+      if (PLATFORM_HOST.test(u.hostname)) where += ` ${u.hostname}`;
+    } catch {
+      /* keep the whole address */
+    }
+    if (!LINK_WORDS.test(`${text} ${where}`)) return;
     if (/facebook\.com|instagram\.com|youtube\.com|twitter\.com|linkedin\.com|wa\.me|whatsapp/i.test(url)) return;
     // What the link sits in: the line, list item or block around it.
     const block = $(a).closest("li, p, tr, td, dd, h1, h2, h3, h4, section, article, div");
     const context = (block.length ? block.text() : $(a).parent().text()).replace(/\s+/g, " ").trim().slice(0, 400);
     if (!out.has(url)) out.set(url, { url, text, context });
   });
-  return [...out.values()].slice(0, 40);
+  // Links whose own text says what they are first, so the cap never drops them.
+  return [...out.values()].sort((a, b) => Number(!LINK_WORDS.test(a.text)) - Number(!LINK_WORDS.test(b.text))).slice(0, 40);
 }
 
 const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();

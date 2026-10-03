@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classesInQuote, verifyEnrichment } from "@/lib/catalog/llm-enrich";
+import { candidateLinks, classesInQuote, verifyEnrichment } from "@/lib/catalog/llm-enrich";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 
 const text = "Harmonogram zawodów. Kategorie: M2 1997-2007 (19-29 lat). G-Cyclocross Gullegem. Zapisy online do 10.10.2026. Dyscyplina: Przełaj";
@@ -48,5 +48,19 @@ describe("verifyEnrichment", () => {
   it("does not take an early-bird price date for the entry deadline", () => {
     const t = "Poplatek za včasnou registraci (do 19.9.2026) je: 600 Kč";
     expect(verifyEnrichment({ page_about: "this_race", entry_closes: { date: "2026-09-19", quote: t } }, t, []).entryCloses).toBeNull();
+  });
+});
+
+describe("candidateLinks", () => {
+  it("does not let a site's host name pass every link", () => {
+    const menu = Array.from({ length: 50 }, (_, i) => `<a href="/seite/${i}/badminton.html">Badminton ${i}</a>`).join("");
+    const html = `<nav>${menu}</nav><p><a href="/seite/1/ausschreibung.html">Ausschreibung</a></p>`;
+    const links = candidateLinks(html, "http://www.mtb-guentersleben.de/");
+    expect(links.map((l) => l.text)).toEqual(["Ausschreibung"]);
+  });
+
+  it("keeps an entry platform's link by its host", () => {
+    const links = candidateLinks('<a href="https://www.datasport.de/anmeldeservice/x/">hier</a>', "https://perlcross.de/");
+    expect(links).toHaveLength(1);
   });
 });
