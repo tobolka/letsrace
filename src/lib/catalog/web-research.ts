@@ -4,8 +4,9 @@ import { recordFacts } from "@/lib/catalog/facts";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { readDocument } from "@/lib/catalog/regulation-ages";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
-import { namesAnotherEdition, pageIsAbout, searchableName } from "@/lib/catalog/web-finder";
-import { askJson, askWithSearch, HAIKU, LlmUnavailable, SONNET, type SearchResult } from "@/lib/llm/anthropic";
+import { looksLikeArticleOrListing, namesAnotherEdition, pageIsAbout, searchableName, searchQuery } from "@/lib/catalog/web-finder";
+import { braveAvailable, braveSearch } from "@/lib/catalog/brave";
+import { askJson, askWithSearch, HAIKU, llmSpent, LlmUnavailable, SONNET, type SearchResult } from "@/lib/llm/anthropic";
 
 /**
  * Look a race up the way a person does: search the web for it, open what
@@ -113,6 +114,78 @@ async function isOwnPage(t: Target, page: { url: string; title: string; text: st
   return { yes: json?.verdict === "yes", reason: json?.reason ?? "" };
 }
 
+type Asked = {
+  json: { website?: string | null; registration?: string | null; regulations?: string | null } | null;
+  results: SearchResult[];
+  searches: number;
+  usage: { costUsd: number };
+};
+
+/** The model searches on its own (Anthropic's web search): dearer, used without a Brave key. */
+async function searchWithModel(t: Target): Promise<Asked> {
+  const known = [
+    t.website ? `Known website: ${t.website}` : null,
+    t.registration ? `Known registration: ${t.registration}` : null,
+    t.regulations ? `Known regulations: ${t.regulations}` : null,
+  ].filter(Boolean).join("\n");
+  return askWithSearch<NonNullable<Asked["json"]>>({
+    system: SYSTEM,
+    user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\nDiscipline: ${t.disciplines.join(", ") || "?"}\n${known}`,
+    model: HAIKU,
+    maxSearches: 2,
+  });
+}
+
+const SOCIAL = /(^|\.)(instagram|youtube|youtu|twitter|x|tiktok|strava|komoot|linkedin|pinterest|reddit|wikipedia|trainerday|veloplanner|bikemap|ridewithgps|tripadvisor|booking)\.[a-z]+$/i;
+const NOT_THE_PAGE = /lista[_-]?uczestnik|startlist|startliste|start-list|ergebnis|results?(\/|\.|$|\?)|wyniki|vysledk|výsledk|klasyfikac|galeri|gallery|fotos?\b|photos?\b/i;
+
+const PICK_SYSTEM =
+  "You are given numbered web search results for one cycling race edition. Say which result is " +
+  "website: the race's own site, or its organiser's page for this race (a Facebook page of the race only if nothing else fits); " +
+  "registration: where riders enter THIS race and edition — not another stage or round of the same series, not a list of entrants, not results; " +
+  "regulations: the rules or regulations for this edition (propozice, propozície, Ausschreibung, regulamin). " +
+  "Never pick a calendar or aggregator listing many races, a news article, results, another year's edition, or another stage/round of the series. " +
+  'Give the result numbers, null when none fits. JSON only: {"website":null,"registration":null,"regulations":null}';
+
+/**
+ * One Brave search; code drops what is never a race's page; the model only
+ * says which of the numbered results is which, so it cannot make up an address.
+ */
+async function searchAndPick(t: Target, log?: (line: string) => void): Promise<Asked> {
+  const query = searchQuery(t.name, t.municipality, t.startDate.slice(0, 4));
+  const hits = await braveSearch(query, { country: t.country });
+  const kept = hits.filter((h) => {
+    const hh = host(h.url);
+    if (!hh || SOCIAL.test(hh)) return false;
+    if (isRegistrationPlatformUrl(h.url)) return !NOT_THE_PAGE.test(h.url);
+    if (LISTING_HOST.test(hh) || NOT_THE_PAGE.test(h.url)) return false;
+    if (namesAnotherEdition(h.url, t.name, t.startDate)) return false;
+    if (!/facebook\.com$/.test(hh) && looksLikeArticleOrListing(h.url)) return false;
+    return true;
+  }).slice(0, 8);
+  const results: SearchResult[] = kept.map((h) => ({ url: h.url, title: h.title }));
+  if (!kept.length) {
+    log?.(`  search "${query}": nothing usable among ${hits.length}`);
+    return { json: null, results, searches: 1, usage: { costUsd: 0 } };
+  }
+  const list = kept.map((h, i) => `${i + 1}. ${h.url}\n   ${h.title}\n   ${h.description.slice(0, 220)}`).join("\n");
+  const { json, usage } = await askJson<{ website?: number | null; registration?: number | null; regulations?: number | null }>({
+    system: PICK_SYSTEM,
+    user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\n\nResults:\n${list}`,
+    model: HAIKU,
+    maxTokens: 120,
+  });
+  const at = (n: unknown) => (typeof n === "number" && kept[n - 1] ? kept[n - 1]!.url : null);
+  // A site's FAQ, contact or about page stands for the site: its front page is the link.
+  let site = at(json?.website);
+  if (site && /\/(faq|kontakt|contact|o-nas|about|impressum|regulamin|polityka|privacy)(\.html?|\/)?$/i.test(new URL(site).pathname)) {
+    const root = `${new URL(site).origin}/`;
+    if (!results.some((r) => r.url === root)) results.push({ url: root, title: kept[(json?.website as number) - 1]!.title });
+    site = root;
+  }
+  return { json: { website: site, registration: at(json?.registration), regulations: at(json?.regulations) }, results, searches: 1, usage };
+}
+
 export type ResearchResult = {
   attempted: number;
   website: number;
@@ -131,6 +204,8 @@ export async function researchRaces(opts?: {
   ids?: string[];
   /** Only races with no site of their own. */
   withoutSite?: boolean;
+  /** For a test against known answers: look as if the race had no links yet. Never writes. */
+  ignoreKnown?: boolean;
   dryRun?: boolean;
   log?: (line: string) => void;
 }): Promise<ResearchResult> {
@@ -138,6 +213,7 @@ export async function researchRaces(opts?: {
   const max = opts?.max ?? 50;
   const today = new Date().toISOString().slice(0, 10);
   const until = new Date(Date.now() + 365 * 86_400_000).toISOString().slice(0, 10);
+  if (opts?.ignoreKnown) opts = { ...opts, dryRun: true };
   const skip = opts?.ids?.length ? new Set<string>() : await recentlyProbed(supabase, "web_research");
   const targets: Target[] = [];
   for (let from = 0; ; from += PAGE) {
@@ -159,6 +235,11 @@ export async function researchRaces(opts?: {
     for (const r of rows) {
       if (skip.has(r.id)) continue;
       if (opts?.countries?.length && !opts.countries.includes(r.location?.country_code ?? "")) continue;
+      if (opts?.ignoreKnown) {
+        r.website_url = null;
+        r.registration_url = null;
+        r.regulations_url = null;
+      }
       const ownSite = r.website_url && !CALENDAR_WEBSITE.test(r.website_url);
       if (ownSite && r.registration_url && r.regulations_url) continue;
       if (opts?.withoutSite && ownSite) continue;
@@ -178,17 +259,7 @@ export async function researchRaces(opts?: {
   const result: ResearchResult = { attempted: targets.length, website: 0, registration: 0, regulations: 0, rejected: 0, silent: 0, failed: 0, searches: 0, costUsd: 0 };
   for (const t of targets) {
     try {
-      const known = [
-        t.website ? `Known website: ${t.website}` : null,
-        t.registration ? `Known registration: ${t.registration}` : null,
-        t.regulations ? `Known regulations: ${t.regulations}` : null,
-      ].filter(Boolean).join("\n");
-      const asked = await askWithSearch<{ website?: string | null; registration?: string | null; regulations?: string | null }>({
-        system: SYSTEM,
-        user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\nDiscipline: ${t.disciplines.join(", ") || "?"}\n${known}`,
-        model: HAIKU,
-        maxSearches: 2,
-      });
+      const asked = braveAvailable() ? await searchAndPick(t, opts?.log) : await searchWithModel(t);
       result.searches += asked.searches;
       result.costUsd += asked.usage.costUsd;
       const seen = new Map(asked.results.map((r) => [norm(r.url), r] as [string, SearchResult]));
@@ -304,6 +375,7 @@ export async function researchRaces(opts?: {
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
     }
   }
-  result.costUsd = Number(result.costUsd.toFixed(3));
+  // Everything this run paid for, the auditor's checks included.
+  result.costUsd = Number(llmSpent().toFixed(3));
   return result;
 }
