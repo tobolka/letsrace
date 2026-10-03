@@ -69,6 +69,17 @@ export const DISCIPLINE_WORDS: Record<string, RegExp> = {
 const REGISTRATION_WORDS = /registr|anmeld|nennung|iscri|p[řr]ihl[aá][šs]|zapis|entry|entries|enter|sign.?up|inscri|tickets?|startpl[aä]tz|meld/i;
 const REGULATIONS_WORDS = /propoz|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|guide|info.?pdf|teilnehmerinfo|rules|pravidl/i;
 /** Pages that sit next to entry links and are not one: schedules, results, galleries. */
+/** A platform's or club's list of all its events, or a blog category: never one race's page. */
+export function isListingPage(url: string): boolean {
+  try {
+    const u = new URL(url);
+    if (u.search) return false;
+    return /\/(events?|veranstaltungen|termine|kalender|kalendarz|kalendar|calendar|zawody|akce|category\/[^/]+(\/[^/]+)?)$/i.test(u.pathname.replace(/\/+$/, ""));
+  } catch {
+    return false;
+  }
+}
+
 const NOT_A_LINK_FOR = /harmonogram|schedule|zeitplan|programm?e?\b|ergebnis|results?|v[ýy]sledk|wyniki|risultati|classifica|galer|gallery|foto|photo|startlist|startovn[ií] listin|news|aktuality|admission|authori[sz]ation|extras|merch|shop|hotel|accommodation|unterkunft|ubytov|parking|volunteer|helfer|press|media|sponsor|login|mein-konto|account/i;
 const DEADLINE_QUOTE = /uz[aá]v[eě]rk|p[řr]ihl[aá][šs]|registr|anmeld|nennschluss|meldeschluss|iscrizi|zapis|entr|deadline|closes|bis zum|do\s+\d|until|online/i;
 
@@ -180,6 +191,8 @@ export function verifyEnrichment(
     const l = byUrl.get(u)!;
     const blob = `${l.text} ${u}`;
     if (NOT_A_LINK_FOR.test(blob)) return null;
+    // A list of every event or a category page is not this race's form or rules.
+    if (isListingPage(u)) return null;
     // A link that names another season is last year's form or rules.
     if (startDate) {
       const y = Number(startDate.slice(0, 4));

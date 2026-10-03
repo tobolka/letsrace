@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { candidateLinks, classesInQuote, verifyEnrichment } from "@/lib/catalog/llm-enrich";
+import { candidateLinks, classesInQuote, isListingPage, verifyEnrichment } from "@/lib/catalog/llm-enrich";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 
 const text = "Harmonogram zawodów. Kategorie: M2 1997-2007 (19-29 lat). G-Cyclocross Gullegem. Zapisy online do 10.10.2026. Dyscyplina: Przełaj";
@@ -62,5 +62,14 @@ describe("candidateLinks", () => {
   it("keeps an entry platform's link by its host", () => {
     const links = candidateLinks('<a href="https://www.datasport.de/anmeldeservice/x/">hier</a>', "https://perlcross.de/");
     expect(links).toHaveLength(1);
+  });
+});
+
+describe("isListingPage", () => {
+  it("knows a list of events from one race's page", () => {
+    expect(isListingPage("https://zpn-timing.de/events/")).toBe(true);
+    expect(isListingPage("https://www.czechbmx.cz/category/zavody/propozice/")).toBe(true);
+    expect(isListingPage("https://zpn-timing.de/a/789")).toBe(false);
+    expect(isListingPage("https://registrace.sportsoft.cz/registration.aspx?e=3661")).toBe(false);
   });
 });
