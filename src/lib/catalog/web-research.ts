@@ -4,7 +4,7 @@ import { recordFacts } from "@/lib/catalog/facts";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { readDocument } from "@/lib/catalog/regulation-ages";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
-import { pageIsAbout, searchableName } from "@/lib/catalog/web-finder";
+import { namesAnotherEdition, pageIsAbout, searchableName } from "@/lib/catalog/web-finder";
 import { askJson, askWithSearch, HAIKU, LlmUnavailable, SONNET, type SearchResult } from "@/lib/llm/anthropic";
 
 /**
@@ -224,6 +224,17 @@ export async function researchRaces(opts?: {
           }
           update[field] = url;
           facts.push({ field, value: url, previous: current, sourceUrl: url, quote: hit.title });
+          return;
+        }
+        // Last year's regulations, or an entry platform's section page rather than this race's form.
+        if (namesAnotherEdition(url, t.name, t.startDate) || /\b20(1\d|2[0-5])\b/.test(decodeURIComponent(url).replace(/^[^/]+\/\/[^/]+/, "")) && !decodeURIComponent(url).includes(t.startDate.slice(0, 4))) {
+          result.rejected += 1;
+          opts?.log?.(`  OTHER YEAR ${field}: ${url}`);
+          return;
+        }
+        if (field === "registration_url" && platform && !/\d{2,}/.test(url.replace(/^[^/]+\/\/[^/]+/, ""))) {
+          result.rejected += 1;
+          opts?.log?.(`  NOT A FORM ${field}: ${url}`);
           return;
         }
         const doc = await readDocument(url).catch(() => null);
