@@ -5,7 +5,9 @@ import { listQualifyingHubs } from "@/lib/discipline-hubs";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { absoluteUrl, localeAlternates } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+// Built at most once an hour and served from the cache: a crawler never waits on the
+// database, which a cold start could make slow enough for it to give up.
+export const revalidate = 3600;
 
 type Freq = NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
 
