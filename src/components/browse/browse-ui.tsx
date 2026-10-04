@@ -17,27 +17,19 @@ import { cn } from "@/lib/utils";
 
 export type Crumb = { label: string; href?: string };
 
-/** The existing OG photograph is an accent on the browse entry, not event imagery. */
-export function BrowseIntro({ title, description, photograph = false, children }: {
+/** A compact, shared introduction for countries, disciplines and series. */
+export function BrowseIntro({ title, description, children }: {
   title: string;
   description: string;
-  photograph?: boolean;
   children?: React.ReactNode;
 }) {
   return (
-    <div className={cn("browse-intro", photograph && "browse-intro-with-image")}>
+    <div className="browse-intro">
       <div className="min-w-0 py-1">
-        <span className="race-ribbon mb-4 block" aria-hidden />
         <h1 className="text-balance text-3xl font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[2.125rem]">{title}</h1>
         <p className="mt-3 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground">{description}</p>
         {children ? <div className="mt-5">{children}</div> : null}
       </div>
-      {photograph ? (
-        <div className="browse-intro-photo" aria-hidden>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/riding/mtb.webp" alt="" width={720} height={480} decoding="async" className="h-full w-full object-cover" />
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -81,14 +73,14 @@ export function BrowseHeader({ locale, crumbs }: { locale: string; crumbs: Crumb
 export function TileGrid({ title, children, className }: { title?: string; children: React.ReactNode; className?: string }) {
   return (
     <section className={className}>
-      {title ? <h2 className="browse-section-title mb-3 text-base font-semibold tracking-tight">{title}</h2> : null}
+      {title ? <h2 className="mb-3 text-base font-semibold tracking-tight">{title}</h2> : null}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{children}</div>
     </section>
   );
 }
 
 const TILE =
-  "browse-tile group flex items-center gap-3 rounded-xl border bg-card p-4 transition-[background-color,border-color] duration-150 hover:border-brand/30 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 motion-reduce:transition-none";
+  "browse-tile group flex items-center gap-3 rounded-xl border bg-card p-4 transition-[background-color,border-color] duration-150 hover:border-foreground/20 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none";
 
 function TileText({ name, count }: { name: string; count: string }) {
   return (
@@ -97,7 +89,7 @@ function TileText({ name, count }: { name: string; count: string }) {
         <span className="text-[15px] font-semibold leading-tight">{name}</span>
         <span className="mt-1 text-xs text-muted-foreground tabular-nums">{count}</span>
       </span>
-      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-brand" aria-hidden />
+      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-foreground" aria-hidden />
     </>
   );
 }
@@ -147,7 +139,7 @@ export function SeriesCard({ href, name, meta }: { href: string; name: string; m
         <span className="line-clamp-2 text-[15px] font-semibold leading-tight">{name}</span>
         <span className="text-xs text-muted-foreground tabular-nums">{meta}</span>
       </span>
-      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-brand" aria-hidden />
+      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-foreground" aria-hidden />
     </Link>
   );
 }
@@ -172,10 +164,9 @@ export function BrowseHeaderSkeleton({ depth = 2 }: { depth?: number }) {
   );
 }
 
-export function PageIntroSkeleton({ button = true, branded = false, photograph = false }: { button?: boolean; branded?: boolean; photograph?: boolean }) {
+export function PageIntroSkeleton({ button = true, branded = false }: { button?: boolean; branded?: boolean }) {
   const text = (
     <div className={cn(branded && "min-w-0 py-1")}>
-      {branded ? <span className="race-ribbon mb-4 block" aria-hidden /> : null}
       <Skeleton className="h-9 w-full max-w-md" />
       <Skeleton className="mt-3 h-4 w-full max-w-xl" />
       <Skeleton className="mt-2 h-4 w-2/3 max-w-sm" />
@@ -184,9 +175,8 @@ export function PageIntroSkeleton({ button = true, branded = false, photograph =
   );
   if (!branded) return text;
   return (
-    <div className={cn("browse-intro", photograph && "browse-intro-with-image")}>
+    <div className="browse-intro">
       {text}
-      {photograph ? <Skeleton className="browse-intro-photo border-b-0" /> : null}
     </div>
   );
 }

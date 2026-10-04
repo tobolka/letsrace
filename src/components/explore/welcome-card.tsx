@@ -88,7 +88,7 @@ export function WelcomeCard({
         height={112}
         fetchPriority="high"
         decoding="async"
-        className="h-24 w-full border-b-2 border-brand object-cover md:h-28"
+        className="h-24 w-full object-cover outline outline-1 outline-black/10 md:h-28"
       />
       <Button
         type="button"

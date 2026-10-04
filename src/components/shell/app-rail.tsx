@@ -199,7 +199,7 @@ export function MobileTabBar({ locale }: { locale: string }) {
           onClick={item.key === "profile" ? undefined : carry(item.href)}
           className={cn(
             "relative flex items-center justify-center transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
-            item.active ? "text-brand before:absolute before:top-0 before:h-0.5 before:w-5 before:rounded-b-full before:bg-brand" : "text-muted-foreground",
+            item.active ? "text-brand" : "text-muted-foreground",
           )}
         >
           <item.icon className="size-6" strokeWidth={item.active ? 2.25 : 1.75} aria-hidden />

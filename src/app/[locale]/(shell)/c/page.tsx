@@ -47,7 +47,7 @@ export default async function BrowsePage({ params }: Props) {
     <main className="min-h-full bg-background">
       <BrowseHeader locale={locale} crumbs={[{ label: rc.browse }]} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <BrowseIntro title={rc.byCountry} description={rc.browseIntro} photograph />
+        <BrowseIntro title={rc.byCountry} description={rc.browseIntro} />
         <TileGrid className="mt-8">
           {tallies.map((c) => (
             <CountryCard
