@@ -1804,7 +1804,7 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, age_confidence, status, visibility, event_type, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
+          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, age_confidence, status, visibility, event_type, disciplines, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
@@ -1961,6 +1961,7 @@ async function upsertParsedEvent(
     audience?: string | null;
     age_categories?: string[] | null;
     age_confidence?: string | null;
+    disciplines?: string[] | null;
     status?: string | null;
     visibility?: string | null;
     website_url?: string | null;
@@ -2077,7 +2078,8 @@ async function upsertParsedEvent(
     name_normalized: normalizeName(mergedName),
     start_date: mergedStart,
     end_date: mergedEnd,
-    disciplines,
+    // A source that names no discipline does not take away the one we hold.
+    disciplines: disciplines.length ? disciplines : (existingRow?.disciplines ?? []),
     formats: classified.formats,
     audience: mergedAudience,
     age_categories: mergedAgeCategories,
