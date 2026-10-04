@@ -31,7 +31,14 @@ export type MergeDuplicateRow = {
   } | null;
   series: { name?: string } | null;
   sources?: { id: string; watched_url_id: string | null; external_id: string | null }[] | null;
+  /** Fields a person or a series seed fixed by hand; such a row is the one that stays. */
+  overrides?: { locked_fields?: string[] | null } | { locked_fields?: string[] | null }[] | null;
 };
+
+function lockedCount(r: MergeDuplicateRow): number {
+  const o = Array.isArray(r.overrides) ? r.overrides[0] : r.overrides;
+  return o?.locked_fields?.length ?? 0;
+}
 
 function asDedup(row: MergeDuplicateRow): DedupEvent {
   const loc = row.location;
@@ -293,6 +300,9 @@ export function mergeKeeper(a: MergeDuplicateRow, b: MergeDuplicateRow): MergeDu
     (r.sources?.length ?? 0) * 5 +
     (preferEventName(r.name, r === a ? b.name : a.name) === r.name ? 8 : 0) -
     (looksLikeTextFragment(r.name) ? 1000 : 0);
+  // A row with hand-fixed fields (an official series round seeded by hand)
+  // always stays: merging it away would throw those fixes out.
+  if (lockedCount(a) !== lockedCount(b)) return lockedCount(a) > lockedCount(b) ? a : b;
   return score(a) >= score(b) ? a : b;
 }
 
@@ -371,7 +381,7 @@ export function strongSameRace(a: MergeDuplicateRow, b: MergeDuplicateRow): bool
   if (fa.size && fb.size && ![...fa].some((w) => fb.has(w))) return false;
 
   // A race for pupils beside one for adults, under one championship title.
-  const AUDIENCE = /dorosl|uczni|dziec|\bkids\b|junior|\bzac|\bdeti\b|masters|senior|jugend|schuler|nachwuchs/g;
+  const AUDIENCE = /dorosl|uczni|dziec|\bkids\b|\bkinder|youth|junior|\bzac|\bdeti\b|masters|senior|jugend|schuler|nachwuchs|handbike|inclusion|inklusion|\bpara\b/g;
   const aa = [...new Set(foldName(a.name).match(AUDIENCE) ?? [])].sort().join();
   const ab = [...new Set(foldName(b.name).match(AUDIENCE) ?? [])].sort().join();
   if (aa !== ab) return false;
@@ -407,7 +417,7 @@ export async function mergePublicDuplicates(opts?: {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id)",
+        "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id), overrides:event_overrides(locked_fields)",
       )
       .eq("visibility", "public")
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -426,7 +436,7 @@ export async function mergePublicDuplicates(opts?: {
   const { data: ongoing } = await supabase
     .from("events")
     .select(
-      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id)",
+      "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id), overrides:event_overrides(locked_fields)",
     )
     .eq("visibility", "public")
     .in("status", [...ACTIVE_EVENT_STATUSES])
