@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { ExploreShell } from "@/components/explore/explore-shell";
+import { SiteIndex } from "@/components/seo/site-index";
 import { getPublicEventBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { notFound, redirect } from "next/navigation";
@@ -80,6 +82,10 @@ export default async function LocalePage({
         messages={messages[locale]}
         locale={locale}
       />
+      {/* Streamed after the map's shell, so it never holds the first paint. */}
+      <Suspense fallback={null}>
+        <SiteIndex locale={locale} />
+      </Suspense>
     </>
   );
 }
