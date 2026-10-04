@@ -227,6 +227,58 @@ const DOCS: Record<Locale, Doc> = {
       },
     ],
   },
+  de: {
+    title: "Datenschutz",
+    intro: `${SITE_NAME} ist ein Kalender für Radrennen. Hier steht, was wir über dich speichern, wozu und wie du es wieder loswirst.`,
+    updated: "Zuletzt geändert",
+    sections: [
+      {
+        h: "Was wir speichern",
+        p: [
+          "Dein Konto: E-Mail, Name und, wenn du dich mit Google anmeldest, das Profilbild, das Google teilt. Passwörter speichern wir nur als Hash.",
+          "Was du in der App anlegst: Fahrer (Name, Geburtsjahr, bevorzugte Disziplinen), deinen Rennplan, Favoriten, belegte Tage, Hinweise auf Rennen in der Nähe (ein Ort und ein Umkreis), gemeldete Rennen und Feedback.",
+          "Ein Protokoll der gesendeten E-Mails, damit dieselbe Nachricht nie zweimal rausgeht.",
+        ],
+      },
+      {
+        h: "Wozu wir es nutzen",
+        p: [
+          "Nur damit die App funktioniert: deinen Plan zeigen, Rennen für deine Fahrer vorschlagen und die E-Mails schicken, die du eingeschaltet hast (neue Rennen in der Nähe, Änderungen in deinem Plan, die Wochenübersicht). Wir verkaufen deine Daten nicht und nutzen sie nicht für Werbung.",
+          "Rechtsgrundlage ist die Erbringung des Dienstes, den du angefordert hast (Art. 6 Abs. 1 lit. b DSGVO).",
+        ],
+      },
+      {
+        h: "Standort",
+        p: [
+          "Der Entfernungsfilter fragt deinen Browser nach dem Standort und nutzt ihn nur auf deinem Gerät. Er wird nie an unseren Server geschickt. Für Hinweise speichern wir nur den Ort, den du wählst.",
+        ],
+      },
+      {
+        h: "Cookies und Browserspeicher",
+        p: [
+          "Wir nutzen nur die Cookies, die nötig sind, damit du angemeldet bleibst. Der Browserspeicher merkt sich Einstellungen wie Filter und Tabellenspalten. Besuche messen wir anonym mit Vercel Web Analytics, ohne Cookies und ohne seitenübergreifendes Tracking.",
+        ],
+      },
+      {
+        h: "Wer Daten für uns verarbeitet",
+        p: [
+          "Supabase (Datenbank und Anmeldung, Server in der EU – Frankfurt), Vercel (Hosting), Resend (E-Mail-Versand) und Google (nur wenn du dich mit Google anmeldest).",
+        ],
+      },
+      {
+        h: "Wie lange",
+        p: [
+          "Solange du ein Konto hast. Wenn du es schließt, löschen wir deine Daten innerhalb von 30 Tagen, außer was wir gesetzlich aufbewahren müssen.",
+        ],
+      },
+      {
+        h: "Deine Rechte",
+        p: [
+          `Du kannst Auskunft, Berichtigung, Löschung oder Export deiner Daten verlangen oder der Nutzung widersprechen — schreib an ${CONTACT}. Jede E-Mail von uns hat einen Abmeldelink mit einem Klick. Du kannst dich auch bei deiner Datenschutzbehörde beschweren.`,
+        ],
+      },
+    ],
+  },
 };
 
 export async function generateMetadata({

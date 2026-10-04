@@ -26,6 +26,7 @@ import {
 } from "@/lib/taxonomy";
 import { disciplineColor } from "@/lib/map-visuals";
 import { Badge } from "@/components/ui/badge";
+import { MetaRow } from "@/components/explore/meta-row";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle } from "@/components/ui/toggle";
@@ -672,36 +673,6 @@ export function EventDetailPanel({
       )}
 
     </Card>
-  );
-}
-
-function MetaRow({
-  icon,
-  label,
-  children,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="grid min-w-0 grid-cols-[1rem_minmax(0,1fr)] items-start gap-x-2.5">
-      {/*
-        A fixed 1rem track — not shrink-wrapped flex. Lucide defaults to 24px
-        and a bare shrink-0 span let the SVG paint into the badge column, so
-        “Silnice” sat on top of the bike.
-      */}
-      <span
-        className="mt-0.5 flex size-4 items-center justify-center text-muted-foreground [&_svg]:size-4"
-        aria-hidden
-      >
-        {icon}
-      </span>
-      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-        <span className="sr-only">{label}</span>
-        {children}
-      </div>
-    </div>
   );
 }
 

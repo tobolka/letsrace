@@ -238,6 +238,56 @@ export const teaserMessages: Record<Locale, TeaserMessages> = {
       riders: ["Ema", "Jakub", "Peter"],
     },
   },
+  de: {
+    cta: "Kostenlos anmelden",
+    browse: "Erst Rennen ansehen",
+    teasers: {
+      plan: {
+        eyebrow: "Unser Plan",
+        title: "Die ganze Saison in einem Plan. Kein verpasster Start.",
+        body: "Speichere die Rennen, die du fahren willst, und wir behalten den Rest im Blick: wer aus der Familie fährt, was bezahlt ist und wann die Anmeldung schließt.",
+        points: [
+          "Ein Saisonkalender, in dem freie Wochenenden sofort auffallen",
+          "Eine Erinnerung, bevor die Anmeldung schließt",
+          "Alle Termine direkt in deinem Google- oder Apple-Kalender",
+        ],
+      },
+      discover: {
+        eyebrow: "Entdecken",
+        title: "Neue Rennen finden dich.",
+        body: "Sag uns, wo und was du fährst. Sobald in der Nähe ein Rennen für deine Disziplinen und Klassen auftaucht, sagen wir Bescheid — bevor es die anderen erfahren.",
+        points: [
+          "Wir beobachten die Gegend um die Orte, von denen du startest",
+          "Vorschläge passend zu Disziplinen und Altersklassen",
+          "Für freie Wochenenden schlagen wir gleich ein Rennen vor",
+        ],
+      },
+      riders: {
+        eyebrow: "Fahrer",
+        title: "Mehrere Fahrer in der Familie. Ein Überblick.",
+        body: "Lege für jeden, der Rennen fährt, ein Profil an. Du siehst, wer wohin fährt, bekommst Rennen passend zur Klasse und erkennst Terminüberschneidungen, bevor sie passieren.",
+        points: [
+          "Ein Profil mit Klasse für jeden Fahrer",
+          "Bei jedem Rennen siehst du, wer fährt",
+          "Vorschläge passend zu Alter und Niveau",
+        ],
+      },
+    },
+    art: {
+      nextRace: "Nächstes Rennen",
+      inDays: (n) => `in ${n} Tagen`,
+      registered: "Gemeldet",
+      paid: "Bezahlt",
+      newRace: "Neues Rennen in der Nähe",
+      kmAway: (n) => `${n} km entfernt`,
+      matches: "Passt: XCO · U11",
+      going: "fahren",
+      planRace: { name: "Black Forest Ultra Bike", meta: "Kirchzarten · XCM" },
+      alertRace: "Bike the Rock",
+      familyRace: { name: "Kids MTB Cup", place: "Freiburg" },
+      riders: ["Emma", "Jakob", "Peter"],
+    },
+  },
 };
 
 export function teaserMessagesFor(locale: string): TeaserMessages {

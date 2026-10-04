@@ -14,6 +14,7 @@ ${copy.description}
 - [Mapa (Česky)](${base}/cs)
 - [Mapa (Polski)](${base}/pl)
 - [Mapa (Slovensky)](${base}/sk)
+- [Karte (Deutsch)](${base}/de)
 
 ## API
 

@@ -206,6 +206,44 @@ export const raceCopy: Record<Locale, {
     rounds: "{count} kôl",
     nextRound: "ďalšie {date}",
   },
+  de: {
+    about: "Über das Rennen",
+    classes: "Klassen",
+    entry: "Anmeldung",
+    entryCloses: "Online-Anmeldung bis {date}",
+    entryClosed: "Online-Anmeldung endete am {date}",
+    regulations: "Ausschreibung",
+    website: "Website des Rennens",
+    results: "Ergebnisse",
+    otherRounds: "Weitere Läufe – {name}",
+    sameWeekend: "Am selben Wochenende in der Nähe",
+    taken: "Dieses Rennen hat bereits stattgefunden.",
+    pastRounds: "Bereits gefahren",
+    home: "Rennen",
+    upcoming: "Kommende Rennen",
+    byCountry: "Rennen nach Ländern",
+    series: "Serien",
+    allRaces: "Alle Rennen",
+    race: "Rennen",
+    inPlace: "in {place}",
+    lead: "{name} ist ein {discipline} – Termin {date}, Ort {place} ({country}).",
+    leadNoPlace: "{name} ist ein {discipline} – Termin {date}.",
+    partOf: "Es ist ein Lauf der Serie {series}.",
+    forWhom: "Klassen: {classes}.",
+    entryOnline: "Die Anmeldung läuft online.",
+    entryUntil: "Online-Anmeldung bis {date}.",
+    regsAvailable: "Der Veranstalter hat die Ausschreibung veröffentlicht.",
+    noEntryKnown: "Eine Online-Anmeldung haben wir noch nicht gefunden – frag beim Veranstalter nach.",
+    calendar: "Rennkalender {season}",
+    hubIntro: "{count} Rennen in den nächsten zwölf Monaten – Termine, Orte, Klassen und Links zu Anmeldung und Ausschreibung. Täglich aktualisiert aus den Kalendern der Veranstalter und Verbände.",
+    browse: "Rennen durchsuchen",
+    browseIntro: "Wähle ein Land, dann Disziplin und Serie – bei jedem Rennen Termin, Ort, Klassen und Anmeldung.",
+    disciplines: "Disziplinen",
+    outsideSeries: "Ohne Serie",
+    outsideSeriesBody: "{count} Rennen, die zu keiner Serie gehören",
+    rounds: "{count} Läufe",
+    nextRound: "nächster {date}",
+  },
 };
 
 /** The kind of race in a sentence: "cyclocross race", "závod v cyklokrosu"… */
@@ -214,6 +252,8 @@ const KIND: Record<Locale, (discipline: string | null) => string> = {
   cs: (d) => (d ? `závod v disciplíně ${lower(d)}` : "cyklistický závod"),
   pl: (d) => (d ? `wyścig w dyscyplinie ${lower(d)}` : "wyścig kolarski"),
   sk: (d) => (d ? `pretek v disciplíne ${lower(d)}` : "cyklistický pretek"),
+  // German nouns keep their capital: "Cyclocross-Rennen", "MTB-Rennen".
+  de: (d) => (d ? `${d}-Rennen` : "Radrennen"),
 };
 
 /** "Cyklokros" → "cyklokros", but "MTB" and "XCO" stay as they are written. */
@@ -230,7 +270,7 @@ export function longDate(iso: string, locale: Locale): string {
 }
 
 export function shortDate(iso: string, locale: Locale): string {
-  return format(parseISO(iso), locale === "en" ? "d MMM yyyy" : "d. M. yyyy", { locale: dateFnsLocale(locale) });
+  return format(parseISO(iso), locale === "en" ? "d MMM yyyy" : locale === "de" ? "d.M.yyyy" : "d. M. yyyy", { locale: dateFnsLocale(locale) });
 }
 
 export function monthHeading(iso: string, locale: Locale): string {

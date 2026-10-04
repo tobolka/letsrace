@@ -77,6 +77,14 @@ const DISCIPLINE_COPY: Record<Locale, Record<HubDiscipline, Copy>> = {
     bmx: { title: "Wyścigi BMX — {name}", description: "BMX w kraju {name}: {count} nadchodzących wyścigów, z terminami, miejscem i zapisami." },
     track: { title: "Kolarstwo torowe — {name}", description: "Wyścigi torowe w kraju {name}: {count} nadchodzących, z terminami, torami i zapisami." },
   },
+  de: {
+    mtb: { title: "MTB-Rennen — {name}", description: "Alle Mountainbike-Rennen in {name} — Cross-Country, Marathon, Downhill und Enduro. {count} anstehende, mit Terminen, Startorten und Anmeldelinks." },
+    road: { title: "Straßenrennen — {name}", description: "Straßenradsport in {name} — Rennen, Zeitfahren, Kriterien und Jedermannrennen. {count} anstehende, mit Terminen, Startorten und Anmeldelinks." },
+    gravel: { title: "Gravel-Rennen — {name}", description: "Gravel-Rennen in {name}: {count} anstehende, mit Terminen, Startorten und Anmeldelinks." },
+    cx: { title: "Cyclocross — {name}", description: "Die Cyclocross-Saison in {name}: {count} anstehende Rennen, mit Terminen, Startorten und Anmeldelinks." },
+    bmx: { title: "BMX-Rennen — {name}", description: "BMX in {name}: {count} anstehende Rennen, mit Terminen, Orten und Anmeldelinks." },
+    track: { title: "Bahnradsport — {name}", description: "Bahnrennen in {name}: {count} anstehende, mit Terminen, Radrennbahnen und Anmeldelinks." },
+  },
 };
 
 export function disciplineCopy(locale: Locale, family: HubDiscipline): Copy {

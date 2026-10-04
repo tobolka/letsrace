@@ -1,4 +1,6 @@
-export const locales = ["en", "cs", "pl", "sk"] as const;
+import { de } from "@/lib/i18n/messages-de";
+
+export const locales = ["en", "cs", "pl", "sk", "de"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
@@ -1795,6 +1797,7 @@ export const messages = {
     filtersDone: "Hotovo",
     submit: "Odoslať",
   },
+  de,
 } as const;
 
 export type Messages = {

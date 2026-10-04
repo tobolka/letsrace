@@ -46,6 +46,13 @@ const cards = {
       "strednou Európou. Naplánuj sezónu sebe, rodine alebo tímu.",
     ],
   },
+  de: {
+    title: ["Alle Radrennen", "auf einer Karte"],
+    description: [
+      "Straße, Gravel, MTB, Cyclocross und Kinderrennen in ganz",
+      "Mitteleuropa. Plane die Saison für dich, deine Familie oder dein Team.",
+    ],
+  },
 };
 
 function escape(text) {

@@ -75,6 +75,12 @@ export const seoCopy: Record<
       "Cesta, gravel, MTB, cyklokros aj detské preteky naprieč strednou Európou. Naplánuj sezónu sebe, rodine alebo tímu.",
     ogLocale: "sk_SK",
   },
+  de: {
+    title: messages.de.introTitle,
+    description:
+      "Straße, Gravel, MTB, Cyclocross und Kinderrennen in ganz Mitteleuropa. Plane die Saison für dich, deine Familie oder dein Team.",
+    ogLocale: "de_DE",
+  },
 };
 
 /** Event detail pages and their share cards. */
@@ -101,6 +107,11 @@ export const eventSeoCopy: Record<
     notFound: "Pretek nenájdený",
     fallbackRace: "Cyklistický pretek",
     findOnSite: `Nájdi tento pretek na ${SITE_NAME}.`,
+  },
+  de: {
+    notFound: "Rennen nicht gefunden",
+    fallbackRace: "Radrennen",
+    findOnSite: `Finde dieses Rennen auf ${SITE_NAME}.`,
   },
 };
 
@@ -146,6 +157,14 @@ export const hubCopy: Record<
     seriesTitle: "{name} — kalendarz i terminy",
     series:
       "Wszystkie {count} rundy cyklu {name}: terminy, miejsca i zapisy, na mapie.",
+  },
+  de: {
+    countryTitle: "Radrennen — {name}",
+    country:
+      "Alle Radrennen in {name} auf einer Karte — Straße, Gravel, MTB, Cyclocross und Kinderrennen, mit Terminen, Startorten und Anmeldelinks.",
+    seriesTitle: "{name} — Termine und Kalender",
+    series:
+      "Alle {count} Läufe der Serie {name}: Termine, Orte und Anmeldelinks, auf der Karte.",
   },
 };
 

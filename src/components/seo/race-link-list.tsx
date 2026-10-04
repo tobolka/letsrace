@@ -2,15 +2,15 @@ import Link from "next/link";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
 import { eventPagePath } from "@/lib/event-url";
-import { disciplineWords, monthHeading, shortDate } from "@/lib/seo-race-copy";
-import { Card } from "@/components/ui/card";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item";
+import { monthHeading } from "@/lib/seo-race-copy";
+import { EVENT_ROW_CLASS, EventRowBody } from "@/components/explore/event-row-body";
+import { Item, ItemGroup } from "@/components/ui/item";
+import { cn } from "@/lib/utils";
 
 /**
- * Races as links a crawler can follow, grouped by month, with the date in the
- * page's language and where and what each one is. Hubs listed forty races in
- * English dates and nothing else; the rest of a country's season had no link
- * to it from anywhere but the sitemap.
+ * Races as links a crawler can follow, grouped by month, each row the same as
+ * a row of the app's list — the discipline's colour down the edge, the name,
+ * then the date and where, what and which series.
  */
 export function RaceLinkList({
   events,
@@ -40,31 +40,17 @@ export function RaceLinkList({
               {monthHeading(`${key}-01`, locale)}
             </Heading>
           ) : null}
-          <Card className="gap-0 overflow-hidden py-0">
-            <ItemGroup>
-              {list.map((event) => {
-                const place = event.location?.municipality || event.location?.name || null;
-                const kind = disciplineWords(event, locale);
-                return (
-                  <Item key={event.id} asChild size="sm" className="rounded-none border-x-0 border-t-0">
-                    <Link href={eventPagePath(locale, event.slug)}>
-                      <ItemContent>
-                        <ItemTitle>{event.name}</ItemTitle>
-                        {place || kind ? (
-                          <ItemDescription>{[place, kind].filter(Boolean).join(" · ")}</ItemDescription>
-                        ) : null}
-                      </ItemContent>
-                      <ItemActions>
-                        <time className="tabular text-sm text-muted-foreground" dateTime={event.startDate}>
-                          {shortDate(event.startDate, locale)}
-                        </time>
-                      </ItemActions>
-                    </Link>
-                  </Item>
-                );
-              })}
-            </ItemGroup>
-          </Card>
+          <ItemGroup className="overflow-hidden rounded-xl border">
+            {list.map((event) => (
+              <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
+                <Item asChild size="sm" className={cn(EVENT_ROW_CLASS, "max-md:py-2.5")}>
+                  <Link href={eventPagePath(locale, event.slug)} className="relative">
+                    <EventRowBody event={event} locale={locale} />
+                  </Link>
+                </Item>
+              </div>
+            ))}
+          </ItemGroup>
         </section>
       ))}
     </div>
