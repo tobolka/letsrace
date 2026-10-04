@@ -43,7 +43,7 @@ function NavGroup({ items, carry }: { items: NavItem[]; carry?: ReturnType<typeo
         <SidebarMenu className="items-center gap-2">
           {items.map((item) => (
             <SidebarMenuItem key={item.key}>
-              <SidebarMenuButton asChild isActive={item.active} tooltip={item.label} className="data-[active=true]:bg-brand/8 data-[active=true]:text-brand">
+              <SidebarMenuButton asChild isActive={item.active} tooltip={item.label} className="data-[active=true]:bg-sidebar-accent data-[active=true]:text-brand">
                 <Link
                   href={item.href}
                   aria-current={item.active ? "page" : undefined}

@@ -547,7 +547,6 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     <div className="flex min-h-full flex-col md:absolute md:inset-0">
       <SectionHeader
         title={t.myCalendar}
-        meta={<span className="hidden truncate lg:inline">{t.planIntro}</span>}
         actions={<PlanViewToggle locale={locale} />}
       />
       <div className="flex min-w-0 flex-1 flex-col md:overflow-y-auto">
