@@ -10,14 +10,13 @@ import {
   disciplineCopy,
   disciplineLeaves,
   isHubDiscipline,
-  listCountryTallies,
   MIN_RACES,
   type HubDiscipline,
 } from "@/lib/discipline-hubs";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { MapPinned } from "lucide-react";
-import { BrowseHeader, DisciplineTile, SeriesCard, TileGrid } from "@/components/browse/browse-ui";
-import { addDaysIso, fill, flagEmoji, raceCopy, seasonLabel, seriesIn, shortDate } from "@/lib/seo-race-copy";
+import { BrowseHeader, SeriesCard, TileGrid } from "@/components/browse/browse-ui";
+import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn, shortDate } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
@@ -89,10 +88,6 @@ export default async function DisciplineHubPage({ params }: Props) {
   const heading = fillCopy(copy.title, { name });
   const countryHeading = fillCopy(hubCopy[locale].countryTitle, { name });
   const weekend = thisWeekendRange();
-  const tally = await listCountryTallies([code]).then((r) => r[0] ?? null).catch(() => null);
-  const siblings = (Object.entries(tally?.families ?? {}) as [HubDiscipline, number][])
-    .filter(([f]) => f !== discipline)
-    .sort((a, b) => b[1] - a[1]);
   const series = seriesIn(events);
   const outside = events.filter((e) => !e.series);
   const nextOf = (slug: string) => events.find((e) => e.series?.slug === slug)?.startDate;
@@ -116,7 +111,7 @@ export default async function DisciplineHubPage({ params }: Props) {
         locale={locale}
         crumbs={[
           { label: rc.browse, href: `/${locale}/c` },
-          { label: `${flagEmoji(code)} ${name}`, href: `/${locale}/c/${code.toLowerCase()}` },
+          { label: name, href: `/${locale}/c/${code.toLowerCase()}` },
           { label: disciplineLabel(discipline, locale) },
         ]}
       />
@@ -167,19 +162,6 @@ export default async function DisciplineHubPage({ params }: Props) {
           </section>
         )}
 
-        {siblings.length > 0 && (
-          <TileGrid title={rc.disciplines} className="mt-10">
-            {siblings.map(([family, n]) => (
-              <DisciplineTile
-                key={family}
-                href={`/${locale}/c/${code.toLowerCase()}/${family}`}
-                family={family}
-                name={disciplineLabel(family, locale)}
-                count={`${n} ${t.racesCount}`}
-              />
-            ))}
-          </TileGrid>
-        )}
       </div>
     </main>
   );

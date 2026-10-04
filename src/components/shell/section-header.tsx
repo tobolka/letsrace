@@ -1,13 +1,27 @@
+import { BrandMark } from "@/components/brand-mark";
+
 /**
- * The top of a page in the frame: the name of the section. The logo is the
- * map's alone — every other page says where you are instead of who we are —
- * and the account lives at the foot of the sidebar.
+ * The logo bar at the top of the race views — map, list, calendar, browse —
+ * the same height, padding and mark in each, so it does not move between them.
+ */
+export function BrandBar({ href }: { href: string }) {
+  return (
+    <div className="flex h-12 shrink-0 items-center border-b px-4">
+      <BrandMark href={href} size="xs" />
+    </div>
+  );
+}
+
+/**
+ * The top of a page in the frame. The race views (list, calendar) lead with
+ * the same logo bar as the map; the profile's pages say where you are.
  */
 export function SectionHeader({
   title,
   meta,
   actions,
   children,
+  brandHref,
 }: {
   title: string;
   /** Small text beside the title: a count, a month. */
@@ -16,7 +30,21 @@ export function SectionHeader({
   actions?: React.ReactNode;
   /** A row of controls under the title — the filters. */
   children?: React.ReactNode;
+  /**
+   * The race views lead with the logo bar the map has, the title then only
+   * for screen readers; the profile's pages keep their visible title.
+   */
+  brandHref?: string;
 }) {
+  if (brandHref) {
+    return (
+      <header className="shrink-0 border-b">
+        <BrandBar href={brandHref} />
+        <h1 className="sr-only">{title}</h1>
+        {children ? <div className="px-4 py-3 md:px-6">{children}</div> : null}
+      </header>
+    );
+  }
   return (
     <header className="shrink-0 border-b">
       <div className="flex h-14 items-center gap-3 px-4 md:px-6">

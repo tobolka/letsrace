@@ -66,7 +66,7 @@ export function ScheduleView({ locale }: { locale: string }) {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <SectionHeader title={t.navSchedule}>
+      <SectionHeader title={t.navSchedule} brandHref={`/${locale}`}>
         <ExploreFilterBar locale={locale} state={state} hideDate />
       </SectionHeader>
 

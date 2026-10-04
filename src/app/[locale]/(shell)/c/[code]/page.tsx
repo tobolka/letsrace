@@ -10,7 +10,7 @@ import {
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { addDaysIso, fill, flagEmoji, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
+import { addDaysIso, fill, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { listCountryTallies, type HubDiscipline } from "@/lib/discipline-hubs";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
@@ -105,7 +105,7 @@ export default async function CountryHubPage({ params }: Props) {
       />
       <BrowseHeader
         locale={locale}
-        crumbs={[{ label: rc.browse, href: `/${locale}/c` }, { label: `${flagEmoji(code)} ${name}` }]}
+        crumbs={[{ label: rc.browse, href: `/${locale}/c` }, { label: name }]}
       />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <h1 className="text-3xl font-semibold tracking-tight">

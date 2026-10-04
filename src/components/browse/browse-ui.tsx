@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { BrandBar } from "@/components/shell/section-header";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,9 +24,7 @@ export type Crumb = { label: string; href?: string };
 export function BrowseHeader({ locale, crumbs }: { locale: string; crumbs: Crumb[] }) {
   return (
     <>
-      <div className="flex h-12 shrink-0 items-center border-b px-4">
-        <BrandMark href={`/${locale}`} size="xs" />
-      </div>
+      <BrandBar href={`/${locale}`} />
       {crumbs.length ? (
         <Breadcrumb className="mx-auto w-full max-w-3xl px-4 pt-4 sm:px-6">
           <BreadcrumbList>
@@ -63,21 +62,34 @@ export function TileGrid({ title, children, className }: { title?: string; child
   );
 }
 
-/** A country: its flag, its name and how many races it has coming. */
-export function CountryCard({ href, flag, name, count }: { href: string; flag: string; name: string; count: string }) {
+const TILE =
+  "group flex items-center gap-3 rounded-xl border bg-card p-3 transition-[background-color,border-color,translate] duration-150 hover:-translate-y-px hover:border-foreground/20 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:translate-y-0";
+
+function TileText({ name, count }: { name: string; count: string }) {
   return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-3 rounded-xl border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-offset-2"
-    >
-      <span aria-hidden className="text-4xl leading-none">
-        {flag}
+    <>
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-[15px] font-semibold leading-tight">{name}</span>
+        <span className="text-xs text-muted-foreground tabular-nums">{count}</span>
       </span>
-      <span className="flex items-end justify-between gap-2">
-        <span className="font-semibold leading-tight">{name}</span>
-        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
-      </span>
-      <span className="-mt-2 text-sm text-muted-foreground tabular-nums">{count}</span>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+    </>
+  );
+}
+
+/** A country: its flag, its name and how many races it has coming. */
+export function CountryCard({ href, code, name, count }: { href: string; code: string; name: string; count: string }) {
+  return (
+    <Link href={href} className={TILE}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`/flags/${code.toLowerCase()}.svg`}
+        alt=""
+        width={36}
+        height={27}
+        className="h-[27px] w-9 shrink-0 rounded-md object-cover shadow-sm ring-1 ring-black/10"
+      />
+      <TileText name={name} count={count} />
     </Link>
   );
 }
@@ -87,26 +99,15 @@ export function DisciplineTile({ href, family, name, count }: { href: string; fa
   const icon = DISCIPLINE_FAMILY_ICONS[family];
   const color = familyColor(family);
   return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-3 rounded-xl border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-offset-2"
-    >
-      <span
-        aria-hidden
-        className="flex size-11 items-center justify-center rounded-full"
-        style={{ backgroundColor: color }}
-      >
+    <Link href={href} className={TILE}>
+      <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg shadow-sm" style={{ backgroundColor: color }}>
         {icon ? (
           // The pin glyphs are black on transparent; inverted they read on the colour.
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={icon} alt="" width={24} height={24} className="size-6 invert" />
+          <img src={icon} alt="" width={20} height={20} className="size-5 invert" />
         ) : null}
       </span>
-      <span className="flex items-end justify-between gap-2">
-        <span className="font-semibold leading-tight">{name}</span>
-        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
-      </span>
-      <span className="-mt-2 text-sm text-muted-foreground tabular-nums">{count}</span>
+      <TileText name={name} count={count} />
     </Link>
   );
 }
@@ -114,15 +115,12 @@ export function DisciplineTile({ href, family, name, count }: { href: string; fa
 /** A series: its name, how many rounds, when the next one is. */
 export function SeriesCard({ href, name, meta }: { href: string; name: string; meta: string }) {
   return (
-    <Link
-      href={href}
-      className="group flex flex-col justify-between gap-2 rounded-xl border bg-card p-4 transition-colors hover:border-foreground/25 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-offset-2"
-    >
-      <span className="flex items-start justify-between gap-2">
-        <span className="line-clamp-2 font-semibold leading-tight">{name}</span>
-        <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+    <Link href={href} className={TILE}>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="line-clamp-2 text-[15px] font-semibold leading-tight">{name}</span>
+        <span className="text-xs text-muted-foreground tabular-nums">{meta}</span>
       </span>
-      <span className="text-sm text-muted-foreground tabular-nums">{meta}</span>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
     </Link>
   );
 }
@@ -162,10 +160,12 @@ export function TileGridSkeleton({ count = 6, icon = true, className }: { count?
   return (
     <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3", className)}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-xl border bg-card p-4">
-          {icon ? <Skeleton className="size-11 rounded-full" /> : null}
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-3 w-16" />
+        <div key={i} className="flex items-center gap-3 rounded-xl border bg-card p-3">
+          {icon ? <Skeleton className="size-9 shrink-0 rounded-lg" /> : null}
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-3 w-14" />
+          </div>
         </div>
       ))}
     </div>

@@ -4,7 +4,7 @@ import { isHubDiscipline, type HubDiscipline } from "@/lib/discipline-hubs";
 import { eventDisciplineFamily } from "@/lib/taxonomy";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
-import { flagEmoji, raceCopy } from "@/lib/seo-race-copy";
+import { raceCopy } from "@/lib/seo-race-copy";
 import type { Crumb } from "@/components/browse/browse-ui";
 
 function mode<T>(values: T[]): T | null {
@@ -31,7 +31,7 @@ export function browseCrumbs(locale: Locale, place: { country: string | null; fa
   const crumbs: Crumb[] = [{ label: raceCopy[locale].browse, href: `/${locale}/c` }];
   if (!place.country) return crumbs;
   const c = place.country.toLowerCase();
-  crumbs.push({ label: `${flagEmoji(place.country)} ${countryDisplayName(place.country, locale)}`, href: `/${locale}/c/${c}` });
+  crumbs.push({ label: countryDisplayName(place.country, locale), href: `/${locale}/c/${c}` });
   if (place.family) crumbs.push({ label: disciplineLabel(place.family, locale), href: `/${locale}/c/${c}/${place.family}` });
   return crumbs;
 }

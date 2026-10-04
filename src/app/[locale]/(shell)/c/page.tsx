@@ -4,7 +4,7 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { countryDisplayName, PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { listCountryTallies } from "@/lib/discipline-hubs";
 import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { flagEmoji, raceCopy } from "@/lib/seo-race-copy";
+import { raceCopy } from "@/lib/seo-race-copy";
 import { BrowseHeader, CountryCard, TileGrid } from "@/components/browse/browse-ui";
 
 export const revalidate = 600;
@@ -54,7 +54,7 @@ export default async function BrowsePage({ params }: Props) {
             <CountryCard
               key={c.countryCode}
               href={`/${locale}/c/${c.countryCode.toLowerCase()}`}
-              flag={flagEmoji(c.countryCode)}
+              code={c.countryCode}
               name={countryDisplayName(c.countryCode, locale)}
               count={`${c.races} ${t.racesCount}`}
             />

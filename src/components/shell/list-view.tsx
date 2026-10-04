@@ -77,7 +77,7 @@ export function ListView({ locale }: { locale: string }) {
   return (
     <div className="absolute inset-0 flex">
       <section className="flex min-w-0 flex-1 flex-col">
-        <SectionHeader title={t.navList}>
+        <SectionHeader title={t.navList} brandHref={`/${locale}`}>
           <ExploreFilterBar locale={locale} state={state} />
         </SectionHeader>
 

@@ -3,17 +3,17 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { ExternalLink, MapPinned } from "lucide-react";
-import { getPublicEventBySlug, getSeriesBySlug, listEvents, type EventListItem } from "@/lib/events";
+import { getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageBandHint, ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
-import { addDaysIso, disciplineWords, fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
+import { disciplineWords, fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
 import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
-import { disciplineCopy, disciplineLeaves as disciplineLeavesOf, isHubDiscipline, listQualifyingHubs, type HubDiscipline } from "@/lib/discipline-hubs";
+import { disciplineLeaves as disciplineLeavesOf, isHubDiscipline, listQualifyingHubs, type HubDiscipline } from "@/lib/discipline-hubs";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
@@ -59,22 +59,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       imageSize: { width: 1200, height: 630 },
     }),
   };
-}
-
-/** Races the same weekend within about an hour's drive, this one left out. */
-async function sameWeekendNearby(event: EventListItem): Promise<EventListItem[]> {
-  const lat = event.location?.lat;
-  const lng = event.location?.lng;
-  if (lat == null || lng == null) return [];
-  const near = await listEvents({
-    dateFrom: addDaysIso(event.startDate, -1),
-    dateTo: addDaysIso(event.startDate, 1),
-    south: lat - 0.6,
-    north: lat + 0.6,
-    west: lng - 0.9,
-    east: lng + 0.9,
-  }).catch(() => [] as EventListItem[]);
-  return near.filter((e) => e.id !== event.id).slice(0, 8);
 }
 
 export default async function EventPage({ params }: Props) {
@@ -130,9 +114,8 @@ export default async function EventPage({ params }: Props) {
 
   // What links this page into the rest of the site: its series' other rounds,
   // races the same weekend nearby, and the hub for its kind of racing.
-  const [seriesData, nearby, hubs] = await Promise.all([
+  const [seriesData, hubs] = await Promise.all([
     event.series ? getSeriesBySlug(event.series.slug).catch(() => null) : Promise.resolve(null),
-    isPast ? Promise.resolve([] as EventListItem[]) : sameWeekendNearby(event),
     hubCountry ? listQualifyingHubs([hubCountry]).catch(() => []) : Promise.resolve([]),
   ]);
   const otherRounds = (seriesData?.events ?? []).filter((e) => e.id !== event.id);
@@ -318,33 +301,6 @@ export default async function EventPage({ params }: Props) {
           </section>
         ) : null}
 
-        {nearby.length > 0 ? (
-          <section className="mt-10">
-            <h2 className="mb-3 text-lg font-semibold">{rc.sameWeekend}</h2>
-            <RaceLinkList events={nearby} locale={locale} groupByMonth={false} />
-          </section>
-        ) : null}
-
-        {hubCountry && countryName ? (
-          <nav aria-label={rc.byCountry} className="mt-10 flex flex-wrap gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/${locale}/c/${hubCountry.toLowerCase()}`}>
-                {fillCopy(hubCopy[locale].countryTitle, { name: countryName })}
-              </Link>
-            </Button>
-            {hub ? (
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/${locale}/c/${hubCountry.toLowerCase()}/${hub.discipline}`}>
-                  {fillCopy(disciplineCopy(locale, hub.discipline).title, { name: countryName })}
-                </Link>
-              </Button>
-            ) : null}
-          </nav>
-        ) : null}
-
-        <p className="mt-10 hidden text-sm text-muted-foreground sm:mt-12 sm:block">
-          {t.tagline}
-        </p>
       </div>
 
       <div className="sticky bottom-0 z-30 border-t bg-card/95 px-4 pb-3 pt-3 backdrop-blur sm:hidden">

@@ -56,6 +56,7 @@ import {
 } from "@/lib/explore-filter-storage";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
+import { BrandBar } from "@/components/shell/section-header";
 import { SITE_NAME } from "@/lib/seo";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { listViewState } from "@/lib/list-view-state";
@@ -1367,14 +1368,7 @@ function ListToolbar({
   );
 }
 
-/**
- * The panel's title bar. The logo is the map's alone: the other views are named
- * by what they are, and this is the one place the product introduces itself.
- */
+/** The panel's title bar: the logo bar every race view shares. */
 function Header({ locale }: { locale: string }) {
-  return (
-    <div className="flex h-12 shrink-0 items-center border-b px-4">
-      <BrandMark href={`/${locale}`} size="xs" />
-    </div>
-  );
+  return <BrandBar href={`/${locale}`} />;
 }
