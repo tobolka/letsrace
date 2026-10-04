@@ -14,6 +14,7 @@ import { addDaysIso, fill, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { listCountryTallies, type HubDiscipline } from "@/lib/discipline-hubs";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
+import { DISCIPLINE_TREE } from "@/lib/taxonomy";
 import { MapPinned } from "lucide-react";
 import { BrowseHeader, BrowseIntro, DisciplineTile, TileGrid } from "@/components/browse/browse-ui";
 import { Button } from "@/components/ui/button";
@@ -87,7 +88,9 @@ export default async function CountryHubPage({ params }: Props) {
   const copy = hubCopy[locale];
   const rc = raceCopy[locale];
   const heading = fillCopy(copy.countryTitle, { name });
-  const families = (Object.entries(tally?.families ?? {}) as [HubDiscipline, number][]).sort((a, b) => b[1] - a[1]);
+  const disciplineOrder = DISCIPLINE_TREE.map(({ id }) => id);
+  const families = (Object.entries(tally?.families ?? {}) as [HubDiscipline, number][])
+    .sort((a, b) => disciplineOrder.indexOf(a[0]) - disciplineOrder.indexOf(b[0]));
 
   return (
     <main className="min-h-full bg-background">

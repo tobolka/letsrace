@@ -16,6 +16,8 @@ existing Let's Race wordmark and Stone palette.
 - Card hover and keyboard focus use neutral black and grey, including chevrons.
 - Keep the logo bar at 48px across map, list, calendar and browse.
 - Countries, disciplines and series share intro typography and card spacing.
+- Discipline cards follow the filter order in every country: MTB, road, gravel,
+  cyclocross, track, BMX. Families without catalogue races remain omitted.
 - On phones, keep cards compact, wrap labels and retain bottom tabs.
 - Loading states use the same layout and card dimensions as loaded pages.
 - The original OG and welcome photographs remain in their existing locations.
