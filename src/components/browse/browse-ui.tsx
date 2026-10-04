@@ -87,7 +87,7 @@ export function CountryCard({ href, code, name, count }: { href: string; code: s
         alt=""
         width={36}
         height={27}
-        className="h-[27px] w-9 shrink-0 rounded-md object-cover shadow-sm ring-1 ring-black/10"
+        className="h-[27px] w-9 shrink-0 rounded-[5px] object-cover ring-1 ring-black/5"
       />
       <TileText name={name} count={count} />
     </Link>
@@ -100,7 +100,7 @@ export function DisciplineTile({ href, family, name, count }: { href: string; fa
   const color = familyColor(family);
   return (
     <Link href={href} className={TILE}>
-      <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg shadow-sm" style={{ backgroundColor: color }}>
+      <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-[10px]" style={{ backgroundColor: color }}>
         {icon ? (
           // The pin glyphs are black on transparent; inverted they read on the colour.
           // eslint-disable-next-line @next/next/no-img-element
