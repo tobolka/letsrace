@@ -127,11 +127,6 @@ body {
   transform: skewX(-14deg);
 }
 
-.race-ribbon-muted {
-  width: 1.5rem;
-  opacity: 0.65;
-}
-
 .browse-intro {
   padding-block: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);

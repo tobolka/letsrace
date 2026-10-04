@@ -6,9 +6,8 @@ import { BrandMark } from "@/components/brand-mark";
  */
 export function BrandBar({ href }: { href: string }) {
   return (
-    <div className="brand-bar relative z-10 flex h-12 shrink-0 items-center justify-between border-b bg-background px-4">
+    <div className="relative z-10 flex h-12 shrink-0 items-center border-b bg-background px-4">
       <BrandMark href={href} size="xs" />
-      <span className="race-ribbon race-ribbon-muted" aria-hidden />
     </div>
   );
 }
