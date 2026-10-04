@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // The bare domain is not listed: it redirects to a language.
   add("", now, "hourly", 1);
 
+  add("c", now, "daily", 0.9);
   for (const code of PUBLIC_COUNTRY_CODES) add(`c/${code.toLowerCase()}`, now, "daily", 0.8);
 
   try {

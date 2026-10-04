@@ -188,7 +188,7 @@ export function MobileTabBar({ locale }: { locale: string }) {
   return (
     <nav
       aria-label={t.navTabs}
-      className="relative z-40 grid h-[var(--mobile-tabbar)] shrink-0 grid-cols-4 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="relative z-40 grid h-[var(--mobile-tabbar)] shrink-0 grid-cols-5 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       {items.map((item) => (
         <Link

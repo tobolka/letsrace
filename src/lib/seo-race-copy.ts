@@ -45,6 +45,14 @@ export const raceCopy: Record<Locale, {
   /** Hub titles: what people type next to the discipline and country. */
   calendar: string;
   hubIntro: string;
+  /** The browse section: countries, then disciplines, then series. */
+  browse: string;
+  browseIntro: string;
+  disciplines: string;
+  outsideSeries: string;
+  outsideSeriesBody: string;
+  rounds: string;
+  nextRound: string;
 }> = {
   en: {
     about: "About the race",
@@ -76,6 +84,13 @@ export const raceCopy: Record<Locale, {
     noEntryKnown: "We have not found an online entry for it yet; check with the organiser.",
     calendar: "race calendar {season}",
     hubIntro: "{count} races in the next twelve months, with dates, venues, categories and links to entry and regulations. Updated every day from the organisers' and federations' calendars.",
+    browse: "Browse races",
+    browseIntro: "Pick a country, then a discipline and a series — every race with its date, place, categories and entry.",
+    disciplines: "Disciplines",
+    outsideSeries: "Outside a series",
+    outsideSeriesBody: "{count} races that are not a round of any series",
+    rounds: "{count} rounds",
+    nextRound: "next {date}",
   },
   cs: {
     about: "O závodě",
@@ -107,6 +122,13 @@ export const raceCopy: Record<Locale, {
     noEntryKnown: "Online přihlášky jsme zatím nenašli, ověř si je u pořadatele.",
     calendar: "kalendář závodů {season}",
     hubIntro: "{count} závodů na příštích dvanáct měsíců – termíny, místa, kategorie a odkazy na přihlášky a propozice. Aktualizujeme denně z kalendářů pořadatelů a svazů.",
+    browse: "Procházet závody",
+    browseIntro: "Vyber zemi, pak disciplínu a seriál – u každého závodu termín, místo, kategorie a přihlášky.",
+    disciplines: "Disciplíny",
+    outsideSeries: "Mimo seriál",
+    outsideSeriesBody: "{count} závodů, které nepatří do žádného seriálu",
+    rounds: "{count} kol",
+    nextRound: "další {date}",
   },
   pl: {
     about: "O wyścigu",
@@ -138,6 +160,13 @@ export const raceCopy: Record<Locale, {
     noEntryKnown: "Nie znaleźliśmy jeszcze zapisów online – sprawdź u organizatora.",
     calendar: "kalendarz wyścigów {season}",
     hubIntro: "{count} wyścigów w najbliższych dwunastu miesiącach – terminy, miejsca, kategorie oraz linki do zapisów i regulaminów. Aktualizowane codziennie z kalendarzy organizatorów i związków.",
+    browse: "Przeglądaj wyścigi",
+    browseIntro: "Wybierz kraj, potem dyscyplinę i cykl – przy każdym wyścigu termin, miejsce, kategorie i zapisy.",
+    disciplines: "Dyscypliny",
+    outsideSeries: "Poza cyklem",
+    outsideSeriesBody: "{count} wyścigów, które nie należą do żadnego cyklu",
+    rounds: "{count} rund",
+    nextRound: "następna {date}",
   },
   sk: {
     about: "O preteku",
@@ -169,6 +198,13 @@ export const raceCopy: Record<Locale, {
     noEntryKnown: "Online prihlášky sme zatiaľ nenašli, over si ich u organizátora.",
     calendar: "kalendár pretekov {season}",
     hubIntro: "{count} pretekov na najbližších dvanásť mesiacov – termíny, miesta, kategórie a odkazy na prihlášky a propozície. Aktualizujeme denne z kalendárov organizátorov a zväzov.",
+    browse: "Prehľadávať preteky",
+    browseIntro: "Vyber krajinu, potom disciplínu a seriál – pri každom preteku termín, miesto, kategórie a prihlášky.",
+    disciplines: "Disciplíny",
+    outsideSeries: "Mimo seriálu",
+    outsideSeriesBody: "{count} pretekov, ktoré nepatria do žiadneho seriálu",
+    rounds: "{count} kôl",
+    nextRound: "ďalšie {date}",
   },
 };
 
@@ -281,4 +317,9 @@ export function seriesIn(events: EventListItem[]): { slug: string; name: string;
     by.set(e.series.slug, s);
   }
   return [...by.values()].sort((a, b) => b.rounds - a.rounds || a.name.localeCompare(b.name));
+}
+
+/** A country's flag from its two letters, as the regional-indicator emoji pair. */
+export function flagEmoji(code: string): string {
+  return code.toUpperCase().replace(/[A-Z]/g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65));
 }

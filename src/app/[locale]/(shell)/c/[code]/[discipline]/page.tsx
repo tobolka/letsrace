@@ -10,11 +10,14 @@ import {
   disciplineCopy,
   disciplineLeaves,
   isHubDiscipline,
-  listQualifyingHubs,
+  listCountryTallies,
   MIN_RACES,
   type HubDiscipline,
 } from "@/lib/discipline-hubs";
-import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn } from "@/lib/seo-race-copy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
+import { MapPinned } from "lucide-react";
+import { BrowseHeader, DisciplineTile, SeriesCard, TileGrid } from "@/components/browse/browse-ui";
+import { addDaysIso, fill, flagEmoji, raceCopy, seasonLabel, seriesIn, shortDate } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
@@ -80,16 +83,22 @@ export default async function DisciplineHubPage({ params }: Props) {
 
   const { locale, code, discipline, events } = data;
   const t = messages[locale];
+  const rc = raceCopy[locale];
   const name = countryDisplayName(code, locale);
   const copy = disciplineCopy(locale, discipline);
   const heading = fillCopy(copy.title, { name });
   const countryHeading = fillCopy(hubCopy[locale].countryTitle, { name });
   const weekend = thisWeekendRange();
-  const siblings = (await listQualifyingHubs([code])).filter((c) => c.discipline !== discipline);
+  const tally = await listCountryTallies([code]).then((r) => r[0] ?? null).catch(() => null);
+  const siblings = (Object.entries(tally?.families ?? {}) as [HubDiscipline, number][])
+    .filter(([f]) => f !== discipline)
+    .sort((a, b) => b[1] - a[1]);
   const series = seriesIn(events);
+  const outside = events.filter((e) => !e.series);
+  const nextOf = (slug: string) => events.find((e) => e.series?.slug === slug)?.startDate;
 
   return (
-    <main className="min-h-full bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-2 md:pt-4">
+    <main className="min-h-full bg-background">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -103,56 +112,73 @@ export default async function DisciplineHubPage({ params }: Props) {
           place: e.location?.municipality ?? e.location?.name ?? null,
         }))}
       />
-      <div className="mx-auto max-w-2xl py-8">
-        <Button asChild variant="ghost" size="sm" className="-ml-2">
-          <Link href={`/${locale}/c/${code.toLowerCase()}`}>{countryHeading}</Link>
-        </Button>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+      <BrowseHeader
+        locale={locale}
+        crumbs={[
+          { label: rc.browse, href: `/${locale}/c` },
+          { label: `${flagEmoji(code)} ${name}`, href: `/${locale}/c/${code.toLowerCase()}` },
+          { label: disciplineLabel(discipline, locale) },
+        ]}
+      />
+      <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
+        <h1 className="text-3xl font-semibold tracking-tight">
           {heading} {seasonLabel()}
         </h1>
-        <p className="mt-3 text-pretty text-muted-foreground">{fill(raceCopy[locale].hubIntro, { count: events.length })}</p>
-        <div className="mt-6">
-          <Button asChild size="lg">
-            <Link
-              href={`/${locale}?country=${code}&disciplines=${discipline}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}
-            >
+        <p className="mt-2 text-pretty text-muted-foreground">{fill(rc.hubIntro, { count: events.length })}</p>
+        <div className="mt-5">
+          <Button asChild>
+            <Link href={`/${locale}?country=${code}&disciplines=${discipline}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}>
+              <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
           </Button>
         </div>
 
+        {series.length > 0 && (
+          <TileGrid title={rc.series} className="mt-8">
+            {series.map((s) => {
+              const next = nextOf(s.slug);
+              return (
+                <SeriesCard
+                  key={s.slug}
+                  href={`/${locale}/series/${s.slug}`}
+                  name={s.name}
+                  meta={[fill(rc.rounds, { count: s.rounds }), next ? fill(rc.nextRound, { date: shortDate(next, locale) }) : null].filter(Boolean).join(" · ")}
+                />
+              );
+            })}
+            {outside.length > 0 && (
+              <SeriesCard href="#outside-series" name={rc.outsideSeries} meta={fill(rc.outsideSeriesBody, { count: outside.length })} />
+            )}
+          </TileGrid>
+        )}
+
         {events.length ? (
-          <div className="mt-8">
-            <RaceLinkList events={events} locale={locale} />
-          </div>
+          <section className="mt-10">
+            <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
+            <RaceLinkList events={events} locale={locale} headingLevel="h3" />
+          </section>
         ) : null}
 
-        {series.length > 0 && (
-          <nav aria-label={raceCopy[locale].series} className="mt-10">
-            <h2 className="mb-3 text-lg font-semibold">{raceCopy[locale].series}</h2>
-            <div className="flex flex-wrap gap-2">
-              {series.map((s) => (
-                <Button key={s.slug} asChild variant="outline" size="sm">
-                  <Link href={`/${locale}/series/${s.slug}`}>
-                    {s.name}
-                    <span className="ml-1 text-muted-foreground tabular-nums">{s.rounds}</span>
-                  </Link>
-                </Button>
-              ))}
-            </div>
-          </nav>
+        {series.length > 0 && outside.length > 0 && (
+          <section id="outside-series" className="mt-10 scroll-mt-4">
+            <h2 className="mb-3 text-lg font-semibold">{rc.outsideSeries}</h2>
+            <RaceLinkList events={outside} locale={locale} headingLevel="h3" />
+          </section>
         )}
 
         {siblings.length > 0 && (
-          <nav aria-label={heading} className="mt-8 flex flex-wrap gap-2">
-            {siblings.map((s) => (
-              <Button key={s.discipline} asChild variant="outline" size="sm">
-                <Link href={`/${locale}/c/${code.toLowerCase()}/${s.discipline}`}>
-                  {fillCopy(disciplineCopy(locale, s.discipline).title, { name })}
-                </Link>
-              </Button>
+          <TileGrid title={rc.disciplines} className="mt-10">
+            {siblings.map(([family, n]) => (
+              <DisciplineTile
+                key={family}
+                href={`/${locale}/c/${code.toLowerCase()}/${family}`}
+                family={family}
+                name={disciplineLabel(family, locale)}
+                count={`${n} ${t.racesCount}`}
+              />
             ))}
-          </nav>
+          </TileGrid>
         )}
       </div>
     </main>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { ArrowLeft, ExternalLink, MapPinned } from "lucide-react";
+import { ExternalLink, MapPinned } from "lucide-react";
 import { getPublicEventBySlug, getSeriesBySlug, listEvents, type EventListItem } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { formatEventCategoryLabel } from "@/lib/taxonomy";
@@ -11,6 +11,8 @@ import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
 import { addDaysIso, disciplineWords, fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
+import { BrowseHeader } from "@/components/browse/browse-ui";
+import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { disciplineCopy, disciplineLeaves as disciplineLeavesOf, isHubDiscipline, listQualifyingHubs, type HubDiscipline } from "@/lib/discipline-hubs";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
@@ -159,35 +161,18 @@ export default async function EventPage({ params }: Props) {
         }}
       />
 
-      <div className="relative mx-auto max-w-2xl px-4 pb-8 pt-2 md:pt-4 sm:px-6 sm:pb-16 sm:pt-12">
-        <nav aria-label="breadcrumb" className="-ml-2 flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground">
-          <Button asChild variant="ghost" size="sm">
-            <Link href={`/${locale}`}>
-              <ArrowLeft data-icon="inline-start" />
-              {SITE_NAME}
-            </Link>
-          </Button>
-          {hubCountry && countryName ? (
-            <>
-              <span aria-hidden>/</span>
-              <Button asChild variant="ghost" size="sm">
-                <Link href={`/${locale}/c/${hubCountry.toLowerCase()}`}>{countryName}</Link>
-              </Button>
-            </>
-          ) : null}
-          {hubCountry && hub ? (
-            <>
-              <span aria-hidden>/</span>
-              <Button asChild variant="ghost" size="sm">
-                <Link href={`/${locale}/c/${hubCountry.toLowerCase()}/${hub.discipline}`}>
-                  {disciplineLabelForHub(locale, hub.discipline)}
-                </Link>
-              </Button>
-            </>
-          ) : null}
-        </nav>
-
-        <header className="mt-5 scroll-mt-24 sm:mt-6">
+      <div className="relative">
+        <BrowseHeader
+          locale={locale}
+          crumbs={[
+            ...browseCrumbs(locale, browsePlace([event])),
+            ...(event.series ? [{ label: event.series.name, href: `/${locale}/series/${event.series.slug}` }] : []),
+            { label: event.name },
+          ]}
+        />
+      </div>
+      <div className="relative mx-auto max-w-3xl px-4 pb-8 pt-4 sm:px-6 sm:pb-16">
+        <header className="scroll-mt-24">
           <h1 className="mt-2 text-balance text-[1.75rem] font-semibold leading-tight tracking-tight sm:text-4xl sm:leading-tight">
             {event.name}
           </h1>

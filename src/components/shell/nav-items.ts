@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Bookmark, CalendarDays, Compass, List, Map, Settings, Users } from "lucide-react";
+import { Bookmark, CalendarDays, Compass, LayoutGrid, List, Map, Settings, Users } from "lucide-react";
 import type { Messages } from "@/lib/i18n/messages";
 
 export type NavItem = {
@@ -33,6 +33,15 @@ export function exploreNav(locale: string, t: Messages, pathname: string): NavIt
       label: t.navSchedule,
       icon: CalendarDays,
       active: pathname.startsWith(`${base}/schedule`),
+    },
+    {
+      // Countries, then disciplines, then series: the races for someone who
+      // would rather choose than pan a map. A race's own page sits here too.
+      key: "browse",
+      href: `${base}/c`,
+      label: t.navBrowse,
+      icon: LayoutGrid,
+      active: [`${base}/c`, `${base}/e/`, `${base}/series/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
     },
   ];
 }

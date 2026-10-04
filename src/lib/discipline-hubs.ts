@@ -91,7 +91,10 @@ export type HubCombo = { countryCode: string; discipline: HubDiscipline; races: 
  * One grouped query rather than a request per pair: the sitemap needs all of
  * them, and the country hub needs its own row, on every render.
  */
-export async function listQualifyingHubs(countryCodes: string[]): Promise<HubCombo[]> {
+/** Upcoming races per country and per discipline family, from one query. */
+export type CountryTally = { countryCode: string; races: number; families: Partial<Record<HubDiscipline, number>> };
+
+async function tallyUpcoming(countryCodes: string[]): Promise<CountryTally[]> {
   if (!countryCodes.length) return [];
   const supabase = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
@@ -102,6 +105,8 @@ export async function listQualifyingHubs(countryCodes: string[]): Promise<HubCom
       .from("events")
       .select("disciplines, locations!inner(country_code)")
       .eq("visibility", "public")
+      .is("merged_into_id", null)
+      .neq("event_type", "ride")
       .gte("start_date", today)
       .in("locations.country_code", countryCodes)
       .order("id", { ascending: true })
@@ -111,27 +116,42 @@ export async function listQualifyingHubs(countryCodes: string[]): Promise<HubCom
     if (!data || data.length < 1000) break;
   }
 
-  const tally = new Map<string, number>();
+  const by = new Map<string, CountryTally>();
   for (const row of rows) {
     const cc = row.locations?.country_code;
     if (!cc) continue;
+    const t = by.get(cc) ?? { countryCode: cc, races: 0, families: {} };
+    t.races += 1;
     const disciplines = row.disciplines ?? [];
     // A race counts once per family, and MTB wins over road when a listing
     // carries both — the specific family is what the visitor came for.
     for (const family of HUB_DISCIPLINES) {
       if (FAMILY_LEAVES[family].some((d) => disciplines.includes(d))) {
-        const key = `${cc}|${family}`;
-        tally.set(key, (tally.get(key) ?? 0) + 1);
+        t.families[family] = (t.families[family] ?? 0) + 1;
         break;
       }
     }
+    by.set(cc, t);
   }
+  return [...by.values()];
+}
 
-  return [...tally.entries()]
-    .map(([key, races]) => {
-      const [countryCode, discipline] = key.split("|") as [string, HubDiscipline];
-      return { countryCode, discipline, races };
-    })
+/** Countries with upcoming races, most races first, for the browse index. */
+export async function listCountryTallies(countryCodes: string[]): Promise<CountryTally[]> {
+  return (await tallyUpcoming(countryCodes)).sort((a, b) => b.races - a.races);
+}
+
+/**
+ * Country × discipline pairs that clear the threshold.
+ *
+ * One grouped query rather than a request per pair: the sitemap needs all of
+ * them, and the country hub needs its own row, on every render.
+ */
+export async function listQualifyingHubs(countryCodes: string[]): Promise<HubCombo[]> {
+  return (await tallyUpcoming(countryCodes))
+    .flatMap((t) =>
+      (Object.entries(t.families) as [HubDiscipline, number][]).map(([discipline, races]) => ({ countryCode: t.countryCode, discipline, races })),
+    )
     .filter((c) => c.races >= MIN_RACES)
     .sort((a, b) => a.countryCode.localeCompare(b.countryCode) || b.races - a.races);
 }

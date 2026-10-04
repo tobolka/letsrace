@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MapPinned } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
+import { BrowseHeader } from "@/components/browse/browse-ui";
+import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
@@ -57,7 +60,7 @@ export default async function SeriesPage({ params }: Props) {
   const heading = fillCopy(copy.seriesTitle, { name: data.series.name });
 
   return (
-    <main className="min-h-full bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-2 md:pt-4">
+    <main className="min-h-full bg-background">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -73,17 +76,18 @@ export default async function SeriesPage({ params }: Props) {
           place: e.location?.municipality ?? e.location?.name ?? null,
         }))}
       />
-      <div className="mx-auto max-w-2xl py-8">
-        <Button asChild variant="ghost" size="sm" className="-ml-2">
-          <Link href={`/${locale}`}>{SITE_NAME}</Link>
-        </Button>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{data.series.name}</h1>
+      <BrowseHeader locale={locale} crumbs={[...browseCrumbs(locale, browsePlace(data.events)), { label: data.series.name }]} />
+      <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
+        <h1 className="text-3xl font-semibold tracking-tight">{data.series.name}</h1>
         {data.series.description ? (
           <p className="mt-2 text-muted-foreground">{data.series.description}</p>
         ) : null}
         <div className="mt-6 flex flex-wrap gap-2">
-          <Button asChild size="lg">
-            <Link href={`/${locale}?series=${data.series.slug}`}>{t.viewOnMap}</Link>
+          <Button asChild>
+            <Link href={`/${locale}?series=${data.series.slug}`}>
+              <MapPinned data-icon="inline-start" />
+              {t.viewOnMap}
+            </Link>
           </Button>
         </div>
         <p className="mt-6 text-pretty text-muted-foreground">
