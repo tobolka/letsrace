@@ -13,6 +13,7 @@ import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NA
 import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
+import { disciplineColor } from "@/lib/map-visuals";
 import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { disciplineLeaves as disciplineLeavesOf, isHubDiscipline, listQualifyingHubs, type HubDiscipline } from "@/lib/discipline-hubs";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -152,17 +153,27 @@ export default async function EventPage({ params }: Props) {
         />
       </div>
       <div className="relative mx-auto max-w-3xl px-4 pb-8 pt-4 sm:px-6 sm:pb-16">
-        <header className="scroll-mt-24">
-          <h1 className="mt-2 text-balance text-[1.75rem] font-semibold leading-tight tracking-tight sm:text-4xl sm:leading-tight">
+        {/* The list row's shape, larger: the discipline's colour down the
+            edge, the name, then the date and where, what and which series. */}
+        <header className="relative scroll-mt-24 pl-4">
+          <span
+            aria-hidden
+            className="absolute inset-y-1 left-0 w-1 rounded-full"
+            style={{ background: disciplineColor(event.disciplines) }}
+          />
+          <h1 className="text-balance text-[1.75rem] font-semibold leading-tight tracking-tight sm:text-4xl sm:leading-tight">
             {event.name}
           </h1>
-          <p className="mt-3 text-[15px] text-muted-foreground sm:text-base">
-            <time className="tabular" dateTime={event.startDate}>
+          <p className="mt-2 text-[15px] sm:text-base">
+            <time className="font-medium tabular-nums" dateTime={event.startDate}>
               {dateLabel}
             </time>
+            <span className="text-muted-foreground">
+              {" · "}
+              {[place, discChips.join(", "), event.series?.name].filter(Boolean).join(" · ")}
+            </span>
           </p>
-          <p className="mt-1 break-words text-[15px] text-muted-foreground sm:text-base">{place}</p>
-          {isPast ? <p className="mt-3 text-sm font-medium">{rc.taken}</p> : null}
+          {isPast ? <p className="mt-2 text-sm font-medium">{rc.taken}</p> : null}
         </header>
 
         {/* The same rows and badges as the race card on the map. */}
