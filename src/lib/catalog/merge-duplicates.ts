@@ -94,6 +94,31 @@ function ordinalConflict(a: string, b: string): boolean {
   return true;
 }
 
+const ORDINAL_WORDS: [RegExp, string][] = [
+  [/\b(prvn[ií]|erste[rsn]?|pierwsz\w*|prv[ée]|first)\b/, "1"],
+  [/\b(druh[yýeéaá]|zweite[rsn]?|drug\w*|second)\b/, "2"],
+  [/\b(tret[ií]|třet[ií]|dritte[rsn]?|trzec\w*|tretie|third)\b/, "3"],
+  [/\b(ctvrt[yýeé]|čtvrt[yýeé]|vierte[rsn]?|czwart\w*|stvrt\w*|fourth)\b/, "4"],
+  [/\b(pat[yýeé]|pát[yýeé]|funfte[rsn]?|fünfte[rsn]?|piat\w*|fifth)\b/, "5"],
+];
+
+/**
+ * Two titles that say they are different instalments of one thing: "První
+ * podzimní cross country" and "Druhé podzimní cross country", a month apart
+ * on the same organiser's page. Ordinals written as words, in the languages
+ * we read; numbered rounds are `roundConflict`'s.
+ */
+export function differentInstalment(a: string, b: string): boolean {
+  const ords = (s: string) => {
+    const t = foldName(s);
+    return new Set(ORDINAL_WORDS.filter(([re]) => re.test(t)).map(([, n]) => n));
+  };
+  const oa = ords(a);
+  const ob = ords(b);
+  if (!oa.size || !ob.size) return roundConflict(a, b) || ordinalConflict(a, b);
+  return ![...oa].some((n) => ob.has(n)) || roundConflict(a, b);
+}
+
 function formatTagConflict(a: string, b: string): boolean {
   const ta = a.match(FORMAT_TAG)?.[1]?.toLowerCase();
   const tb = b.match(FORMAT_TAG)?.[1]?.toLowerCase();

@@ -42,3 +42,16 @@ describe("strongSameRace", () => {
     expect(strongSameRace(row("a", "50 COPPA COMUNE DI ELMSHORN"), row("b", "1 GP ELMSHORN IN ROSA"))).toBe(false);
   });
 });
+
+import { differentInstalment } from "@/lib/catalog/merge-duplicates";
+
+describe("differentInstalment", () => {
+  it("tells the first and the second of a season apart", () => {
+    expect(differentInstalment("Povltavský bikerský pohár - První podzimní cross country", "Druhé podzimní cross country Povltavský bikerský pohár")).toBe(true);
+    expect(differentInstalment("Oderský pohár — Zlaté Hory I.", "Oderský pohár — Zlaté Hory II.")).toBe(true);
+  });
+  it("leaves the same instalment and unnumbered names alone", () => {
+    expect(differentInstalment("Povltavský bikerský pohár - První podzimní cross country", "První podzimní cross country Povltavský bikerský pohár")).toBe(false);
+    expect(differentInstalment("Moravskotřebovský Cyklokros 2026", "Oderský pohár — Moravská Třebová")).toBe(false);
+  });
+});

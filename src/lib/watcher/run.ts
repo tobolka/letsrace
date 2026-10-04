@@ -1659,6 +1659,8 @@ async function upsertParsedEvent(
     (Array.isArray(sourceEvent) ? sourceEvent[0] : sourceEvent) as
       { id: string; start_date: string; merged_into_id?: string | null } | null,
   );
+  // Matched by this very source's own record of the race, not by resemblance.
+  const matchedBySource = existingId != null;
   const fpCols =
     "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
   const { data: fpRows } = await supabase
@@ -1798,6 +1800,16 @@ async function upsertParsedEvent(
       [...byId.values()].map((r) => asCandidate(r)),
     );
     existingId = best?.row.id;
+  }
+
+  // A match by a shared page or a near name is not a match when the titles
+  // name different instalments: the "Druhé podzimní" listing had taken over
+  // the "První podzimní" race (one organiser page for both) and moved it a
+  // month. Such an incoming listing is its own race.
+  if (existingId && !matchedBySource) {
+    const { data: matched } = await supabase.from("events").select("name").eq("id", existingId).maybeSingle();
+    const { differentInstalment } = await import("@/lib/catalog/merge-duplicates");
+    if (matched?.name && differentInstalment(matched.name, ev.name)) existingId = undefined;
   }
 
   const { data: existingFull } = existingId
