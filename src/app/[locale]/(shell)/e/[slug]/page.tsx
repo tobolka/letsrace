@@ -9,7 +9,6 @@ import { getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageBandHint, ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
-import { disciplineColor, disciplineColorDark } from "@/lib/map-visuals";
 import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
 import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
@@ -92,8 +91,6 @@ export default async function EventPage({ params }: Props) {
   );
   const levelLabel = event.level ? raceLevelLabel(event.level, locale) : null;
   const mapHref = eventMapPath(locale, event);
-  const from = disciplineColor(event.disciplines);
-  const to = disciplineColorDark(event.disciplines);
   const trustText = trustLabel(eventTrustLevel(event), t);
   const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
   // Only markets that actually have a hub page — linking to a 404 is worse than
@@ -142,13 +139,6 @@ export default async function EventPage({ params }: Props) {
           ...(hubCountry && hub ? [{ name: disciplineLabelForHub(locale, hub.discipline), path: `c/${hubCountry.toLowerCase()}/${hub.discipline}` }] : []),
           { name: event.name, path: `e/${event.slug}` },
         ]}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-12 h-[min(42vh,22rem)] opacity-90"
-        style={{
-          background: `radial-gradient(120% 80% at 10% -10%, ${from}33 0%, transparent 55%), linear-gradient(180deg, ${to}14 0%, transparent 70%)`,
-        }}
       />
 
       <div className="relative">
