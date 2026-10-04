@@ -26,9 +26,9 @@ export function BrandMark({
       viewBox="0 0 199 30"
       width={size === "xs" ? 118 : size === "sm" ? 145 : 160}
       height={size === "xs" ? 18 : size === "sm" ? 22 : 24}
-      className={cn("shrink-0", className)}
+      className={cn("shrink-0", tone === "inverse" ? "text-white" : "text-brand", className)}
     >
-      <path d={LOGO_PATH} fill="#C81D25" />
+      <path d={LOGO_PATH} fill="currentColor" />
     </svg>
   ) : (
     <span

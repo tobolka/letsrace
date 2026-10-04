@@ -15,7 +15,7 @@ import {
 } from "@/lib/discipline-hubs";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { MapPinned } from "lucide-react";
-import { BrowseHeader, SeriesCard, TileGrid } from "@/components/browse/browse-ui";
+import { BrowseHeader, BrowseIntro, SeriesCard, TileGrid } from "@/components/browse/browse-ui";
 import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn, shortDate } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
@@ -116,18 +116,14 @@ export default async function DisciplineHubPage({ params }: Props) {
         ]}
       />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {heading} {seasonLabel()}
-        </h1>
-        <p className="mt-2 text-pretty text-muted-foreground">{fill(rc.hubIntro, { count: events.length })}</p>
-        <div className="mt-5">
+        <BrowseIntro title={`${heading} ${seasonLabel()}`} description={fill(rc.hubIntro, { count: events.length })}>
           <Button asChild>
             <Link href={`/${locale}?country=${code}&disciplines=${discipline}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
           </Button>
-        </div>
+        </BrowseIntro>
 
         {series.length > 0 && (
           <TileGrid title={rc.series} className="mt-8">

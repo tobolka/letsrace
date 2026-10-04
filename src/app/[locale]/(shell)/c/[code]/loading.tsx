@@ -11,7 +11,7 @@ export default function Loading() {
     <main className="min-h-full bg-background">
       <BrowseHeaderSkeleton depth={3} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <PageIntroSkeleton />
+        <PageIntroSkeleton branded />
         <Skeleton className="mt-8 mb-3 h-5 w-28" />
         <TileGridSkeleton count={6} />
       </div>

@@ -5,7 +5,7 @@ import { countryDisplayName, PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { listCountryTallies } from "@/lib/discipline-hubs";
 import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { raceCopy } from "@/lib/seo-race-copy";
-import { BrowseHeader, CountryCard, TileGrid } from "@/components/browse/browse-ui";
+import { BrowseHeader, BrowseIntro, CountryCard, TileGrid } from "@/components/browse/browse-ui";
 
 export const revalidate = 600;
 
@@ -47,8 +47,7 @@ export default async function BrowsePage({ params }: Props) {
     <main className="min-h-full bg-background">
       <BrowseHeader locale={locale} crumbs={[{ label: rc.browse }]} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <h1 className="text-3xl font-semibold tracking-tight">{rc.byCountry}</h1>
-        <p className="mt-2 text-pretty text-muted-foreground">{rc.browseIntro}</p>
+        <BrowseIntro title={rc.byCountry} description={rc.browseIntro} photograph />
         <TileGrid className="mt-8">
           {tallies.map((c) => (
             <CountryCard

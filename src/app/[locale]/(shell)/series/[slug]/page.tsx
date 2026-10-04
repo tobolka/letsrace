@@ -7,7 +7,7 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
-import { BrowseHeader } from "@/components/browse/browse-ui";
+import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
 import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
@@ -78,21 +78,22 @@ export default async function SeriesPage({ params }: Props) {
       />
       <BrowseHeader locale={locale} crumbs={[...browseCrumbs(locale, browsePlace(data.events)), { label: data.series.name }]} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <h1 className="text-3xl font-semibold tracking-tight">{data.series.name}</h1>
-        {data.series.description ? (
-          <p className="mt-2 text-muted-foreground">{data.series.description}</p>
-        ) : null}
-        <div className="mt-6 flex flex-wrap gap-2">
+        <BrowseIntro
+          title={data.series.name}
+          description={data.series.description || fillCopy(copy.series, { name: data.series.name, count: data.events.length })}
+        >
           <Button asChild>
             <Link href={`/${locale}?series=${data.series.slug}`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
           </Button>
-        </div>
-        <p className="mt-6 text-pretty text-muted-foreground">
-          {fillCopy(copy.series, { name: data.series.name, count: data.events.length })}
-        </p>
+        </BrowseIntro>
+        {data.series.description ? (
+          <p className="mt-6 text-pretty text-muted-foreground">
+            {fillCopy(copy.series, { name: data.series.name, count: data.events.length })}
+          </p>
+        ) : null}
         {upcoming.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{rc.upcoming}</h2>

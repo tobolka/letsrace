@@ -15,7 +15,7 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { listCountryTallies, type HubDiscipline } from "@/lib/discipline-hubs";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { MapPinned } from "lucide-react";
-import { BrowseHeader, DisciplineTile, TileGrid } from "@/components/browse/browse-ui";
+import { BrowseHeader, BrowseIntro, DisciplineTile, TileGrid } from "@/components/browse/browse-ui";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -108,18 +108,14 @@ export default async function CountryHubPage({ params }: Props) {
         crumbs={[{ label: rc.browse, href: `/${locale}/c` }, { label: name }]}
       />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {heading} {seasonLabel()}
-        </h1>
-        <p className="mt-2 text-pretty text-muted-foreground">{fill(rc.hubIntro, { count: events.length })}</p>
-        <div className="mt-5">
+        <BrowseIntro title={`${heading} ${seasonLabel()}`} description={fill(rc.hubIntro, { count: events.length })}>
           <Button asChild>
             <Link href={`/${locale}?country=${code}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
           </Button>
-        </div>
+        </BrowseIntro>
 
         {families.length > 0 && (
           <TileGrid title={rc.disciplines} className="mt-8">
