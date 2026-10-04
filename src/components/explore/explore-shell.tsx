@@ -64,12 +64,11 @@ import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { EventCard } from "@/components/explore/event-rows";
 
-const EventDetailPanel = dynamic(
-  () =>
-    import("@/components/explore/event-detail-panel").then((m) => ({
-      default: m.EventDetailPanel,
-    })),
-);
+const loadEventDetailPanel = () =>
+  import("@/components/explore/event-detail-panel").then((m) => ({
+    default: m.EventDetailPanel,
+  }));
+const EventDetailPanel = dynamic(loadEventDetailPanel);
 const SubmitRaceModal = dynamic(
   () =>
     import("@/components/explore/submit-race-modal").then((m) => ({
@@ -223,6 +222,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     router.replace(`/${locale}/list${qs ? `?${qs}` : ""}`);
   }, [filters.view, locale, router]);
   const [prefsReady, setPrefsReady] = useState(false);
+
+  // Fetch the race card's code once the map is idle, so the first click opens
+  // it at once instead of waiting on the network.
+  useEffect(() => {
+    const preload = () => void loadEventDetailPanel();
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(preload, { timeout: 4000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(preload, 2000);
+    return () => window.clearTimeout(id);
+  }, []);
 
   function selectEvent(id: string | null) {
     setSelectedId(id);
@@ -1106,7 +1117,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </div>
         </div>
 
+        {/*
+          Its own boundary: the card's code arrives on the first click, and
+          without one the wait reached the page's loading screen — the whole
+          map went blank for a moment before the card appeared.
+        */}
         {selected && (
+          <Suspense fallback={null}>
           <EventDetailPanel
             event={selected}
             locale={locale}
@@ -1114,6 +1131,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onSelectSeries={applySeries}
                         leftX={mapWidth + 12}
           />
+          </Suspense>
         )}
       </div>
 
@@ -1215,6 +1233,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           >
             {selected ? (
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
+                <Suspense fallback={null}>
                 <EventDetailPanel
                   event={selected}
                   locale={locale}
@@ -1226,6 +1245,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                     setListSnap(COMPACT);
                   }}
                 />
+                </Suspense>
               </div>
             ) : null}
           </MobileDetailSheet>
