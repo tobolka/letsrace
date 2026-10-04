@@ -35,9 +35,15 @@ function schemaEventStatus(status: string | null | undefined): string {
 export function EventJsonLd({
   event,
   locale,
+  description,
+  breadcrumb,
 }: {
   event: EventListItem;
   locale: string;
+  /** The page's written account of the race. */
+  description?: string;
+  /** From the site down to this race, for search results' breadcrumb trail. */
+  breadcrumb?: { name: string; path: string }[];
 }) {
   const placeName =
     event.location?.municipality || event.location?.name || undefined;
@@ -61,8 +67,26 @@ export function EventJsonLd({
 
   if (event.endDate) data.endDate = event.endDate;
   if (sameAs.length) data.sameAs = sameAs;
+  if (description) data.description = description;
+  data.sport = "Cycling";
+  data.image = [absoluteUrl(`/${locale}/e/${event.slug}/opengraph-image`)];
+  // The series is the event this race is a round of — not its organiser,
+  // which is what this block used to call it.
   if (event.series) {
-    data.organizer = { "@type": "Organization", name: event.series.name };
+    data.superEvent = {
+      "@type": "EventSeries",
+      name: event.series.name,
+      url: absoluteUrl(`/${locale}/series/${event.series.slug}`),
+    };
+  }
+  if (event.registrationUrl) {
+    const offer: Record<string, unknown> = {
+      "@type": "Offer",
+      url: event.registrationUrl,
+      availability: "https://schema.org/InStock",
+    };
+    if (event.registrationClosesAt) offer.validThrough = event.registrationClosesAt;
+    data.offers = offer;
   }
   if (placeName || event.location?.lat != null) {
     const location: Record<string, unknown> = {
@@ -86,10 +110,31 @@ export function EventJsonLd({
     data.location = location;
   }
 
+  const crumbs = breadcrumb?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumb.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: b.name,
+          item: absoluteUrl(`/${locale}${b.path ? `/${b.path}` : ""}`),
+        })),
+      }
+    : null;
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
+      />
+      {crumbs ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(crumbs) }}
+        />
+      ) : null}
+    </>
   );
 }

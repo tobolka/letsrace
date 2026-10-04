@@ -21,8 +21,42 @@ function isHomepage(pathname: string): boolean {
   return new RegExp(`^/(${locales.join("|")})/?$`).test(pathname);
 }
 
+/**
+ * The reader's first language we have a page in, from Accept-Language.
+ * Null when none matches (and for crawlers, which send none): `/` then goes
+ * on to its permanent redirect to the default language.
+ */
+export function preferredLocale(acceptLanguage: string | null): Locale | null {
+  if (!acceptLanguage) return null;
+  const ranked = acceptLanguage
+    .split(",")
+    .map((part) => {
+      const [tag, ...params] = part.trim().split(";");
+      const q = Number(params.find((p) => p.trim().startsWith("q="))?.trim().slice(2) ?? 1);
+      return { lang: tag!.trim().toLowerCase().split("-")[0]!, q: Number.isFinite(q) ? q : 0 };
+    })
+    .filter((x) => x.lang && x.q > 0)
+    .sort((a, b) => b.q - a.q);
+  for (const { lang } of ranked) {
+    if ((locales as readonly string[]).includes(lang)) return lang as Locale;
+  }
+  return null;
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // A Czech reader typing letsrace.cz gets the Czech site, not the English one.
+  if (pathname === "/" && !wantsMarkdown(request)) {
+    const preferred = preferredLocale(request.headers.get("accept-language"));
+    if (preferred && preferred !== defaultLocale) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${preferred}`;
+      const response = NextResponse.redirect(url, 307);
+      response.headers.set("Vary", "Accept-Language");
+      return response;
+    }
+  }
 
   if (isHomepage(pathname) && wantsMarkdown(request)) {
     const locale = pathname === "/" ? defaultLocale : localeFromPath(pathname);

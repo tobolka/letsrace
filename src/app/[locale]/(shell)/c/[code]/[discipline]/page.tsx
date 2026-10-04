@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format, parseISO } from "date-fns";
 import { listEvents } from "@/lib/events";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
@@ -15,22 +14,14 @@ import {
   MIN_RACES,
   type HubDiscipline,
 } from "@/lib/discipline-hubs";
-import { eventPagePath } from "@/lib/event-url";
-import { BrandMark } from "@/components/brand-mark";
+import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn } from "@/lib/seo-race-copy";
+import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Item, ItemActions, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string; code: string; discipline: string }> };
-
-function addDaysIso(iso: string, days: number): string {
-  return new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000)
-    .toISOString()
-    .slice(0, 10);
-}
 
 async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   const locale = (locales.includes(rawLocale as Locale) ? rawLocale : defaultLocale) as Locale;
@@ -38,12 +29,12 @@ async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   const discipline = rawDiscipline.toLowerCase();
   if (!isListedCountry(code) || !isHubDiscipline(discipline)) return null;
 
-  const weekend = thisWeekendRange();
+  const today = new Date().toISOString().slice(0, 10);
   const events = await listEvents({
     countryCodes: [code],
     disciplines: disciplineLeaves(discipline as HubDiscipline),
-    dateFrom: weekend.from,
-    dateTo: addDaysIso(weekend.to, 120),
+    dateFrom: today,
+    dateTo: addDaysIso(today, 365),
   });
   return { locale, code, discipline: discipline as HubDiscipline, events };
 }
@@ -56,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, code, discipline, events } = data;
   const name = countryDisplayName(code, locale);
   const copy = disciplineCopy(locale, discipline);
-  const heading = fillCopy(copy.title, { name });
+  const heading = `${fillCopy(copy.title, { name })} – ${fill(raceCopy[locale].calendar, { season: seasonLabel() })}`;
   const description = fillCopy(copy.description, { name, count: events.length });
   const path = `c/${code.toLowerCase()}/${discipline}`;
   const url = absoluteUrl(`/${locale}/${path}`);
@@ -95,9 +86,10 @@ export default async function DisciplineHubPage({ params }: Props) {
   const countryHeading = fillCopy(hubCopy[locale].countryTitle, { name });
   const weekend = thisWeekendRange();
   const siblings = (await listQualifyingHubs([code])).filter((c) => c.discipline !== discipline);
+  const series = seriesIn(events);
 
   return (
-    <main className="min-h-[100dvh] bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
+    <main className="min-h-full bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-2 md:pt-4">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -115,11 +107,10 @@ export default async function DisciplineHubPage({ params }: Props) {
         <Button asChild variant="ghost" size="sm" className="-ml-2">
           <Link href={`/${locale}/c/${code.toLowerCase()}`}>{countryHeading}</Link>
         </Button>
-        <BrandMark href={`/${locale}`} size="sm" className="mt-5 block" />
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{heading}</h1>
-        <p className="mt-2 text-muted-foreground">
-          {events.length} {t.racesCount}
-        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          {heading} {seasonLabel()}
+        </h1>
+        <p className="mt-3 text-pretty text-muted-foreground">{fill(raceCopy[locale].hubIntro, { count: events.length })}</p>
         <div className="mt-6">
           <Button asChild size="lg">
             <Link
@@ -131,25 +122,26 @@ export default async function DisciplineHubPage({ params }: Props) {
         </div>
 
         {events.length ? (
-          <Card className="mt-8 gap-0 overflow-hidden py-0">
-            <ItemGroup>
-              {events.slice(0, 40).map((event) => (
-                <Item key={event.id} asChild size="sm" className="rounded-none border-x-0 border-t-0">
-                  <Link href={eventPagePath(locale, event.slug)}>
-                    <ItemContent>
-                      <ItemTitle>{event.name}</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <time className="tabular text-sm text-muted-foreground" dateTime={event.startDate}>
-                        {format(parseISO(event.startDate), "d MMM yyyy")}
-                      </time>
-                    </ItemActions>
-                  </Link>
-                </Item>
-              ))}
-            </ItemGroup>
-          </Card>
+          <div className="mt-8">
+            <RaceLinkList events={events} locale={locale} />
+          </div>
         ) : null}
+
+        {series.length > 0 && (
+          <nav aria-label={raceCopy[locale].series} className="mt-10">
+            <h2 className="mb-3 text-lg font-semibold">{raceCopy[locale].series}</h2>
+            <div className="flex flex-wrap gap-2">
+              {series.map((s) => (
+                <Button key={s.slug} asChild variant="outline" size="sm">
+                  <Link href={`/${locale}/series/${s.slug}`}>
+                    {s.name}
+                    <span className="ml-1 text-muted-foreground tabular-nums">{s.rounds}</span>
+                  </Link>
+                </Button>
+              ))}
+            </div>
+          </nav>
+        )}
 
         {siblings.length > 0 && (
           <nav aria-label={heading} className="mt-8 flex flex-wrap gap-2">

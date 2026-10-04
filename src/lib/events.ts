@@ -38,6 +38,8 @@ export type EventListItem = {
   registrationUrl: string | null;
   regulationsUrl: string | null;
   resultsUrl: string | null;
+  /** When online entry closes, if the organiser says. */
+  registrationClosesAt?: string | null;
   listingUrl: string | null;
   sourceKind: string;
   level: string;
@@ -86,7 +88,7 @@ export type EventFilters = {
   polygon?: [number, number][];
 };
 
-const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
+const EVENT_LIST_COLUMNS = `id, slug, name, start_date, end_date, disciplines, formats, audience, age_categories, age_confidence, status, visibility, event_type, competition_type, season, website_url, registration_url, regulations_url, results_url, registration_closes_at, source_kind, level, class_label, uci_class, last_seen_at, updated_at`;
 
 /** `YYYY-MM-DD`, and a real day — the only date shape this catalogue stores. */
 export function isIsoDay(value: string | null | undefined): value is string {
@@ -569,7 +571,9 @@ export async function listSitemapSeries(
     (from, to) =>
       supabase
         .from("series")
-        .select("id, slug, updated_at, events!inner(id, visibility, start_date)")
+        // Two foreign keys join events and series: name the one a race belongs by,
+        // or the join is ambiguous and the database answers with an error.
+        .select("id, slug, updated_at, events!events_series_id_fkey!inner(id, visibility, start_date)")
         .eq("visibility", "public")
         .eq("events.visibility", "public")
         .gte("events.start_date", today)
@@ -595,7 +599,9 @@ export async function listSitemapEvents(limit = 4000): Promise<
   const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy } =
     await import("@/lib/event-visibility");
   const { isListedCountry } = await import("@/lib/geo/europe");
-  const today = new Date().toISOString().slice(0, 10);
+  // A race just ridden is still searched for, for its results and next year's
+  // date: its page stays offered for a month after.
+  const today = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
   // 1,896 races are upcoming and public; `.limit(4000)` shipped a thousand of
   // them, so nine hundred race pages were never offered to Google at all.
   const data = await readAllRows<{
@@ -689,6 +695,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     registrationUrl: outbound.registrationUrl,
     regulationsUrl: outbound.regulationsUrl,
     resultsUrl: outbound.resultsUrl,
+    registrationClosesAt: (row.registration_closes_at as string | null) ?? null,
     listingUrl: outbound.listingUrl,
     sourceKind: String(row.source_kind ?? "scraped"),
     level: String(row.level ?? "local"),

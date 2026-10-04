@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format, parseISO } from "date-fns";
 import { listEvents } from "@/lib/events";
 import { thisWeekendRange } from "@/lib/date-presets";
 import {
@@ -11,25 +10,17 @@ import {
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { eventPagePath } from "@/lib/event-url";
-import { BrandMark } from "@/components/brand-mark";
+import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn } from "@/lib/seo-race-copy";
+import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { disciplineCopy, listQualifyingHubs } from "@/lib/discipline-hubs";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemGroup,
-  ItemTitle,
-} from "@/components/ui/item";
 
 type Props = { params: Promise<{ locale: string; code: string }> };
 
@@ -51,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = hubCopy[locale];
   // The visible title carries the query someone actually types — the country
   // name alone competes with the country, not with race calendars.
-  const heading = fillCopy(copy.countryTitle, { name });
+  const heading = `${fillCopy(copy.countryTitle, { name })} – ${fill(raceCopy[locale].calendar, { season: seasonLabel() })}`;
   const title = `${heading} · ${SITE_NAME}`;
   const description = fillCopy(copy.country, { name });
   const url = absoluteUrl(`/${locale}/c/${code.toLowerCase()}`);
@@ -83,20 +74,25 @@ export default async function CountryHubPage({ params }: Props) {
   const t = messages[locale];
   const name = countryDisplayName(code, locale);
   const weekend = thisWeekendRange();
+  const today = new Date().toISOString().slice(0, 10);
+  // The whole coming year, every race a link: the hub is how a crawler — and
+  // a reader planning a season — reaches the races beyond next month.
   const events = await listEvents({
     countryCodes: [code],
-    dateFrom: weekend.from,
-    dateTo: addDaysIso(weekend.to, 60),
+    dateFrom: today,
+    dateTo: addDaysIso(today, 365),
   });
 
   const copy = hubCopy[locale];
+  const rc = raceCopy[locale];
   const heading = fillCopy(copy.countryTitle, { name });
   // "Gravel races in Czechia" is what people search; the country page is where
   // they can be reached from.
   const disciplineHubs = await listQualifyingHubs([code]);
+  const series = seriesIn(events);
 
   return (
-    <main className="min-h-[100dvh] bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]">
+    <main className="min-h-full bg-background px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-2 md:pt-4">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -113,11 +109,10 @@ export default async function CountryHubPage({ params }: Props) {
         <Button asChild variant="ghost" size="sm" className="-ml-2">
           <Link href={`/${locale}`}>{SITE_NAME}</Link>
         </Button>
-        <BrandMark href={`/${locale}`} size="sm" className="mt-5 block" />
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{name}</h1>
-        <p className="mt-2 text-muted-foreground">
-          {events.length} {t.racesCount} · {t.thisWeekend}+
-        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          {heading} {seasonLabel()}
+        </h1>
+        <p className="mt-3 text-pretty text-muted-foreground">{fill(rc.hubIntro, { count: events.length })}</p>
         <div className="mt-6">
           <Button asChild size="lg">
             <Link href={`/${locale}?country=${code}&dateFrom=${weekend.from}&dateTo=${weekend.to}`}>
@@ -139,24 +134,9 @@ export default async function CountryHubPage({ params }: Props) {
         )}
 
         {events.length ? (
-          <Card className="mt-8 gap-0 overflow-hidden py-0">
-            <ItemGroup>
-              {events.slice(0, 40).map((event) => (
-                <Item key={event.id} asChild size="sm" className="rounded-none border-x-0 border-t-0">
-                  <Link href={eventPagePath(locale, event.slug)}>
-                    <ItemContent>
-                      <ItemTitle>{event.name}</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <time className="tabular text-sm text-muted-foreground" dateTime={event.startDate}>
-                        {format(parseISO(event.startDate), "d MMM yyyy")}
-                      </time>
-                    </ItemActions>
-                  </Link>
-                </Item>
-              ))}
-            </ItemGroup>
-          </Card>
+          <div className="mt-8">
+            <RaceLinkList events={events} locale={locale} />
+          </div>
         ) : (
           <Empty className="mt-8 border-0 p-0 md:p-0">
             <EmptyHeader>
@@ -165,13 +145,23 @@ export default async function CountryHubPage({ params }: Props) {
             </EmptyHeader>
           </Empty>
         )}
+
+        {series.length > 0 && (
+          <nav aria-label={rc.series} className="mt-10">
+            <h2 className="mb-3 text-lg font-semibold">{rc.series}</h2>
+            <div className="flex flex-wrap gap-2">
+              {series.map((s) => (
+                <Button key={s.slug} asChild variant="outline" size="sm">
+                  <Link href={`/${locale}/series/${s.slug}`}>
+                    {s.name}
+                    <span className="ml-1 text-muted-foreground tabular-nums">{s.rounds}</span>
+                  </Link>
+                </Button>
+              ))}
+            </div>
+          </nav>
+        )}
       </div>
     </main>
   );
-}
-
-function addDaysIso(isoDate: string, days: number) {
-  const d = new Date(isoDate + "T12:00:00");
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
 }

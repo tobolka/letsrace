@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 /** One race, as a document. Same measure and rhythm as the page it stands in for. */
 export default function Loading() {
   return (
-    <main className="relative min-h-[100dvh] bg-background">
+    <main className="relative min-h-full bg-background">
       <div className="relative mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 sm:pt-12">
         <header className="mt-5 sm:mt-6">
           <BrandMark size="sm" />

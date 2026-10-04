@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export default function Loading() {
   return (
-    <main className="min-h-[100dvh] bg-background px-4 pb-8 pt-6">
+    <main className="min-h-full bg-background px-4 pb-8 pt-6">
       <div className="mx-auto max-w-2xl py-8">
         <BrandMark size="sm" className="mt-5 block" />
         <Skeleton className="mt-3 h-9 w-64" />
