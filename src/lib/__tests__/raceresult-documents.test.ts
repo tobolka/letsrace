@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { raceResultDocument, registrationProgramme } from "@/lib/catalog/raceresult-documents";
+import { raceResultDocument, registrationProgramme, raceResultExternalInfo } from "@/lib/catalog/raceresult-documents";
 import { fetchRaceResultProgramme, parseContestAdmission } from "@/lib/watcher/extractors/contest-categories";
 
 afterEach(() => vi.unstubAllGlobals());
@@ -30,4 +30,20 @@ it("rejects sentinel and contradictory date limits as age evidence", () => {
   expect(parseContestAdmission({ name: "30 km", birthFrom: "1900-01-01", birthTo: "2100-12-31" }, 2026)).toEqual([]);
   expect(parseContestAdmission({ name: "30 km", birthFrom: "2015-01-01", birthTo: "2010-12-31" }, 2026)).toEqual([]);
   expect(registrationProgramme({ EventDate: "2027-07-04", Registrations: [{ Title: "Registration", Contests: [{ Name: "2er-Team" }] }] })).toContain("2027-07-04");
+});
+
+it("discovers the external Info tab's organiser URL, not just InfoText", async () => {
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => new Response(JSON.stringify(url.includes("/info/")
+    ? { Data: "https://www.mtb-hohenems.at/hillclimb" } : {}))));
+  const doc = await raceResultDocument("https://my.raceresult.com/410580/", "<h1>Emser Steinbock</h1>");
+  expect(doc?.html).toContain('href="https://www.mtb-hohenems.at/hillclimb"');
+  expect(doc?.html).toContain('data-catalog-external-info="true"');
+  expect(raceResultExternalInfo({ Data: "javascript:alert(1)" })).toBeNull();
+  expect(raceResultExternalInfo({ Data: "https://user:password@example.com/" })).toBeNull();
+});
+
+it("reads Emser Steinbock's actual registration cohorts, refining generic gender labels", () => {
+  expect(parseContestAdmission({ name: "MTB Erw. Damen", birthFrom: "1900-01-01", birthTo: "2007-12-31" }, 2026)).toEqual(["amateur"]);
+  expect(parseContestAdmission({ name: "MTB Jugend Damen", birthFrom: "2008-01-01", birthTo: "2011-12-31" }, 2026)).toEqual(["u17", "youth", "junior"]);
+  expect(parseContestAdmission({ name: "MTB Schüler Männlich", birthFrom: "2012-01-01", birthTo: "2016-12-31" }, 2026)).toEqual(["u11", "u13", "u15", "kids", "youth"]);
 });

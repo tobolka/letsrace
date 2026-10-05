@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 
+it("reads Wood Bikerally's birth-year upper and lower directions", () => {
+  expect(ageCategoriesFromList([{ name: "Střelci ročník 2012 – a výš" }], { refYear: 2026 })).toEqual(["u7", "u9", "u11", "u13", "u15", "kids", "youth"]);
+  expect(ageCategoriesFromList([{ name: "Legendy ročník 1981 a níže" }], { refYear: 2026 })).toEqual(["masters"]);
+});
+
 const names = (list: string[]) => ageCategoriesFromList(list.map((name) => ({ name })));
 
 describe("ageCategoriesFromList", () => {

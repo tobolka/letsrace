@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import { linkLabel } from "@/lib/watcher/link-label";
 import { writeFileSync } from "node:fs";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
@@ -132,7 +133,7 @@ export function candidateLinks(html: string, base: string): Link[] {
     } catch {
       return;
     }
-    const text = $(a).text().replace(/\s+/g, " ").trim().slice(0, 80);
+    const text = linkLabel($(a)).slice(0, 160);
     // The words are looked for in the link's text and path, not its host: a
     // host like mtb-guentersleben.de ("enter") or an enduro club's ("endu")
     // would let every link of the site through and crowd out the real one.

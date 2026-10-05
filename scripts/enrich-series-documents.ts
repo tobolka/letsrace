@@ -55,8 +55,9 @@ async function main() {
         for (const hit of hits.filter((h) => !isAggregatorUrl(h.url)).slice(0, 2))
           for (const d of await gatherDossier({ startDate: pending[0]!.start_date, website: hit.url, regulations: null, registration: null, sources: [], maxDocs: 5, seriesName: group.name })) docs.set(d.url, d);
       }
-      const rank = (d: Awaited<ReturnType<typeof gatherDossier>>[number]) => (/ausschreib|reglement|regulamin|propoz|rules|regolament/i.test(d.url) ? 100 : 0) + d.classLines;
-      const ranked = [...docs.values()].filter((d) => (d.classLines >= 2 || /ausschreib|reglement|regulamin|propoz|rules|regolament/i.test(d.url)) && d.text.length < 100_000).sort((a, b) => rank(b) - rank(a)).slice(0, 3);
+      const rulesUrl = /ausschreib|reglement|regulamin|propoz|pravidl|technical[-_ ]?guide|rules|regolament/i;
+      const rank = (d: Awaited<ReturnType<typeof gatherDossier>>[number]) => (rulesUrl.test(d.url) ? 100 : 0) + d.classLines;
+      const ranked = [...docs.values()].filter((d) => (d.classLines >= 2 || rulesUrl.test(d.url)) && d.text.length < 100_000).sort((a, b) => rank(b) - rank(a)).slice(0, 3);
       console.log(`SERIES ${group.name}: ${pending.length} missing, ${ranked.length} candidate documents`);
       for (const d of ranked) {
         result.documents++;

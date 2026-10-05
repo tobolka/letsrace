@@ -21,6 +21,7 @@ import { isRideAndRestHost, parseRideAndRest } from "@/lib/watcher/extractors/ri
 import { isNaZavodyHost, parseNaZavody } from "@/lib/watcher/extractors/nazavody";
 import { isSporttHost, parseSportt } from "@/lib/watcher/extractors/sportt";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
+import { parseEventinKids } from "@/lib/watcher/extractors/eventin-kids";
 import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
 import { isRacementHost, parseRacement } from "@/lib/watcher/extractors/racement";
@@ -220,6 +221,10 @@ export async function extractWithAdapter(
   url: string,
   html: string,
 ): Promise<AdapterResult | null> {
+  if (host === "ketterechts.eu" && /\/etn\//.test(new URL(url).pathname)) {
+    const events = parseEventinKids(url, html);
+    if (events.length) return { events, strategy: "adapter:eventin-kids" };
+  }
   // Club hub + trainings — not an official race calendar.
   if (host.includes("jiskra.potocky.cz")) {
     return { events: [], strategy: "adapter:jiskra-skip" };

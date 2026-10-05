@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { categoriesFromRegulationsText } from "@/lib/catalog/regulation-ages";
+import { categoriesFromRegulationsText, directDocumentUrl } from "@/lib/catalog/regulation-ages";
 
 describe("categoriesFromRegulationsText", () => {
+  it("unwraps an embedded Google document viewer into the source PDF", () => {
+    expect(directDocumentUrl("https://docs.google.com/viewer?url=https%3A%2F%2Fclub.cz%2Frules.pdf&embedded=true")).toBe("https://club.cz/rules.pdf");
+  });
   it("reads the classes a propozice names", () => {
     const text = `Mezinárodní závod UCI C1 pro kategorie Muži ELITE+U23, ŽENY ELITE,
 junioři

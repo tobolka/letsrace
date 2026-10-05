@@ -58,7 +58,7 @@ export function ageCategoriesFromList(
 /** Ages written out: "15-35 let", "36 let - 60 let", "40 a více let". */
 function agesInText(rawName: string): { ageMin?: number; ageMax?: number } {
   const name = rawName.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
-  const range = name.match(/(?<![\d.])(\d{1,2})\s*(?:let\s*)?[-–]\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahre)\b/);
+  const range = name.match(/(?<![\d.])(\d{1,2})\s*(?:let\s*)?(?:[-–]|bis)\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahren?)\b/);
   if (range) return { ageMin: Number(range[1]), ageMax: Number(range[2]) };
   const plus = name.match(/(?<![\d.])(\d{1,2})\s*(?:\+|a\s*vice|let\s*a\s*vice|and\s*over|und\s*alter)/);
   if (plus) return { ageMin: Number(plus[1]) };
@@ -84,8 +84,8 @@ function agesFromBirthYears(rawName: string, refYear: number): { ageMin?: number
   if (years.length === 1) {
     if (/\bbis\s*(?:jg\.?\s*)?(?:19|20)\d\d\b/.test(name)) return { ageMin: youngest };
     if (/\bab\s*(?:jg\.?\s*)?(?:19|20)\d\d\b/.test(name)) return { ageMin: /erwachsene/.test(name) ? 18 : undefined, ageMax: youngest };
-    if (/a\s*mladsi|and\s*younger|und\s*junger|i\s*mlodsi/.test(name)) return { ageMax: youngest };
-    if (/a\s*starsi|and\s*older|und\s*alter|i\s*starsi/.test(name)) return { ageMin: oldest };
+    if (/a\s*mladsi|a\s*vys\b|and\s*younger|und\s*junger|i\s*mlodsi/.test(name)) return { ageMax: youngest };
+    if (/a\s*starsi|a\s*nize\b|and\s*older|und\s*alter|i\s*starsi/.test(name)) return { ageMin: oldest };
     return { ageMin: youngest, ageMax: youngest };
   }
   return { ageMin: youngest, ageMax: oldest };

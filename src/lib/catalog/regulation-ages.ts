@@ -4,8 +4,9 @@ import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { BOT_UA } from "@/lib/watcher/http";
+import { catalogUserAgent } from "@/lib/watcher/http";
 import { findRegulationsUrl, isRegulationsUrl } from "@/lib/watcher/regulations-url";
+import { linkLabel } from "@/lib/watcher/link-label";
 
 const PAGE = 1000;
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -73,7 +74,7 @@ function specificBands(ages: AgeCategory[]): number {
 
 async function fetchBytes(url: string): Promise<{ type: string; bytes: Uint8Array } | null> {
   const res = await fetch(url, {
-    headers: { "user-agent": BOT_UA, accept: "text/html,application/pdf,*/*" },
+    headers: { "user-agent": catalogUserAgent(url), accept: "text/html,application/pdf,*/*" },
     redirect: "follow",
     signal: AbortSignal.timeout(20_000),
   });
@@ -115,6 +116,14 @@ export function htmlText(html: string): string {
 
 /** A Drive or Docs viewer link, turned into the file itself. */
 export function directDocumentUrl(url: string): string {
+  try {
+    const viewer = new URL(url);
+    const source = viewer.searchParams.get("url");
+    if (viewer.hostname === "docs.google.com" && /^\/(?:viewer|gview)$/.test(viewer.pathname) && source) {
+      const document = new URL(source);
+      if (/^https?:$/.test(document.protocol)) return document.toString();
+    }
+  } catch { /* Not a usable public document viewer. */ }
   const file = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^#]*&)?id=)([A-Za-z0-9_-]{10,})/);
   if (file) return `https://drive.google.com/uc?export=download&id=${file[1]}`;
   const doc = url.match(/docs\.google\.com\/document\/d\/([A-Za-z0-9_-]{10,})/);
@@ -123,7 +132,7 @@ export function directDocumentUrl(url: string): string {
 }
 
 const LINK_WORDS =
-  /propozic|kategori|ausschreib|regulamin|r[eè]glement|rozpis|regolamento|bulletin|pokyny|klassen|info\s*(o|zum|about)/i;
+  /propozic|pravidl|technical\s*guide|kategori|ausschreib|regulamin|r[eè]glement|rozpis|regolamento|bulletin|pokyny|klassen|info\s*(o|zum|about)/i;
 const LINK_SKIP =
   /facebook|instagram|youtube|strava|komoot|wa\.me|mailto:|tel:|v[ýy]sledk|results|ergebnis|galerie|gallery|foto|photo|gdpr|cookie|privacy/i;
 
@@ -158,7 +167,7 @@ export function relatedDocumentLinks(
     } catch {
       return;
     }
-    const text = $(a).text().replace(/\s+/g, " ").trim();
+    const text = linkLabel($(a));
     const around = $(a).parent().text().replace(/\s+/g, " ").trim().slice(0, 240);
     const blob = `${text} ${abs}`;
     if (LINK_SKIP.test(blob)) return;
@@ -171,7 +180,7 @@ export function relatedDocumentLinks(
     } catch {
       /* ignore */
     }
-    if (!isDoc && !sameSite) return;
+    if (!isDoc && !sameSite && $(a).attr("data-catalog-external-info") !== "true") return;
     const near = foldedHints.some((h) => fold(around).includes(h) || fold(text).includes(h));
     found.push({ url: directDocumentUrl(abs), score: (near ? 6 : 0) + (wordy ? 3 : 0) + (isDoc ? 2 : 0) });
   });

@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import { directDocumentUrl, readDocument } from "@/lib/catalog/regulation-ages";
 import { textNamesEdition } from "@/lib/date-in-text";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
+import { linkLabel } from "@/lib/watcher/link-label";
 
 /**
  * Everything written about one race, gathered before anyone reads it:
@@ -28,8 +29,8 @@ export type DossierDoc = {
 const CLASS_LINE =
   /\b[MW]?U\s?-?\d{1,2}\b|\bjg\.?\s*\d|\b(19|20)\d\d\s*[-–/]\s*(19|20)?\d\d\b|kategori|categor|klasse|klasy|ro[čc]n[ií]k|rocznik|junior|master|elit[ea]\b|kadet|[žz][aá]c|[žz][aá]k|senior|hobby|amat|open|giovanissimi|esordienti|allievi|nieuwelingen|aspiranten|benjamin|minime|cadet/i;
 
-const FOLLOW = /propoz|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|kategori|categor|klassen|klasy|registr|anmeld|p[řr]ihl|zapis|iscri|inscri|entry|startgeld|startovn|info|\.pdf/i;
-const SKIP = /facebook|instagram|youtube|twitter|strava|komoot|maps\.google|mailto:|tel:|\.(jpg|png|gif|zip)(\?|$)/i;
+const FOLLOW = /propoz|pravidl|technical\s*guide|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|kategori|categor|klassen|klasy|registr|anmeld|p[řr]ihl|zapis|iscri|inscri|entry|startgeld|startovn|info|\.pdf/i;
+const SKIP = /facebook|instagram|youtube|twitter|strava|komoot|maps\.google|mailto:|tel:|\/imprint\/|\/fw\/shophelp\/|\/newshop(?:\/|\?)|\.(jpg|png|gif|zip)(\?|$)/i;
 
 export function classLineCount(text: string): number {
   return text.split(/\n+/).filter((l) => l.length < 200 && CLASS_LINE.test(l)).length;
@@ -42,10 +43,21 @@ function linksOf(html: string, base: string): { url: string; label: string }[] {
     const raw = ($(a).attr("href") || "").trim();
     if (!raw || SKIP.test(raw)) return;
     try {
-      out.push({ url: new URL(raw, base).toString().replace(/#.*$/, ""), label: $(a).text().replace(/\s+/g, " ").trim() });
+      const url = new URL(raw, base);
+      if (!/^https?:$/.test(url.protocol)) return;
+      out.push({ url: url.toString().replace(/#.*$/, ""), label: linkLabel($(a)) });
     } catch {
       /* ignore */
     }
+  });
+  $("iframe[src], embed[src], object[data]").each((_, element) => {
+    const node = $(element), raw = node.attr("src") ?? node.attr("data");
+    if (!raw || SKIP.test(raw)) return;
+    try {
+      const url = new URL(raw, base);
+      if (/^https?:$/.test(url.protocol) && /\.pdf(?:\?|$)|drive\.google\.com|docs\.google\.com/i.test(url.toString()))
+        out.push({ url: url.toString().replace(/#.*$/, ""), label: linkLabel(node) || "PDF document" });
+    } catch { /* Invalid embedded document URL. */ }
   });
   return out;
 }
@@ -63,9 +75,10 @@ export async function gatherDossier(race: {
   seriesName?: string;
 }): Promise<DossierDoc[]> {
   const max = race.maxDocs ?? 8;
-  const queue: { url: string; kind: DossierDoc["kind"]; linkedFromEdition?: boolean }[] = [];
+  const queue: { url: string; kind: DossierDoc["kind"]; linkedFromEdition?: boolean; priority: number }[] = [];
   const docs: DossierDoc[] = [];
-  const add = (url: string | null | undefined, kind: DossierDoc["kind"], linkedFromEdition = false) => {
+  let readCursor = 0;
+  const add = (url: string | null | undefined, kind: DossierDoc["kind"], linkedFromEdition = false, priority = kind === "listing" ? 0 : 100) => {
     if (!url || SKIP.test(url)) return;
     let u = directDocumentUrl(url);
     let parsed: URL;
@@ -76,7 +89,15 @@ export async function gatherDossier(race: {
       u = `https://my.raceresult.com/${parsed.pathname.split("/")[1]}/`;
     }
     const existing = queue.find((q) => q.url === u);
-    if (!existing) queue.push({ url: u, kind, linkedFromEdition });
+    if (!existing) {
+      if (queue.length >= max * 2) {
+        let lowest = -1;
+        for (let at = readCursor; at < queue.length; at++) if (lowest < 0 || queue[at]!.priority < queue[lowest]!.priority) lowest = at;
+        if (lowest < 0 || priority <= queue[lowest]!.priority) return;
+        queue.splice(lowest, 1);
+      }
+      queue.push({ url: u, kind, linkedFromEdition, priority });
+    }
     else if (linkedFromEdition) {
       existing.linkedFromEdition = true;
       const read = docs.find((d) => d.url === u);
@@ -88,12 +109,19 @@ export async function gatherDossier(race: {
   add(race.registration, "registration");
   for (const s of race.sources) add(s, "listing");
 
-  const thin: { url: string; kind: DossierDoc["kind"] }[] = [];
   for (let i = 0; i < queue.length && docs.length < max; i++) {
+    readCursor = i + 1;
     const { url, kind, linkedFromEdition } = queue[i]!;
-    const doc = await readDocument(url).catch(() => null);
+    let doc = await readDocument(url).catch(() => null);
     if (!doc) continue;
-    if (doc.thin) thin.push({ url, kind });
+    // Follow documents discovered after rendering too, rather than replacing
+    // the shell only after link discovery has already ended.
+    if (doc.thin && race.render) {
+      const { renderPagesHtml } = await import("@/lib/watcher/extractors/csc-render");
+      const { htmlText } = await import("@/lib/catalog/regulation-ages");
+      const html = (await renderPagesHtml([url])).get(url);
+      if (html) doc = { ...doc, html, text: htmlText(html), thin: false };
+    }
     const thisEdition = textNamesEdition(doc.text, race.startDate);
     docs.push({ url, kind, text: doc.text, thisEdition, classLines: classLineCount(doc.text), thin: doc.thin, linkedFromEdition });
     // From the race's own pages, follow what leads to rules, classes, entry.
@@ -103,7 +131,7 @@ export async function gatherDossier(race: {
       const rank = (l: { url: string; label: string }) => {
         const destination = new URL(l.url);
         const blob = `${l.label} ${destination.pathname} ${destination.search}`;
-        return (/ausschreib|reglement|regulamin|propoz|rules|regolament/i.test(blob) ? 8 : 0)
+        return (/ausschreib|reglement|regulamin|propoz|pravidl|technical\s*guide|rules|regolament/i.test(blob) ? 8 : 0)
           + (/\.pdf|\.docx|kategori|categor|klassen/i.test(blob) ? 4 : 0) + (seriesLink(l.label) ? 3 : 0)
           + (/anmeld|registr|entry|p[řr]ihl|iscri/i.test(blob) ? 3 : 0) + (isRegistrationPlatformUrl(l.url) ? 4 : 0)
           + (blob.includes(race.startDate.slice(0, 4)) ? 2 : 0) - (/ergebnis|result|archiv|histor/i.test(blob) ? 20 : 0);
@@ -111,11 +139,10 @@ export async function gatherDossier(race: {
       const links = linksOf(doc.html, url);
       links.sort((a, b) => rank(b) - rank(a));
       for (const l of links) {
-        if (queue.length >= max * 2) break;
         if (/\/(participants|favorites|reviews|contact|results)(\/|$)/i.test(new URL(l.url).pathname) || rank(l) < 0) continue;
         if (kind === "linked" && !race.seriesName && rank(l) < 4) continue;
         if (FOLLOW.test(`${l.label} ${l.url}`) || (race.seriesName && seriesLink(l.label)) || isRegistrationPlatformUrl(l.url)) {
-          add(l.url, isRegistrationPlatformUrl(l.url) ? "registration" : "linked", (thisEdition || linkedFromEdition === true) && new URL(l.url).hostname === new URL(url).hostname);
+          add(l.url, isRegistrationPlatformUrl(l.url) ? "registration" : "linked", (thisEdition || linkedFromEdition === true) && new URL(l.url).hostname === new URL(url).hostname, rank(l));
           // Read a newly found proposition before queued news/footer pages consume maxDocs.
           if (rank(l) >= 8) {
             const at = queue.findIndex((q) => q.url === directDocumentUrl(l.url));
@@ -123,20 +150,6 @@ export async function gatherDossier(race: {
           }
         }
       }
-    }
-  }
-  if (race.render && thin.length) {
-    const { renderPagesHtml } = await import("@/lib/watcher/extractors/csc-render");
-    const { htmlText } = await import("@/lib/catalog/regulation-ages");
-    const rendered = await renderPagesHtml(thin.map((t) => t.url));
-    for (const t of thin) {
-      const html = rendered.get(t.url);
-      if (!html) continue;
-      const text = htmlText(html);
-      const at = docs.findIndex((d) => d.url === t.url);
-      const d: DossierDoc = { url: t.url, kind: t.kind, text, thisEdition: textNamesEdition(text, race.startDate), classLines: classLineCount(text), thin: false, linkedFromEdition: at >= 0 ? docs[at]?.linkedFromEdition : undefined };
-      if (at >= 0) docs[at] = d;
-      else docs.push(d);
     }
   }
   return docs;

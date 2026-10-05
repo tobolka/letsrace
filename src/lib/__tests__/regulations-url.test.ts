@@ -6,6 +6,10 @@ import {
 } from "@/lib/watcher/regulations-url";
 
 describe("regulations / propozice links", () => {
+  it("reads an icon's accessible name and prioritizes the technical guide over an unlabeled PDF", () => {
+    const html = '<a href="/other.pdf"></a><a href="https://files.example/16221da1.pdf" aria-label="Technical Guide Emser Steinbock 2026.pdf"><img src="icon.png"></a>';
+    expect(findRegulationsUrl("https://club.example/", html)).toBe("https://files.example/16221da1.pdf");
+  });
   it("recognizes pages and PDFs", () => {
     expect(isRegulationsUrl("https://vangillerncup.cz/wordpress/propozice/")).toBe(true);
     expect(isRegulationsUrl("https://example.cz/wp-content/uploads/2026/propozice-2026.pdf")).toBe(

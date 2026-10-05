@@ -76,8 +76,9 @@ export function parseContestAdmission(contest: ContestAdmission, refYear: number
   if (from && to && from > to || oldest != null && (oldest < 0 || oldest > 110) || youngest != null && (youngest < 0 || youngest > 110)) return [];
   // Unrestricted/sentinel dates are not an actual published age programme.
   if (youngest == null && oldest == null || youngest != null && youngest < 3 && oldest == null) return [];
-  const bounded = ageCategoriesFromList([{ name: "", ageMin: youngest, ageMax: oldest }]);
-  return AGE_CATEGORIES.filter((age) => bounded.includes(age) || parseContestCategories([contest.name], { refYear }).includes(age));
+  // Admission ages refine generic Damen/Herren/Jugend names. Combining a
+  // separate name-only parse would falsely label child/adult hobby classes elite.
+  return ageCategoriesFromList([{ name: contest.name, ageMin: youngest, ageMax: oldest }]);
 }
 
 export async function fetchRaceResultProgramme(eventId: string): Promise<{ names: string[]; admissions: ContestAdmission[]; startDate: string | null; endDate: string | null }> {

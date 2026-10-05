@@ -2047,6 +2047,25 @@ async function upsertParsedEvent(
     );
   }
 
+  // A calendar's off-by-one day must not undo a platform date independently
+  // corroborated by the organiser's guide. Only investigate date conflicts.
+  if (existingId && existingRow?.start_date && existingRow.start_date !== ev.startDate) {
+    const { data: dateFacts } = await supabase.from("event_facts").select("field,value")
+      .eq("event_id", existingId).eq("method", "raceresult_official_date").eq("status", "active")
+      .in("field", ["start_date", "end_date"]).order("created_at", { ascending: false }).limit(2);
+    const { verifiedDetailSpan } = await import("@/lib/catalog/raceresult-date");
+    const verified = verifiedDetailSpan({ start: existingRow.start_date, end: existingRow.end_date ?? null }, ev.startDate, dateFacts ?? []);
+    if (verified) {
+      const { raceResultEventId, fetchRaceResultProgramme } = await import("@/lib/watcher/extractors/contest-categories");
+      const eventId = raceResultEventId(beforeSnap?.registrationUrl) ?? raceResultEventId(existingRow.website_url);
+      const programme = eventId ? await fetchRaceResultProgramme(eventId).catch(() => null) : null;
+      // Re-read the platform so a real later reschedule can replace old evidence.
+      if (!programme?.startDate || programme.startDate === verified.start && programme.endDate === verified.end) {
+        mergedStart = verified.start; mergedEnd = verified.end;
+      }
+    }
+  }
+
   /**
    * Ages used to be unioned on every pass, so one source's guess stuck to the
    * row forever — a UCI World Championship carried "kids" for a season because

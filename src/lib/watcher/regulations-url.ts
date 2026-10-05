@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
+import { linkLabel } from "@/lib/watcher/link-label";
 
 /** Path / filename looks like race regulations (page or PDF). */
 const REGULATIONS_PATH =
@@ -101,7 +102,7 @@ function collectHits(pageUrl: string, html: string): { url: string; score: numbe
   };
 
   $("a[href]").each((_, el) => {
-    consider($(el).attr("href"), $(el).text());
+    consider($(el).attr("href"), linkLabel($(el)));
   });
   $("iframe[src], embed[src], object[data]").each((_, el) => {
     consider($(el).attr("src") || $(el).attr("data"), "pdf");

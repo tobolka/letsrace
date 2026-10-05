@@ -5,6 +5,15 @@ import { embeddedDocumentText } from "@/lib/catalog/document-ocr";
 type Registration = { Title?: string; InfoText?: string; ShowContests?: boolean; Contests?: { Name?: string; Start?: string }[] };
 export type RaceResultRegistration = { EventDate?: string; EventDate2?: string; TabConfig?: { InfoText?: string }; Registrations?: Registration[] };
 
+/** External Info tabs publish the organiser URL as Data, rather than InfoText. */
+export function raceResultExternalInfo(config: { Data?: unknown }): string | null {
+  if (typeof config.Data !== "string") return null;
+  try {
+    const url = new URL(config.Data.trim());
+    return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.toString() : null;
+  } catch { return null; }
+}
+
 /** Only public admission text and contest labels; never participant data. */
 export function registrationProgramme(config: RaceResultRegistration): string {
   return [config.EventDate ? `Event starts: ${config.EventDate.slice(0, 10)}` : "", config.EventDate2 ? `Event ends: ${config.EventDate2.slice(0, 10)}` : "",
@@ -22,14 +31,16 @@ export async function raceResultDocument(url: string, pageHtml: string): Promise
   };
   const [info, registration] = await Promise.allSettled([get("info"), get("registration")]);
   const infoHtml = info.status === "fulfilled" && typeof info.value?.InfoText === "string" ? info.value.InfoText as string : "";
+  const externalInfo = info.status === "fulfilled" && info.value ? raceResultExternalInfo(info.value) : null;
   const config = registration.status === "fulfilled" ? registration.value as RaceResultRegistration | null : null;
   const $ = cheerio.load(pageHtml);
   const metadata: string[] = [];
   $("script[type='application/ld+json']").each((_, node) => {
     try { const event = JSON.parse($(node).text()); if (event["@type"] === "Event") metadata.push(`Event: ${event.name}\nStart date: ${event.startDate}\nEnd date: ${event.endDate}`); } catch { /* Unusable structured data adds no evidence. */ }
   });
-  const html = `${pageHtml}\n${infoHtml}`;
+  const externalLink = externalInfo ? cheerio.load("<a></a>")("a").attr("href", externalInfo).attr("data-catalog-external-info", "true").text("Organiser race information — Technical guide").toString() : "";
+  const html = `${pageHtml}\n${infoHtml}\n${externalLink}`;
   const ocr = await embeddedDocumentText(infoHtml).catch(() => "");
-  const text = [metadata.join("\n"), htmlText(pageHtml), htmlText(infoHtml), config ? registrationProgramme(config) : "", ocr].filter(Boolean).join("\n\n");
+  const text = [metadata.join("\n"), htmlText(pageHtml), htmlText(infoHtml), externalInfo ? `Official organiser information: ${externalInfo}` : "", config ? registrationProgramme(config) : "", ocr].filter(Boolean).join("\n\n");
   return { html, text };
 }
