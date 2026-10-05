@@ -203,7 +203,7 @@ export async function searchAndPick(t: Target, log?: (line: string) => void): Pr
     const { json, usage } = await askJson<{ website?: number | null; registration?: number | null; regulations?: number | null }>({
       system: PICK_SYSTEM,
       user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\n\nResults:\n${list}`,
-      model: HAIKU, maxTokens: 120,
+      model: HAIKU, maxTokens: 400,
     });
     costUsd += usage.costUsd;
     const at = (n: unknown) => typeof n === "number" && Number.isInteger(n) && n > 0 ? kept[n - 1]?.url ?? null : null;
