@@ -84,6 +84,9 @@ function describe(r: Row): string {
 /** Two titles that are the same words, give or take numbers, years and punctuation. */
 export function sameTitle(a: string, b: string): boolean {
   const toks = (x: string) => new Set(fold(x).replace(/\b(19|20)\d{2}\b/g, " ").split(/[^a-z]+/).filter((w) => w.length >= 3));
+  // Round, distance and class numbers carry identity. Do not erase them with years.
+  const numbers = (x: string) => fold(x).replace(/\b(19|20)\d{2}\b/g, " ").match(/\d+/g) ?? [];
+  if (JSON.stringify([...new Set(numbers(a))].sort()) !== JSON.stringify([...new Set(numbers(b))].sort())) return false;
   const ta = toks(a), tb = toks(b);
   if (!ta.size || !tb.size) return false;
   const common = [...ta].filter((w) => tb.has(w)).length;
@@ -157,8 +160,8 @@ export async function modelEvidence(a: Row, b: Row, docs: Map<string, string>, s
 }
 
 const SYSTEM =
-  "You de-duplicate a catalogue of cycling races collected from many calendars. For each numbered pair, decide whether A and B are the SAME event (one race listed twice: by two sources, in two languages, once by its own name and once as a series round, with or without the venue) or DIFFERENT events (even at one venue on one day: a kids' race beside the main race, an e-bike or hobby heat, a different discipline, a ride next to a race, two rounds of different cups, a festival vs one race within it when both are listed on purpose). " +
-  "For riders the catalogue lists events, not every start: an event and a race or distance within it (a festival and its enduro race, a gravel weekend and its 100 km ride, a series round listed by its own name and as the round) at the same venue on overlapping days are the SAME event. " +
+  "You de-duplicate a catalogue of cycling races collected from many calendars. For each numbered pair, decide whether A and B are the SAME event (one race listed twice: by two sources, in two languages, once by its own name and once as a series round, with or without the venue) or DIFFERENT events (even at one venue on one day: a kids' race beside the main race, an e-bike or hobby heat, a different discipline, a ride next to a race, two rounds of different cups, a festival vs one race within it). " +
+  "Two distances or age starts within the SAME race can be one event; a festival and one race within it are not interchangeable. A series round listed twice under its own name and the series name can be the SAME event, with source evidence. " +
   "They are DIFFERENT when they are separate events that merely share a venue or a weekend: two different organisers, two different series, a kids' cup round on another day, or a different discipline (road race vs. MTB). " +
   "Different towns are different events unless one record clearly has a wrong or vague place. Do not reason your way to 'same' from a shared series or venue alone. " +
   'Answer JSON only: {"pairs":[{"n":1,"verdict":"same|different|unsure","confidence":0.0-1.0,"reason":"short"}]}. Use "unsure" when the records do not let you tell.';
@@ -249,7 +252,7 @@ export async function judgeDuplicates(opts?: {
         // Names and places only make a pair worth checking; the pages decide —
         // unless the two titles are the same words (one race typed twice).
         if (gone.has(a.id) || gone.has(b.id)) continue;
-        const twins = v.verdict === "same" && conf >= SURE && sameTitle(a.name, b.name);
+        const twins = v.verdict === "same" && conf >= SURE && a.start_date === b.start_date && (a.end_date ?? a.start_date) === (b.end_date ?? b.start_date) && sameTitle(a.name, b.name);
         const docs = new Map<string, string>();
         for (const url of twins ? [] : [...pagesOf(a, shared), ...pagesOf(b, shared)]) {
           if (docs.has(url)) continue;

@@ -1,3 +1,4 @@
+import { recordFacts } from "@/lib/catalog/facts";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { AGE_CATEGORIES, audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -110,33 +111,53 @@ export async function listSeriesForAgeReview(opts?: {
     );
 }
 
-/** Upcoming rounds take the series' confirmed list, as stated. */
-export async function applySeriesAgesToRounds(seriesId?: string): Promise<{ series: number; rounds: number }> {
+/** Confirmed common categories fill gaps; a round's own categories are an exception. */
+export function mayInheritSeriesAges(round: { age_categories: string[] | null; age_confidence: string | null; locked_fields?: string[] | null }): boolean {
+  if (round.age_confidence === "explicit" && round.age_categories?.length) return false;
+  return !(round.locked_fields ?? []).some((field) => ["age_categories", "age_confidence", "audience"].includes(field));
+}
+
+export async function applySeriesAgesToRounds(seriesId?: string, opts?: { dryRun?: boolean; log?: (line: string) => void }): Promise<{ series: number; rounds: number }> {
   const supabase = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
-  let q = supabase
-    .from("series")
-    .select("id, age_categories")
+  let q = supabase.from("series").select("id, name, age_categories, website_url")
     .not("age_categories_confirmed_at", "is", null);
   if (seriesId) q = q.eq("id", seriesId);
-  const { data: confirmed } = await q;
+  const { data: confirmed, error } = await q;
+  if (error) throw new Error(error.message);
   let rounds = 0;
-  for (const s of (confirmed ?? []) as { id: string; age_categories: string[] | null }[]) {
+  for (const s of confirmed ?? []) {
     const ages = AGE_CATEGORIES.filter((a) => (s.age_categories ?? []).includes(a));
     if (!ages.length) continue;
-    const { data } = await supabase
-      .from("events")
-      .update({
-        age_categories: ages,
-        age_confidence: "explicit",
-        audience: audienceFromAgeCategories(ages),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("series_id", s.id)
-      .is("merged_into_id", null)
-      .gte("start_date", today)
-      .select("id");
-    rounds += data?.length ?? 0;
+    type Round = { id: string; name: string; age_categories: string[] | null; age_confidence: string | null; audience: string | null; overrides: { locked_fields: string[] | null } | null };
+    const candidates: Round[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase.from("events")
+        .select("id, name, age_categories, age_confidence, audience, overrides:event_overrides(locked_fields)")
+        .eq("series_id", s.id).is("merged_into_id", null).gte("start_date", today)
+        .in("status", [...ACTIVE_EVENT_STATUSES]).order("id").range(from, from + PAGE - 1);
+      if (error) throw new Error(error.message);
+      candidates.push(...((data ?? []) as unknown as Round[]));
+      if (!data || data.length < PAGE) break;
+    }
+    for (const round of candidates) {
+      if (!mayInheritSeriesAges({ ...round, locked_fields: round.overrides?.locked_fields })) continue;
+      opts?.log?.(`${opts.dryRun ? "DRY" : "SET"} ${round.name} ← ${s.name}: ${ages.join(",")}`);
+      if (opts?.dryRun) { rounds += 1; continue; }
+      const audience = audienceFromAgeCategories(ages);
+      const { data, error } = await supabase.from("events")
+        .update({ age_categories: ages, age_confidence: "explicit", audience, updated_at: new Date().toISOString() })
+        .eq("id", round.id).or("age_confidence.is.null,age_confidence.neq.explicit,age_categories.is.null,age_categories.eq.{}")
+        .select("id");
+      if (error) throw new Error(error.message);
+      if (!data?.length) continue;
+      await recordFacts(supabase, round.id, [
+        { field: "age_categories", value: ages, previous: round.age_categories, sourceUrl: s.website_url, quote: `Confirmed series categories: ${s.name}` },
+        { field: "age_confidence", value: "explicit", previous: round.age_confidence },
+        { field: "audience", value: audience, previous: round.audience },
+      ], { method: "confirmed_series", version: "series-ages-v2" });
+      rounds += 1;
+    }
   }
   return { series: confirmed?.length ?? 0, rounds };
 }

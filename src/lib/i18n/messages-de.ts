@@ -127,7 +127,7 @@ export const de = {
   ageStrict: "Nur bestätigte",
   ageStrictHelp: "Rennen ausblenden, deren Veranstalter keine Klassen angibt",
   ageUnconfirmed: "Klassen unbestätigt",
-  ageUnconfirmedHelp: "Der Veranstalter hat keine Klassen angegeben — sieh auf der Rennseite nach.",
+  ageUnconfirmedHelp: "Wir haben die Klassen noch nicht bestätigt — sieh auf der Rennseite nach.",
   ageGuessed: "geschätzt",
   ageLastYear: "wie im Vorjahr",
   mapUnsupported: "Dieser Browser kann die Karte nicht zeichnen (WebGL 2 ist aus oder nicht unterstützt). Die Rennliste funktioniert trotzdem — oder schalte die Hardwarebeschleunigung ein.",

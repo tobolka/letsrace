@@ -1,4 +1,4 @@
-import { askJson, llmAvailable, LlmUnavailable, SONNET } from "@/lib/llm/anthropic";
+import { askJson, llmAvailable, LlmUnavailable, LlmResponseError, SONNET } from "@/lib/llm/anthropic";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -213,7 +213,7 @@ export async function isTheRacesPage(
       "other: a town or tourism page (even one describing the race), a news article, a calendar, aggregator or results platform that lists many events (finishers.com, ahotu, raceraves…), " +
       "a venue's, sports centre's or club's general front page where this race is only one item among others, another race, or another year only. When unsure, answer other.",
     user: `Race: ${race.name}\nDate: ${race.startDate}\nPlace: ${race.municipality ?? "?"}\n\nPage: ${page.url}\nTitle: ${page.title}\nText: ${page.text.replace(/\s+/g, " ").slice(0, 2500)}`,
-    maxTokens: 60,
+    maxTokens: 400,
     model: SONNET,
   });
   return ["race_page", "organiser_page", "registration_page"].includes(json?.verdict ?? "");
@@ -321,7 +321,7 @@ export async function findWebsites(opts?: {
       const candidate = chosen ?? likely;
       if (candidate && llmAvailable()) {
         const ok = await isTheRacesPage(t, candidate).catch((e) => {
-          if (e instanceof LlmUnavailable) throw e;
+          if (e instanceof LlmUnavailable || e instanceof LlmResponseError) throw e;
           return false;
         });
         chosen = ok ? { ...candidate, confident: true } : null;

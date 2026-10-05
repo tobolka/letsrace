@@ -17,7 +17,7 @@ export async function recordFacts(
   how: { method: string; model?: string | null; version?: string | null },
 ): Promise<void> {
   if (!facts.length) return;
-  await supabase.from("event_facts").insert(
+  const { error } = await supabase.from("event_facts").insert(
     facts.map((f) => ({
       event_id: eventId,
       field: f.field,
@@ -30,6 +30,7 @@ export async function recordFacts(
       version: how.version ?? null,
     })),
   );
+  if (error) throw new Error(`Recording fact evidence: ${error.message}`);
 }
 
 export function textHash(text: string): string {

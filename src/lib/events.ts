@@ -184,6 +184,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
           // Only a stated list may rule a race out here; guesses go through.
           "age_confidence.is.null",
           "age_confidence.eq.default",
+          "age_confidence.eq.previous",
         ].join(","),
       );
     }

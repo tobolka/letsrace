@@ -11,10 +11,16 @@ import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { isAggregatorUrl, isDumpListingUrl } from "@/lib/watcher/public-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
 import { askJson, HAIKU, SONNET, LlmUnavailable, type LlmUsage } from "@/lib/llm/anthropic";
+import { quoteStatesDate } from "@/lib/catalog/quoted-date";
 import { alreadyRead, markRead, recordFacts, textHash, type Fact } from "@/lib/catalog/facts";
 
 /** Bump when the prompt or the checks change: pages are read again, facts carry it. */
-export const ENRICH_VERSION = "enrich-v3";
+export const ENRICH_VERSION = "enrich-v4";
+
+/** Page reads are decisions about an event edition, not about its shared homepage. */
+export function enrichmentReader(eventId: string): string {
+  return `${ENRICH_VERSION}:${eventId}`;
+}
 const KIDS_RACE = /kids|kinder|d[ěe]ti|d[ěe]tsk|ml[aá]de|youth|jugend|nachwuchs|giovan|[žz][aá]k|dzieci|mini|pupil|scolair|jeunes|petits/i;
 
 const PAGE = 1000;
@@ -206,11 +212,11 @@ export function verifyEnrichment(
   const ec = raw.entry_closes;
   if (ec && typeof ec.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(ec.date) && typeof ec.quote === "string") {
     const q = norm(unquote(ec.quote));
-    const day = String(Number(ec.date.slice(8, 10)));
     const earlyBird = /v[čc]asn|early|fr[üu]hbucher|sconto|zl?[ae]v|discount|rabatt|reduced|poplatek|startovn[eé]|price|cena|preis|prezzo|op[łl]at/i.test(q) && !/uz[aá]v[eě]rk|schluss|closes|chiusura|koniec|konec|end of/i.test(q);
-    if (q.length >= 6 && hay.includes(q) && !earlyBird && DEADLINE_QUOTE.test(q) && new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(q)) {
-      let time = typeof ec.time === "string" && /^\d{1,2}:\d{2}$/.test(ec.time) ? ec.time.padStart(5, "0") : null;
-      if (time && Number(time.slice(0, 2)) >= 24) time = "23:59";
+    if (q.length >= 6 && hay.includes(q) && !earlyBird && DEADLINE_QUOTE.test(q) && quoteStatesDate(q, ec.date)) {
+      const proposedTime = typeof ec.time === "string" && /^\d{1,2}:\d{2}$/.test(ec.time) ? ec.time.padStart(5, "0") : null;
+      const time = proposedTime && Number(proposedTime.slice(0, 2)) < 24 && Number(proposedTime.slice(3)) < 60
+        && q.includes(proposedTime.replace(/^0/, "")) ? proposedTime : null;
       entryCloses = { date: ec.date, time, quote: ec.quote };
     }
   }
@@ -346,7 +352,7 @@ export async function enrichFromPages(opts?: {
   const supabase = createServerSupabase();
   const max = opts?.max ?? 60;
   const today = new Date().toISOString().slice(0, 10);
-  const skip = await recentlyProbed(supabase, "llm_v2");
+  const skip = await recentlyProbed(supabase, "llm_v4");
   type Target = {
     id: string; name: string; startDate: string; place: string | null; web: string | null; regs: string | null;
     disciplines: string[]; existing: string[]; ageConfidence: string | null; registrationUrl: string | null; regulationsUrl: string | null; closesAt: string | null;
@@ -366,7 +372,8 @@ export async function enrichFromPages(opts?: {
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (opts?.ids?.length) q = q.in("id", opts.ids);
-    const { data } = await q;
+    const { data, error } = await q;
+    if (error) throw new Error(`Loading enrichment targets: ${error.message}`);
     const rows = (data ?? []) as unknown as {
       id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; registration_closes_at: string | null;
       disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; location: { municipality: string | null } | null;
@@ -393,6 +400,7 @@ export async function enrichFromPages(opts?: {
   const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, deadlines: 0, auditDropped: 0, auditUsd: 0, proposed: {}, passedRules: {}, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
   const review: string[] = ["kind\tdate\trace\tholds\tmodel says\tevidence"];
   let stop = false;
+  const completedReads = new Map<string, { url: string; reader: string; hash: string }>();
   const deadlines = new Map<string, { t: Target; date: string; time: string | null; quote: string }>();
   const one = async (t: Target) => {
     if (stop) return;
@@ -424,21 +432,25 @@ export async function enrichFromPages(opts?: {
       const all = `${intro}${text}`.slice(0, 16_000);
       if (all.length < 300) {
         result.silent += 1;
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v4", "silent");
         return;
       }
       // The same text read by the same version gives the same answer: do not pay twice.
-      const hash = textHash(`${ENRICH_VERSION}\n${all}\n${links.map((l) => l.url).join("\n")}`);
-      if ((!opts?.ids?.length || opts?.keepMemory) && (await alreadyRead(supabase, t.web!, ENRICH_VERSION, hash))) {
+      const reader = enrichmentReader(t.id);
+      const hash = textHash(JSON.stringify({ version: ENRICH_VERSION, race: { id: t.id, name: t.name, date: t.startDate, place: t.place, disciplines: t.disciplines }, text: all, links }));
+      if ((!opts?.ids?.length || opts?.keepMemory) && (await alreadyRead(supabase, t.web!, reader, hash))) {
         result.silent += 1;
         return;
       }
-      /** The page a quote was taken from: the nearest "--- url" header above it. */
+      /** Find evidence within individual documents; normalised offsets are not raw offsets. */
       const sourceOf = (quote: string | undefined | null): string | null => {
-        if (!quote) return t.web;
-        const at = all.toLowerCase().replace(/\s+/g, " ").indexOf(quote.toLowerCase().replace(/\s+/g, " ").slice(0, 40));
-        const head = [...all.slice(0, Math.max(0, at)).matchAll(/--- (\S+)/g)].pop();
-        return head?.[1] ?? t.web;
+        if (!quote) return null;
+        const needle = norm(unquote(quote));
+        for (const section of all.split(/(?:^|\n)--- /).slice(1)) {
+          const line = section.indexOf("\n");
+          if (line >= 0 && norm(section.slice(line + 1)).includes(needle)) return section.slice(0, line).trim();
+        }
+        return null;
       };
       const facts: Fact[] = [];
       const { raw, tokensIn, tokensOut } = await askModel({ name: t.name, startDate: t.startDate, place: t.place, disciplines: t.disciplines, website: t.web }, all, links.slice(0, 40));
@@ -468,12 +480,12 @@ export async function enrichFromPages(opts?: {
         result.proposed[k] = (result.proposed[k] ?? 0) + (n[0] ? 1 : 0);
         result.passedRules[k] = (result.passedRules[k] ?? 0) + (n[1] ? 1 : 0);
       }
-      if (!opts?.dryRun) await markRead(supabase, t.web!, ENRICH_VERSION, hash);
+      if (raw) completedReads.set(t.id, { url: t.web!, reader, hash });
       if (!v.isThisRace) {
         result.notThisRace += 1;
         review.push(`not-this-race\t${t.startDate}\t${t.name}\t${t.web}\t\t`);
         opts?.log?.(`SKIP ${t.startDate}  ${t.name}  — the page is not about this race (${t.web})`);
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v4", "silent");
         return;
       }
       const patch: Record<string, unknown> = {};
@@ -592,7 +604,7 @@ export async function enrichFromPages(opts?: {
 
       if (!Object.keys(patch).length) {
         result.silent += 1;
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "silent");
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v4", "silent");
         return;
       }
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}\n      ${notes.join("\n      ")}`);
@@ -601,17 +613,19 @@ export async function enrichFromPages(opts?: {
       const { error } = await supabase.from("events").update(patch).eq("id", t.id);
       if (!error) await recordFacts(supabase, t.id, facts, { method: "llm", model: HAIKU, version: ENRICH_VERSION });
       if (error) {
+        completedReads.delete(t.id);
         result.failed += 1;
-        await recordProbe(supabase, t.id, "llm_v2", "failed");
-      } else await recordProbe(supabase, t.id, "llm_v2", "silent");
+        await recordProbe(supabase, t.id, "llm_v4", "failed");
+      } else await recordProbe(supabase, t.id, "llm_v4", "silent");
     } catch (e) {
+      completedReads.delete(t.id);
       result.failed += 1;
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
       if (e instanceof LlmUnavailable) {
         stop = true;
         return;
       }
-      if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v2", "failed");
+      if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v4", "failed");
     }
   };
   const { mapPool } = await import("@/lib/watcher/pool");
@@ -630,14 +644,21 @@ export async function enrichFromPages(opts?: {
     opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${line}`);
     if (opts?.dryRun) continue;
     const value = `${d.date}T${d.time ?? "00:00"}:00+00:00`;
-    const { data: done } = await supabase
+    const { data: done, error } = await supabase
       .from("events")
       .update({ registration_closes_at: value, updated_at: new Date().toISOString() })
       .eq("id", d.t.id)
       .is("registration_closes_at", null)
       .select("id");
+    if (error) {
+      completedReads.delete(d.t.id);
+      result.failed += 1;
+      continue;
+    }
     if (done?.length) await recordFacts(supabase, d.t.id, [{ field: "registration_closes_at", value: `${d.date}T${d.time ?? "00:00"}:00+00:00`, previous: null, sourceUrl: d.t.web, quote: d.quote }], { method: "llm", model: HAIKU, version: ENRICH_VERSION });
   }
+  // Remember only completed decisions, after the auditor and all writes finish.
+  if (!opts?.dryRun) for (const read of completedReads.values()) await markRead(supabase, read.url, read.reader, read.hash);
   if (opts?.reviewFile && review.length > 1) writeFileSync(opts.reviewFile, review.join("\n") + "\n");
   return result;
 }

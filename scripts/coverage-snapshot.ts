@@ -10,7 +10,7 @@ for (const line of readFileSync(resolve(".env.local"), "utf8").split("\n")) {
   if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, "");
 }
 
-const FIELDS = ["races", "pin", "discipline", "statedCats", "web", "registration", "regulations"] as const;
+const FIELDS = ["races", "pin", "discipline", "statedCats", "web", "registration", "regulations", "complete"] as const;
 type Row = Record<(typeof FIELDS)[number], number>;
 
 async function main() {
@@ -25,21 +25,24 @@ async function main() {
     by[c]![k] += 1;
   };
   for (let from = 0; ; from += 1000) {
-    const { data } = await s
+    const { data, error } = await s
       .from("events")
-      .select("disciplines, age_categories, age_confidence, website_url, registration_url, regulations_url, location:locations(country_code, lat)")
+      .select("disciplines, age_categories, age_confidence, website_url, registration_url, regulations_url, location:locations(country_code, lat, lng)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today).lte("start_date", until).order("id").range(from, from + 999);
-    type E = { disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; website_url: string | null; registration_url: string | null; regulations_url: string | null; location: { country_code: string | null; lat: number | null } | null };
+    if (error) throw new Error(`Coverage query: ${error.message}`);
+    type E = { disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; website_url: string | null; registration_url: string | null; regulations_url: string | null; location: { country_code: string | null; lat: number | null; lng: number | null } | null };
     for (const e of (data ?? []) as unknown as E[]) {
       for (const c of ["ALL", e.location?.country_code ?? "?"]) {
         add(c, "races");
-        if (e.location?.lat != null) add(c, "pin");
+        if (e.location?.lat != null && e.location.lng != null) add(c, "pin");
         if ((e.disciplines ?? []).length) add(c, "discipline");
         if ((e.age_categories ?? []).length && e.age_confidence === "explicit") add(c, "statedCats");
         if (e.website_url) add(c, "web");
         if (e.registration_url) add(c, "registration");
         if (e.regulations_url) add(c, "regulations");
+        if (e.website_url && e.regulations_url && e.location?.lat != null && e.location.lng != null
+          && (e.disciplines ?? []).length && (e.age_categories ?? []).length && e.age_confidence === "explicit") add(c, "complete");
       }
     }
     if (!data || data.length < 1000) break;
@@ -56,7 +59,7 @@ async function main() {
     const cell = (k: (typeof FIELDS)[number]) =>
       k === "races"
         ? was ? `${was.races} → ${now.races}` : String(now.races)
-        : was ? `${pct(was[k], was.races)} → ${pct(now[k], now.races)}` : pct(now[k], now.races);
+        : was ? `${pct(was[k] ?? 0, was.races)} → ${pct(now[k], now.races)}` : pct(now[k], now.races);
     return { country: c, ...Object.fromEntries(FIELDS.map((k) => [k, cell(k)])) };
   });
   console.table(table);

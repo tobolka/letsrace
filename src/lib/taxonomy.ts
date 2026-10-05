@@ -477,8 +477,8 @@ function chipMeets(ages: string[], id: string): "hit" | "umbrella" | "miss" {
  * - `possible`: we do not know — no categories at all, or only a guess that
  *   happens to fit. Shown, marked as unconfirmed, because hiding it would be
  *   us deciding something nobody told us.
- * - `no`: the source stated categories and none is selected, or the guess
- *   says plainly otherwise (a gran fondo is not a kids race).
+ * - `no`: the source stated categories and none is selected.
+ *   A guess or last season's list never excludes a race.
  *
  * A guess may make a race likely; only a stated list may make it certain.
  */

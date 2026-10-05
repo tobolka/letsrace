@@ -1,3 +1,4 @@
+import { askJson, HAIKU } from "@/lib/llm/anthropic";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ageCategoriesFromList } from "@/lib/age-bands";
@@ -7,7 +8,6 @@ import { isRegulationsUrl, findRegulationsUrl } from "@/lib/watcher/regulations-
 import { CHAMPIONSHIP, directDocumentUrl, hintsFor, readDocument, relatedDocumentLinks } from "@/lib/catalog/regulation-ages";
 
 const PAGE = 1000;
-const MODEL = "claude-haiku-4-5-20251001";
 /** Haiku 4.5, dollars per million tokens. */
 const PRICE_IN = 1;
 const PRICE_OUT = 5;
@@ -66,30 +66,14 @@ export async function askModel(
   race: { name: string; startDate: string; place: string | null },
   text: string,
 ): Promise<{ answer: ModelAnswer | null; tokensIn: number; tokensOut: number }> {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error("ANTHROPIC_API_KEY is not set");
   const system =
     "You read cycling race web pages and regulations and extract the rider categories (age or competition classes) that THIS race states. " +
     "Answer with JSON only: {\"categories\":[{\"name\":\"<class name as written>\",\"quote\":\"<verbatim text copied from the page, at most 120 characters, containing the class>\"}]}. " +
     "Rules: list only classes the text says this race has. Do not use other races, other years, federation-wide rules for other events, or prizes. " +
     "Copy the quote exactly, character for character. If the text states no classes for this race, answer {\"categories\":[]}. Never guess.";
   const user = `Race: ${race.name}\nDate: ${race.startDate}\nPlace: ${race.place ?? "unknown"}\n\nText:\n${text}`;
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 700, system, messages: [{ role: "user", content: user }] }),
-    signal: AbortSignal.timeout(60_000),
-  });
-  if (!res.ok) throw new Error(`Anthropic API ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const body = (await res.json()) as { content?: { type: string; text?: string }[]; usage?: { input_tokens?: number; output_tokens?: number } };
-  const raw = (body.content ?? []).filter((c) => c.type === "text").map((c) => c.text ?? "").join("");
-  let answer: ModelAnswer | null = null;
-  try {
-    answer = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1)) as ModelAnswer;
-  } catch {
-    answer = null;
-  }
-  return { answer, tokensIn: body.usage?.input_tokens ?? 0, tokensOut: body.usage?.output_tokens ?? 0 };
+  const { json, usage } = await askJson<ModelAnswer>({ system, user, model: HAIKU, maxTokens: 700, timeoutMs: 60_000 });
+  return { answer: json, tokensIn: usage.tokensIn, tokensOut: usage.tokensOut };
 }
 
 /**

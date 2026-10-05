@@ -47,3 +47,7 @@ describe("single U-band filters", () => {
     expect(ageCategoryMatch({ ageCategories: ["u13", "youth"], ageConfidence: "explicit" }, ["youth"])).toBe("match");
   });
 });
+
+it("keeps previous-season adult classes visible for parents filtering for children", () => {
+  expect(ageCategoryMatch({ ageCategories: ["amateur", "masters"], ageConfidence: "previous" }, ["u11"])).toBe("possible");
+});

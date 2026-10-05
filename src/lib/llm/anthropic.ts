@@ -1,3 +1,5 @@
+import { reserveSharedBudget } from "@/lib/llm/budget-ledger";
+
 /**
  * One way to ask Claude for JSON, shared by every reader that uses a model.
  *
@@ -13,12 +15,15 @@ export const SONNET = "claude-sonnet-5-5";
 /** Dollars per million tokens, input and output. */
 const PRICES: Record<string, [number, number]> = {
   [HAIKU]: [1, 5],
-  [SONNET]: [3, 15],
+  [SONNET]: [2, 10],
 };
 
 export type LlmUsage = { tokensIn: number; tokensOut: number; costUsd: number };
 
 export class LlmUnavailable extends Error {}
+export class LlmResponseError extends Error {
+  constructor(message: string, public readonly usage: LlmUsage) { super(message); }
+}
 
 export function llmAvailable(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY);
@@ -32,11 +37,42 @@ export const NO_USAGE: LlmUsage = { tokensIn: 0, tokensOut: 0, costUsd: 0 };
 
 /** Spent by this process. Every request checks it against LLM_BUDGET_USD. */
 let spent = 0;
+let reserved = 0;
+
+/** Reserve conservatively before sending, so parallel readers cannot overrun the cap. */
+async function withinBudget<T>(opts: { system: string; user: string; model?: string; maxTokens?: number; maxSearches?: number }, run: () => Promise<T>): Promise<T> {
+  const budget = Number(process.env.LLM_BUDGET_USD ?? 0.25);
+  if (!Number.isFinite(budget) || budget < 0) throw new LlmUnavailable("LLM_BUDGET_USD must be a finite non-negative number");
+  const [pin, pout] = PRICES[opts.model ?? HAIKU] ?? [3, 15];
+  // UTF-8 bytes bound token count conservatively; reserve protocol overhead too.
+  const input = Buffer.byteLength(opts.system.toWellFormed() + opts.user.toWellFormed(), "utf8") + 1024;
+  const amount = (input * pin + (opts.maxTokens ?? 1000) * pout) / 1_000_000 + (opts.maxSearches ?? 0) * 0.01;
+  if (spent + reserved + amount > budget) throw new LlmUnavailable(`LLM budget of $${budget}: not enough left for the next request`);
+  reserved += amount;
+  let settle: Awaited<ReturnType<typeof reserveSharedBudget>> = null;
+  let actual = 0;
+  try {
+    try { settle = await reserveSharedBudget(amount); }
+    catch (error) { throw new LlmUnavailable(error instanceof Error ? error.message : String(error)); }
+    const result = await run();
+    actual = (result as { usage?: LlmUsage }).usage?.costUsd ?? 0;
+    return result;
+  }
+  catch (error) {
+    if (error instanceof LlmResponseError) actual = error.usage.costUsd;
+    // A timeout can still have been billed. Keep its reservation as a conservative charge.
+    if (error instanceof Error && /timeout|abort|fetch failed/i.test(`${error.name} ${error.message}`)) { spent += amount; actual = amount; }
+    throw error;
+  } finally {
+    reserved -= amount;
+    if (settle) await settle(actual);
+  }
+}
 export function llmSpent(): number {
   return spent;
 }
 
-export async function askJson<T>(opts: {
+async function askJsonUnchecked<T>(opts: {
   system: string;
   user: string;
   model?: string;
@@ -54,6 +90,7 @@ export async function askJson<T>(opts: {
     body: JSON.stringify({
       model,
       max_tokens: opts.maxTokens ?? 1000,
+      ...(model === SONNET ? { thinking: { type: "between_tools" } } : {}),
       system: opts.system.toWellFormed(),
       // Lone surrogates from a broken page make the body invalid JSON.
       messages: [{ role: "user", content: opts.user.toWellFormed() }],
@@ -83,10 +120,13 @@ export async function askJson<T>(opts: {
   } catch {
     json = null;
   }
-  spent += (tokensIn * pin + tokensOut * pout) / 1_000_000;
+  const usage = { tokensIn, tokensOut, costUsd: (tokensIn * pin + tokensOut * pout) / 1_000_000 };
+  spent += usage.costUsd;
+  if (body.stop_reason === "max_tokens") throw new LlmResponseError("Model response was truncated at max_tokens; no verdict recorded", usage);
+  if (json === null) throw new LlmResponseError("Model response did not contain valid JSON; no verdict recorded", usage);
   return {
     json,
-    usage: { tokensIn, tokensOut, costUsd: (tokensIn * pin + tokensOut * pout) / 1_000_000 },
+    usage,
     stopReason: body.stop_reason ?? null,
   };
 }
@@ -101,7 +141,7 @@ export type SearchResult = { url: string; title: string };
  * searches brought back, so the caller can hold the answer to them: a URL the
  * model gives that no search returned is a URL it made up.
  */
-export async function askWithSearch<T>(opts: {
+async function askWithSearchUnchecked<T>(opts: {
   system: string;
   user: string;
   model?: string;
@@ -120,6 +160,7 @@ export async function askWithSearch<T>(opts: {
     body: JSON.stringify({
       model,
       max_tokens: opts.maxTokens ?? 800,
+      ...(model === SONNET ? { thinking: { type: "between_tools" } } : {}),
       system: opts.system.toWellFormed(),
       messages: [{ role: "user", content: opts.user.toWellFormed() }],
       tools: [{ type: "web_search_20250305", name: "web_search", max_uses: opts.maxSearches ?? 3 }],
@@ -134,6 +175,7 @@ export async function askWithSearch<T>(opts: {
   const body = (await res.json()) as {
     content?: { type: string; text?: string; content?: unknown }[];
     usage?: { input_tokens?: number; output_tokens?: number; server_tool_use?: { web_search_requests?: number } };
+    stop_reason?: string;
   };
   const results: SearchResult[] = [];
   for (const block of body.content ?? []) {
@@ -159,6 +201,17 @@ export async function askWithSearch<T>(opts: {
   const tokensOut = body.usage?.output_tokens ?? 0;
   const searches = body.usage?.server_tool_use?.web_search_requests ?? 0;
   const costUsd = (tokensIn * pin + tokensOut * pout) / 1_000_000 + searches * SEARCH_USD;
+  const usage = { tokensIn, tokensOut, costUsd };
   spent += costUsd;
-  return { json, results, searches, usage: { tokensIn, tokensOut, costUsd } };
+  if (body.stop_reason === "max_tokens") throw new LlmResponseError("Search model response was truncated at max_tokens; no verdict recorded", usage);
+  if (json === null) throw new LlmResponseError("Search model response did not contain valid JSON; no verdict recorded", usage);
+  return { json, results, searches, usage };
+}
+
+export async function askJson<T>(opts: Parameters<typeof askJsonUnchecked<T>>[0]): Promise<Awaited<ReturnType<typeof askJsonUnchecked<T>>>> {
+  return withinBudget(opts, () => askJsonUnchecked<T>(opts));
+}
+
+export async function askWithSearch<T>(opts: Parameters<typeof askWithSearchUnchecked<T>>[0]): Promise<Awaited<ReturnType<typeof askWithSearchUnchecked<T>>>> {
+  return withinBudget({ ...opts, maxTokens: opts.maxTokens ?? 800, maxSearches: opts.maxSearches ?? 3 }, () => askWithSearchUnchecked<T>(opts));
 }

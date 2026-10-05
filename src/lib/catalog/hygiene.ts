@@ -47,6 +47,8 @@ export async function runCatalogHygiene(opts?: {
     maxEvents: opts?.maxAgeFills ?? 400,
     upcomingOnly: true,
   });
+  // Settle common series classes before paying to read individual rounds.
+  const seriesAges = await applySeriesAgesToRounds();
   // Italian races state their categories on their own page and nowhere else,
   // so a handful are read directly each run rather than guessed at.
   const fciAges = await fillFciAgeCategories({ max: 40 });
@@ -62,8 +64,6 @@ export async function runCatalogHygiene(opts?: {
   const rideAndRestLinks = await fillRideAndRestLinks();
   // Austrian calendar rows name only the federal state; the race page says more.
   const austria = await fillCyclingAustriaDetails({ max: 30 });
-  // A person's word on a series goes to every round, new ones included.
-  const seriesAges = await applySeriesAgesToRounds();
   // Where to enter, from the race's own page.
   const registrationLinks = await fillRegistrationLinks({ max: 30 });
   // A round with no discipline of its own is the series'.

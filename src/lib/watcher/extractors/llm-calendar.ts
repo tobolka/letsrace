@@ -1,6 +1,8 @@
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { quoteStatesDate } from "@/lib/catalog/quoted-date";
+import { DISCIPLINE_WORDS } from "@/lib/catalog/llm-enrich";
 import { DISCIPLINES, type Discipline } from "@/lib/taxonomy";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 import { askJson, addUsage, NO_USAGE, type LlmUsage } from "@/lib/llm/anthropic";
@@ -115,19 +117,20 @@ export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, so
     if (quote.length < 6 || !hay.includes(quote)) continue;
     // The name must come from the row, not from the model.
     const words = fold(name).split(/[^a-z0-9]+/).filter((w) => w.length >= 3);
-    if (!words.length || words.filter((w) => quote.includes(w) || hay.includes(w)).length < Math.ceil(words.length * 0.7)) continue;
+    if (!words.length || words.filter((w) => quote.includes(w)).length < Math.ceil(words.length * 0.7)) continue;
     // The day must be in the row (or a nearby heading the quote includes).
-    const day = String(Number(start.slice(8, 10)));
-    if (!new RegExp(`(^|\\D)0?${day}(\\D|$)`).test(quote)) continue;
-    const end = typeof r.end_date === "string" && ISO.test(r.end_date) && r.end_date >= start ? r.end_date : undefined;
+    if (!quoteStatesDate(quote, start)) continue;
+    // When the row omits a year, the page must state the requested season.
+    if (!/\b20\d{2}\b/.test(quote) && !hay.includes(start.slice(0, 4))) continue;
+    const end = typeof r.end_date === "string" && ISO.test(r.end_date) && r.end_date >= start && quoteStatesDate(quote.replace(/\b\d{1,2}\.?\s*[-–]\s*(?=\d{1,2}[./])/, ""), r.end_date) ? r.end_date : undefined;
     if ((end ?? start) < today) continue;
     const disciplines = Array.isArray(r.disciplines)
-      ? (r.disciplines.filter((d) => typeof d === "string" && (DISCIPLINES as readonly string[]).includes(d) && d !== "other") as Discipline[])
+      ? (r.disciplines.filter((d) => typeof d === "string" && (DISCIPLINES as readonly string[]).includes(d) && d !== "other" && DISCIPLINE_WORDS[d]?.test(quote)) as Discipline[])
       : [];
     const url = typeof r.url === "string" && links.has(r.url) ? r.url : undefined;
-    const categories = Array.isArray(r.categories) ? r.categories.filter((c): c is string => typeof c === "string" && hay.includes(skeleton(c))) : [];
+    const categories = Array.isArray(r.categories) ? r.categories.filter((c): c is string => typeof c === "string" && skeleton(c).length >= 2 && quote.includes(skeleton(c))) : [];
     const ages = categories.length >= 2 ? ageCategoriesFromList(categories.map((c) => ({ name: c })), { refYear: Number(start.slice(0, 4)) }) : [];
-    const place = typeof r.place === "string" ? r.place.trim() : "";
+    const place = typeof r.place === "string" && quote.includes(skeleton(r.place)) ? r.place.trim() : "";
     const country = typeof r.country === "string" && /^[A-Z]{2}$/.test(r.country) ? r.country : undefined;
     out.push({
       externalId: `llm-${host}-${normalizeName(name).slice(0, 60)}-${start}`,

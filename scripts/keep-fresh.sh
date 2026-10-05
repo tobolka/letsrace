@@ -16,6 +16,11 @@ mkdir -p tmp
 HOURS="${1:-2}"
 # The model's daily work (a few cents a day, each step capped) and its reading
 # of calendars no parser knows. Set to 0 to run without the model.
+# Shared across every subprocess and refresh, including fallback calendar readers.
+export LLM_LEDGER_PATH="${LLM_LEDGER_PATH:-$PWD/tmp/llm-budget.json}"
+export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-0.50}"
+export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-5}"
+export BRAVE_SEARCH_LIMIT="${BRAVE_SEARCH_LIMIT:-40}"
 export LLM_DAILY="${LLM_DAILY:-1}"
 export LLM_CALENDARS="${LLM_CALENDARS:-1}"
 while true; do

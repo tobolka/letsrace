@@ -73,3 +73,17 @@ describe("isListingPage", () => {
     expect(isListingPage("https://registrace.sportsoft.cz/registration.aspx?e=3661")).toBe(false);
   });
 });
+
+it("does not accept a matching day number with the wrong month, year or time", () => {
+  const quote = "Zapisy online do 10.10.2026 19:30";
+  for (const date of ["2026-11-10", "2027-10-10", "2026-02-31"]) {
+    expect(verifyEnrichment({ is_this_race: true, entry_closes: { date, quote } }, quote, []).entryCloses).toBeNull();
+  }
+  expect(verifyEnrichment({ is_this_race: true, entry_closes: { date: "2026-10-10", time: "25:70", quote } }, quote, []).entryCloses?.time).toBeNull();
+  expect(verifyEnrichment({ is_this_race: true, entry_closes: { date: "2026-10-10", time: "19:30", quote } }, quote, []).entryCloses?.time).toBe("19:30");
+});
+
+it("separates read memory for different rounds sharing a homepage", async () => {
+  const { enrichmentReader } = await import("@/lib/catalog/llm-enrich");
+  expect(enrichmentReader("round-1")).not.toEqual(enrichmentReader("round-2"));
+});

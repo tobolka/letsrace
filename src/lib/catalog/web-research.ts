@@ -4,8 +4,10 @@ import { recordFacts } from "@/lib/catalog/facts";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { readDocument } from "@/lib/catalog/regulation-ages";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
-import { looksLikeArticleOrListing, namesAnotherEdition, pageIsAbout, searchableName, searchQuery } from "@/lib/catalog/web-finder";
-import { braveAvailable, braveSearch } from "@/lib/catalog/brave";
+import { namesAnotherEdition, pageIsAbout, searchableName } from "@/lib/catalog/web-finder";
+import { researchQueries } from "@/lib/catalog/research-queries";
+import { candidateLinks, verifyEnrichment } from "@/lib/catalog/llm-enrich";
+import { braveAvailable, braveSearch, BraveUnavailable } from "@/lib/catalog/brave";
 import { askJson, askWithSearch, HAIKU, llmSpent, LlmUnavailable, SONNET, type SearchResult } from "@/lib/llm/anthropic";
 
 /**
@@ -21,7 +23,7 @@ import { askJson, askWithSearch, HAIKU, llmSpent, LlmUnavailable, SONNET, type S
  */
 
 const PAGE = 1000;
-const VERSION = "web-research-v1";
+const VERSION = "web-research-v2";
 
 /** A race's own website is never one of these: they list many races. */
 const LISTING_HOST =
@@ -49,6 +51,7 @@ type Target = {
   website: string | null;
   registration: string | null;
   regulations: string | null;
+  previousWebsite?: string | null;
 };
 
 function norm(u: string): string {
@@ -148,42 +151,68 @@ const PICK_SYSTEM =
   'Give the result numbers, null when none fits. JSON only: {"website":null,"registration":null,"regulations":null}';
 
 /**
- * One Brave search; code drops what is never a race's page; the model only
+ * Targeted Brave searches; code drops what is never a race's page; the model only
  * says which of the numbered results is which, so it cannot make up an address.
  */
-async function searchAndPick(t: Target, log?: (line: string) => void): Promise<Asked> {
-  const query = searchQuery(t.name, t.municipality, t.startDate.slice(0, 4));
-  const hits = await braveSearch(query, { country: t.country });
-  const kept = hits.filter((h) => {
-    const hh = host(h.url);
-    if (!hh || SOCIAL.test(hh)) return false;
-    if (isRegistrationPlatformUrl(h.url)) return !NOT_THE_PAGE.test(h.url);
-    if (LISTING_HOST.test(hh) || NOT_THE_PAGE.test(h.url)) return false;
-    if (namesAnotherEdition(h.url, t.name, t.startDate)) return false;
-    if (!/facebook\.com$/.test(hh) && looksLikeArticleOrListing(h.url)) return false;
-    return true;
-  }).slice(0, 8);
-  const results: SearchResult[] = kept.map((h) => ({ url: h.url, title: h.title }));
-  if (!kept.length) {
-    log?.(`  search "${query}": nothing usable among ${hits.length}`);
-    return { json: null, results, searches: 1, usage: { costUsd: 0 } };
+export async function searchAndPick(t: Target, log?: (line: string) => void): Promise<Asked> {
+  const picked: NonNullable<Asked["json"]> = {};
+  const results = new Map<string, SearchResult>();
+  const read = new Set<string>();
+  let searches = 0;
+  let costUsd = 0;
+  // Follow known organiser links before paying for search or a model selection.
+  const followSite = async (site: string | null | undefined) => {
+    if (!site || read.has(site)) return;
+    read.add(site);
+    const doc = await readDocument(site).catch(() => null);
+    if (!doc?.html) return;
+    for (const link of candidateLinks(doc.html, site)) {
+      const verified = verifyEnrichment({ is_this_race: true, registration_url: link.url, regulations_url: link.url }, doc.text, [link], t.startDate);
+      if (!t.registration && !picked.registration && verified.registrationUrl) picked.registration = verified.registrationUrl;
+      if (!t.regulations && !picked.regulations && verified.regulationsUrl) picked.regulations = verified.regulationsUrl;
+      results.set(link.url, { url: link.url, title: link.text });
+    }
+  };
+  await followSite(t.website);
+  const complete = () => Boolean(t.website || picked.website) && Boolean(t.registration || picked.registration) && Boolean(t.regulations || picked.regulations);
+  const queried = new Set<string>();
+  const hits = new Map<string, Awaited<ReturnType<typeof braveSearch>>[number]>();
+  // Adaptive: a successful first search can make every following one unnecessary.
+  while (!complete() && searches < 4) {
+    const query = researchQueries({ ...t, website: t.website || picked.website || null,
+      registration: t.registration || picked.registration || null, regulations: t.regulations || picked.regulations || null })
+      .find((q) => !queried.has(q));
+    if (!query) break;
+    queried.add(query);
+    const found = await braveSearch(query, { country: t.country, count: 10 });
+    searches += 1;
+    log?.(`  search "${query}": ${found.length} results`);
+    for (const hit of found) if (!hits.has(hit.url)) hits.set(hit.url, hit);
+    const kept = [...hits.values()].filter((h) => {
+      const hh = host(h.url);
+      if (!hh || SOCIAL.test(hh)) return false;
+      if (isRegistrationPlatformUrl(h.url)) return !NOT_THE_PAGE.test(h.url);
+      if (LISTING_HOST.test(hh) || NOT_THE_PAGE.test(h.url)) return false;
+      if (namesAnotherEdition(h.url, t.name, t.startDate)) return false;
+      // Announcements on organiser websites are audited after selection.
+      return !/\/(calendar|kalender|calendario|events?|termine)\/?$/i.test(new URL(h.url).pathname);
+    }).slice(0, 30);
+    for (const h of kept) results.set(h.url, { url: h.url, title: h.title });
+    if (!kept.length) continue;
+    const list = kept.map((h, i) => `${i + 1}. ${h.url}\n   ${h.title}\n   ${h.description.slice(0, 600)}`).join("\n");
+    const { json, usage } = await askJson<{ website?: number | null; registration?: number | null; regulations?: number | null }>({
+      system: PICK_SYSTEM,
+      user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\n\nResults:\n${list}`,
+      model: HAIKU, maxTokens: 120,
+    });
+    costUsd += usage.costUsd;
+    const at = (n: unknown) => typeof n === "number" && Number.isInteger(n) && n > 0 ? kept[n - 1]?.url ?? null : null;
+    picked.website ||= at(json?.website);
+    picked.registration ||= at(json?.registration);
+    picked.regulations ||= at(json?.regulations);
+    await followSite(picked.website);
   }
-  const list = kept.map((h, i) => `${i + 1}. ${h.url}\n   ${h.title}\n   ${h.description.slice(0, 220)}`).join("\n");
-  const { json, usage } = await askJson<{ website?: number | null; registration?: number | null; regulations?: number | null }>({
-    system: PICK_SYSTEM,
-    user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\n\nResults:\n${list}`,
-    model: HAIKU,
-    maxTokens: 120,
-  });
-  const at = (n: unknown) => (typeof n === "number" && kept[n - 1] ? kept[n - 1]!.url : null);
-  // A site's FAQ, contact or about page stands for the site: its front page is the link.
-  let site = at(json?.website);
-  if (site && /\/(faq|kontakt|contact|o-nas|about|impressum|regulamin|polityka|privacy)(\.html?|\/)?$/i.test(new URL(site).pathname)) {
-    const root = `${new URL(site).origin}/`;
-    if (!results.some((r) => r.url === root)) results.push({ url: root, title: kept[(json?.website as number) - 1]!.title });
-    site = root;
-  }
-  return { json: { website: site, registration: at(json?.registration), regulations: at(json?.regulations) }, results, searches: 1, usage };
+  return { json: picked, results: [...results.values()], searches, usage: { costUsd } };
 }
 
 export type ResearchResult = {
@@ -214,7 +243,7 @@ export async function researchRaces(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const until = new Date(Date.now() + 365 * 86_400_000).toISOString().slice(0, 10);
   if (opts?.ignoreKnown) opts = { ...opts, dryRun: true };
-  const skip = opts?.ids?.length ? new Set<string>() : await recentlyProbed(supabase, "web_research");
+  const skip = opts?.ids?.length ? new Set<string>() : await recentlyProbed(supabase, "web_research_v2");
   const targets: Target[] = [];
   for (let from = 0; ; from += PAGE) {
     let q = supabase
@@ -247,7 +276,7 @@ export async function researchRaces(opts?: {
         id: r.id, name: r.name, startDate: r.start_date,
         municipality: r.location?.municipality ?? null, country: r.location?.country_code ?? null,
         disciplines: r.disciplines ?? [],
-        website: ownSite ? r.website_url : null, registration: r.registration_url, regulations: r.regulations_url,
+        website: ownSite ? r.website_url : null, previousWebsite: r.website_url, registration: r.registration_url, regulations: r.regulations_url,
       });
     }
     if (rows.length < PAGE) break;
@@ -294,7 +323,7 @@ export async function researchRaces(opts?: {
             return;
           }
           update[field] = url;
-          facts.push({ field, value: url, previous: current, sourceUrl: url, quote: hit.title });
+          facts.push({ field, value: url, previous: field === "website_url" ? t.previousWebsite ?? current : current, sourceUrl: url, quote: hit.title });
           return;
         }
         // Last year's regulations, or an entry platform's section page rather than this race's form.
@@ -338,7 +367,7 @@ export async function researchRaces(opts?: {
           }
         }
         update[field] = url;
-        facts.push({ field, value: url, previous: current, sourceUrl: url, quote: hit.title });
+        facts.push({ field, value: url, previous: field === "website_url" ? t.previousWebsite ?? current : current, sourceUrl: url, quote: hit.title });
       };
       opts?.log?.(`  model: ${JSON.stringify(asked.json)}`);
       let site = asked.json?.website;
@@ -355,7 +384,7 @@ export async function researchRaces(opts?: {
       if (!facts.length) {
         result.silent += 1;
         opts?.log?.(`--   ${t.startDate}  ${t.name}  (${asked.searches} searches, $${asked.usage.costUsd.toFixed(3)})`);
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_research", "silent");
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_research_v2", "silent");
         continue;
       }
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}  (${asked.searches} searches, $${asked.usage.costUsd.toFixed(3)})\n${facts.map((f) => `       ${f.field.replace("_url", "")}: ${f.value}`).join("\n")}`);
@@ -363,11 +392,12 @@ export async function researchRaces(opts?: {
       if (update.registration_url) result.registration += 1;
       if (update.regulations_url) result.regulations += 1;
       if (opts?.dryRun) continue;
-      await supabase.from("events").update({ ...update, updated_at: new Date().toISOString() }).eq("id", t.id);
+      const { error } = await supabase.from("events").update({ ...update, updated_at: new Date().toISOString() }).eq("id", t.id);
+      if (error) throw new Error(`Saving research: ${error.message}`);
       await recordFacts(supabase, t.id, facts, { method: "llm", model: HAIKU, version: VERSION });
-      await recordProbe(supabase, t.id, "web_research", "silent");
+      await recordProbe(supabase, t.id, "web_research_v2", "silent");
     } catch (e) {
-      if (e instanceof LlmUnavailable) {
+      if (e instanceof LlmUnavailable || e instanceof BraveUnavailable) {
         opts?.log?.(`stopped: ${e.message}`);
         break;
       }

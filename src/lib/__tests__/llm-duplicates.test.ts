@@ -10,3 +10,9 @@ describe("sameTitle", () => {
     expect(sameTitle("VGF Handbike Race", "VGF – Inclusion Race")).toBe(false);
   });
 });
+
+it("does not erase distinct round, distance or class numbers", () => {
+  expect(sameTitle("Perlcross round 1", "Perlcross round 2")).toBe(false);
+  expect(sameTitle("Gravel adventure 100 km", "Gravel adventure 200 km")).toBe(false);
+  expect(sameTitle("Perlcross U11", "Perlcross U13")).toBe(false);
+});
