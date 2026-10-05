@@ -21,6 +21,6 @@ Chýnov – sobota 3.10.2026`;
   it("reads a registration platform's age fields", () => {
     const text = "Klasyfikacje\n DZIECI 0-7 LAT\n Wiek\n 0-7\n Opłaty\n JUNIORZY\n Wiek\n 15-18\n MASTERS\n Wiek\n 40-99";
     // JUNIORZY admits ages 15–18: sixteen-year-olds must also match U17.
-    expect(categoriesFromRegulationsText(text, 2026).ages).toEqual(["u9", "u17", "kids", "youth", "junior", "masters"]);
+    expect(categoriesFromRegulationsText(text, 2026).ages).toEqual(["u7", "u9", "u17", "kids", "youth", "junior", "masters"]);
   });
 });

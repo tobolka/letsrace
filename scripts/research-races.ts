@@ -17,6 +17,7 @@ async function main() {
     countries: (arg("countries") ?? process.env.CATALOG_COUNTRIES)?.split(","),
     ids: arg("ids")?.split(","),
     withoutSite: process.argv.includes("--without-site"),
+    searchProvider: arg("search-provider") === "claude" ? "claude" : "brave",
     ignoreKnown: process.argv.includes("--ignore-known"),
     log: console.log,
   });

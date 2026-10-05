@@ -62,11 +62,32 @@ export function raceResultEventId(url: string | null | undefined): string | null
 }
 
 export async function fetchRaceResultContests(eventId: string): Promise<string[]> {
+  return (await fetchRaceResultProgramme(eventId)).names;
+}
+
+export type ContestAdmission = { name: string; birthFrom?: string; birthTo?: string };
+
+/** Public form validation is explicit admission evidence, unlike distance. */
+export function parseContestAdmission(contest: ContestAdmission, refYear: number): AgeCategory[] {
+  const date = (value?: string) => value && /^\d{4}-\d{2}-\d{2}/.test(value) ? value.slice(0, 10) : null;
+  const from = date(contest.birthFrom), to = date(contest.birthTo);
+  const oldest = from && Number(from.slice(0, 4)) > 1900 ? refYear - Number(from.slice(0, 4)) : undefined;
+  const youngest = to && Number(to.slice(0, 4)) < refYear + 1 ? refYear - Number(to.slice(0, 4)) : undefined;
+  if (from && to && from > to || oldest != null && (oldest < 0 || oldest > 110) || youngest != null && (youngest < 0 || youngest > 110)) return [];
+  // Unrestricted/sentinel dates are not an actual published age programme.
+  if (youngest == null && oldest == null || youngest != null && youngest < 3 && oldest == null) return [];
+  const bounded = ageCategoriesFromList([{ name: "", ageMin: youngest, ageMax: oldest }]);
+  return AGE_CATEGORIES.filter((age) => bounded.includes(age) || parseContestCategories([contest.name], { refYear }).includes(age));
+}
+
+export async function fetchRaceResultProgramme(eventId: string): Promise<{ names: string[]; admissions: ContestAdmission[]; startDate: string | null; endDate: string | null }> {
   const res = await fetch(
-    `https://my.raceresult.com/${eventId}/RRPublish/data/config?page=lists&noVisitor=1`,
-    { headers: { "user-agent": "letsrace-catalog/1.0 (+https://letsrace.cz)" } },
+    `https://my.raceresult.com/${eventId}/registration/config?lang=en&sanitize=1`,
+    { headers: { "user-agent": "letsrace-catalog/1.0 (+https://letsrace.cz)" }, signal: AbortSignal.timeout(20_000) },
   );
-  if (!res.ok) return [];
-  const body = (await res.json()) as { contests?: Record<string, string> };
-  return Object.values(body.contests ?? {}).filter((v): v is string => typeof v === "string");
+  if (!res.ok) return { names: [], admissions: [], startDate: null, endDate: null };
+  const body = (await res.json()) as { EventDate?: string; EventDate2?: string; Registrations?: { Contests?: { Name?: string; AgeStart?: string; AgeEnd?: string }[] }[] };
+  const admissions = [...new Map((body.Registrations ?? []).flatMap((r) => (r.Contests ?? []).filter((c) => typeof c.Name === "string" && Boolean(c.Name.trim())).map((c) => ({ name: c.Name!, birthFrom: c.AgeStart, birthTo: c.AgeEnd }))).map((c) => [JSON.stringify(c), c])).values()];
+  return { names: [...new Set(admissions.map((c) => c.name))], admissions,
+    startDate: body.EventDate?.slice(0, 10) ?? null, endDate: body.EventDate2?.slice(0, 10) ?? body.EventDate?.slice(0, 10) ?? null };
 }

@@ -12,7 +12,7 @@ describe("ageCategoriesFromList", () => {
         { name: "E - muži, 60 a více let ( 1966 a starší)", ageMin: 60 },
         { name: "SI - starší žáci, 0 - 14 let (2012 a mladší )", ageMin: 0, ageMax: 14 },
       ]),
-    ).toEqual(["u15", "u17", "youth", "amateur", "masters"]);
+    ).toEqual(["u7", "u9", "u11", "u13", "u15", "u17", "kids", "youth", "amateur", "masters"]);
   });
 
   it("reads the Czech federation's class names", () => {
@@ -45,11 +45,11 @@ describe("ageCategoriesFromList", () => {
         [{ name: "Kadeti 2011–2012" }, { name: "Žáci starší 2013 a mladší" }, { name: "Muži E 1966 a starší" }],
         { refYear: 2026 },
       ),
-    ).toEqual(["u15", "u17", "youth", "masters"]);
+    ).toEqual(["u7", "u9", "u11", "u13", "u15", "u17", "kids", "youth", "masters"]);
   });
 
   it("reads ages written out in the name", () => {
-    expect(names(["muži 15-35 let", "muži 36 let -60 let", "Mini 4-5 let"])).toEqual(["u7", "kids", "amateur", "masters"]);
+    expect(names(["muži 15-35 let", "muži 36 let -60 let", "Mini 4-5 let"])).toEqual(["u7", "u17", "kids", "youth", "junior", "amateur", "masters"]);
   });
 });
 
@@ -60,7 +60,8 @@ describe("other federations' class names", () => {
   });
   it("does not turn an adult birth-year ceiling into one exact age", () => {
     expect(ageCategoriesFromList([{ name: "Damen bis 2010" }], { refYear: 2026 })).toEqual(expect.arrayContaining(["u17", "youth", "junior", "amateur"]));
-    expect(ageCategoriesFromList([{ name: "Erwachsene ab 1987" }], { refYear: 2026 })).toEqual(["amateur"]);
+    // The admitted 18-year-olds also need to match the junior age filter.
+    expect(ageCategoriesFromList([{ name: "Erwachsene ab 1987" }], { refYear: 2026 })).toEqual(["junior", "amateur"]);
   });
   it("places Italian, Dutch, Polish and French youth classes", async () => {
     const { ageCategoriesFromList } = await import("@/lib/age-bands");
@@ -73,4 +74,10 @@ describe("other federations' class names", () => {
     expect(one("Hobby Frauen")).toEqual(["amateur"]);
     expect(one("Elite e Under 23")).toEqual(["u23"]);
   });
+});
+
+it("keeps every admitted child band for an open upper age limit", () => {
+  expect(names(["kluci do 8 let"])).toEqual(["u7", "u9", "kids"]);
+  expect(ageCategoriesFromList([{name:"2018 a mladší"}],{refYear:2026})).toEqual(["u7","u9","kids"]);
+  expect(names(["Laufradrennen"])).toEqual(["kids"]);
 });

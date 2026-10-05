@@ -14,7 +14,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * one more look.
  */
 
-export type ProbeName = "fci_ages" | "raceresult_ages" | "raceresult_ages_v2" | "csc_ages" | "regs_ages" | "fci_website" | "ca_details" | "reg_links" | "web_search" | "llm_ages" | "llm_enrich" | "llm_v2" | "dossier_classes" | "web_research" | "web_research_v2" | "llm_v4";
+export type ProbeName = "fci_ages" | "raceresult_ages" | "raceresult_ages_v2" | "raceresult_ages_v3" | "raceresult_ages_v4" | "csc_ages" | "regs_ages" | "fci_website" | "ca_details" | "reg_links" | "web_search" | "llm_ages" | "llm_enrich" | "llm_v2" | "dossier_classes" | "dossier_classes_v2" | "web_research" | "web_research_v2" | "web_research_claude_v1" | "llm_v4";
 export type ProbeOutcome = "silent" | "failed";
 
 /** How long an answer stands before the page is worth asking again. */
@@ -33,6 +33,7 @@ const PAGE = 1000;
 export async function recentlyProbed(
   supabase: SupabaseClient,
   probe: ProbeName,
+  opts?: { silentDays?: number },
 ): Promise<Set<string>> {
   const skip = new Set<string>();
   const now = Date.now();
@@ -45,7 +46,7 @@ export async function recentlyProbed(
       .range(from, from + PAGE - 1);
     if (error || !data || data.length === 0) break;
     for (const row of data as { event_id: string; outcome: string; last_attempt_at: string }[]) {
-      const days = RETRY_DAYS[(row.outcome as ProbeOutcome) ?? "silent"] ?? RETRY_DAYS.silent;
+      const days = row.outcome === "silent" && opts?.silentDays != null ? opts.silentDays : RETRY_DAYS[(row.outcome as ProbeOutcome) ?? "silent"] ?? RETRY_DAYS.silent;
       if (now - Date.parse(row.last_attempt_at) < days * 86_400_000) skip.add(row.event_id);
     }
     if (data.length < PAGE) break;

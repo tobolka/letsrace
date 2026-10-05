@@ -1,9 +1,10 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
-import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
+import { AGE_CATEGORIES, audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import {
-  fetchRaceResultContests,
+  fetchRaceResultProgramme,
   parseContestCategories,
+  parseContestAdmission,
   raceResultEventId,
 } from "@/lib/watcher/extractors/contest-categories";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
@@ -35,7 +36,7 @@ export async function fillRaceResultAgeCategories(opts?: {
   const max = opts?.max ?? 30;
   const delayMs = opts?.delayMs ?? 350;
   const today = new Date().toISOString().slice(0, 10);
-  const skip = await recentlyProbed(supabase, "raceresult_ages_v2");
+  const skip = await recentlyProbed(supabase, "raceresult_ages_v4", { silentDays: 7 });
 
   const targets: { id: string; eventId: string; name: string; startDate: string; previous: string[] | null; confidence: string | null; audience: string | null }[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
@@ -77,16 +78,18 @@ export async function fillRaceResultAgeCategories(opts?: {
   }
 
   const result = { attempted: targets.length, filled: 0, silent: 0, failed: 0 };
-  const contests = new Map<string, string[]>();
+  const contests = new Map<string, Awaited<ReturnType<typeof fetchRaceResultProgramme>>>();
   for (const target of targets) {
     try {
-      if (!contests.has(target.eventId)) contests.set(target.eventId, await fetchRaceResultContests(target.eventId));
-      const names = contests.get(target.eventId)!;
+      if (!contests.has(target.eventId)) contests.set(target.eventId, await fetchRaceResultProgramme(target.eventId));
+      const programme = contests.get(target.eventId)!;
+      const names = programme.names;
       const season = { refYear: Number(target.startDate.slice(0, 4)) };
-      const ages = parseContestCategories(names, season);
-      if (!ages.length || names.some((name) => !parseContestCategories([name], season).length)) {
+      const mapped = programme.admissions.map((contest) => parseContestAdmission(contest, season.refYear).length ? parseContestAdmission(contest, season.refYear) : parseContestCategories([contest.name], season));
+      const ages = AGE_CATEGORIES.filter((age) => mapped.some((bands) => bands.includes(age)));
+      if (!programme.startDate || !programme.endDate || target.startDate < programme.startDate || target.startDate > programme.endDate || !ages.length || mapped.some((bands) => !bands.length) || names.some((name) => /\bberg?lauf|\blauf\b|\brun\b|swim|schwimm/i.test(name))) {
         result.silent += 1;
-        if (!opts?.dryRun) await recordProbe(supabase, target.id, "raceresult_ages_v2", "silent");
+        if (!opts?.dryRun) await recordProbe(supabase, target.id, "raceresult_ages_v4", "silent");
         continue;
       }
       opts?.log?.(`${opts.dryRun ? "DRY" : "SET"} ${target.name}: ${ages.join(",")} ← ${names.join(" | ")}`);
@@ -105,20 +108,20 @@ export async function fillRaceResultAgeCategories(opts?: {
         .select("id");
       if (error) {
         result.failed += 1;
-        await recordProbe(supabase, target.id, "raceresult_ages_v2", "failed");
+        await recordProbe(supabase, target.id, "raceresult_ages_v4", "failed");
       } else {
         if (!saved?.length) continue;
         const sourceUrl = `https://my.raceresult.com/${target.eventId}/`;
         await recordFacts(supabase, target.id, [
-          { field: "age_categories", value: ages, previous: target.previous, sourceUrl, quote: names.join(" | ") },
+          { field: "age_categories", value: ages, previous: target.previous, sourceUrl, quote: programme.admissions.map((contest) => `${contest.name} (DOB ${contest.birthFrom ?? "?"} to ${contest.birthTo ?? "?"})`).join(" | ") },
           { field: "age_confidence", value: "explicit", previous: target.confidence, sourceUrl },
           { field: "audience", value: audienceFromAgeCategories(ages), previous: target.audience, sourceUrl },
-        ], { method: "raceresult_contests", version: "contest-categories-v2" });
+        ], { method: "raceresult_contests", version: "contest-categories-v4" });
         result.filled += 1;
       }
     } catch {
       result.failed += 1;
-      if (!opts?.dryRun) await recordProbe(supabase, target.id, "raceresult_ages_v2", "failed");
+      if (!opts?.dryRun) await recordProbe(supabase, target.id, "raceresult_ages_v4", "failed");
     }
     await new Promise((r) => setTimeout(r, delayMs));
   }

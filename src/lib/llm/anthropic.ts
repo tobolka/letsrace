@@ -1,4 +1,5 @@
 import { reserveSharedBudget } from "@/lib/llm/budget-ledger";
+import { parseJsonReply } from "@/lib/llm/json-reply";
 
 /**
  * One way to ask Claude for JSON, shared by every reader that uses a model.
@@ -112,14 +113,7 @@ async function askJsonUnchecked<T>(opts: {
   const [pin, pout] = PRICES[model] ?? [3, 15];
   const tokensIn = body.usage?.input_tokens ?? 0;
   const tokensOut = body.usage?.output_tokens ?? 0;
-  let json: T | null = null;
-  try {
-    const start = Math.min(...["{", "["].map((c) => out.indexOf(c)).filter((i) => i >= 0));
-    const end = Math.max(out.lastIndexOf("}"), out.lastIndexOf("]"));
-    if (Number.isFinite(start) && end > start) json = JSON.parse(out.slice(start, end + 1)) as T;
-  } catch {
-    json = null;
-  }
+  const json = parseJsonReply<T>(out);
   const usage = { tokensIn, tokensOut, costUsd: (tokensIn * pin + tokensOut * pout) / 1_000_000 };
   spent += usage.costUsd;
   if (body.stop_reason === "max_tokens") throw new LlmResponseError(`${model} response was truncated at max_tokens; no verdict recorded`, usage);
@@ -188,14 +182,7 @@ async function askWithSearchUnchecked<T>(opts: {
   const blocks = body.content ?? [];
   const lastTool = blocks.map((b) => b.type).lastIndexOf("web_search_tool_result");
   const out = blocks.slice(lastTool + 1).filter((c) => c.type === "text").map((c) => c.text ?? "").join("");
-  let json: T | null = null;
-  try {
-    const start = out.indexOf("{");
-    const end = out.lastIndexOf("}");
-    if (start >= 0 && end > start) json = JSON.parse(out.slice(start, end + 1)) as T;
-  } catch {
-    json = null;
-  }
+  const json = parseJsonReply<T>(out);
   const [pin, pout] = PRICES[model] ?? [3, 15];
   const tokensIn = body.usage?.input_tokens ?? 0;
   const tokensOut = body.usage?.output_tokens ?? 0;

@@ -30,8 +30,16 @@ export function ageCategoriesFromList(
     const mapped = bandsFor(c.name, ageMin, ageMax);
     // A bounded cohort such as ages 7–10 admits both U9 and U11. Recording
     // only its oldest band would falsely exclude younger eligible children.
-    if (ageMin != null && ageMax != null && ageMin >= 3 && ageMax <= 18) {
-      for (let age = ageMin; age <= ageMax; age++) {
+    if (ageMin != null && ageMax != null && ageMin >= 0 && ageMin <= 18) {
+      for (let age = ageMin; age <= Math.min(ageMax, 18); age++) {
+        const band = bandForAge(age);
+        if (band && !mapped.includes(band)) mapped.push(band);
+      }
+    }
+    // "2018 a mladší" / "do 8 let" admits the younger band too. An absent
+    // lower bound must not hide this race when a parent filters for U7.
+    if (ageMin == null && ageMax != null && ageMax >= 3 && ageMax <= 18) {
+      for (let age = 3; age <= ageMax; age++) {
         const band = bandForAge(age);
         if (band && !mapped.includes(band)) mapped.push(band);
       }
@@ -54,6 +62,8 @@ function agesInText(rawName: string): { ageMin?: number; ageMax?: number } {
   if (range) return { ageMin: Number(range[1]), ageMax: Number(range[2]) };
   const plus = name.match(/(?<![\d.])(\d{1,2})\s*(?:\+|a\s*vice|let\s*a\s*vice|and\s*over|und\s*alter)/);
   if (plus) return { ageMin: Number(plus[1]) };
+  const upper = name.match(/\b(?:do|up to|bis)\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahre)\b/);
+  if (upper) return { ageMax: Number(upper[1]) };
   return {};
 }
 
@@ -103,12 +113,12 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   // elite are adults, masters are adults of a given age.
   if (/\bu\s*23\b|under\s*23/.test(name)) return ["u23"];
   // "Hobby Frauen" is a hobby class, not the women's open race.
-  if (/hobby|jedermann|amater|cicloturist|\bfun\b|funklasse/.test(name)) return ["amateur"];
+  if (/hobby|jedermann|amat[ae]ur|amater|cicloturist|\bfun\b|funklasse/.test(name)) return ["amateur"];
   if (/\belit[ea]?\b/.test(name)) return ["elite"];
   if (/\bmasters?\b|\bveteran|\bsenior/.test(name)) return ["masters"];
 
-  // Stated ages decide. The top of the range is the band: "0–14 let (2012 a
-  // mladší)" is the older pupils' class, not an open door for toddlers.
+  // Stated ages decide. The oldest band is added here; the caller expands
+  // every younger band that the published admission interval includes.
   if (ageMax != null && ageMax <= 18) {
     const band = bandForAge(ageMax);
     return band ? [band] : [];
@@ -144,7 +154,8 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   if (pupils.test(name)) return ["u13", "u15"];
   if (/kadet/.test(name)) return ["u17"];
   // Other federations' youth classes.
-  if (/giovanissim|poussin|pupil|laufrad/.test(name)) return ["u7", "u9", "u11"];
+  if (/laufrad/.test(name)) return ["kids"];
+  if (/giovanissim|poussin|pupil/.test(name)) return ["u7", "u9", "u11"];
   if (/\bzak\b|\bzacy\b/.test(name)) return ["u13"];
   if (/mlodzik|minime/.test(name)) return ["u15"];
   if (/esordient|benjamin|aspirant|schuler/.test(name)) return ["u13", "u15"];

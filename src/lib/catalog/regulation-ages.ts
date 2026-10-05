@@ -104,6 +104,9 @@ export function htmlText(html: string): string {
   const $ = cheerio.load(html);
   $("script, style, noscript, nav, header, footer").remove();
   $("br").replaceWith("\n");
+  // Keep table columns separate: U15 and a birth-year cell must not become
+  // "U152012-2013". Preserve each complete row for admission extraction.
+  $("td, th").append(" | ");
   $("p, div, li, tr, h1, h2, h3, h4, h5, h6, section, article, table").each((_, el) => {
     $(el).append("\n");
   });
@@ -231,6 +234,11 @@ export async function readDocument(url: string): Promise<ReadDoc | null> {
     return text ? { url, text, html: null, thin: false } : null;
   }
   const html = new TextDecoder("utf-8").decode(doc.bytes);
+  if (/^https?:\/\/my\.raceresult\.com\/\d+(?:\/|$)/i.test(url)) {
+    const { raceResultDocument } = await import("@/lib/catalog/raceresult-documents");
+    const publicDocument = await raceResultDocument(url, html).catch(() => null);
+    if (publicDocument) return { url, ...publicDocument, thin: publicDocument.text.length < 300 };
+  }
   const text = htmlText(html);
   // A shell for a script to fill: little text, a script that will write it.
   // Or an app that renders itself (Next, Nuxt, React, Angular): its first

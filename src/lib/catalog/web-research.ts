@@ -145,7 +145,7 @@ type Asked = {
 };
 
 /** The model searches on its own (Anthropic's web search): dearer, used without a Brave key. */
-async function searchWithModel(t: Target): Promise<Asked> {
+async function searchWithModel(t: Target, model: string = HAIKU): Promise<Asked> {
   const known = [
     t.website ? `Known website: ${t.website}` : null,
     t.registration ? `Known registration: ${t.registration}` : null,
@@ -154,8 +154,9 @@ async function searchWithModel(t: Target): Promise<Asked> {
   return askWithSearch<NonNullable<Asked["json"]>>({
     system: SYSTEM,
     user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\nCountry: ${t.country ?? "?"}\nDiscipline: ${t.disciplines.join(", ") || "?"}\n${known}`,
-    model: HAIKU,
+    model,
     maxSearches: 2,
+    maxTokens: 1200,
   });
 }
 
@@ -251,6 +252,7 @@ export async function researchRaces(opts?: {
   max?: number;
   countries?: string[];
   ids?: string[];
+  searchProvider?: "brave" | "claude";
   /** Only races with no site of their own. */
   withoutSite?: boolean;
   /** For a test against known answers: look as if the race had no links yet. Never writes. */
@@ -263,7 +265,8 @@ export async function researchRaces(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const until = new Date(Date.now() + 365 * 86_400_000).toISOString().slice(0, 10);
   if (opts?.ignoreKnown) opts = { ...opts, dryRun: true };
-  const skip = opts?.ids?.length ? new Set<string>() : await recentlyProbed(supabase, "web_research_v2");
+  const probe = opts?.searchProvider === "claude" ? "web_research_claude_v1" : "web_research_v2";
+  const skip = opts?.ids?.length ? new Set<string>() : await recentlyProbed(supabase, probe);
   const targets: Target[] = [];
   for (let from = 0; ; from += PAGE) {
     let q = supabase
@@ -308,7 +311,8 @@ export async function researchRaces(opts?: {
   const result: ResearchResult = { attempted: targets.length, website: 0, registration: 0, regulations: 0, rejected: 0, silent: 0, failed: 0, searches: 0, costUsd: 0 };
   for (const t of targets) {
     try {
-      const asked = braveAvailable() ? await searchAndPick(t, opts?.log) : await searchWithModel(t);
+      const asked = opts?.searchProvider === "claude" ? await searchWithModel(t, SONNET)
+        : braveAvailable() ? await searchAndPick(t, opts?.log) : await searchWithModel(t);
       result.searches += asked.searches;
       result.costUsd += asked.usage.costUsd;
       const seen = new Map(asked.results.map((r) => [norm(r.url), r] as [string, SearchResult]));
@@ -414,7 +418,7 @@ export async function researchRaces(opts?: {
       if (!facts.length) {
         result.silent += 1;
         opts?.log?.(`--   ${t.startDate}  ${t.name}  (${asked.searches} searches, $${asked.usage.costUsd.toFixed(3)})`);
-        if (!opts?.dryRun) await recordProbe(supabase, t.id, "web_research_v2", "silent");
+        if (!opts?.dryRun) await recordProbe(supabase, t.id, probe, "silent");
         continue;
       }
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}  (${asked.searches} searches, $${asked.usage.costUsd.toFixed(3)})\n${facts.map((f) => `       ${f.field.replace("_url", "")}: ${f.value}`).join("\n")}`);
@@ -424,8 +428,8 @@ export async function researchRaces(opts?: {
       if (opts?.dryRun) continue;
       const { error } = await supabase.from("events").update({ ...update, updated_at: new Date().toISOString() }).eq("id", t.id);
       if (error) throw new Error(`Saving research: ${error.message}`);
-      await recordFacts(supabase, t.id, facts, { method: "llm", model: HAIKU, version: VERSION });
-      await recordProbe(supabase, t.id, "web_research_v2", "silent");
+      await recordFacts(supabase, t.id, facts, { method: "llm", model: opts?.searchProvider === "claude" ? SONNET : HAIKU, version: VERSION });
+      await recordProbe(supabase, t.id, probe, "silent");
     } catch (e) {
       if (e instanceof LlmUnavailable || e instanceof BraveUnavailable) {
         opts?.log?.(`stopped: ${e.message}`);
