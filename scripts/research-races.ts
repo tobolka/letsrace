@@ -14,7 +14,7 @@ async function main() {
   const result = await researchRaces({
     dryRun,
     max: Number(arg("max") ?? 50),
-    countries: arg("countries")?.split(","),
+    countries: (arg("countries") ?? process.env.CATALOG_COUNTRIES)?.split(","),
     ids: arg("ids")?.split(","),
     withoutSite: process.argv.includes("--without-site"),
     ignoreKnown: process.argv.includes("--ignore-known"),

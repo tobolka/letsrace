@@ -358,10 +358,10 @@ export async function enrichFromPages(opts?: {
     disciplines: string[]; existing: string[]; ageConfidence: string | null; registrationUrl: string | null; regulationsUrl: string | null; closesAt: string | null;
   };
   const targets: Target[] = [];
-  for (let from = 0; targets.length < max; from += PAGE) {
+  for (let from = 0; ; from += PAGE) {
     let q = supabase
       .from("events")
-      .select("id, name, start_date, website_url, registration_url, regulations_url, registration_closes_at, disciplines, age_categories, age_confidence, location:locations(municipality)")
+      .select("id, name, start_date, website_url, registration_url, regulations_url, registration_closes_at, disciplines, age_categories, age_confidence, location:locations(municipality,country_code)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", opts?.past ? [...ACTIVE_EVENT_STATUSES, "completed"] : [...ACTIVE_EVENT_STATUSES])
@@ -376,26 +376,35 @@ export async function enrichFromPages(opts?: {
     if (error) throw new Error(`Loading enrichment targets: ${error.message}`);
     const rows = (data ?? []) as unknown as {
       id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; registration_closes_at: string | null;
-      disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; location: { municipality: string | null } | null;
+      disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; location: { municipality: string | null; country_code: string | null } | null;
     }[];
     for (const r of rows) {
+      if (!opts?.ids?.length && process.env.CATALOG_COUNTRIES && !process.env.CATALOG_COUNTRIES.split(",").includes(r.location?.country_code ?? "")) continue;
       if (skip.has(r.id) && !opts?.ids?.length && !opts?.agesOnly) continue;
       if (opts?.agesOnly && r.age_confidence === "explicit") continue;
       if (!r.website_url || AGGREGATOR.test(r.website_url)) continue;
       // Worth a look only if something is missing or only a guess.
       const needs = opts?.past
         ? r.age_confidence !== "explicit" || !(r.disciplines ?? []).length
-        : r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url || !r.registration_closes_at;
+        : r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url;
       if (!needs && !opts?.ids?.length) continue;
       targets.push({
         id: r.id, name: r.name, startDate: r.start_date, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
         disciplines: r.disciplines ?? [], existing: r.age_categories ?? [], ageConfidence: r.age_confidence,
         registrationUrl: r.registration_url, regulationsUrl: r.regulations_url, closesAt: r.registration_closes_at,
       });
-      if (targets.length >= max) break;
     }
     if (rows.length < PAGE) break;
   }
+  // Spend on missing catalog fields with usable evidence before optional deadlines.
+  const priority = (t: Target) => {
+    const missing = Number(t.ageConfidence !== "explicit" || !t.existing.length) + Number(!t.disciplines.length);
+    // Complete an almost complete race first. Known propositions are stronger
+    // category evidence than another search; deadlines do not affect the goal.
+    return missing ? 100 - missing * 10 + (t.ageConfidence !== "explicit" && t.regs ? 3 : 0) : !t.regulationsUrl ? 1 : 0;
+  };
+  targets.sort((a, b) => priority(b) - priority(a) || a.startDate.localeCompare(b.startDate));
+  targets.splice(max);
 
   const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, deadlines: 0, auditDropped: 0, auditUsd: 0, proposed: {}, passedRules: {}, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
   const review: string[] = ["kind\tdate\trace\tholds\tmodel says\tevidence"];

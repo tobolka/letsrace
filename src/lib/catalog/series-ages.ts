@@ -11,7 +11,7 @@ export type SeriesAgeRow = {
   countryCode: string | null;
   websiteUrl: string | null;
   /** Upcoming public rounds, soonest first. */
-  rounds: { id: string; name: string; startDate: string; ages: string[]; confidence: string | null }[];
+  rounds: { id: string; name: string; startDate: string; ages: string[]; confidence: string | null; regulationsUrl: string | null }[];
   /** The series' own list, and whether a person confirmed it. */
   ages: AgeCategory[];
   confirmedAt: string | null;
@@ -41,11 +41,12 @@ export async function listSeriesForAgeReview(opts?: {
     series_id: string;
     age_categories: string[] | null;
     age_confidence: string | null;
+    regulations_url: string | null;
   }[] = [];
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, series_id, age_categories, age_confidence")
+      .select("id, name, start_date, series_id, age_categories, age_confidence, regulations_url")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -94,6 +95,7 @@ export async function listSeriesForAgeReview(opts?: {
         startDate: r.start_date,
         ages: r.age_categories ?? [],
         confidence: r.age_confidence,
+        regulationsUrl: r.regulations_url,
       })),
       ages: AGE_CATEGORIES.filter((a) => (s.age_categories ?? []).includes(a)),
       confirmedAt: s.age_categories_confirmed_at,

@@ -7,7 +7,7 @@ for (const line of readFileSync(".env.local", "utf8").split("\n")) {
 async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const { ACTIVE_EVENT_STATUSES } = await import("../src/lib/event-visibility");
-  const { isAggregatorUrl } = await import("../src/lib/watcher/public-url");
+  const { missingCompletionFields, missingCatalogFields, countryCompletionTargets, CATALOG_FIELDS } = await import("../src/lib/catalog/completeness");
   const s = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
   type E = { id: string; name: string; start_date: string; age_categories: string[] | null; age_confidence: string | null; disciplines: string[] | null; website_url: string | null; regulations_url: string | null; series_id: string | null; location: { lat: number | null; lng: number | null; country_code: string | null } | null; series: { name: string; age_categories_confirmed_at: string | null } | null };
@@ -22,13 +22,7 @@ async function main() {
     events.push(...((data ?? []) as unknown as E[]));
     if (!data || data.length < 1000) break;
   }
-  const missing = (e: E) => [
-    !e.website_url || isAggregatorUrl(e.website_url) ? "ownWebsite" : null,
-    !e.regulations_url ? "regulations" : null,
-    e.location?.lat == null || e.location.lng == null ? "location" : null,
-    !e.disciplines?.length ? "discipline" : null,
-    !e.age_categories?.length || e.age_confidence !== "explicit" ? "categories" : null,
-  ].filter((v): v is string => Boolean(v));
+  const missing = missingCompletionFields;
   const bySeries = new Map<string, E[]>();
   for (const e of events) if (e.series_id) {
     const key = `${e.series_id}:${e.start_date.slice(0, 4)}`;
@@ -42,13 +36,22 @@ async function main() {
     exampleIds: rows.slice(0, 3).map((e) => e.id),
   })).filter((s) => s.missingCategories).sort((a, b) => b.missingCategories - a.missingCategories);
   const report = { auditedAt: new Date().toISOString(), total: events.length,
+    goalFields: ["ownWebsite", "location", "discipline", "categories"],
     completeWithOwnWebsite: events.filter((e) => !missing(e).length).length,
-    missing: Object.fromEntries(["ownWebsite", "regulations", "location", "discipline", "categories"].map((f) => [f, events.filter((e) => missing(e).includes(f)).length])),
+    completeIncludingRegulations: events.filter((e) => !missingCatalogFields(e).length).length,
+    missing: Object.fromEntries(CATALOG_FIELDS.map((f) => [f, events.filter((e) => missingCatalogFields(e).includes(f)).length])),
     seriesPriority: series,
+    countryTargets: countryCompletionTargets(events),
+    completionQueue: events.filter((e) => ["CZ", "SK", "AT", "DE"].includes(e.location?.country_code ?? "") && missing(e).length)
+      .sort((a, b) => missing(a).length - missing(b).length || a.start_date.localeCompare(b.start_date))
+      .map((e) => ({ id: e.id, name: e.name, date: e.start_date, country: e.location?.country_code, missing: missing(e), website: e.website_url, regulations: e.regulations_url, seriesId: e.series_id })),
     websiteExamples: events.filter((e) => missing(e).includes("ownWebsite")).slice(0, 12).map((e) => ({ id: e.id, name: e.name, date: e.start_date, country: e.location?.country_code })),
   };
-  writeFileSync("tmp/data-goal-audit-2026-10-05.json", JSON.stringify(report, null, 2) + "\n");
+  const json = JSON.stringify(report, null, 2) + "\n";
+  writeFileSync(`tmp/data-goal-audit-${today}.json`, json);
+  writeFileSync("tmp/data-goal-audit-latest.json", json);
   console.log({ total: report.total, completeWithOwnWebsite: report.completeWithOwnWebsite, missing: report.missing, seriesToReview: series.length });
+  console.table(report.countryTargets.map(({ country, total, complete, percent, target, remaining }) => ({ country, total, complete, percent, target, remaining })));
   console.table(series.slice(0, 12).map(({ name, rounds, missingCategories, statedSets }) => ({ name, rounds, missingCategories, statedSets: statedSets.length })));
   console.log(report.websiteExamples.slice(0, 3));
 }

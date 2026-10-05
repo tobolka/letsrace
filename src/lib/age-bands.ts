@@ -27,7 +27,16 @@ export function ageCategoriesFromList(
     if (ageMin == null && ageMax == null && opts?.refYear) {
       ({ ageMin, ageMax } = agesFromBirthYears(c.name, opts.refYear));
     }
-    for (const band of bandsFor(c.name, ageMin, ageMax)) {
+    const mapped = bandsFor(c.name, ageMin, ageMax);
+    // A bounded cohort such as ages 7–10 admits both U9 and U11. Recording
+    // only its oldest band would falsely exclude younger eligible children.
+    if (ageMin != null && ageMax != null && ageMin >= 3 && ageMax <= 18) {
+      for (let age = ageMin; age <= ageMax; age++) {
+        const band = bandForAge(age);
+        if (band && !mapped.includes(band)) mapped.push(band);
+      }
+    }
+    for (const band of mapped) {
       found.add(band);
     }
   }
@@ -56,13 +65,15 @@ function agesFromBirthYears(rawName: string, refYear: number): { ageMin?: number
   const name = rawName.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
   // Not the year of a date ("3.10.2026", "2026-10-03"), and old enough to
   // be someone's birth year in this season.
-  const years = [...name.matchAll(/(?<![\d.\/-])(19[3-9]\d|20[0-3]\d)(?![\d]|[.\/-]\d)/g)]
-    .map((m) => Number(m[1]))
+  const range = name.match(/\b(19[3-9]\d|20[0-3]\d)\s*[-–]\s*(19[3-9]\d|20[0-3]\d)\b/);
+  const years = (range ? [Number(range[1]), Number(range[2])] : [...name.matchAll(/(?<![\d.\/-])(19[3-9]\d|20[0-3]\d)(?![\d]|[.\/-]\d)/g)].map((m) => Number(m[1])))
     .filter((y) => y <= refYear - 3);
   if (!years.length) return {};
   const oldest = refYear - Math.min(...years);
   const youngest = refYear - Math.max(...years);
   if (years.length === 1) {
+    if (/\bbis\s*(?:jg\.?\s*)?(?:19|20)\d\d\b/.test(name)) return { ageMin: youngest };
+    if (/\bab\s*(?:jg\.?\s*)?(?:19|20)\d\d\b/.test(name)) return { ageMin: /erwachsene/.test(name) ? 18 : undefined, ageMax: youngest };
     if (/a\s*mladsi|and\s*younger|und\s*junger|i\s*mlodsi/.test(name)) return { ageMax: youngest };
     if (/a\s*starsi|and\s*older|und\s*alter|i\s*starsi/.test(name)) return { ageMin: oldest };
     return { ageMin: youngest, ageMax: youngest };
@@ -106,6 +117,14 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
     return ageMin >= 35 ? ["masters"] : ["amateur"];
   }
   if (ageMin != null && ageMin >= 17 && ageMax == null) return ["junior", "amateur"];
+  if (ageMin != null && ageMin >= 3 && ageMin < 17 && ageMax == null) {
+    const bands = new Set<AgeCategory>(["amateur"]);
+    for (let age = ageMin; age <= 18; age++) {
+      const band = bandForAge(age);
+      if (band) bands.add(band);
+    }
+    return [...bands];
+  }
   if (ageMin != null && ageMax != null && ageMax > 18) return ageMin >= 35 ? ["masters"] : ["amateur"];
 
   // U-numbers: "U11", "U 13", "U-15".

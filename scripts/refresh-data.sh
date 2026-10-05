@@ -12,6 +12,7 @@ mkdir -p tmp
 export LLM_LEDGER_PATH="${LLM_LEDGER_PATH:-$PWD/tmp/llm-budget.json}"
 export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-0.50}"
 export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-5}"
+export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE}"
 
 step() {
   local title="$1"; shift
@@ -21,8 +22,9 @@ step() {
 }
 
 step "Coverage before"                     scripts/data-stats.ts
-step "Official calendars (force-poll)"     scripts/reload-calendars.ts
-step "Everything else that is due"         scripts/drain-due-watches.ts 40
+# Calendar fallbacks must leave room for completing already discovered races.
+LLM_BUDGET_USD=0.08 step "Official calendars (force-poll)" scripts/reload-calendars.ts
+LLM_BUDGET_USD=0.02 step "Everything else that is due" scripts/drain-due-watches.ts 40
 if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
   step "Duplicates (review only)"          scripts/merge-duplicates.ts --dry
 else
@@ -34,6 +36,7 @@ step "Race pages and regulations"          scripts/fill-regulation-ages.ts --max
 step "Entry links from race pages"         scripts/fill-registration-links.ts --max=1500 --apply
 step "RaceResult, FCI, defaults"           scripts/fill-source-ages.ts
 step "Confirmed series categories"         scripts/apply-series-ages.ts
+step "Verified series documents, no model cost" scripts/enrich-series-documents.ts --max=500 --cached-only --apply
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
 step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --apply
 # The language model reads race pages once a day, within a small budget:
@@ -42,6 +45,8 @@ step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --app
 TODAY=$(date +%F)
 # LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
 if [ "${LLM_DAILY:-0}" = "1" ] && { [ "${LLM_FORCE_DAILY:-0}" = "1" ] || [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; }; then
+  # One season document can fill many rounds; give it first claim on the budget.
+  LLM_BUDGET_USD=0.12 step "Shared series propositions and categories" scripts/enrich-series-documents.ts --max=500 --apply
   # Sites first (Brave search, a model only picks among the results), so the
   # reader below reads the new ones the same day.
   LLM_BUDGET_USD=0.1  step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
@@ -60,5 +65,6 @@ fi
 step "Last year's editions"                scripts/carry-forward-editions.ts --apply
 step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30
 step "Coverage after"                      scripts/data-stats.ts
+step "90 percent completeness by country"  scripts/audit-data-goal.ts
 echo
 echo "=== done $(date '+%H:%M:%S')"

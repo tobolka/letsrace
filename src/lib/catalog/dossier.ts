@@ -57,6 +57,8 @@ export async function gatherDossier(race: {
   /** Render pages that are a script shell (needs Chrome on this machine). */
   render?: boolean;
   maxDocs?: number;
+  /** Follow shared rules through an intermediate series information page. */
+  seriesName?: string;
 }): Promise<DossierDoc[]> {
   const max = race.maxDocs ?? 8;
   const queue: { url: string; kind: DossierDoc["kind"] }[] = [];
@@ -79,10 +81,27 @@ export async function gatherDossier(race: {
     if (doc.thin) thin.push({ url, kind });
     docs.push({ url, kind, text: doc.text, thisEdition: textNamesEdition(doc.text, race.startDate), classLines: classLineCount(doc.text), thin: doc.thin });
     // From the race's own pages, follow what leads to rules, classes, entry.
-    if (doc.html && (kind === "site" || kind === "registration")) {
-      for (const l of linksOf(doc.html, url)) {
+    if (doc.html && (kind === "site" || kind === "registration" || (race.seriesName && kind === "linked"))) {
+      const words = (race.seriesName ?? "").toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !/^(cross|bike|cyclocross|202\d)$/.test(w));
+      const seriesLink = (label: string) => words.length > 0 && words.filter((w) => label.toLowerCase().includes(w)).length >= Math.min(2, words.length);
+      const rank = (l: { url: string; label: string }) => {
+        const blob = `${l.label} ${l.url}`;
+        return (/ausschreib|reglement|regulamin|propoz|rules|regolament/i.test(blob) ? 8 : 0)
+          + (/\.pdf|\.docx|kategori|categor|klassen/i.test(blob) ? 4 : 0) + (seriesLink(l.label) ? 3 : 0)
+          + (blob.includes(race.startDate.slice(0, 4)) ? 2 : 0) - (/ergebnis|result|archiv|histor/i.test(blob) ? 20 : 0);
+      };
+      const links = linksOf(doc.html, url);
+      if (race.seriesName) links.sort((a, b) => rank(b) - rank(a));
+      for (const l of links) {
         if (queue.length >= max * 2) break;
-        if (FOLLOW.test(`${l.label} ${l.url}`) || isRegistrationPlatformUrl(l.url)) add(l.url, isRegistrationPlatformUrl(l.url) ? "registration" : "linked");
+        if (FOLLOW.test(`${l.label} ${l.url}`) || (race.seriesName && seriesLink(l.label)) || isRegistrationPlatformUrl(l.url)) {
+          add(l.url, isRegistrationPlatformUrl(l.url) ? "registration" : "linked");
+          // Read a newly found proposition before queued news/footer pages consume maxDocs.
+          if (race.seriesName && rank(l) >= 8) {
+            const at = queue.findIndex((q) => q.url === directDocumentUrl(l.url));
+            if (at > i + 1) queue.splice(i + 1, 0, queue.splice(at, 1)[0]!);
+          }
+        }
       }
     }
   }

@@ -9,6 +9,14 @@ import {
  * the timing platform's own config endpoint.
  */
 describe("parseContestCategories", () => {
+  it("reads every admitted children's band from the current Krapf birth-year classes", () => {
+    expect(parseContestCategories(["Erwachsene bis 1986", "Erwachsene ab 1987", "Damen bis 2010", "Mini Kids 2016-2019", "Kids 2011-2015", "2 Runden FUN"], { refYear: 2026 }))
+      .toEqual(expect.arrayContaining(["u9", "u11", "u13", "u15", "u17", "kids", "youth", "amateur"]));
+  });
+  it("does not put U11 in youth or U17 in juniors", () => {
+    expect(parseContestCategories(["Schülerrennen U11"])).toEqual(["u11", "kids"]);
+    expect(parseContestCategories(["U17"])).toEqual(["u17", "youth"]);
+  });
   it("reads a Czech marathon's contests", () => {
     const ages = parseContestCategories([
       "56 km - hlavní závod",

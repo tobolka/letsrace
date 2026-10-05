@@ -54,6 +54,14 @@ describe("ageCategoriesFromList", () => {
 });
 
 describe("other federations' class names", () => {
+  it("reads tight birth-year ranges and every admitted child band", () => {
+    expect(ageCategoriesFromList([{ name: "Mini Kids Jahrgang 2016-2019" }, { name: "Kids Jahrgang 2011-2015" }], { refYear: 2026 }))
+      .toEqual(["u9", "u11", "u13", "u15", "u17", "kids", "youth"]);
+  });
+  it("does not turn an adult birth-year ceiling into one exact age", () => {
+    expect(ageCategoriesFromList([{ name: "Damen bis 2010" }], { refYear: 2026 })).toEqual(expect.arrayContaining(["u17", "youth", "junior", "amateur"]));
+    expect(ageCategoriesFromList([{ name: "Erwachsene ab 1987" }], { refYear: 2026 })).toEqual(["amateur"]);
+  });
   it("places Italian, Dutch, Polish and French youth classes", async () => {
     const { ageCategoriesFromList } = await import("@/lib/age-bands");
     const one = (n: string) => ageCategoriesFromList([{ name: n }], { refYear: 2026 }).filter((a) => a !== "kids" && a !== "youth");

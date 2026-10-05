@@ -39,6 +39,7 @@ async function main() {
   const targets = rows
     .filter((r) => r.age_confidence !== "explicit" && (again || !skip.has(r.id)) && !CHAMPIONSHIP.test(r.name))
     .filter((r) => !country || r.location?.country_code === country)
+    .filter((r) => !process.env.CATALOG_COUNTRIES || process.env.CATALOG_COUNTRIES.split(",").includes(r.location?.country_code ?? ""))
     .slice(0, max);
   const result = { targets: targets.length, stated: 0, notSafe: 0, nothing: 0, failed: 0, costUsd: 0 };
   let stop = false;
