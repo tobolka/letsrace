@@ -76,10 +76,17 @@ function nameWords(name: string): string[] {
   return [...new Set(fold(searchableName(name)).split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !generic.test(w)))];
 }
 
-function namesTheRace(text: string, name: string): boolean {
+export function namesRaceVariant(text: string, name: string): boolean {
+  const variants = fold(name).match(/\b(?:mini|kids|junior|juniors|bambini|giovanissimi)\b/g) ?? [];
+  return variants.every((variant) => new RegExp(`\\b${variant}\\b`).test(fold(text)));
+}
+
+export function namesTheRace(text: string, name: string): boolean {
   const words = nameWords(name);
   if (!words.length) return false;
   const t = fold(text);
+  // A children's/mini variant is a different event even when date and venue match.
+  if (!namesRaceVariant(text, name)) return false;
   return words.filter((w) => t.includes(w)).length >= Math.max(1, Math.ceil(words.length * 0.6));
 }
 
@@ -107,7 +114,7 @@ async function isOwnPage(t: Target, page: { url: string; title: string; text: st
   const { json } = await askJson<{ verdict?: string; reason?: string }>({
     system:
       "You check a link before it is saved as a cycling race's website. " +
-      "yes: the race's own site, or the organiser's (club's) page or post announcing this race — also when it covers a second race of the same weekend, and when the date is given without the year. " +
+      "yes: the race's own site, or the organiser's (club's) page or post explicitly announcing this exact race, including its mini, junior or children's variant when present in the name, and when the date is given without the year. " +
       "no: a calendar or aggregator listing many races, a news or results article, a town or tourism page, a different race, or only another year's edition. " +
       'Answer JSON only: {"verdict":"yes|no","reason":"short"}',
     user: `Race: ${t.name}\nDate: ${t.startDate}\nTown: ${t.municipality ?? "?"}\n\nPage: ${page.url}\nTitle: ${page.title}\nText: ${aroundName(page.text, t.name)}`,
@@ -338,6 +345,11 @@ export async function researchRaces(opts?: {
           return;
         }
         const doc = await readDocument(url).catch(() => null);
+        if (doc && !namesRaceVariant(doc.text, t.name)) {
+          result.rejected += 1;
+          opts?.log?.(`  OTHER VARIANT ${field}: ${url}`);
+          return;
+        }
         const text = `${hit.title} ${doc?.text ?? ""}`;
         if (!doc || doc.text.length < 40) {
           result.rejected += 1;
