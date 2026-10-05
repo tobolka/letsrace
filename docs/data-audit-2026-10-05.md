@@ -40,10 +40,36 @@ Opravená cena Sonnet 5.5 a nastavení krátkých auditních odpovědí vycháze
 
 ## Ověření a hranice
 
-Živé volání Sonnetu 5.5 potvrdilo, že `thinking.type = between_tools` API přijímá. Test s limitem 60 tokenů skončil `max_tokens` a neúplným JSON, s limitem 400 tokenů vrátil platný JSON. Následný test skutečné funkce nad živým webem `https://www.perlcross.de` vrátil kladný verdikt za 0,00296 USD. Nízký limit ve `isTheRacesPage` je zvýšený na 400. Uříznutý nebo neplatný JSON se hlásí jako chyba, nikoli jako negativní verdikt; útrata se přesto započítává.
+Živé volání Sonnetu 5.5 potvrdilo, že `thinking.type = between_tools` API přijímá. Test s limitem 60 tokenů skončil `max_tokens` a neúplným JSON, s limitem 400 tokenů vrátil platný JSON. Následný test skutečné funkce nad živým webem `https://www.perlcross.de` vrátil kladný verdikt za 0,00296 USD. Nízký limit ve `isTheRacesPage` je zvýšený na 800. Uříznutý nebo neplatný JSON se hlásí jako chyba, nikoli jako negativní verdikt; útrata se přesto započítává.
 
-Všech 694 testů prošlo, stejně jako kontrola TypeScriptu a lint změněných souborů. Regresní testy kontrolují dětský filtr včetně databázového dotazu, levné dohledání odkazů bez modelu a Brave, důkazy v kalendáři, výjimky seriálů a sdílené denní/měsíční rozpočty.
+Všech 697 testů prošlo, stejně jako kontrola TypeScriptu a lint změněných souborů. Regresní testy kontrolují dětský filtr včetně databázového dotazu, levné dohledání odkazů bez modelu a Brave, důkazy v kalendáři, výjimky seriálů a sdílené denní/měsíční rozpočty.
 
 Živý suchý test dvou obtížných italských závodů: 7 vyhledávání, 0 ověřených nových odkazů, 0,025 USD za modelové výběry. Není doložené plošné zlepšení výtěžnosti Brave; širší hledání samo nestačí. Oficiální detailové stránky a propozice seriálů mají přednost před navyšováním počtu dotazů.
 
-V tomto úkolu nebyly aplikované opravy produkčních dat ani sloučení, nebyl proveden commit, push nebo deployment. Zlatá sada 50 ručně ověřených závodů a naměřená přesnost jednotlivých polí z původního plánu zatím nejsou hotové; nelze tvrdit 95% přesnost. Mezi následnými kontrolami zůstává také interpretace lokálních časů uzávěrek, které nynější zápis ukládá s UTC offsetem.
+Po autorizaci uživatele byly změny commitnuté a obnova spuštěná proti katalogu. Push ani deployment nebyly provedeny. Zlatá sada 50 ručně ověřených závodů a naměřená přesnost jednotlivých polí z původního plánu zatím nejsou hotové; nelze tvrdit 95% přesnost. Mezi následnými kontrolami zůstává také interpretace lokálních časů uzávěrek, které nynější zápis ukládá s UTC offsetem.
+
+
+## Ostrý běh po commitu (09:40–09:54)
+
+Pravidelný šestihodinový proces během ověřování spustil celý refresh a doběhl v 09:52. Nové modelové čtečky byly navíc spuštěné samostatně, protože dnešní značka by jejich denní blok přeskočila. Výchozí měření vzniklo již během prvního kola obnovy, takže nejde o izolovaný experiment.
+
+| Ukazatel (aktivní veřejné závody, následujících 365 dní) | Před | Po |
+|---|---:|---:|
+| Závody | 1 086 | 1 080 |
+| Všech pět údajů, vlastní web | 203 | 203 |
+| Doložené kategorie | 687 | 687 |
+| Odkaz na propozice | 279 | 273 |
+| Souřadnice | 1 050 | 1 043 |
+| Chybí vlastní web | 150 | 148 |
+
+Populace se při obnově měnila, zejména německá část. Snížení počtu chybějících kategorií není jejich doplnění: počet doložených kategorií zůstal stejný. Příčinu každého odchodu z této populace nelze doložit z uloženého souhrnu; předchozí kompletní seznam ID nebyl uložen. Nelze tedy tvrdit plošné zvýšení úplnosti katalogu.
+
+- Načteno 300 oficiálních zdrojů (3 776 upsertů, žádné hlášené selhání) a dalších 59 zdrojů (411 upsertů). Upsert není nový závod.
+- Deterministické duplicity: 0 kandidátů, 0 sloučení. Audit stejného místa a dne: 29 skupin k prověření, nikoli potvrzené duplicity.
+- Modelové dohledání ponechalo 4 nové či lepší odkazy: Trofeo Parco del Ticino, Local Series of Downhill ve Wisłe, detail FCI pro Coppa Citta di San Daniele a VELO Kladno. FCI detail není vlastní web pořadatele.
+- Kontrola odhalila záměnu Mini Giro s hlavním Il Lombardia a obecný rakouský svazový řád vydávaný za propozice závodu. Oba nové zápisy byly vráceny přes jejich předchozí hodnoty; pozdější změny jsou chráněné porovnáním aktuální hodnoty. Byla doplněná kontrola variant mini/kids/junior a samostatný modelový audit propozic. Živý test nového auditu odmítl rakouský obecný řád.
+- První pokusy měly uříznuté odpovědi. Limit výběru výsledků zvýšen na 400, limit Sonnetových kontrol stránky na 800. Poslední opakování přijalo VELO Kladno bez chyby uříznutí; druhý závod zastavil procesový rozpočet. Nejde o důkaz, že se uříznutí již nikdy neobjeví.
+- Z deterministických čteček přibyla jedna přihláška. Modelový čtenář kategorií nové doložené kategorie nepřidal, čtečka dokumentů měla 4 cíle bez výsledku. Přenos kategorií potvrzených seriálů nenavrhl změnu.
+- Sdílený denní a měsíční účet po běhu: 0,432391 USD, bez otevřených rezervací. Před kontrolou byl 0,058431 USD; přírůstek je 0,373960 USD za modely. Brave se účtuje samostatně. Jedno selhání geokódování a zastavení placených kroků kvůli jejich procesovým rozpočtům zůstávají v logu viditelné.
+
+Lokální důkazy: `tmp/refresh-2026-10-05-0940.log`, `tmp/research-committed-run.log`, `tmp/research-committed-retry.log`, `tmp/research-final-verification.log`, `tmp/all-model-facts-committed-run.json`, `tmp/rules-verdict-committed-run.log`, `tmp/data-goal-before-committed-run.json`, `tmp/data-goal-after-committed-run.json`, `tmp/integrity-after-committed-run.log`. Tyto dočasné soubory nejsou verzované.

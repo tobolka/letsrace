@@ -213,7 +213,7 @@ export async function isTheRacesPage(
       "other: a town or tourism page (even one describing the race), a news article, a calendar, aggregator or results platform that lists many events (finishers.com, ahotu, raceraves…), " +
       "a venue's, sports centre's or club's general front page where this race is only one item among others, another race, or another year only. When unsure, answer other.",
     user: `Race: ${race.name}\nDate: ${race.startDate}\nPlace: ${race.municipality ?? "?"}\n\nPage: ${page.url}\nTitle: ${page.title}\nText: ${page.text.replace(/\s+/g, " ").slice(0, 2500)}`,
-    maxTokens: 400,
+    maxTokens: 800,
     model: SONNET,
   });
   return ["race_page", "organiser_page", "registration_page"].includes(json?.verdict ?? "");

@@ -122,7 +122,7 @@ async function askJsonUnchecked<T>(opts: {
   }
   const usage = { tokensIn, tokensOut, costUsd: (tokensIn * pin + tokensOut * pout) / 1_000_000 };
   spent += usage.costUsd;
-  if (body.stop_reason === "max_tokens") throw new LlmResponseError("Model response was truncated at max_tokens; no verdict recorded", usage);
+  if (body.stop_reason === "max_tokens") throw new LlmResponseError(`${model} response was truncated at max_tokens; no verdict recorded`, usage);
   if (json === null) throw new LlmResponseError("Model response did not contain valid JSON; no verdict recorded", usage);
   return {
     json,

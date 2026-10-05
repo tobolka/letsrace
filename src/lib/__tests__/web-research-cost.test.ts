@@ -3,11 +3,17 @@ const stubs = vi.hoisted(() => ({ search: vi.fn(), read: vi.fn(), ask: vi.fn() }
 vi.mock("@/lib/catalog/brave", () => ({ braveSearch: stubs.search, braveAvailable: () => true, BraveUnavailable: class extends Error {} }));
 vi.mock("@/lib/catalog/regulation-ages", async (original) => ({ ...await original<object>(), readDocument: stubs.read }));
 vi.mock("@/lib/llm/anthropic", async (original) => ({ ...await original<object>(), askJson: stubs.ask }));
-import { namesRaceVariant, namesTheRace, searchAndPick } from "@/lib/catalog/web-research";
+import { isRaceRules, namesRaceVariant, namesTheRace, searchAndPick } from "@/lib/catalog/web-research";
 const race = { id: "race", name: "Perlcross", municipality: "Perl", startDate: "2026-10-11", country: "DE", disciplines: ["cx"], website: "https://perlcross.de/", registration: null, regulations: null };
 afterEach(() => vi.resetAllMocks());
 const doc = { text: "Perlcross Perl 11.10.2026", html: '<a href="/anmeldung">Anmeldung</a><a href="/ausschreibung.pdf">Ausschreibung</a>' };
 describe("research cost", () => {
+  it("requires a separate verdict for race propositions and preserves shared series rules", async () => {
+    stubs.ask.mockResolvedValueOnce({ json: { verdict: "no" } }).mockResolvedValueOnce({ json: { verdict: "yes" } });
+    expect(await isRaceRules(race, { url: "https://fed.test/rules.pdf", title: "Sporting code", text: "General MTB federation rules" })).toBe(false);
+    expect(await isRaceRules(race, { url: "https://perlcross.de/rules.pdf", title: "Perlcross", text: "Series rules for this season" })).toBe(true);
+    expect(stubs.ask.mock.calls[0]?.[0].system).toContain("general federation sporting code");
+  });
   it("does not confuse a mini or children's race with the main event", () => {
     expect(namesTheRace("Il Lombardia Giro Bergamo 10/10/2026", "MINI GIRO DI LOMBARDIA")).toBe(false);
     expect(namesRaceVariant("Il Lombardia 10/10/2026", "MINI GIRO DI LOMBARDIA")).toBe(false);
