@@ -13,10 +13,12 @@ for (const line of readFileSync(resolve(".env.local"), "utf8").split("\n")) {
 
 async function main() {
   const { fillRaceResultAgeCategories } = await import("../src/lib/catalog/raceresult-ages");
+  const { fillRegistrationAgeEvidence } = await import("../src/lib/catalog/registration-ages");
   const { fillFciAgeCategories } = await import("../src/lib/catalog/fci-ages");
   const { geocodePendingLocations } = await import("../src/lib/geocode");
   const { fillEmptyAgeCategories } = await import("../src/lib/catalog/ages");
   console.log("raceresult", await fillRaceResultAgeCategories({ max: 400 }));
+  console.log("registration evidence", await fillRegistrationAgeEvidence({ max: 400 }));
   console.log("fci", await fillFciAgeCategories({ max: 600 }));
   console.log("geocode", await geocodePendingLocations(600));
   console.log("defaults", await fillEmptyAgeCategories({ maxEvents: 3000 }));
