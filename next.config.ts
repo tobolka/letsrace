@@ -38,14 +38,12 @@ const nextConfig: NextConfig = {
    * Crawlers that get the title, description and canonical in <head>.
    *
    * Next streams metadata after the page shell for everyone not on its own
-   * list — which leaves out Googlebot itself and SeznamBot. A race page's
-   * <title> arrived half a megabyte into the body, after the map shell:
-   * Google copes once it renders the page, Seznam (a tenth of Czech search)
-   * is not built to. Next's default list is kept whole and these two added;
+   * list — which leaves out Googlebot, SeznamBot and AI search crawlers.
+   * Keep their metadata in the initial head, alongside the default bots;
    * setting the option replaces the default rather than extending it.
    */
   htmlLimitedBots:
-    /Googlebot|SeznamBot|[\w-]+-Google|Google-[\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight/i,
+    /Googlebot|SeznamBot|OAI-SearchBot|ChatGPT-User|PerplexityBot|Perplexity-User|Claude-SearchBot|Claude-User|[\w-]+-Google|Google-[\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight/i,
   // Nothing calls `next/image` (plain <img> throughout). Leaving the optimiser
   // on makes Next trace `sharp` + libvips (~28 MB) into every page function.
   images: { unoptimized: true },

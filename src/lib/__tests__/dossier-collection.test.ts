@@ -45,3 +45,9 @@ it("reads a class table and RaceResult before generic menu links exhaust the dos
   const { editionDocs } = await import("@/lib/catalog/dossier-classes");
   expect(editionDocs(docs, "2026-10-24", ["Race"])).toContain(docs[1]);
 });
+
+it("reads supplied rules and registration before links discovered on the homepage", async () => {
+  const { gatherDossier } = await import("@/lib/catalog/dossier");
+  const docs = await gatherDossier({ startDate: "2026-10-24", website: "https://organiser.example/", registration: "https://entry.example/race", regulations: "https://club.example/propozice.pdf", sources: [], maxDocs: 3 });
+  expect(docs.map(doc => doc.url)).toEqual(["https://organiser.example/", "https://club.example/propozice.pdf", "https://entry.example/race"]);
+});

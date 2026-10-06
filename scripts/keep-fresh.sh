@@ -8,12 +8,27 @@
 #
 #   bash scripts/keep-fresh.sh          # every 2 hours
 #   bash scripts/keep-fresh.sh 2        # every 2 hours
+#   bash scripts/keep-fresh.sh --deep --hours=6  # bounded deep collection + refresh
 #
 # Each run is logged to tmp/refresh-<date>-<time>.log.
-set -u
+set -uo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p tmp
-HOURS="${1:-2}"
+HOURS=2
+RUN_HOURS=0
+for argument in "$@"; do
+  case "$argument" in
+    --deep) export SOURCE_DEEP=1 ;;
+    --hours=*) RUN_HOURS="${argument#--hours=}" ;;
+    --help) echo 'Usage: bash scripts/keep-fresh.sh [interval-hours] [--deep] [--hours=6]'; exit 0 ;;
+    [0-9]*) HOURS="$argument" ;;
+    *) echo "Unknown option: $argument" >&2; exit 1 ;;
+  esac
+done
+if ! [[ "$HOURS" =~ ^[0-9]+$ && "$RUN_HOURS" =~ ^[0-9]+$ ]] || [ "$HOURS" -lt 1 ]; then
+  echo 'Hours must be whole numbers; interval must be at least 1.' >&2; exit 1
+fi
+if [ "$RUN_HOURS" -gt 0 ]; then export SOURCE_RUN_DEADLINE=$(( $(date +%s) + RUN_HOURS * 3600 )); fi
 # The model's daily work (a few cents a day, each step capped) and its reading
 # of calendars no parser knows. Set to 0 to run without the model.
 # Shared across every subprocess and refresh, including fallback calendar readers.
@@ -25,10 +40,18 @@ export BRAVE_SEARCH_LIMIT="${BRAVE_SEARCH_LIMIT:-40}"
 export LLM_DAILY="${LLM_DAILY:-1}"
 export LLM_CALENDARS="${LLM_CALENDARS:-1}"
 while true; do
+  if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then break; fi
   LOG="tmp/refresh-$(date +%F-%H%M).log"
   echo "=== run started $(date '+%F %H:%M'), log: $LOG"
-  caffeinate -i bash scripts/refresh-data.sh > "$LOG" 2>&1
-  tail -22 "$LOG"
+  if ! caffeinate -i bash scripts/refresh-data.sh 2>&1 | tee "$LOG"; then
+    echo "Refresh reported errors; details: $LOG"
+  fi
+  if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ]; then
+    REMAINING=$((SOURCE_RUN_DEADLINE - $(date +%s)))
+    if [ "$REMAINING" -le 0 ]; then break; fi
+    if [ "$REMAINING" -lt $((HOURS * 3600)) ]; then break; fi
+  fi
   echo "=== next run in ${HOURS} h ($(date -v+${HOURS}H '+%H:%M'))"
   sleep $((HOURS * 3600))
 done
+echo 'Finished. Data: tmp/source-dossiers/summary.json; completeness: tmp/data-goal-audit-latest.json'

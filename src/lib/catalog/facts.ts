@@ -39,12 +39,14 @@ export function textHash(text: string): string {
 
 /** True when this reader already read this exact text. */
 export async function alreadyRead(supabase: SupabaseClient, url: string, reader: string, hash: string): Promise<boolean> {
-  const { data } = await supabase.from("page_reads").select("text_hash").eq("url", url).eq("reader", reader).maybeSingle();
+  const { data, error } = await supabase.from("page_reads").select("text_hash").eq("url", url).eq("reader", reader).maybeSingle();
+  if (error) throw new Error(`Reading document checkpoint: ${error.message}`);
   return data?.text_hash === hash;
 }
 
 export async function markRead(supabase: SupabaseClient, url: string, reader: string, hash: string): Promise<void> {
-  await supabase.from("page_reads").upsert({ url, reader, text_hash: hash, read_at: new Date().toISOString() }, { onConflict: "url,reader" });
+  const { error } = await supabase.from("page_reads").upsert({ url, reader, text_hash: hash, read_at: new Date().toISOString() }, { onConflict: "url,reader" });
+  if (error) throw new Error(`Saving document checkpoint: ${error.message}`);
 }
 
 /**
@@ -62,6 +64,8 @@ export async function rollbackFacts(
   const { data } = await q.order("created_at", { ascending: false }).limit(10000);
   const result = { facts: data?.length ?? 0, restored: 0, kept: 0 };
   for (const f of (data ?? []) as { id: string; event_id: string; field: string; value: unknown; previous: unknown }[]) {
+    // Source snapshots are evidence documents, not columns on events.
+    if (f.field === "source_evidence") { result.kept += 1; continue; }
     const { data: ev } = await supabase.from("events").select(f.field).eq("id", f.event_id).maybeSingle();
     const now = (ev as Record<string, unknown> | null)?.[f.field];
     if (JSON.stringify(now ?? null) !== JSON.stringify(f.value ?? null)) {

@@ -5,9 +5,12 @@
  *   LLM_BUDGET_USD=0.5 node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/fill-dossier-classes.ts [--max=700] [--country=CZ] [--again] [--past] [--apply]
  */
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { readJson } from "../src/lib/catalog/local-source-cache";
+import type { DossierDoc } from "../src/lib/catalog/dossier";
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, ""); }
 
-const VERSION = "dossier-classes-v4";
+const VERSION = "dossier-classes-v5-all-sources";
 const PROBE = "dossier_classes_v2";
 type Row = { id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; age_confidence: string | null; age_categories: string[] | null; audience: string | null; overrides: { locked_fields: string[] | null } | null; location: { municipality: string | null; country_code: string | null } | null; sources: { source_url: string | null }[] | null };
 
@@ -16,16 +19,19 @@ async function main() {
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 700);
   const country = process.argv.find((a) => a.startsWith("--country="))?.slice(10);
   const again = process.argv.includes("--again");
+  const allSources = process.argv.includes("--all-sources");
+  const dossierDirectory = process.argv.find(a => a.startsWith("--dossier-dir="))?.slice(14);
   const ids = process.argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",");
   // Last season's races: what they stated carries to this year's edition.
   const past = process.argv.includes("--past");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
-  const { gatherDossier } = await import("../src/lib/catalog/dossier");
+  const { gatherEventDossier } = await import("../src/lib/catalog/source-evidence");
   const { classesFromDossier, statable, auditDossierClasses } = await import("../src/lib/catalog/dossier-classes");
   const { recordFacts, textHash, alreadyRead, markRead } = await import("../src/lib/catalog/facts");
   const { recentlyProbed, recordProbe } = await import("../src/lib/catalog/probes");
   const { audienceFromAgeCategories } = await import("../src/lib/taxonomy");
   const { mayInheritSeriesAges } = await import("../src/lib/catalog/series-ages");
+  const { mergeStatedAges } = await import("../src/lib/catalog/merge-category-evidence");
   const { LlmUnavailable, HAIKU, llmSpent } = await import("../src/lib/llm/anthropic");
   const { mapPool } = await import("../src/lib/watcher/pool");
   const s = createServerSupabase();
@@ -41,7 +47,7 @@ async function main() {
   }
   const targets = rows
     .filter((r) => !ids || ids.includes(r.id))
-    .filter((r) => mayInheritSeriesAges({ ...r, locked_fields: r.overrides?.locked_fields }) && (again || !skip.has(r.id)))
+    .filter((r) => (allSources ? !(r.overrides?.locked_fields ?? []).some(f => ["age_categories", "age_confidence", "audience"].includes(f)) : mayInheritSeriesAges({ ...r, locked_fields: r.overrides?.locked_fields })) && (again || !skip.has(r.id)))
     .filter((r) => !country || r.location?.country_code === country)
     .filter((r) => !process.env.CATALOG_COUNTRIES || process.env.CATALOG_COUNTRIES.split(",").includes(r.location?.country_code ?? ""))
     .slice(0, max);
@@ -50,7 +56,9 @@ async function main() {
   await mapPool(targets, 4, async (r) => {
     if (stop) return;
     try {
-      const docs = await gatherDossier({ startDate: r.start_date, website: r.website_url, registration: r.registration_url, regulations: r.regulations_url, sources: (r.sources ?? []).map((x) => x.source_url).filter((u): u is string => Boolean(u)), render: process.argv.includes("--render") });
+      const archived = dossierDirectory ? await readJson<{ collectedAt: string; race: { name: string; start_date: string }; documents: DossierDoc[] }>(resolve(dossierDirectory, `${r.id}.json`)) : null;
+      const freshArchive = archived?.race.name === r.name && archived.race.start_date === r.start_date && Date.now() - Date.parse(archived.collectedAt) < 24 * 3600000;
+      const docs = freshArchive ? archived.documents : await gatherEventDossier(s, r.id, { startDate: r.start_date, website: r.website_url, registration: r.registration_url, regulations: r.regulations_url, sources: (r.sources ?? []).map((x) => x.source_url).filter((u): u is string => Boolean(u)), render: process.argv.includes("--render") });
       const readUrl = docs[0]?.url ?? r.website_url ?? r.id;
       const reader = `${VERSION}:${r.id}`;
       const hash = textHash(JSON.stringify({ name: r.name, date: r.start_date, docs }));
@@ -73,14 +81,20 @@ async function main() {
       if (!apply) result.stated += 1;
       console.log(`${apply ? "SET" : "DRY"}  ${r.start_date}  ${r.name}  → ${got.ages.join(",")}  (had ${(r.age_categories ?? []).join(",") || "-"})\n      ${got.lines.slice(0, 4).map((l) => l.line.slice(0, 100)).join(" | ")}\n      ${got.lines[0]?.url}`);
       if (!apply) return;
-      const { data: saved, error } = await s.from("events").update({ age_categories: got.ages, age_confidence: "explicit", audience: audienceFromAgeCategories(got.ages), updated_at: new Date().toISOString() }).eq("id", r.id).or("age_confidence.is.null,age_confidence.neq.explicit,age_categories.is.null,age_categories.eq.{}").select("id");
+      const ages = mergeStatedAges(r.age_categories, r.age_confidence, got.ages, []) as typeof got.ages;
+      // Compare with the read snapshot so another collector's new evidence is
+      // never overwritten by a stale dossier; a later pass can retry it.
+      let update = s.from("events").update({ age_categories: ages, age_confidence: "explicit", audience: audienceFromAgeCategories(ages), updated_at: new Date().toISOString() }).eq("id", r.id);
+      update = r.age_confidence == null ? update.is("age_confidence", null) : update.eq("age_confidence", r.age_confidence);
+      update = r.age_categories == null ? update.is("age_categories", null) : update.eq("age_categories", r.age_categories);
+      const { data: saved, error } = await update.select("id");
       if (error) throw error;
       if (saved?.length) {
         result.stated += 1;
         await recordFacts(s, r.id, [
-          { field: "age_categories", value: got.ages, previous: r.age_categories, sourceUrl: got.lines[0]?.url, quote: got.lines.map((l) => l.line).join(" | ").slice(0, 2000) },
+          { field: "age_categories", value: ages, previous: r.age_categories, sourceUrl: got.lines[0]?.url, quote: got.lines.map((l) => l.line).join(" | ").slice(0, 2000) },
           { field: "age_confidence", value: "explicit", previous: r.age_confidence, sourceUrl: got.lines[0]?.url },
-          { field: "audience", value: audienceFromAgeCategories(got.ages), previous: r.audience, sourceUrl: got.lines[0]?.url },
+          { field: "audience", value: audienceFromAgeCategories(ages), previous: r.audience, sourceUrl: got.lines[0]?.url },
         ], { method: "llm", model: HAIKU, version: VERSION });
       }
       await remember();

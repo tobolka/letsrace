@@ -22,6 +22,8 @@ import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/
 import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
+import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
+import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -2066,16 +2068,8 @@ async function upsertParsedEvent(
     }
   }
 
-  /**
-   * Ages used to be unioned on every pass, so one source's guess stuck to the
-   * row forever — a UCI World Championship carried "kids" for a season because
-   * a kids-cup adapter had seen the same weekend. Evidence from the name or
-   * category list now replaces the stored set; a level/discipline default only
-   * fills a row that has nothing.
-   */
-  // A source that states who may start is evidence of the same standing as a
-  // category list in the name — the two are unioned, and either replaces what
-  // is stored rather than being unioned into it.
+  // Combine positive category evidence across sources. A stated list replaces
+  // old defaults, while later guesses cannot widen already stated classes.
   const statedAges =
     ev.ageCategories?.length || classified.ageConfidence === "explicit"
       ? unionText(
@@ -2088,11 +2082,7 @@ async function upsertParsedEvent(
   // stated "U11" does not grow "amateur, masters" because it is gravel.
   const existingExplicit =
     existingRow?.age_confidence === "explicit" && (existingRow.age_categories ?? []).length > 0;
-  const mergedAgeCategories =
-    statedAges ??
-    (existingExplicit
-      ? (existingRow!.age_categories as string[])
-      : unionText(existingRow?.age_categories, classified.ageCategories));
+  const mergedAgeCategories = mergeStatedAges(existingRow?.age_categories, existingRow?.age_confidence, statedAges, classified.ageCategories);
   const ageConfidence = statedAges?.length || existingExplicit
     ? "explicit"
     : mergedAgeCategories.length
@@ -2310,6 +2300,8 @@ async function upsertParsedEvent(
 
   if (!eventId) return null;
 
+  await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
+
   if (beforeSnap) {
     try {
       const { recordEventPlanChanges } = await import("@/lib/plan-changes-db");
@@ -2329,7 +2321,7 @@ async function upsertParsedEvent(
     }
   }
 
-  await supabase.from("event_sources").upsert(
+  const { error: sourceWriteError } = await supabase.from("event_sources").upsert(
     {
       event_id: eventId,
       watched_url_id: watchedUrlId,
@@ -2347,19 +2339,31 @@ async function upsertParsedEvent(
     },
     { onConflict: "watched_url_id,external_id" },
   );
+  if (sourceWriteError) throw sourceWriteError;
 
-  if (ev.categories?.length) {
-    await supabase.from("event_categories").delete().eq("event_id", eventId);
-    await supabase.from("event_categories").insert(
-      ev.categories.map((c) => ({
-        event_id: eventId,
+  if (ev.categories?.length && !lockedFields.includes("categories")) {
+    const { data: held, error: readError } = await supabase.from("event_categories")
+      .select("id,name,distance_km,age_min,age_max,audience").eq("event_id", eventId);
+    if (readError) throw readError;
+    const incoming: CategoryEvidence[] = ev.categories.map((c) => ({
         name: c.name,
         distance_km: c.distanceKm ?? null,
         age_min: c.ageMin ?? null,
         age_max: c.ageMax ?? null,
         audience: c.audience ?? ev.audience ?? null,
-      })),
-    );
+    }));
+    for (const row of mergeCategoryEvidence((held ?? []) as CategoryEvidence[], incoming)) {
+      if (row.id) {
+        const before = held?.find(r => r.id === row.id);
+        if (JSON.stringify(before) === JSON.stringify(row)) continue;
+        const { id, ...values } = row;
+        const { error } = await supabase.from("event_categories").update(values).eq("id", id).eq("event_id", eventId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("event_categories").insert({ ...row, event_id: eventId });
+        if (error) throw error;
+      }
+    }
   }
 
   // Explicit secondary memberships from the parser (alsoSeries).

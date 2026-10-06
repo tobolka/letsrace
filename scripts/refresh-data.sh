@@ -13,12 +13,14 @@ export LLM_LEDGER_PATH="${LLM_LEDGER_PATH:-$PWD/tmp/llm-budget.json}"
 export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-0.50}"
 export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-5}"
 export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE}"
+FAILURES=0
 
 step() {
   local title="$1"; shift
+  if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then echo "Time limit reached; pending: $title"; return 0; fi
   echo
   echo "=== $title  ($(date '+%H:%M:%S'))"
-  node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@" || echo "!!! $title failed"
+  if ! node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@"; then echo "!!! $title failed"; FAILURES=$((FAILURES + 1)); fi
 }
 
 step "Coverage before"                     scripts/data-stats.ts
@@ -39,6 +41,14 @@ step "Confirmed series categories"         scripts/apply-series-ages.ts
 step "Verified series documents, no model cost" scripts/enrich-series-documents.ts --max=500 --cached-only --apply
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
 step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --apply
+if [ "${SOURCE_DEEP:-0}" = "1" ]; then
+  DEEP_HOURS="${SOURCE_DEEP_HOURS:-4}"
+  if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ]; then
+    REMAINING=$((SOURCE_RUN_DEADLINE - $(date +%s)))
+    if [ "$REMAINING" -gt 0 ]; then DEEP_HOURS=$(awk -v seconds="$REMAINING" -v cap="$DEEP_HOURS" 'BEGIN { printf "%.6f", (seconds < cap * 3600 ? seconds : cap * 3600) / 3600 }'); fi
+  fi
+  step "All countries: all-source documents, resumable local archive" scripts/collect-source-dossiers.ts --country=all --out=tmp/source-dossiers --render --hours="$DEEP_HOURS"
+fi
 # The language model reads race pages once a day, within a small budget:
 # new races, and ones not read for a month. Calendars it reads only when they
 # change (inside the watch steps above, capped per process).
@@ -51,7 +61,7 @@ if [ "${LLM_DAILY:-0}" = "1" ] && { [ "${LLM_FORCE_DAILY:-0}" = "1" ] || [ "$(ca
   # reader below reads the new ones the same day.
   LLM_BUDGET_USD=0.1  step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
   LLM_BUDGET_USD=0.15 step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
-  LLM_BUDGET_USD=0.1  step "Classes from each race's documents" scripts/fill-dossier-classes.ts --max=300 --render --apply
+  LLM_BUDGET_USD=0.1  step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
   LLM_BUDGET_USD=0.03 step "Races linked to their series"    scripts/link-series.ts --apply
   if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
     LLM_BUDGET_USD=0.1 step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
@@ -64,7 +74,9 @@ if [ "${LLM_DAILY:-0}" = "1" ] && { [ "${LLM_FORCE_DAILY:-0}" = "1" ] || [ "$(ca
 fi
 step "Last year's editions"                scripts/carry-forward-editions.ts --apply
 step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30
-step "Coverage after"                      scripts/data-stats.ts
-step "90 percent completeness by country"  scripts/audit-data-goal.ts
+SOURCE_RUN_DEADLINE=0 step "Coverage after" scripts/data-stats.ts
+SOURCE_RUN_DEADLINE=0 step "90 percent completeness by country" scripts/audit-data-goal.ts
 echo
 echo "=== done $(date '+%H:%M:%S')"
+echo "=== failed steps: $FAILURES"
+if [ "$FAILURES" -gt 0 ]; then exit 1; fi

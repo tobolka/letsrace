@@ -47,9 +47,20 @@ function isAggregatorHost(url: string): boolean {
   return Boolean(host && AGGREGATOR_HOST.test(host));
 }
 
+/** MTBS publishes race-specific rules inside its dated race article. */
+export function isMtbsRulesSection(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return /^(www\.)?mtbs\.cz$/i.test(u.hostname)
+      && /^\/clanek\/[^/]+\/kategorie\/[^/]+\/?$/i.test(u.pathname)
+      && u.hash.toLowerCase() === "#propozice";
+  } catch { return false; }
+}
+
 export function isRegulationsUrl(url: string | null | undefined): boolean {
   const u = (url || "").trim();
   if (!u || !/^https?:\/\//i.test(u)) return false;
+  if (isMtbsRulesSection(u)) return true;
   if (isAggregatorHost(u) || isRegistrationPlatformUrl(u) || SKIP.test(u)) return false;
   const host = hostOf(u);
   if (host && REGULATIONS_BLOCKLIST.test(host)) return false;
@@ -141,6 +152,8 @@ export function preferRegulationsUrl(
   const b = clean(existing);
   if (!a) return b;
   if (!b) return a;
+  // The organiser's own rules take precedence over a copy on MTBS.
+  if (isMtbsRulesSection(b) && isRegulationsUrl(a) && !isMtbsRulesSection(a)) return a;
   if (isPdf(a) && !isPdf(b)) return a;
   return b;
 }

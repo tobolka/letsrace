@@ -47,7 +47,7 @@ function absUrl(href: string | undefined): string | undefined {
   return undefined;
 }
 
-function parseCards(html: string): ParsedEvent[] {
+export function parseMtbsCards(html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
   const events: ParsedEvent[] = [];
 
@@ -74,10 +74,12 @@ function parseCards(html: string): ParsedEvent[] {
       .filter((_, a) => /registrace/i.test($(a).text()))
       .first()
       .attr("href");
+    const rulesHref = $card.find("a.a-badge")
+      .filter((_, a) => /propozice/i.test($(a).text())).first().attr("href");
+    const articleUrl = absUrl(articleHref);
 
     const sourceUrl =
-      absUrl(webHref) ||
-      (articleHref?.startsWith("/") ? `https://mtbs.cz${articleHref}` : absUrl(articleHref)) ||
+      articleUrl || absUrl(webHref) ||
       "https://mtbs.cz/sekce/kalendar";
 
     const disc = DISC_MAP[discRaw.toLowerCase()];
@@ -95,7 +97,9 @@ function parseCards(html: string): ParsedEvent[] {
       discipline: disc ? [disc] : undefined,
       audience,
       sourceUrl,
+      websiteUrl: absUrl(webHref),
       registrationUrl: absUrl(regHref),
+      regulationsUrl: absUrl(rulesHref),
       confidence: 0.88,
       childUrls: articleHref?.startsWith("/") ? [`https://mtbs.cz${articleHref}`] : undefined,
     });
@@ -128,7 +132,7 @@ async function fetchMtbsPage(offset: number, dates: string): Promise<string> {
 
 /** Parse MTBS calendar page + paginate via /ajax/loadkalendar.php */
 export async function parseMtbs(url: string, html: string): Promise<ParsedEvent[]> {
-  const events = parseCards(html);
+  const events = parseMtbsCards(html);
 
   // Paginate for full season (server-rendered page is only ~20 items)
   const year = new Date().getFullYear();
@@ -141,7 +145,7 @@ export async function parseMtbs(url: string, html: string): Promise<ParsedEvent[
     try {
       const chunk = await fetchMtbsPage(offset, dates);
       if (!chunk) break;
-      const more = parseCards(chunk);
+      const more = parseMtbsCards(chunk);
       if (!more.length) break;
       events.push(...more);
       if (more.length < 10) break;

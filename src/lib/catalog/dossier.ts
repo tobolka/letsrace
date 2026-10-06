@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { directDocumentUrl, readDocument } from "@/lib/catalog/regulation-ages";
+import { directDocumentUrl, readDocument, type ReadDoc } from "@/lib/catalog/regulation-ages";
 import { textNamesEdition } from "@/lib/date-in-text";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { linkLabel } from "@/lib/watcher/link-label";
@@ -29,8 +29,19 @@ export type DossierDoc = {
 const CLASS_LINE =
   /\b[MW]?U\s?-?\d{1,2}\b|\bjg\.?\s*\d|\b(19|20)\d\d\s*[-–/]\s*(19|20)?\d\d\b|kategori|categor|klasse|klasy|ro[čc]n[ií]k|rocznik|junior|master|elit[ea]\b|kadet|[žz][aá]c|[žz][aá]k|senior|hobby|amat|open|giovanissimi|esordienti|allievi|nieuwelingen|aspiranten|benjamin|minime|cadet/i;
 
-const FOLLOW = /propoz|pravidl|technical\s*guide|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|kategori|categor|klassen|klasy|registr|anmeld|p[řr]ihl|zapis|iscri|inscri|entry|startgeld|startovn|info|\.pdf/i;
+const FOLLOW = /propoz|pravidl|technical\s*guide|rules|regulation|reglement|regulamin|regolamento|ausschreibung|rozpis|bulletin|kategori|categor|klassen|klasy|registr|anmeld|p[řr]ihl|zapis|iscri|inscri|entry|startgeld|startovn|info|\.pdf/i;
 const SKIP = /facebook|instagram|youtube|twitter|strava|komoot|maps\.google|mailto:|tel:|\/imprint\/|\/fw\/shophelp\/|\/newshop(?:\/|\?)|\.(jpg|png|gif|zip)(\?|$)/i;
+
+/** Only race detail pages may fan out; a shared calendar holds many races. */
+export function isRaceListingDetail(url: string): boolean {
+  try {
+    const u = new URL(url);
+    const h = u.hostname.replace(/^www\./, "");
+    return (h === "mtbs.cz" && /^\/clanek\/[^/]+\/kategorie\/[^/]+\/?$/.test(u.pathname))
+      || (h === "sumator.cz" && /^\/race\/[^/]+\/?$/.test(u.pathname))
+      || ((/^(data\.)?ceskysvazcyklistiky\.cz$/.test(h) || h === "portal.czechcyclingfederation.com") && /^\/RaceDetail\/Race\/\d+\/?$/i.test(u.pathname));
+  } catch { return false; }
+}
 
 export function classLineCount(text: string): number {
   return text.split(/\n+/).filter((l) => l.length < 200 && CLASS_LINE.test(l)).length;
@@ -38,6 +49,7 @@ export function classLineCount(text: string): number {
 
 function linksOf(html: string, base: string): { url: string; label: string }[] {
   const $ = cheerio.load(html);
+  $("nav, header, footer, aside").remove();
   const out: { url: string; label: string }[] = [];
   $("a[href]").each((_, a) => {
     const raw = ($(a).attr("href") || "").trim();
@@ -73,6 +85,8 @@ export async function gatherDossier(race: {
   maxDocs?: number;
   /** Follow shared rules through an intermediate series information page. */
   seriesName?: string;
+  /** Shared reader lets multiple source dossiers reuse one network/document read. */
+  read?: (url: string) => Promise<ReadDoc | null>;
 }): Promise<DossierDoc[]> {
   const max = race.maxDocs ?? 8;
   const queue: { url: string; kind: DossierDoc["kind"]; linkedFromEdition?: boolean; priority: number }[] = [];
@@ -112,7 +126,7 @@ export async function gatherDossier(race: {
   for (let i = 0; i < queue.length && docs.length < max; i++) {
     readCursor = i + 1;
     const { url, kind, linkedFromEdition } = queue[i]!;
-    let doc = await readDocument(url).catch(() => null);
+    let doc = await (race.read ?? readDocument)(url).catch(() => null);
     if (!doc) continue;
     // Follow documents discovered after rendering too, rather than replacing
     // the shell only after link discovery has already ended.
@@ -125,7 +139,7 @@ export async function gatherDossier(race: {
     const thisEdition = textNamesEdition(doc.text, race.startDate);
     docs.push({ url, kind, text: doc.text, thisEdition, classLines: classLineCount(doc.text), thin: doc.thin, linkedFromEdition });
     // From the race's own pages, follow what leads to rules, classes, entry.
-    if (doc.html && (kind === "site" || kind === "registration" || kind === "regulations" || kind === "linked")) {
+    if (doc.html && (kind === "site" || kind === "registration" || kind === "regulations" || kind === "linked" || (kind === "listing" && thisEdition && isRaceListingDetail(url)))) {
       const words = (race.seriesName ?? "").toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !/^(cross|bike|cyclocross|202\d)$/.test(w));
       const seriesLink = (label: string) => words.length > 0 && words.filter((w) => label.toLowerCase().includes(w)).length >= Math.min(2, words.length);
       const rank = (l: { url: string; label: string }) => {
@@ -139,6 +153,12 @@ export async function gatherDossier(race: {
       const links = linksOf(doc.html, url);
       links.sort((a, b) => rank(b) - rank(a));
       for (const l of links) {
+        const destination = new URL(l.url);
+        if (/registrace\s*(?:účtu|uctu)|create\s+(?:an?\s+)?account|newsletter/i.test(l.label)) continue;
+        if (isRaceListingDetail(url) && destination.hostname === new URL(url).hostname && /^\/(registrace|registration|login|account)\/?$/i.test(destination.pathname)) continue;
+        // An inline rules anchor on an aggregator is still its race detail;
+        // treating it as an organiser site would crawl news/account menus.
+        if ((kind === "listing" || isRaceListingDetail(url)) && rank(l) < 8 && !isRegistrationPlatformUrl(l.url)) continue;
         if (/\/(participants|favorites|reviews|contact|results)(\/|$)/i.test(new URL(l.url).pathname) || rank(l) < 0) continue;
         if (kind === "linked" && !race.seriesName && rank(l) < 4) continue;
         if (FOLLOW.test(`${l.label} ${l.url}`) || (race.seriesName && seriesLink(l.label)) || isRegistrationPlatformUrl(l.url)) {
@@ -146,7 +166,8 @@ export async function gatherDossier(race: {
           // Read a newly found proposition before queued news/footer pages consume maxDocs.
           if (rank(l) >= 8) {
             const at = queue.findIndex((q) => q.url === directDocumentUrl(l.url));
-            if (at > i + 1) queue.splice(i + 1, 0, queue.splice(at, 1)[0]!);
+            const next = queue.findIndex((q, index) => index > i && q.priority < rank(l));
+            if (at > i + 1 && next > i && next < at) queue.splice(next, 0, queue.splice(at, 1)[0]!);
           }
         }
       }
