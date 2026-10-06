@@ -55,16 +55,14 @@ export function HubJsonLd({
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: events.length,
+      // A summary list points at the race pages, which carry the full
+      // `SportsEvent`. A stub event per row here made Search Console read
+      // every hub as fifty thin events, each missing eight fields.
       itemListElement: events.slice(0, 50).map((e, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        item: {
-          "@type": "SportsEvent",
-          name: e.name,
-          startDate: e.startDate,
-          url: absoluteUrl(`/${locale}/e/${e.slug}`),
-          ...(e.place ? { location: { "@type": "Place", name: e.place } } : {}),
-        },
+        name: e.name,
+        url: absoluteUrl(`/${locale}/e/${e.slug}`),
       })),
     },
   };

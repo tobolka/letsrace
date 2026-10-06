@@ -4,7 +4,7 @@ import { ageCategoryMatch } from "@/lib/taxonomy";
 import { addDaysIso } from "@/lib/seo-race-copy";
 import { counted, fillCopy } from "@/lib/seo";
 
-export const COLLECTION_SLUGS = ["kids", "kids-weekend", "youth", "amateur", "weekend"] as const;
+export const COLLECTION_SLUGS = ["weekend", "kids-weekend", "kids", "youth", "amateur"] as const;
 export type CollectionSlug = (typeof COLLECTION_SLUGS)[number];
 export const MIN_COLLECTION_RACES = 8;
 

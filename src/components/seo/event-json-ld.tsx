@@ -65,7 +65,8 @@ export function EventJsonLd({
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   };
 
-  if (event.endDate) data.endDate = event.endDate;
+  // No end date stored means a one-day race, as everywhere else in the app.
+  data.endDate = event.endDate ?? event.startDate;
   if (sameAs.length) data.sameAs = sameAs;
   if (description) data.description = description;
   data.sport = "Cycling";
