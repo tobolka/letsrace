@@ -28,6 +28,7 @@ import { disciplineColor } from "@/lib/map-visuals";
 import { Badge } from "@/components/ui/badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { Button } from "@/components/ui/button";
+import { SaveRaceButton } from "@/components/race/save-race-button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle } from "@/components/ui/toggle";
 import {
@@ -377,6 +378,12 @@ export function EventDetailPanel({
         ) : null}
       </p>
       <div className="ml-auto flex shrink-0 items-center gap-0.5">
+        <SaveRaceButton
+          eventId={event.id}
+          raceName={event.name}
+          locale={locale}
+          className="size-9 [@media(pointer:coarse)]:size-11"
+        />
         <Toggle
           pressed={linkCopied}
           size="lg"

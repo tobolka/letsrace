@@ -5,7 +5,7 @@ import { eventDisciplineFamily } from "@/lib/taxonomy";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { raceCopy } from "@/lib/seo-race-copy";
-import { hubPath } from "@/lib/browse-paths";
+import { hubPath } from "@/lib/localized-paths";
 import type { Crumb } from "@/components/browse/browse-ui";
 
 function mode<T>(values: T[]): T | null {

@@ -25,6 +25,7 @@ import {
 import { useAuthUser } from "@/hooks/use-auth-user";
 import { messagesFor } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
+import { localePath } from "@/lib/localized-paths";
 
 const SubmitRaceModal = dynamic(() =>
   import("@/components/explore/submit-race-modal").then((m) => ({ default: m.SubmitRaceModal })),
@@ -177,10 +178,10 @@ export function MobileTabBar({ locale }: { locale: string }) {
     ...exploreNav(locale, t, pathname),
     {
       key: "profile",
-      href: `/${locale}/account`,
+      href: localePath(locale, `account`),
       label: t.navProfileGroup,
       icon: UserRound,
-      active: pathname.startsWith(`/${locale}/account`),
+      active: pathname.startsWith(localePath(locale, `account`)),
       badge: counts.action + counts.alerts,
     },
   ];

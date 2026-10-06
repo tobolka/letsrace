@@ -131,9 +131,50 @@ export function fingerprintVariants(opts: {
   return [...cells].map((cell) => `${opts.startDate}:${cell}:${norm}`);
 }
 
-export function slugifyEvent(name: string, startDate: string): string {
-  const base = normalizeName(name).replace(/\s+/g, "-").slice(0, 60);
-  return `${base}-${startDate}`.replace(/-+/g, "-");
+/** Letters NFD does not take apart: ł, ß, ø… */
+const LATIN_EXTRA: Record<string, string> = { ł: "l", Ł: "l", ß: "ss", ø: "o", Ø: "o", đ: "d", Đ: "d", æ: "ae", Æ: "ae", œ: "oe", Œ: "oe", ı: "i" };
+
+/** Words for a URL: ASCII, lowercase, hyphenated, cut at a word under `max`. */
+export function slugWords(text: string, max = 60): string {
+  const words = text
+    .replace(/[łŁßøØđĐæÆœŒı]/g, (c) => LATIN_EXTRA[c] ?? c)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+  let out = "";
+  for (const w of words) {
+    const next = out ? `${out}-${w}` : w;
+    if (next.length > max) break;
+    out = next;
+  }
+  return out || words[0]?.slice(0, max) || "race";
+}
+
+/**
+ * A race's address, best first: its whole name and the year
+ * (`ct-author-cup-2026`); with the place when the name repeats within a year
+ * (`zh-cross-5-zlate-hory-2026`); with the date when even that repeats. Years
+ * and seasons are taken out of the name so the address names one year, once.
+ */
+export function eventSlugCandidates(name: string, startDate: string, place?: string | null): string[] {
+  const year = startDate.slice(0, 4);
+  // Any year or season in the name ("2026", "2026/27") — the address states its own.
+  const withoutYear = name.replace(/\b(?:19|20)\d{2}(?:\s*[/-]\s*(?:19|20)?\d{2})?\b/g, " ");
+  const base = slugWords(withoutYear);
+  const placeWords = place ? slugWords(place, 30) : "";
+  const out = [`${base}-${year}`];
+  if (placeWords && !base.includes(placeWords)) out.push(`${base}-${placeWords}-${year}`);
+  out.push(`${base}-${startDate}`);
+  return out;
+}
+
+/** The first choice for a new race; inserts fall back through `eventSlugCandidates`. */
+export function slugifyEvent(name: string, startDate: string, place?: string | null): string {
+  return eventSlugCandidates(name, startDate, place)[0]!;
 }
 
 export const AUDIENCES: Audience[] = ["kids", "youth", "adults", "mixed"];

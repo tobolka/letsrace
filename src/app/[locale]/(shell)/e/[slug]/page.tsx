@@ -10,7 +10,7 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageBandHint, ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
-import { hubPath } from "@/lib/browse-paths";
+import { hubPath, localePath } from "@/lib/localized-paths";
 import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
@@ -23,6 +23,7 @@ import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
+import { SaveRaceButton } from "@/components/race/save-race-button";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 
 type Props = {
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // and a description that says what is on the page (classes, entry, rules).
   const title = raceTitle(event, locale);
   const description = raceDescription(event, locale);
-  const url = absoluteUrl(`/${locale}/e/${event.slug}`);
+  const url = absoluteUrl(localePath(locale, `e/${event.slug}`));
 
   return {
     title: brandedTitle(title),
@@ -56,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url,
       localeKey: locale,
-      imagePath: `/${locale}/e/${event.slug}/opengraph-image`,
+      imagePath: localePath(locale, `e/${event.slug}/opengraph-image`),
       imageAlt: `${event.name} — ${SITE_NAME}`,
       imageSize: { width: 1200, height: 630 },
     }),
@@ -69,7 +70,7 @@ export default async function EventPage({ params }: Props) {
   const locale = raw as Locale;
   const event = await getPublicEventBySlug(slug);
   if (!event) notFound();
-  if (event.slug !== slug) permanentRedirect(`/${locale}/e/${event.slug}`);
+  if (event.slug !== slug) permanentRedirect(localePath(locale, `e/${event.slug}`));
 
   const t = messages[locale];
   const rc = raceCopy[locale];
@@ -148,7 +149,7 @@ export default async function EventPage({ params }: Props) {
           locale={locale}
           crumbs={[
             ...browseCrumbs(locale, browsePlace([event])),
-            ...(event.series ? [{ label: event.series.name, href: `/${locale}/series/${event.series.slug}` }] : []),
+            ...(event.series ? [{ label: event.series.name, href: localePath(locale, `series/${event.series.slug}`) }] : []),
             { label: event.name },
           ]}
         />
@@ -220,7 +221,7 @@ export default async function EventPage({ params }: Props) {
           {event.series ? (
             <MetaRow icon={<Trophy />} label={t.seriesFilter}>
               <Button asChild variant="outline" size="xs" className="max-w-full min-w-0 shrink justify-start overflow-hidden">
-                <Link href={`/${locale}/series/${event.series.slug}`} title={event.series.name} className="min-w-0">
+                <Link href={localePath(locale, `series/${event.series.slug}`)} title={event.series.name} className="min-w-0">
                   <span className="truncate">{event.series.name}</span>
                 </Link>
               </Button>
@@ -249,6 +250,7 @@ export default async function EventPage({ params }: Props) {
               {link.label}
             </OutboundTrackLink>
           ))}
+          {isPast ? null : <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" />}
           <Button asChild variant="outline">
             <Link href={mapHref}>
               <MapPinned data-icon="inline-start" />
@@ -283,7 +285,7 @@ export default async function EventPage({ params }: Props) {
             <h2 className="mb-3 text-lg font-semibold">{fill(rc.otherRounds, { name: event.series.name })}</h2>
             <RaceLinkList events={rounds} locale={locale} groupByMonth={false} />
             <Button asChild variant="link" className="mt-1 px-0">
-              <Link href={`/${locale}/series/${event.series.slug}`}>
+              <Link href={localePath(locale, `series/${event.series.slug}`)}>
                 {fillCopy(hubCopy[locale].seriesTitle, { name: event.series.name })}
               </Link>
             </Button>

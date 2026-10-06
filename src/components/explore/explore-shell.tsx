@@ -63,6 +63,7 @@ import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { EventCard } from "@/components/explore/event-rows";
+import { localePath } from "@/lib/localized-paths";
 
 const loadEventDetailPanel = () =>
   import("@/components/explore/event-detail-panel").then((m) => ({
@@ -219,7 +220,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     params.delete("view");
     for (const key of ["west", "south", "east", "north", "e"]) params.delete(key);
     const qs = params.toString();
-    router.replace(`/${locale}/list${qs ? `?${qs}` : ""}`);
+    router.replace(`${localePath(locale, "list")}${qs ? `?${qs}` : ""}`);
   }, [filters.view, locale, router]);
   const [prefsReady, setPrefsReady] = useState(false);
 

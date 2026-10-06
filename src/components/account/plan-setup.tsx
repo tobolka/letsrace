@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { messagesFor } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
+import { localePath } from "@/lib/localized-paths";
 
 /**
  * Three things make the rest of this page work: who rides, where you start
@@ -51,7 +52,7 @@ export function PlanSetup({
       icon: Users,
       title: t.planSetupPeople,
       body: t.planSetupPeopleBody,
-      href: `/${locale}/account/riders`,
+      href: localePath(locale, `account/riders`),
       cta: t.profilesAdd,
     },
     {

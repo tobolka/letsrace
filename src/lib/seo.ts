@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
+import { localePath } from "@/lib/localized-paths";
 
 export const OG_IMAGE_SIZE = { width: 1600, height: 840 } as const;
 export const DEFAULT_OG_ALT = `${messages.en.introTitle} · Let's Race`;
@@ -232,12 +233,18 @@ export function brandedTitle(title: string): Metadata["title"] {
  * four is the fallback for the bare domain — and it guessed the redirecting
  * root over `/en`.
  */
-/** A page's path in each language — pass a function where the address is translated. */
+/**
+ * A page's address in each language: an internal path (`e/slug`), translated
+ * per language, or a function giving each language's public path.
+ */
 export function localeAlternates(path: string | ((locale: Locale) => string) = ""): Record<string, string> {
   const base = getSiteUrl();
   const at = (l: Locale) => {
-    const p = typeof path === "function" ? path(l) : path;
-    return `${base}/${l}${p.startsWith("/") ? p : p ? `/${p}` : ""}`;
+    if (typeof path === "function") {
+      const p = path(l);
+      return `${base}/${l}${p ? `/${p}` : ""}`;
+    }
+    return `${base}${localePath(l, path)}`;
   };
   const entries = locales.map((l) => [l, at(l)] as const);
   return Object.fromEntries([...entries, ["x-default", at(defaultLocale)]]);

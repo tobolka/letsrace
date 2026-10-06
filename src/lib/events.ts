@@ -4,7 +4,6 @@ import { readAllRows } from "@/lib/supabase/read-all";
 import {
   fingerprint,
   normalizeName,
-  slugifyEvent,
   type Audience,
   type Discipline,
 } from "@/lib/domain";
@@ -12,6 +11,7 @@ import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-ur
 import { canonicalEventDisciplines } from "@/lib/taxonomy";
 import { formatPlaceName } from "@/lib/places";
 import { repairText } from "@/lib/text";
+import { freeEventSlug } from "@/lib/event-slug";
 
 export type EventListItem = {
   id: string;
@@ -524,6 +524,14 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) {
+    // An address the race used to have: follow it to the current one.
+    const { data: renamed } = await supabase
+      .from("event_slug_aliases")
+      .select("event:events(slug)")
+      .eq("slug", slug)
+      .maybeSingle();
+    const current = (renamed?.event as { slug?: string } | null)?.slug;
+    if (current && current !== slug) return getPublicEventBySlug(current);
     const { data: alias, error: aliasError } = await supabase
       .from("events")
       .select("merged_into_id")
@@ -769,7 +777,7 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
     lat: input.lat,
     lng: input.lng,
   });
-  const slug = slugifyEvent(input.name, input.startDate);
+  const slug = eventId ? undefined : await freeEventSlug(supabase, { name: input.name, startDate: input.startDate, place: input.municipality ?? input.placeName });
 
   let locationId: string | null = null;
   if (input.placeName) {
@@ -803,7 +811,7 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
   }
 
   const eventPayload = {
-    slug: eventId ? undefined : slug,
+    slug,
     name: input.name,
     name_normalized: normalizeName(input.name),
     location_id: locationId,

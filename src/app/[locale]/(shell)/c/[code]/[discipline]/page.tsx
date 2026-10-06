@@ -6,7 +6,7 @@ import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { hubPath } from "@/lib/browse-paths";
+import { hubPath, localePath } from "@/lib/localized-paths";
 import {
   disciplineCopy,
   disciplineLeaves,
@@ -134,7 +134,7 @@ export default async function DisciplineHubPage({ params }: Props) {
               return (
                 <SeriesCard
                   key={s.slug}
-                  href={`/${locale}/series/${s.slug}`}
+                  href={localePath(locale, `series/${s.slug}`)}
                   name={s.name}
                   meta={[counted(s.rounds, "round", locale), next ? fill(rc.nextRound, { date: shortDate(next, locale) }) : null].filter(Boolean).join(" · ")}
                 />

@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Bookmark, CalendarDays, Compass, LayoutGrid, List, Map, Settings, Users } from "lucide-react";
-import type { Locale, Messages } from "@/lib/i18n/messages";
-import { hubPath } from "@/lib/browse-paths";
+import type { Messages } from "@/lib/i18n/messages";
+import { localePath } from "@/lib/localized-paths";
 
 export type NavItem = {
   key: string;
@@ -19,30 +19,31 @@ export type NavItem = {
  */
 export function exploreNav(locale: string, t: Messages, pathname: string): NavItem[] {
   const base = `/${locale}`;
+  const at = (internal: string) => localePath(locale, internal);
   return [
     { key: "map", href: base, label: t.navMap, icon: Map, active: pathname === base },
     {
       key: "list",
-      href: `${base}/list`,
+      href: at("list"),
       label: t.navList,
       icon: List,
-      active: pathname.startsWith(`${base}/list`),
+      active: pathname.startsWith(at("list")),
     },
     {
       key: "schedule",
-      href: `${base}/schedule`,
+      href: at("schedule"),
       label: t.navSchedule,
       icon: CalendarDays,
-      active: pathname.startsWith(`${base}/schedule`),
+      active: pathname.startsWith(at("schedule")),
     },
     {
       // Countries, then disciplines, then series: the races for someone who
       // would rather choose than pan a map. A race's own page sits here too.
       key: "browse",
-      href: `${base}/${hubPath(locale as Locale)}`,
+      href: at("c"),
       label: t.navBrowse,
       icon: LayoutGrid,
-      active: [`${base}/${hubPath(locale as Locale)}`, `${base}/e/`, `${base}/series/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
+      active: [at("c"), `${at("e")}/`, `${at("series")}/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
     },
   ];
 }
@@ -55,7 +56,8 @@ export function profileNav(
   counts: { action: number; alerts: number },
   authed: boolean | null,
 ): NavItem[] {
-  const base = `/${locale}/account`;
+  const at = (page: string) => localePath(locale, `account${page ? `/${page}` : ""}`);
+  const base = at("");
   const items: NavItem[] = [
     {
       key: "plan",
@@ -69,27 +71,27 @@ export function profileNav(
     },
     {
       key: "discover",
-      href: `${base}/recommendations`,
+      href: at("recommendations"),
       label: t.accountDiscover,
       icon: Compass,
       // The areas page is Discover's settings, so Discover stays lit there,
       // and new races found in those areas are Discover's news.
-      active: pathname.startsWith(`${base}/recommendations`) || pathname.startsWith(`${base}/alerts`),
+      active: pathname.startsWith(at("recommendations")) || pathname.startsWith(at("alerts")),
       badge: counts.alerts,
     },
     {
       key: "riders",
-      href: `${base}/riders`,
+      href: at("riders"),
       label: t.profilesTitle,
       icon: Users,
-      active: pathname.startsWith(`${base}/riders`),
+      active: pathname.startsWith(at("riders")),
     },
     {
       key: "settings",
-      href: `${base}/settings`,
+      href: at("settings"),
       label: t.accountSettings,
       icon: Settings,
-      active: pathname.startsWith(`${base}/settings`),
+      active: pathname.startsWith(at("settings")),
     },
   ];
   // Settings belong to an account; signed out there is nothing behind them.

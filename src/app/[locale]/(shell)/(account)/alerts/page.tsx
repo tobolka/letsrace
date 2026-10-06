@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { localePath } from "@/lib/localized-paths";
 
 /** Alerts live under the account now. */
 export default async function AlertsRedirect({
@@ -7,5 +8,5 @@ export default async function AlertsRedirect({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  redirect(`/${locale}/account/alerts`);
+  redirect(localePath(locale, `account/alerts`));
 }

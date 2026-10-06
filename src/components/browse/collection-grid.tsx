@@ -3,7 +3,7 @@ import { Baby, Bike, CalendarDays, CalendarHeart, ChevronRight, Users } from "lu
 import type { Locale } from "@/lib/i18n/messages";
 import { counted } from "@/lib/seo";
 import { collectionCopy, COLLECTION_SLUGS } from "@/lib/race-collections";
-import { collectionPath } from "@/lib/browse-paths";
+import { collectionPath } from "@/lib/localized-paths";
 import { listCollectionSummaries } from "@/lib/race-collection-data";
 
 const ICONS = { kids: Baby, "kids-weekend": CalendarHeart, youth: Users, amateur: Bike, weekend: CalendarDays };

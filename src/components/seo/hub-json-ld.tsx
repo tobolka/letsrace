@@ -1,4 +1,5 @@
 import { absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { localePath } from "@/lib/localized-paths";
 
 /**
  * Structured data for the country and series hubs.
@@ -37,13 +38,14 @@ export function HubJsonLd({
   locale: string;
   title: string;
   description: string;
-  /** Hub path without the locale, e.g. `zavody/cz` or `series/cesky-pohar-mtb`. */
+  /** Path without the locale — public (`zavody/cz`) or internal (`series/cesky-pohar-mtb`). */
   path: string;
   events: HubEvent[];
   /** Trail after the site root; the hub itself is appended automatically. */
   breadcrumb?: { name: string; path: string }[];
 }) {
-  const url = absoluteUrl(`/${locale}/${path}`);
+  // Internal (`series/x`) or already public paths: localePath leaves the latter be.
+  const url = absoluteUrl(localePath(locale, path));
 
   const itemList = {
     "@context": "https://schema.org",
@@ -62,7 +64,7 @@ export function HubJsonLd({
         "@type": "ListItem",
         position: i + 1,
         name: e.name,
-        url: absoluteUrl(`/${locale}/e/${e.slug}`),
+        url: absoluteUrl(localePath(locale, `e/${e.slug}`)),
       })),
     },
   };
@@ -79,7 +81,7 @@ export function HubJsonLd({
       "@type": "ListItem",
       position: i + 1,
       name: c.name,
-      item: absoluteUrl(c.path ? `/${locale}/${c.path}` : `/${locale}`),
+      item: absoluteUrl(localePath(locale, c.path)),
     })),
   };
 

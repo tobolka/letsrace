@@ -12,6 +12,7 @@ import { DocPageSkeleton, PlanPageSkeleton } from "@/components/account/page-ske
 import { useAuthUser } from "@/hooks/use-auth-user";
 import { messagesFor } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
+import { localePath } from "@/lib/localized-paths";
 
 /**
  * The profile's half of the frame.
@@ -82,11 +83,11 @@ export function AppShell({
       <main
         className={cn(
           "flex flex-1 flex-col",
-          authed !== false && pathname === `/${locale}/account` ? "p-0" : "p-4 md:p-8",
+          authed !== false && pathname === localePath(locale, `account`) ? "p-0" : "p-4 md:p-8",
         )}
       >
         {authed === null ? (
-          pathname === `/${locale}/account` ? <PlanPageSkeleton /> : <DocPageSkeleton />
+          pathname === localePath(locale, `account`) ? <PlanPageSkeleton /> : <DocPageSkeleton />
         ) : authed ? (
           children
         ) : (

@@ -11,6 +11,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import type { EventPlan, PlanMemberStatus, PlannerMember } from "@/lib/planner";
+import { localePath } from "@/lib/localized-paths";
 
 /**
  * The races still ahead, one row each, under the month they fall in.
@@ -74,7 +75,7 @@ export function PlanRaces({
         </EmptyHeader>
         <EmptyContent className="flex-row flex-wrap justify-center">
           <Button asChild size="sm">
-            <Link href={`/${locale}/account/recommendations`}>
+            <Link href={localePath(locale, `account/recommendations`)}>
               <Compass data-icon="inline-start" />
               {t.accountDiscover}
             </Link>

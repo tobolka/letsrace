@@ -4,7 +4,7 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { countryDisplayName, PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { listCountryTallies } from "@/lib/discipline-hubs";
 import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { hubPath } from "@/lib/browse-paths";
+import { hubPath } from "@/lib/localized-paths";
 import { raceCopy } from "@/lib/seo-race-copy";
 import { BrowseHeader, BrowseIntro, CountryCard, TileGrid } from "@/components/browse/browse-ui";
 import { CollectionGrid } from "@/components/browse/collection-grid";

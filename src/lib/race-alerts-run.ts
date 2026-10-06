@@ -13,6 +13,7 @@ import { sendResendEmail } from "@/lib/mail";
 import { matchAlert, type AlertCandidate, type AlertMatch, type RaceAlert } from "@/lib/race-alerts";
 import { parseWeekdays } from "@/lib/plan-prefs";
 import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
+import { localePath } from "@/lib/localized-paths";
 
 type AlertRow = {
   id: string;
@@ -132,7 +133,7 @@ export function alertEmail(
         })),
       },
     ],
-    cta: { label: t.alertEmailCta, href: `${origin}/${loc}/account/recommendations` },
+    cta: { label: t.alertEmailCta, href: `${origin}${localePath(loc, "account/recommendations")}` },
     reason: fill(t.alertEmailFooter),
     manage: links.manage,
     unsubscribe: links.unsubscribe,

@@ -20,6 +20,7 @@ import {
   type PlannerMember,
 } from "@/lib/planner";
 import { cn } from "@/lib/utils";
+import { localePath } from "@/lib/localized-paths";
 
 /** How much further "show more days" reaches each time it is pressed. */
 const WEEKS_AT_A_TIME = 8;
@@ -115,7 +116,7 @@ export function PlanAgenda({
         <p className="text-sm font-medium">{t.planSetupPeople}</p>
         <p className="mt-1 text-sm text-muted-foreground">{t.planSetupPeopleBody}</p>
         <Button asChild size="sm" className="mt-4">
-          <Link href={`/${locale}/account/riders`}>
+          <Link href={localePath(locale, `account/riders`)}>
             <Plus data-icon="inline-start" />
             {t.profilesAdd}
           </Link>
@@ -164,7 +165,7 @@ export function PlanAgenda({
               ))}
               <th scope="col" className={cn(HEAD, "w-10 px-2")}>
                 <Link
-                  href={`/${locale}/account/riders`}
+                  href={localePath(locale, `account/riders`)}
                   aria-label={t.profilesAdd}
                   title={t.profilesAdd}
                   className="inline-flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"

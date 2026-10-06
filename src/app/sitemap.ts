@@ -6,7 +6,7 @@ import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { absoluteUrl, localeAlternates } from "@/lib/seo";
 import { listCollectionSummaries } from "@/lib/race-collection-data";
 import { MIN_COLLECTION_RACES } from "@/lib/race-collections";
-import { collectionPath, hubPath } from "@/lib/browse-paths";
+import { collectionPath, hubPath, localePath } from "@/lib/localized-paths";
 
 // Built at most once an hour and served from the cache: a crawler never waits on the
 // database, which a cold start could make slow enough for it to give up.
@@ -28,9 +28,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const add = (path: string | ((l: Locale) => string), lastModified: Date | undefined, changeFrequency: Freq, priority: number) => {
     const languages = localeAlternates(path);
     for (const l of locales) {
-      const p = typeof path === "function" ? path(l) : path;
+      // A string is an internal path (`e/slug`), translated for each language.
+      const url = typeof path === "function" ? absoluteUrl(`/${l}/${path(l)}`) : absoluteUrl(localePath(l, path));
       entries.push({
-        url: absoluteUrl(`/${l}${p ? `/${p}` : ""}`),
+        url,
         lastModified,
         changeFrequency,
         priority,

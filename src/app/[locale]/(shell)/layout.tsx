@@ -1,5 +1,6 @@
 import { AppSidebar, MobileTabBar } from "@/components/shell/app-rail";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SavedRacesBoot } from "@/components/race/saved-races-boot";
 
 /**
  * One frame for everything inside the app: the map, the list, the calendar and
@@ -41,6 +42,7 @@ export default async function ShellLayout({
         </div>
       </SidebarInset>
       <MobileTabBar locale={locale} />
+      <SavedRacesBoot />
     </SidebarProvider>
   );
 }

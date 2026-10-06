@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
-import { BROWSE_ROOT, internalBrowsePath, publicBrowsePath, translateBrowsePath } from "@/lib/browse-paths";
+import { routePath } from "@/lib/localized-paths";
 
 const LOCALE_PREFIX = new RegExp(`^/(${locales.join("|")})(/|$)`);
 
@@ -44,30 +44,10 @@ export function preferredLocale(acceptLanguage: string | null): Locale | null {
   return null;
 }
 
-/**
- * The browse section in the reader's language: `/cs/zavody/cz/mtb` is served
- * by the `c/` route, `/cs/zavody/deti` by `collections/`. The routes' own
- * addresses redirect permanently, so each page has exactly one URL.
- */
-export function browseRouting(pathname: string): { rewrite: string } | { redirect: string } | null {
-  const [, locale, head, ...rest] = pathname.split("/");
-  if (!locale || !head || !locales.includes(locale as Locale)) return null;
-  const l = locale as Locale;
-  const tail = rest.filter(Boolean);
-  if (head === BROWSE_ROOT[l]) return { rewrite: `/${l}/${internalBrowsePath(l, tail)}` };
-  if (head === "c" || head === "collections") {
-    const target = publicBrowsePath(l, [head, ...tail]);
-    return target ? { redirect: `/${l}/${target}` } : null;
-  }
-  // Another language's address under this prefix, e.g. `/cs/races/this-weekend`.
-  const translated = translateBrowsePath([head, ...tail], l);
-  return translated ? { redirect: `/${l}/${translated}` } : null;
-}
-
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const browse = browseRouting(pathname);
+  const browse = routePath(pathname);
   if (browse && "redirect" in browse) {
     const url = request.nextUrl.clone();
     url.pathname = browse.redirect;

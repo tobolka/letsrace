@@ -24,6 +24,7 @@ import {
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { ensureFavorite } from "@/lib/planner-db";
 import { messagesFor } from "@/lib/i18n/messages";
+import { localePath } from "@/lib/localized-paths";
 
 type Hit = {
   id: string;
@@ -150,14 +151,14 @@ export function AccountCommand({
         ) : null}
 
         <CommandGroup heading={t.account}>
-          <CommandItem value={`plan ${t.myCalendar}`} onSelect={() => go(`/${locale}/account`)}>
+          <CommandItem value={`plan ${t.myCalendar}`} onSelect={() => go(localePath(locale, `account`))}>
             <CalendarDays />
             {t.myCalendar}
           </CommandItem>
-          <CommandItem value={`recommendations ${t.accountDiscover}`} onSelect={() => go(`/${locale}/account/recommendations`)}><Compass />{t.accountDiscover}</CommandItem>
-          <CommandItem value={`riders ${t.profilesTitle}`} onSelect={() => go(`/${locale}/account/riders`)}><Users />{t.profilesTitle}</CommandItem>
+          <CommandItem value={`recommendations ${t.accountDiscover}`} onSelect={() => go(localePath(locale, `account/recommendations`))}><Compass />{t.accountDiscover}</CommandItem>
+          <CommandItem value={`riders ${t.profilesTitle}`} onSelect={() => go(localePath(locale, `account/riders`))}><Users />{t.profilesTitle}</CommandItem>
 
-          <CommandItem value={`account ${t.account}`} onSelect={() => go(`/${locale}/account/settings`)}>
+          <CommandItem value={`account ${t.account}`} onSelect={() => go(localePath(locale, `account/settings`))}>
             <UserRound />
             {t.accountSettings}
           </CommandItem>

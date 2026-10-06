@@ -6,7 +6,7 @@ import { countryDisplayName, isListedCountry, sortCountryCodes } from "@/lib/geo
 import { absoluteUrl, brandedTitle, fillCopy, inCountry, localeAlternates, localeOgImagePath, socialCard } from "@/lib/seo";
 import { raceCopy } from "@/lib/seo-race-copy";
 import { collectionCopy, collectionPeriod, isCollectionSlug, MIN_COLLECTION_RACES } from "@/lib/race-collections";
-import { collectionPath, hubPath } from "@/lib/browse-paths";
+import { collectionPath, hubPath } from "@/lib/localized-paths";
 import { getRaceCollection, listCollectionSummaries } from "@/lib/race-collection-data";
 import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
 import { CollectionGrid } from "@/components/browse/collection-grid";

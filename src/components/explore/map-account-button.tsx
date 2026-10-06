@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthUser } from "@/hooks/use-auth-user";
 import { locales, type Locale, type Messages } from "@/lib/i18n/messages";
-import { translateBrowsePath } from "@/lib/browse-paths";
+import { translatePathname, localePath } from "@/lib/localized-paths";
 
 export async function signOutAndRefresh(router: ReturnType<typeof useRouter>) {
   const { createBrowserSupabase } = await import("@/lib/supabase/browser");
@@ -81,19 +81,16 @@ export function MapAccountButton({
 /**
  * The same page, in another language.
  *
- * Only the first segment of the path is the language; everything after it, and
- * the whole query string, is where you were.
+ * The language prefix and the translated section names change; the rest of
+ * the path, and the whole query string, is where you were.
  */
 function useLocaleHref(): (next: string) => string {
   const pathname = usePathname() || "/";
   const search = useSearchParams();
   return (next: string) => {
-    const [, first, ...rest] = pathname.split("/");
-    const segments = (locales as readonly string[]).includes(first ?? "") ? rest : [first, ...rest];
-    // The browse section's address is itself translated (`zavody` → `races`).
-    const tail = translateBrowsePath(segments.filter(Boolean) as string[], next as Locale) ?? segments.filter(Boolean).join("/");
+    // Section names are translated too (`zavod` → `race`), not only the prefix.
     const query = search?.toString() ?? "";
-    return `/${next}${tail ? `/${tail}` : ""}${query ? `?${query}` : ""}`;
+    return `${translatePathname(pathname, next as Locale)}${query ? `?${query}` : ""}`;
   };
 }
 
@@ -153,7 +150,7 @@ export function AccountMenuItems({
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem asChild>
-                <Link href={`/${locale}/account`}>
+                <Link href={localePath(locale, `account`)}>
                   <LogIn /> {messages.signIn}
                 </Link>
               </DropdownMenuItem>

@@ -1,3 +1,5 @@
+import { localePath } from "@/lib/localized-paths";
+
 /** Map deep-link for a race (`?e=` + dates so the pin is in range). */
 export function eventMapPath(
   locale: string,
@@ -11,5 +13,5 @@ export function eventMapPath(
 }
 
 export function eventPagePath(locale: string, slug: string) {
-  return `/${locale}/e/${slug}`;
+  return localePath(locale, `e/${slug}`);
 }

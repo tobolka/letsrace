@@ -1,5 +1,6 @@
 import type { EventListItem } from "@/lib/events";
 import { absoluteUrl } from "@/lib/seo";
+import { localePath } from "@/lib/localized-paths";
 
 /**
  * Race names come from scraped third-party pages, so a name containing
@@ -47,7 +48,7 @@ export function EventJsonLd({
 }) {
   const placeName =
     event.location?.municipality || event.location?.name || undefined;
-  const pageUrl = absoluteUrl(`/${locale}/e/${event.slug}`);
+  const pageUrl = absoluteUrl(localePath(locale, `e/${event.slug}`));
   const sameAs = [
     event.websiteUrl,
     event.registrationUrl,
@@ -70,14 +71,14 @@ export function EventJsonLd({
   if (sameAs.length) data.sameAs = sameAs;
   if (description) data.description = description;
   data.sport = "Cycling";
-  data.image = [absoluteUrl(`/${locale}/e/${event.slug}/opengraph-image`)];
+  data.image = [absoluteUrl(localePath(locale, `e/${event.slug}/opengraph-image`))];
   // The series is the event this race is a round of — not its organiser,
   // which is what this block used to call it.
   if (event.series) {
     data.superEvent = {
       "@type": "EventSeries",
       name: event.series.name,
-      url: absoluteUrl(`/${locale}/series/${event.series.slug}`),
+      url: absoluteUrl(localePath(locale, `series/${event.series.slug}`)),
     };
   }
   if (event.registrationUrl) {
@@ -119,7 +120,7 @@ export function EventJsonLd({
           "@type": "ListItem",
           position: i + 1,
           name: b.name,
-          item: absoluteUrl(`/${locale}${b.path ? `/${b.path}` : ""}`),
+          item: absoluteUrl(localePath(locale, b.path)),
         })),
       }
     : null;

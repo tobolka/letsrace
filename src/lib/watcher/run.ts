@@ -4,7 +4,6 @@ import {
   fingerprint,
   fingerprintVariants,
   normalizeName,
-  slugifyEvent,
   type ParsedEvent,
 } from "@/lib/domain";
 import {
@@ -22,6 +21,7 @@ import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
 import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
+import { freeEventSlug } from "@/lib/event-slug";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -2270,7 +2270,7 @@ async function upsertParsedEvent(
   if (eventId) {
     await supabase.from("events").update(payload).eq("id", eventId);
   } else {
-    const slug = slugifyEvent(ev.name, ev.startDate);
+    const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
     const { data, error } = await supabase
       .from("events")
       .insert({ ...payload, slug })

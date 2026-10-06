@@ -3,6 +3,7 @@
 import { memo } from "react";
 import { format, parseISO } from "date-fns";
 import { levelFromClassLabel, UnconfirmedAges } from "@/components/explore/event-rows";
+import { SaveRaceButton } from "@/components/race/save-race-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { EventListItem } from "@/lib/events";
 import { countryDisplayName } from "@/lib/geo/europe";
@@ -41,7 +42,8 @@ const MIN_PX: Record<ListColumn, number> = {
 };
 
 function tableMinWidth(columns: ListColumn[]): number {
-  return columns.reduce((sum, col) => sum + MIN_PX[col], 0);
+  // 48px for the plan button's column at the end.
+  return columns.reduce((sum, col) => sum + MIN_PX[col], 48);
 }
 
 function cellText(col: ListColumn, event: EventListItem, locale: string, origin: { lat: number; lng: number } | null): string {
@@ -127,6 +129,7 @@ export function RaceTable({
               {labels[col]}
             </TableHead>
           ))}
+          <TableHead className="h-9 w-12 pr-3" aria-hidden />
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -206,6 +209,12 @@ const Row = memo(function Row({
           </TableCell>
         );
       })}
+      <TableCell className="h-10 w-12 py-0 pr-3">
+        {/* The row answers Enter and Space by opening the race; the button's own keys stay its own. */}
+        <span className="flex justify-end" onKeyDown={(e) => e.stopPropagation()}>
+          <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} />
+        </span>
+      </TableCell>
     </TableRow>
   );
 });

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { hubPath } from "@/lib/browse-paths";
+import { hubPath, localePath } from "@/lib/localized-paths";
 import { DESCRIPTION_MAX, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!data) return { title: "Series not found", robots: { index: false } };
   const { title: heading, description } = seriesWords(data, locale);
   const title = `${heading} · ${SITE_NAME}`;
-  const url = absoluteUrl(`/${locale}/series/${slug}`);
+  const url = absoluteUrl(localePath(locale, `series/${slug}`));
   return {
     title: brandedTitle(heading),
     description,

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { messagesFor } from "@/lib/i18n/messages";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { localePath } from "@/lib/localized-paths";
 
 export function ResetPasswordForm({ locale }: { locale: string }) {
   const t = messagesFor(locale);
@@ -44,7 +45,7 @@ export function ResetPasswordForm({ locale }: { locale: string }) {
   if (done) return (
     <div className="flex flex-col gap-4">
       <p role="status">{t.passwordUpdated}</p>
-      <Button asChild><Link href={`/${locale}/account`}>{t.myCalendar}</Link></Button>
+      <Button asChild><Link href={localePath(locale, `account`)}>{t.myCalendar}</Link></Button>
     </div>
   );
 

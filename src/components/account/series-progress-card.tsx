@@ -16,6 +16,7 @@ import { todayIso } from "@/lib/date-presets";
 import { eventMapPath } from "@/lib/event-url";
 import type { SeriesProgress, SeriesRound } from "@/lib/plan-series";
 import { cn } from "@/lib/utils";
+import { localePath } from "@/lib/localized-paths";
 
 /**
  * A season told the way people tell it: not eight separate races, but "we do
@@ -65,7 +66,7 @@ export function SeriesProgressCard({
               }
               title={
                 s.seriesSlug ? (
-                  <Link href={`/${locale}/series/${s.seriesSlug}`} className="block truncate text-sm font-medium hover:underline">
+                  <Link href={localePath(locale, `series/${s.seriesSlug}`)} className="block truncate text-sm font-medium hover:underline">
                     {s.seriesName}
                   </Link>
                 ) : (

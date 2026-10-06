@@ -1,5 +1,6 @@
 import { messagesFor } from "@/lib/i18n/messages";
 import { getSiteUrl } from "@/lib/seo";
+import { localePath } from "@/lib/localized-paths";
 import { unsubscribeToken, type UnsubscribeTarget } from "@/lib/email/unsubscribe";
 
 /**
@@ -16,7 +17,7 @@ export function emailFooterLinks(locale: string, target: UnsubscribeTarget) {
   const token = unsubscribeToken(target);
   const unsubscribeHref = token ? `${origin}/api/email/unsubscribe?t=${token}&l=${locale}` : null;
   return {
-    manage: { label: t.emailManage, href: `${origin}/${locale}/account/settings` },
+    manage: { label: t.emailManage, href: `${origin}${localePath(locale, "account/settings")}` },
     unsubscribe: unsubscribeHref ? { label: t.emailUnsubscribe, href: unsubscribeHref } : undefined,
     headers: unsubscribeHref
       ? { "List-Unsubscribe": `<${unsubscribeHref}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" }

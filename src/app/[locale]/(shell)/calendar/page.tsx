@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { localePath } from "@/lib/localized-paths";
 
 /** The plan moved to the account it belongs to; links in the wild still work. */
 export default async function CalendarRedirect({
@@ -7,5 +8,5 @@ export default async function CalendarRedirect({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  redirect(`/${locale}/account`);
+  redirect(localePath(locale, `account`));
 }

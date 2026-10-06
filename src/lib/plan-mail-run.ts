@@ -25,6 +25,7 @@ import { getSiteUrl } from "@/lib/seo";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import type { PlanChangeKind } from "@/lib/plan-changes";
 import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
+import { localePath } from "@/lib/localized-paths";
 
 function unwrap<T>(v: T | T[] | null | undefined): T | null {
   if (!v) return null;
@@ -179,7 +180,7 @@ export function planChangeEmail(locale: string, userId: string, notices: Notice[
         })),
       },
     ],
-    cta: { label: t.planChangeCta, href: `${origin}/${loc}/account` },
+    cta: { label: t.planChangeCta, href: `${origin}${localePath(loc, "account")}` },
     reason: t.planMailFooter,
     manage: links.manage,
     unsubscribe: links.unsubscribe,
@@ -229,7 +230,7 @@ export function digestEmail(locale: string, userId: string, digest: ReturnType<t
     heading: t.digestSubject,
     intro: t.digestIntro,
     sections,
-    cta: { label: t.digestCta, href: `${origin}/${loc}/account` },
+    cta: { label: t.digestCta, href: `${origin}${localePath(loc, "account")}` },
     reason: t.planMailFooter,
     manage: links.manage,
     unsubscribe: links.unsubscribe,

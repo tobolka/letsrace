@@ -12,6 +12,7 @@ import { DOC_WIDTH, PageHeader } from "@/components/account/panel";
 import { Button } from "@/components/ui/button";
 import { messagesFor } from "@/lib/i18n/messages";
 import { parseDisciplines } from "@/lib/plan-prefs";
+import { localePath } from "@/lib/localized-paths";
 
 export function AlertsPanel({ locale, embedded = false }: { locale: string; embedded?: boolean }) {
   const t = messagesFor(locale);
@@ -61,7 +62,7 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
       {!embedded ? (
         <div className="flex flex-col gap-3">
           <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit text-muted-foreground">
-            <Link href={`/${locale}/account/recommendations`}>
+            <Link href={localePath(locale, `account/recommendations`)}>
               <ArrowLeft data-icon="inline-start" />
               {t.backToDiscover}
             </Link>

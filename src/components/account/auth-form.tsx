@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { messagesFor } from "@/lib/i18n/messages";
+import { localePath } from "@/lib/localized-paths";
 
 function GoogleMark() {
   return (
@@ -116,7 +117,7 @@ export function AuthForm({
           password,
           options: {
             data: { display_name: name.trim() || emailValue.split("@")[0], locale },
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/${locale}/account`)}`,
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(localePath(locale, `account`))}`,
           },
         });
         if (err) {
@@ -144,7 +145,7 @@ export function AuthForm({
           onSuccess();
         } else {
           if (window.location.pathname !== `/${locale}/auth/reset-password`) {
-            router.push(`/${locale}/account`);
+            router.push(localePath(locale, `account`));
           }
           router.refresh();
         }
@@ -162,7 +163,7 @@ export function AuthForm({
           onSuccess();
         } else {
           if (window.location.pathname !== `/${locale}/auth/reset-password`) {
-            router.push(`/${locale}/account`);
+            router.push(localePath(locale, `account`));
           }
           router.refresh();
         }
