@@ -16,11 +16,13 @@ export function StickyPageTitle() {
   useEffect(() => {
     const heading = document.querySelector<HTMLElement>("h1[data-page-title]");
     if (!heading) return;
-    setTitle(heading.textContent ?? "");
     // The 48px bar covers the top of the scroller: the heading counts as gone
     // once it is fully under the bar.
     const observer = new IntersectionObserver(
-      ([entry]) => setShown(!entry!.isIntersecting && entry!.boundingClientRect.top < 0),
+      ([entry]) => {
+        setTitle(heading.textContent ?? "");
+        setShown(!entry!.isIntersecting && entry!.boundingClientRect.top < 0);
+      },
       { root: document.getElementById("shell-stage"), rootMargin: "-48px 0px 0px 0px" },
     );
     observer.observe(heading);
