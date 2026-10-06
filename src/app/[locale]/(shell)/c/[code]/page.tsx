@@ -18,6 +18,7 @@ import { DISCIPLINE_TREE } from "@/lib/taxonomy";
 import { MapPinned } from "lucide-react";
 import { BrowseHeader, BrowseIntro, DisciplineTile, TileGrid } from "@/components/browse/browse-ui";
 import { Button } from "@/components/ui/button";
+import { CollectionGrid } from "@/components/browse/collection-grid";
 import {
   Empty,
   EmptyDescription,
@@ -120,6 +121,8 @@ export default async function CountryHubPage({ params }: Props) {
             </Link>
           </Button>
         </BrowseIntro>
+
+        <CollectionGrid locale={locale} countryCode={code} />
 
         {families.length > 0 && (
           <TileGrid title={rc.disciplines} className="mt-8">

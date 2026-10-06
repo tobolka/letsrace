@@ -41,7 +41,7 @@ export function exploreNav(locale: string, t: Messages, pathname: string): NavIt
       href: `${base}/c`,
       label: t.navBrowse,
       icon: LayoutGrid,
-      active: [`${base}/c`, `${base}/e/`, `${base}/series/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
+      active: [`${base}/c`, `${base}/collections/`, `${base}/e/`, `${base}/series/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
     },
   ];
 }

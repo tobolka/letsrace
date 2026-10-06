@@ -6,6 +6,7 @@ import { disciplineCopy, listQualifyingHubs } from "@/lib/discipline-hubs";
 import { fillCopy, hubCopy, inCountry } from "@/lib/seo";
 import { addDaysIso, raceCopy, seriesIn, shortDate } from "@/lib/seo-race-copy";
 import { eventPagePath } from "@/lib/event-url";
+import { collectionCopy, collectionPath, COLLECTION_SLUGS } from "@/lib/race-collections";
 
 /** The markets we cover most, first. */
 const CORE = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH"];
@@ -29,6 +30,12 @@ export async function SiteIndex({ locale }: { locale: Locale }) {
 
   return (
     <nav aria-label={rc.allRaces} className="sr-only">
+      <h2>{collectionCopy[locale].heading}</h2>
+      <ul>
+        {COLLECTION_SLUGS.map((slug) => (
+          <li key={slug}><Link href={`/${locale}/${collectionPath(slug)}`}>{collectionCopy[locale].collections[slug].label}</Link></li>
+        ))}
+      </ul>
       <h2>{rc.byCountry}</h2>
       <ul>
         {countries.map((c) => {

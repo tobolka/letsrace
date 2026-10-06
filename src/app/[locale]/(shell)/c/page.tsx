@@ -6,6 +6,8 @@ import { listCountryTallies } from "@/lib/discipline-hubs";
 import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { raceCopy } from "@/lib/seo-race-copy";
 import { BrowseHeader, BrowseIntro, CountryCard, TileGrid } from "@/components/browse/browse-ui";
+import { CollectionGrid } from "@/components/browse/collection-grid";
+import { collectionCopy } from "@/lib/race-collections";
 
 export const revalidate = 600;
 
@@ -47,8 +49,9 @@ export default async function BrowsePage({ params }: Props) {
     <main className="min-h-full bg-background">
       <BrowseHeader locale={locale} crumbs={[{ label: rc.browse }]} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
-        <BrowseIntro title={rc.byCountry} description={rc.browseIntro} />
-        <TileGrid className="mt-8">
+        <BrowseIntro title={rc.browse} description={collectionCopy[locale].browseIntro} />
+        <CollectionGrid locale={locale} />
+        <TileGrid title={rc.byCountry} className="mt-8">
           {tallies.map((c) => (
             <CountryCard
               key={c.countryCode}
