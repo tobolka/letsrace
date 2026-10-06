@@ -3,7 +3,6 @@
 import { memo } from "react";
 import { EVENT_ROW_CLASS, EventRowBody } from "@/components/explore/event-row-body";
 import { Item } from "@/components/ui/item";
-import { SaveRaceButton } from "@/components/race/save-race-button";
 import type { EventListItem } from "@/lib/events";
 import { RACE_LEVEL_LABELS, type RaceLevel } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -45,37 +44,31 @@ export const EventCard = memo(function EventCard({
   onSelect: (id: string) => void;
 }) {
   return (
-    // The plan button sits over the row's right end, beside the row's own
-    // button rather than inside it — a button cannot hold another.
-    <div className="relative">
-      <Item
-        asChild
-        size="sm"
-        // The dividing line lives on the listitem wrapper now — inside it this
-        // button is always the last child, so `last:` here would never not match.
-        className={cn(
-          // `active:` is the press itself. On a phone there is no hover, and a
-          // row that does nothing until the card slides up feels like a miss.
-          EVENT_ROW_CLASS,
-          "pr-12",
-          // `muted/50` over a near-white ground was a shade nobody could see. The
-          // race you picked is the one thing on this list worth finding again
-          // after you look away from it.
-          active && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
-        )}
+    <Item
+      asChild
+      size="sm"
+      // The dividing line lives on the listitem wrapper now — inside it this
+      // button is always the last child, so `last:` here would never not match.
+      className={cn(
+        // `active:` is the press itself. On a phone there is no hover, and a
+        // row that does nothing until the card slides up feels like a miss.
+        EVENT_ROW_CLASS,
+        // `muted/50` over a near-white ground was a shade nobody could see. The
+        // race you picked is the one thing on this list worth finding again
+        // after you look away from it.
+        active && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+      )}
+    >
+      <button
+        type="button"
+        data-event-id={event.id}
+        aria-pressed={active}
+        onClick={() => onSelect(event.id)}
+        className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
-        <button
-          type="button"
-          data-event-id={event.id}
-          aria-pressed={active}
-          onClick={() => onSelect(event.id)}
-          className="relative w-full scroll-my-2 text-left touch-manipulation"
-        >
-          <EventRowBody event={event} locale={locale} distanceKm={km} />
-        </button>
-      </Item>
-      <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} className="absolute right-2 top-1/2 -translate-y-1/2" />
-    </div>
+        <EventRowBody event={event} locale={locale} distanceKm={km} />
+      </button>
+    </Item>
   );
 });
 

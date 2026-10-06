@@ -14,7 +14,7 @@ import { localePath } from "@/lib/localized-paths";
 const AuthDialog = dynamic(() => import("@/components/account/auth-dialog").then((m) => ({ default: m.AuthDialog })), { ssr: false });
 
 /**
- * "Add to plan" for one race, wherever races are listed — signed in or not.
+ * "Add to plan" for one race — on its page and its map card, signed in or not.
  *
  * Signed out, it opens sign-in with the reason; the race waits and is added
  * the moment a session appears. Once in the plan it links to the plan.
@@ -29,7 +29,7 @@ export function SaveRaceButton({
   eventId: string;
   raceName: string;
   locale: string;
-  /** `icon` for rows in a list; `full` for a race's own page or panel. */
+  /** `icon` for the map card's footer; `full` for the race's own page. */
   variant?: "icon" | "full";
   className?: string;
 }) {
@@ -64,7 +64,7 @@ export function SaveRaceButton({
         title={label}
         className={className}
         onClick={async (e) => {
-          // Rows are links: the button sits beside one, but never follows it.
+          // Never let a surrounding link or card act on the press.
           e.preventDefault();
           e.stopPropagation();
           setBusy(true);
