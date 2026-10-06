@@ -118,64 +118,112 @@ export const eventSeoCopy: Record<
 /**
  * Landing-page copy per locale.
  *
- * The country and series hubs described themselves in English on every locale —
- * a Czech page titled "Cycling races in Czechia" competes for nothing a Czech
- * rider types. `{name}` and `{count}` are filled by the caller.
+ * `{in}` is the country with its preposition, in the case the language wants:
+ * "v Česku", "na Slovensku", "in der Schweiz". The Czech hubs used to say
+ * "Cyklistické závody — Česko" and "v zemi Česko", which nobody types and
+ * nobody says. `{name}`, `{rounds}` and `{season}` are filled by the caller.
  */
 export const hubCopy: Record<
   Locale,
   { country: string; countryTitle: string; series: string; seriesTitle: string }
 > = {
   en: {
-    countryTitle: "Cycling races in {name}",
+    countryTitle: "Cycling races {in}",
     country:
-      "Every cycling race in {name} on one map — road, gravel, MTB, cyclocross and kids' races, with dates, start towns and entry links.",
-    seriesTitle: "{name} — calendar and results",
+      "Every upcoming cycling race {in} on one map: road, gravel, MTB, cyclocross and kids' races, with dates, venues, categories and entry links.",
+    seriesTitle: "{name} – race calendar",
     series:
-      "All {count} rounds of {name}: dates, venues and entry links, on the map.",
+      "{name}: {rounds} in {season}. Dates, venues, categories and entry links for every round, on the map.",
   },
   cs: {
-    countryTitle: "Cyklistické závody — {name}",
+    countryTitle: "Cyklistické závody {in}",
     country:
-      "Všechny cyklistické závody v zemi {name} na jedné mapě — silnice, gravel, MTB, cyklokros i dětské závody, s termíny, místem startu a odkazy na přihlášky.",
-    seriesTitle: "{name} — kalendář a termíny",
+      "Všechny nadcházející cyklistické závody {in} na jedné mapě: silnice, gravel, MTB, cyklokros i dětské závody. Termíny, místa, kategorie a přihlášky.",
+    seriesTitle: "{name} – kalendář závodů",
     series:
-      "Všech {count} kol seriálu {name}: termíny, místa a odkazy na přihlášky, na mapě.",
+      "{name}: {rounds} v sezóně {season}. Termíny, místa, kategorie a přihlášky ke každému kolu, na mapě.",
   },
   sk: {
-    countryTitle: "Cyklistické preteky — {name}",
+    countryTitle: "Cyklistické preteky {in}",
     country:
-      "Všetky cyklistické preteky v krajine {name} na jednej mape — cesta, gravel, MTB, cyklokros aj detské preteky, s termínmi, miestom štartu a odkazmi na prihlášky.",
-    seriesTitle: "{name} — kalendár a termíny",
+      "Všetky nadchádzajúce cyklistické preteky {in} na jednej mape: cesta, gravel, MTB, cyklokros aj detské preteky. Termíny, miesta, kategórie a prihlášky.",
+    seriesTitle: "{name} – kalendár pretekov",
     series:
-      "Všetkých {count} kôl seriálu {name}: termíny, miesta a odkazy na prihlášky, na mape.",
+      "{name}: {rounds} v sezóne {season}. Termíny, miesta, kategórie a prihlášky ku každému kolu, na mape.",
   },
   pl: {
-    countryTitle: "Wyścigi kolarskie — {name}",
+    countryTitle: "Wyścigi kolarskie {in}",
     country:
-      "Wszystkie wyścigi kolarskie w kraju {name} na jednej mapie — szosa, gravel, MTB, przełaje i wyścigi dla dzieci, z terminami, miejscem startu i zapisami.",
-    seriesTitle: "{name} — kalendarz i terminy",
+      "Wszystkie nadchodzące wyścigi kolarskie {in} na jednej mapie: szosa, gravel, MTB, przełaje i wyścigi dla dzieci. Terminy, miejsca, kategorie i zapisy.",
+    seriesTitle: "{name} – kalendarz wyścigów",
     series:
-      "Wszystkie {count} rundy cyklu {name}: terminy, miejsca i zapisy, na mapie.",
+      "{name}: {rounds} w sezonie {season}. Terminy, miejsca, kategorie i zapisy na każdą rundę, na mapie.",
   },
   de: {
-    countryTitle: "Radrennen — {name}",
+    countryTitle: "Radrennen {in}",
     country:
-      "Alle Radrennen in {name} auf einer Karte — Straße, Gravel, MTB, Cyclocross und Kinderrennen, mit Terminen, Startorten und Anmeldelinks.",
-    seriesTitle: "{name} — Termine und Kalender",
+      "Alle kommenden Radrennen {in} auf einer Karte: Straße, Gravel, MTB, Cyclocross und Kinderrennen. Termine, Orte, Klassen und Anmeldelinks.",
+    seriesTitle: "{name} – Termine",
     series:
-      "Alle {count} Läufe der Serie {name}: Termine, Orte und Anmeldelinks, auf der Karte.",
+      "{name}: {rounds} in der Saison {season}. Termine, Orte, Klassen und Anmeldung für jeden Lauf, auf der Karte.",
   },
 };
 
-/** Fill `{name}` / `{count}` in a hub template. */
-export function fillCopy(
-  template: string,
-  vars: { name?: string; count?: number | string },
-): string {
-  return template
-    .replace(/\{name\}/g, String(vars.name ?? ""))
-    .replace(/\{count\}/g, String(vars.count ?? ""));
+/** The countries we publish, with the preposition and case each language uses. */
+const IN_COUNTRY: Record<Locale, Record<string, string>> = {
+  en: { CZ: "in Czechia", SK: "in Slovakia", PL: "in Poland", DE: "in Germany", AT: "in Austria", CH: "in Switzerland", IT: "in Italy" },
+  cs: { CZ: "v Česku", SK: "na Slovensku", PL: "v Polsku", DE: "v Německu", AT: "v Rakousku", CH: "ve Švýcarsku", IT: "v Itálii" },
+  sk: { CZ: "v Česku", SK: "na Slovensku", PL: "v Poľsku", DE: "v Nemecku", AT: "v Rakúsku", CH: "vo Švajčiarsku", IT: "v Taliansku" },
+  pl: { CZ: "w Czechach", SK: "na Słowacji", PL: "w Polsce", DE: "w Niemczech", AT: "w Austrii", CH: "w Szwajcarii", IT: "we Włoszech" },
+  de: { CZ: "in Tschechien", SK: "in der Slowakei", PL: "in Polen", DE: "in Deutschland", AT: "in Österreich", CH: "in der Schweiz", IT: "in Italien" },
+};
+
+/** "v Česku", "in der Schweiz" — or, for a country not in the table, the plain form. */
+export function inCountry(code: string, name: string, locale: Locale): string {
+  const known = IN_COUNTRY[locale][code.toUpperCase()];
+  if (known) return known;
+  return { en: `in ${name}`, cs: `v zemi ${name}`, sk: `v krajine ${name}`, pl: `w kraju ${name}`, de: `in ${name}` }[locale];
+}
+
+/** Nouns that follow a number, in each language's plural forms. */
+const COUNTED: Record<"race" | "round", Record<Locale, Partial<Record<Intl.LDMLPluralRule, string>> & { other: string }>> = {
+  race: {
+    en: { one: "race", other: "races" },
+    cs: { one: "závod", few: "závody", other: "závodů" },
+    sk: { one: "pretek", few: "preteky", other: "pretekov" },
+    pl: { one: "wyścig", few: "wyścigi", other: "wyścigów" },
+    de: { one: "Rennen", other: "Rennen" },
+  },
+  round: {
+    en: { one: "round", other: "rounds" },
+    cs: { one: "kolo", few: "kola", other: "kol" },
+    sk: { one: "kolo", few: "kolá", other: "kôl" },
+    pl: { one: "runda", few: "rundy", other: "rund" },
+    de: { one: "Lauf", other: "Läufe" },
+  },
+};
+
+/** "1 závod", "3 závody", "12 závodů" — the old copy said "Všech 2 kol". */
+export function counted(n: number, noun: "race" | "round", locale: Locale): string {
+  const forms = COUNTED[noun][locale];
+  const rule = new Intl.PluralRules(locale).select(n);
+  return `${n} ${forms[rule] ?? forms.other}`;
+}
+
+/** Fill `{name}`, `{in}`, `{count}`… in a hub template. */
+export function fillCopy(template: string, vars: Record<string, string | number | null | undefined>): string {
+  return template.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? ""));
+}
+
+/** What the root layout's title template adds to every page. */
+export const TITLE_SUFFIX = ` · ${SITE_NAME}`;
+
+/**
+ * The brand goes after a title that has room for it. A long one is shown
+ * without it rather than with the race's own name cut off by the results page.
+ */
+export function brandedTitle(title: string): Metadata["title"] {
+  return title.length + TITLE_SUFFIX.length <= 65 ? title : { absolute: title };
 }
 
 /**

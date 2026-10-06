@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AuthErrorToast } from "@/components/account/auth-error-toast";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, localeAlternates, localeOgImagePath, seoCopy, socialCard } from "@/lib/seo";
+import { absoluteUrl, localeAlternates, localeOgImagePath, seoCopy, socialCard, TITLE_SUFFIX } from "@/lib/seo";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -19,7 +19,10 @@ export async function generateMetadata({
   const url = absoluteUrl(`/${locale}`);
 
   return {
-    title: copy.title,
+    // A plain string here ends the root layout's template for every page below
+    // it: race and hub titles went out without the brand. The template is
+    // restated so it carries on; this page's own title is written out whole.
+    title: { absolute: `${copy.title}${TITLE_SUFFIX}`, template: `%s${TITLE_SUFFIX}` },
     description: copy.description,
     alternates: {
       canonical: url,

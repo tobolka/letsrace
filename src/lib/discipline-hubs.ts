@@ -41,49 +41,51 @@ export function disciplineLeaves(family: HubDiscipline): Discipline[] {
 
 /**
  * Per-locale copy. Each title leads with the phrase a rider searches — the
- * discipline and the country — rather than with the brand.
+ * discipline and the country — rather than with the brand. `{in}` is the
+ * country with its preposition ("v Česku"), `{races}` the counted noun
+ * ("23 závodů"), both filled by the caller.
  */
 type Copy = { title: string; description: string };
 const DISCIPLINE_COPY: Record<Locale, Record<HubDiscipline, Copy>> = {
   en: {
-    mtb: { title: "MTB races in {name}", description: "Every mountain bike race in {name} — cross-country, marathon, downhill and enduro. {count} upcoming, with dates, start towns and entry links." },
-    road: { title: "Road races in {name}", description: "Road racing in {name} — road races, time trials, criteriums and gran fondos. {count} upcoming, with dates, start towns and entry links." },
-    gravel: { title: "Gravel races in {name}", description: "Gravel racing in {name}: {count} upcoming events, with dates, start towns and entry links." },
-    cx: { title: "Cyclocross races in {name}", description: "The cyclocross season in {name}: {count} upcoming races, with dates, start towns and entry links." },
-    bmx: { title: "BMX races in {name}", description: "BMX racing in {name}: {count} upcoming events, with dates, venues and entry links." },
-    track: { title: "Track races in {name}", description: "Track racing in {name}: {count} upcoming meetings, with dates, velodromes and entry links." },
+    mtb: { title: "MTB races {in}", description: "{races} on mountain bikes {in} in the next 12 months: cross-country, marathon, downhill and enduro. Dates, venues, categories and entry links." },
+    road: { title: "Road races {in}", description: "{races} on the road {in} in the next 12 months: road races, time trials, criteriums and gran fondos. Dates, venues, categories and entry links." },
+    gravel: { title: "Gravel races {in}", description: "{races} on gravel {in} in the next 12 months, with dates, start towns, categories and entry links, all on one map." },
+    cx: { title: "Cyclocross races {in}", description: "The cyclocross season {in}: {races} in the next 12 months, with dates, venues, categories and links to entry and regulations." },
+    bmx: { title: "BMX races {in}", description: "BMX racing {in}: {races} in the next 12 months, with dates, tracks, categories and entry links." },
+    track: { title: "Track races {in}", description: "Track cycling {in}: {races} in the next 12 months, with dates, velodromes, categories and entry links." },
   },
   cs: {
-    mtb: { title: "MTB závody — {name}", description: "Všechny závody na horských kolech v zemi {name} — cross country, maraton, sjezd i enduro. {count} nadcházejících, s termíny, místem startu a odkazy na přihlášky." },
-    road: { title: "Silniční závody — {name}", description: "Silniční cyklistika v zemi {name} — závody, časovky, kritéria i gran fondo. {count} nadcházejících, s termíny, místem startu a odkazy na přihlášky." },
-    gravel: { title: "Gravel závody — {name}", description: "Gravelové závody v zemi {name}: {count} nadcházejících, s termíny, místem startu a odkazy na přihlášky." },
-    cx: { title: "Cyklokros — {name}", description: "Cyklokrosová sezóna v zemi {name}: {count} nadcházejících závodů, s termíny, místem startu a odkazy na přihlášky." },
-    bmx: { title: "BMX závody — {name}", description: "BMX v zemi {name}: {count} nadcházejících závodů, s termíny, místem konání a odkazy na přihlášky." },
-    track: { title: "Dráhová cyklistika — {name}", description: "Dráhové závody v zemi {name}: {count} nadcházejících, s termíny, velodromy a odkazy na přihlášky." },
+    mtb: { title: "MTB závody {in}", description: "{races} na horských kolech {in} na příštích 12 měsíců: cross country, maraton, sjezd i enduro. Termíny, místa, kategorie a přihlášky." },
+    road: { title: "Silniční závody {in}", description: "{races} na silnici {in} na příštích 12 měsíců: silniční závody, časovky, kritéria i gran fondo. Termíny, místa, kategorie a přihlášky." },
+    gravel: { title: "Gravel závody {in}", description: "{races} na gravelu {in} na příštích 12 měsíců – termíny, místa startu, kategorie a odkazy na přihlášky, vše na jedné mapě." },
+    cx: { title: "Cyklokrosové závody {in}", description: "Cyklokrosová sezóna {in}: {races} na příštích 12 měsíců s termíny, místy, kategoriemi a odkazy na přihlášky a propozice." },
+    bmx: { title: "BMX závody {in}", description: "BMX {in}: {races} na příštích 12 měsíců s termíny, tratěmi, kategoriemi a odkazy na přihlášky." },
+    track: { title: "Dráhové závody {in}", description: "Dráhová cyklistika {in}: {races} na příštích 12 měsíců s termíny, velodromy, kategoriemi a odkazy na přihlášky." },
   },
   sk: {
-    mtb: { title: "MTB preteky — {name}", description: "Všetky preteky na horských bicykloch v krajine {name} — cross country, maratón, zjazd aj enduro. {count} nadchádzajúcich, s termínmi, miestom štartu a odkazmi na prihlášky." },
-    road: { title: "Cestné preteky — {name}", description: "Cestná cyklistika v krajine {name} — preteky, časovky, kritériá aj gran fondo. {count} nadchádzajúcich, s termínmi, miestom štartu a odkazmi na prihlášky." },
-    gravel: { title: "Gravel preteky — {name}", description: "Gravelové preteky v krajine {name}: {count} nadchádzajúcich, s termínmi, miestom štartu a odkazmi na prihlášky." },
-    cx: { title: "Cyklokros — {name}", description: "Cyklokrosová sezóna v krajine {name}: {count} nadchádzajúcich pretekov, s termínmi, miestom štartu a odkazmi na prihlášky." },
-    bmx: { title: "BMX preteky — {name}", description: "BMX v krajine {name}: {count} nadchádzajúcich pretekov, s termínmi, miestom konania a odkazmi na prihlášky." },
-    track: { title: "Dráhová cyklistika — {name}", description: "Dráhové preteky v krajine {name}: {count} nadchádzajúcich, s termínmi, velodrómami a odkazmi na prihlášky." },
+    mtb: { title: "MTB preteky {in}", description: "{races} na horských bicykloch {in} na najbližších 12 mesiacov: cross country, maratón, zjazd aj enduro. Termíny, miesta, kategórie a prihlášky." },
+    road: { title: "Cestné preteky {in}", description: "{races} na ceste {in} na najbližších 12 mesiacov: cestné preteky, časovky, kritériá aj gran fondo. Termíny, miesta, kategórie a prihlášky." },
+    gravel: { title: "Gravel preteky {in}", description: "{races} na gravele {in} na najbližších 12 mesiacov – termíny, miesta štartu, kategórie a odkazy na prihlášky, všetko na jednej mape." },
+    cx: { title: "Cyklokrosové preteky {in}", description: "Cyklokrosová sezóna {in}: {races} na najbližších 12 mesiacov s termínmi, miestami, kategóriami a odkazmi na prihlášky a propozície." },
+    bmx: { title: "BMX preteky {in}", description: "BMX {in}: {races} na najbližších 12 mesiacov s termínmi, traťami, kategóriami a odkazmi na prihlášky." },
+    track: { title: "Dráhové preteky {in}", description: "Dráhová cyklistika {in}: {races} na najbližších 12 mesiacov s termínmi, velodrómami, kategóriami a odkazmi na prihlášky." },
   },
   pl: {
-    mtb: { title: "Wyścigi MTB — {name}", description: "Wszystkie wyścigi MTB w kraju {name} — cross country, maraton, downhill i enduro. {count} nadchodzących, z terminami, miejscem startu i zapisami." },
-    road: { title: "Wyścigi szosowe — {name}", description: "Kolarstwo szosowe w kraju {name} — wyścigi, czasówki, kryteria i gran fondo. {count} nadchodzących, z terminami, miejscem startu i zapisami." },
-    gravel: { title: "Wyścigi gravelowe — {name}", description: "Wyścigi gravelowe w kraju {name}: {count} nadchodzących, z terminami, miejscem startu i zapisami." },
-    cx: { title: "Przełaje — {name}", description: "Sezon przełajowy w kraju {name}: {count} nadchodzących wyścigów, z terminami, miejscem startu i zapisami." },
-    bmx: { title: "Wyścigi BMX — {name}", description: "BMX w kraju {name}: {count} nadchodzących wyścigów, z terminami, miejscem i zapisami." },
-    track: { title: "Kolarstwo torowe — {name}", description: "Wyścigi torowe w kraju {name}: {count} nadchodzących, z terminami, torami i zapisami." },
+    mtb: { title: "Wyścigi MTB {in}", description: "{races} MTB {in} w najbliższych 12 miesiącach: cross country, maraton, downhill i enduro. Terminy, miejsca, kategorie i zapisy." },
+    road: { title: "Wyścigi szosowe {in}", description: "Kolarstwo szosowe {in}: {races} w najbliższych 12 miesiącach – wyścigi, czasówki, kryteria i gran fondo. Terminy, miejsca, kategorie i zapisy." },
+    gravel: { title: "Wyścigi gravelowe {in}", description: "Gravel {in}: {races} w najbliższych 12 miesiącach – terminy, miejsca startu, kategorie i zapisy, wszystko na jednej mapie." },
+    cx: { title: "Wyścigi przełajowe {in}", description: "Sezon przełajowy {in}: {races} w najbliższych 12 miesiącach z terminami, miejscami, kategoriami oraz linkami do zapisów i regulaminów." },
+    bmx: { title: "Wyścigi BMX {in}", description: "BMX {in}: {races} w najbliższych 12 miesiącach z terminami, torami, kategoriami i zapisami." },
+    track: { title: "Wyścigi torowe {in}", description: "Kolarstwo torowe {in}: {races} w najbliższych 12 miesiącach z terminami, welodromami, kategoriami i zapisami." },
   },
   de: {
-    mtb: { title: "MTB-Rennen — {name}", description: "Alle Mountainbike-Rennen in {name} — Cross-Country, Marathon, Downhill und Enduro. {count} anstehende, mit Terminen, Startorten und Anmeldelinks." },
-    road: { title: "Straßenrennen — {name}", description: "Straßenradsport in {name} — Rennen, Zeitfahren, Kriterien und Jedermannrennen. {count} anstehende, mit Terminen, Startorten und Anmeldelinks." },
-    gravel: { title: "Gravel-Rennen — {name}", description: "Gravel-Rennen in {name}: {count} anstehende, mit Terminen, Startorten und Anmeldelinks." },
-    cx: { title: "Cyclocross — {name}", description: "Die Cyclocross-Saison in {name}: {count} anstehende Rennen, mit Terminen, Startorten und Anmeldelinks." },
-    bmx: { title: "BMX-Rennen — {name}", description: "BMX in {name}: {count} anstehende Rennen, mit Terminen, Orten und Anmeldelinks." },
-    track: { title: "Bahnradsport — {name}", description: "Bahnrennen in {name}: {count} anstehende, mit Terminen, Radrennbahnen und Anmeldelinks." },
+    mtb: { title: "MTB-Rennen {in}", description: "{races} mit dem Mountainbike {in} in den nächsten 12 Monaten: Cross-Country, Marathon, Downhill und Enduro. Termine, Orte, Klassen und Anmeldung." },
+    road: { title: "Straßenrennen {in}", description: "Straßenradsport {in}: {races} in den nächsten 12 Monaten – Rennen, Zeitfahren, Kriterien und Jedermannrennen. Termine, Orte, Klassen und Anmeldung." },
+    gravel: { title: "Gravel-Rennen {in}", description: "Gravel {in}: {races} in den nächsten 12 Monaten – Termine, Startorte, Klassen und Anmeldelinks, alles auf einer Karte." },
+    cx: { title: "Cyclocross-Rennen {in}", description: "Die Cyclocross-Saison {in}: {races} in den nächsten 12 Monaten mit Terminen, Orten, Klassen und Links zu Anmeldung und Ausschreibung." },
+    bmx: { title: "BMX-Rennen {in}", description: "BMX {in}: {races} in den nächsten 12 Monaten mit Terminen, Strecken, Klassen und Anmeldelinks." },
+    track: { title: "Bahnrennen {in}", description: "Bahnradsport {in}: {races} in den nächsten 12 Monaten mit Terminen, Radrennbahnen, Klassen und Anmeldelinks." },
   },
 };
 

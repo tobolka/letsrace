@@ -17,13 +17,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const rc = raceCopy[locale];
   const url = absoluteUrl(`/${locale}/c`);
   return {
-    title: rc.browse,
-    description: rc.browseIntro,
+    title: rc.browseTitle,
+    description: rc.browseDescription,
     alternates: { canonical: url, languages: localeAlternates("c") },
     ...socialCard({
-      title: rc.browse,
-      ogTitle: `${rc.browse} · ${SITE_NAME}`,
-      description: rc.browseIntro,
+      title: rc.browseTitle,
+      ogTitle: `${rc.browseTitle} · ${SITE_NAME}`,
+      description: rc.browseDescription,
       url,
       localeKey: locale,
       imagePath: localeOgImagePath(locale),

@@ -5,7 +5,7 @@ import { listEvents } from "@/lib/events";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import {
   disciplineCopy,
   disciplineLeaves,
@@ -47,16 +47,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!data) return { title: "Not found", robots: { index: false, follow: false } };
 
   const { locale, code, discipline, events } = data;
-  const name = countryDisplayName(code, locale);
+  const where = inCountry(code, countryDisplayName(code, locale), locale);
   const copy = disciplineCopy(locale, discipline);
-  const heading = `${fillCopy(copy.title, { name })} – ${fill(raceCopy[locale].calendar, { season: seasonLabel() })}`;
-  const description = fillCopy(copy.description, { name, count: events.length });
+  const heading = `${fillCopy(copy.title, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
+  const description = fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) });
   const path = `c/${code.toLowerCase()}/${discipline}`;
   const url = absoluteUrl(`/${locale}/${path}`);
   const ogTitle = `${heading} · ${SITE_NAME}`;
 
   return {
-    title: heading,
+    title: brandedTitle(heading),
     description,
     alternates: { canonical: url, languages: localeAlternates(path) },
     ...socialCard({
@@ -85,8 +85,9 @@ export default async function DisciplineHubPage({ params }: Props) {
   const rc = raceCopy[locale];
   const name = countryDisplayName(code, locale);
   const copy = disciplineCopy(locale, discipline);
-  const heading = fillCopy(copy.title, { name });
-  const countryHeading = fillCopy(hubCopy[locale].countryTitle, { name });
+  const where = inCountry(code, name, locale);
+  const heading = fillCopy(copy.title, { in: where });
+  const countryHeading = fillCopy(hubCopy[locale].countryTitle, { in: where });
   const weekend = thisWeekendRange();
   const series = seriesIn(events);
   const outside = events.filter((e) => !e.series);
@@ -97,7 +98,7 @@ export default async function DisciplineHubPage({ params }: Props) {
       <HubJsonLd
         locale={locale}
         title={heading}
-        description={fillCopy(copy.description, { name, count: events.length })}
+        description={fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) })}
         path={`c/${code.toLowerCase()}/${discipline}`}
         breadcrumb={[{ name: countryHeading, path: `c/${code.toLowerCase()}` }]}
         events={events.map((e) => ({
@@ -134,7 +135,7 @@ export default async function DisciplineHubPage({ params }: Props) {
                   key={s.slug}
                   href={`/${locale}/series/${s.slug}`}
                   name={s.name}
-                  meta={[fill(rc.rounds, { count: s.rounds }), next ? fill(rc.nextRound, { date: shortDate(next, locale) }) : null].filter(Boolean).join(" · ")}
+                  meta={[counted(s.rounds, "round", locale), next ? fill(rc.nextRound, { date: shortDate(next, locale) }) : null].filter(Boolean).join(" · ")}
                 />
               );
             })}

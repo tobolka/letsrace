@@ -4,8 +4,8 @@ import { MapPinned } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { raceCopy, seasonLabel } from "@/lib/seo-race-copy";
+import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { DESCRIPTION_MAX, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
 import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
@@ -15,20 +15,40 @@ import { Button } from "@/components/ui/button";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
+/**
+ * The words a series page is found by. The season is the series' own — the
+ * years its rounds are in — not the calendar's, and a name that already
+ * carries a year ("3Lions-GRAVEL-Cup 2026") is not given a second one.
+ *
+ * The description an editor wrote for a series is Czech; it leads the Czech
+ * page and stays off the others, which used to show it to English and German
+ * readers as their page's description.
+ */
+function seriesWords(data: NonNullable<Awaited<ReturnType<typeof getSeriesBySlug>>>, locale: Locale) {
+  const copy = hubCopy[locale];
+  const name = data.series.name;
+  const years = data.events.map((e) => Number(e.startDate.slice(0, 4)));
+  const first = years.length ? Math.min(...years) : null;
+  const last = years.length ? Math.max(...years) : null;
+  const season =
+    first == null ? seasonLabel() : first === last ? String(first) : last === first + 1 ? `${first}/${String(last).slice(2)}` : `${first}–${last}`;
+  const named = /\b20\d\d\b/.test(name) ? name : `${name} ${season}`;
+  const generated = fillCopy(copy.series, { name, rounds: counted(data.events.length, "round", locale), season });
+  const own = locale === "cs" ? data.series.description?.trim() || null : null;
+  const description = own && `${own} ${generated}`.length <= DESCRIPTION_MAX ? `${own} ${generated}` : own ?? generated;
+  return { title: fillCopy(copy.seriesTitle, { name: named }), description, generated, own };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw, slug } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const data = await getSeriesBySlug(slug);
   if (!data) return { title: "Series not found", robots: { index: false } };
-  const copy = hubCopy[locale];
-  const heading = `${fillCopy(copy.seriesTitle, { name: data.series.name })} ${seasonLabel()}`;
+  const { title: heading, description } = seriesWords(data, locale);
   const title = `${heading} · ${SITE_NAME}`;
-  const description =
-    data.series.description ||
-    fillCopy(copy.series, { name: data.series.name, count: data.events.length });
   const url = absoluteUrl(`/${locale}/series/${slug}`);
   return {
-    title: heading,
+    title: brandedTitle(heading),
     description,
     alternates: { canonical: url, languages: localeAlternates(`series/${slug}`) },
     ...socialCard({
@@ -40,6 +60,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       imagePath: localeOgImagePath(locale),
       imageAlt: title,
     }),
+    // Every round outside the countries we publish: the page lists nothing.
+    ...(data.events.length === 0 ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -57,17 +79,15 @@ export default async function SeriesPage({ params }: Props) {
   const countries = [...new Set(data.events.map((e) => e.location?.countryCode).filter((c): c is string => Boolean(c) && isListedCountry(c!)))];
 
   const copy = hubCopy[locale];
-  const heading = fillCopy(copy.seriesTitle, { name: data.series.name });
+  const words = seriesWords(data, locale);
+  const heading = words.title;
 
   return (
     <main className="min-h-full bg-background">
       <HubJsonLd
         locale={locale}
         title={heading}
-        description={
-          data.series.description ||
-          fillCopy(copy.series, { name: data.series.name, count: data.events.length })
-        }
+        description={words.description}
         path={`series/${slug}`}
         events={upcoming.map((e) => ({
           name: e.name,
@@ -80,7 +100,7 @@ export default async function SeriesPage({ params }: Props) {
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro
           title={data.series.name}
-          description={data.series.description || fillCopy(copy.series, { name: data.series.name, count: data.events.length })}
+          description={words.own ?? words.generated}
         >
           <Button asChild>
             <Link href={`/${locale}?series=${data.series.slug}`}>
@@ -89,10 +109,8 @@ export default async function SeriesPage({ params }: Props) {
             </Link>
           </Button>
         </BrowseIntro>
-        {data.series.description ? (
-          <p className="mt-6 text-pretty text-muted-foreground">
-            {fillCopy(copy.series, { name: data.series.name, count: data.events.length })}
-          </p>
+        {words.own ? (
+          <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}
         {upcoming.length > 0 && (
           <section className="mt-8">
@@ -111,7 +129,7 @@ export default async function SeriesPage({ params }: Props) {
             {countries.map((c) => (
               <Button key={c} asChild variant="outline" size="sm">
                 <Link href={`/${locale}/c/${c.toLowerCase()}`}>
-                  {fillCopy(copy.countryTitle, { name: countryDisplayName(c, locale) })}
+                  {fillCopy(copy.countryTitle, { in: inCountry(c, countryDisplayName(c, locale), locale) })}
                 </Link>
               </Button>
             ))}

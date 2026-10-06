@@ -9,7 +9,7 @@ import { getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageBandHint, ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
-import { absoluteUrl, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
+import { absoluteUrl, brandedTitle, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
 import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = absoluteUrl(`/${locale}/e/${event.slug}`);
 
   return {
-    title,
+    title: brandedTitle(title),
     description,
     alternates: {
       canonical: url,

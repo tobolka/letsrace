@@ -3,7 +3,7 @@ import { listEvents } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { disciplineCopy, listQualifyingHubs } from "@/lib/discipline-hubs";
-import { fillCopy, hubCopy } from "@/lib/seo";
+import { fillCopy, hubCopy, inCountry } from "@/lib/seo";
 import { addDaysIso, raceCopy, seriesIn, shortDate } from "@/lib/seo-race-copy";
 import { eventPagePath } from "@/lib/event-url";
 
@@ -32,17 +32,17 @@ export async function SiteIndex({ locale }: { locale: Locale }) {
       <h2>{rc.byCountry}</h2>
       <ul>
         {countries.map((c) => {
-          const name = countryDisplayName(c, locale);
+          const where = inCountry(c, countryDisplayName(c, locale), locale);
           return (
             <li key={c}>
-              <Link href={`/${locale}/c/${c.toLowerCase()}`}>{fillCopy(hubCopy[locale].countryTitle, { name })}</Link>
+              <Link href={`/${locale}/c/${c.toLowerCase()}`}>{fillCopy(hubCopy[locale].countryTitle, { in: where })}</Link>
               <ul>
                 {hubs
                   .filter((h) => h.countryCode === c)
                   .map((h) => (
                     <li key={h.discipline}>
                       <Link href={`/${locale}/c/${c.toLowerCase()}/${h.discipline}`}>
-                        {fillCopy(disciplineCopy(locale, h.discipline).title, { name })}
+                        {fillCopy(disciplineCopy(locale, h.discipline).title, { in: where })}
                       </Link>
                     </li>
                   ))}

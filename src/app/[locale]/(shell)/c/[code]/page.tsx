@@ -9,7 +9,7 @@ import {
   PUBLIC_COUNTRY_CODES,
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, fillCopy, hubCopy, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { absoluteUrl, brandedTitle, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { addDaysIso, fill, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { listCountryTallies, type HubDiscipline } from "@/lib/discipline-hubs";
@@ -41,16 +41,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const code = rawCode.toUpperCase();
   if (!isListedCountry(code)) return { title: "Country", robots: { index: false } };
-  const name = countryDisplayName(code, locale);
+  const where = inCountry(code, countryDisplayName(code, locale), locale);
   const copy = hubCopy[locale];
   // The visible title carries the query someone actually types — the country
   // name alone competes with the country, not with race calendars.
-  const heading = `${fillCopy(copy.countryTitle, { name })} – ${fill(raceCopy[locale].calendar, { season: seasonLabel() })}`;
+  const heading = `${fillCopy(copy.countryTitle, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const title = `${heading} · ${SITE_NAME}`;
-  const description = fillCopy(copy.country, { name });
+  const description = fillCopy(copy.country, { in: where });
   const url = absoluteUrl(`/${locale}/c/${code.toLowerCase()}`);
   return {
-    title: heading,
+    title: brandedTitle(heading),
     description,
     alternates: {
       canonical: url,
@@ -87,7 +87,8 @@ export default async function CountryHubPage({ params }: Props) {
 
   const copy = hubCopy[locale];
   const rc = raceCopy[locale];
-  const heading = fillCopy(copy.countryTitle, { name });
+  const where = inCountry(code, name, locale);
+  const heading = fillCopy(copy.countryTitle, { in: where });
   const disciplineOrder = DISCIPLINE_TREE.map(({ id }) => id);
   const families = (Object.entries(tally?.families ?? {}) as [HubDiscipline, number][])
     .sort((a, b) => disciplineOrder.indexOf(a[0]) - disciplineOrder.indexOf(b[0]));
@@ -97,7 +98,7 @@ export default async function CountryHubPage({ params }: Props) {
       <HubJsonLd
         locale={locale}
         title={heading}
-        description={fillCopy(copy.country, { name })}
+        description={fillCopy(copy.country, { in: where })}
         path={`c/${code.toLowerCase()}`}
         events={events.map((e) => ({
           name: e.name,
