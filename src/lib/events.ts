@@ -524,14 +524,6 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) {
-    // An address the race used to have: follow it to the current one.
-    const { data: renamed } = await supabase
-      .from("event_slug_aliases")
-      .select("event:events(slug)")
-      .eq("slug", slug)
-      .maybeSingle();
-    const current = (renamed?.event as { slug?: string } | null)?.slug;
-    if (current && current !== slug) return getPublicEventBySlug(current);
     const { data: alias, error: aliasError } = await supabase
       .from("events")
       .select("merged_into_id")
