@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
-import { BROWSE_ROOT, internalBrowsePath, publicBrowsePath } from "@/lib/browse-paths";
+import { BROWSE_ROOT, internalBrowsePath, publicBrowsePath, translateBrowsePath } from "@/lib/browse-paths";
 
 const LOCALE_PREFIX = new RegExp(`^/(${locales.join("|")})(/|$)`);
 
@@ -59,7 +59,9 @@ export function browseRouting(pathname: string): { rewrite: string } | { redirec
     const target = publicBrowsePath(l, [head, ...tail]);
     return target ? { redirect: `/${l}/${target}` } : null;
   }
-  return null;
+  // Another language's address under this prefix, e.g. `/cs/races/this-weekend`.
+  const translated = translateBrowsePath([head, ...tail], l);
+  return translated ? { redirect: `/${l}/${translated}` } : null;
 }
 
 export function proxy(request: NextRequest) {

@@ -17,7 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthUser } from "@/hooks/use-auth-user";
-import { locales, type Messages } from "@/lib/i18n/messages";
+import { locales, type Locale, type Messages } from "@/lib/i18n/messages";
+import { translateBrowsePath } from "@/lib/browse-paths";
 
 export async function signOutAndRefresh(router: ReturnType<typeof useRouter>) {
   const { createBrowserSupabase } = await import("@/lib/supabase/browser");
@@ -88,9 +89,9 @@ function useLocaleHref(): (next: string) => string {
   const search = useSearchParams();
   return (next: string) => {
     const [, first, ...rest] = pathname.split("/");
-    const tail = (locales as readonly string[]).includes(first ?? "")
-      ? rest.join("/")
-      : [first, ...rest].filter(Boolean).join("/");
+    const segments = (locales as readonly string[]).includes(first ?? "") ? rest : [first, ...rest];
+    // The browse section's address is itself translated (`zavody` → `races`).
+    const tail = translateBrowsePath(segments.filter(Boolean) as string[], next as Locale) ?? segments.filter(Boolean).join("/");
     const query = search?.toString() ?? "";
     return `/${next}${tail ? `/${tail}` : ""}${query ? `?${query}` : ""}`;
   };

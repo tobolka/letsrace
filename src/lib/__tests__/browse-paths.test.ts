@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collectionPath, hubPath } from "@/lib/browse-paths";
+import { collectionPath, hubPath, translateBrowsePath } from "@/lib/browse-paths";
 import { locales } from "@/lib/i18n/messages";
 import { COLLECTION_SLUGS } from "@/lib/race-collections";
 import { browseRouting } from "@/proxy";
@@ -28,8 +28,16 @@ describe("browse addresses", () => {
     expect(browseRouting("/cs/c")).toEqual({ redirect: "/cs/zavody" });
     expect(browseRouting("/pl/c/cz/cx")).toEqual({ redirect: "/pl/wyscigi/cz/cx" });
     expect(browseRouting("/en/collections/kids-weekend/de")).toEqual({ redirect: "/en/races/kids-this-weekend/de" });
-    expect(browseRouting("/cs/races")).toBeNull();
+    expect(browseRouting("/cs/races")).toEqual({ redirect: "/cs/zavody" });
     expect(browseRouting("/cs/e/some-race")).toBeNull();
+  });
+
+  it("translates an address between languages and repairs a mismatched one", () => {
+    expect(translateBrowsePath(["zavody", "deti-tento-vikend", "cz"], "en")).toBe("races/kids-this-weekend/cz");
+    expect(translateBrowsePath(["races", "cz", "mtb"], "de")).toBe("rennen/cz/mtb");
+    expect(translateBrowsePath(["e", "some-race"], "cs")).toBeNull();
+    expect(browseRouting("/cs/races/this-weekend")).toEqual({ redirect: "/cs/zavody/tento-vikend" });
+    expect(browseRouting("/pl/zavody/cz")).toEqual({ redirect: "/pl/wyscigi/cz" });
   });
 
   it("keeps collection slugs apart from two-letter country codes", () => {

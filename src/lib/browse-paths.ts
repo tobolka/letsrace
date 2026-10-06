@@ -55,3 +55,15 @@ export function publicBrowsePath(locale: Locale, segments: string[]): string | n
   }
   return null;
 }
+
+/**
+ * A browse address (segments after the locale) in another language, or null
+ * when the segments are not one. Any language's root is recognised, so the
+ * language menu and stray links like `/cs/races/this-weekend` both land.
+ */
+export function translateBrowsePath(segments: string[], to: Locale): string | null {
+  const [head, ...rest] = segments;
+  const from = (Object.keys(BROWSE_ROOT) as Locale[]).find((l) => BROWSE_ROOT[l] === head);
+  if (!from) return null;
+  return publicBrowsePath(to, internalBrowsePath(from, rest).split("/"));
+}
