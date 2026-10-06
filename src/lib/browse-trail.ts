@@ -5,6 +5,7 @@ import { eventDisciplineFamily } from "@/lib/taxonomy";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { raceCopy } from "@/lib/seo-race-copy";
+import { hubPath } from "@/lib/browse-paths";
 import type { Crumb } from "@/components/browse/browse-ui";
 
 function mode<T>(values: T[]): T | null {
@@ -28,10 +29,9 @@ export function browsePlace(events: EventListItem[]): { country: string | null; 
 
 /** The trail from the browse section down to (and including) the country and discipline. */
 export function browseCrumbs(locale: Locale, place: { country: string | null; family: HubDiscipline | null }): Crumb[] {
-  const crumbs: Crumb[] = [{ label: raceCopy[locale].browse, href: `/${locale}/c` }];
+  const crumbs: Crumb[] = [{ label: raceCopy[locale].browse, href: `/${locale}/${hubPath(locale)}` }];
   if (!place.country) return crumbs;
-  const c = place.country.toLowerCase();
-  crumbs.push({ label: countryDisplayName(place.country, locale), href: `/${locale}/c/${c}` });
-  if (place.family) crumbs.push({ label: disciplineLabel(place.family, locale), href: `/${locale}/c/${c}/${place.family}` });
+  crumbs.push({ label: countryDisplayName(place.country, locale), href: `/${locale}/${hubPath(locale, place.country)}` });
+  if (place.family) crumbs.push({ label: disciplineLabel(place.family, locale), href: `/${locale}/${hubPath(locale, place.country, place.family)}` });
   return crumbs;
 }

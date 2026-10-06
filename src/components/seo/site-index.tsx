@@ -6,7 +6,8 @@ import { disciplineCopy, listQualifyingHubs } from "@/lib/discipline-hubs";
 import { fillCopy, hubCopy, inCountry } from "@/lib/seo";
 import { addDaysIso, raceCopy, seriesIn, shortDate } from "@/lib/seo-race-copy";
 import { eventPagePath } from "@/lib/event-url";
-import { collectionCopy, collectionPath, COLLECTION_SLUGS } from "@/lib/race-collections";
+import { collectionCopy, COLLECTION_SLUGS } from "@/lib/race-collections";
+import { collectionPath, hubPath } from "@/lib/browse-paths";
 
 /** The markets we cover most, first. */
 const CORE = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH"];
@@ -33,7 +34,7 @@ export async function SiteIndex({ locale }: { locale: Locale }) {
       <h2>{collectionCopy[locale].heading}</h2>
       <ul>
         {COLLECTION_SLUGS.map((slug) => (
-          <li key={slug}><Link href={`/${locale}/${collectionPath(slug)}`}>{collectionCopy[locale].collections[slug].label}</Link></li>
+          <li key={slug}><Link href={`/${locale}/${collectionPath(locale, slug)}`}>{collectionCopy[locale].collections[slug].label}</Link></li>
         ))}
       </ul>
       <h2>{rc.byCountry}</h2>
@@ -42,13 +43,13 @@ export async function SiteIndex({ locale }: { locale: Locale }) {
           const where = inCountry(c, countryDisplayName(c, locale), locale);
           return (
             <li key={c}>
-              <Link href={`/${locale}/c/${c.toLowerCase()}`}>{fillCopy(hubCopy[locale].countryTitle, { in: where })}</Link>
+              <Link href={`/${locale}/${hubPath(locale, c)}`}>{fillCopy(hubCopy[locale].countryTitle, { in: where })}</Link>
               <ul>
                 {hubs
                   .filter((h) => h.countryCode === c)
                   .map((h) => (
                     <li key={h.discipline}>
-                      <Link href={`/${locale}/c/${c.toLowerCase()}/${h.discipline}`}>
+                      <Link href={`/${locale}/${hubPath(locale, c, h.discipline)}`}>
                         {fillCopy(disciplineCopy(locale, h.discipline).title, { in: where })}
                       </Link>
                     </li>

@@ -5,7 +5,8 @@ import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { countryDisplayName, isListedCountry, sortCountryCodes } from "@/lib/geo/europe";
 import { absoluteUrl, brandedTitle, fillCopy, inCountry, localeAlternates, localeOgImagePath, socialCard } from "@/lib/seo";
 import { raceCopy } from "@/lib/seo-race-copy";
-import { collectionCopy, collectionPath, collectionPeriod, isCollectionSlug, MIN_COLLECTION_RACES } from "@/lib/race-collections";
+import { collectionCopy, collectionPeriod, isCollectionSlug, MIN_COLLECTION_RACES } from "@/lib/race-collections";
+import { collectionPath, hubPath } from "@/lib/browse-paths";
 import { getRaceCollection, listCollectionSummaries } from "@/lib/race-collection-data";
 import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
 import { CollectionGrid } from "@/components/browse/collection-grid";
@@ -24,7 +25,7 @@ function resolve({ locale: raw, slug, country }: Awaited<Props["params"]>) {
   const locale = raw as Locale;
   const where = countryCode ? inCountry(countryCode, countryDisplayName(countryCode, locale), locale) : ({ cs: "v Evropě", en: "in Europe", sk: "v Európe", pl: "w Europie", de: "in Europa" } satisfies Record<Locale, string>)[locale];
   const text = collectionCopy[locale].collections[slug];
-  return { locale, slug, countryCode, path: collectionPath(slug, countryCode), title: fillCopy(text.title, { in: where }), description: fillCopy(text.description, { in: where }) };
+  return { locale, slug, countryCode, path: collectionPath(locale, slug, countryCode), title: fillCopy(text.title, { in: where }), description: fillCopy(text.description, { in: where }) };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: brandedTitle(title),
     description,
-    alternates: { canonical: absoluteUrl(`/${locale}/${path}`), languages: localeAlternates(path) },
+    alternates: { canonical: absoluteUrl(`/${locale}/${path}`), languages: localeAlternates((l) => collectionPath(l, slug, countryCode)) },
     robots: { index: events.length >= MIN_COLLECTION_RACES, follow: true },
     ...socialCard({ title, description, url: absoluteUrl(`/${locale}/${path}`), localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
   };
@@ -51,21 +52,21 @@ export default async function CollectionPage({ params }: Props) {
   const countries = summaries.filter((s) => s.slug === slug && s.countryCode && s.count > 0).map((s) => s.countryCode!);
   if (countryCode && !countries.includes(countryCode)) countries.push(countryCode);
   const crumbs = [
-    { label: rc.browse, href: `/${locale}/c` },
-    ...(countryCode ? [{ label: copy.collections[slug].label, href: `/${locale}/${collectionPath(slug)}` }, { label: countryDisplayName(countryCode, locale) }] : [{ label: copy.collections[slug].label }]),
+    { label: rc.browse, href: `/${locale}/${hubPath(locale)}` },
+    ...(countryCode ? [{ label: copy.collections[slug].label, href: `/${locale}/${collectionPath(locale, slug)}` }, { label: countryDisplayName(countryCode, locale) }] : [{ label: copy.collections[slug].label }]),
   ];
 
   return (
     <main className="min-h-full bg-background">
-      <HubJsonLd locale={locale} title={title} description={description} path={path} breadcrumb={[{ name: rc.browse, path: "c" }, ...(countryCode ? [{ name: copy.collections[slug].label, path: collectionPath(slug) }] : [])]} events={events.map((e) => ({ name: e.name, slug: e.slug, startDate: e.startDate, place: e.location?.municipality ?? e.location?.name }))} />
+      <HubJsonLd locale={locale} title={title} description={description} path={path} breadcrumb={[{ name: rc.browse, path: hubPath(locale) }, ...(countryCode ? [{ name: copy.collections[slug].label, path: collectionPath(locale, slug) }] : [])]} events={events.map((e) => ({ name: e.name, slug: e.slug, startDate: e.startDate, place: e.location?.municipality ?? e.location?.name }))} />
       <BrowseHeader locale={locale} crumbs={crumbs} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro title={title} description={description} />
         <p className="mt-4 text-sm font-medium tabular-nums">{collectionPeriod(slug, events.length, locale, window)}</p>
         <nav aria-label={rc.byCountry} className="mt-6 flex flex-wrap gap-2">
-          <Button asChild variant={countryCode ? "outline" : "secondary"} size="sm"><Link href={`/${locale}/${collectionPath(slug)}`} aria-current={!countryCode ? "page" : undefined}>{copy.allCountries}</Link></Button>
+          <Button asChild variant={countryCode ? "outline" : "secondary"} size="sm"><Link href={`/${locale}/${collectionPath(locale, slug)}`} aria-current={!countryCode ? "page" : undefined}>{copy.allCountries}</Link></Button>
           {sortCountryCodes(countries, locale).map((code) => (
-            <Button key={code} asChild variant={countryCode === code ? "secondary" : "outline"} size="sm"><Link href={`/${locale}/${collectionPath(slug, code)}`} aria-current={countryCode === code ? "page" : undefined}>{countryDisplayName(code, locale)}</Link></Button>
+            <Button key={code} asChild variant={countryCode === code ? "secondary" : "outline"} size="sm"><Link href={`/${locale}/${collectionPath(locale, slug, code)}`} aria-current={countryCode === code ? "page" : undefined}>{countryDisplayName(code, locale)}</Link></Button>
           ))}
         </nav>
         <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">{copy.collections[slug].note}</p>
@@ -77,7 +78,7 @@ export default async function CollectionPage({ params }: Props) {
         ) : (
           <Empty className="mt-8 border">
             <EmptyHeader><EmptyTitle>{copy.emptyTitle}</EmptyTitle><EmptyDescription>{copy.emptyDescription}</EmptyDescription></EmptyHeader>
-            <Button asChild variant="outline"><Link href={`/${locale}/c`}>{copy.showAll}</Link></Button>
+            <Button asChild variant="outline"><Link href={`/${locale}/${hubPath(locale)}`}>{copy.showAll}</Link></Button>
           </Empty>
         )}
         <CollectionGrid locale={locale} countryCode={countryCode} />

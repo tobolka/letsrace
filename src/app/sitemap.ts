@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
-import { locales } from "@/lib/i18n/messages";
+import { locales, type Locale } from "@/lib/i18n/messages";
 import { listSitemapEvents, listSitemapSeries } from "@/lib/events";
 import { listQualifyingHubs } from "@/lib/discipline-hubs";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { absoluteUrl, localeAlternates } from "@/lib/seo";
 import { listCollectionSummaries } from "@/lib/race-collection-data";
-import { collectionPath, MIN_COLLECTION_RACES } from "@/lib/race-collections";
+import { MIN_COLLECTION_RACES } from "@/lib/race-collections";
+import { collectionPath, hubPath } from "@/lib/browse-paths";
 
 // Built at most once an hour and served from the cache: a crawler never waits on the
 // database, which a cold start could make slow enough for it to give up.
@@ -24,11 +25,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
    * left for Google to find by itself, and the queries it showed us were all
    * English.
    */
-  const add = (path: string, lastModified: Date | undefined, changeFrequency: Freq, priority: number) => {
+  const add = (path: string | ((l: Locale) => string), lastModified: Date | undefined, changeFrequency: Freq, priority: number) => {
     const languages = localeAlternates(path);
     for (const l of locales) {
+      const p = typeof path === "function" ? path(l) : path;
       entries.push({
-        url: absoluteUrl(`/${l}${path ? `/${path}` : ""}`),
+        url: absoluteUrl(`/${l}${p ? `/${p}` : ""}`),
         lastModified,
         changeFrequency,
         priority,
@@ -40,15 +42,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // The bare domain is not listed: it redirects to a language.
   add("", now, "hourly", 1);
 
-  add("c", now, "daily", 0.9);
-  for (const code of PUBLIC_COUNTRY_CODES) add(`c/${code.toLowerCase()}`, now, "daily", 0.8);
+  add((l) => hubPath(l), now, "daily", 0.9);
+  for (const code of PUBLIC_COUNTRY_CODES) add((l) => hubPath(l, code), now, "daily", 0.8);
 
   try {
     for (const collection of await listCollectionSummaries()) {
       if (collection.count < MIN_COLLECTION_RACES) continue;
       // No invented modification timestamp: membership changes with dates and
       // source updates, independently of when this sitemap is requested.
-      add(collectionPath(collection.slug, collection.countryCode), undefined, "daily", 0.75);
+      add((l) => collectionPath(l, collection.slug, collection.countryCode), undefined, "daily", 0.75);
     }
   } catch {
     // Collection counts must not take the existing catalogue sitemap down.
@@ -58,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Only combinations that clear the race threshold — a thin hub in the
     // sitemap asks Google to index a page competing with its own parent.
     for (const hub of await listQualifyingHubs([...PUBLIC_COUNTRY_CODES])) {
-      add(`c/${hub.countryCode.toLowerCase()}/${hub.discipline}`, now, "daily", 0.75);
+      add((l) => hubPath(l, hub.countryCode, hub.discipline), now, "daily", 0.75);
     }
   } catch {
     // Hub outage must not take the rest of the sitemap down.

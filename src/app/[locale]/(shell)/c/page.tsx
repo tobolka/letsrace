@@ -4,6 +4,7 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { countryDisplayName, PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { listCountryTallies } from "@/lib/discipline-hubs";
 import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { hubPath } from "@/lib/browse-paths";
 import { raceCopy } from "@/lib/seo-race-copy";
 import { BrowseHeader, BrowseIntro, CountryCard, TileGrid } from "@/components/browse/browse-ui";
 import { CollectionGrid } from "@/components/browse/collection-grid";
@@ -17,11 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const rc = raceCopy[locale];
-  const url = absoluteUrl(`/${locale}/c`);
+  const url = absoluteUrl(`/${locale}/${hubPath(locale)}`);
   return {
     title: rc.browseTitle,
     description: rc.browseDescription,
-    alternates: { canonical: url, languages: localeAlternates("c") },
+    alternates: { canonical: url, languages: localeAlternates((l) => hubPath(l)) },
     ...socialCard({
       title: rc.browseTitle,
       ogTitle: `${rc.browseTitle} · ${SITE_NAME}`,
@@ -55,7 +56,7 @@ export default async function BrowsePage({ params }: Props) {
           {tallies.map((c) => (
             <CountryCard
               key={c.countryCode}
-              href={`/${locale}/c/${c.countryCode.toLowerCase()}`}
+              href={`/${locale}/${hubPath(locale, c.countryCode)}`}
               code={c.countryCode}
               name={countryDisplayName(c.countryCode, locale)}
               count={`${c.races} ${t.racesCount}`}

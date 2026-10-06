@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { hubPath } from "@/lib/browse-paths";
 import { DESCRIPTION_MAX, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
@@ -128,7 +129,7 @@ export default async function SeriesPage({ params }: Props) {
           <nav aria-label={rc.byCountry} className="mt-10 flex flex-wrap gap-2">
             {countries.map((c) => (
               <Button key={c} asChild variant="outline" size="sm">
-                <Link href={`/${locale}/c/${c.toLowerCase()}`}>
+                <Link href={`/${locale}/${hubPath(locale, c)}`}>
                   {fillCopy(copy.countryTitle, { in: inCountry(c, countryDisplayName(c, locale), locale) })}
                 </Link>
               </Button>

@@ -10,6 +10,7 @@ import {
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { hubPath } from "@/lib/browse-paths";
 import { addDaysIso, fill, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { listCountryTallies, type HubDiscipline } from "@/lib/discipline-hubs";
@@ -49,13 +50,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const heading = `${fillCopy(copy.countryTitle, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const title = `${heading} · ${SITE_NAME}`;
   const description = fillCopy(copy.country, { in: where });
-  const url = absoluteUrl(`/${locale}/c/${code.toLowerCase()}`);
+  const url = absoluteUrl(`/${locale}/${hubPath(locale, code)}`);
   return {
     title: brandedTitle(heading),
     description,
     alternates: {
       canonical: url,
-      languages: localeAlternates(`c/${code.toLowerCase()}`),
+      languages: localeAlternates((l) => hubPath(l, code)),
     },
     ...socialCard({
       title: heading,
@@ -100,7 +101,7 @@ export default async function CountryHubPage({ params }: Props) {
         locale={locale}
         title={heading}
         description={fillCopy(copy.country, { in: where })}
-        path={`c/${code.toLowerCase()}`}
+        path={hubPath(locale, code)}
         events={events.map((e) => ({
           name: e.name,
           slug: e.slug,
@@ -110,7 +111,7 @@ export default async function CountryHubPage({ params }: Props) {
       />
       <BrowseHeader
         locale={locale}
-        crumbs={[{ label: rc.browse, href: `/${locale}/c` }, { label: name }]}
+        crumbs={[{ label: rc.browse, href: `/${locale}/${hubPath(locale)}` }, { label: name }]}
       />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro title={`${heading} ${seasonLabel()}`} description={fill(rc.hubIntro, { count: events.length })}>
@@ -129,7 +130,7 @@ export default async function CountryHubPage({ params }: Props) {
             {families.map(([family, n]) => (
               <DisciplineTile
                 key={family}
-                href={`/${locale}/c/${code.toLowerCase()}/${family}`}
+                href={`/${locale}/${hubPath(locale, code, family)}`}
                 family={family}
                 name={disciplineLabel(family, locale)}
                 count={`${n} ${t.racesCount}`}

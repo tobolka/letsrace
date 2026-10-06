@@ -37,7 +37,7 @@ export function HubJsonLd({
   locale: string;
   title: string;
   description: string;
-  /** Hub path without the locale, e.g. `c/cz` or `series/cesky-pohar-mtb`. */
+  /** Hub path without the locale, e.g. `zavody/cz` or `series/cesky-pohar-mtb`. */
   path: string;
   events: HubEvent[];
   /** Trail after the site root; the hub itself is appended automatically. */

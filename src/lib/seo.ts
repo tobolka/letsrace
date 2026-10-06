@@ -232,11 +232,15 @@ export function brandedTitle(title: string): Metadata["title"] {
  * four is the fallback for the bare domain — and it guessed the redirecting
  * root over `/en`.
  */
-export function localeAlternates(path = ""): Record<string, string> {
+/** A page's path in each language — pass a function where the address is translated. */
+export function localeAlternates(path: string | ((locale: Locale) => string) = ""): Record<string, string> {
   const base = getSiteUrl();
-  const suffix = path.startsWith("/") ? path : path ? `/${path}` : "";
-  const entries = locales.map((l) => [l, `${base}/${l}${suffix}`] as const);
-  return Object.fromEntries([...entries, ["x-default", `${base}/${defaultLocale}${suffix}`]]);
+  const at = (l: Locale) => {
+    const p = typeof path === "function" ? path(l) : path;
+    return `${base}/${l}${p.startsWith("/") ? p : p ? `/${p}` : ""}`;
+  };
+  const entries = locales.map((l) => [l, at(l)] as const);
+  return Object.fromEntries([...entries, ["x-default", at(defaultLocale)]]);
 }
 
 export function absoluteUrl(path: string): string {

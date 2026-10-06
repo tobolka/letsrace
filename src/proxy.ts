@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
+import { BROWSE_ROOT, internalBrowsePath, publicBrowsePath } from "@/lib/browse-paths";
 
 const LOCALE_PREFIX = new RegExp(`^/(${locales.join("|")})(/|$)`);
 
@@ -43,8 +44,33 @@ export function preferredLocale(acceptLanguage: string | null): Locale | null {
   return null;
 }
 
+/**
+ * The browse section in the reader's language: `/cs/zavody/cz/mtb` is served
+ * by the `c/` route, `/cs/zavody/deti` by `collections/`. The routes' own
+ * addresses redirect permanently, so each page has exactly one URL.
+ */
+export function browseRouting(pathname: string): { rewrite: string } | { redirect: string } | null {
+  const [, locale, head, ...rest] = pathname.split("/");
+  if (!locale || !head || !locales.includes(locale as Locale)) return null;
+  const l = locale as Locale;
+  const tail = rest.filter(Boolean);
+  if (head === BROWSE_ROOT[l]) return { rewrite: `/${l}/${internalBrowsePath(l, tail)}` };
+  if (head === "c" || head === "collections") {
+    const target = publicBrowsePath(l, [head, ...tail]);
+    return target ? { redirect: `/${l}/${target}` } : null;
+  }
+  return null;
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  const browse = browseRouting(pathname);
+  if (browse && "redirect" in browse) {
+    const url = request.nextUrl.clone();
+    url.pathname = browse.redirect;
+    return NextResponse.redirect(url, 308);
+  }
 
   // A Czech reader typing letsrace.cz gets the Czech site, not the English one.
   if (pathname === "/" && !wantsMarkdown(request)) {
@@ -70,7 +96,14 @@ export function proxy(request: NextRequest) {
     });
   }
 
-  const response = NextResponse.next();
+  let response: NextResponse;
+  if (browse) {
+    const url = request.nextUrl.clone();
+    url.pathname = browse.rewrite;
+    response = NextResponse.rewrite(url);
+  } else {
+    response = NextResponse.next();
+  }
   response.headers.set("x-locale", localeFromPath(pathname));
   if (isHomepage(pathname)) {
     response.headers.set("Link", agentLinkHeaders().join(", "));

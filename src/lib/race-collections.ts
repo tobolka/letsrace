@@ -138,10 +138,6 @@ export function belongsToCollection(event: EventListItem, slug: CollectionSlug, 
   return event.level === "amateur" || event.competitionType === "amateur" || ageCategoryMatch(event, ["amateur"]) === "match";
 }
 
-export function collectionPath(slug: CollectionSlug, countryCode?: string | null): string {
-  return `collections/${slug}${countryCode ? `/${countryCode.toLowerCase()}` : ""}`;
-}
-
 export function collectionPeriod(slug: CollectionSlug, count: number, locale: Locale, window: CollectionWindow): string {
   const format = new Intl.DateTimeFormat(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone: "UTC" });
   const { from, to } = collectionDates(slug, window);

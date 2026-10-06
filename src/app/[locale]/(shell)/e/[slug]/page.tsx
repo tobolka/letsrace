@@ -10,6 +10,7 @@ import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messag
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageBandHint, ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
+import { hubPath } from "@/lib/browse-paths";
 import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
@@ -136,8 +137,8 @@ export default async function EventPage({ params }: Props) {
         description={raceSummary(event, locale).join(" ")}
         breadcrumb={[
           { name: SITE_NAME, path: "" },
-          ...(hubCountry && countryName ? [{ name: countryName, path: `c/${hubCountry.toLowerCase()}` }] : []),
-          ...(hubCountry && hub ? [{ name: disciplineLabelForHub(locale, hub.discipline), path: `c/${hubCountry.toLowerCase()}/${hub.discipline}` }] : []),
+          ...(hubCountry && countryName ? [{ name: countryName, path: hubPath(locale, hubCountry) }] : []),
+          ...(hubCountry && hub ? [{ name: disciplineLabelForHub(locale, hub.discipline), path: hubPath(locale, hubCountry, hub.discipline) }] : []),
           { name: event.name, path: `e/${event.slug}` },
         ]}
       />

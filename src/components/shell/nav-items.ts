@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Bookmark, CalendarDays, Compass, LayoutGrid, List, Map, Settings, Users } from "lucide-react";
-import type { Messages } from "@/lib/i18n/messages";
+import type { Locale, Messages } from "@/lib/i18n/messages";
+import { hubPath } from "@/lib/browse-paths";
 
 export type NavItem = {
   key: string;
@@ -38,10 +39,10 @@ export function exploreNav(locale: string, t: Messages, pathname: string): NavIt
       // Countries, then disciplines, then series: the races for someone who
       // would rather choose than pan a map. A race's own page sits here too.
       key: "browse",
-      href: `${base}/c`,
+      href: `${base}/${hubPath(locale as Locale)}`,
       label: t.navBrowse,
       icon: LayoutGrid,
-      active: [`${base}/c`, `${base}/collections/`, `${base}/e/`, `${base}/series/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
+      active: [`${base}/${hubPath(locale as Locale)}`, `${base}/e/`, `${base}/series/`].some((p) => pathname === p || pathname.startsWith(p.endsWith("/") ? p : `${p}/`)),
     },
   ];
 }

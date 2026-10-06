@@ -6,6 +6,7 @@ import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { hubPath } from "@/lib/browse-paths";
 import {
   disciplineCopy,
   disciplineLeaves,
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = disciplineCopy(locale, discipline);
   const heading = `${fillCopy(copy.title, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const description = fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) });
-  const path = `c/${code.toLowerCase()}/${discipline}`;
+  const path = hubPath(locale, code, discipline);
   const url = absoluteUrl(`/${locale}/${path}`);
   const ogTitle = `${heading} · ${SITE_NAME}`;
 
@@ -99,8 +100,8 @@ export default async function DisciplineHubPage({ params }: Props) {
         locale={locale}
         title={heading}
         description={fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) })}
-        path={`c/${code.toLowerCase()}/${discipline}`}
-        breadcrumb={[{ name: countryHeading, path: `c/${code.toLowerCase()}` }]}
+        path={hubPath(locale, code, discipline)}
+        breadcrumb={[{ name: countryHeading, path: hubPath(locale, code) }]}
         events={events.map((e) => ({
           name: e.name,
           slug: e.slug,
@@ -111,8 +112,8 @@ export default async function DisciplineHubPage({ params }: Props) {
       <BrowseHeader
         locale={locale}
         crumbs={[
-          { label: rc.browse, href: `/${locale}/c` },
-          { label: name, href: `/${locale}/c/${code.toLowerCase()}` },
+          { label: rc.browse, href: `/${locale}/${hubPath(locale)}` },
+          { label: name, href: `/${locale}/${hubPath(locale, code)}` },
           { label: disciplineLabel(discipline, locale) },
         ]}
       />
