@@ -154,19 +154,21 @@ export default async function EventPage({ params }: Props) {
           ]}
         />
       </div>
-      <div className="relative mx-auto max-w-3xl px-4 pb-8 pt-4 sm:px-6 sm:pb-16">
+      <div className="relative mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         {/* The list row's shape, larger: the discipline's colour down the
-            edge, the name, then the date and where, what and which series. */}
-        <header className="relative scroll-mt-24 pl-4">
+            edge, the name, then the date and where, what and which series.
+            The edge hangs in the gutter so the name lines up with the trail
+            and everything under it, as the browse pages' headings do. */}
+        <header className="browse-intro relative scroll-mt-24">
           <span
             aria-hidden
-            className="absolute inset-y-1 left-0 w-1 rounded-full"
+            className="absolute bottom-1 top-5 -left-3 w-1 rounded-full sm:-left-4"
             style={{ background: disciplineColor(event.disciplines) }}
           />
-          <h1 className="text-balance text-[1.75rem] font-semibold leading-tight tracking-tight sm:text-4xl sm:leading-tight">
+          <h1 data-page-title className="text-balance text-3xl font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[2.125rem]">
             {event.name}
           </h1>
-          <p className="mt-2 text-[15px] sm:text-base">
+          <p className="mt-3 text-sm">
             <time className="font-medium tabular-nums" dateTime={event.startDate}>
               {dateLabel}
             </time>
@@ -271,17 +273,16 @@ export default async function EventPage({ params }: Props) {
           ) : null}
         </p>
 
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold">{rc.about}</h2>
-          <div className="mt-2 flex flex-col gap-2 text-pretty text-[15px] leading-relaxed text-muted-foreground">
-            {raceSummary(event, locale).map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
+        <section className="mt-8">
+          <h2 className="mb-3 text-lg font-semibold">{rc.about}</h2>
+          {/* One paragraph: the sentences are one account of the race, not a list. */}
+          <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+            {raceSummary(event, locale).join(" ")}
+          </p>
         </section>
 
         {event.series && rounds.length > 0 ? (
-          <section className="mt-10">
+          <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{fill(rc.otherRounds, { name: event.series.name })}</h2>
             <RaceLinkList events={rounds} locale={locale} groupByMonth={false} />
             <Button asChild variant="link" className="mt-1 px-0">
