@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { BrandBar } from "@/components/shell/section-header";
+import { StickyPageTitle } from "@/components/browse/sticky-page-title";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,7 +27,7 @@ export function BrowseIntro({ title, description, children }: {
   return (
     <div className="browse-intro">
       <div className="min-w-0 py-1">
-        <h1 className="text-balance text-3xl font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[2.125rem]">{title}</h1>
+        <h1 data-page-title className="text-balance text-3xl font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[2.125rem]">{title}</h1>
         <p className="mt-3 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground">{description}</p>
         {children ? <div className="mt-5">{children}</div> : null}
       </div>
@@ -41,7 +42,9 @@ export function BrowseIntro({ title, description, children }: {
 export function BrowseHeader({ locale, crumbs }: { locale: string; crumbs: Crumb[] }) {
   return (
     <>
-      <BrandBar href={`/${locale}`} />
+      <BrandBar href={`/${locale}`} sticky>
+        <StickyPageTitle />
+      </BrandBar>
       {crumbs.length ? (
         <Breadcrumb className="mx-auto w-full max-w-3xl px-4 pt-4 sm:px-6">
           <BreadcrumbList>

@@ -4,10 +4,11 @@ import { BrandMark } from "@/components/brand-mark";
  * The logo bar at the top of the race views — map, list, calendar, browse —
  * the same height, padding and mark in each, so it does not move between them.
  */
-export function BrandBar({ href }: { href: string }) {
+export function BrandBar({ href, sticky = false, children }: { href: string; sticky?: boolean; children?: React.ReactNode }) {
   return (
-    <div className="relative z-10 flex h-12 shrink-0 items-center border-b bg-background px-4">
+    <div className={`${sticky ? "sticky top-0" : "relative"} z-10 flex h-12 shrink-0 items-center border-b bg-background px-4`}>
       <BrandMark href={href} size="xs" />
+      {children}
     </div>
   );
 }
