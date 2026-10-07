@@ -3,8 +3,8 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, ""); }
 process.env.LLM_LEDGER_PATH ??= resolve("tmp/llm-budget.json");
-process.env.LLM_DAILY_BUDGET_USD ??= "0.50";
-process.env.LLM_MONTHLY_BUDGET_USD ??= "5";
+process.env.LLM_DAILY_BUDGET_USD ??= "2.50";
+process.env.LLM_MONTHLY_BUDGET_USD ??= "25";
 
 async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
@@ -22,7 +22,7 @@ async function main() {
   let cachedOnly = process.argv.includes("--cached-only");
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 12);
   const ids = process.argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",");
-  const countries = (process.argv.find((a) => a.startsWith("--countries="))?.slice(12) ?? process.env.CATALOG_COUNTRIES ?? "CZ,SK,AT,DE").split(",");
+  const countries = (process.argv.find((a) => a.startsWith("--countries="))?.slice(12) ?? process.env.CATALOG_COUNTRIES ?? "CZ,SK,AT,DE,PL,CH").split(",");
   const series = (await listSeriesForAgeReview()).filter((g) => (!ids || ids.includes(g.id)) && (!countries || countries.includes(g.countryCode ?? "")) && g.rounds.some((r) => r.confidence !== "explicit" || !r.ages.length || !r.regulationsUrl))
     .sort((a, b) => {
       const benefit = (g: typeof a) => g.rounds.reduce((sum, r) => sum + (r.confidence !== "explicit" || !r.ages.length ? 10 : 0) + (!r.regulationsUrl ? 1 : 0), 0)

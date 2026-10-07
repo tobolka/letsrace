@@ -10,9 +10,9 @@ cd "$(dirname "$0")/.."
 mkdir -p tmp
 # All model readers share the same ledger, rather than resetting the cap per step.
 export LLM_LEDGER_PATH="${LLM_LEDGER_PATH:-$PWD/tmp/llm-budget.json}"
-export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-0.50}"
-export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-5}"
-export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE}"
+export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-2.50}"
+export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-25}"
+export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE,PL,CH}"
 FAILURES=0
 
 step() {
@@ -25,8 +25,8 @@ step() {
 
 step "Coverage before"                     scripts/data-stats.ts
 # Calendar fallbacks must leave room for completing already discovered races.
-LLM_BUDGET_USD=0.08 step "Official calendars (force-poll)" scripts/reload-calendars.ts
-LLM_BUDGET_USD=0.02 step "Everything else that is due" scripts/drain-due-watches.ts 40
+LLM_BUDGET_USD=0.40 step "Official calendars (force-poll)" scripts/reload-calendars.ts
+LLM_BUDGET_USD=0.10 step "Everything else that is due" scripts/drain-due-watches.ts 40
 if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
   step "Duplicates (review only)"          scripts/merge-duplicates.ts --dry
 else
@@ -56,19 +56,19 @@ TODAY=$(date +%F)
 # LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
 if [ "${LLM_DAILY:-0}" = "1" ] && { [ "${LLM_FORCE_DAILY:-0}" = "1" ] || [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; }; then
   # One season document can fill many rounds; give it first claim on the budget.
-  LLM_BUDGET_USD=0.12 step "Shared series propositions and categories" scripts/enrich-series-documents.ts --max=500 --apply
+  LLM_BUDGET_USD=0.60 step "Shared series propositions and categories" scripts/enrich-series-documents.ts --max=500 --apply
   # Sites first (Brave search, a model only picks among the results), so the
   # reader below reads the new ones the same day.
-  LLM_BUDGET_USD=0.1  step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
-  LLM_BUDGET_USD=0.15 step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
-  LLM_BUDGET_USD=0.1  step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
-  LLM_BUDGET_USD=0.03 step "Races linked to their series"    scripts/link-series.ts --apply
+  LLM_BUDGET_USD=0.50 step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
+  LLM_BUDGET_USD=0.75 step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
+  LLM_BUDGET_USD=0.50 step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
+  LLM_BUDGET_USD=0.15 step "Races linked to their series"    scripts/link-series.ts --apply
   if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
-    LLM_BUDGET_USD=0.1 step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
+    LLM_BUDGET_USD=0.50 step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
   else
-    LLM_BUDGET_USD=0.1 step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
+    LLM_BUDGET_USD=0.50 step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
   fi
-  LLM_BUDGET_USD=0.1  step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
+  LLM_BUDGET_USD=0.50 step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
   step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
   echo "$TODAY" > tmp/.llm-day
 fi

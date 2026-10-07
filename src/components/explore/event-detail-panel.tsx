@@ -25,6 +25,7 @@ import {
   type UciClass,
 } from "@/lib/taxonomy";
 import { disciplineColor } from "@/lib/map-visuals";
+import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { Badge } from "@/components/ui/badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { eventMapPath } from "@/lib/event-url";
-import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
 
@@ -246,8 +247,9 @@ export function EventDetailPanel({
   // The ages a chip stands for, by its label: "Junior" → "17–18 let".
   const ageHintFor = (label: string) => {
     const id = AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
-    return id ? ageGroupHint(id, locale) : "";
+    return id ? ageCategoryHelp(id, locale) : "";
   };
+  const levelHelp = event.uciClass ? uciClassHelp(event.uciClass, locale) : "";
   const discChips = event.disciplines
     .slice(0, 4)
     .map((d) => disciplineLabel(d, locale))
@@ -545,14 +547,13 @@ export function EventDetailPanel({
             {whoChips.length > 0 ? (
               <>
                 {whoChips.map((chip) => (
-                  <Badge
+                  <ExplainedBadge
                     key={chip}
-                    variant="outline"
-                    title={ageHintFor(chip) || undefined}
+                    explanation={ageHintFor(chip)}
                     className={event.ageConfidence === "explicit" ? undefined : "border-dashed"}
                   >
                     {chip}
-                  </Badge>
+                  </ExplainedBadge>
                 ))}
                 {/* Our guess from the level or discipline, not the organiser's
                     list — said so, rather than shown as fact. */}
@@ -578,7 +579,7 @@ export function EventDetailPanel({
             )}
           </MetaRow>
           <MetaRow icon={<ChartNoAxesColumnIncreasing />} label={t.levelFilter}>
-            <Badge variant="outline">{levelLabel}</Badge>
+            <ExplainedBadge explanation={levelHelp}>{levelLabel}</ExplainedBadge>
           </MetaRow>
           {event.series ? (
             <MetaRow icon={<Trophy />} label={t.seriesFilter}>

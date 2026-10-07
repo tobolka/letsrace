@@ -33,9 +33,9 @@ if [ "$RUN_HOURS" -gt 0 ]; then export SOURCE_RUN_DEADLINE=$(( $(date +%s) + RUN
 # of calendars no parser knows. Set to 0 to run without the model.
 # Shared across every subprocess and refresh, including fallback calendar readers.
 export LLM_LEDGER_PATH="${LLM_LEDGER_PATH:-$PWD/tmp/llm-budget.json}"
-export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-0.50}"
-export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-5}"
-export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE}"
+export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-2.50}"
+export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-25}"
+export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE,PL,CH}"
 export BRAVE_SEARCH_LIMIT="${BRAVE_SEARCH_LIMIT:-40}"
 export LLM_DAILY="${LLM_DAILY:-1}"
 export LLM_CALENDARS="${LLM_CALENDARS:-1}"

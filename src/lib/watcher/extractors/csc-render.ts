@@ -69,7 +69,7 @@ async function renderOnce(
       `--user-agent=${BOT_UA}`,
       "about:blank",
     ],
-    { stdio: "ignore" },
+    { stdio: "ignore", detached: true },
   );
 
   const deadline = Date.now() + RENDER_MS;
@@ -164,7 +164,7 @@ export async function renderCscRaceDetails(
       "--window-size=1280,1600",
       "about:blank",
     ],
-    { stdio: "ignore" },
+    { stdio: "ignore", detached: true },
   );
   const deadline = Date.now() + (opts?.budgetMs ?? 10 * 60_000);
   try {
@@ -291,9 +291,10 @@ export async function renderPagesHtml(
       `--user-agent=${BOT_UA}`,
       "about:blank",
     ],
-    { stdio: "ignore" },
+    { stdio: "ignore", detached: true },
   );
   const deadline = Date.now() + (opts?.budgetMs ?? 5 * 60_000);
+  const forceStop = setTimeout(() => { void killChrome(proc); }, Math.max(1_000, deadline - Date.now()));
   try {
     await waitForJson(port, Math.min(deadline, Date.now() + 20_000));
     const cdp = await Cdp.connect(await firstPageWs(port), deadline);
@@ -316,6 +317,7 @@ export async function renderPagesHtml(
       cdp.close();
     }
   } finally {
+    clearTimeout(forceStop);
     await killChrome(proc);
     await rm(profile, { recursive: true, force: true }).catch(() => undefined);
   }
@@ -364,7 +366,7 @@ async function waitForJson(port: number, deadline: number): Promise<void> {
 }
 
 async function firstPageWs(port: number): Promise<string> {
-  const res = await fetch(`http://127.0.0.1:${port}/json/list`);
+  const res = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(5_000) });
   const pages = (await res.json()) as { type?: string; webSocketDebuggerUrl?: string }[];
   const page = pages.find((p) => p.type === "page" && p.webSocketDebuggerUrl) ?? pages[0];
   if (!page?.webSocketDebuggerUrl) throw new Error("no chrome page target");
@@ -462,8 +464,12 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function killChrome(proc: ChildProcess): Promise<void> {
-  if (proc.exitCode != null) return;
-  proc.kill("SIGKILL");
+  if (proc.exitCode != null || proc.pid == null) return;
+  try {
+    process.kill(-proc.pid, "SIGKILL");
+  } catch {
+    try { proc.kill("SIGKILL"); } catch { /* already gone */ }
+  }
   await sleep(50);
 }
 
@@ -487,6 +493,10 @@ class Cdp {
         for (const w of waiters) w();
       }
     });
+    this.ws.addEventListener("close", () => {
+      for (const pending of this.pending.values()) pending.reject(new Error("cdp closed"));
+      this.pending.clear();
+    });
   }
 
   static connect(wsUrl: string, deadline: number): Promise<Cdp> {
@@ -507,11 +517,24 @@ class Cdp {
     });
   }
 
-  send(method: string, params?: Record<string, unknown>): Promise<unknown> {
+  send(method: string, params?: Record<string, unknown>, timeoutMs = 20_000): Promise<unknown> {
     const id = ++this.id;
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-      this.ws.send(JSON.stringify({ id, method, params }));
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error(`cdp ${method} timed out`));
+      }, timeoutMs);
+      this.pending.set(id, {
+        resolve: (value) => { clearTimeout(timer); resolve(value); },
+        reject: (error) => { clearTimeout(timer); reject(error); },
+      });
+      try {
+        this.ws.send(JSON.stringify({ id, method, params }));
+      } catch (error) {
+        clearTimeout(timer);
+        this.pending.delete(id);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      }
     });
   }
 

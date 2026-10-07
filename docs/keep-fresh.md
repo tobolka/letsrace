@@ -10,7 +10,7 @@ This extends the existing refresh loop. It imports calendars, enriches the
 catalogue using its existing per-race readers, and collects documents from all
 sources of every upcoming public race. The deep collection includes all
 countries in the catalogue; the regular refresh keeps the existing
-`CATALOG_COUNTRIES` priorities (CZ, SK, AT, DE by default).
+`CATALOG_COUNTRIES` priorities (CZ, SK, AT, DE, PL, CH by default).
 
 The Mac stays awake. Progress is printed and saved in `tmp/refresh-*.log`.
 The time limit stops new steps and new document requests; an in-progress step
@@ -39,7 +39,7 @@ and adds confirmed classes without removing existing confirmed evidence.
 Conflicting or incomplete source material remains available for later reading;
 deterministic category clues are not treated as a complete admission list.
 
-Existing model ceilings remain $0.50/day and $5/month across all steps. Deep
+Existing model ceilings remain $2.50/day and $25/month across all steps. Deep
 document collection does not call a model and continues when that budget is
 exhausted. `.env.local` needs the same Supabase credentials as keep-fresh;
 paid readers additionally require the existing model key.

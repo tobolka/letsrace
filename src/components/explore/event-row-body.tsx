@@ -8,6 +8,7 @@ import { UCI_CLASS_LABELS, type UciClass } from "@/lib/taxonomy";
 import { formatDistanceKm } from "@/lib/geo/distance";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
+import { ExplainedHint } from "@/components/explore/explained-badge";
 import { cn } from "@/lib/utils";
 
 /** The row classes of a race in any list — the app's list and the browse pages alike. */
@@ -77,7 +78,12 @@ export function EventRowBody({
           <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
           {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
           <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
-          {distanceLabel && <span className="ms-auto shrink-0 text-muted-foreground tabular-nums" title={t.distanceFromOrigin}>↗ {distanceLabel}<span className="sr-only"> · {t.distanceFromOrigin}</span></span>}
+          {distanceLabel ? (
+            <ExplainedHint explanation={t.distanceFromOrigin} className="ms-auto shrink-0 text-muted-foreground tabular-nums">
+              ↗ {distanceLabel}
+              <span className="sr-only"> · {t.distanceFromOrigin}</span>
+            </ExplainedHint>
+          ) : null}
         </span>
       </ItemContent>
     </>

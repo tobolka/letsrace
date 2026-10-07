@@ -96,7 +96,9 @@ function isPdf(type: string, bytes: Uint8Array, url: string): boolean {
 
 async function pdfText(bytes: Uint8Array): Promise<string> {
   const { extractText, getDocumentProxy } = await import("unpdf");
-  const pdf = await getDocumentProxy(bytes);
+  // Broken embedded fonts make pdf.js print one "Warning:" line per glyph.
+  // The text still extracts; only real failures should reach the log.
+  const pdf = await getDocumentProxy(bytes, { verbosity: 0 });
   const { text } = await extractText(pdf, { mergePages: false });
   return (Array.isArray(text) ? text : [text]).join("\n\n");
 }

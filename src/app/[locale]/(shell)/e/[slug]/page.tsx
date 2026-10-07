@@ -4,11 +4,12 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { Bike, CalendarClock, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
-import { ageBandHint, ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
 import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
@@ -106,7 +107,7 @@ export default async function EventPage({ params }: Props) {
   // The ages a chip stands for, by its label: "Junior" → "17–18 let".
   const ageHintFor = (label: string) => {
     const id = AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
-    return id ? ageBandHint(id, locale) || ageGroupHint(id, locale) : "";
+    return id ? ageCategoryHelp(id, locale) : "";
   };
   const discChips = event.disciplines.slice(0, 4).map((d) => disciplineLabel(d, locale)).filter(Boolean);
   // Entry first — it is what the page is for — then the organiser's own pages.
@@ -186,14 +187,13 @@ export default async function EventPage({ params }: Props) {
             {whoChips.length > 0 ? (
               <>
                 {whoChips.map((chip) => (
-                  <Badge
+                  <ExplainedBadge
                     key={chip}
-                    variant="outline"
-                    title={ageHintFor(chip) || undefined}
+                    explanation={ageHintFor(chip)}
                     className={event.ageConfidence === "explicit" ? undefined : "border-dashed"}
                   >
                     {chip}
-                  </Badge>
+                  </ExplainedBadge>
                 ))}
                 {event.ageConfidence === "explicit" ? null : (
                   <span className="text-xs text-muted-foreground" title={t.ageUnconfirmedHelp}>
@@ -218,7 +218,9 @@ export default async function EventPage({ params }: Props) {
           </MetaRow>
           <MetaRow icon={<ChartNoAxesColumnIncreasing />} label={t.levelFilter}>
             {levelLabel ? <Badge variant="outline">{levelLabel}</Badge> : null}
-            {event.uciClass ? <Badge variant="outline">UCI {event.uciClass}</Badge> : null}
+            {event.uciClass ? (
+              <ExplainedBadge explanation={uciClassHelp(event.uciClass, locale)}>UCI {event.uciClass}</ExplainedBadge>
+            ) : null}
           </MetaRow>
           {event.series ? (
             <MetaRow icon={<Trophy />} label={t.seriesFilter}>
