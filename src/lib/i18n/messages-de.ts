@@ -103,7 +103,7 @@ export const de = {
   trustCalendar: "Kalendereintrag",
   trustLow: "Nicht geprüft",
   trustChecked: "In der Quelle gesehen {when}",
-  distanceFromOrigin: "Luftlinie von deinem gewählten Ort",
+  distanceFromOrigin: "Luftlinie",
   trustExplanation: "Wir sammeln Renninformationen aus mehreren Quellen. Prüfe Ort, Datum und Anmeldebedingungen beim Veranstalter, bevor du losfährst.",
   clearFilters: "Filter zurücksetzen",
   shareRace: "Teilen",

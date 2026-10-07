@@ -20,7 +20,7 @@ export function ExplainedHint({
       <TooltipTrigger asChild>
         <span className={cn("cursor-help", className)}>{children}</span>
       </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-56 text-left leading-snug">
+      <TooltipContent side="left" sideOffset={6} className="whitespace-nowrap">
         {explanation}
       </TooltipContent>
     </Tooltip>
@@ -51,7 +51,7 @@ export function ExplainedBadge({
           {children}
         </Badge>
       </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-64 text-left leading-snug">
+      <TooltipContent sideOffset={6} className="whitespace-nowrap">
         {explanation}
       </TooltipContent>
     </Tooltip>
