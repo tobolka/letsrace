@@ -24,6 +24,11 @@ describe("FCI discipline labels", () => {
     ["Fuoristrada - CROSS COUNTRY", "xco"],
     ["Fuoristrada - MTB", "mtb"],
     ["Pista", "track"],
+    ["Giovanile - SHORT TRACK TROFEO BICI E NATURA Regionale - Tipo: Short Track (XCC)", "xcc"],
+    ["Giovanile - 1^ GIMKANA TROFEO DEI NONNI Regionale - Tipo: Short Track (XCC)", "xcc"],
+    ["Strada - GP CITTÀ Regionale - Tipo: In linea \\ strada", "road"],
+    ["Giovanile - FESTIVAL DELLO SPORT Regionale - Tipo: Gioco Ciclismo", "other"],
+    ["Giovanile - LA VIA DEI BERICI KIDS Regionale - Tipo: Abilità Str. o FuoriStr.", "other"],
   ] as const)("maps %s to %s", (label, discipline) => {
     expect(mapFciDiscipline(label)).toEqual([discipline]);
   });

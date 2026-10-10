@@ -37,17 +37,27 @@ function parseItalianDate(raw: string): string | null {
   return `${m[3]}-${mon}-${m[1]!.padStart(2, "0")}`;
 }
 
+/**
+ * The discipline from the calendar's sector and "Tipo" ("Giovanile - … Tipo:
+ * Short Track (XCC)"). Order matters: the specific labels come before the
+ * words they contain.
+ */
 export function mapFciDiscipline(text: string): Discipline[] {
   const t = text.toLowerCase();
   if (/ciclocross|cyclo[- ]?cross/.test(t)) return ["cx"];
+  // MTB short track. It used to match "track" below and land on the velodrome
+  // — most of the Italian "track" hub was kids' short-track races.
+  if (/short[\s-]*track|\bxcc\b/.test(t)) return ["xcc"];
   if (/downhill|discesa|\bdh\b/.test(t)) return ["dh"];
   if (/enduro/.test(t)) return ["enduro"];
   if (/cross.?country|\bxco\b/.test(t)) return ["xco"];
   if (/fuoristrada|mtb|mountain/.test(t)) return ["mtb"];
-  if (/pista|track/.test(t)) return ["track"];
+  if (/\bpista\b|velodrom|\btrack\b/.test(t)) return ["track"];
   if (/gravel/.test(t)) return ["gravel"];
-  if (/strada|road|gran.?premio|amatoriale/.test(t)) return ["road"];
-  return ["road"];
+  if (/strada|road|in linea|gran.?premio|amatoriale|ciclostoric|cicloturistic/.test(t)) return ["road"];
+  // Kids' skills and play days ("Gioco Ciclismo", "Abilità") are not a road
+  // race, and neither is a label we do not know.
+  return ["other"];
 }
 
 function fmtIt(d: Date): string {

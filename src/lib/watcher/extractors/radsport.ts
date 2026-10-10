@@ -100,7 +100,21 @@ const OPEN_EVENT_TYPES = new Set([
   "ULTRA",
 ]);
 
-function mapCategory(
+export function mapCategory(
+  cat?: string | null,
+  secondary?: string[] | null,
+  eventType?: string | null,
+  title?: string | null,
+): Discipline[] {
+  const mapped = mapCategoryFields(cat, secondary, eventType);
+  // An RTF or an uncategorised listing comes out as road; "Maifelder Gravel
+  // Loops" was published as a road race on the strength of that alone. A name
+  // that says gravel outranks a road label that only means "no better guess".
+  if (mapped.length === 1 && mapped[0] === "road" && /\bgravel\b/i.test(title ?? "")) return ["gravel"];
+  return mapped;
+}
+
+function mapCategoryFields(
   cat?: string | null,
   secondary?: string[] | null,
   eventType?: string | null,
@@ -171,7 +185,7 @@ export function radsportEventToParsed(ev: ApiEvent): ParsedEvent | null {
     endDate: ev.endDate?.slice(0, 10) || undefined,
     placeText: placeOf(ev),
     countryHint: countryHint(ev.country, ev.bundesland),
-    discipline: mapCategory(ev.category, ev.secondaryCategories, ev.eventType),
+    discipline: mapCategory(ev.category, ev.secondaryCategories, ev.eventType, ev.title),
     audience: /kids|jugend|nachwuchs|u1[0-9]|schüler|schueler/i.test(ev.title)
       ? "youth"
       : "mixed",
