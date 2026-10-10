@@ -7,7 +7,6 @@ import { thisWeekendRange } from "@/lib/date-presets";
 import {
   countryDisplayName,
   isListedCountry,
-  PUBLIC_COUNTRY_CODES,
 } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
@@ -32,13 +31,16 @@ import {
 
 type Props = { params: Promise<{ locale: string; code: string }> };
 
+/**
+ * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
+ * so an hour is fresh; no page is built ahead — each on its first visit
+ * (building all forty countries in five languages at deploy time would hold
+ * every build on the database).
+ */
+export const revalidate = 3600;
+
 export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    PUBLIC_COUNTRY_CODES.slice(0, 40).map((code) => ({
-      locale,
-      code: code.toLowerCase(),
-    })),
-  );
+  return [];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

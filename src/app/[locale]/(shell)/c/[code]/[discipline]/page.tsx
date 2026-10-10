@@ -24,7 +24,15 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { HubSkeleton } from "../hub-skeleton";
 
-export const dynamic = "force-dynamic";
+/**
+ * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
+ * so an hour is fresh; no page is built ahead — each on its first visit.
+ */
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return [];
+}
 
 type Props = { params: Promise<{ locale: string; code: string; discipline: string }> };
 

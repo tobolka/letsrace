@@ -16,6 +16,16 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { SeriesSkeleton } from "./series-skeleton";
 
+/**
+ * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
+ * so an hour is fresh; no page is built ahead — each on its first visit.
+ */
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
 /**

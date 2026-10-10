@@ -4,6 +4,13 @@ import { ListView } from "@/components/shell/list-view";
 import { locales, messagesFor, type Locale } from "@/lib/i18n/messages";
 import { SITE_NAME } from "@/lib/seo";
 
+/**
+ * Rendered per request, as it always was: the view reads its filters from the
+ * address (nuqs), which a prerendered page cannot have. Every page used to be
+ * dynamic because the root layout read a header; this one still needs to be.
+ */
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }

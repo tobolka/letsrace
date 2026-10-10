@@ -1,15 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
 import { GeistSans } from "geist/font/sans";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DeferredVitals } from "@/components/perf/deferred-vitals";
-import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { WebMcpTools } from "@/components/agent/webmcp-tools";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME, socialCard } from "@/lib/seo";
 import { WELCOME_SEEN_BOOT_SCRIPT } from "@/lib/welcome";
-import "./globals.css";
+import "@/app/globals.css";
 
 const site = getSiteUrl();
 const en = seoCopy.en;
@@ -21,7 +19,7 @@ const rootSocial = socialCard({
   imageAlt: en.title,
 });
 
-export const viewport: Viewport = {
+export const rootViewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -39,7 +37,7 @@ export const viewport: Viewport = {
  */
 const SEZNAM_VERIFICATION = "5ixYWYYeiOTVCgKPzlpbV8K9oBN2TEJD";
 
-export const metadata: Metadata = {
+export const rootMetadata: Metadata = {
   metadataBase: new URL(site),
   title: {
     // `default` is used verbatim, so it carries the brand itself; every other
@@ -87,11 +85,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const h = await headers();
-  const raw = h.get("x-locale") ?? defaultLocale;
-  const lang = locales.includes(raw as Locale) ? raw : defaultLocale;
-
+/**
+ * The document every root layout renders: `app/[locale]/layout.tsx` for the
+ * site, and the admin and API-docs layouts for theirs.
+ *
+ * There used to be one root layout above them all, and it read the language
+ * from a request header for `<html lang>`. That one `headers()` call made every
+ * page on the site dynamic — `no-store`, no ISR, no CDN cache — so the
+ * language now comes from the route itself, and each root passes it in.
+ */
+export function RootDocument({ lang, children }: { lang: string; children: React.ReactNode }) {
   return (
     /*
      * The inline script below stamps `data-welcome-seen` on this element before
@@ -105,6 +108,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${GeistSans.className} ${GeistSans.variable} h-full`}
       suppressHydrationWarning
     >
+      {/* The root layouts' document, shared — this is their <head>, not a page's. */}
+      {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
         <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
         {/*

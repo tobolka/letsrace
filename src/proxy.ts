@@ -44,6 +44,9 @@ export function preferredLocale(acceptLanguage: string | null): Locale | null {
   return null;
 }
 
+/** Top-level routes outside the language segment that the matcher lets through. */
+const ROOT_ROUTES = new Set(["docs", "auth", "race-card", "opengraph-image"]);
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -64,6 +67,13 @@ export function proxy(request: NextRequest) {
       response.headers.set("Vary", "Accept-Language");
       return response;
     }
+    // Everyone else, crawlers included, to the default language — 308, not
+    // 307: a temporary redirect told Google to keep `/` as the canonical and
+    // file `/en` as its duplicate. (This was `app/page.tsx`, which needed a
+    // root layout above the language segment just to redirect.)
+    const url = request.nextUrl.clone();
+    url.pathname = `/${defaultLocale}`;
+    return NextResponse.redirect(url, 308);
   }
 
   if (isHomepage(pathname) && wantsMarkdown(request)) {
@@ -78,6 +88,19 @@ export function proxy(request: NextRequest) {
     });
   }
 
+  // An address that does not start with a language (`/nonsense`) would land in
+  // `[locale]` as a language we do not publish, and a root layout's notFound()
+  // shows Next's bare 404. Send it somewhere under the default language that
+  // no route has, so it gets the site's own 404 page — still a 404.
+  const first = pathname.split("/")[1] ?? "";
+  if (first && !(locales as readonly string[]).includes(first) && !ROOT_ROUTES.has(first)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${defaultLocale}/_missing${pathname}`;
+    const missing = NextResponse.rewrite(url);
+    missing.headers.set("x-locale", defaultLocale);
+    return missing;
+  }
+
   let response: NextResponse;
   if (browse) {
     const url = request.nextUrl.clone();
@@ -87,8 +110,6 @@ export function proxy(request: NextRequest) {
     response = NextResponse.next();
   }
   response.headers.set("x-locale", localeFromPath(pathname));
-  // The public address, for not-found boundaries — they get no params.
-  response.headers.set("x-pathname", pathname);
   if (isHomepage(pathname)) {
     response.headers.set("Link", agentLinkHeaders().join(", "));
   }

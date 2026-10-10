@@ -29,6 +29,16 @@ import { SaveRaceButton } from "@/components/race/save-race-button";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
 
+/**
+ * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
+ * so an hour is fresh; no page is built ahead — each on its first visit.
+ */
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return [];
+}
+
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };

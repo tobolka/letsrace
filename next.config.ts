@@ -61,6 +61,12 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    /**
+     * The site's root layout is `app/[locale]/layout.tsx` (admin and the API
+     * docs have their own), so there is no single layout left to compose a 404
+     * for unmatched addresses from — `app/global-not-found.tsx` is that page.
+     */
+    globalNotFound: true,
     optimizePackageImports: ["lucide-react", "date-fns"],
     /**
      * Ship the stylesheet inside the HTML instead of behind a <link>.
