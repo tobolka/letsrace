@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { Bike, CalendarClock, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
+import { Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
-import { NotFoundHelp, notFoundCopy } from "@/components/browse/not-found-help";
-import { parseRaceSlug } from "@/lib/event-slug";
+import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, type EventListItem } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
-import { absoluteUrl, brandedTitle, eventSeoCopy, fillCopy, hubCopy, localeAlternates, SITE_NAME, socialCard } from "@/lib/seo";
+import { absoluteUrl, brandedTitle, fillCopy, hubCopy, localeAlternates, raceOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
-import { fill, longDate, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
+import { fill, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -28,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
+import { RaceSkeleton } from "./race-skeleton";
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -37,9 +37,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw, slug } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const event = await getPublicEventBySlug(slug);
-  const seo = eventSeoCopy[locale];
   if (!event) {
-    return { title: seo.notFound, robots: { index: false, follow: false } };
+    // Same answer as the page: the edition that replaced it, or 404.
+    const { match } = await findRacesForMissingSlug(slug).catch(() => ({ match: null }));
+    if (match) permanentRedirect(localePath(locale, `e/${match.slug}`));
+    notFound();
   }
 
   // What someone types: the race, its year, the kind of racing and the town —
@@ -60,7 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url,
       localeKey: locale,
-      imagePath: localePath(locale, `e/${event.slug}/opengraph-image`),
+      imagePath: raceOgImagePath(locale, event.slug),
       imageAlt: `${event.name} — ${SITE_NAME}`,
       imageSize: { width: 1200, height: 630 },
     }),
@@ -72,9 +74,23 @@ export default async function EventPage({ params }: Props) {
   if (!locales.includes(raw as Locale)) notFound();
   const locale = raw as Locale;
   const event = await getPublicEventBySlug(slug);
-  if (!event) return <MissingRace locale={locale} slug={slug} />;
+  if (!event) {
+    // An old edition's address goes to the race that replaced it; anything
+    // else is a real 404 — decided before the skeleton streams a 200.
+    // `not-found.tsx` beside this page offers the races it may have meant.
+    const { match } = await findRacesForMissingSlug(slug).catch(() => ({ match: null }));
+    if (match) permanentRedirect(localePath(locale, `e/${match.slug}`));
+    notFound();
+  }
   if (event.slug !== slug) permanentRedirect(localePath(locale, `e/${event.slug}`));
+  return (
+    <Suspense fallback={<RaceSkeleton />}>
+      <Race locale={locale} event={event} />
+    </Suspense>
+  );
+}
 
+async function Race({ locale, event }: { locale: Locale; event: EventListItem }) {
   const t = messages[locale];
   const rc = raceCopy[locale];
   const today = new Date().toISOString().slice(0, 10);
@@ -104,7 +120,6 @@ export default async function EventPage({ params }: Props) {
   const rawCountry = event.location?.countryCode ?? null;
   const hubCountry = rawCountry && isListedCountry(rawCountry) ? rawCountry : null;
   const countryName = hubCountry ? countryDisplayName(hubCountry, locale) : null;
-  const closes = event.registrationClosesAt?.slice(0, 10) ?? null;
   const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
   // The ages a chip stands for, by its label: "Junior" → "17–18 let".
   const ageHintFor = (label: string) => {
@@ -233,13 +248,6 @@ export default async function EventPage({ params }: Props) {
               </Button>
             </MetaRow>
           ) : null}
-          {closes ? (
-            <MetaRow icon={<CalendarClock />} label={rc.entry}>
-              <Badge variant="outline">
-                {fill(closes >= today ? rc.entryCloses : rc.entryClosed, { date: longDate(closes, locale) })}
-              </Badge>
-            </MetaRow>
-          ) : null}
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
@@ -310,23 +318,4 @@ function disciplineMatches(family: HubDiscipline, discipline: string): boolean {
 
 function disciplineLabelForHub(locale: Locale, family: HubDiscipline): string {
   return disciplineLabel(family, locale);
-}
-
-/**
- * An address no race has. One that clearly names a race — an old slug, from
- * before slugs were whole names — goes on to it; anything else gets the races
- * it may have meant and a search, not a bare 404.
- */
-async function MissingRace({ locale, slug }: { locale: Locale; slug: string }) {
-  const { match, near } = await findRacesForMissingSlug(slug).catch(() => ({ match: null, near: [] }));
-  if (match) permanentRedirect(localePath(locale, `e/${match.slug}`));
-  const c = notFoundCopy[locale];
-  return (
-    <main className="relative min-h-full bg-background">
-      <BrowseHeader locale={locale} crumbs={[...browseCrumbs(locale, { country: null, family: null }), { label: c.raceTitle }]} />
-      <NotFoundHelp locale={locale} title={c.raceTitle} body={c.raceBody} query={parseRaceSlug(slug).words.join(" ")}>
-        {near.length ? <RaceLinkList events={near} locale={locale} groupByMonth={false} /> : null}
-      </NotFoundHelp>
-    </main>
-  );
 }

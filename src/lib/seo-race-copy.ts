@@ -17,9 +17,6 @@ import { countryDisplayName } from "@/lib/geo/europe";
 export const raceCopy: Record<Locale, {
   about: string;
   classes: string;
-  entry: string;
-  entryCloses: string;
-  entryClosed: string;
   regulations: string;
   website: string;
   results: string;
@@ -40,7 +37,6 @@ export const raceCopy: Record<Locale, {
   partOf: string;
   forWhom: string;
   entryOnline: string;
-  entryUntil: string;
   regsAvailable: string;
   noEntryKnown: string;
   /** Hub titles end in it: what people type after the discipline and country. */
@@ -60,9 +56,6 @@ export const raceCopy: Record<Locale, {
   en: {
     about: "About the race",
     classes: "Categories",
-    entry: "Entry",
-    entryCloses: "Online entry closes {date}",
-    entryClosed: "Online entry closed {date}",
     regulations: "Regulations",
     website: "Race website",
     results: "Results",
@@ -82,7 +75,6 @@ export const raceCopy: Record<Locale, {
     partOf: "It is a round of {series}.",
     forWhom: "Categories: {classes}.",
     entryOnline: "Entries are taken online.",
-    entryUntil: "Online entry closes {date}.",
     regsAvailable: "The regulations are published by the organiser.",
     noEntryKnown: "We have not found an online entry for it yet; check with the organiser.",
     calendar: "race calendar",
@@ -99,9 +91,6 @@ export const raceCopy: Record<Locale, {
   cs: {
     about: "O závodě",
     classes: "Kategorie",
-    entry: "Přihlášky",
-    entryCloses: "Online přihlášky do {date}",
-    entryClosed: "Online přihlášky skončily {date}",
     regulations: "Propozice",
     website: "Web závodu",
     results: "Výsledky",
@@ -121,7 +110,6 @@ export const raceCopy: Record<Locale, {
     partOf: "Je to kolo seriálu {series}.",
     forWhom: "Kategorie: {classes}.",
     entryOnline: "Přihlásit se dá online.",
-    entryUntil: "Online přihlášky končí {date}.",
     regsAvailable: "Pořadatel zveřejnil propozice.",
     noEntryKnown: "Online přihlášky jsme zatím nenašli, ověř si je u pořadatele.",
     calendar: "kalendář",
@@ -138,9 +126,6 @@ export const raceCopy: Record<Locale, {
   pl: {
     about: "O wyścigu",
     classes: "Kategorie",
-    entry: "Zapisy",
-    entryCloses: "Zapisy online do {date}",
-    entryClosed: "Zapisy online zakończone {date}",
     regulations: "Regulamin",
     website: "Strona wyścigu",
     results: "Wyniki",
@@ -160,7 +145,6 @@ export const raceCopy: Record<Locale, {
     partOf: "To runda cyklu {series}.",
     forWhom: "Kategorie: {classes}.",
     entryOnline: "Zapisy przyjmowane są online.",
-    entryUntil: "Zapisy online trwają do {date}.",
     regsAvailable: "Organizator opublikował regulamin.",
     noEntryKnown: "Nie znaleźliśmy jeszcze zapisów online – sprawdź u organizatora.",
     calendar: "kalendarz",
@@ -177,9 +161,6 @@ export const raceCopy: Record<Locale, {
   sk: {
     about: "O preteku",
     classes: "Kategórie",
-    entry: "Prihlášky",
-    entryCloses: "Online prihlášky do {date}",
-    entryClosed: "Online prihlášky skončili {date}",
     regulations: "Propozície",
     website: "Web preteku",
     results: "Výsledky",
@@ -199,7 +180,6 @@ export const raceCopy: Record<Locale, {
     partOf: "Je to kolo seriálu {series}.",
     forWhom: "Kategórie: {classes}.",
     entryOnline: "Prihlásiť sa dá online.",
-    entryUntil: "Online prihlášky končia {date}.",
     regsAvailable: "Organizátor zverejnil propozície.",
     noEntryKnown: "Online prihlášky sme zatiaľ nenašli, over si ich u organizátora.",
     calendar: "kalendár",
@@ -216,9 +196,6 @@ export const raceCopy: Record<Locale, {
   de: {
     about: "Über das Rennen",
     classes: "Klassen",
-    entry: "Anmeldung",
-    entryCloses: "Online-Anmeldung bis {date}",
-    entryClosed: "Online-Anmeldung endete am {date}",
     regulations: "Ausschreibung",
     website: "Website des Rennens",
     results: "Ergebnisse",
@@ -238,7 +215,6 @@ export const raceCopy: Record<Locale, {
     partOf: "Es ist ein Lauf der Serie {series}.",
     forWhom: "Klassen: {classes}.",
     entryOnline: "Die Anmeldung läuft online.",
-    entryUntil: "Online-Anmeldung bis {date}.",
     regsAvailable: "Der Veranstalter hat die Ausschreibung veröffentlicht.",
     noEntryKnown: "Eine Online-Anmeldung haben wir noch nicht gefunden – frag beim Veranstalter nach.",
     calendar: "Termine",
@@ -410,7 +386,7 @@ export function monthHeading(iso: string, locale: Locale): string {
  * A short written account of the race from what we hold: kind, place, date,
  * series, classes, entry. Every sentence is a fact we have; none is padding.
  */
-export function raceSummary(event: EventListItem & { registrationClosesAt?: string | null }, locale: Locale): string[] {
+export function raceSummary(event: EventListItem, locale: Locale): string[] {
   const c = raceCopy[locale];
   const place = placeOf(event);
   const country = event.location?.countryCode ? countryDisplayName(event.location.countryCode, locale) : "";
@@ -421,12 +397,10 @@ export function raceSummary(event: EventListItem & { registrationClosesAt?: stri
   if (event.ageConfidence === "explicit" && event.ageCategories.length) {
     out.push(fill(c.forWhom, { classes: event.ageCategories.map((a) => ageCategoryLabel(a, locale)).join(", ") }));
   }
-  if (event.registrationUrl) {
-    out.push(event.registrationClosesAt && event.registrationClosesAt.slice(0, 10) >= new Date().toISOString().slice(0, 10)
-      ? fill(c.entryUntil, { date: longDate(event.registrationClosesAt.slice(0, 10), locale) })
-      : c.entryOnline);
-  } else if (event.startDate >= new Date().toISOString().slice(0, 10)) {
-    out.push(c.noEntryKnown);
+  // Entry is only news while the race is ahead; after it, "entries are taken
+  // online" is simply wrong.
+  if ((event.endDate ?? event.startDate) >= new Date().toISOString().slice(0, 10)) {
+    out.push(event.registrationUrl ? c.entryOnline : c.noEntryKnown);
   }
   if (event.regulationsUrl) out.push(c.regsAvailable);
   return out;
@@ -544,7 +518,7 @@ export function raceTitle(event: EventListItem, locale: Locale): string {
  * where, then entry, classes, series, regulations), each as a whole sentence,
  * until the snippet is full.
  */
-export function raceDescription(event: EventListItem & { registrationClosesAt?: string | null }, locale: Locale): string {
+export function raceDescription(event: EventListItem, locale: Locale): string {
   const c = raceCopy[locale];
   const w = SNIPPET[locale];
   const df = { locale: dateFnsLocale(locale) };
@@ -569,9 +543,7 @@ export function raceDescription(event: EventListItem & { registrationClosesAt?: 
   const entry = past
     ? c.taken
     : event.registrationUrl
-      ? event.registrationClosesAt && event.registrationClosesAt.slice(0, 10) >= today
-        ? fill(c.entryUntil, { date: longDate(event.registrationClosesAt.slice(0, 10), locale) })
-        : c.entryOnline
+      ? c.entryOnline
       : null;
   const classes = event.ageConfidence === "explicit" && event.ageCategories.length
     ? fill(c.forWhom, { classes: event.ageCategories.map((a) => ageCategoryLabel(a, locale)).join(", ") })

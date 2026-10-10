@@ -18,12 +18,14 @@ function resolveLocale(raw?: string): Locale {
   return locales.includes(raw as Locale) ? (raw as Locale) : defaultLocale;
 }
 
-export default async function EventOgImage({
-  params,
-}: {
-  params: Promise<{ locale: string; slug: string }>;
-}) {
-  const { locale: raw, slug } = await params;
+/**
+ * A race's share card. Served by `app/race-card/[locale]/[slug]/route.tsx`
+ * rather than as `opengraph-image.tsx` beside the race page: inside the
+ * `(shell)` route group Next serves that file under a hashed name
+ * (`opengraph-image-<hash>`), so the plain address every race page and its
+ * JSON-LD pointed at was a 404 on all of them.
+ */
+export async function renderRaceOgImage(raw: string, slug: string, init?: { headers?: Record<string, string> }) {
   const locale = resolveLocale(raw);
   const seo = eventSeoCopy[locale];
   const event = await getPublicEventBySlug(slug);
@@ -64,6 +66,6 @@ export default async function EventOgImage({
         </div>
       </div>
     ),
-    { ...size },
+    { ...size, ...init },
   );
 }

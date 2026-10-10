@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { MapPinned } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getSeriesBySlug } from "@/lib/events";
+import { getPublicSeriesRow, getSeriesBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
@@ -13,6 +14,7 @@ import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
+import { SeriesSkeleton } from "./series-skeleton";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -44,7 +46,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw, slug } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const data = await getSeriesBySlug(slug);
-  if (!data) return { title: "Series not found", robots: { index: false } };
+  // notFound() here, not just in the page: crawlers get the head before
+  // `loading.tsx` streams, so this is where a real 404 status is still possible.
+  if (!data) notFound();
   const { title: heading, description } = seriesWords(data, locale);
   const title = `${heading} · ${SITE_NAME}`;
   const url = absoluteUrl(localePath(locale, `series/${slug}`));
@@ -69,7 +73,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SeriesPage({ params }: Props) {
   const { locale: raw, slug } = await params;
   if (!locales.includes(raw as Locale)) notFound();
-  const locale = raw as Locale;
+  // One row, before the skeleton streams: an unknown series is a real 404.
+  if (!(await getPublicSeriesRow(slug))) notFound();
+  return (
+    <Suspense fallback={<SeriesSkeleton />}>
+      <Series locale={raw as Locale} slug={slug} />
+    </Suspense>
+  );
+}
+
+async function Series({ locale, slug }: { locale: Locale; slug: string }) {
   const data = await getSeriesBySlug(slug);
   if (!data) notFound();
   const t = messages[locale];

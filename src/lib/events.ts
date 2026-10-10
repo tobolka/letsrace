@@ -438,11 +438,12 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
     .sort((a, b) => b.eventCount - a.eventCount || a.name.localeCompare(b.name, "cs"));
 }
 
-export async function getSeriesBySlug(
-  slug: string,
-): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
+/**
+ * Whether a public series has this slug — one row, no rounds. The series page
+ * asks this before it streams anything, so a dead address can still answer 404.
+ */
+export const getPublicSeriesRow = cache(async function getPublicSeriesRow(slug: string) {
   const supabase = createServerSupabase();
-  const { PUBLIC_COUNTRY_CODES } = await import("@/lib/geo/europe");
   const { data: row, error } = await supabase
     .from("series")
     .select(SERIES_PUBLIC_COLUMNS)
@@ -450,6 +451,15 @@ export async function getSeriesBySlug(
     .eq("visibility", "public")
     .maybeSingle();
   if (error) throw new Error(error.message);
+  return row;
+});
+
+export const getSeriesBySlug = cache(async function getSeriesBySlug(
+  slug: string,
+): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
+  const supabase = createServerSupabase();
+  const { PUBLIC_COUNTRY_CODES } = await import("@/lib/geo/europe");
+  const row = await getPublicSeriesRow(slug);
   if (!row) return null;
 
   const { data: eventRows, error: eventError } = await supabase
@@ -472,7 +482,7 @@ export async function getSeriesBySlug(
     series: mapSeriesRow(row as Record<string, unknown>, events.length),
     events,
   };
-}
+});
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();

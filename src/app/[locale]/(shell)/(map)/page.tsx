@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { ExploreShell } from "@/components/explore/explore-shell";
 import { SiteIndex } from "@/components/seo/site-index";
+import { SiteJsonLd } from "@/components/seo/site-json-ld";
 import { getPublicEventBySlug } from "@/lib/events";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { notFound, redirect } from "next/navigation";
@@ -63,6 +64,7 @@ export default async function LocalePage({
   // before this component runs at all.
   return (
     <>
+      <SiteJsonLd locale={locale} />
       {/*
         The intro photograph is the LCP element. It has to be discoverable in the
         first HTML so the preload scanner starts it before hydration — and before

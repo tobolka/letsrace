@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { listEvents } from "@/lib/events";
@@ -21,6 +22,7 @@ import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn, shortDate } from "@/
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
+import { HubSkeleton } from "../hub-skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +47,9 @@ async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: rawLocale, code: rawCode, discipline: rawDiscipline } = await params;
   const data = await load(rawLocale, rawCode, rawDiscipline);
-  if (!data) return { title: "Not found", robots: { index: false, follow: false } };
+  // notFound() here, not just in the page: crawlers get the head before
+  // `loading.tsx` streams, so this is where a real 404 status is still possible.
+  if (!data) notFound();
 
   const { locale, code, discipline, events } = data;
   const where = inCountry(code, countryDisplayName(code, locale), locale);
@@ -59,7 +63,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: brandedTitle(heading),
     description,
-    alternates: { canonical: url, languages: localeAlternates(path) },
+    // Per language, not this language's path: `/en/zavody/cz/road` is not a page.
+    alternates: { canonical: url, languages: localeAlternates((l) => hubPath(l, code, discipline)) },
     ...socialCard({
       title: heading,
       ogTitle,
@@ -78,8 +83,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function DisciplineHubPage({ params }: Props) {
   const { locale: rawLocale, code: rawCode, discipline: rawDiscipline } = await params;
   if (!locales.includes(rawLocale as Locale)) notFound();
+  // Checked before the skeleton streams, so an unknown address is a real 404.
+  if (!isListedCountry(rawCode.toUpperCase()) || !isHubDiscipline(rawDiscipline.toLowerCase())) notFound();
+  return (
+    <Suspense fallback={<HubSkeleton />}>
+      <DisciplineHub rawLocale={rawLocale} rawCode={rawCode} rawDiscipline={rawDiscipline} />
+    </Suspense>
+  );
+}
+
+async function DisciplineHub({ rawLocale, rawCode, rawDiscipline }: { rawLocale: string; rawCode: string; rawDiscipline: string }) {
   const data = await load(rawLocale, rawCode, rawDiscipline);
-  if (!data) notFound();
+  if (!data) return null;
 
   const { locale, code, discipline, events } = data;
   const t = messages[locale];

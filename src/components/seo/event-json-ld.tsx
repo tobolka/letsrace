@@ -1,5 +1,5 @@
 import type { EventListItem } from "@/lib/events";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, raceOgImagePath } from "@/lib/seo";
 import { localePath } from "@/lib/localized-paths";
 
 /**
@@ -49,12 +49,12 @@ export function EventJsonLd({
   const placeName =
     event.location?.municipality || event.location?.name || undefined;
   const pageUrl = absoluteUrl(localePath(locale, `e/${event.slug}`));
+  // Pages about this race. The entry form is not one — it goes in `offers`.
   const sameAs = [
     event.websiteUrl,
-    event.registrationUrl,
     event.regulationsUrl,
     event.resultsUrl,
-  ].filter((u): u is string => Boolean(u));
+  ].filter((u): u is string => Boolean(u) && u !== event.registrationUrl);
 
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -64,6 +64,7 @@ export function EventJsonLd({
     startDate: event.startDate,
     eventStatus: schemaEventStatus(event.status),
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    inLanguage: locale,
   };
 
   // No end date stored means a one-day race, as everywhere else in the app.
@@ -71,7 +72,7 @@ export function EventJsonLd({
   if (sameAs.length) data.sameAs = sameAs;
   if (description) data.description = description;
   data.sport = "Cycling";
-  data.image = [absoluteUrl(localePath(locale, `e/${event.slug}/opengraph-image`))];
+  data.image = [absoluteUrl(raceOgImagePath(locale, event.slug))];
   // The series is the event this race is a round of — not its organiser,
   // which is what this block used to call it.
   if (event.series) {
@@ -81,13 +82,17 @@ export function EventJsonLd({
       url: absoluteUrl(localePath(locale, `series/${event.series.slug}`)),
     };
   }
-  if (event.registrationUrl) {
+  // An offer is a claim that entry is open. Every race with an entry link used
+  // to carry one marked InStock, including the ones run months ago — so only
+  // while the race is still ahead. (No `validThrough`: entry deadlines are not
+  // published anywhere on the site.)
+  const today = new Date().toISOString().slice(0, 10);
+  if (event.registrationUrl && (event.endDate ?? event.startDate) >= today) {
     const offer: Record<string, unknown> = {
       "@type": "Offer",
       url: event.registrationUrl,
       availability: "https://schema.org/InStock",
     };
-    if (event.registrationClosesAt) offer.validThrough = event.registrationClosesAt;
     data.offers = offer;
   }
   if (placeName || event.location?.lat != null) {

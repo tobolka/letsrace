@@ -87,6 +87,8 @@ export function proxy(request: NextRequest) {
     response = NextResponse.next();
   }
   response.headers.set("x-locale", localeFromPath(pathname));
+  // The public address, for not-found boundaries — they get no params.
+  response.headers.set("x-pathname", pathname);
   if (isHomepage(pathname)) {
     response.headers.set("Link", agentLinkHeaders().join(", "));
   }

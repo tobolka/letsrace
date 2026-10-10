@@ -11,6 +11,14 @@ export function localeOgImagePath(locale: string): string {
   return `/${locale}/opengraph-image/default?v=2`;
 }
 
+/**
+ * A race's share card — a plain route handler outside the `(shell)` group, so
+ * its address is stable (see `lib/og/race-opengraph-image.tsx`).
+ */
+export function raceOgImagePath(locale: string, slug: string): string {
+  return `/race-card/${locale}/${encodeURIComponent(slug)}`;
+}
+
 /** Production URL used for canonicals, sitemap, and Open Graph. */
 export function getSiteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");

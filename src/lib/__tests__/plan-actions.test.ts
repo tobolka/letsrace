@@ -99,36 +99,14 @@ describe("planActions", () => {
 });
 
 describe("entry deadlines", () => {
-  it("measures an entry job against the day entries close", () => {
+  it("are not shown, so an entry job runs to race day", () => {
     const a = planAction(plan("2026-10-24", { me: "going" }, true, "2026-09-11"), {
       members,
       today,
     });
     expect(a?.kind).toBe("enter");
-    expect(a?.daysAway).toBe(46);
-    expect(a?.dueInDays).toBe(3);
-    expect(a?.closesAt).toBe("2026-09-11");
-  });
-
-  it("ignores a deadline that falls after the race", () => {
-    const a = planAction(plan("2026-09-12", { me: "going" }, true, "2026-09-30"), {
-      members,
-      today,
-    });
-    expect(a?.dueInDays).toBe(4);
-    expect(a?.closesAt).toBeUndefined();
-  });
-
-  it("puts a distant race with a closing entry above a near one", () => {
-    const list = planActions(
-      [
-        plan("2026-09-12", { me: "registered" }),
-        plan("2026-10-24", { me: "going" }, true, "2026-09-09"),
-      ],
-      { members, today },
-    );
-    expect(list[0]!.kind).toBe("enter");
-    expect(list[0]!.dueInDays).toBe(1);
+    expect(a?.dueInDays).toBe(46);
+    expect(a).not.toHaveProperty("closesAt");
   });
 });
 

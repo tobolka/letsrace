@@ -22,13 +22,10 @@ export type PlanAction = {
   /** Calendar days from today to the start. 0 is today. */
   daysAway: number;
   /**
-   * The day this job actually runs out — the entry deadline when there is one
-   * and the job is to enter, the race day otherwise. A race in three weeks
-   * whose entries close on Friday is this week's job.
+   * The day this job runs out — the race day. Entry deadlines are not shown
+   * anywhere on the site: scraped ones were too often wrong to plan by.
    */
   dueInDays: number;
-  /** The stated entry deadline, when it is what makes this urgent. */
-  closesAt?: string;
 };
 
 /**
@@ -73,13 +70,7 @@ export function planAction(
     return { plan, kind: "pay", daysAway, dueInDays: daysAway };
   }
   if (marked.some((s) => s === "going")) {
-    // Entries usually close before the race, and when the source says when,
-    // that date is the deadline this job is measured against.
-    const closesAt = plan.event.registrationClosesAt ?? null;
-    const closesIn = closesAt ? daysUntil(closesAt, today) : null;
-    return closesAt && closesIn != null && closesIn < daysAway
-      ? { plan, kind: "enter", daysAway, dueInDays: closesIn, closesAt }
-      : { plan, kind: "enter", daysAway, dueInDays: daysAway };
+    return { plan, kind: "enter", daysAway, dueInDays: daysAway };
   }
   return null;
 }

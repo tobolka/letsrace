@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /** One race: the bar and trail, the name and date, its facts, then the account of it. */
-export default function Loading() {
+export function RaceSkeleton() {
   return (
     <main className="relative min-h-full bg-background">
       <BrowseHeaderSkeleton depth={4} />

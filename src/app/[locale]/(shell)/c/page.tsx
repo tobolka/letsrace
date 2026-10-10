@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
+import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { countryDisplayName, PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { listCountryTallies } from "@/lib/discipline-hubs";
-import { absoluteUrl, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
+import { absoluteUrl, counted, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath } from "@/lib/localized-paths";
 import { raceCopy } from "@/lib/seo-race-copy";
 import { BrowseHeader, BrowseIntro, CountryCard, TileGrid } from "@/components/browse/browse-ui";
 import { CollectionGrid } from "@/components/browse/collection-grid";
 import { collectionCopy } from "@/lib/race-collections";
+import { BrowseSkeleton } from "./browse-skeleton";
 
 export const revalidate = 600;
 
@@ -41,8 +43,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BrowsePage({ params }: Props) {
   const { locale: raw } = await params;
   if (!locales.includes(raw as Locale)) notFound();
-  const locale = raw as Locale;
-  const t = messages[locale];
+  // The skeleton lives here rather than in `loading.tsx`: a segment-level
+  // boundary also wraps every country and discipline below, and once it has
+  // streamed their 200 they can no longer answer 404.
+  return (
+    <Suspense fallback={<BrowseSkeleton />}>
+      <Browse locale={raw as Locale} />
+    </Suspense>
+  );
+}
+
+async function Browse({ locale }: { locale: Locale }) {
   const rc = raceCopy[locale];
   const tallies = await listCountryTallies([...PUBLIC_COUNTRY_CODES]).catch(() => []);
 
@@ -59,7 +70,7 @@ export default async function BrowsePage({ params }: Props) {
               href={`/${locale}/${hubPath(locale, c.countryCode)}`}
               code={c.countryCode}
               name={countryDisplayName(c.countryCode, locale)}
-              count={`${c.races} ${t.racesCount}`}
+              count={counted(c.races, "race", locale)}
             />
           ))}
         </TileGrid>

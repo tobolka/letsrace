@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * The same shell as the page — the map's skeleton would flash a full-screen
  * map ground and then swap it for a document.
  */
-export default function Loading() {
+export function HubSkeleton() {
   return (
     <main className="min-h-full bg-background">
       <BrowseHeaderSkeleton depth={3} />

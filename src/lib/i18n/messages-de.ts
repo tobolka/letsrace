@@ -314,7 +314,6 @@ export const de = {
   planActionWho: "Sag, wer fährt",
   planActionEnter: "Anmelden",
   planActionPay: "Bezahlen",
-  planEntryCloses: "Anmeldeschluss {date}",
   planNoUpcoming: "Nichts in Sicht",
   planNoUpcomingBody: "Alle Rennen im Plan sind gefahren.",
   planViewCalendar: "Kalender",

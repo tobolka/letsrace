@@ -2,7 +2,7 @@ import { BrowseHeaderSkeleton, PageIntroSkeleton, RaceListSkeleton } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 
 /** A series: its name, what it is, then its rounds by month. */
-export default function Loading() {
+export function SeriesSkeleton() {
   return (
     <main className="min-h-full bg-background">
       <BrowseHeaderSkeleton depth={4} />

@@ -1,7 +1,7 @@
 import { BrowseHeaderSkeleton, PageIntroSkeleton, TileGridSkeleton } from "@/components/browse/browse-ui";
 
 /** The countries: the bar, the trail, the heading and a grid of country cards. */
-export default function Loading() {
+export function BrowseSkeleton() {
   return (
     <main className="min-h-full bg-background">
       <BrowseHeaderSkeleton depth={1} />
