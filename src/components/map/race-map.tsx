@@ -471,10 +471,6 @@ function raceFeatures(
 /** Selected state lives in feature state, so selecting repaints nothing else. */
 const SELECTED: ExpressionSpecification = ["boolean", ["feature-state", "selected"], false];
 
-function coarsePointer() {
-  return typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
-}
-
 function makeUserLocationElement() {
   const wrap = document.createElement("div");
   wrap.className = "letsrace-user-location";

@@ -28,6 +28,8 @@ const eslintConfig = defineConfig([
     rules: {
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/refs": "warn",
+      // `_html`, `_url`: a parser that keeps its sibling parsers' signature.
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
 ]);

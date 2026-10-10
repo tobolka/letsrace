@@ -191,7 +191,6 @@ export function AccountPanel({
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [editing, setEditing] = useState<Member | null>(null);
@@ -276,6 +275,8 @@ export function AccountPanel({
   async function signOut() {
     const supabase = createBrowserSupabase();
     await supabase.auth.signOut();
+    // A full load on purpose: nothing the signed-in session held survives it.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.href = `/${locale}`;
   }
 

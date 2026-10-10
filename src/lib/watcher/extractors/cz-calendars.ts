@@ -1561,7 +1561,6 @@ export function parseJesenickySnek(url: string, html: string): ParsedEvent[] {
       if (!name || name.length < 3) return;
       if (/^(aktuality|závody|zavody|jesenický šnek)$/i.test(name)) return;
 
-      const $scope = $(heading).parent();
       const $time = $("time")
         .filter((_, el) => /^\d{4}-\d{2}-\d{2}$/.test(($(el).attr("datetime") || "").trim()))
         .first();

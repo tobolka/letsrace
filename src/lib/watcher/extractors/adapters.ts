@@ -1485,13 +1485,3 @@ function parseKolopro(url: string, html: string): ParsedEvent[] {
   });
   return events;
 }
-
-function dedupe(events: ParsedEvent[]): ParsedEvent[] {
-  const seen = new Set<string>();
-  return events.filter((e) => {
-    const k = `${e.startDate}:${normalizeName(e.name)}`;
-    if (seen.has(k)) return false;
-    seen.add(k);
-    return true;
-  });
-}

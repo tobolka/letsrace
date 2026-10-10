@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
-import { normalizeName } from "@/lib/domain";
 import { geocodeFromGazetteer } from "@/lib/geocode";
 import { inferDisciplines, isIngestibleDate } from "@/lib/taxonomy";
 

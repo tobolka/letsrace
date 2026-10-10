@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { canonicalizeSeries, parseHynekMusil } from "@/lib/watcher/extractors/hynek";
-import { parseMaratonTbcRows } from "@/lib/watcher/extractors/tbcserie";
 
 // Hynek's list page labels the cyclocross series "TBC SÉRIE"; the official
 // calendar files it as tbc-cyclocross. One series, one slug.

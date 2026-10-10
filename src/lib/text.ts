@@ -43,9 +43,7 @@ const CP1252: Record<number, string> = {
 };
 
 /** Control characters that never belong in a race name. */
-// eslint-disable-next-line no-control-regex
 const C1 = /[\u0080-\u009f]/g;
-// eslint-disable-next-line no-control-regex
 const C0 = /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g;
 
 /**

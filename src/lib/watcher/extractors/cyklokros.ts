@@ -16,28 +16,6 @@ import type { ParsedEvent } from "@/lib/domain";
  * the round runs both.
  */
 
-const MONTHS: Record<string, number> = {
-  leden: 1,
-  únor: 2,
-  unor: 2,
-  březen: 3,
-  brezen: 3,
-  duben: 4,
-  květen: 5,
-  kveten: 5,
-  červen: 6,
-  cerven: 6,
-  červenec: 7,
-  cervenec: 7,
-  srpen: 8,
-  září: 9,
-  zari: 9,
-  říjen: 10,
-  rijen: 10,
-  listopad: 11,
-  prosinec: 12,
-};
-
 /**
  * Which column a race sits in, and what that says about who rides it.
  *

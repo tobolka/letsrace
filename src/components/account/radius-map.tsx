@@ -144,14 +144,12 @@ export function RadiusMap({
       mapRef.current = null;
     };
     // The map is created once; later changes go through `sync`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const racesKey = races.map((r) => r.id).join(",");
   useEffect(() => {
     const map = mapRef.current;
     if (map?.isStyleLoaded()) sync(map, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lat, lng, radiusKm, racesKey, muted]);
 
   return <div ref={el} className={className} aria-hidden />;

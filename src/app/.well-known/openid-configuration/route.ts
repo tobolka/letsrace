@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { agentSiteUrl, AGENT_DISCOVERY_VERSION, supabaseAuthBase } from "@/lib/agent-discovery";
+import { agentSiteUrl, supabaseAuthBase } from "@/lib/agent-discovery";
 
 function authMetadata() {
   const auth = supabaseAuthBase();
