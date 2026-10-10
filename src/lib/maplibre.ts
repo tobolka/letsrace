@@ -3,7 +3,7 @@ import type * as MapLibreNS from "maplibre-gl";
 export type MapLibreModule = typeof MapLibreNS;
 
 /** Must match `scripts/copy-maplibre-worker.cjs` (maplibre-gl package version). */
-export const MAPLIBRE_ASSET_DIR = "/maplibre/6.6.0";
+export const MAPLIBRE_ASSET_DIR = "/maplibre/6.13.0";
 
 type MapLibreWindow = Window & { __letsraceMapLibre?: MapLibreModule };
 
