@@ -550,6 +550,62 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
   return event;
 });
 
+/**
+ * Races an address no race has may mean: the one to send it to, when the
+ * address clearly names it (a slug from before slugs were whole names, like
+ * `ct-author-2026-10-10`), and otherwise the nearest few to offer instead of a
+ * dead end.
+ */
+export async function findRacesForMissingSlug(
+  slug: string,
+): Promise<{ match: EventListItem | null; near: EventListItem[] }> {
+  const { parseRaceSlug, rankRacesForSlug } = await import("@/lib/event-slug");
+  const { words, date, year } = parseRaceSlug(slug);
+  const searchable = words.filter((w) => w.length >= 3 && /^[a-z0-9]+$/.test(w)).slice(0, 6);
+  if (!searchable.length) return { match: null, near: [] };
+  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, shouldHideFromMap } = await import(
+    "@/lib/event-visibility"
+  );
+  const { isListedCountry } = await import("@/lib/geo/europe");
+  const supabase = createServerSupabase();
+  // Slugs and days only: a common word ("cup") matches hundreds of races, and
+  // all of them are scored before any is loaded whole.
+  let query = supabase
+    .from("events")
+    .select("id, slug, start_date")
+    .eq("visibility", PUBLIC_VISIBILITY)
+    .in("status", [...PUBLIC_EVENT_STATUSES])
+    .is("merged_into_id", null)
+    .or(searchable.map((w) => `slug.ilike.%${w}%`).join(","));
+  if (date) query = query.eq("start_date", date);
+  else if (year) query = query.gte("start_date", `${year}-01-01`).lte("start_date", `${year}-12-31`);
+  else query = query.gte("start_date", new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10));
+  const { data, error } = await query.limit(2000);
+  if (error) throw new Error(error.message);
+  const ranked = rankRacesForSlug(
+    slug,
+    (data ?? []).map((r) => ({ id: String(r.id), slug: String(r.slug), startDate: String(r.start_date) })),
+  );
+  const ids = [ranked.match, ...ranked.near].filter((r) => r != null).map((r) => r.id);
+  if (!ids.length) return { match: null, near: [] };
+  const { data: rows, error: rowsError } = await supabase
+    .from("events")
+    .select(`${EVENT_LIST_COLUMNS}, location:locations(id, name, municipality, country_code, lat, lng)`)
+    .in("id", ids);
+  if (rowsError) throw new Error(rowsError.message);
+  const byId = new Map(
+    (rows ?? [])
+      .map((row) => mapEventRow(row as Record<string, unknown>))
+      .filter((e) => !shouldHideFromMap(e.name, e.status, e.visibility))
+      .filter((e) => !e.location?.countryCode || isListedCountry(e.location.countryCode))
+      .map((e) => [e.id, e] as const),
+  );
+  return {
+    match: (ranked.match && byId.get(ranked.match.id)) ?? null,
+    near: ranked.near.map((r) => byId.get(r.id)).filter((e) => e != null),
+  };
+}
+
 /** Upcoming public races for sitemap (capped). */
 /**
  * Series with a race still to come — the hubs worth indexing.

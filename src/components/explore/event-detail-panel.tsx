@@ -13,6 +13,7 @@ import {
   Share,
   UserRound,
   ChartNoAxesColumnIncreasing,
+  Maximize2,
 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -44,7 +45,7 @@ import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { cn } from "@/lib/utils";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
-import { eventMapPath } from "@/lib/event-url";
+import { eventMapPath, eventPagePath } from "@/lib/event-url";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
@@ -462,11 +463,21 @@ export function EventDetailPanel({
             {event.name}
           </span>
         </CardTitle>
-        {!embedded ? (
-          // Negative margins: the button is taller than a line of text, and
-          // it must not be what sets the header's height — otherwise a
-          // one-line name sits at the top of a box sized for the cross.
-          <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto shrink-0 self-center justify-self-auto">
+        {/* Negative margins: the buttons are taller than a line of text, and
+            they must not be what sets the header's height — otherwise a
+            one-line name sits at the top of a box sized for the cross. */}
+        <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto flex shrink-0 items-center self-center justify-self-auto">
+          {/* The card is the short version; the race's own page has all of it. */}
+          <Button asChild variant="ghost" size="icon" title={t.openRaceDetail}>
+            <Link
+              href={eventPagePath(locale, event.slug)}
+              aria-label={t.openRaceDetail}
+              onClick={() => track("open_race_page", { slug: event.slug })}
+            >
+              <Maximize2 />
+            </Link>
+          </Button>
+          {!embedded ? (
             <Button
               type="button"
               variant="ghost"
@@ -476,8 +487,8 @@ export function EventDetailPanel({
             >
               <X />
             </Button>
-          </CardAction>
-        ) : null}
+          ) : null}
+        </CardAction>
       </CardHeader>
 
       <CardContent

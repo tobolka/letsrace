@@ -449,6 +449,7 @@ export const de = {
   submitThanks: "Danke — wir sehen es uns an.",
   submitFailed: "Senden fehlgeschlagen — versuche es erneut",
   close: "Schließen",
+  openRaceDetail: "Alle Details zum Rennen",
   sheetExpand: "Rennliste zeigen",
   sheetCollapse: "Karte zeigen",
   filtersDone: "Fertig",

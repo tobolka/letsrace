@@ -6,7 +6,9 @@ import { Bike, CalendarClock, ChartNoAxesColumnIncreasing, ExternalLink, MapPinn
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
+import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug } from "@/lib/events";
+import { NotFoundHelp, notFoundCopy } from "@/components/browse/not-found-help";
+import { parseRaceSlug } from "@/lib/event-slug";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
@@ -70,7 +72,7 @@ export default async function EventPage({ params }: Props) {
   if (!locales.includes(raw as Locale)) notFound();
   const locale = raw as Locale;
   const event = await getPublicEventBySlug(slug);
-  if (!event) notFound();
+  if (!event) return <MissingRace locale={locale} slug={slug} />;
   if (event.slug !== slug) permanentRedirect(localePath(locale, `e/${event.slug}`));
 
   const t = messages[locale];
@@ -308,4 +310,23 @@ function disciplineMatches(family: HubDiscipline, discipline: string): boolean {
 
 function disciplineLabelForHub(locale: Locale, family: HubDiscipline): string {
   return disciplineLabel(family, locale);
+}
+
+/**
+ * An address no race has. One that clearly names a race — an old slug, from
+ * before slugs were whole names — goes on to it; anything else gets the races
+ * it may have meant and a search, not a bare 404.
+ */
+async function MissingRace({ locale, slug }: { locale: Locale; slug: string }) {
+  const { match, near } = await findRacesForMissingSlug(slug).catch(() => ({ match: null, near: [] }));
+  if (match) permanentRedirect(localePath(locale, `e/${match.slug}`));
+  const c = notFoundCopy[locale];
+  return (
+    <main className="relative min-h-full bg-background">
+      <BrowseHeader locale={locale} crumbs={[...browseCrumbs(locale, { country: null, family: null }), { label: c.raceTitle }]} />
+      <NotFoundHelp locale={locale} title={c.raceTitle} body={c.raceBody} query={parseRaceSlug(slug).words.join(" ")}>
+        {near.length ? <RaceLinkList events={near} locale={locale} groupByMonth={false} /> : null}
+      </NotFoundHelp>
+    </main>
+  );
 }
