@@ -441,6 +441,7 @@ export const de = {
   noOnlineEntry: "Noch keine Online-Anmeldung",
   weekendNearYou: "Dieses Wochenende in deiner Nähe",
   missingRace: "Fehlt ein Rennen oder eine Serie?",
+  navAbout: "Über das Projekt",
   reportRace: "Rennen melden",
   submitRaceHelp: "Füge die offizielle URL des Rennens ein. Wir prüfen sie.",
   raceUrl: "URL des Rennens",

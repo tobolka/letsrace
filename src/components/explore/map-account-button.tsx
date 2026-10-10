@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Check, LogIn, LogOut, User } from "lucide-react";
+import { Check, Info, LogIn, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -185,6 +185,12 @@ export function AccountMenuItems({
         {onFeedback ? (
           <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
         ) : null}
+        {/* Who makes the site and where its races come from. */}
+        <DropdownMenuItem asChild>
+          <Link href={localePath(locale, "about")}>
+            <Info /> {messages.navAbout}
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuGroup>
 
       {authed === true ? (
