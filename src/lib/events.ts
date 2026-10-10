@@ -9,7 +9,7 @@ import {
 } from "@/lib/domain";
 import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 import { canonicalEventDisciplines } from "@/lib/taxonomy";
-import { formatPlaceName } from "@/lib/places";
+import { formatPlaceName, joinPlace, splitPlace } from "@/lib/places";
 import { repairText } from "@/lib/text";
 import { freeEventSlug } from "@/lib/event-slug";
 
@@ -780,8 +780,11 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
           // here rather than at each screen means the list, the map, the
           // detail panel, the share card and the structured data all say the
           // same thing, and none of them has to remember to.
-          name: formatPlaceName(repairText(String(location.name))) ?? String(location.name),
-          municipality: formatPlaceName(repairText(location.municipality as string | null)),
+          // Free text from the sources: "Festhalle, Güntersleben",
+          // "Kirchzarten, Germany", "DE". `name` keeps the venue and town;
+          // `municipality` is the town alone, or null when there is none.
+          name: joinPlace(splitPlace(formatPlaceName(repairText(String(location.name))) ?? String(location.name))),
+          municipality: splitPlace(formatPlaceName(repairText(location.municipality as string | null))).town,
           countryCode: String(location.country_code),
           lat: (location.lat as number) ?? null,
           lng: (location.lng as number) ?? null,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatPlaceName } from "@/lib/places";
+import { formatPlaceName, splitPlace } from "@/lib/places";
 
 describe("formatPlaceName", () => {
   it("puts a shouted Czech town back into sentence case", () => {
@@ -36,5 +36,33 @@ describe("formatPlaceName", () => {
     expect(formatPlaceName(null)).toBeNull();
     expect(formatPlaceName("")).toBeNull();
     expect(formatPlaceName("   ")).toBeNull();
+  });
+});
+
+describe("splitPlace", () => {
+  it("keeps the town and the venue before it", () => {
+    expect(splitPlace("Festhalle, Güntersleben")).toEqual({ town: "Güntersleben", venue: "Festhalle" });
+    expect(splitPlace("Grillhütte am Maifeldradweg, Naunheim")).toEqual({ town: "Naunheim", venue: "Grillhütte am Maifeldradweg" });
+  });
+
+  it("drops a country or region a source appended", () => {
+    expect(splitPlace("Kirchzarten, Germany").town).toBe("Kirchzarten");
+    expect(splitPlace("Pilsen (Plzeň), Czechia").town).toBe("Pilsen (Plzeň)");
+    expect(splitPlace("Bratislava, Slovensko").town).toBe("Bratislava");
+    expect(splitPlace("Söll, Tirol").town).toBe("Söll");
+    expect(splitPlace("Edinburgh, Scotland").town).toBe("Edinburgh");
+  });
+
+  it("has no town for a country code or a placeholder", () => {
+    for (const v of ["DE", "CZ", "TBC", "lokalita v jednání", "...", "[?]", "", null]) {
+      expect(splitPlace(v)).toEqual({ town: null, venue: null });
+    }
+  });
+
+  it("leaves real short towns and city-states alone", () => {
+    expect(splitPlace("Aš").town).toBe("Aš");
+    expect(splitPlace("Seč").town).toBe("Seč");
+    expect(splitPlace("Salzburg").town).toBe("Salzburg");
+    expect(splitPlace("Berlin").town).toBe("Berlin");
   });
 });

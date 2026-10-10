@@ -119,3 +119,65 @@ export function formatPlaceName(raw: string | null | undefined): string | null {
     return cased;
   });
 }
+
+/** Values a source put in the place field to mean "we do not know yet". */
+const PLACEHOLDER =
+  /^(?:\.{2,}|…|\[\?\]|\?+|-+|tb[acd]|n\/?a|unknown|lokalita v jednání|místo bude upřesněno|bude upřesněno|upřesníme|ort folgt|ort tba)$/i;
+
+/** Regions a source appends after the town ("Söll, Tirol"). Cities that share a region's name are left out. */
+const REGIONS = [
+  "tirol", "tyrol", "niederosterreich", "oberosterreich", "karnten", "steiermark", "vorarlberg", "burgenland",
+  "bayern", "bavaria", "baden-wurttemberg", "sachsen", "thuringen", "hessen", "niedersachsen",
+  "nordrhein-westfalen", "rheinland-pfalz", "schleswig-holstein", "mecklenburg-vorpommern", "sachsen-anhalt",
+  "saarland", "brandenburg", "sudtirol", "south tyrol", "alto adige", "trentino", "toscana", "tuscany",
+  "lombardia", "lombardy", "veneto", "piemonte", "scotland", "england", "wales", "northern ireland",
+  "south england", "north england", "great britain", "czech republic", "slovak republic",
+  "ceska republika", "slovenska republika",
+];
+
+const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().trim();
+
+let notTowns: Set<string> | null = null;
+/** Every country's name in the languages our sources write in, plus its code, plus the regions above. */
+function notATown(part: string): boolean {
+  if (!notTowns) {
+    notTowns = new Set(REGIONS);
+    const codes = "AD AL AT BA BE BG BY CH CY CZ DE DK EE ES FI FR GB GR HR HU IE IS IT LI LT LU LV MC MD ME MK MT NL NO PL PT RO RS RU SE SI SK SM UA VA XK".split(" ");
+    for (const lang of ["en", "cs", "sk", "de", "pl", "it", "fr", "hu", "sl", "nl", "es"]) {
+      const names = new Intl.DisplayNames([lang], { type: "region" });
+      for (const code of codes) {
+        const name = names.of(code);
+        if (name) notTowns.add(fold(name));
+      }
+    }
+    for (const code of codes) notTowns.add(code.toLowerCase());
+    notTowns.add("uk");
+  }
+  return notTowns.has(fold(part));
+}
+
+/**
+ * A place field split into the town and whatever came before it.
+ *
+ * The field is free text from many sources: "Festhalle, Güntersleben" (venue,
+ * town), "Kirchzarten, Germany" (town, country), "Söll, Tirol", or just "DE"
+ * or "TBC". Titles, lists and the structured data all want the town, and
+ * reading the last comma-separated part gave "Germany" for a town in a
+ * thousand-odd places. Only parts that are certainly not a town come off — a
+ * country or region name, a country code, a placeholder — so a real two-letter
+ * town like Aš is left alone.
+ */
+export function splitPlace(raw: string | null | undefined): { town: string | null; venue: string | null } {
+  const value = (raw ?? "").replace(/\s+/g, " ").trim();
+  if (!value || PLACEHOLDER.test(value)) return { town: null, venue: null };
+  const parts = value.split(",").map((p) => p.trim()).filter(Boolean);
+  while (parts.length && (notATown(parts[parts.length - 1]!) || PLACEHOLDER.test(parts[parts.length - 1]!))) parts.pop();
+  if (!parts.length) return { town: null, venue: null };
+  const town = parts.pop()!;
+  return { town, venue: parts.length ? parts.join(", ") : null };
+}
+
+/** The venue and town back as one display string ("Festhalle, Güntersleben"), or "" for neither. */
+export function joinPlace(place: { town: string | null; venue: string | null }): string {
+  return [place.venue, place.town].filter(Boolean).join(", ");
+}

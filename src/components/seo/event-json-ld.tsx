@@ -46,8 +46,9 @@ export function EventJsonLd({
   /** From the site down to this race, for search results' breadcrumb trail. */
   breadcrumb?: { name: string; path: string }[];
 }) {
-  const placeName =
-    event.location?.municipality || event.location?.name || undefined;
+  // The town alone, and the venue-and-town string for the Place's name.
+  const town = event.location?.municipality || undefined;
+  const placeLabel = event.location?.name || town;
   const pageUrl = absoluteUrl(localePath(locale, `e/${event.slug}`));
   // Pages about this race. The entry form is not one — it goes in `offers`.
   const sameAs = [
@@ -95,17 +96,19 @@ export function EventJsonLd({
     };
     data.offers = offer;
   }
-  if (placeName || event.location?.lat != null) {
+  if (placeLabel || event.location?.lat != null) {
     const location: Record<string, unknown> = {
       "@type": "Place",
-      name: placeName || event.name,
+      name: placeLabel || event.name,
     };
     if (event.location?.countryCode) {
-      location.address = {
+      const address: Record<string, unknown> = {
         "@type": "PostalAddress",
         addressCountry: event.location.countryCode,
-        addressLocality: placeName,
       };
+      // A town or nothing — not a venue, a country name or "TBC".
+      if (town) address.addressLocality = town;
+      location.address = address;
     }
     if (event.location?.lat != null && event.location?.lng != null) {
       location.geo = {
@@ -130,12 +133,16 @@ export function EventJsonLd({
       }
     : null;
 
+  // Google requires a location on an Event; without one the block is only an
+  // error in Search Console, so the race goes without it.
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
-      />
+      {data.location ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
+        />
+      ) : null}
       {crumbs ? (
         <script
           type="application/ld+json"

@@ -1,3 +1,4 @@
+import { splitPlace } from "@/lib/places";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
@@ -335,15 +336,11 @@ export function unshout(name: string): string {
 }
 
 /**
- * Where a race starts, as a place name. A venue with no town of its own often
- * reads "Sporthalle Schule, Haid" — the town is the last part.
+ * Where a race starts, as a town: "Sportheim, Lupburg" is Lupburg, and
+ * "Kirchzarten, Germany" is Kirchzarten (see `splitPlace`).
  */
 function placeOf(event: EventListItem): string | null {
-  // The town field itself sometimes holds the venue too ("Sportheim, Lupburg").
-  const value = (event.location?.municipality || event.location?.name || "").trim();
-  if (!value) return null;
-  const parts = value.split(",").map((p) => p.trim()).filter(Boolean);
-  return parts[parts.length - 1] ?? null;
+  return splitPlace(event.location?.municipality).town || splitPlace(event.location?.name).town;
 }
 
 /** A place a title should not repeat: every word of it is in the race's name already. */
