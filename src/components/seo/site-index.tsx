@@ -24,12 +24,17 @@ const CORE = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH"];
  */
 export async function SiteIndex({ locale }: { locale: Locale }) {
   const today = new Date().toISOString().slice(0, 10);
-  const [hubs, soon] = await Promise.all([
+  // One round trip, not two: the season's list used to wait for the first
+  // pair, and the home page document stayed open until it came back.
+  const [hubs, season] = await Promise.all([
     listQualifyingHubs(CORE).catch(() => []),
-    listEvents({ countryCodes: CORE, dateFrom: today, dateTo: addDaysIso(today, 9) }).catch(() => []),
+    listEvents({ countryCodes: CORE, dateFrom: today, dateTo: addDaysIso(today, 120) }).catch(() => []),
   ]);
+  // The next ten days are a slice of the season's list, not a query of their own.
+  const soonUntil = addDaysIso(today, 9);
+  const soon = season.filter((e) => e.startDate <= soonUntil);
   const rc = raceCopy[locale];
-  const series = seriesIn(await listEvents({ countryCodes: CORE, dateFrom: today, dateTo: addDaysIso(today, 120) }).catch(() => [])).slice(0, 24);
+  const series = seriesIn(season).slice(0, 24);
   const countries = CORE.filter((c) => isListedCountry(c));
 
   return (
