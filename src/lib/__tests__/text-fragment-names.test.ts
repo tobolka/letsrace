@@ -4,7 +4,6 @@ import { preferEventName } from "@/lib/dedup";
 import { looksLikeTextFragment } from "@/lib/text";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { decodeBody } from "@/lib/watcher/http";
-import { extractEvents, stripHtml } from "../../../scripts/scrape-doplnene-html-2026-09-17";
 
 /**
  * On 2026-09-17 a date-first bulk scrape named ~540 rows with the text around
@@ -134,34 +133,5 @@ describe("generic extractor on a Windows-1250 shop homepage", () => {
       "text/html; charset=windows-1250",
     );
     expect(extractGeneric("https://cyklosvec.cz", html)).toEqual([]);
-  });
-});
-
-describe("bulk calendar scrape", () => {
-  // The Cycling Austria event card, roughly as the page serves it.
-  const card = `
-    <div class="card" data-x="a>b">
-      <p>Sa, 31. Oktober 2026 | 09.00&ndash;17.00 Uhr</p>
-      <h3>MUD MASTER CYCLOCROSS Mittelk&auml;rnten</h3>
-      <p>von Mountain Sport Union Klagenfurt : Ausschreibung Kärnten</p>
-    </div>
-    <div class="card">
-      <p>So, 29. November 2026 | 10.00&ndash;13.00 Uhr</p>
-      <h3>Park-Cross B&ouml;heimkirchen</h3>
-      <p>von Radsport B&ouml;heimkirchen : Ausschreibung</p>
-    </div>`;
-
-  it("decodes every entity, not just the three it used to know", () => {
-    const text = stripHtml(card);
-    expect(text).toContain("Mittelkärnten");
-    expect(text).toContain("09.00–17.00 Uhr");
-    expect(text).not.toMatch(/&[a-z]+;/);
-  });
-
-  it("creates nothing whose name is the text around a date", () => {
-    for (const found of extractEvents(stripHtml(card), "Cycling Austria Cyclocross Cup")) {
-      expect(looksLikeTextFragment(found.name), found.name).toBe(false);
-      expect(found.name.length).toBeLessThanOrEqual(80);
-    }
   });
 });

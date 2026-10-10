@@ -72,6 +72,9 @@ series slug + date (geocodes a town, creates/reuses a `locations` row, locks `lo
 Examples to copy: `scripts/repair-major-series-2026-09-17.ts` (round 1),
 `scripts/repair-series-round-2-2026-09-17.ts` (round 2).
 
+These one-off scripts were removed on 2026-10-10 once they had run; read them
+from history with `git show a9a482a:scripts/<name>`.
+
 ## Method that worked
 
 1. `previewUrl(officialUrl)` (from `run.ts`) → what the parser reads now. Compare with the
