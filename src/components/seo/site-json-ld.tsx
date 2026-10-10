@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/messages";
-import { absoluteUrl, getSiteUrl, seoCopy, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 
 const CONTACT = "contact@letsrace.cz";
 
@@ -23,6 +23,7 @@ export function SiteJsonLd({ locale }: { locale: Locale }) {
         url: site,
         logo: absoluteUrl("/apple-icon.png"),
         email: CONTACT,
+        founder: { "@type": "Person", name: SITE_AUTHOR.name, url: SITE_AUTHOR.url },
       },
       {
         "@type": "WebSite",

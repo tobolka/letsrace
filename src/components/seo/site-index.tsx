@@ -9,6 +9,9 @@ import { eventPagePath } from "@/lib/event-url";
 import { collectionCopy, COLLECTION_SLUGS } from "@/lib/race-collections";
 import { collectionPath, hubPath, localePath } from "@/lib/localized-paths";
 
+/** The about page, in the nav a crawler reads first. */
+const ABOUT: Record<Locale, string> = { cs: "O projektu", en: "About", pl: "O projekcie", sk: "O projekte", de: "Über das Projekt" };
+
 /** The markets we cover most, first. */
 const CORE = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH"];
 
@@ -86,6 +89,7 @@ export async function SiteIndex({ locale }: { locale: Locale }) {
           </ul>
         </>
       )}
+      <Link href={`/${locale}/about`}>{ABOUT[locale]}</Link>
     </nav>
   );
 }

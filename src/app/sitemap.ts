@@ -44,6 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   add("", now, "hourly", 1);
 
   add((l) => hubPath(l), now, "daily", 0.9);
+  add("about", new Date("2026-10-10"), "monthly", 0.5);
   for (const code of PUBLIC_COUNTRY_CODES) add((l) => hubPath(l, code), now, "daily", 0.8);
 
   try {
