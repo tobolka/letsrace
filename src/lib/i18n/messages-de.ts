@@ -450,6 +450,7 @@ export const de = {
   submitFailed: "Senden fehlgeschlagen — versuche es erneut",
   close: "Schließen",
   openRaceDetail: "Alle Details zum Rennen",
+  raceDetailShort: "Details",
   sheetExpand: "Rennliste zeigen",
   sheetCollapse: "Karte zeigen",
   filtersDone: "Fertig",

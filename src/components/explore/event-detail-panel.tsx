@@ -463,21 +463,11 @@ export function EventDetailPanel({
             {event.name}
           </span>
         </CardTitle>
-        {/* Negative margins: the buttons are taller than a line of text, and
-            they must not be what sets the header's height — otherwise a
-            one-line name sits at the top of a box sized for the cross. */}
-        <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto flex shrink-0 items-center self-center justify-self-auto">
-          {/* The card is the short version; the race's own page has all of it. */}
-          <Button asChild variant="ghost" size="icon" title={t.openRaceDetail}>
-            <Link
-              href={eventPagePath(locale, event.slug)}
-              aria-label={t.openRaceDetail}
-              onClick={() => track("open_race_page", { slug: event.slug })}
-            >
-              <Maximize2 />
-            </Link>
-          </Button>
-          {!embedded ? (
+        {!embedded ? (
+          // Negative margins: the button is taller than a line of text, and
+          // it must not be what sets the header's height — otherwise a
+          // one-line name sits at the top of a box sized for the cross.
+          <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto shrink-0 self-center justify-self-auto">
             <Button
               type="button"
               variant="ghost"
@@ -487,8 +477,8 @@ export function EventDetailPanel({
             >
               <X />
             </Button>
-          ) : null}
-        </CardAction>
+          </CardAction>
+        ) : null}
       </CardHeader>
 
       <CardContent
@@ -527,7 +517,7 @@ export function EventDetailPanel({
         <div className={cn("flex flex-col", embedded ? "gap-1" : "gap-2")}>
           <p className="flex items-center gap-2 text-base font-medium">
             <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            <time className="tabular" dateTime={event.startDate}>
+            <time className="min-w-0 flex-1 tabular" dateTime={event.startDate}>
               {format(parseISO(event.startDate), "EEE d MMM yyyy", {
                 locale: dateFnsLocale(locale),
               })}
@@ -535,6 +525,17 @@ export function EventDetailPanel({
                 ? ` – ${format(parseISO(event.endDate), "d MMM", { locale: dateFnsLocale(locale) })}`
                 : ""}
             </time>
+            {/* The card is the short version; the race's own page has all of it. */}
+            <Button asChild variant="outline" size="xs" className="-my-0.5 shrink-0 font-normal">
+              <Link
+                href={eventPagePath(locale, event.slug)}
+                title={t.openRaceDetail}
+                onClick={() => track("open_race_page", { slug: event.slug })}
+              >
+                <Maximize2 data-icon="inline-start" />
+                {t.raceDetailShort}
+              </Link>
+            </Button>
           </p>
           <p className="flex items-start gap-2 text-sm font-medium">
             <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
