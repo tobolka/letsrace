@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.5.2",
-    "@sparticuz/chromium": "^149.0.0",
+    "@sparticuz/chromium": "^153.0.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
     "@turf/boolean-point-in-polygon": "^7.4.0",
