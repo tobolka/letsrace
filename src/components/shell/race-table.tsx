@@ -82,6 +82,26 @@ function cellText(col: ListColumn, event: EventListItem, locale: string, origin:
   }
 }
 
+export type ListSort = { column: ListColumn; direction: "asc" | "desc" };
+
+export function sortTableEvents(events: EventListItem[], sort: ListSort, locale: string, origin: { lat: number; lng: number } | null): EventListItem[] {
+  const collator = new Intl.Collator(locale, { numeric: true, sensitivity: "base" });
+  const values = new Map(events.map((event) => [event.id,
+    sort.column === "distance" ? eventDistanceKm(event, origin)
+      : sort.column === "date" ? event.startDate
+        : cellText(sort.column, event, locale, origin),
+  ]));
+  return [...events].sort((a, b) => {
+    const av = values.get(a.id);
+    const bv = values.get(b.id);
+    // Missing values stay at the end in both directions.
+    if (av == null || av === "" || av === "—") return bv == null || bv === "" || bv === "—" ? 0 : 1;
+    if (bv == null || bv === "" || bv === "—") return -1;
+    const comparison = typeof av === "number" && typeof bv === "number" ? av - bv : collator.compare(String(av), String(bv));
+    return comparison * (sort.direction === "asc" ? 1 : -1);
+  });
+}
+
 /**
  * The races as a table, one line each.
  *
@@ -97,6 +117,8 @@ export function RaceTable({
   origin,
   selectedId,
   onSelect,
+  sort,
+  onSort,
 }: {
   events: EventListItem[];
   columns: ListColumn[];
@@ -105,6 +127,8 @@ export function RaceTable({
   origin: { lat: number; lng: number } | null;
   selectedId: string | null;
   onSelect: (id: string) => void;
+  sort: ListSort;
+  onSort: (column: ListColumn) => void;
 }) {
   return (
     // A fixed layout ignores a column's min-width, so the free column — the
@@ -117,6 +141,7 @@ export function RaceTable({
           {columns.map((col, i) => (
             <TableHead
               key={col}
+              aria-sort={sort.column === col ? (sort.direction === "asc" ? "ascending" : "descending") : undefined}
               className={cn(
                 "h-9 text-xs font-medium text-muted-foreground",
                 WIDTH[col],
@@ -124,7 +149,14 @@ export function RaceTable({
                 i === columns.length - 1 && "pr-6",
               )}
             >
-              {labels[col]}
+              <button
+                type="button"
+                onClick={() => onSort(col)}
+                className={cn("flex h-full w-full cursor-pointer items-center gap-1.5 rounded-sm text-left hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring", col === "distance" && "justify-end", sort.column === col && "text-foreground")}
+              >
+                {labels[col]}
+                {sort.column === col ? <span aria-hidden="true">{sort.direction === "asc" ? "↑" : "↓"}</span> : null}
+              </button>
             </TableHead>
           ))}
         </TableRow>

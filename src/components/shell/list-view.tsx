@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { EventCard } from "@/components/explore/event-rows";
 import { ColumnPicker } from "@/components/shell/column-picker";
-import { RaceTable } from "@/components/shell/race-table";
+import { RaceTable, sortTableEvents, type ListSort } from "@/components/shell/race-table";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { ExploreFilterBar } from "@/components/shell/explore-filter-bar";
 import { RacePreview } from "@/components/shell/race-preview";
@@ -39,7 +39,9 @@ export function ListView({ locale }: { locale: string }) {
   const origin = place.origin;
 
   const sort: EventSort = filters.sort === "distance" && origin ? "distance" : "date";
-  const rows = useMemo(() => sortEvents(feed.events, sort, origin), [feed.events, sort, origin]);
+  const [tableSort, setTableSort] = useState<ListSort | null>(null);
+  const activeSort: ListSort = tableSort ?? { column: sort, direction: "asc" };
+  const rows = useMemo(() => sortTableEvents(sortEvents(feed.events, "date", origin), { column: tableSort?.column ?? sort, direction: tableSort?.direction ?? "asc" }, locale, origin), [feed.events, sort, tableSort, locale, origin]);
   const selected = useMemo(
     () => feed.events.find((e) => e.id === selectedId) ?? null,
     [feed.events, selectedId],
@@ -69,9 +71,18 @@ export function ListView({ locale }: { locale: string }) {
   const isDefault = JSON.stringify(layout) === JSON.stringify(DEFAULT_LAYOUT);
 
   function setSort(next: EventSort) {
+    setTableSort(null);
     void setFilters({ sort: next === "distance" ? "distance" : null });
     // Choosing distance is what asks for the position, as it is on the map.
     if (next === "distance" && !origin) place.locate();
+  }
+
+  function sortColumn(column: ListColumn) {
+    setTableSort({ column, direction: activeSort.column === column && activeSort.direction === "asc" ? "desc" : "asc" });
+    if (column === "date" || column === "distance") {
+      void setFilters({ sort: column === "distance" ? "distance" : null });
+    }
+    if (column === "distance" && !origin) place.locate();
   }
 
   return (
@@ -108,7 +119,7 @@ export function ListView({ locale }: { locale: string }) {
             type="single"
             variant="outline"
             size="xs"
-            value={sort}
+            value={activeSort.column === "date" || activeSort.column === "distance" ? activeSort.column : ""}
             onValueChange={(value) => {
               if (value === "date" || value === "distance") setSort(value);
             }}
@@ -168,6 +179,8 @@ export function ListView({ locale }: { locale: string }) {
                   origin={origin}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
+                  sort={activeSort}
+                  onSort={sortColumn}
                 />
               ) : null}
             </>
