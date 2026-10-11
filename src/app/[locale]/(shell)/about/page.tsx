@@ -4,7 +4,7 @@ import { DOC_WIDTH, PageHeader } from "@/components/account/panel";
 import { asLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 
-const CONTACT = "contact@letsrace.cz";
+const CONTACT = "info@letsrace.cz";
 const UPDATED = "2026-10-10";
 
 type Doc = {

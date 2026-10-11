@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 
-const CONTACT = "contact@letsrace.cz";
+const CONTACT = "info@letsrace.cz";
 
 /**
  * Who publishes the site, for the home page.
