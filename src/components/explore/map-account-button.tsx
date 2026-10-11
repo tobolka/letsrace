@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Check, LogIn, LogOut, User } from "lucide-react";
+import { Check, Flag, Info, Languages, LogIn, LogOut, MessageSquare, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -163,6 +163,7 @@ export function AccountMenuItems({
       <DropdownMenuGroup>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
+            <Languages aria-hidden />
             {messages.language}
             <span className="ml-auto text-xs text-muted-foreground">{locale.toUpperCase()}</span>
           </DropdownMenuSubTrigger>
@@ -180,15 +181,19 @@ export function AccountMenuItems({
           </DropdownMenuPortal>
         </DropdownMenuSub>
         {onSubmitRace ? (
-          <DropdownMenuItem onSelect={onSubmitRace}>{messages.missingRace}</DropdownMenuItem>
+          <DropdownMenuItem onSelect={onSubmitRace}>
+            <Flag aria-hidden /> {messages.missingRace}
+          </DropdownMenuItem>
         ) : null}
         {onFeedback ? (
-          <DropdownMenuItem onSelect={onFeedback}>Feature / feedback…</DropdownMenuItem>
+          <DropdownMenuItem onSelect={onFeedback}>
+            <MessageSquare aria-hidden /> Feature / feedback…
+          </DropdownMenuItem>
         ) : null}
         {/* Who makes the site and where its races come from. */}
         <DropdownMenuItem asChild>
           <Link href={localePath(locale, "about")}>
-            {messages.navAbout}
+            <Info aria-hidden /> {messages.navAbout}
           </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>
