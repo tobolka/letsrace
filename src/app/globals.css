@@ -175,7 +175,7 @@ time,
   --rdp-nav_button-width: 1.75rem;
   --rdp-nav-height: 2rem;
   --rdp-outside-opacity: 0.35;
-  --rdp-today-color: var(--foreground);
+  --rdp-today-color: #dc2626;
   --rdp-animation_duration: 0s;
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 13px;
@@ -218,6 +218,9 @@ time,
 .letsrace-date-cal .rdp-selected .rdp-day_button {
   font-size: 13px;
   font-weight: 500;
+}
+.letsrace-date-cal .rdp-today:not(.rdp-outside) .rdp-day_button {
+  color: var(--rdp-today-color);
 }
 .letsrace-date-cal .rdp-button_previous,
 .letsrace-date-cal .rdp-button_next {
