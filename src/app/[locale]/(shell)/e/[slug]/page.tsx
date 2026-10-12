@@ -30,14 +30,11 @@ import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
 
 /**
- * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
- * so an hour is fresh; no page is built ahead — each on its first visit.
+ * The long-tail catalogue is rendered on demand. Persisting a full HTML/RSC
+ * response for every race × language made crawler visits write thousands of
+ * large ISR entries, even when each URL was requested only once.
  */
-export const revalidate = 3600;
-
-export function generateStaticParams() {
-  return [];
-}
+export const revalidate = 0;
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;

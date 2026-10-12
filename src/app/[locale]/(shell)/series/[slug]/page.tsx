@@ -17,14 +17,10 @@ import { Button } from "@/components/ui/button";
 import { SeriesSkeleton } from "./series-skeleton";
 
 /**
- * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
- * so an hour is fresh; no page is built ahead — each on its first visit.
+ * Render series on demand, as with race details: a crawler's first visit
+ * must not persist another large HTML/RSC entry for every language and slug.
  */
-export const revalidate = 3600;
-
-export function generateStaticParams() {
-  return [];
-}
+export const revalidate = 0;
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
