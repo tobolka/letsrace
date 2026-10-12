@@ -27,6 +27,7 @@ export function WelcomeCard({
 }: {
   messages: {
     introTitle: string;
+    introImageAlt: string;
     introBody: string;
     introCta: string;
     introDismiss: string;
@@ -68,7 +69,7 @@ export function WelcomeCard({
       className="pointer-events-auto fixed inset-x-3 top-16 z-40 overflow-hidden rounded-xl border bg-background/95 shadow-xl backdrop-blur md:inset-x-auto md:bottom-6 md:right-6 md:top-auto md:w-[22rem]"
     >
       {/*
-        Decorative, so it carries no alt text — the card is already labelled.
+        The photograph describes the sport, with a localized alternative.
         Dimensions are set to keep the card from jumping as it loads.
 
         A plain img rather than next/image: the file is already cropped and
@@ -83,7 +84,7 @@ export function WelcomeCard({
       <img
         src="/intro-race.webp"
         srcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
-        alt=""
+        alt={messages.introImageAlt}
         width={352}
         height={112}
         fetchPriority="high"

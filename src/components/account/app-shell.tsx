@@ -22,6 +22,14 @@ import { localePath } from "@/lib/localized-paths";
  * that page's teaser instead: every one of these pages is about their own
  * races, and an empty plan with a login form under it sells nothing.
  */
+function accountPageTitle(pathname: string, locale: string, t: ReturnType<typeof messagesFor>) {
+  if (pathname === localePath(locale, "account/riders")) return t.profilesTitle;
+  if (pathname === localePath(locale, "account/recommendations")) return t.accountDiscover;
+  if (pathname === localePath(locale, "account/settings")) return t.accountSettings;
+  if (pathname === localePath(locale, "account/alerts")) return t.areasTitle;
+  return t.myCalendar;
+}
+
 export function AppShell({
   locale,
   children,
@@ -32,6 +40,7 @@ export function AppShell({
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
   const { authed } = useAuthUser();
+  const pageTitle = accountPageTitle(pathname, locale, t);
   const counts = useNavCounts(pathname, authed);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const items = profileNav(locale, t, pathname, counts, authed);
@@ -87,7 +96,10 @@ export function AppShell({
         )}
       >
         {authed === null ? (
-          pathname === localePath(locale, `account`) ? <PlanPageSkeleton /> : <DocPageSkeleton />
+          <>
+            <h1 className="sr-only">{pageTitle}</h1>
+            {pathname === localePath(locale, `account`) ? <PlanPageSkeleton /> : <DocPageSkeleton />}
+          </>
         ) : authed ? (
           children
         ) : (

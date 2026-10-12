@@ -1,8 +1,10 @@
+import { paginateRaces, raceListPagePath } from "@/lib/race-list-pagination";
+import { RaceListPagination } from "@/components/seo/race-list-pagination";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { listEvents } from "@/lib/events";
+import { listHubEvents } from "@/lib/race-hub-data";
 import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
@@ -24,17 +26,10 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { HubSkeleton } from "../hub-skeleton";
 
-/**
- * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
- * so an hour is fresh; no page is built ahead — each on its first visit.
- */
-export const revalidate = 3600;
+/** Page query selects the rows; catalogue data is cached for an hour. */
+export const dynamic = "force-dynamic";
 
-export function generateStaticParams() {
-  return [];
-}
-
-type Props = { params: Promise<{ locale: string; code: string; discipline: string }> };
+type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Promise<{ locale: string; code: string; discipline: string }> };
 
 async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   const locale = (locales.includes(rawLocale as Locale) ? rawLocale : defaultLocale) as Locale;
@@ -43,7 +38,7 @@ async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   if (!isListedCountry(code) || !isHubDiscipline(discipline)) return null;
 
   const today = new Date().toISOString().slice(0, 10);
-  const events = await listEvents({
+  const events = await listHubEvents({
     countryCodes: [code],
     disciplines: disciplineLeaves(discipline as HubDiscipline),
     dateFrom: today,
@@ -52,7 +47,7 @@ async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   return { locale, code, discipline: discipline as HubDiscipline, events };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale: rawLocale, code: rawCode, discipline: rawDiscipline } = await params;
   const data = await load(rawLocale, rawCode, rawDiscipline);
   // notFound() here, not just in the page: crawlers get the head before
@@ -64,7 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = disciplineCopy(locale, discipline);
   const heading = `${fillCopy(copy.title, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const description = fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) });
-  const path = hubPath(locale, code, discipline);
+  const rawPage = String(paginateRaces(events, (await searchParams).page).page);
+  const path = raceListPagePath(hubPath(locale, code, discipline), rawPage);
   const url = absoluteUrl(`/${locale}/${path}`);
   const ogTitle = `${heading} · ${SITE_NAME}`;
 
@@ -72,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: brandedTitle(heading),
     description,
     // Per language, not this language's path: `/en/zavody/cz/road` is not a page.
-    alternates: { canonical: url, languages: localeAlternates((l) => hubPath(l, code, discipline)) },
+    alternates: { canonical: url, languages: localeAlternates((l) => raceListPagePath(hubPath(l, code, discipline), rawPage)) },
     ...socialCard({
       title: heading,
       ogTitle,
@@ -88,23 +84,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function DisciplineHubPage({ params }: Props) {
+export default async function DisciplineHubPage({ params, searchParams }: Props) {
   const { locale: rawLocale, code: rawCode, discipline: rawDiscipline } = await params;
   if (!locales.includes(rawLocale as Locale)) notFound();
   // Checked before the skeleton streams, so an unknown address is a real 404.
   if (!isListedCountry(rawCode.toUpperCase()) || !isHubDiscipline(rawDiscipline.toLowerCase())) notFound();
   return (
     <Suspense fallback={<HubSkeleton />}>
-      <DisciplineHub rawLocale={rawLocale} rawCode={rawCode} rawDiscipline={rawDiscipline} />
+      <DisciplineHub rawLocale={rawLocale} rawCode={rawCode} rawDiscipline={rawDiscipline} rawPage={(await searchParams).page} />
     </Suspense>
   );
 }
 
-async function DisciplineHub({ rawLocale, rawCode, rawDiscipline }: { rawLocale: string; rawCode: string; rawDiscipline: string }) {
+async function DisciplineHub({ rawLocale, rawCode, rawDiscipline, rawPage }: { rawLocale: string; rawCode: string; rawDiscipline: string; rawPage?: string | string[] }) {
   const data = await load(rawLocale, rawCode, rawDiscipline);
   if (!data) return null;
 
   const { locale, code, discipline, events } = data;
+  const paginated = paginateRaces(events, rawPage);
   const t = messages[locale];
   const rc = raceCopy[locale];
   const name = countryDisplayName(code, locale);
@@ -114,7 +111,7 @@ async function DisciplineHub({ rawLocale, rawCode, rawDiscipline }: { rawLocale:
   const countryHeading = fillCopy(hubCopy[locale].countryTitle, { in: where });
   const weekend = thisWeekendRange();
   const series = seriesIn(events);
-  const outside = events.filter((e) => !e.series);
+  const outside = paginated.events.filter((e) => !e.series);
   const nextOf = (slug: string) => events.find((e) => e.series?.slug === slug)?.startDate;
 
   return (
@@ -123,9 +120,9 @@ async function DisciplineHub({ rawLocale, rawCode, rawDiscipline }: { rawLocale:
         locale={locale}
         title={heading}
         description={fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) })}
-        path={hubPath(locale, code, discipline)}
+        path={raceListPagePath(hubPath(locale, code, discipline), String(paginated.page))}
         breadcrumb={[{ name: countryHeading, path: hubPath(locale, code) }]}
-        events={events.map((e) => ({
+        events={paginated.events.map((e) => ({
           name: e.name,
           slug: e.slug,
           startDate: e.startDate,
@@ -172,7 +169,8 @@ async function DisciplineHub({ rawLocale, rawCode, rawDiscipline }: { rawLocale:
         {events.length ? (
           <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
-            <RaceLinkList events={events} locale={locale} headingLevel="h3" />
+            <RaceLinkList events={paginated.events} locale={locale} headingLevel="h3" />
+            <RaceListPagination page={paginated.page} pages={paginated.pages} path={`/${locale}/${hubPath(locale, code, discipline)}`} locale={locale} />
           </section>
         ) : null}
 

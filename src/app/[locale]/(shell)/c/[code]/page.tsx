@@ -1,8 +1,10 @@
+import { paginateRaces, raceListPagePath } from "@/lib/race-list-pagination";
+import { RaceListPagination } from "@/components/seo/race-list-pagination";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { listEvents } from "@/lib/events";
+import { listHubEvents } from "@/lib/race-hub-data";
 import { thisWeekendRange } from "@/lib/date-presets";
 import {
   countryDisplayName,
@@ -29,27 +31,19 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 
-type Props = { params: Promise<{ locale: string; code: string }> };
+type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Promise<{ locale: string; code: string }> };
 
-/**
- * Cached and rebuilt at most hourly (ISR). The catalogue refreshes once a day,
- * so an hour is fresh; no page is built ahead — each on its first visit
- * (building all forty countries in five languages at deploy time would hold
- * every build on the database).
- */
-export const revalidate = 3600;
+/** Page query selects the rows; catalogue data is cached for an hour. */
+export const dynamic = "force-dynamic";
 
-export function generateStaticParams() {
-  return [];
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale: raw, code: rawCode } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const code = rawCode.toUpperCase();
   // notFound() here, not just in the page: crawlers get the head before
   // `loading.tsx` streams, so this is where a real 404 status is still possible.
   if (!isListedCountry(code)) notFound();
+  const rawPage = (await searchParams).page;
   const where = inCountry(code, countryDisplayName(code, locale), locale);
   const copy = hubCopy[locale];
   // The visible title carries the query someone actually types — the country
@@ -57,13 +51,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const heading = `${fillCopy(copy.countryTitle, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const title = `${heading} · ${SITE_NAME}`;
   const description = fillCopy(copy.country, { in: where });
-  const url = absoluteUrl(`/${locale}/${hubPath(locale, code)}`);
+  const url = absoluteUrl(raceListPagePath(`/${locale}/${hubPath(locale, code)}`, rawPage));
   return {
     title: brandedTitle(heading),
     description,
     alternates: {
       canonical: url,
-      languages: localeAlternates((l) => hubPath(l, code)),
+      languages: localeAlternates((l) => raceListPagePath(hubPath(l, code), rawPage)),
     },
     ...socialCard({
       title: heading,
@@ -77,7 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CountryHubPage({ params }: Props) {
+export default async function CountryHubPage({ params, searchParams }: Props) {
   const { locale: raw, code: rawCode } = await params;
   if (!locales.includes(raw as Locale)) notFound();
   const code = rawCode.toUpperCase();
@@ -85,12 +79,12 @@ export default async function CountryHubPage({ params }: Props) {
   // Checked before the skeleton streams, so an unknown country is a real 404.
   return (
     <Suspense fallback={<HubSkeleton />}>
-      <CountryHub locale={raw as Locale} code={code} />
+      <CountryHub locale={raw as Locale} code={code} rawPage={(await searchParams).page} />
     </Suspense>
   );
 }
 
-async function CountryHub({ locale, code }: { locale: Locale; code: string }) {
+async function CountryHub({ locale, code, rawPage }: { locale: Locale; code: string; rawPage?: string | string[] }) {
   const t = messages[locale];
   const name = countryDisplayName(code, locale);
   const weekend = thisWeekendRange();
@@ -98,10 +92,11 @@ async function CountryHub({ locale, code }: { locale: Locale; code: string }) {
   // The whole coming year, every race a link: the hub is how a crawler — and
   // a reader planning a season — reaches the races beyond next month.
   const [events, tally] = await Promise.all([
-    listEvents({ countryCodes: [code], dateFrom: today, dateTo: addDaysIso(today, 365) }),
+    listHubEvents({ countryCodes: [code], dateFrom: today, dateTo: addDaysIso(today, 365) }),
     listCountryTallies([code]).then((r) => r[0] ?? null).catch(() => null),
   ]);
 
+  const paginated = paginateRaces(events, rawPage);
   const copy = hubCopy[locale];
   const rc = raceCopy[locale];
   const where = inCountry(code, name, locale);
@@ -116,8 +111,8 @@ async function CountryHub({ locale, code }: { locale: Locale; code: string }) {
         locale={locale}
         title={heading}
         description={fillCopy(copy.country, { in: where })}
-        path={hubPath(locale, code)}
-        events={events.map((e) => ({
+        path={raceListPagePath(hubPath(locale, code), String(paginated.page))}
+        events={paginated.events.map((e) => ({
           name: e.name,
           slug: e.slug,
           startDate: e.startDate,
@@ -168,7 +163,8 @@ async function CountryHub({ locale, code }: { locale: Locale; code: string }) {
         {events.length ? (
           <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
-            <RaceLinkList events={events} locale={locale} headingLevel="h3" />
+            <RaceLinkList events={paginated.events} locale={locale} headingLevel="h3" />
+            <RaceListPagination page={paginated.page} pages={paginated.pages} path={`/${locale}/${hubPath(locale, code)}`} locale={locale} />
           </section>
         ) : null}
       </div>

@@ -112,6 +112,7 @@ export const de = {
   calendarAdd: "Kalender",
   signIn: "Anmelden",
   introTitle: "Alle Radrennen auf einer Karte",
+  introImageAlt: "Mountainbike-Rennfahrer auf einer Waldstrecke",
   introBody:
     "Straße, Gravel, MTB, Cyclocross und Kinderrennen in ganz Mitteleuropa. Melde dich an und plane die Saison für dich, deine Familie oder dein Team — wer fährt, wer gemeldet ist, wer bezahlt hat.",
   introCta: "Anmelden",

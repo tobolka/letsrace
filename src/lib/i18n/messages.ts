@@ -114,6 +114,7 @@ export const messages = {
     calendarAdd: "Calendar",
     signIn: "Sign in",
     introTitle: "Every cycling race, on one map",
+    introImageAlt: "Mountain biker racing on a forest trail",
     introBody:
       "Road, gravel, MTB, cyclocross and kids' races across Central Europe. Sign in to plan the season for yourself, your family or your team — who's going, who has entered, who has paid.",
     introCta: "Sign in",
@@ -566,6 +567,7 @@ export const messages = {
     calendarAdd: "Kalendář",
     signIn: "Přihlásit se",
     introTitle: "Všechny cyklistické závody na jedné mapě",
+    introImageAlt: "Závodník na horském kole na lesní trati",
     introBody:
       "Silnice, gravel, MTB, cyklokros i dětské závody napříč střední Evropou. Přihlas se a naplánuj sezónu sobě, rodině nebo týmu — kdo jede, kdo je přihlášený a kdo zaplatil.",
     introCta: "Přihlásit se",
@@ -1018,6 +1020,7 @@ export const messages = {
     calendarAdd: "Kalendarz",
     signIn: "Zaloguj się",
     introTitle: "Wszystkie wyścigi kolarskie na jednej mapie",
+    introImageAlt: "Zawodnik na rowerze górskim na leśnej trasie",
     introBody:
       "Szosa, gravel, MTB, przełaje i wyścigi dla dzieci w Europie Środkowej. Zaloguj się i zaplanuj sezon dla siebie, rodziny lub drużyny — kto jedzie, kto zapisany, kto zapłacił.",
     introCta: "Zaloguj się",
@@ -1470,6 +1473,7 @@ export const messages = {
     calendarAdd: "Kalendár",
     signIn: "Prihlásiť sa",
     introTitle: "Všetky cyklistické preteky na jednej mape",
+    introImageAlt: "Pretekár na horskom bicykli na lesnej trati",
     introBody:
       "Cesta, gravel, MTB, cyklokros aj detské preteky naprieč strednou Európou. Prihlás sa a naplánuj sezónu sebe, rodine alebo tímu — kto ide, kto je prihlásený a kto zaplatil.",
     introCta: "Prihlásiť sa",

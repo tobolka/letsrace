@@ -1,3 +1,5 @@
+import { paginateRaces, raceListPagePath } from "@/lib/race-list-pagination";
+import { RaceListPagination } from "@/components/seo/race-list-pagination";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -16,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 
 export const dynamic = "force-dynamic";
-type Props = { params: Promise<{ locale: string; slug: string; country?: string[] }> };
+type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Promise<{ locale: string; slug: string; country?: string[] }> };
 
 function resolve({ locale: raw, slug, country }: Awaited<Props["params"]>) {
   if (!locales.includes(raw as Locale) || !isCollectionSlug(slug) || (country?.length ?? 0) > 1) return null;
@@ -28,25 +30,27 @@ function resolve({ locale: raw, slug, country }: Awaited<Props["params"]>) {
   return { locale, slug, countryCode, path: collectionPath(locale, slug, countryCode), title: fillCopy(text.title, { in: where }), description: fillCopy(text.description, { in: where }) };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const data = resolve(await params);
   if (!data) return { title: raceCopy[defaultLocale].browse, robots: { index: false, follow: false } };
   const { locale, slug, countryCode, path, title, description } = data;
   const { events } = await getRaceCollection(slug, countryCode);
+  const rawPage = String(paginateRaces(events, (await searchParams).page).page);
   return {
     title: brandedTitle(title),
     description,
-    alternates: { canonical: absoluteUrl(`/${locale}/${path}`), languages: localeAlternates((l) => collectionPath(l, slug, countryCode)) },
+    alternates: { canonical: absoluteUrl(raceListPagePath(`/${locale}/${path}`, rawPage)), languages: localeAlternates((l) => raceListPagePath(collectionPath(l, slug, countryCode), rawPage)) },
     robots: { index: events.length >= MIN_COLLECTION_RACES, follow: true },
-    ...socialCard({ title, description, url: absoluteUrl(`/${locale}/${path}`), localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
+    ...socialCard({ title, description, url: absoluteUrl(raceListPagePath(`/${locale}/${path}`, rawPage)), localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
   };
 }
 
-export default async function CollectionPage({ params }: Props) {
+export default async function CollectionPage({ params, searchParams }: Props) {
   const data = resolve(await params);
   if (!data) notFound();
   const { locale, slug, countryCode, path, title, description } = data;
   const [{ events, window }, summaries] = await Promise.all([getRaceCollection(slug, countryCode), listCollectionSummaries()]);
+  const paginated = paginateRaces(events, (await searchParams).page);
   const copy = collectionCopy[locale];
   const rc = raceCopy[locale];
   const countries = summaries.filter((s) => s.slug === slug && s.countryCode && s.count > 0).map((s) => s.countryCode!);
@@ -58,7 +62,7 @@ export default async function CollectionPage({ params }: Props) {
 
   return (
     <main className="min-h-full bg-background">
-      <HubJsonLd locale={locale} title={title} description={description} path={path} breadcrumb={[{ name: rc.browse, path: hubPath(locale) }, ...(countryCode ? [{ name: copy.collections[slug].label, path: collectionPath(locale, slug) }] : [])]} events={events.map((e) => ({ name: e.name, slug: e.slug, startDate: e.startDate, place: e.location?.municipality ?? e.location?.name }))} />
+      <HubJsonLd locale={locale} title={title} description={description} path={raceListPagePath(path, String(paginated.page))} breadcrumb={[{ name: rc.browse, path: hubPath(locale) }, ...(countryCode ? [{ name: copy.collections[slug].label, path: collectionPath(locale, slug) }] : [])]} events={paginated.events.map((e) => ({ name: e.name, slug: e.slug, startDate: e.startDate, place: e.location?.municipality ?? e.location?.name }))} />
       <BrowseHeader locale={locale} crumbs={crumbs} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro title={title} description={description} />
@@ -73,7 +77,8 @@ export default async function CollectionPage({ params }: Props) {
         {events.length ? (
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
-            <RaceLinkList events={events} locale={locale} groupByMonth={slug !== "weekend" && slug !== "kids-weekend"} headingLevel="h3" />
+            <RaceLinkList events={paginated.events} locale={locale} groupByMonth={slug !== "weekend" && slug !== "kids-weekend"} headingLevel="h3" />
+            <RaceListPagination page={paginated.page} pages={paginated.pages} path={`/${locale}/${path}`} locale={locale} />
           </section>
         ) : (
           <Empty className="mt-8 border">
