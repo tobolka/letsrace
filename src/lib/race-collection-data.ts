@@ -15,7 +15,7 @@ const loadSummaries = unstable_cache(async (window: CollectionWindow): Promise<C
       ...PUBLIC_COUNTRY_CODES.map((countryCode) => ({ slug, countryCode, count: matches.filter((event) => event.location?.countryCode === countryCode).length })),
     ];
   });
-}, ["race-collection-summaries-v2"], { revalidate: 600 });
+}, ["race-collection-summaries-v2"], { revalidate: 3600 });
 
 /** Cache the small counts, rather than megabytes of full race records. */
 export const listCollectionSummaries = cache(() => loadSummaries(collectionWindow()));

@@ -15,7 +15,6 @@ export const revalidate = 3600;
 type Freq = NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
   const entries: MetadataRoute.Sitemap = [];
 
   /**
@@ -41,11 +40,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   };
 
   // The bare domain is not listed: it redirects to a language.
-  add("", now, "hourly", 1);
+  // Generation time is not modification time. A moving timestamp rewrites
+  // this large sitemap even when the catalogue and its URLs are unchanged.
+  add("", undefined, "daily", 1);
 
-  add((l) => hubPath(l), now, "daily", 0.9);
+  add((l) => hubPath(l), undefined, "daily", 0.9);
   add("about", new Date("2026-10-10"), "monthly", 0.5);
-  for (const code of PUBLIC_COUNTRY_CODES) add((l) => hubPath(l, code), now, "daily", 0.8);
+  for (const code of PUBLIC_COUNTRY_CODES) add((l) => hubPath(l, code), undefined, "daily", 0.8);
 
   try {
     for (const collection of await listCollectionSummaries()) {
@@ -62,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Only combinations that clear the race threshold — a thin hub in the
     // sitemap asks Google to index a page competing with its own parent.
     for (const hub of await listQualifyingHubs([...PUBLIC_COUNTRY_CODES])) {
-      add((l) => hubPath(l, hub.countryCode, hub.discipline), now, "daily", 0.75);
+      add((l) => hubPath(l, hub.countryCode, hub.discipline), undefined, "daily", 0.75);
     }
   } catch {
     // Hub outage must not take the rest of the sitemap down.
@@ -70,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     for (const s of await listSitemapSeries()) {
-      add(`series/${s.slug}`, s.updatedAt ? new Date(s.updatedAt) : now, "weekly", 0.7);
+      add(`series/${s.slug}`, s.updatedAt ? new Date(s.updatedAt) : undefined, "weekly", 0.7);
     }
   } catch {
     // A series outage must not take the event URLs down with it.
