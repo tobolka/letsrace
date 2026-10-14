@@ -1,27 +1,27 @@
 ---
 name: auth
-description: Authenticate with Let's Race via Supabase OAuth for protected actions like race submissions.
+description: Use the Let's Race public read API without credentials or agent registration.
 ---
 
-# Auth
+# Public Agent Access
 
-Let's Race uses Supabase Auth (OpenID Connect) for signed-in users.
+No API key, access token, OAuth flow, or agent registration is required for public reads.
 
 ## Discovery
 
-- OpenID configuration: `/.well-known/openid-configuration`
-- Protected resource metadata: `/.well-known/oauth-protected-resource`
-- Human guide: `/auth.md`
+- Access policy: `/auth.md`
+- API documentation: `/docs/api`
+- OpenAPI schema: `/openapi.json`
 
-## Registration
+## Public endpoints
 
-Agents and users sign in at `/en/auth` (or `/cs/auth`, `/pl/auth`, `/sk/auth`) via OAuth (Google).
+- `GET /api/events` — search cycling events.
+- `GET /api/series` — list race series.
+- `GET /api/places?q=` — geocode a place (at least three characters).
 
-## Protected endpoints
+Send `Accept: application/json`. No `Authorization` header is needed.
 
-- `POST /api/submissions` — submit a race URL (requires session)
-- `POST /api/account/bootstrap` — account setup (requires session)
+## Scope
 
-## Anonymous access
-
-Public read endpoints (`/api/events`, `/api/series`, `/api/places`) require no authentication.
+Use these read endpoints directly. Account, admin, and write operations are outside this public agent interface.
+Human browser sign-in is separate; no agent credentials are issued.

@@ -1,38 +1,33 @@
 import { NextResponse } from "next/server";
-import { agentSiteUrl, supabaseAuthBase } from "@/lib/agent-discovery";
+import { agentSiteUrl } from "@/lib/agent-discovery";
 
 export function GET() {
   const base = agentSiteUrl();
-  const auth = supabaseAuthBase();
-  const body = `# auth.md — Let's Race agent authentication
+  const body = `# auth.md — Let's Race public agent access
 
-Agents can read public race data without credentials. Sign in is required to submit races or manage a personal plan.
+## Access policy
 
-## Protected resource
+Agents can read public race data without registration, an API key, or an access token.
+No OAuth authorization server or agent credential issuance is provided for this API.
 
-- Resource: \`${base}/api\`
-- Metadata: [/.well-known/oauth-protected-resource](${base}/.well-known/oauth-protected-resource)
+## Public endpoints
 
-## Authorization server
+- [GET /api/events](${base}/api/events) — search cycling events by date, location, and discipline.
+- [GET /api/series](${base}/api/series) — list race series.
+- GET /api/places?q= — geocode a place name (at least three characters).
 
-${auth ? `- Issuer: \`${auth}\`\n- Discovery: [/.well-known/openid-configuration](${base}/.well-known/openid-configuration)` : "- Configure \`NEXT_PUBLIC_SUPABASE_URL\` for live OAuth metadata."}
+Send \`Accept: application/json\`. No \`Authorization\` header is required.
+See [the API documentation](${base}/docs/api) and [OpenAPI schema](${base}/openapi.json) for parameters.
 
-## Registration
+## Agent registration
 
-Human and agent clients start OAuth at [${base}/en/auth](${base}/en/auth).
+Registration, identity assertions, claim ceremonies, and credential revocation do not apply to public reads.
+Use the endpoints directly; do not attempt to register an agent or request OAuth tokens.
 
-Supported identity types:
+## Personal accounts
 
-- **anonymous** — browse and query public APIs
-- **verified_email** — OAuth sign-in via Supabase (Google)
-
-## Scopes
-
-\`openid\`, \`email\`, \`profile\`
-
-## Bearer usage
-
-Send \`Authorization: Bearer <access_token>\` to protected endpoints such as \`POST /api/submissions\`.
+Human users can sign in through the website to manage a personal plan.
+That browser session is separate from public agent access. Account, admin, and other write operations are outside the public read API documented here.
 
 ## Agent skills
 

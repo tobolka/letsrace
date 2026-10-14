@@ -1,20 +1,13 @@
 import { NextResponse } from "next/server";
-import { agentSiteUrl, supabaseAuthBase } from "@/lib/agent-discovery";
 
+// Public agent reads have no OAuth resource or authorization server.
+// Keep an explicit response so old discovery URLs cannot advertise stale metadata.
 export function GET() {
-  const base = agentSiteUrl();
-  const auth = supabaseAuthBase();
-
-  const metadata = {
-    resource: `${base}/api`,
-    authorization_servers: auth ? [auth] : [base],
-    scopes_supported: ["openid", "email", "profile"],
-    bearer_methods_supported: ["header"],
-  };
-
-  return NextResponse.json(metadata, {
-    headers: {
-      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+  return NextResponse.json(
+    {
+      error: "oauth_not_supported",
+      error_description: "Public agent reads require no registration or access token. See /auth.md.",
     },
-  });
+    { status: 404, headers: { "Cache-Control": "no-store" } },
+  );
 }

@@ -5,7 +5,7 @@ import { agentSiteUrl, sha256Digest } from "@/lib/agent-discovery";
 
 const SKILLS = [
   { name: "search-events", description: "Query the Let's Race public API to find cycling events." },
-  { name: "auth", description: "Authenticate with Let's Race via Supabase OAuth." },
+  { name: "auth", description: "Use the public read API without credentials or agent registration." },
 ] as const;
 
 function skillUrl(name: string): string {

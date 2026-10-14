@@ -1,5 +1,1 @@
-import { GET as getOpenIdConfiguration } from "../openid-configuration/route";
-
-export function GET() {
-  return getOpenIdConfiguration();
-}
+export { GET } from "../oauth-protected-resource/route";

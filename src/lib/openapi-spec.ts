@@ -55,45 +55,7 @@ export function buildOpenApiSpec() {
           },
         },
       },
-      "/api/submissions": {
-        post: {
-          summary: "Submit a race URL for catalog review",
-          security: [{ oauth2: ["openid"] }],
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  required: ["url"],
-                  properties: {
-                    url: { type: "string", format: "uri" },
-                    note: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            "200": { description: "Submission accepted" },
-            "401": { description: "Sign-in required" },
-          },
-        },
-      },
     },
-    components: {
-      securitySchemes: {
-        oauth2: {
-          type: "oauth2",
-          flows: {
-            authorizationCode: {
-              authorizationUrl: `${base}/en/auth`,
-              tokenUrl: `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "")}/auth/v1/token`,
-              scopes: { openid: "OpenID Connect", email: "Email address", profile: "Profile" },
-            },
-          },
-        },
-      },
-    },
+    security: [],
   };
 }

@@ -12,6 +12,7 @@ export default function ApiDocsPage() {
         Public read endpoints for cycling race discovery. OpenAPI spec at{" "}
         <Link href="/openapi.json">/openapi.json</Link>.
       </p>
+      <p>No API key, access token, or agent registration is required for these endpoints.</p>
 
       <h2>Endpoints</h2>
       <ul>
@@ -24,9 +25,6 @@ export default function ApiDocsPage() {
         </li>
         <li>
           <code>GET /api/places?q=</code> — geocode a place (min 3 chars)
-        </li>
-        <li>
-          <code>POST /api/submissions</code> — submit a race URL (OAuth session required)
         </li>
       </ul>
 
