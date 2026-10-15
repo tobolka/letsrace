@@ -9,6 +9,7 @@ import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_ICONS } from "@/lib/
 import { messagesFor } from "@/lib/i18n/messages";
 import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Marker } from "./leaflet-runtime";
 import { attachSmoothWheelZoom, type WheelMap } from "./smooth-wheel-zoom";
+import { clusterAction } from "./cluster-action";
 import "./light-race-map.css";
 
 type City = [name: string, lat: number, lng: number, population: number, capital: boolean];
@@ -85,6 +86,7 @@ export function LightRaceMap(props: RaceMapProps) {
   const reason = useRef<BoundsChangeReason>("sync");
   const handled = useRef({ fit: 0, destination: 0, locate: 0, initialFocus: false });
   const userMoved = useRef(false);
+  const selectionPan = useRef<{ id?: string | null; epoch: number; done: boolean }>({ epoch: 0, done: false });
   const [epoch, setEpoch] = useState(0);
   const [error, setError] = useState("");
   const [locating, setLocating] = useState(false);
@@ -151,8 +153,14 @@ export function LightRaceMap(props: RaceMapProps) {
             });
           } else {
             addMarker(L, markers, chosen, point, events.length, latest.current, () => {
-              if (events.length > 1) { expanded = bucket; draw(); }
-              else latest.current.onSelect(chosen.id);
+              if (events.length > 1) {
+                const action = clusterAction(events.map((e) => ({ lat: Number(e.location!.lat), lng: Number(e.location!.lng) })), map.getZoom());
+                if (action.type === "expand") { expanded = bucket; draw(); }
+                else {
+                  userMoved.current = true; reason.current = "user";
+                  fitBox(map, action.bounds, latest.current, true, action.maxZoom);
+                }
+              } else latest.current.onSelect(chosen.id);
             });
           }
         }
@@ -244,7 +252,12 @@ export function LightRaceMap(props: RaceMapProps) {
   useEffect(() => { redraw.current(); }, [props.events, props.selectedId]);
   useEffect(() => {
     const map = mapRef.current, e = props.events.find((e) => e.id === props.selectedId);
-    if (!map || e?.location?.lat == null || e.location.lng == null) return;
+    if (selectionPan.current.id !== props.selectedId || selectionPan.current.epoch !== epoch) {
+      selectionPan.current = { id: props.selectedId, epoch, done: false };
+    }
+    // Fetching a new viewport must not pull the camera back to an old selection.
+    if (!map || selectionPan.current.done || e?.location?.lat == null || e.location.lng == null) return;
+    selectionPan.current.done = true;
     map.panInside([Number(e.location.lat), Number(e.location.lng)], fitOptions(latest.current));
   }, [props.selectedId, props.events, epoch]);
   useEffect(() => { reportRef.current(); }, [props.padding]);
