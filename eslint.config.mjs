@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "**/*.cjs",
     "public/maplibre/**",
+    // Unmodified, vendored Leaflet 1.9.4 distribution (BSD-2-Clause).
+    "public/maps/light-v1/leaflet.js",
     ".claude/worktrees/**",
     "scripts/.tmp/**",
   ]),
