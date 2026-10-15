@@ -85,15 +85,6 @@ const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
  * and zooming between levels is briefly soft.
  */
 
-/** Whether this browser can draw the map at all (MapLibre 5+ needs WebGL 2). */
-function hasWebGL2(): boolean {
-  try {
-    return Boolean(document.createElement("canvas").getContext("webgl2"));
-  } catch {
-    return false;
-  }
-}
-
 function hideMarineNames(map: MapLibreMap) {
   for (const id of ["watername_ocean", "watername_sea"]) {
     if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
@@ -938,7 +929,9 @@ export function RaceMap({
     // No WebGL 2, no map: MapLibre would log the failure, hand back a map with
     // no painter, and the first resize would throw — taking the whole page,
     // list and all, down with it. Say so instead and leave the list working.
-    if (!hasWebGL2()) {
+    // Checking by creating a throwaway WebGL context initializes the GPU twice.
+    // Let the real map constructor verify driver support and handle failure below.
+    if (typeof WebGL2RenderingContext === "undefined") {
       setNoWebgl(true);
       return () => {
         cancelled = true;
@@ -1136,6 +1129,7 @@ export function RaceMap({
     };
     }).catch((err) => {
       console.error(err);
+      if (!cancelled) setNoWebgl(true);
     });
 
     return () => {
