@@ -8,6 +8,7 @@ import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_ICONS } from "@/lib/map-visuals";
 import { messagesFor } from "@/lib/i18n/messages";
 import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Marker } from "./leaflet-runtime";
+import { attachSmoothWheelZoom, type WheelMap } from "./smooth-wheel-zoom";
 import "./light-race-map.css";
 
 type City = [name: string, lat: number, lng: number, population: number, capital: boolean];
@@ -96,7 +97,7 @@ export function LightRaceMap(props: RaceMapProps) {
     void loadLeaflet().then((L) => {
       if (disposed || !container.current) return;
       const map = L.map(container.current, {
-        zoomControl: false, attributionControl: true, zoomSnap: 0.25, zoomDelta: 0.5,
+        zoomControl: false, attributionControl: true, zoomSnap: 0, zoomDelta: 0.5, scrollWheelZoom: false,
         minZoom: 4, maxZoom: 18, maxBounds: EUROPE_CAMERA_BOUNDS.map(([lng, lat]) => [lat, lng]),
       });
       mapRef.current = map;
@@ -193,6 +194,7 @@ export function LightRaceMap(props: RaceMapProps) {
       map.on("moveend", settled).on("click", () => { expanded = ""; draw(); latest.current.onBackgroundClick?.(); }).on("dragstart", gesture);
       const el = container.current;
       el.addEventListener("wheel", gesture, { passive: true });
+      const detachWheel = attachSmoothWheelZoom(map as WheelMap, el);
       el.addEventListener("keydown", gesture);
       const applyLocation = (pos: GeolocationPosition, explicit: boolean) => {
         if (disposed) return;
@@ -231,7 +233,7 @@ export function LightRaceMap(props: RaceMapProps) {
       const observer = new ResizeObserver(() => { map.invalidateSize({ pan: false }); report(); });
       observer.observe(el);
       cleanup = () => {
-        observer.disconnect(); el.removeEventListener("wheel", gesture); el.removeEventListener("keydown", gesture);
+        detachWheel(); observer.disconnect(); el.removeEventListener("wheel", gesture); el.removeEventListener("keydown", gesture);
         if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
         map.remove(); mapRef.current = null; redraw.current = () => {}; reportRef.current = () => {}; locateRef.current = () => {};
       };
