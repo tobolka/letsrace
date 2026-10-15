@@ -28,3 +28,7 @@
   .light-race-map .fast-map-controls { bottom: max(38px, calc(var(--map-sheet-inset, 220px) + 12px)); }
   .light-race-map .leaflet-control-attribution { max-width: 240px; font-size: 9px; }
 }
+
+.fast-marker-highlighted .fast-pin-disc { width: 36px; height: 36px; outline: 4px solid color-mix(in srgb, var(--pin-color), transparent 65%); box-shadow: 0 2px 7px #0003; }
+.fast-map .leaflet-control-scale-line { font: 10px/1.2 Arial, sans-serif; color: #57534e; border-color: #78716c; background: #ffffffd9; }
+@media (max-width: 767px) { .light-race-map .leaflet-bottom.leaflet-left { bottom: calc(var(--map-sheet-inset, 220px) + 12px); } }

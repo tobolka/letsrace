@@ -36,12 +36,14 @@ export const EventCard = memo(function EventCard({
   distanceKm: km,
   active,
   onSelect,
+  onHover,
 }: {
   event: EventListItem;
   locale: string;
   distanceKm?: number | null;
   active: boolean;
   onSelect: (id: string) => void;
+  onHover?: (id: string | null) => void;
 }) {
   return (
     <Item
@@ -64,6 +66,10 @@ export const EventCard = memo(function EventCard({
         data-event-id={event.id}
         aria-pressed={active}
         onClick={() => onSelect(event.id)}
+        onMouseEnter={() => onHover?.(event.id)}
+        onMouseLeave={() => onHover?.(null)}
+        onFocus={() => onHover?.(event.id)}
+        onBlur={() => onHover?.(null)}
         className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
         <EventRowBody event={event} locale={locale} distanceKm={km} />

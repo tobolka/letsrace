@@ -3,7 +3,7 @@
 import { Suspense, type CSSProperties, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useQueryStates } from "nuqs";
+import { parseAsInteger, useQueryState, useQueryStates } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import {
   INT_COUNTRY,
@@ -46,7 +46,10 @@ import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
-import { exploreSearchParams } from "@/lib/explore-params";
+import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
+import { DistanceFilter } from "@/components/shell/distance-filter";
+import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
+import { eventsWithinRadius } from "@/lib/geo/radius";
 import { loadSeriesList } from "@/lib/series-list";
 import {
   readExploreFilterPrefs,
@@ -157,6 +160,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [radius, setRadiusParam] = useQueryState(RADIUS_PARAM, parseAsInteger);
+  const place = useUserOrigin();
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -186,6 +192,36 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [destination, setDestination] = useState<MapBounds | null>(null);
   const [destinationSeq, setDestinationSeq] = useState(0);
   const [userOrigin, setUserOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const distanceOrigin = userOrigin ?? place.origin;
+  const radiusArea = useMemo(() => radius != null && radius > 0 && distanceOrigin
+    ? { lat: distanceOrigin.lat, lng: distanceOrigin.lng, km: radius } : null,
+    [radius, distanceOrigin]);
+  const radiusEvents = useMemo(() => eventsWithinRadius(events, radiusArea), [events, radiusArea]);
+  const { status: originStatus, locate: locateOrigin } = place;
+  useEffect(() => {
+    if (radius != null && !distanceOrigin && originStatus === "idle") locateOrigin();
+  }, [radius, distanceOrigin, originStatus, locateOrigin]);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has(RADIUS_PARAM)) return;
+    try {
+      const saved = Number(localStorage.getItem("letsrace.explore.radius.v1"));
+      if (saved > 0) void setRadiusParam(saved);
+    } catch { /* storage unavailable */ }
+    // Restore once, matching the list and calendar's distance preference.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  function setRadius(km: number | null) {
+    try {
+      if (km == null) localStorage.removeItem("letsrace.explore.radius.v1");
+      else localStorage.setItem("letsrace.explore.radius.v1", String(km));
+    } catch { /* storage unavailable */ }
+    void setRadiusParam(km);
+    if (km != null) {
+      selectEvent(null);
+      if (!distanceOrigin) locateOrigin();
+    }
+  }
+
   const lastPlacedQ = useRef("");
   const destFlyingRef = useRef(false);
   const placeAbortRef = useRef<AbortController | null>(null);
@@ -285,7 +321,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     [events, selectedId],
   );
 
-  const distanceEnabled = userOrigin != null;
+  const distanceEnabled = distanceOrigin != null;
   // Date is the default and distance is opt-in. Sorting by distance the moment
   // a location arrived reshuffled the list under whoever was reading it, and it
   // only ever made sense to someone who asked for it.
@@ -306,9 +342,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    */
   const visibleEvents = useMemo(() => {
     const box = cameraBounds;
-    if (!box || filters.series || filters.country) return events;
-    if (filters.q.trim() && !lastPlacedQ.current) return events;
-    return events.filter((e) => {
+    if (radiusArea || !box || filters.series || filters.country) return radiusEvents;
+    if (filters.q.trim() && !lastPlacedQ.current) return radiusEvents;
+    return radiusEvents.filter((e) => {
       // The race you opened stays in the list even when the map has carried it
       // off the edge — losing the row you are reading is worse than a row you
       // cannot see.
@@ -319,11 +355,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return true;
       return lat >= box.south && lat <= box.north && lng >= box.west && lng <= box.east;
     });
-  }, [events, cameraBounds, selectedId, filters.series, filters.country, filters.q]);
+  }, [radiusEvents, radiusArea, cameraBounds, selectedId, filters.series, filters.country, filters.q]);
 
   const sortedEvents = useMemo(
-    () => sortEvents(visibleEvents, listSort, userOrigin),
-    [visibleEvents, listSort, userOrigin],
+    () => sortEvents(visibleEvents, listSort, distanceOrigin),
+    [visibleEvents, listSort, distanceOrigin],
   );
 
   useEffect(() => {
@@ -343,6 +379,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }, [listSettled]);
 
   function handleUserLocation(pos: { lat: number; lng: number }) {
+    place.acceptOrigin(pos);
     setUserOrigin((prev) => {
       if (!prev) return pos;
       if (distanceKm(prev, pos) < 0.3) return prev;
@@ -441,6 +478,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   function resetExploreFilters(opts?: { clearSearch?: boolean }) {
+    setRadius(null);
     const w = thisWeekendRange();
     const clearSearch = opts?.clearSearch ?? false;
     setFilterBarReset((n) => n + 1);
@@ -538,7 +576,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
        * ground; the ring came up empty.
        */
       const explicit = overrides.bounds as typeof bounds | undefined;
-      const b = skipBounds ? null : (explicit ?? (bounds ? expandViewport(bounds) : null));
+      const near = overrides.clearRadius ? null : radiusArea;
+      const b = near ? boxAround(near, near.km) : skipBounds ? null : (explicit ?? (bounds ? expandViewport(bounds) : null));
       if (b) lastAreaRef.current = b;
       if (q) params.set("q", q);
       if (series) params.set("series", series);
@@ -585,6 +624,25 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       }
     })();
   }
+
+  const lastRadiusQuery = useRef("");
+  useEffect(() => {
+    if (!radiusArea) {
+      if (lastRadiusQuery.current) {
+        lastRadiusQuery.current = "";
+        void refetch({ clearRadius: true });
+      }
+      return;
+    }
+    const key = `${radiusArea.lat}:${radiusArea.lng}:${radiusArea.km}`;
+    if (key === lastRadiusQuery.current) return;
+    lastRadiusQuery.current = key;
+    const area = boxAround(radiusArea, radiusArea.km);
+    void refetch({ bounds: area, forceBounds: true });
+    setDestination(area); setDestinationSeq((n) => n + 1);
+    // Radius/center define this query; camera movement does not change it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [radiusArea]);
 
   useEffect(() => {
     if (prefsReady) return;
@@ -860,6 +918,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         q={filters.q}
         onQ={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
+        extra={<DistanceFilter compact locale={locale} radius={radius} status={distanceOrigin ? "ready" : place.status} onRadius={setRadius} />}
       />
     );
   }
@@ -883,6 +942,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     (filters.levels.length ? 1 : 0) +
     (filters.country ? 1 : 0) +
     (filters.series ? 1 : 0) +
+    (radius != null ? 1 : 0) +
     (isThisWeekend ? 0 : 1);
 
   const listView = listViewState({ settled: listSettled, count: visibleEvents.length });
@@ -925,8 +985,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           }
         >
           <RaceMap
-            events={events}
+            events={radiusEvents}
             selectedId={selectedId}
+            hoveredId={hoveredId}
+            radiusArea={radiusArea}
             padding={mapPadding}
             fitSeq={fitSeq}
             destination={destination}
@@ -949,6 +1011,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               // what the list shows. If a pin is on the map it belongs in the
               // list beside it.
               setCameraBounds(camera);
+              if (radiusArea) { initialBoundsFetchDone.current = true; return; }
               // First camera settle → load races for this viewport (padded query box)
               if (!initialBoundsFetchDone.current) {
                 initialBoundsFetchDone.current = true;
@@ -1075,9 +1138,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   <EventCard
                     event={event}
                     locale={locale}
-                    distanceKm={eventDistanceKm(event, userOrigin)}
+                    distanceKm={eventDistanceKm(event, distanceOrigin)}
                     active={event.id === selectedId}
                     onSelect={selectFromList}
+                    onHover={setHoveredId}
                   />
                   </div>
                     ))
@@ -1218,9 +1282,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                         <EventCard
                           event={event}
                           locale={locale}
-                          distanceKm={eventDistanceKm(event, userOrigin)}
+                          distanceKm={eventDistanceKm(event, distanceOrigin)}
                           active={event.id === selectedId}
                           onSelect={selectFromSheet}
+                          onHover={setHoveredId}
                         />
                       </div>
                     ))}
@@ -1284,6 +1349,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onSeries={setSeries}
           onCountry={setCountry}
           onReset={() => resetExploreFilters()}
+          extra={<div className="px-4 py-3"><DistanceFilter locale={locale} radius={radius} status={distanceOrigin ? "ready" : place.status} onRadius={setRadius} /></div>}
         />
       ) : null}
       {searchOpen ? (

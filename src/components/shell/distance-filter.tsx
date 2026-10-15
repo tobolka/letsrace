@@ -29,15 +29,18 @@ export function DistanceFilter({
   radius,
   status,
   onRadius,
+  compact = false,
 }: {
   locale: string;
   radius: number | null;
   status: OriginStatus;
   onRadius: (km: number | null) => void;
+  compact?: boolean;
 }) {
   const t = messagesFor(locale);
   const active = radius != null;
-  const label = active ? t.distanceWithin.replace("{km}", String(radius)) : t.distanceFilter;
+  const fullLabel = active ? t.distanceWithin.replace("{km}", String(radius)) : t.distanceFilter;
+  const label = compact && active ? `${radius} km` : fullLabel;
 
   return (
     <div className="inline-flex shrink-0 items-center">
@@ -47,6 +50,7 @@ export function DistanceFilter({
             type="button"
             variant="secondary"
             size="sm"
+            aria-label={fullLabel}
             // A distance the browser will not let us measure is not in force,
             // and the chip must not look as if it were.
             title={active && status === "denied" ? t.distanceDenied : undefined}

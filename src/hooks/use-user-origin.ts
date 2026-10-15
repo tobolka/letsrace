@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { distanceKm } from "@/lib/geo/distance";
 
 type Origin = { lat: number; lng: number };
 export type OriginStatus = "idle" | "locating" | "ready" | "denied";
@@ -37,6 +38,13 @@ export function useUserOrigin() {
     }
   }, []);
 
+  const acceptOrigin = useCallback((next: Origin) => {
+    if (!Number.isFinite(next.lat) || !Number.isFinite(next.lng)) return;
+    setOrigin((prev) => prev && distanceKm(prev, next) < 0.3 ? prev : next);
+    setStatus("ready");
+    try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode */ }
+  }, []);
+
   const locate = useCallback(() => {
     // A fix from earlier in the session answers without asking again.
     const cached = readCached();
@@ -53,20 +61,14 @@ export function useUserOrigin() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const next = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        setOrigin(next);
-        setStatus("ready");
-        try {
-          window.sessionStorage.setItem(KEY, JSON.stringify(next));
-        } catch {
-          /* private mode */
-        }
+        acceptOrigin(next);
       },
       () => setStatus("denied"),
       { maximumAge: 300_000, timeout: 10_000 },
     );
-  }, []);
+  }, [acceptOrigin]);
 
-  return { origin, status, locate };
+  return { origin, status, locate, acceptOrigin };
 }
 
 /** A box around a point that holds every place within `km` of it. */

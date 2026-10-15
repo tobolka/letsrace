@@ -43,6 +43,8 @@ export type BoundsChangeReason = "sync" | "user" | "gps" | "locate";
 export type RaceMapProps = {
   events: EventListItem[];
   selectedId?: string | null;
+  hoveredId?: string | null;
+  radiusArea?: { lat: number; lng: number; km: number } | null;
   onSelect: (id: string) => void;
   /** Map canvas tap (not a pin) — used to collapse the mobile sheet. */
   onBackgroundClick?: () => void;

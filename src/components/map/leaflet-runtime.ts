@@ -29,13 +29,23 @@ export interface LeafletMap {
   remove(): void;
   attributionControl: { setPrefix(value: string | false): void };
 }
+export interface CircleMarker extends Layer {
+  setLatLng(point: [number, number]): this;
+  setRadius(meters: number): this;
+  setStyle(options: object): this;
+}
+export interface Circle extends CircleMarker { getBounds(): Bounds }
 export interface Marker extends Layer {
+  setZIndexOffset(offset: number): this;
   on(event: string, callback: () => void): this;
   bindTooltip(content: HTMLElement, options?: object): this;
   getElement(): HTMLElement | undefined;
 }
 export interface LeafletApi {
   map(container: HTMLElement, options: object): LeafletMap;
+  circle(point: [number, number], options: object): Circle;
+  circleMarker(point: [number, number], options: object): CircleMarker;
+  control: { scale(options: object): Layer };
   tileLayer(url: string, options: object): Layer & { on(event: string, callback: () => void): void };
   layerGroup(): LayerGroup;
   marker(point: [number, number], options: object): Marker;

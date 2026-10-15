@@ -285,6 +285,7 @@ function AlertCard({
       </div>
 
       <RadiusMap
+        label={`${t.alertRadius} ${t.alertRadiusKm.replace("{n}", String(row.radius_km))}`}
         lat={Number(row.lat)}
         lng={Number(row.lng)}
         radiusKm={row.radius_km}

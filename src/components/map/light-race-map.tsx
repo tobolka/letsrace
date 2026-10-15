@@ -1,26 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LocateFixed, Minus, Plus } from "lucide-react";
+import { LocateFixed, Minus, Plus, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import type { MapBounds, BoundsChangeReason, RaceMapProps } from "./race-map";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_ICONS } from "@/lib/map-visuals";
 import { messagesFor } from "@/lib/i18n/messages";
-import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Marker } from "./leaflet-runtime";
+import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Marker, type Circle } from "./leaflet-runtime";
 import { attachSmoothWheelZoom, type WheelMap } from "./smooth-wheel-zoom";
 import { clusterAction } from "./cluster-action";
+import { addLightBasemap, drawCityLabels, loadCities, type City } from "./light-basemap";
 import "./light-race-map.css";
 
-type City = [name: string, lat: number, lng: number, population: number, capital: boolean];
-let cityData: Promise<City[]> | undefined;
-function loadCities() {
-  return cityData ??= fetch("/maps/light-v1/cities.json").then((r) => {
-    if (!r.ok) throw new Error("City labels unavailable");
-    return r.json() as Promise<City[]>;
-  }).catch((e) => { cityData = undefined; throw e; });
-}
-const key = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
 const defaultPadding = { top: 16, right: 56, bottom: 56, left: 48 };
 const zoomLabels: Record<string, [string, string]> = {
   cs: ["Přiblížit", "Oddálit"], en: ["Zoom in", "Zoom out"],
@@ -81,6 +73,9 @@ export function LightRaceMap(props: RaceMapProps) {
   const latest = useRef(props);
   useEffect(() => { latest.current = props; }, [props]);
   const redraw = useRef<() => void>(() => {});
+  const highlight = useRef<() => void>(() => {});
+  const radiusLayer = useRef<Circle | null>(null);
+  const apiRef = useRef<LeafletApi | null>(null);
   const locateRef = useRef<() => void>(() => {});
   const reportRef = useRef<() => void>(() => {});
   const reason = useRef<BoundsChangeReason>("sync");
@@ -89,6 +84,12 @@ export function LightRaceMap(props: RaceMapProps) {
   const selectionPan = useRef<{ id?: string | null; epoch: number; done: boolean }>({ epoch: 0, done: false });
   const [epoch, setEpoch] = useState(0);
   const [error, setError] = useState("");
+  const [locationError, setLocationError] = useState("");
+  useEffect(() => {
+    if (!locationError) return;
+    const timeout = window.setTimeout(() => setLocationError(""), 6000);
+    return () => window.clearTimeout(timeout);
+  }, [locationError]);
   const [locating, setLocating] = useState(false);
   const locale = props.locale ?? "en";
   const messages = messagesFor(locale);
@@ -102,8 +103,9 @@ export function LightRaceMap(props: RaceMapProps) {
         zoomControl: false, attributionControl: true, zoomSnap: 0, zoomDelta: 0.5, scrollWheelZoom: false,
         minZoom: 4, maxZoom: 18, maxBounds: EUROPE_CAMERA_BOUNDS.map(([lng, lat]) => [lat, lng]),
       });
-      mapRef.current = map;
+      mapRef.current = map; apiRef.current = L;
       map.attributionControl.setPrefix(false);
+      L.control.scale({ metric: true, imperial: false, position: "bottomleft", maxWidth: 100 }).addTo(map);
       const initial = latest.current;
       const focus = initial.initialFocus;
       if (initial.destination && initial.destinationSeq) {
@@ -115,18 +117,27 @@ export function LightRaceMap(props: RaceMapProps) {
         focusPoint(map, focus?.lat ?? lat, focus?.lng ?? lng, initial);
         handled.current.initialFocus = Boolean(focus);
       }
-      L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}${window.devicePixelRatio > 1 ? "@2x" : ""}.png${key ? `?key=${encodeURIComponent(key)}` : ""}`, {
-        tileSize: 256, maxZoom: 20, keepBuffer: 2,
-        attribution: '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a>',
-      }).addTo(map);
+      addLightBasemap(L, map);
       map.createPane("city-labels").style.zIndex = "450";
       const labels = L.layerGroup().addTo(map), markers = L.layerGroup().addTo(map);
       let cities: City[] = [], expanded = "";
       let userMarker: Marker | undefined;
       let watchId: number | undefined;
       let gpsCentered = false;
+      let rendered: { marker: Marker; ids: string[]; active: boolean }[] = [];
+      const applyHighlight = () => {
+        const id = latest.current.hoveredId;
+        for (const item of rendered) {
+          const active = Boolean(id && item.ids.includes(id));
+          if (active === item.active) continue;
+          item.active = active;
+          item.marker.getElement()?.classList.toggle("fast-marker-highlighted", active);
+          item.marker.setZIndexOffset(active ? 2000 : item.ids.includes(latest.current.selectedId ?? "") ? 1000 : 0);
+        }
+      };
+      highlight.current = applyHighlight;
       const draw = () => {
-        markers.clearLayers(); labels.clearLayers();
+        markers.clearLayers(); labels.clearLayers(); rendered = [];
         const bounds = map.getBounds();
         const occupied: [number, number, number, number][] = [];
         // Group by actual distance, including across cell boundaries, so touch targets never overlap.
@@ -149,10 +160,11 @@ export function LightRaceMap(props: RaceMapProps) {
             events.forEach((e, i) => {
               const angle = i / events.length * Math.PI * 2 - Math.PI / 2;
               const p = map.containerPointToLatLng([x + Math.cos(angle) * radius, y + Math.sin(angle) * radius]);
-              addMarker(L, markers, e, [p.lat, p.lng], 1, latest.current, () => latest.current.onSelect(e.id));
+              const marker = addMarker(L, markers, e, [p.lat, p.lng], 1, latest.current, () => latest.current.onSelect(e.id));
+              rendered.push({ marker, ids: [e.id], active: false });
             });
           } else {
-            addMarker(L, markers, chosen, point, events.length, latest.current, () => {
+            const marker = addMarker(L, markers, chosen, point, events.length, latest.current, () => {
               if (events.length > 1) {
                 const action = clusterAction(events.map((e) => ({ lat: Number(e.location!.lat), lng: Number(e.location!.lng) })), map.getZoom());
                 if (action.type === "expand") { expanded = bucket; draw(); }
@@ -162,24 +174,11 @@ export function LightRaceMap(props: RaceMapProps) {
                 }
               } else latest.current.onSelect(chosen.id);
             });
+            rendered.push({ marker, ids: events.map((e) => e.id), active: false });
           }
         }
-        const zoom = map.getZoom();
-        const threshold = zoom < 5.5 ? 600000 : zoom < 6.5 ? 180000 : zoom < 7.5 ? 70000 : zoom < 8.5 ? 30000 : 15000;
-        let drawn = 0;
-        const size = map.getSize();
-        for (const [name, lat, lng, population, capital] of cities) {
-          if (drawn >= 70 || (population < threshold && !capital) || !bounds.contains([lat, lng])) continue;
-          const width = Math.min(name.length * 6.2 + 15, 160), p = map.latLngToContainerPoint([lat, lng]);
-          const rect: [number, number, number, number] = [p.x - width / 2 - 10, p.y - 12, p.x + width / 2 + 10, p.y + 12];
-          if (rect[0] < 0 || rect[2] > size.x || rect[1] < 0 || rect[3] > size.y) continue;
-          if (occupied.some((r) => rect[0] < r[2] && rect[2] > r[0] && rect[1] < r[3] && rect[3] > r[1])) continue;
-          occupied.push(rect); drawn++;
-          const text = document.createElement("span"); text.className = `fast-city-label${capital || population >= 200000 ? " fast-city-major" : ""}`; text.textContent = name;
-          L.marker([lat, lng], { pane: "city-labels", interactive: false, keyboard: false,
-            icon: L.divIcon({ className: "fast-city", html: text, iconSize: [width, 20], iconAnchor: [width / 2, 10] }),
-          }).addTo(labels);
-        }
+        applyHighlight();
+        drawCityLabels(L, map, labels, cities, occupied);
       };
       redraw.current = draw;
       let lastReport = "";
@@ -209,7 +208,7 @@ export function LightRaceMap(props: RaceMapProps) {
         setLocating(false);
         const { latitude: lat, longitude: lng } = pos.coords;
         if (!isInEuropeMap(lat, lng)) return;
-        setError("");
+        setLocationError("");
         userMarker?.remove();
         const dot = document.createElement("div"); dot.className = "fast-user-location";
         userMarker = L.marker([lat, lng], { interactive: false, keyboard: false,
@@ -221,11 +220,11 @@ export function LightRaceMap(props: RaceMapProps) {
         }
       };
       locateRef.current = () => {
-        if (!navigator.geolocation) { setError(latest.current.locationDeniedLabel ?? messagesFor(latest.current.locale ?? "en").locationDenied); return; }
-        setLocating(true);
+        if (!navigator.geolocation) { setLocationError(latest.current.locationDeniedLabel ?? messagesFor(latest.current.locale ?? "en").locationDenied); return; }
+        setLocating(true); setLocationError("");
         navigator.geolocation.getCurrentPosition((pos) => applyLocation(pos, true), () => {
           if (disposed) return;
-          setLocating(false); setError(latest.current.locationDeniedLabel ?? messagesFor(latest.current.locale ?? "en").locationDenied);
+          setLocating(false); setLocationError(latest.current.locationDeniedLabel ?? messagesFor(latest.current.locale ?? "en").locationDenied);
         }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
       };
       // Restore an already granted location without prompting first-time visitors.
@@ -243,13 +242,22 @@ export function LightRaceMap(props: RaceMapProps) {
       cleanup = () => {
         detachWheel(); observer.disconnect(); el.removeEventListener("wheel", gesture); el.removeEventListener("keydown", gesture);
         if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
-        map.remove(); mapRef.current = null; redraw.current = () => {}; reportRef.current = () => {}; locateRef.current = () => {};
+        map.remove(); mapRef.current = null; radiusLayer.current = null; apiRef.current = null; highlight.current = () => {}; redraw.current = () => {}; reportRef.current = () => {}; locateRef.current = () => {};
       };
     }).catch(() => { if (!disposed) setError(errorLabels[latest.current.locale ?? "en"] ?? errorLabels.en); });
     return () => { disposed = true; cleanup?.(); };
   }, []);
 
   useEffect(() => { redraw.current(); }, [props.events, props.selectedId]);
+  useEffect(() => { highlight.current(); }, [props.hoveredId]);
+  useEffect(() => {
+    const map = mapRef.current, L = apiRef.current, area = props.radiusArea;
+    if (!map || !L) return;
+    if (!area) { radiusLayer.current?.remove(); radiusLayer.current = null; return; }
+    if (!radiusLayer.current) {
+      radiusLayer.current = L.circle([area.lat, area.lng], { radius: area.km * 1000, color: "#c81d25", weight: 1.5, dashArray: "5 5", fillColor: "#c81d25", fillOpacity: 0.05, interactive: false }).addTo(map);
+    } else radiusLayer.current.setLatLng([area.lat, area.lng]).setRadius(area.km * 1000);
+  }, [props.radiusArea, epoch]);
   useEffect(() => {
     const map = mapRef.current, e = props.events.find((e) => e.id === props.selectedId);
     if (selectionPan.current.id !== props.selectedId || selectionPan.current.epoch !== epoch) {
@@ -293,7 +301,10 @@ export function LightRaceMap(props: RaceMapProps) {
       <button type="button" aria-label={props.myLocationLabel ?? messages.myLocation} disabled={locating} aria-busy={locating} onClick={() => locateRef.current()}><LocateFixed size={19} /></button>
       <div className="fast-map-zoom"><button type="button" aria-label={zoom[0]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomIn(); }}><Plus size={19} /></button><button type="button" aria-label={zoom[1]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomOut(); }}><Minus size={19} /></button></div>
     </div>
-    {error && <p className="absolute inset-x-4 top-16 z-[600] rounded-lg border bg-background px-4 py-3 text-sm" role="status">{error}</p>}
+    {(error || locationError) && <div className="absolute left-3 top-16 z-[600] flex max-w-[calc(100%_-_1.5rem)] md:max-w-sm items-start gap-3 rounded-lg border bg-background px-3 py-2 text-sm shadow-sm" role="status">
+      <span>{error || locationError}</span>
+      <button type="button" aria-label={messages.close} className="-mr-1 -mt-1 grid size-8 shrink-0 place-items-center rounded-md hover:bg-muted" onClick={() => { setError(""); setLocationError(""); }}><X size={16} /></button>
+    </div>}
   </div>;
 }
 function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [number, number], count: number, props: RaceMapProps, onClick: () => void) {
@@ -310,4 +321,5 @@ function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [n
     if (count > 1) el.setAttribute("aria-expanded", "false");
     el.addEventListener("keydown", (event) => { if (event.key === " ") { event.preventDefault(); onClick(); } });
   }
+  return marker;
 }

@@ -36,9 +36,8 @@ export const exploreSearchParams = {
 };
 
 /**
- * The distance from you. The list and the calendar filter by it; the map has a
- * camera for that, so it is not one of the map's filters — but it still rides
- * along between views, so going map → list → calendar keeps it.
+ * Distance from your position, shared by map, list and calendar. It travels
+ * between views alongside the other filters.
  */
 export const RADIUS_PARAM = "radius";
 export const RADIUS_OPTIONS = [10, 25, 50, 100, 200] as const;
