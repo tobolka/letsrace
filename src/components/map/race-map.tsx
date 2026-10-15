@@ -974,7 +974,15 @@ export function RaceMap({
         : undefined,
     });
     mapRef.current = map;
+    // Set the final camera before the first frame, rather than downloading and
+    // drawing an overview only to discard it when the load event fires.
+    const initialPoint = initialFocusRef.current;
+    const home = fallbackCenterRef.current;
+    fitRadius(map, initialPoint?.lng ?? home[0], initialPoint?.lat ?? home[1], DEFAULT_RADIUS_KM, paddingRef.current);
     initialViewDoneRef.current = false;
+    // The camera is ready before the tiles. Fetch the matching list now so a
+    // slow basemap cannot trigger a global fallback list and then reshuffle it.
+    emitBounds(map, "gps");
     (window as unknown as { __letsraceMap?: MapLibreMap }).__letsraceMap = map;
 
     const locateCtrl = {
@@ -1025,20 +1033,16 @@ export function RaceMap({
 
     map.once("load", () => {
       const focus = initialFocusRef.current;
-      const home = fallbackCenterRef.current;
       if (focus) {
-        fitRadius(map, focus.lng, focus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
         initialViewDoneRef.current = true;
         emitBoundsWhenIdle(map, "gps");
         return;
       }
       if (skipInitialLocateRef.current) {
-        fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
         emitBoundsWhenIdle(map, "gps");
         return;
       }
       if (!initialViewDoneRef.current) {
-        fitRadius(map, home[0], home[1], DEFAULT_RADIUS_KM, paddingRef.current, 0);
         emitBoundsWhenIdle(map, "gps");
       }
     });
