@@ -197,6 +197,15 @@ describe("listings that are not bike races", () => {
 });
 
 describe("a calendar's heading is not a race", () => {
+  it("rejects German news headings without rejecting race names containing them", async () => {
+    const { isJunkListingName, shouldHideFromMap } = await import("@/lib/event-visibility");
+    for (const title of ["Aktuell", "Aktuelles", " AKTUELLES "]) {
+      expect(isJunkListingName(title)).toBe(true);
+      expect(shouldHideFromMap(title, "scheduled", "public")).toBe(true);
+    }
+    expect(isJunkListingName("Aktuelles Crossrennen")).toBe(false);
+  });
+
   it("rejects calendar page titles", async () => {
     const { isJunkListingName } = await import("@/lib/event-visibility");
     expect(isJunkListingName("Kalendář závodů v Karlovarském kraji")).toBe(true);

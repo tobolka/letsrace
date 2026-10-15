@@ -116,7 +116,7 @@ export function isJunkListingName(name: string): boolean {
   // A calendar page's own heading, taken for a race: "Kalendář závodů v
   // Karlovarském kraji", "Rennkalender 2026", "Kalendarz imprez".
   if (/^(kalendar|kalendarz|kalender|calendar|calendario|rennkalender|terminovka|terminy|termine|seznam)\b.*\b(zavod|zavodu|zavody|race|races|rennen|wyscig|wyscigow|imprez|events?|gare|corse|akci)\b/.test(t)) return true;
-  return /^(kalendar|calendar|terminovka|termine|rennkalender|race calendar|zavody|races|events|home|uvod|unknown|o zavode|hynek musil)$/.test(
+  return /^(kalendar|calendar|terminovka|termine|rennkalender|race calendar|zavody|races|events|home|uvod|unknown|o zavode|hynek musil|aktuell|aktuelles)$/.test(
     t,
   );
 }

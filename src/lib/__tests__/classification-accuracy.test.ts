@@ -156,6 +156,11 @@ describe("age categories", () => {
 });
 
 describe("generic extractor guard", () => {
+  it("does not invent a race from the Isarcup news heading and an article date", () => {
+    const html = '<html><title>Aktuelles</title><body>Das Rennen in Auerbach wurde auf den 17.10.2027 verschoben.</body></html>';
+    expect(extractGeneric("https://www.mtb-isarcup.de/", html)).toEqual([]);
+  });
+
   it("ignores impossible dates instead of failing a watched source", () => {
     const url = "https://www.mazurymtb.pl/";
     const page = (body: string) => `<html><head><title>Łaciate Mazury MTB</title></head><body>${body}</body></html>`;
