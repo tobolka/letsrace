@@ -1,0 +1,30 @@
+.fast-map .leaflet-container { background: #f7f5ef; font: inherit; }
+.fast-map .leaflet-control-attribution { font-size: 10px; border-radius: 7px 0 0; background: #ffffffd9; }
+.fast-map .leaflet-control-attribution a { color: #57534e; }
+.fast-map .leaflet-marker-icon.fast-marker { background: none; border: 0; }
+.fast-marker:focus-visible { outline: 2px solid #171717; outline-offset: 3px; border-radius: 50%; }
+.fast-pin { width: 40px; height: 40px; display: grid; place-items: center; position: relative; }
+.fast-pin-disc { display: grid; place-items: center; width: 27px; height: 27px; border: 2px solid white; border-radius: 50%; background: var(--pin-color); box-shadow: 0 1px 3px #1c191726; }
+.fast-pin-disc img { width: 14px; height: 14px; object-fit: contain; filter: brightness(0) invert(1); }
+.fast-pin-selected .fast-pin-disc { width: 36px; height: 36px; outline: 4px solid color-mix(in srgb, var(--pin-color), transparent 78%); }
+.fast-pin-count { position: absolute; right: -2px; top: -1px; display: grid; place-items: center; min-width: 17px; height: 17px; padding: 0 3px; border-radius: 10px; background: #1c1917; border: 1.5px solid white; color: white; font-size: 9px; font-weight: 600; }
+.fast-city { pointer-events: none; background: transparent; border: 0; }
+.fast-city-label { display: block; text-align: center; white-space: nowrap; font: 500 12px/20px Arial, sans-serif; color: #405c78; text-shadow: 1px 0 #faf9f5, -1px 0 #faf9f5, 0 1px #faf9f5, 0 -1px #faf9f5, 0 0 4px #faf9f5; }
+.fast-city-label::after { content: "·"; margin-left: 2px; font-weight: bold; }
+.fast-city-major { text-transform: uppercase; font-weight: 600; }
+.fast-map .leaflet-tooltip { border: 1px solid #e4e1dd; border-radius: 9px; box-shadow: 0 3px 10px #00000012; padding: 8px 12px; font-size: 12px; color: #1c1917; }
+.fast-map-controls { position: absolute; right: 12px; bottom: 38px; z-index: 600; display: grid; gap: 12px; }
+.fast-map-controls button { display: grid; place-items: center; width: 44px; height: 44px; background: #fff; color: #292524; border-radius: 50%; box-shadow: 0 1px 5px #00000016; cursor: pointer; }
+.fast-map-controls > button { color: #3778d7; }
+.fast-map-zoom { overflow: hidden; background: white; border-radius: 24px; box-shadow: 0 1px 5px #00000016; }
+.fast-map-zoom button { box-shadow: none; border-radius: 0; }
+.fast-map-controls button:focus-visible { outline: 2px solid #3778d7; outline-offset: 2px; }
+
+.light-race-map { position: relative; height: 100%; width: 100%; isolation: isolate; z-index: 0; overflow: hidden; }
+.light-race-map .fast-map-controls { bottom: 38px; }
+.fast-user-location { width: 22px; height: 22px; border: 3px solid white; border-radius: 50%; background: #3778d7; box-shadow: 0 0 0 8px #3778d72b, 0 1px 4px #0003; }
+@media (hover: hover) { .fast-marker:hover .fast-pin-disc { outline: 3px solid color-mix(in srgb, var(--pin-color), transparent 80%); } }
+@media (max-width: 767px) {
+  .light-race-map .fast-map-controls { bottom: max(38px, calc(var(--map-sheet-inset, 220px) + 12px)); }
+  .light-race-map .leaflet-control-attribution { max-width: 240px; font-size: 9px; }
+}

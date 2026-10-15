@@ -99,6 +99,10 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       {
+        source: "/maps/light-v1/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
         source: "/maplibre/:path*",
         headers: [
           { key: "Content-Type", value: "text/javascript; charset=utf-8" },

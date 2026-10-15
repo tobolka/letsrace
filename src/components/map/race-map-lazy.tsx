@@ -11,7 +11,7 @@ function MapGround() {
 }
 
 const RaceMapInner = dynamic(
-  () => import("@/components/map/race-map").then((m) => ({ default: m.RaceMap })),
+  () => import("@/components/map/light-race-map").then((m) => ({ default: m.LightRaceMap })),
   {
     ssr: false,
     /**

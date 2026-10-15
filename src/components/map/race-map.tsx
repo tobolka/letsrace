@@ -40,7 +40,7 @@ export type MapBounds = {
 /** Why the camera settled — parent auto-searches only on user/gps/locate. */
 export type BoundsChangeReason = "sync" | "user" | "gps" | "locate";
 
-type Props = {
+export type RaceMapProps = {
   events: EventListItem[];
   selectedId?: string | null;
   onSelect: (id: string) => void;
@@ -671,7 +671,7 @@ export function RaceMap({
   onUserLocation,
   locateSeq = 0,
   locale = "en",
-}: Props) {
+}: RaceMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const hoveredIdRef = useRef<string | null>(null);
