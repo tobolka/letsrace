@@ -905,10 +905,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       <h1 className="sr-only">{messages.introTitle}</h1>
 
       <div
-        className="absolute inset-y-0 right-0"
+        className="absolute inset-y-0 right-0 left-0 md:left-[var(--map-panel-width)]"
         style={
           {
-            left: isDesktop ? (dragW ?? mapWidth) : 0,
+            "--map-panel-width": `${dragW ?? mapWidth}px`,
             "--map-sheet-inset": `${mapPadding.bottom}px`,
           } as CSSProperties
         }
@@ -1091,8 +1091,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           role="separator"
           aria-orientation="vertical"
           aria-label={messages.resizePanel}
+          aria-controls="race-list"
+          aria-valuemin={MIN_PANEL_W}
+          aria-valuemax={MAX_PANEL_W}
+          aria-valuenow={Math.round(dragW ?? mapWidth)}
+          aria-valuetext={`${Math.round(dragW ?? mapWidth)} px`}
           tabIndex={0}
-          className="pointer-events-auto absolute inset-y-0 -right-2 z-10 w-4 cursor-col-resize touch-none outline-none"
+          className="pointer-events-auto absolute inset-y-0 -right-2 z-10 w-4 cursor-col-resize touch-none outline-none focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2"
           onPointerDown={(e) => {
             e.currentTarget.setPointerCapture(e.pointerId);
             setDragW(panelRef.current?.getBoundingClientRect().width ?? mapWidth);
@@ -1109,9 +1114,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           }}
           onPointerCancel={() => setDragW(null)}
           onKeyDown={(e) => {
-            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+            if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
             e.preventDefault();
-            const next = mapWidth + (e.key === "ArrowRight" ? 24 : -24);
+            const next = e.key === "Home" ? MIN_PANEL_W
+              : e.key === "End" ? panelMaxWidth()
+              : mapWidth + (e.key === "ArrowRight" ? 24 : -24);
             setMapWidth(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, next)));
           }}
         >
