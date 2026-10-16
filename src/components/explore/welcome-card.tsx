@@ -16,8 +16,8 @@ import { hasAuthCookie, markWelcomeSeen, WELCOME_SEEN_KEY } from "@/lib/welcome"
  * Deliberately non-blocking: someone who landed here from a race link wants the
  * race, not a modal.
  *
- * Default-shown in SSR so the photograph is in the first HTML (and is the LCP
- * element PageSpeed measures). Returning visitors already dismissed it: a head
+ * Default-shown in SSR so the photograph is in the first HTML (and can paint
+ * before the application hydrates). Returning visitors already dismissed it: a head
  * script sets `data-welcome-seen` before paint and CSS hides `#letsrace-welcome`,
  * so React can unmount on hydrate without a visible flash.
  */
@@ -74,23 +74,24 @@ export function WelcomeCard({
 
         A plain img rather than next/image: the file is already cropped and
         encoded to the size it is shown at, and next/image is used
-        nowhere else in the app — pulling the component in for one banner would
-        cost more than it saves.
+        nowhere else in the app — the browser can pick an AVIF or WebP directly without an image-server round trip.
 
-        No enter animation: the photograph is the LCP element, and animating it
-        in delayed the paint that Lighthouse measures.
+        No enter animation: show the photograph as soon as it is ready.
       */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/intro-race.webp"
-        srcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
-        alt={messages.introImageAlt}
-        width={352}
-        height={112}
-        fetchPriority="high"
-        decoding="async"
-        className="h-24 w-full object-cover outline outline-1 outline-black/10 md:h-28"
-      />
+      <picture>
+        <source type="image/avif" srcSet="/intro-race-v2.avif 1x, /intro-race-v2@2x.avif 2x" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/intro-race-v2.webp"
+          srcSet="/intro-race-v2.webp 1x, /intro-race-v2@2x.webp 2x"
+          alt={messages.introImageAlt}
+          width={352}
+          height={112}
+          fetchPriority="high"
+          decoding="async"
+          className="h-24 w-full object-cover outline outline-1 outline-black/10 md:h-28"
+        />
+      </picture>
       <Button
         type="button"
         variant="ghost"

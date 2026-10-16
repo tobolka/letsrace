@@ -1,57 +1,34 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState, type ComponentProps } from "react";
+import { preload, preconnect } from "react-dom";
+import { lightTileUrl } from "./light-tile-url";
+import { LightRaceMap } from "./light-race-map";
+import type { RaceMapProps } from "./race-map";
 
-export type { MapBounds, BoundsChangeReason } from "@/components/map/race-map";
+export type { MapBounds, BoundsChangeReason } from "./race-map";
 
-/** The same ground the route's skeleton paints, so the handover is invisible. */
-function MapGround() {
-  return <div aria-hidden className="h-full w-full animate-pulse bg-muted" />;
-}
-
-const RaceMapInner = dynamic(
-  () => import("@/components/map/light-race-map").then((m) => ({ default: m.LightRaceMap })),
-  {
-    ssr: false,
-    /**
-     * This is the fallback that actually runs — a Suspense boundary further up
-     * never gets the chance, because `dynamic` handles the wait itself. Bare
-     * "Loading map…" text in the middle of the screen was the one part of the
-     * load that announced a wait rather than showed progress.
-     */
-    loading: () => <MapGround />,
-  },
-);
-
-/**
- * Start the map right after the first frame is on screen.
- *
- * One quiet frame is enough so the chrome can paint; anything longer is the
- * visitor staring at a pulsing stone slab. This is a map product — the map
- * is the product.
- */
-function useAfterFirstPaint(): boolean {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    const go = () => {
-      if (!cancelled) setReady(true);
-    };
-
-    const raf = requestAnimationFrame(() => requestAnimationFrame(go));
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  return ready;
-}
-
-export function RaceMapLazy(props: ComponentProps<typeof RaceMapInner>) {
-  const ready = useAfterFirstPaint();
-  if (!ready) return <MapGround />;
-  return <RaceMapInner {...props} />;
+/** The map is the first screen, so its tiny renderer belongs in the initial
+ * bundle. Preload its runtime during SSR instead of discovering it after
+ * hydration, two animation frames and a second JavaScript download. */
+export function RaceMapLazy(props: RaceMapProps) {
+  preload("/maps/light-v1/leaflet.js", { as: "script" });
+  preload("/maps/light-v1/leaflet.css", { as: "style" });
+  preconnect("https://basemaps.cartocdn.com");
+  // The initial phone camera uses zoom 7 around the selected race or market.
+  // Warm just its two central tiles, not an entire viewport of guessed images.
+  // Saved/place bounds use a different camera and deliberately skip these hints.
+  if (!props.destination) {
+    const [lng, lat] = props.initialFocus
+      ? [props.initialFocus.lng, props.initialFocus.lat]
+      : props.fallbackCenter ?? [15.5, 49.75];
+    const sin = Math.sin(Math.max(-85, Math.min(85, lat)) * Math.PI / 180);
+    const x = Math.floor((lng + 180) / 360 * 128);
+    const y = Math.floor((1 - Math.log((1 + sin) / (1 - sin)) / (2 * Math.PI)) / 2 * 128);
+    for (const row of [y, y + 1]) {
+      preload(lightTileUrl(7, x, row, false), {
+        as: "image", fetchPriority: "high", media: "(max-width: 767px)",
+      });
+    }
+  }
+  return <LightRaceMap {...props} />;
 }

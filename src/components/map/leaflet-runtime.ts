@@ -46,7 +46,7 @@ export interface LeafletApi {
   circle(point: [number, number], options: object): Circle;
   circleMarker(point: [number, number], options: object): CircleMarker;
   control: { scale(options: object): Layer };
-  tileLayer(url: string, options: object): Layer & { on(event: string, callback: () => void): void };
+  tileLayer(url: string, options: object): Layer & { on(event: string, callback: (event: { tile: HTMLImageElement }) => void): void };
   layerGroup(): LayerGroup;
   marker(point: [number, number], options: object): Marker;
   divIcon(options: object): object;
@@ -55,8 +55,8 @@ export interface LeafletApi {
 let pending: Promise<LeafletApi> | undefined;
 export function loadLeaflet(): Promise<LeafletApi> {
   const existing = (window as Window & { L?: LeafletApi }).L;
-  if (existing) return Promise.resolve(existing);
   if (pending) return pending;
+  if (existing) return Promise.resolve(existing);
   const styles = new Promise<void>((resolve, reject) => {
     const css = document.createElement("link");
     css.rel = "stylesheet";

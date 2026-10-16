@@ -918,7 +918,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         q={filters.q}
         onQ={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
-        extra={<DistanceFilter compact locale={locale} radius={radius} status={distanceOrigin ? "ready" : place.status} onRadius={setRadius} />}
+        menuExtra={<DistanceFilter submenu locale={locale} radius={radius} status={distanceOrigin ? "ready" : place.status} onRadius={setRadius} />}
       />
     );
   }

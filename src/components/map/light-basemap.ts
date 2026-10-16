@@ -1,3 +1,4 @@
+import { lightTileUrl } from "./light-tile-url";
 import type { LeafletApi, LeafletMap, LayerGroup } from "./leaflet-runtime";
 
 export type City = [name: string, lat: number, lng: number, population: number, capital: boolean];
@@ -8,14 +9,22 @@ export function loadCities() {
     return r.json() as Promise<City[]>;
   }).catch((e) => { cityData = undefined; throw e; });
 }
-const key = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
 
 export function addLightBasemap(L: LeafletApi, map: LeafletMap) {
   map.attributionControl.setPrefix(false);
-  L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}${window.devicePixelRatio > 1 ? "@2x" : ""}.png${key ? `?key=${encodeURIComponent(key)}` : ""}`, {
+  // Labels and race pins are separate DOM layers and stay sharp on phones.
+  // Standard raster tiles avoid spending four pixels per background pixel.
+  const tiles = L.tileLayer(lightTileUrl("{z}", "{x}", "{y}", window.matchMedia("(min-width: 768px)").matches && window.devicePixelRatio > 1), {
     tileSize: 256, maxZoom: 20, keepBuffer: 2,
     attribution: '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a>',
-  }).addTo(map);
+  });
+  // Leaflet creates the centre tiles first. Give that visible pair priority
+  // over offscreen images; all other tiles retain the browser's default.
+  let started = 0;
+  tiles.on("tileloadstart", ({ tile }) => {
+    if (started++ < 2) tile.fetchPriority = "high";
+  });
+  tiles.addTo(map);
 }
 
 export function drawCityLabels(L: LeafletApi, map: LeafletMap, labels: LayerGroup, cities: City[], occupied: [number, number, number, number][] = []) {

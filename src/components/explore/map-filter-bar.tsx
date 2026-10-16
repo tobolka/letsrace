@@ -2,7 +2,7 @@
 
 import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
-import { useState, type ComponentType, type ReactNode } from "react";
+import { useCallback, useState, type ComponentType, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import {
   addDays,
@@ -183,6 +183,7 @@ export function MapFilterBar({
   wide = false,
   hideDate = false,
   extra,
+  menuExtra,
 }: {
   messages: Messages;
   locale: string;
@@ -216,10 +217,17 @@ export function MapFilterBar({
   /** Only races whose stated categories fit; unconfirmed ones hidden. */
   /** More chips, placed after the date — the list's distance filter. */
   extra?: ReactNode;
+  /** Additional filters kept inside the filter menu. */
+  menuExtra?: ReactNode;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [customPicked, setCustomPicked] = useState(false);
   const [dateDraft, setDateDraft] = useState<DateRange | undefined>();
+  const focusSeriesSearch = useCallback((input: HTMLInputElement | null) => {
+    if (!input) return;
+    const frame = requestAnimationFrame(() => input.focus({ preventScroll: true }));
+    return () => cancelAnimationFrame(frame);
+  }, []);
   const [seriesQuery, setSeriesQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -495,11 +503,13 @@ export function MapFilterBar({
     return (
       <>
         <div
-          className="px-1 pb-1"
-          onKeyDown={(e) => e.stopPropagation()}
+          className="sticky -top-1 z-10 bg-popover px-1 pb-2 pt-1"
+          onKeyDown={(e) => { if (e.key !== "Escape" && e.key !== "Tab") e.stopPropagation(); }}
         >
           <Input
             type="search"
+            ref={focusSeriesSearch}
+            aria-label={messages.searchSeries}
             value={seriesQuery}
             onChange={(e) => setSeriesQuery(e.target.value)}
             placeholder={messages.searchSeries}
@@ -685,7 +695,7 @@ export function MapFilterBar({
           );
         })}
 
-        {availableToAdd.length > 0 ? (
+        {availableToAdd.length > 0 || menuExtra ? (
           <DropdownMenu
             onOpenChange={(next) => {
               if (next) setSeriesQuery("");
@@ -703,6 +713,7 @@ export function MapFilterBar({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56" collisionPadding={12}>
+              {menuExtra}
               {availableToAdd.map((id) => {
                 const Icon = FILTER_ICONS[id];
                 return (

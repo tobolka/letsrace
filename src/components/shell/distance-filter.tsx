@@ -10,6 +10,10 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 import type { OriginStatus } from "@/hooks/use-user-origin";
@@ -30,17 +34,53 @@ export function DistanceFilter({
   status,
   onRadius,
   compact = false,
+  submenu = false,
 }: {
   locale: string;
   radius: number | null;
   status: OriginStatus;
   onRadius: (km: number | null) => void;
   compact?: boolean;
+  submenu?: boolean;
 }) {
   const t = messagesFor(locale);
   const active = radius != null;
   const fullLabel = active ? t.distanceWithin.replace("{km}", String(radius)) : t.distanceFilter;
   const label = compact && active ? `${radius} km` : fullLabel;
+
+  const options = (<>
+          <DropdownMenuLabel className="text-xs text-muted-foreground">{t.distanceFilter}</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            value={radius == null ? "" : String(radius)}
+            onValueChange={(v) => onRadius(v ? Number(v) : null)}
+          >
+            <DropdownMenuRadioItem value="">{t.distanceAny}</DropdownMenuRadioItem>
+            {RADIUS_OPTIONS.map((km) => (
+              <DropdownMenuRadioItem key={km} value={String(km)}>
+                {t.distanceWithin.replace("{km}", String(km))}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+          {status === "locating" || status === "denied" ? (
+            <>
+              <DropdownMenuSeparator />
+              <p className="px-2 py-1.5 text-xs text-muted-foreground">
+                {status === "locating" ? t.distanceLocating : t.distanceDenied}
+              </p>
+            </>
+          ) : null}
+  </>);
+  if (submenu) return (
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>
+        <LocateFixed /> {t.distanceFilter}
+        {active ? <span className="ml-auto text-xs text-muted-foreground">{radius} km</span> : null}
+      </DropdownMenuSubTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuSubContent className="w-56">{options}</DropdownMenuSubContent>
+      </DropdownMenuPortal>
+    </DropdownMenuSub>
+  );
 
   return (
     <div className="inline-flex shrink-0 items-center">
@@ -71,26 +111,7 @@ export function DistanceFilter({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuLabel className="text-xs text-muted-foreground">{t.distanceFilter}</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={radius == null ? "" : String(radius)}
-            onValueChange={(v) => onRadius(v ? Number(v) : null)}
-          >
-            <DropdownMenuRadioItem value="">{t.distanceAny}</DropdownMenuRadioItem>
-            {RADIUS_OPTIONS.map((km) => (
-              <DropdownMenuRadioItem key={km} value={String(km)}>
-                {t.distanceWithin.replace("{km}", String(km))}
-              </DropdownMenuRadioItem>
-            ))}
-          </DropdownMenuRadioGroup>
-          {status === "locating" || status === "denied" ? (
-            <>
-              <DropdownMenuSeparator />
-              <p className="px-2 py-1.5 text-xs text-muted-foreground">
-                {status === "locating" ? t.distanceLocating : t.distanceDenied}
-              </p>
-            </>
-          ) : null}
+          {options}
         </DropdownMenuContent>
       </DropdownMenu>
       {active ? (

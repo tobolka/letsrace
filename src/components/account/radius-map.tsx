@@ -26,7 +26,6 @@ export function RadiusMap(props: Props) {
       const initial = latest.current;
       m.setView([initial.lat, initial.lng], 7);
       addLightBasemap(L, m);
-      L.control.scale({ metric: true, imperial: false, position: "bottomleft", maxWidth: 80 }).addTo(m);
       m.createPane("city-labels").style.zIndex = "450";
       m.createPane("radius-points").style.zIndex = "600";
       const labels = L.layerGroup().addTo(m), dots: LayerGroup = L.layerGroup().addTo(m);

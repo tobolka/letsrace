@@ -105,7 +105,6 @@ export function LightRaceMap(props: RaceMapProps) {
       });
       mapRef.current = map; apiRef.current = L;
       map.attributionControl.setPrefix(false);
-      L.control.scale({ metric: true, imperial: false, position: "bottomleft", maxWidth: 100 }).addTo(map);
       const initial = latest.current;
       const focus = initial.initialFocus;
       if (initial.destination && initial.destinationSeq) {
@@ -183,7 +182,9 @@ export function LightRaceMap(props: RaceMapProps) {
       redraw.current = draw;
       let lastReport = "";
       const report = () => {
-        const camera = cameraBounds(map), size = map.getSize(), p = paddingFor(latest.current);
+        const size = map.getSize();
+        if (size.x <= 0 || size.y <= 0) return;
+        const camera = cameraBounds(map), p = paddingFor(latest.current);
         let visible = camera;
         if (size.x - p.left - p.right >= 160 && size.y - p.top - p.bottom >= 160) {
           const sw = map.containerPointToLatLng([p.left, size.y - p.bottom]), ne = map.containerPointToLatLng([size.x - p.right, p.top]);
@@ -237,7 +238,12 @@ export function LightRaceMap(props: RaceMapProps) {
       }
       draw(); report(); setEpoch((n) => n + 1);
       void loadCities().then((data) => { if (!disposed) { cities = data; draw(); } }).catch(() => {});
-      const observer = new ResizeObserver(() => { map.invalidateSize({ pan: false }); report(); });
+      const observer = new ResizeObserver(([entry]) => {
+        // A sheet or responsive transition can temporarily hide the container.
+        // Preserve the camera rather than publishing a zero-area URL/fetch.
+        if (!entry || entry.contentRect.width <= 0 || entry.contentRect.height <= 0) return;
+        map.invalidateSize({ pan: false }); report();
+      });
       observer.observe(el);
       cleanup = () => {
         detachWheel(); observer.disconnect(); el.removeEventListener("wheel", gesture); el.removeEventListener("keydown", gesture);

@@ -66,17 +66,15 @@ export default async function LocalePage({
     <>
       <SiteJsonLd locale={locale} />
       {/*
-        The intro photograph is the LCP element. It has to be discoverable in the
-        first HTML so the preload scanner starts it before hydration — and before
-        MapLibre takes the main thread. PageSpeed runs with empty storage, so this
-        always matches what the lab measures; returning visitors dismiss via
-        localStorage after paint.
+        Discover the intro image before hydration. AVIF-capable browsers use
+        the compressed variant; the picture element provides a WebP fallback.
       */}
       <link
         rel="preload"
         as="image"
-        href="/intro-race.webp"
-        imageSrcSet="/intro-race.webp 1x, /intro-race@2x.webp 2x"
+        href="/intro-race-v2.avif"
+        type="image/avif"
+        imageSrcSet="/intro-race-v2.avif 1x, /intro-race-v2@2x.avif 2x"
         fetchPriority="high"
       />
       <ExploreShell
