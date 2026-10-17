@@ -27,7 +27,7 @@
  * between them get the stacking without the fight.
  */
 import { useEffect, type ReactNode } from "react";
-import { Map as MapIcon, X } from "lucide-react";
+import { Map as MapIcon } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHandle, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -97,20 +97,18 @@ function Visible({
   snap,
   viewportH,
   handleLabel,
-  closeLabel,
-  onClose,
+  compactHandle = false,
   children,
 }: {
   snap: number | string;
   viewportH: number;
   handleLabel: string;
-  closeLabel?: string;
-  onClose?: () => void;
+  compactHandle?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className={CARD} style={{ height: visibleContentHeight(snap, viewportH) }}>
-      <GrabZone label={handleLabel} closeLabel={closeLabel} onClose={onClose} />
+      <GrabZone label={handleLabel} compact={compactHandle} />
       <div className="flex min-h-0 flex-1 flex-col">
         {children}
       </div>
@@ -121,49 +119,19 @@ function Visible({
 /**
  * A grab zone a thumb can find, with room around the pill.
  *
- * The grabber is a 40×4 pill. Its hit area used to be the pill plus six
- * pixels — reach a little low and the finger is on the first filter chip, and
- * the drag becomes a tap. Now the zone is forty-four points tall and the
- * whole width, the pill sits centred in it with air above and below, and the
- * first row of content starts under that air rather than against the pill.
+ * The grabber is a 40×4 pill. Its hit area spans the full width so the
+ * detail sheet remains easy to drag without a tall empty strip above the race.
  */
-function GrabZone({
-  label,
-  closeLabel,
-  onClose,
-}: {
-  label: string;
-  closeLabel?: string;
-  onClose?: () => void;
-}) {
+function GrabZone({ label, compact }: { label: string; compact: boolean }) {
   return (
-    <div
-      className={cn(
-        "relative flex shrink-0 items-center justify-center",
-        // The list only needs a strip to grab; the detail card carries a close
-        // button that wants the full touch height.
-        onClose ? "h-11" : "h-7",
-      )}
-    >
+    <div className={cn("relative flex shrink-0 items-center justify-center", compact ? "h-5" : "h-7")}>
       {/* Inline, because vaul ships unlayered CSS for [data-vaul-handle] that
           sets a 5px height, and unlayered rules beat any utility class. */}
       <DrawerHandle
         aria-label={label}
         className="m-0 w-full py-0"
-        style={{ width: "100%", height: onClose ? 44 : 28, background: "transparent" }}
+        style={{ width: "100%", height: compact ? 20 : 28, background: "transparent" }}
       />
-      {onClose ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="absolute right-1 top-0 z-10 size-11 rounded-full touch-manipulation active:bg-muted"
-          onClick={onClose}
-          aria-label={closeLabel}
-        >
-          <X className="size-5" aria-hidden />
-        </Button>
-      ) : null}
     </div>
   );
 }
@@ -272,7 +240,6 @@ export function MobileDetailSheet({
   onClose,
   title,
   handleLabel,
-  closeLabel,
   children,
 }: {
   open: boolean;
@@ -282,7 +249,6 @@ export function MobileDetailSheet({
   onClose: () => void;
   title: string;
   handleLabel: string;
-  closeLabel: string;
   children: ReactNode;
 }) {
   useUnlockBody(open);
@@ -312,7 +278,7 @@ export function MobileDetailSheet({
     >
       <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, "z-30")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
-        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel} closeLabel={closeLabel} onClose={onClose}>
+        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel} compactHandle>
           {children}
         </Visible>
       </DrawerContent>

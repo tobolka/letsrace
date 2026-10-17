@@ -58,15 +58,8 @@ export function WelcomeCard({
     <aside
       id="letsrace-welcome"
       aria-labelledby="letsrace-welcome-title"
-      /**
-       * Bottom-right on desktop, top on mobile. The mobile layout gives the
-       * bottom half to the race sheet, and a corner card there covered the
-       * entire list — the first thing someone should see.
-       *
-       * Not a dialog: it is non-blocking on purpose (race deep-links must stay
-       * usable), so a complementary landmark is honest about the behaviour.
-       */
-      className="pointer-events-auto fixed inset-x-3 top-16 z-40 overflow-hidden rounded-xl border bg-background/95 shadow-xl backdrop-blur md:inset-x-auto md:bottom-6 md:right-6 md:top-auto md:w-[22rem]"
+      /** Hidden on mobile; the map and race sheet should open without an overlay. */
+      className="pointer-events-auto fixed z-40 hidden overflow-hidden rounded-xl border bg-background/95 shadow-xl backdrop-blur md:bottom-6 md:right-6 md:block md:w-[22rem]"
     >
       {/*
         The photograph describes the sport, with a localized alternative.

@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DOC_WIDTH, PageHeader } from "@/components/account/panel";
+import { DOC_WIDTH } from "@/components/account/panel";
 import { asLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 
 const CONTACT = "info@letsrace.cz";
-const UPDATED = "2026-10-10";
+const UPDATED = "2026-10-17";
+// Snapshot of distinct fetched watched_urls hosts and public, unmerged 2026 events.
+const SEASON_SNAPSHOT = { sites: 214, races: 4563, nextRaces: 660 } as const;
 
 type Doc = {
   title: string;
   intro: string;
   updated: string;
+  season: string;
+  sites: string;
+  races: string;
+  nextRaces: string;
+  browse: string;
   sections: { h: string; p: string[] }[];
 };
 
@@ -22,31 +29,36 @@ type Doc = {
 const DOCS: Record<Locale, Doc> = {
   cs: {
     title: "O projektu",
-    intro: `${SITE_NAME} dává cyklistické závody ze střední Evropy na jedno místo – na mapu a do kalendáře.`,
+    intro: "Cyklistické závody z různých zdrojů na jedné mapě. Vzniklo to z docela obyčejné otázky: kam pojedeme o víkendu závodit?",
     updated: "Poslední změna",
+    season: "Sezóna 2026 · stav k 17. 10. 2026",
+    sites: "načtených webů",
+    races: "závodů v katalogu",
+    nextRaces: "Na rok 2027 už je v katalogu {n} plánovaných závodů. Další kalendáře průběžně přibývají.",
+    browse: "Prohlédnout mapu závodů",
     sections: [
       {
         h: "Proč to vzniklo",
         p: [
-          `${SITE_NAME} dělám já, ${SITE_AUTHOR.name}. Chyběl mi web, kde bych rychle viděl, jaký závod můžeme s dětmi jet o víkendu nebo když jsme někde na výletě – bez procházení několika webů. A taky závody kousek za hranicemi, o kterých jsme vůbec nevěděli.`,
+          `Jmenuju se ${SITE_AUTHOR.name} a ${SITE_NAME} jsem postavil pro sebe a svou rodinu. Chtěl jsem rychle zjistit, kam můžeme vyrazit s dětmi o víkendu nebo na výletě. Při hledání na různých webech nám navíc utíkaly závody hned za hranicemi.`,
         ],
       },
       {
         h: "Jak to funguje",
         p: [
-          "Web prochází tisíce stránek – kalendáře svazů a weby pořadatelů a seriálů – a u každého závodu vytáhne to podstatné: termín, místo, disciplínu, kategorie a odkaz na přihlášky. Všechno je pak na jedné mapě a v jednom kalendáři, napříč zeměmi.",
+          "Sledujeme kalendáře svazů i weby pořadatelů a seriálů. Z nalezených závodů skládáme přehled termínů, míst, disciplín, kategorií a odkazů na přihlášky. Na mapě a v kalendáři si pak můžeš vybrat bez přeskakování mezi zdroji.",
         ],
       },
       {
         h: "Odkud jsou údaje",
         p: [
-          "Každý závod odkazuje na svůj zdroj – web pořadatele, propozice nebo kalendář svazu. Katalog se obnovuje každý den a u závodu vidíš, kdy jsme ho naposledy ve zdroji našli.",
+          "U závodu najdeš odkaz na pořadatele, propozice nebo kalendář svazu a údaj o tom, kdy jsme ho naposledy našli. Zdroje průběžně kontrolujeme; rozhodující informace si před startem vždy ověř u pořadatele.",
         ],
       },
       {
         h: "Když něco nesedí",
         p: [
-          `Údaje přebíráme od pořadatelů a občas se spleteme. Před startem si termín a podmínky vždy ověř v propozicích. Chybu nebo závod, který tu chybí, nám napiš na ${CONTACT}.`,
+          `Našel jsi chybu nebo tu některý závod chybí? Napiš mi na ${CONTACT}. Odkaz na původní zdroj mi pomůže údaj rychle ověřit.`,
         ],
       },
     ],
@@ -55,11 +67,16 @@ const DOCS: Record<Locale, Doc> = {
     title: "About",
     intro: `${SITE_NAME} puts the bike races of Central Europe in one place — on a map and in a calendar.`,
     updated: "Last updated",
+    season: "2026 season · as of 17 October 2026",
+    sites: "websites read",
+    races: "races in the catalogue",
+    nextRaces: "The 2027 catalogue already has {n} scheduled races. More calendars are being published.",
+    browse: "Explore the race map",
     sections: [
       {
         h: "Why it exists",
         p: [
-          `${SITE_NAME} is made by me, ${SITE_AUTHOR.name}. There was no site where I could quickly see which race we could ride with the kids at the weekend, or while away on a trip, without searching through several others — let alone races just across the border that we had never heard of.`,
+          `I'm ${SITE_AUTHOR.name}. I built ${SITE_NAME} to find races for weekends and trips with my family, including those just across the border that we would otherwise miss.`,
         ],
       },
       {
@@ -86,11 +103,16 @@ const DOCS: Record<Locale, Doc> = {
     title: "O projekcie",
     intro: `${SITE_NAME} zbiera wyścigi rowerowe z Europy Środkowej w jednym miejscu — na mapie i w kalendarzu.`,
     updated: "Ostatnia zmiana",
+    season: "Sezon 2026 · stan na 17.10.2026",
+    sites: "przeczytanych serwisów",
+    races: "wyścigów w katalogu",
+    nextRaces: "W katalogu na 2027 rok jest już {n} zaplanowanych wyścigów. Kolejne kalendarze stopniowo się pojawiają.",
+    browse: "Zobacz mapę wyścigów",
     sections: [
       {
         h: "Skąd ten pomysł",
         p: [
-          `${SITE_NAME} tworzę ja, ${SITE_AUTHOR.name}. Brakowało mi strony, na której szybko zobaczę, jaki wyścig możemy pojechać z dziećmi w weekend albo na wyjeździe — bez przeszukiwania kilku serwisów. I wyścigów tuż za granicą, o których w ogóle nie wiedzieliśmy.`,
+          `Nazywam się ${SITE_AUTHOR.name}. Stworzyłem ${SITE_NAME}, żeby łatwiej znajdować wyścigi na weekendy i wyjazdy z rodziną — także te tuż za granicą, o których wcześniej nie wiedzieliśmy.`,
         ],
       },
       {
@@ -117,11 +139,16 @@ const DOCS: Record<Locale, Doc> = {
     title: "O projekte",
     intro: `${SITE_NAME} dáva cyklistické preteky zo strednej Európy na jedno miesto – na mapu a do kalendára.`,
     updated: "Posledná zmena",
+    season: "Sezóna 2026 · stav k 17. 10. 2026",
+    sites: "prečítaných webov",
+    races: "pretekov v katalógu",
+    nextRaces: "V katalógu na rok 2027 je už {n} plánovaných pretekov. Ďalšie kalendáre postupne pribúdajú.",
+    browse: "Pozrieť mapu pretekov",
     sections: [
       {
         h: "Prečo to vzniklo",
         p: [
-          `${SITE_NAME} robím ja, ${SITE_AUTHOR.name}. Chýbal mi web, kde by som rýchlo videl, aké preteky môžeme s deťmi ísť cez víkend alebo keď sme niekde na výlete – bez prehľadávania niekoľkých webov. A aj preteky kúsok za hranicami, o ktorých sme vôbec nevedeli.`,
+          `Volám sa ${SITE_AUTHOR.name}. ${SITE_NAME} som vytvoril, aby som ľahšie našiel preteky na víkendy a výlety s rodinou — aj tie kúsok za hranicami, o ktorých sme predtým nevedeli.`,
         ],
       },
       {
@@ -148,11 +175,16 @@ const DOCS: Record<Locale, Doc> = {
     title: "Über das Projekt",
     intro: `${SITE_NAME} bringt die Radrennen Mitteleuropas an einen Ort – auf eine Karte und in einen Kalender.`,
     updated: "Zuletzt geändert",
+    season: "Saison 2026 · Stand 17.10.2026",
+    sites: "gelesene Websites",
+    races: "Rennen im Katalog",
+    nextRaces: "Für 2027 stehen bereits {n} geplante Rennen im Katalog. Weitere Kalender kommen nach und nach hinzu.",
+    browse: "Rennkarte ansehen",
     sections: [
       {
         h: "Warum es das gibt",
         p: [
-          `${SITE_NAME} mache ich, ${SITE_AUTHOR.name}. Mir fehlte eine Seite, auf der ich schnell sehe, welches Rennen wir am Wochenende oder im Urlaub mit den Kindern fahren können – ohne mehrere Websites zu durchsuchen. Und Rennen gleich hinter der Grenze, von denen wir gar nichts wussten.`,
+          `Ich bin ${SITE_AUTHOR.name}. Ich habe ${SITE_NAME} gebaut, um Rennen für Wochenenden und Ausflüge mit meiner Familie zu finden — auch direkt hinter der Grenze, wo wir früher oft nichts mitbekamen.`,
         ],
       },
       {
@@ -223,18 +255,42 @@ export default async function AboutPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <article className={DOC_WIDTH}>
-        <PageHeader title={doc.title} description={doc.intro} />
-        {doc.sections.map((s) => (
-          <section key={s.h} className="flex flex-col gap-2">
-            <h2 className="text-base font-semibold">{s.h}</h2>
-            {s.p.map((p) => (
-              <p key={p} className="text-sm leading-relaxed text-pretty text-muted-foreground">
-                {p}
-              </p>
-            ))}
-          </section>
-        ))}
-        <p className="text-xs text-muted-foreground">
+        <header className="border-b pb-7 md:pb-9">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{doc.title}</p>
+          <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight text-balance md:text-4xl">{doc.intro}</h1>
+          <a href={`/${locale}`} className="mt-6 inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            {doc.browse} <span aria-hidden="true" className="ml-2">↗</span>
+          </a>
+        </header>
+        <section aria-label={doc.season} className="border-b pb-7 md:pb-9">
+          <p className="mb-4 text-xs text-muted-foreground">{doc.season}</p>
+          <div className="grid grid-cols-2 gap-5">
+            <div>
+              <p className="text-4xl font-semibold tabular-nums tracking-tight md:text-5xl">{new Intl.NumberFormat(locale).format(SEASON_SNAPSHOT.sites)}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{doc.sites}</p>
+            </div>
+            <div>
+              <p className="text-4xl font-semibold tabular-nums tracking-tight md:text-5xl">{new Intl.NumberFormat(locale).format(SEASON_SNAPSHOT.races)}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{doc.races}</p>
+            </div>
+          </div>
+          <p className="mt-5 text-sm text-muted-foreground">
+            {doc.nextRaces.replace("{n}", new Intl.NumberFormat(locale).format(SEASON_SNAPSHOT.nextRaces))}
+          </p>
+        </section>
+        <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
+          {doc.sections.map((s) => (
+            <section key={s.h} className="flex flex-col gap-2">
+              <h2 className="text-base font-semibold">{s.h}</h2>
+              {s.p.map((p) => (
+                <p key={p} className="text-sm leading-relaxed text-pretty text-muted-foreground">
+                  {p}
+                </p>
+              ))}
+            </section>
+          ))}
+        </div>
+        <p className="border-t pt-5 text-xs text-muted-foreground">
           {doc.updated}: {UPDATED} · <a href={`mailto:${CONTACT}`} className="underline underline-offset-2">{CONTACT}</a> ·{" "}
           <a href={SITE_AUTHOR.url} className="underline underline-offset-2">{SITE_AUTHOR.url.replace(/^https?:\/\//, "")}</a>
         </p>

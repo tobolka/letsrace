@@ -23,6 +23,19 @@ step() {
   if ! node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@"; then echo "!!! $title failed"; FAILURES=$((FAILURES + 1)); fi
 }
 
+# Resume individual daily steps: a failed or deadline-skipped step remains due.
+# Successful steps are not charged again just because a later step failed.
+daily_step() {
+  local mode="review"
+  case " $* " in *" --apply "*) mode="apply" ;; esac
+  local stamp="tmp/.llm-steps/$(basename "$2" .ts)-$mode"
+  if [ "${LLM_FORCE_DAILY:-0}" != "1" ] && [ "$(cat "$stamp" 2>/dev/null)" = "$TODAY" ]; then return 0; fi
+  if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then echo "Time limit reached; pending: $1"; return 0; fi
+  local before="$FAILURES"
+  step "$@"
+  if [ "$FAILURES" -eq "$before" ]; then mkdir -p tmp/.llm-steps; echo "$TODAY" > "$stamp"; fi
+}
+
 step "Coverage before"                     scripts/data-stats.ts
 # Calendar fallbacks must leave room for completing already discovered races.
 LLM_BUDGET_USD=0.40 step "Official calendars (force-poll)" scripts/reload-calendars.ts
@@ -54,23 +67,26 @@ fi
 # change (inside the watch steps above, capped per process).
 TODAY=$(date +%F)
 # LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
-if [ "${LLM_DAILY:-0}" = "1" ] && { [ "${LLM_FORCE_DAILY:-0}" = "1" ] || [ "$(cat tmp/.llm-day 2>/dev/null)" != "$TODAY" ]; }; then
+if [ "${LLM_DAILY:-0}" = "1" ]; then
   # One season document can fill many rounds; give it first claim on the budget.
-  LLM_BUDGET_USD=0.60 step "Shared series propositions and categories" scripts/enrich-series-documents.ts --max=500 --apply
+  LLM_BUDGET_USD=0.60 daily_step "Shared series propositions and categories" scripts/enrich-series-documents.ts --max=500 --apply
+  # Preserve original admission classes when conversion to U bands is unsafe.
+  if [ "${ORIGINAL_CATEGORY_IMPORT:-0}" = "1" ]; then
+    LLM_BUDGET_USD=0.40 daily_step "Original categories, independently reviewed" scripts/refresh-original-categories.ts --max=20 --apply
+  fi
   # Sites first (Brave search, a model only picks among the results), so the
   # reader below reads the new ones the same day.
-  LLM_BUDGET_USD=0.50 step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
-  LLM_BUDGET_USD=0.75 step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
-  LLM_BUDGET_USD=0.50 step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
-  LLM_BUDGET_USD=0.15 step "Races linked to their series"    scripts/link-series.ts --apply
+  LLM_BUDGET_USD=0.50 daily_step "Organisers' sites, searched"     scripts/research-races.ts --without-site --max=60 --apply
+  LLM_BUDGET_USD=0.75 daily_step "Race pages read by the model"   scripts/fill-llm-enrich.ts --max=200 --apply
+  LLM_BUDGET_USD=0.50 daily_step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
+  LLM_BUDGET_USD=0.15 daily_step "Races linked to their series"    scripts/link-series.ts --apply
   if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
-    LLM_BUDGET_USD=0.50 step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
+    LLM_BUDGET_USD=0.50 daily_step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
   else
-    LLM_BUDGET_USD=0.50 step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
+    LLM_BUDGET_USD=0.50 daily_step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
   fi
-  LLM_BUDGET_USD=0.50 step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
-  step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
-  echo "$TODAY" > tmp/.llm-day
+  LLM_BUDGET_USD=0.50 daily_step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
+  daily_step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
 fi
 step "Last year's editions"                scripts/carry-forward-editions.ts --apply
 step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30

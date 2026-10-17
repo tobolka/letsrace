@@ -942,7 +942,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     (filters.levels.length ? 1 : 0) +
     (filters.country ? 1 : 0) +
     (filters.series ? 1 : 0) +
-    (radius != null ? 1 : 0) +
+    (radiusArea ? 1 : 0) +
     (isThisWeekend ? 0 : 1);
 
   const listView = listViewState({ settled: listSettled, count: visibleEvents.length });
@@ -1302,7 +1302,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             onClose={() => selectEvent(null)}
             title={selected?.name ?? ""}
             handleLabel={detailSnap === FULL ? messages.sheetCollapse : messages.sheetExpand}
-            closeLabel={messages.close}
           >
             {selected ? (
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">

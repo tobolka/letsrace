@@ -353,6 +353,13 @@ export function MapFilterBar({
         if (id === "country" && countryCodes.length === 0) return false;
         return true;
       });
+  const menuFilters = menuExtra
+    ? EXTRA_ORDER.filter((id) => {
+        if (id === "series") return visibleSeries.length > 0 || hasValue(id);
+        if (id === "country") return countryCodes.length > 0 || hasValue(id);
+        return true;
+      })
+    : availableToAdd;
 
   function applyPreset(from: string, to: string) {
     setCustomPicked(false);
@@ -695,7 +702,7 @@ export function MapFilterBar({
           );
         })}
 
-        {availableToAdd.length > 0 || menuExtra ? (
+        {menuFilters.length > 0 || menuExtra ? (
           <DropdownMenu
             onOpenChange={(next) => {
               if (next) setSeriesQuery("");
@@ -714,13 +721,20 @@ export function MapFilterBar({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56" collisionPadding={12}>
               {menuExtra}
-              {availableToAdd.map((id) => {
+              {menuFilters.map((id) => {
                 const Icon = FILTER_ICONS[id];
+                const active = hasValue(id);
                 return (
                   <DropdownMenuSub key={id}>
-                    <DropdownMenuSubTrigger className={itemClass}>
+                    <DropdownMenuSubTrigger className={cn(itemClass, active && "bg-accent/70 font-medium")}>
                       <Icon />
-                      {extraMeta[id].label}
+                      <span className="min-w-0 truncate">{extraMeta[id].label}</span>
+                      {active ? (
+                        <>
+                          <span className="ml-auto max-w-24 truncate text-xs text-muted-foreground">{extraMeta[id].value}</span>
+                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" />
+                        </>
+                      ) : null}
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent

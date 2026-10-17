@@ -72,7 +72,8 @@ function specificBands(ages: AgeCategory[]): number {
   return ages.filter((a) => a !== "kids" && a !== "youth").length;
 }
 
-async function fetchBytes(url: string): Promise<{ type: string; bytes: Uint8Array } | null> {
+async function fetchBytes(url: string, requestedMaxBytes = MAX_BYTES): Promise<{ type: string; bytes: Uint8Array } | null> {
+  const maxBytes = Number.isFinite(requestedMaxBytes) ? Math.min(16 * 1024 * 1024, Math.max(1, requestedMaxBytes)) : MAX_BYTES;
   const res = await fetch(url, {
     headers: { "user-agent": catalogUserAgent(url), accept: "text/html,application/pdf,*/*" },
     redirect: "follow",
@@ -80,9 +81,23 @@ async function fetchBytes(url: string): Promise<{ type: string; bytes: Uint8Arra
   });
   if (!res.ok) return null;
   const len = Number(res.headers.get("content-length") ?? 0);
-  if (len > MAX_BYTES) return null;
-  const buf = new Uint8Array(await res.arrayBuffer());
-  if (buf.byteLength > MAX_BYTES) return null;
+  if (len > maxBytes) { await res.body?.cancel(); return null; }
+  if (!res.body) return null;
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > maxBytes) { await reader.cancel(); return null; }
+      chunks.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const buf = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { buf.set(chunk, offset); offset += chunk.byteLength; }
   return { type: (res.headers.get("content-type") ?? "").toLowerCase(), bytes: buf };
 }
 
@@ -235,8 +250,8 @@ async function officeText(bytes: Uint8Array, url: string): Promise<string | null
 
 export type ReadDoc = { url: string; text: string; html: string | null; thin: boolean };
 
-export async function readDocument(url: string): Promise<ReadDoc | null> {
-  const doc = await fetchBytes(url);
+export async function readDocument(url: string, opts?: { maxBytes?: number }): Promise<ReadDoc | null> {
+  const doc = await fetchBytes(url, opts?.maxBytes);
   if (!doc) return null;
   if (isPdf(doc.type, doc.bytes, url)) return { url, text: await pdfText(doc.bytes), html: null, thin: false };
   if (/text\/plain/.test(doc.type)) return { url, text: new TextDecoder("utf-8").decode(doc.bytes), html: null, thin: false };

@@ -47,6 +47,13 @@ describe("shared series documents", () => {
   });
   it("does not silently interpret birth years in the wrong year of a winter season", () => {
     const births = text.replace("U11", "Kinder 2015 - 2016");
-    expect(verifySeriesDocument("STEVENS CycloCross-Cup 2026/27", births, verdict)).toBeNull();
+    expect(verifySeriesDocument("STEVENS CycloCross-Cup 2026/27", births, verdict)?.ages).toEqual([]);
+    expect(verifySeriesDocument("STEVENS CycloCross-Cup 2026/27", births, { ...verdict, rules_document: false })).toBeNull();
   });
+});
+
+it("uses a verbatim season-scoped series heading when the separate season quote is empty", () => {
+  const document = "REGULAMIN ROBINSONADA 2026 r.\nShared admission rules for all rounds";
+  expect(verifySeriesDocument("Robinsonada 2026", document, { applies_all_rounds: true, complete_categories: false, exceptions: [], series_quote: "REGULAMIN ROBINSONADA 2026 r.", season: "2026", season_quote: "", rules_document: true })?.rules).toBe(true);
+  expect(verifySeriesDocument("Robinsonada 2026", document, { applies_all_rounds: true, complete_categories: false, exceptions: [], series_quote: "REGULAMIN ROBINSONADA 2026 r.", season: "2027", season_quote: "", rules_document: true })).toBeNull();
 });

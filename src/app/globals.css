@@ -1,4 +1,5 @@
-@import "tailwindcss";
+/* Imported source HTML in tmp/ is evidence, not application class names. */
+@import "tailwindcss" source("../");
 
 @custom-variant dark (&:is(.dark *));
 

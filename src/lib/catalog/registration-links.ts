@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
+import { recordFacts } from "@/lib/catalog/facts";
 import { BOT_UA } from "@/lib/watcher/http";
 import {
   isAccountOrNewsletterUrl,
@@ -76,7 +77,7 @@ export async function fillRegistrationLinks(opts?: {
   max?: number;
   dryRun?: boolean;
   log?: (line: string) => void;
-}): Promise<{ attempted: number; filled: number; silent: number; failed: number }> {
+}): Promise<{ attempted: number; proposed: number; filled: number; silent: number; failed: number }> {
   const supabase = createServerSupabase();
   const max = opts?.max ?? 60;
   const today = new Date().toISOString().slice(0, 10);
@@ -84,9 +85,9 @@ export async function fillRegistrationLinks(opts?: {
   type Target = { id: string; name: string; startDate: string; website: string; municipality: string | null };
   const targets: Target[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, website_url, location:locations(municipality)")
+      .select("id, name, start_date, website_url, location:locations(municipality), overrides:event_overrides(locked_fields)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -96,15 +97,17 @@ export async function fillRegistrationLinks(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
+    if (error) throw error;
     const rows = (data ?? []) as unknown as {
       id: string;
       name: string;
       start_date: string;
       website_url: string;
       location: { municipality: string | null } | null;
+      overrides: { locked_fields: string[] | null } | null;
     }[];
     for (const row of rows) {
-      if (skip.has(row.id)) continue;
+      if (skip.has(row.id) || row.overrides?.locked_fields?.includes("registration_url")) continue;
       targets.push({
         id: row.id,
         name: row.name,
@@ -117,11 +120,13 @@ export async function fillRegistrationLinks(opts?: {
     if (rows.length < PAGE) break;
   }
 
-  const result = { attempted: targets.length, filled: 0, silent: 0, failed: 0 };
+  const result = { attempted: targets.length, proposed: 0, filled: 0, silent: 0, failed: 0 };
   const { mapPool } = await import("@/lib/watcher/pool");
   await mapPool(targets, 4, async (t) => {
     try {
       // The page itself is a registration platform: that is the entry link.
+      let sourceUrl = t.website;
+      let quote: string | null = null;
       let link: string | null = isRegistrationPlatformUrl(t.website) ? t.website : null;
       if (!link) {
         const res = await fetch(t.website, {
@@ -140,26 +145,50 @@ export async function fillRegistrationLinks(opts?: {
           if (!opts?.dryRun) await recordProbe(supabase, t.id, "reg_links", "silent");
           return;
         }
+        const html = await res.text();
+        sourceUrl = res.url || t.website;
         link = findEntryLink(
-          await res.text(),
+          html,
           res.url || t.website,
           hintsFor(t.name, t.startDate, t.municipality),
           t.startDate.slice(0, 4),
         );
+        if (link) {
+          const $ = cheerio.load(html);
+          $("a[href]").each((_, a) => {
+            try { if (new URL($(a).attr("href")!, sourceUrl).toString() === link) quote = $(a).text().replace(/\s+/g, " ").trim() || null; } catch { /* invalid anchor */ }
+          });
+        }
       }
       if (!link) {
         result.silent += 1;
         if (!opts?.dryRun) await recordProbe(supabase, t.id, "reg_links", "silent");
         return;
       }
-      result.filled += 1;
-      opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}  → ${link}`);
-      if (opts?.dryRun) return;
-      await supabase
-        .from("events")
+      result.proposed += 1;
+      if (opts?.dryRun) { opts?.log?.(`DRY  ${t.startDate}  ${t.name}  → ${link}`); return; }
+      const { data: current, error: check } = await supabase.from("events")
+        .select("name,start_date,overrides:event_overrides(locked_fields)").eq("id", t.id)
+        .eq("visibility", "public").is("merged_into_id", null).single();
+      if (check) throw check;
+      const overrides = current?.overrides as unknown as { locked_fields: string[] | null } | null;
+      if (!current || current.name !== t.name || current.start_date !== t.startDate || overrides?.locked_fields?.includes("registration_url")) return;
+      const { data: changed, error: writeError } = await supabase.from("events")
         .update({ registration_url: link, updated_at: new Date().toISOString() })
-        .eq("id", t.id)
-        .is("registration_url", null);
+        .eq("id", t.id).is("registration_url", null).select("id");
+      if (writeError) throw writeError;
+      if (!changed?.length) return;
+      try {
+        await recordFacts(supabase, t.id, [{ field: "registration_url", value: link, previous: null, sourceUrl, quote }], { method: "registration_links", version: "links-v2" });
+      } catch (error) {
+        const { error: cleanup } = await supabase.from("events").update({ registration_url: null }).eq("id", t.id).eq("registration_url", link);
+        if (cleanup) throw cleanup;
+        throw error;
+      }
+      const { data: saved, error: readError } = await supabase.from("events").select("registration_url").eq("id", t.id).single();
+      if (readError || saved?.registration_url !== link) throw new Error("Registration readback failed");
+      result.filled += 1;
+      opts?.log?.(`SET  ${t.startDate}  ${t.name}  → ${link}`);
       await clearProbe(supabase, t.id, "reg_links");
     } catch {
       result.failed += 1;

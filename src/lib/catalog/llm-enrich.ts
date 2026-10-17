@@ -11,7 +11,7 @@ import { findRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { isAggregatorUrl, isDumpListingUrl } from "@/lib/watcher/public-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
-import { askJson, HAIKU, SONNET, LlmUnavailable, type LlmUsage } from "@/lib/llm/anthropic";
+import { askJson, llmSpent, HAIKU, SONNET, LlmUnavailable, type LlmUsage } from "@/lib/llm/anthropic";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
 import { alreadyRead, markRead, recordFacts, textHash, type Fact } from "@/lib/catalog/facts";
 
@@ -25,8 +25,6 @@ export function enrichmentReader(eventId: string): string {
 const KIDS_RACE = /kids|kinder|d[ěe]ti|d[ěe]tsk|ml[aá]de|youth|jugend|nachwuchs|giovan|[žz][aá]k|dzieci|mini|pupil|scolair|jeunes|petits/i;
 
 const PAGE = 1000;
-const PRICE_IN = 1;
-const PRICE_OUT = 5;
 const AGGREGATOR = /rideandrest\.net|odjazd\.pl|kalendarzrowerowy|sumator|eventivsport|radsport-events|granfondoguide|facebook\.com|instagram\.com/i;
 const LINK_WORDS = /registr|anmeld|iscri|p[řr]ihl[aá][šs]|zapis|entry|enter|start ?list|startovn|propoz|regulation|ausschreibung|regolamento|regulamin|reglement|kategori|categor|klassen|results|ergebnis|vysledk|výsledk|risultati|wyniki|ticket|sportsoft|raceresult|racetime|datasport|endu|dostartu|sportident|timing|evenZo|\.pdf/i;
 
@@ -350,6 +348,7 @@ export async function enrichFromPages(opts?: {
   reviewFile?: string;
   log?: (line: string) => void;
 }): Promise<EnrichResult> {
+  const spentBefore = llmSpent();
   const supabase = createServerSupabase();
   const max = opts?.max ?? 60;
   const today = new Date().toISOString().slice(0, 10);
@@ -447,7 +446,7 @@ export async function enrichFromPages(opts?: {
       }
       // The same text read by the same version gives the same answer: do not pay twice.
       const reader = enrichmentReader(t.id);
-      const hash = textHash(JSON.stringify({ version: ENRICH_VERSION, race: { id: t.id, name: t.name, date: t.startDate, place: t.place, disciplines: t.disciplines }, text: all, links }));
+      const hash = textHash(JSON.stringify({ version: ENRICH_VERSION, model: HAIKU, race: { id: t.id, name: t.name, date: t.startDate, place: t.place, disciplines: t.disciplines }, text: all, links }));
       if ((!opts?.ids?.length || opts?.keepMemory) && (await alreadyRead(supabase, t.web!, reader, hash))) {
         result.silent += 1;
         return;
@@ -466,7 +465,7 @@ export async function enrichFromPages(opts?: {
       const { raw, tokensIn, tokensOut } = await askModel({ name: t.name, startDate: t.startDate, place: t.place, disciplines: t.disciplines, website: t.web }, all, links.slice(0, 40));
       result.tokensIn += tokensIn;
       result.tokensOut += tokensOut;
-      result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000;
+      result.costUsd = llmSpent() - spentBefore;
       const v = verifyEnrichment(raw, all, links, t.startDate);
       // On a calendar or federation page many races share the links: one
       // counts only if its label or its line names this race or its town.
@@ -640,7 +639,7 @@ export async function enrichFromPages(opts?: {
   };
   const { mapPool } = await import("@/lib/watcher/pool");
   await mapPool(targets, 4, one);
-  result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000 + result.auditUsd;
+  result.costUsd = llmSpent() - spentBefore;
   const quoteCount = new Map<string, number>();
   for (const d of deadlines.values()) quoteCount.set(norm(d.quote), (quoteCount.get(norm(d.quote)) ?? 0) + 1);
   for (const d of deadlines.values()) {

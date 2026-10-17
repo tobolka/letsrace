@@ -479,22 +479,18 @@ export function EventDetailPanel({
             {event.name}
           </span>
         </CardTitle>
-        {!embedded ? (
-          // Negative margins: the button is taller than a line of text, and
-          // it must not be what sets the header's height — otherwise a
-          // one-line name sits at the top of a box sized for the cross.
-          <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto shrink-0 self-center justify-self-auto">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              aria-label={t.close}
-            >
-              <X />
-            </Button>
-          </CardAction>
-        ) : null}
+        {/* Negative margins keep the close target from setting the title row's height. */}
+        <CardAction className="col-auto row-auto -my-2 -mr-2 ml-auto shrink-0 self-center justify-self-auto">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label={t.close}
+          >
+            <X />
+          </Button>
+        </CardAction>
       </CardHeader>
 
       <CardContent

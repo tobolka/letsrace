@@ -1,4 +1,4 @@
-import { askJson, HAIKU } from "@/lib/llm/anthropic";
+import { askJson, llmSpent, LlmUnavailable, HAIKU } from "@/lib/llm/anthropic";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ageCategoriesFromList } from "@/lib/age-bands";
@@ -8,9 +8,6 @@ import { isRegulationsUrl, findRegulationsUrl } from "@/lib/watcher/regulations-
 import { CHAMPIONSHIP, directDocumentUrl, hintsFor, readDocument, relatedDocumentLinks } from "@/lib/catalog/regulation-ages";
 
 const PAGE = 1000;
-/** Haiku 4.5, dollars per million tokens. */
-const PRICE_IN = 1;
-const PRICE_OUT = 5;
 const MAX_CHARS = 14_000;
 
 /** Where a page talks about who may start. */
@@ -90,6 +87,7 @@ export async function fillAgesWithModel(opts?: {
   ids?: string[];
   log?: (line: string) => void;
 }): Promise<{ attempted: number; filled: number; silent: number; failed: number; tokensIn: number; tokensOut: number; costUsd: number }> {
+  const spentBefore = llmSpent();
   const supabase = createServerSupabase();
   const max = opts?.max ?? 40;
   const today = new Date().toISOString().slice(0, 10);
@@ -157,7 +155,7 @@ export async function fillAgesWithModel(opts?: {
       const { answer, tokensIn, tokensOut } = await askModel({ name: t.name, startDate: t.startDate, place: t.place }, text);
       result.tokensIn += tokensIn;
       result.tokensOut += tokensOut;
-      result.costUsd = (result.tokensIn * PRICE_IN + result.tokensOut * PRICE_OUT) / 1_000_000;
+      result.costUsd = llmSpent() - spentBefore;
       const good = answer ? verifiedCategories(answer, text) : [];
       const ages = new Set<AgeCategory>(ageCategoriesFromList(good.map((c) => ({ name: c.quote })), { refYear: Number(t.startDate.slice(0, 4)) }));
       const specific = [...ages].filter((a) => !["kids", "youth"].includes(a)).length;
@@ -183,9 +181,11 @@ export async function fillAgesWithModel(opts?: {
     } catch (e) {
       result.failed += 1;
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
+      if (e instanceof LlmUnavailable) break;
       if (e instanceof Error && /ANTHROPIC_API_KEY|credit balance|API 4(00|01|03|29)/.test(e.message)) break;
       if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_ages", "failed");
     }
   }
+  result.costUsd = llmSpent() - spentBefore;
   return result;
 }

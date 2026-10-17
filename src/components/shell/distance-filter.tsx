@@ -44,14 +44,17 @@ export function DistanceFilter({
   submenu?: boolean;
 }) {
   const t = messagesFor(locale);
-  const active = radius != null;
-  const fullLabel = active ? t.distanceWithin.replace("{km}", String(radius)) : t.distanceFilter;
-  const label = compact && active ? `${radius} km` : fullLabel;
+  // Keep the preference for a later successful location fix, but never show
+  // an unavailable radius as an applied filter.
+  const selectedRadius = status === "denied" ? null : radius;
+  const active = selectedRadius != null;
+  const fullLabel = active ? t.distanceWithin.replace("{km}", String(selectedRadius)) : t.distanceFilter;
+  const label = compact && active ? `${selectedRadius} km` : fullLabel;
 
   const options = (<>
           <DropdownMenuLabel className="text-xs text-muted-foreground">{t.distanceFilter}</DropdownMenuLabel>
           <DropdownMenuRadioGroup
-            value={radius == null ? "" : String(radius)}
+            value={selectedRadius == null ? "" : String(selectedRadius)}
             onValueChange={(v) => onRadius(v ? Number(v) : null)}
           >
             <DropdownMenuRadioItem value="">{t.distanceAny}</DropdownMenuRadioItem>
@@ -72,9 +75,10 @@ export function DistanceFilter({
   </>);
   if (submenu) return (
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger>
+      <DropdownMenuSubTrigger className={cn(active && "bg-accent/70 font-medium")}>
         <LocateFixed /> {t.distanceFilter}
-        {active ? <span className="ml-auto text-xs text-muted-foreground">{radius} km</span> : null}
+        {active ? <span className="ml-auto text-xs text-muted-foreground">{selectedRadius} km</span> : null}
+        {active ? <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" /> : null}
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent className="w-56">{options}</DropdownMenuSubContent>
@@ -93,16 +97,15 @@ export function DistanceFilter({
             aria-label={fullLabel}
             // A distance the browser will not let us measure is not in force,
             // and the chip must not look as if it were.
-            title={active && status === "denied" ? t.distanceDenied : undefined}
+            title={radius != null && status === "denied" ? t.distanceDenied : undefined}
             className={cn(
               "shrink-0 max-md:h-11 [@media(pointer:coarse)]:h-11",
               active && "rounded-r-none",
-              active && status === "denied" && "text-muted-foreground line-through",
             )}
           >
             {status === "locating" && active ? (
               <Spinner />
-            ) : status === "denied" && active ? (
+            ) : status === "denied" ? (
               <LocateOff />
             ) : (
               <LocateFixed />

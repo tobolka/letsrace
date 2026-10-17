@@ -3,7 +3,7 @@ import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { distanceKm, isGarbagePlace } from "@/lib/dedup";
 import { mergeEventPair, mergeKeeper, type MergeDuplicateRow } from "@/lib/catalog/merge-duplicates";
 import { canonicalizeDisciplines, disciplineFamily } from "@/lib/taxonomy";
-import { askJson, addUsage, NO_USAGE, SONNET, type LlmUsage } from "@/lib/llm/anthropic";
+import { askJson, LlmUnavailable, addUsage, NO_USAGE, SONNET, type LlmUsage } from "@/lib/llm/anthropic";
 import { readDocument } from "@/lib/catalog/regulation-ages";
 
 const PAGE = 1000;
@@ -173,6 +173,8 @@ export type DuplicateJudgeResult = {
   different: number;
   unsure: number;
   failed: number;
+  deferred: number;
+  stopped: boolean;
   usage: LlmUsage;
 };
 
@@ -219,7 +221,7 @@ export async function judgeDuplicates(opts?: {
   }
   // "cx" and "cyclocross" are one discipline under two spellings.
   const fam = (ds: string[] | null | undefined) => new Set(canonicalizeDisciplines(ds ?? []).map((d) => disciplineFamily(d)));
-  const result: DuplicateJudgeResult = { pairs: pairs.length, same: 0, merged: 0, different: 0, unsure: 0, failed: 0, usage: NO_USAGE };
+  const result: DuplicateJudgeResult = { pairs: pairs.length, same: 0, merged: 0, different: 0, unsure: 0, failed: 0, deferred: 0, stopped: false, usage: NO_USAGE };
   const gone = new Set<string>();
 
   for (let i = 0; i < pairs.length; i += BATCH) {
@@ -231,9 +233,14 @@ export async function judgeDuplicates(opts?: {
       result.usage = addUsage(result.usage, usage);
       verdicts = json?.pairs ?? [];
     } catch (e) {
+      if (e instanceof LlmUnavailable) {
+        result.stopped = true;
+        result.deferred = pairs.length - i;
+        opts?.log?.(`STOP: ${e.message}; ${result.deferred} pairs remain unreviewed`);
+        break;
+      }
       result.failed += batch.length;
       opts?.log?.(`FAIL batch: ${e instanceof Error ? e.message : e}`);
-      if (e instanceof Error && e.name === "LlmUnavailable") break;
       continue;
     }
     for (const v of verdicts) {
