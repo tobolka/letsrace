@@ -118,7 +118,7 @@ export function MonthCalendar({
   const activeDay = phoneDay && days.some((d) => d.iso === phoneDay) ? phoneDay : (today ?? firstWithRaces ?? null);
 
   return (
-    <div className={cn("flex min-h-0 flex-col", fill && "flex-1", className)}>
+    <div className={cn("flex min-h-0 min-w-0 flex-col", fill && "flex-1", className)}>
       <div className="grid shrink-0 grid-cols-7 border-b">
         {headings.map((label, i) => (
           <div
@@ -133,7 +133,7 @@ export function MonthCalendar({
         ))}
       </div>
 
-      <div className={cn("grid shrink-0 grid-cols-7", fill && !isMobile && "flex-1 auto-rows-fr")}>
+      <div className={cn("grid min-w-0 shrink-0 grid-cols-7", fill && !isMobile && "flex-1 auto-rows-[minmax(7rem,1fr)]")}>
         {days.map((day, i) => {
           const list = byDay.get(day.iso) ?? [];
           const info = dayInfo?.(day.iso);
@@ -192,7 +192,7 @@ export function MonthCalendar({
                     if (isMobile && list.length > 0) openDay();
                   }}
                   className={cn(
-                    "flex min-w-0 flex-col gap-0.5 border-r border-b p-1 transition-colors",
+                    "flex min-w-0 flex-col gap-0.5 overflow-hidden border-r border-b p-1 transition-colors",
                     fill ? "min-h-24" : "min-h-24 max-md:min-h-14",
                     i % 7 === 6 && "border-r-0",
                     i >= days.length - 7 && "border-b-0",

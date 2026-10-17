@@ -81,7 +81,7 @@ export function ScheduleView({ locale }: { locale: string }) {
         }
       />
 
-      <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overscroll-contain transition-opacity [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", feed.loading && "opacity-60")}>
+      <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-scroll overscroll-contain transition-opacity [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", feed.loading && "opacity-60")}>
         <MonthCalendar
           locale={locale}
           month={month}
