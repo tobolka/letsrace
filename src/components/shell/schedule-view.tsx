@@ -65,7 +65,7 @@ export function ScheduleView({ locale }: { locale: string }) {
   const byId = useMemo(() => new Map(feed.events.map((e) => [e.id, e])), [feed.events]);
 
   return (
-    <div className="absolute inset-0 flex flex-col">
+    <div className="absolute inset-0 flex min-w-0 flex-col overflow-hidden">
       <SectionHeader title={t.navSchedule} brandHref={`/${locale}`}>
         <ExploreFilterBar locale={locale} state={state} hideDate />
       </SectionHeader>
