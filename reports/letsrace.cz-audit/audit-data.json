@@ -1,0 +1,320 @@
+{
+ "summary": {
+  "health_score": 52,
+  "business_type": "Event directory / programmatic race catalogue (5 locales, ~10.8k URLs)",
+  "top_findings": [
+   "Race og:image / JSON-LD image 404 on ~10k race pages",
+   "Country hubs render zero race links (race pages effectively orphaned)",
+   "Thin programmatic race pages: median 78 words, ~49% past races",
+   "Every page dynamic and no-store (await headers() in root layout)",
+   "Wrong discipline/place data in titles, H1 and schema"
+  ],
+  "quick_wins": [
+   "Fix OG image URL in e/[slug]/page.tsx:63 and event-json-ld.tsx:74",
+   "Render RaceLinkList on country hubs",
+   "Fix discipline-hub hreflang (c/[code]/[discipline]/page.tsx:62)",
+   "Add Organization + WebSite JSON-LD on home",
+   "Emit offers only for upcoming races with open entry"
+  ]
+ },
+ "categories": [
+  {
+   "name": "Technical SEO",
+   "score": 58,
+   "what_works": [
+    "Full SSR",
+    "Self-canonicals",
+    "Reciprocal sitemap hreflang",
+    "Security headers",
+    "60/60 sitemap URLs 200"
+   ],
+   "findings": [
+    {
+     "title": "Race OG / JSON-LD image 404",
+     "severity": "Critical",
+     "description": "/<loc>/zavod/<slug>/opengraph-image returns 404; real route is hashed",
+     "recommendation": "Use generated metadata image URL or stable route handler"
+    },
+    {
+     "title": "Discipline-hub hreflang wrong",
+     "severity": "High",
+     "description": "/cs/zavody/cz/road lists /en/zavody/cz/road etc. (125 URLs)",
+     "recommendation": "localeAlternates((l)=>hubPath(l,code,discipline))"
+    },
+    {
+     "title": "Soft 404s",
+     "severity": "High",
+     "description": "Unknown race slug returns 200 + noindex",
+     "recommendation": "notFound() and remove loading.tsx streaming on detail routes"
+    },
+    {
+     "title": "Country hubs have no race links",
+     "severity": "High",
+     "description": "/en/races/cz lists 99 races only in JSON-LD",
+     "recommendation": "Render RaceLinkList"
+    },
+    {
+     "title": "All HTML no-store / dynamic",
+     "severity": "High",
+     "description": "await headers() in src/app/layout.tsx:91",
+     "recommendation": "Root layout under [locale] with next/root-params, then ISR"
+    },
+    {
+     "title": "CSS embedded 3x",
+     "severity": "Medium",
+     "description": "inlineCss: ~455 KB of ~590 KB raw HTML",
+     "recommendation": "Test inlineCss off"
+    },
+    {
+     "title": "Inconsistent root redirect",
+     "severity": "Medium",
+     "description": "308 for Googlebot, 307 for cs/de; no Vary",
+     "recommendation": "307 + Vary: Accept-Language"
+    }
+   ]
+  },
+  {
+   "name": "Content Quality",
+   "score": 38,
+   "what_works": [
+    "Sensible title/description templates",
+    "Real entity data (dates, places, categories)"
+   ],
+   "findings": [
+    {
+     "title": "Thin pages at scale",
+     "severity": "Critical",
+     "description": "Median 78 words; 154/201 <100 words; locales are translated chrome",
+     "recommendation": "Add held catalog data; noindex dead past races"
+    },
+    {
+     "title": "Wrong discipline labels",
+     "severity": "High",
+     "description": "Gravel->road, short track->track; default road fallback",
+     "recommendation": "Classify on structured fields; 'unknown' value"
+    },
+    {
+     "title": "Country used as town",
+     "severity": "High",
+     "description": "placeOf takes last comma part",
+     "recommendation": "Use municipality"
+    },
+    {
+     "title": "No trust pages",
+     "severity": "High",
+     "description": "/about, /contact 404; no footer; no operator",
+     "recommendation": "Add About/methodology, contact, footer"
+    },
+    {
+     "title": "Description promises nearby races not shown",
+     "severity": "Medium",
+     "description": "148/201 pages",
+     "recommendation": "Render nearby same-weekend block"
+    }
+   ]
+  },
+  {
+   "name": "On-Page SEO",
+   "score": 55,
+   "what_works": [
+    "Single H1",
+    "Unique titles",
+    "Breadcrumbs"
+   ],
+   "findings": [
+    {
+     "title": "ALL-CAPS / scraped junk in H1",
+     "severity": "Medium",
+     "description": "42/201 H1s",
+     "recommendation": "Apply unshout to H1"
+    },
+    {
+     "title": "Plural errors",
+     "severity": "Low",
+     "description": "'1 závodů'",
+     "recommendation": "counted()"
+    },
+    {
+     "title": "Titles >60 chars",
+     "severity": "Low",
+     "description": "brand rule seo.ts:226",
+     "recommendation": "Trim"
+    }
+   ]
+  },
+  {
+   "name": "Schema / Structured Data",
+   "score": 58,
+   "what_works": [
+    "SportsEvent + BreadcrumbList on every race",
+    "CollectionPage + ItemList on hubs"
+   ],
+   "findings": [
+    {
+     "title": "Missing location",
+     "severity": "High",
+     "description": "44 races",
+     "recommendation": "Skip JSON-LD or fill"
+    },
+    {
+     "title": "addressLocality misuse",
+     "severity": "High",
+     "description": "312/1986 races",
+     "recommendation": "Venue in Place.name"
+    },
+    {
+     "title": "Misleading Offers",
+     "severity": "High",
+     "description": "772 InStock, 345 past, no price",
+     "recommendation": "Upcoming+open only, validThrough"
+    },
+    {
+     "title": "No Organization/WebSite",
+     "severity": "Medium",
+     "description": "home, /races, /series",
+     "recommendation": "@graph on home"
+    },
+    {
+     "title": "No organizer",
+     "severity": "Medium",
+     "description": "no column",
+     "recommendation": "Interim Organization from series/website"
+    }
+   ]
+  },
+  {
+   "name": "Performance (CWV)",
+   "score": 62,
+   "what_works": [
+    "Content pages LH 91-100",
+    "CLS 0 on content pages"
+   ],
+   "findings": [
+    {
+     "title": "Home mobile LH 28",
+     "severity": "High",
+     "description": "LCP 4.76s, TBT 1992ms, CLS 0.456 (lab)",
+     "recommendation": "Merge queries, skeleton heights, defer maplibre"
+    },
+    {
+     "title": "Content LCP 3.2-3.4s mobile",
+     "severity": "Medium",
+     "description": "text LCP revealed late by streaming",
+     "recommendation": "Retest after ISR"
+    }
+   ]
+  },
+  {
+   "name": "AI Search Readiness",
+   "score": 44,
+   "what_works": [
+    "All AI crawlers allowed",
+    "Agent catalogue, OpenAPI, MCP card"
+   ],
+   "findings": [
+    {
+     "title": "No entity signals",
+     "severity": "High",
+     "description": "No Organization/sameAs, no mentions",
+     "recommendation": "Entity layer + profiles"
+    },
+    {
+     "title": "Facts not extractable",
+     "severity": "Medium",
+     "description": "Distances not shown; div rows",
+     "recommendation": "Category table"
+    },
+    {
+     "title": "robots blocks public API",
+     "severity": "Medium",
+     "description": "Disallow: /api/",
+     "recommendation": "Allow /api/events"
+    }
+   ]
+  },
+  {
+   "name": "Images",
+   "score": 55,
+   "what_works": [
+    "Alt text present",
+    "No overflow"
+   ],
+   "findings": [
+    {
+     "title": "OG 404",
+     "severity": "High",
+     "description": "see Technical",
+     "recommendation": "see Technical"
+    },
+    {
+     "title": "Home CLS",
+     "severity": "Medium",
+     "description": "0.51 desktop / 0.47 mobile",
+     "recommendation": "Reserve space"
+    },
+    {
+     "title": "Small tap targets",
+     "severity": "Low",
+     "description": "breadcrumb 20px",
+     "recommendation": "24px min"
+    }
+   ]
+  }
+ ],
+ "action_plan": {
+  "phases": [
+   {
+    "name": "Phase 0: Instrumentation",
+    "timeframe": "Today",
+    "items": [
+     "Connect GSC + Bing Webmaster, submit sitemap"
+    ]
+   },
+   {
+    "name": "Phase 1: Critical Fixes",
+    "timeframe": "Week 1",
+    "items": [
+     "Fix OG image URLs",
+     "Race links on country hubs",
+     "Discipline-hub hreflang",
+     "Real 404s",
+     "Remove headers() from root layout + ISR"
+    ]
+   },
+   {
+    "name": "Phase 2: High-Impact Improvements",
+    "timeframe": "Weeks 2-3",
+    "items": [
+     "Classification/place fixes",
+     "Offers/status JSON-LD",
+     "Entity layer + About/contact/footer",
+     "Enrich race template with held data",
+     "Home mobile performance"
+    ]
+   },
+   {
+    "name": "Phase 3: Content & Authority",
+    "timeframe": "Month 2",
+    "items": [
+     "Past-race + sitemap policy",
+     "Season-aware hubs + year pages",
+     "Region/kids/level hubs",
+     "Trim locale duplication"
+    ]
+   },
+   {
+    "name": "Phase 4: Monitoring & Iteration",
+    "timeframe": "Ongoing",
+    "items": [
+     "Link earning (badge, widget, partner feeds)",
+     "Crawler policy",
+     "Drift baseline + IndexNow"
+    ]
+   }
+  ]
+ },
+ "artifacts": {
+  "findings_dir": "findings/",
+  "screenshots_dir": "screenshots/"
+ }
+}
