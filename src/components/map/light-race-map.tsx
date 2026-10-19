@@ -99,7 +99,9 @@ export function LightRaceMap(props: RaceMapProps) {
     let cleanup: (() => void) | undefined;
     void loadLeaflet().then((L) => {
       if (disposed || !container.current) return;
+      const embedded = Boolean(latest.current.embedded);
       const map = L.map(container.current, {
+        dragging: !(embedded && window.matchMedia("(pointer: coarse)").matches),
         zoomControl: false, attributionControl: true, zoomSnap: 0, zoomDelta: 0.5, scrollWheelZoom: false,
         minZoom: 4, maxZoom: 18, maxBounds: EUROPE_CAMERA_BOUNDS.map(([lng, lat]) => [lat, lng]),
       });
@@ -202,7 +204,7 @@ export function LightRaceMap(props: RaceMapProps) {
       map.on("moveend", settled).on("click", () => { expanded = ""; draw(); latest.current.onBackgroundClick?.(); }).on("dragstart", gesture);
       const el = container.current;
       el.addEventListener("wheel", gesture, { passive: true });
-      const detachWheel = attachSmoothWheelZoom(map as WheelMap, el);
+      const detachWheel = embedded ? () => {} : attachSmoothWheelZoom(map as WheelMap, el);
       el.addEventListener("keydown", gesture);
       const applyLocation = (pos: GeolocationPosition, explicit: boolean) => {
         if (disposed) return;
@@ -229,7 +231,7 @@ export function LightRaceMap(props: RaceMapProps) {
         }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
       };
       // Restore an already granted location without prompting first-time visitors.
-      if (navigator.permissions && navigator.geolocation) {
+      if (!embedded && navigator.permissions && navigator.geolocation) {
         void navigator.permissions.query({ name: "geolocation" }).then((status) => {
           if (!disposed && status.state === "granted") {
             watchId = navigator.geolocation.watchPosition((pos) => applyLocation(pos, false), () => {}, { enableHighAccuracy: false, maximumAge: 60000 });
@@ -301,7 +303,7 @@ export function LightRaceMap(props: RaceMapProps) {
     handled.current.locate = props.locateSeq; locateRef.current();
   }, [props.locateSeq, epoch]);
   const zoom = zoomLabels[locale] ?? zoomLabels.en;
-  return <div className="fast-map light-race-map">
+  return <div className={`fast-map light-race-map${props.embedded ? " light-race-map-embedded" : ""}`}>
     <div ref={container} className="absolute inset-0 h-full w-full" />
     <div className="fast-map-controls">
       <button type="button" aria-label={props.myLocationLabel ?? messages.myLocation} disabled={locating} aria-busy={locating} onClick={() => locateRef.current()}><LocateFixed size={19} /></button>

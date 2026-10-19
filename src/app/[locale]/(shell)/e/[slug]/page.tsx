@@ -25,6 +25,7 @@ import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
+import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
@@ -298,6 +299,10 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
             {raceSummary(event, locale).join(" ")}
           </p>
+        </section>
+
+        <section className="mt-8">
+          <RaceDetailMap event={event} locale={locale} href={mapHref} label={t.viewOnMap} />
         </section>
 
         {event.series && rounds.length > 0 ? (

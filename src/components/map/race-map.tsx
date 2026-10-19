@@ -71,6 +71,8 @@ export type RaceMapProps = {
   locateSeq?: number;
   /** UI locale — dates in pin tooltips follow it. */
   locale?: string;
+  /** A map inside a page: no wheel zoom, no touch drag, no geolocation prompt. */
+  embedded?: boolean;
 };
 
 const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
