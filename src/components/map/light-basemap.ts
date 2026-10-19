@@ -1,13 +1,17 @@
 import { lightTileUrl } from "./light-tile-url";
+import { isPublicMapMarket } from "@/lib/coverage";
 import type { LeafletApi, LeafletMap, LayerGroup } from "./leaflet-runtime";
 
-export type City = [name: string, lat: number, lng: number, population: number, capital: boolean];
+export type City = [name: string, lat: number, lng: number, population: number, capital: boolean, countryCode: string];
 let cityData: Promise<City[]> | undefined;
 export function loadCities() {
+  // GeoNames country membership follows borders, unlike market camera boxes.
+  // Keep all countries in the asset so promoting a market needs no data rebuild.
   return cityData ??= fetch("/maps/light-v1/cities.json").then((r) => {
     if (!r.ok) throw new Error("City labels unavailable");
     return r.json() as Promise<City[]>;
-  }).catch((e) => { cityData = undefined; throw e; });
+  }).then((cities) => cities.filter((city) => isPublicMapMarket(city[5])))
+    .catch((e) => { cityData = undefined; throw e; });
 }
 
 export function addLightBasemap(L: LeafletApi, map: LeafletMap) {
