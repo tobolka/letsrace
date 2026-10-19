@@ -10,6 +10,8 @@
  * {@link MIN_RACES} before it is offered or indexed; below that the page still
  * renders for anyone who follows a link, but asks not to be indexed.
  */
+import { unstable_cache } from "next/cache";
+import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Discipline } from "@/lib/taxonomy";
 import type { Locale } from "@/lib/i18n/messages";
@@ -104,10 +106,10 @@ export type HubCombo = { countryCode: string; discipline: HubDiscipline; races: 
 /** Upcoming races per country and per discipline family, from one query. */
 export type CountryTally = { countryCode: string; races: number; families: Partial<Record<HubDiscipline, number>> };
 
-async function tallyUpcoming(countryCodes: string[]): Promise<CountryTally[]> {
-  if (!countryCodes.length) return [];
+// Store the small aggregate, not thousands of race rows per page/language.
+// The day is an argument so yesterday's races leave the counts at midnight.
+const loadUpcomingTallies = unstable_cache(async (today: string): Promise<CountryTally[]> => {
   const supabase = createServerSupabase();
-  const today = new Date().toISOString().slice(0, 10);
 
   const rows: { disciplines: string[] | null; locations: { country_code?: string } | null }[] = [];
   for (let from = 0; ; from += 1000) {
@@ -118,7 +120,7 @@ async function tallyUpcoming(countryCodes: string[]): Promise<CountryTally[]> {
       .is("merged_into_id", null)
       .neq("event_type", "ride")
       .gte("start_date", today)
-      .in("locations.country_code", countryCodes)
+      .in("locations.country_code", [...PUBLIC_COUNTRY_CODES])
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw new Error(error.message);
@@ -144,6 +146,13 @@ async function tallyUpcoming(countryCodes: string[]): Promise<CountryTally[]> {
     by.set(cc, t);
   }
   return [...by.values()];
+}, ["upcoming-country-tallies-v1"], { revalidate: 3600, tags: ["public-catalogue"] });
+
+async function tallyUpcoming(countryCodes: string[]): Promise<CountryTally[]> {
+  if (!countryCodes.length) return [];
+  const wanted = new Set(countryCodes);
+  const tallies = await loadUpcomingTallies(new Date().toISOString().slice(0, 10));
+  return tallies.filter((t) => wanted.has(t.countryCode));
 }
 
 /** Countries with upcoming races, most races first, for the browse index. */

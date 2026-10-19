@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { listEvents } from "@/lib/events";
+import { getSiteIndexData, SITE_INDEX_COUNTRIES } from "@/lib/site-index-data";
 import type { Locale } from "@/lib/i18n/messages";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
-import { disciplineCopy, listQualifyingHubs } from "@/lib/discipline-hubs";
+import { disciplineCopy } from "@/lib/discipline-hubs";
 import { fillCopy, hubCopy, inCountry } from "@/lib/seo";
-import { addDaysIso, raceCopy, seriesIn, shortDate } from "@/lib/seo-race-copy";
+import { raceCopy, shortDate } from "@/lib/seo-race-copy";
 import { eventPagePath } from "@/lib/event-url";
 import { collectionCopy, COLLECTION_SLUGS } from "@/lib/race-collections";
 import { collectionPath, hubPath, localePath } from "@/lib/localized-paths";
@@ -13,7 +13,7 @@ import { collectionPath, hubPath, localePath } from "@/lib/localized-paths";
 const ABOUT: Record<Locale, string> = { cs: "O projektu", en: "About", pl: "O projekcie", sk: "O projekte", de: "Über das Projekt" };
 
 /** The markets we cover most, first. */
-const CORE = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH"];
+const CORE = SITE_INDEX_COUNTRIES;
 
 /**
  * A plain index of the site for anyone not using the map — a crawler above
@@ -23,18 +23,8 @@ const CORE = ["CZ", "SK", "PL", "DE", "AT", "IT", "CH"];
  * same links the hubs show, not a second page hidden behind the first.
  */
 export async function SiteIndex({ locale }: { locale: Locale }) {
-  const today = new Date().toISOString().slice(0, 10);
-  // One round trip, not two: the season's list used to wait for the first
-  // pair, and the home page document stayed open until it came back.
-  const [hubs, season] = await Promise.all([
-    listQualifyingHubs(CORE).catch(() => []),
-    listEvents({ countryCodes: CORE, dateFrom: today, dateTo: addDaysIso(today, 120) }).catch(() => []),
-  ]);
-  // The next ten days are a slice of the season's list, not a query of their own.
-  const soonUntil = addDaysIso(today, 9);
-  const soon = season.filter((e) => e.startDate <= soonUntil);
+  const { hubs, series, soon } = await getSiteIndexData();
   const rc = raceCopy[locale];
-  const series = seriesIn(season).slice(0, 24);
   const countries = CORE.filter((c) => isListedCountry(c));
 
   return (

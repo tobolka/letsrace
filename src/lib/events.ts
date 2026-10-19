@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
 import {
@@ -442,7 +443,7 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
  * Whether a public series has this slug — one row, no rounds. The series page
  * asks this before it streams anything, so a dead address can still answer 404.
  */
-export const getPublicSeriesRow = cache(async function getPublicSeriesRow(slug: string) {
+export const getPublicSeriesRow = cache(unstable_cache(async function getPublicSeriesRow(slug: string) {
   const supabase = createServerSupabase();
   const { data: row, error } = await supabase
     .from("series")
@@ -452,9 +453,9 @@ export const getPublicSeriesRow = cache(async function getPublicSeriesRow(slug: 
     .maybeSingle();
   if (error) throw new Error(error.message);
   return row;
-});
+}, ["public-series-row-v1"], { revalidate: 3600, tags: ["public-catalogue"] }));
 
-export const getSeriesBySlug = cache(async function getSeriesBySlug(
+export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySlug(
   slug: string,
 ): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
   const supabase = createServerSupabase();
@@ -482,7 +483,7 @@ export const getSeriesBySlug = cache(async function getSeriesBySlug(
     series: mapSeriesRow(row as Record<string, unknown>, events.length),
     events,
   };
-});
+}, ["public-series-rounds-v1"], { revalidate: 3600, tags: ["public-catalogue"] }));
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();
@@ -513,7 +514,7 @@ export async function getEventBySlug(slug: string) {
 }
 
 /** Public race by slug for SEO pages and deep links. */
-export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
+export const getPublicEventBySlug = cache(unstable_cache(async function getPublicEventBySlug(
   slug: string,
 ): Promise<EventListItem | null> {
   const supabase = createServerSupabase();
@@ -558,7 +559,7 @@ export const getPublicEventBySlug = cache(async function getPublicEventBySlug(
   const cc = event.location?.countryCode;
   if (cc && !isListedCountry(cc)) return null;
   return event;
-});
+}, ["public-event-by-slug-v1"], { revalidate: 3600, tags: ["public-catalogue"] }));
 
 /**
  * Races an address no race has may mean: the one to send it to, when the
