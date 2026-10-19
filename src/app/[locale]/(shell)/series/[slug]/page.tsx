@@ -124,7 +124,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
           description={words.own ?? words.generated}
         >
           <Button asChild>
-            <Link href={`/${locale}?series=${data.series.slug}`}>
+            <Link href={`/${locale}?series=${data.series.slug}&dateFrom=&dateTo=`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
@@ -134,7 +134,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
           <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}
         <section className="mt-8">
-          <RaceDetailMap events={upcoming.length ? upcoming : data.events} locale={locale} href={`/${locale}?series=${data.series.slug}`} label={t.viewOnMap} />
+          <RaceDetailMap events={upcoming.length ? upcoming : data.events} locale={locale} href={`/${locale}?series=${data.series.slug}&dateFrom=&dateTo=`} label={t.viewOnMap} />
         </section>
         {upcoming.length > 0 && (
           <section className="mt-8">

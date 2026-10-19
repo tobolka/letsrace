@@ -4,11 +4,13 @@ import { localePath } from "@/lib/localized-paths";
 export function eventMapPath(
   locale: string,
   event: { slug: string; startDate: string; endDate?: string | null },
+  options: { anyDate?: boolean } = {},
 ) {
   const params = new URLSearchParams();
   params.set("e", event.slug);
-  params.set("dateFrom", event.startDate);
-  params.set("dateTo", event.endDate || event.startDate);
+  // Empty dates are the map's "any date" filter; absent ones fall back to this weekend.
+  params.set("dateFrom", options.anyDate ? "" : event.startDate);
+  params.set("dateTo", options.anyDate ? "" : event.endDate || event.startDate);
   return `/${locale}?${params.toString()}`;
 }
 
