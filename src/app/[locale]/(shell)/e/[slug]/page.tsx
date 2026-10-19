@@ -120,7 +120,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     (id) => ageCategoryLabel(id, locale),
   );
   const levelLabel = event.level ? raceLevelLabel(event.level, locale) : null;
-  const mapHref = eventMapPath(locale, event, { anyDate: true });
+  const mapHref = eventMapPath(locale, event, { upcoming: true });
   const trustText = trustLabel(eventTrustLevel(event), t);
   const checkedText = lastCheckedLabel(event.lastSeenAt, locale, t.trustChecked);
   // Only markets that actually have a hub page — linking to a 404 is worse than

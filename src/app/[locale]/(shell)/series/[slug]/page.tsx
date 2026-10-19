@@ -14,6 +14,7 @@ import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RaceDetailMap } from "@/components/race/race-detail-map";
+import { todayIso } from "@/lib/date-presets";
 import { Button } from "@/components/ui/button";
 import { SeriesSkeleton } from "./series-skeleton";
 
@@ -124,7 +125,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
           description={words.own ?? words.generated}
         >
           <Button asChild>
-            <Link href={`/${locale}?series=${data.series.slug}&dateFrom=&dateTo=`}>
+            <Link href={`/${locale}?series=${data.series.slug}&dateFrom=${todayIso()}&dateTo=`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
@@ -133,15 +134,15 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
         {words.own ? (
           <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}
-        <section className="mt-8">
-          <RaceDetailMap events={upcoming.length ? upcoming : data.events} locale={locale} href={`/${locale}?series=${data.series.slug}&dateFrom=&dateTo=`} label={t.viewOnMap} />
-        </section>
         {upcoming.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{rc.upcoming}</h2>
             <RaceLinkList events={upcoming} locale={locale} headingLevel="h3" />
           </section>
         )}
+        <section className="mt-8">
+          <RaceDetailMap events={upcoming.length ? upcoming : data.events} locale={locale} href={`/${locale}?series=${data.series.slug}&dateFrom=${todayIso()}&dateTo=`} label={t.viewOnMap} />
+        </section>
         {past.length > 0 && (
           <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{rc.pastRounds}</h2>
