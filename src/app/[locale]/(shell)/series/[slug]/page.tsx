@@ -13,6 +13,7 @@ import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
 import { browseCrumbs, browsePlace } from "@/lib/browse-trail";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
+import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { Button } from "@/components/ui/button";
 import { SeriesSkeleton } from "./series-skeleton";
 
@@ -132,6 +133,9 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
         {words.own ? (
           <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}
+        <section className="mt-8">
+          <RaceDetailMap events={upcoming.length ? upcoming : data.events} locale={locale} href={`/${locale}?series=${data.series.slug}`} label={t.viewOnMap} />
+        </section>
         {upcoming.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{rc.upcoming}</h2>

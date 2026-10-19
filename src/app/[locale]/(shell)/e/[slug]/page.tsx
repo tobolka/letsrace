@@ -302,7 +302,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         </section>
 
         <section className="mt-8">
-          <RaceDetailMap event={event} locale={locale} href={mapHref} label={t.viewOnMap} />
+          <RaceDetailMap events={[event]} locale={locale} href={mapHref} label={t.viewOnMap} />
         </section>
 
         {event.series && rounds.length > 0 ? (
