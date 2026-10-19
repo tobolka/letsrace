@@ -88,6 +88,18 @@ export function proxy(request: NextRequest) {
     });
   }
 
+  // Only deep links need a server lookup and date-normalising redirect.
+  // Keeping searchParams out of the ordinary home page lets Next cache its
+  // five locale variants instead of rendering every visit and filter URL.
+  if (isHomepage(pathname) && request.nextUrl.searchParams.get("e")) {
+    const url = request.nextUrl.clone();
+    const locale = localeFromPath(pathname);
+    url.pathname = `/${locale}/map-entry`;
+    const response = NextResponse.rewrite(url);
+    response.headers.set("x-locale", locale);
+    return response;
+  }
+
   // An address that does not start with a language (`/nonsense`) would land in
   // `[locale]` as a language we do not publish, and a root layout's notFound()
   // shows Next's bare 404. Send it somewhere under the default language that

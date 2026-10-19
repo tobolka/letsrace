@@ -68,16 +68,9 @@ const nextConfig: NextConfig = {
      */
     globalNotFound: true,
     optimizePackageImports: ["lucide-react", "date-fns"],
-    /**
-     * Ship the stylesheet inside the HTML instead of behind a <link>.
-     *
-     * The shell now leaves the server in 40ms, but the browser cannot paint it
-     * until a render-blocking stylesheet has been discovered, requested and
-     * parsed — which is the two blank frames at the start of the filmstrip.
-     * Tailwind keeps this small (121 kB raw, 21 kB on the wire), so trading a
-     * round trip for those bytes is worth it on a first visit.
-     */
-    inlineCss: true,
+    // A shared immutable stylesheet is downloaded once. Inlining repeated
+    // ~145 KB of CSS in every HTML response and again in its RSC payload.
+    inlineCss: false,
   },
   async redirects() {
     return [

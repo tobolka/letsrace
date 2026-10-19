@@ -1,91 +1,16 @@
-import { Suspense } from "react";
-import { ExploreShell } from "@/components/explore/explore-shell";
-import { SiteIndex } from "@/components/seo/site-index";
-import { SiteJsonLd } from "@/components/seo/site-json-ld";
-import { getPublicEventBySlug } from "@/lib/events";
-import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { notFound, redirect } from "next/navigation";
+import { ExplorePage } from "@/components/explore/explore-page";
+import { locales, type Locale } from "@/lib/i18n/messages";
+import { notFound } from "next/navigation";
 
-/** Cache the explore shell briefly; client refetch handles bbox. */
-export const revalidate = 120;
+/** Five shared entry pages; live map results are fetched in the browser. */
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export default async function LocalePage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const { locale: raw } = await params;
-  if (!locales.includes(raw as Locale)) notFound();
-  const locale = (raw as Locale) || defaultLocale;
-  const sp = await searchParams;
-  const one = (key: string) => {
-    const v = sp[key];
-    return typeof v === "string" && v ? v : undefined;
-  };
-  const slug = one("e");
-  const focused = slug ? await getPublicEventBySlug(slug) : null;
-  if (focused && (!one("dateFrom") || !one("dateTo"))) {
-    const next = new URLSearchParams();
-    for (const [key, value] of Object.entries(sp)) {
-      if (typeof value === "string" && value) next.set(key, value);
-      else if (Array.isArray(value)) {
-        for (const item of value) {
-          if (item) next.append(key, item);
-        }
-      }
-    }
-    next.set("e", focused.slug);
-    if (!one("dateFrom")) next.set("dateFrom", focused.startDate);
-    if (!one("dateTo")) next.set("dateTo", focused.endDate || focused.startDate);
-    redirect(`/${locale}?${next.toString()}`);
-  }
-  /**
-   * No race list is fetched here, and that is the point.
-   *
-   * The list this used to send was never shown: the shell renders placeholder
-   * rows until the map settles on its real bounds and fetches its own set, and
-   * the two sets are not the same. So a second of server time went into rows
-   * that were serialised, hydrated and then replaced — the whole of the wait
-   * before the page appeared, spent on something nobody saw.
-   *
-   * The one row still worth fetching is the race someone followed a link to:
-   * the map has to open on it.
-   */
-  const initialEvents = focused ? [focused] : [];
-
-  // No Suspense boundary here: the data above is already awaited, so one would
-  // never show. `loading.tsx` is the real boundary — it is what Next streams
-  // before this component runs at all.
-  return (
-    <>
-      <SiteJsonLd locale={locale} />
-      {/*
-        Discover the intro image before hydration. AVIF-capable browsers use
-        the compressed variant; the picture element provides a WebP fallback.
-      */}
-      <link
-        rel="preload"
-        as="image"
-        href="/intro-race-v2.avif"
-        type="image/avif"
-        imageSrcSet="/intro-race-v2.avif 1x, /intro-race-v2@2x.avif 2x"
-        fetchPriority="high"
-      />
-      <ExploreShell
-        initialEvents={initialEvents}
-        messages={messages[locale]}
-        locale={locale}
-      />
-      {/* Streamed after the map's shell, so it never holds the first paint. */}
-      <Suspense fallback={null}>
-        <SiteIndex locale={locale} />
-      </Suspense>
-    </>
-  );
+export default async function LocalePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!locales.includes(locale as Locale)) notFound();
+  return <ExplorePage locale={locale as Locale} initialEvents={[]} />;
 }
