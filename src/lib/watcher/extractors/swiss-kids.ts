@@ -131,6 +131,85 @@ function valaisDisc(raw: string): Discipline[] {
   return ["mtb"];
 }
 
+/**
+ * The line under a stage title — "Hors Category (HC)", "XCO", "Radkriterium",
+ * "XCC + XCO CH-Meisterschaften" — is the only place the site says what is
+ * actually raced. Assuming cross-country for every stage filed the GP Osterhas,
+ * a road criterium on an 880 m circuit where a road bike is mandatory from U17,
+ * under XCO.
+ */
+function sbcDiscipline(label: string): Discipline[] {
+  const t = fold(label);
+  if (/kriterium|criterium/.test(t)) return ["criterium"];
+  if (/strasse|strassen|route|road/.test(t)) return ["road"];
+  const found: Discipline[] = [];
+  if (/xcc|short track/.test(t)) found.push("xcc");
+  if (/xcm|marathon/.test(t)) found.push("xcm");
+  if (/enduro/.test(t)) found.push("enduro");
+  if (/downhill|\bdh\b/.test(t)) found.push("dh");
+  // A Swiss Bike Cup round that names only its UCI class is a cross-country one.
+  if (/xco/.test(t) || !found.length) found.push("xco");
+  return found;
+}
+
+/** A stage the series itself calls a kids-only round — "das erste reine … Kids Rennen". */
+const SBC_KIDS_ONLY =
+  /\brein\w*\b[^.]{0,60}kids|kids[- ]only|nur\s+f[üu]r\s+kids|(?:exclusivement|uniquement)[^.]{0,40}kids/i;
+
+/**
+ * Every stage page lists a kids parcours, so the word alone means nothing. Take
+ * the audience from the round being declared kids-only, and only when no elite
+ * field is on the programme — a stage page published before its timetable is
+ * silent about both, and silence must not turn a full round into a kids race.
+ *
+ * The elite check reads the timetable rather than the page, which also carries
+ * news headlines: a report on an elite title won elsewhere says nothing about
+ * who starts here.
+ */
+function sbcAudience(intro: string, timetable: string): "kids" | "mixed" {
+  if (/\belite\b/i.test(timetable)) return "mixed";
+  return SBC_KIDS_ONLY.test(intro) ? "kids" : "mixed";
+}
+
+/** Škoda Swiss Bike Cup — one stage page: place, dates, class, audience. */
+export function parseSwissBikeCupStage(
+  seriesUrl: string,
+  href: string,
+  html: string,
+): ParsedEvent | null {
+  const $p = cheerio.load(html);
+  const heading = $p("h1").first().text().replace(/\s+/g, " ").trim();
+  const title = $p("title").first().text().replace(/\s+/g, " ").trim();
+  const place = sbcPlace(heading || title);
+  if (!place) return null;
+
+  // The stage header carries its own date; the page around it carries news dates.
+  const scoped = $p(".stage_date-wrap").first().text();
+  const dates = enRange(scoped) || enRange($p("body").text());
+  if (!dates) return null;
+
+  const label = $p(".stage_category-wrap").first().text().replace(/\s+/g, " ").trim();
+  const intro = $p("p.text-size-large").first().text().replace(/\s+/g, " ").trim();
+  const timetable = $p("#zeitplan, .section-zeitplan").first().text();
+
+  return {
+    externalId: `swiss-bike-cup-${dates.start}-${normalizeName(place)}`,
+    name: `Škoda Swiss Bike Cup — ${place}`,
+    startDate: dates.start,
+    endDate: dates.end,
+    placeText: place,
+    countryHint: "CH",
+    discipline: sbcDiscipline(label),
+    audience: sbcAudience(intro, timetable),
+    seriesName: "Škoda Swiss Bike Cup",
+    seriesSlug: "skoda-swiss-bike-cup",
+    seriesWebsite: "https://www.swissbikecup.ch/",
+    sourceUrl: seriesUrl.split("?")[0]!,
+    websiteUrl: href,
+    confidence: 0.9,
+  };
+}
+
 /** Škoda Swiss Bike Cup — homepage etappe list, dates from stage pages. */
 export async function parseSwissBikeCup(url: string, html: string): Promise<ParsedEvent[]> {
   const $ = cheerio.load(html);
@@ -149,28 +228,8 @@ export async function parseSwissBikeCup(url: string, html: string): Promise<Pars
   for (const href of [...new Set(hrefs)]) {
     const page = await fetchText(href);
     if (!page.ok) continue;
-    const $p = cheerio.load(page.text);
-    const title = ($p("title").first().text() || $p("h1").first().text()).replace(/\s+/g, " ").trim();
-    const dates = enRange($p("body").text());
-    if (!dates) continue;
-    const place = sbcPlace(title);
-    const kids = /moléson|moleson/i.test(`${place} ${title}`);
-    push(events, seen, {
-      externalId: `swiss-bike-cup-${dates.start}-${normalizeName(place)}`,
-      name: `Škoda Swiss Bike Cup — ${place}`,
-      startDate: dates.start,
-      endDate: dates.end,
-      placeText: place,
-      countryHint: "CH",
-      discipline: ["xco"],
-      audience: kids ? "kids" : "mixed",
-      seriesName: "Škoda Swiss Bike Cup",
-      seriesSlug: "skoda-swiss-bike-cup",
-      seriesWebsite: "https://www.swissbikecup.ch/",
-      sourceUrl: url.split("?")[0]!,
-      websiteUrl: href,
-      confidence: 0.9,
-    });
+    const ev = parseSwissBikeCupStage(url, href, page.text);
+    if (ev) push(events, seen, ev);
   }
   return events;
 }
