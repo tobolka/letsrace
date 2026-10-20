@@ -1137,8 +1137,21 @@ export async function watchOne(row: {
       calendarKind && extracted.events.length === 0 && !seasonMismatch
         ? await sourceHasUpcomingEvents(supabase, row.id)
         : false;
+    /*
+     * A single race's own page that once gave us the race and now gives
+     * nothing, with no edition ahead in the catalogue: the race has been run
+     * and next year's is not up yet. Forty sources sat red in the admin as
+     * "broken" for exactly this, every one of them reading fine.
+     */
+    const raceSeasonOver =
+      !calendarKind && extracted.events.length === 0 && !seasonMismatch
+        ? (await sourceHasAnyEvents(supabase, row.id)) &&
+          !(await sourceHasUpcomingEvents(supabase, row.id))
+        : false;
     const offSeasonEmpty =
-      (calendarKind && extracted.events.length === 0 && !stillHasUpcoming) || seasonMismatch;
+      (calendarKind && extracted.events.length === 0 && !stillHasUpcoming) ||
+      raceSeasonOver ||
+      seasonMismatch;
     const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
     const needsReview =
       !offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4);
@@ -2407,6 +2420,17 @@ export async function previewUrl(url: string) {
 }
 
 /** Does the catalogue still hold races ahead of today that came from this source? */
+async function sourceHasAnyEvents(
+  supabase: ReturnType<typeof createServerSupabase>,
+  watchedUrlId: string,
+): Promise<boolean> {
+  const { count } = await supabase
+    .from("event_sources")
+    .select("event_id", { count: "exact", head: true })
+    .eq("watched_url_id", watchedUrlId);
+  return (count ?? 0) > 0;
+}
+
 async function sourceHasUpcomingEvents(
   supabase: ReturnType<typeof createServerSupabase>,
   watchedUrlId: string,

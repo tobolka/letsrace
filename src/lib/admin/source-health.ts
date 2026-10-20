@@ -48,6 +48,28 @@ function daysSince(iso: string | null): number | null {
 
 const CALENDAR_KINDS = ["series", "federation", "aggregator", "calendar"];
 
+/** Which of these sources the catalogue holds a public race ahead from. */
+async function sourcesWithUpcoming(
+  supabase: ReturnType<typeof createServerSupabase>,
+  ids: string[],
+): Promise<Set<string>> {
+  const found = new Set<string>();
+  const today = new Date().toISOString().slice(0, 10);
+  // Small batches: one big aggregator could fill a thousand-row page alone.
+  for (let i = 0; i < ids.length; i += 10) {
+    const { data, error } = await supabase
+      .from("event_sources")
+      .select("watched_url_id, event:events!inner(start_date, visibility)")
+      .in("watched_url_id", ids.slice(i, i + 10))
+      .eq("event.visibility", "public")
+      .gte("event.start_date", today)
+      .limit(1000);
+    if (error) throw new Error(error.message);
+    for (const row of data ?? []) found.add(row.watched_url_id as string);
+  }
+  return found;
+}
+
 /**
  * Cheap pass: judge on the stored record alone, no network.
  *
@@ -65,6 +87,19 @@ export async function getSourceHealth(): Promise<SourceHealthReport> {
   if (error) throw new Error(error.message);
 
   const rows = data ?? [];
+
+  /*
+   * "Off season" is only suspicious when the catalogue still holds races ahead
+   * from that source — the federation portal that said "nothing" while 369 of
+   * its races were on the map. A calendar with nothing ahead saying "nothing"
+   * is October: 106 sources, 57 of them next year's pages, kept this badge at
+   * three figures and hid the few rows that mattered.
+   */
+  const quietIds = rows
+    .filter((r) => QUIET_STATES.includes(r.last_extract_status as (typeof QUIET_STATES)[number]) && !r.last_error)
+    .map((r) => r.id as string);
+  const withUpcoming = await sourcesWithUpcoming(supabase, quietIds);
+
   const stalled: StalledSource[] = [];
   for (const row of rows) {
     const days = daysSince(row.last_fetched_at as string | null);
@@ -74,7 +109,10 @@ export async function getSourceHealth(): Promise<SourceHealthReport> {
     if (!row.last_fetched_at) reason = "never read";
     else if (days != null && days >= STALE_DAYS) reason = "not read recently";
     else if (state === "error" || row.last_error) reason = "erroring";
-    else if (QUIET_STATES.includes(state as (typeof QUIET_STATES)[number])) {
+    else if (
+      QUIET_STATES.includes(state as (typeof QUIET_STATES)[number]) &&
+      withUpcoming.has(row.id as string)
+    ) {
       reason = "quiet but listing races";
     }
     if (!reason) continue;
