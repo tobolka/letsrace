@@ -14,7 +14,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { messagesFor } from "@/lib/i18n/messages";
 
 export type FeedFilters = {
-  q: string;
   categories: string[];
   disciplines: string[];
   levels: string[];
@@ -22,15 +21,19 @@ export type FeedFilters = {
   country: string[];
 };
 
-/** The feed's address for these filters; dates stay out so it keeps rolling. */
+/**
+ * The feed's address for these filters, in the route's canonical form (sorted,
+ * no search text) so it is served from cache without a redirect. Dates stay
+ * out so it keeps rolling.
+ */
 export function feedPath(locale: string, f: FeedFilters): string {
+  const sorted = (v: string[]) => [...new Set(v)].sort().join(",");
   const params = new URLSearchParams({ lang: locale });
-  if (f.q.trim()) params.set("q", f.q.trim());
   if (f.series) params.set("series", f.series);
-  if (f.country.length) params.set("country", f.country.join(","));
-  if (f.disciplines.length) params.set("disciplines", f.disciplines.join(","));
-  if (f.levels.length) params.set("levels", f.levels.join(","));
-  if (f.categories.length) params.set("categories", f.categories.join(","));
+  if (f.country.length) params.set("country", sorted(f.country));
+  if (f.disciplines.length) params.set("disciplines", sorted(f.disciplines));
+  if (f.levels.length) params.set("levels", sorted(f.levels));
+  if (f.categories.length) params.set("categories", sorted(f.categories));
   return `/api/races.ics?${params}`;
 }
 
