@@ -111,11 +111,14 @@ export function AccountMenuItems({
   onSubmitRace,
   onFeedback,
   onSignOut,
+  showAbout = true,
 }: {
   authed: boolean | null;
   email: string | null;
   locale: string;
   messages: Messages;
+  /** Off where the about page already has its own icon next to the menu. */
+  showAbout?: boolean;
   onSignIn?: () => void;
   onSubmitRace?: () => void;
   onFeedback?: () => void;
@@ -191,11 +194,13 @@ export function AccountMenuItems({
           </DropdownMenuItem>
         ) : null}
         {/* Who makes the site and where its races come from. */}
-        <DropdownMenuItem asChild>
-          <Link href={localePath(locale, "about")}>
-            <Info aria-hidden /> {messages.navAbout}
-          </Link>
-        </DropdownMenuItem>
+        {showAbout ? (
+          <DropdownMenuItem asChild>
+            <Link href={localePath(locale, "about")}>
+              <Info aria-hidden /> {messages.navAbout}
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
       </DropdownMenuGroup>
 
       {authed === true ? (

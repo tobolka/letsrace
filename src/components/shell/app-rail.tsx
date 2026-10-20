@@ -4,7 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { UserRound } from "lucide-react";
+import { CirclePlus, CircleUserRound, Info, UserRound } from "lucide-react";
 import { AccountMenuItems, signOutAndRefresh } from "@/components/explore/map-account-button";
 import { exploreNav, profileNav, type NavItem } from "@/components/shell/nav-items";
 import { useCarryFilters } from "@/components/shell/use-carried-query";
@@ -83,26 +83,52 @@ function UserMenu({ locale }: { locale: string }) {
   const router = useRouter();
   const { authed, email } = useAuthUser();
   const [dialog, setDialog] = useState<"auth" | "submit" | "feedback" | null>(null);
+  const pathname = usePathname() ?? "";
+  const aboutHref = localePath(locale, "about");
+  const aboutActive = pathname.startsWith(aboutHref);
 
   return (
     <>
-      <SidebarMenu className="items-center">
+      <SidebarMenu className="items-center gap-2">
+        {/* What has nowhere else to live, laid out where it can be seen —
+            adding a race and who we are — with the rest behind the last icon. */}
+        <SidebarMenuItem>
+          <SidebarMenuButton tooltip={t.missingRace} onClick={() => setDialog("submit")}>
+            <CirclePlus strokeWidth={2} />
+            <span>{t.missingRace}</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            isActive={aboutActive}
+            tooltip={t.navAbout}
+            className="data-[active=true]:bg-sidebar-accent data-[active=true]:text-brand"
+          >
+            <Link href={aboutHref} aria-current={aboutActive ? "page" : undefined}>
+              <Info strokeWidth={aboutActive ? 2.25 : 2} />
+              <span>{t.navAbout}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton size="lg" tooltip={email ?? t.account} className="justify-center">
-                <Avatar size="sm" className="size-8">
-                  <AvatarFallback
-                    className={cn(
-                      "text-xs font-medium",
-                      authed ? "bg-foreground text-background" : "bg-sidebar-accent text-muted-foreground",
-                    )}
-                  >
-                    {authed && email ? initials(email) : <UserRound className="size-4" />}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="sr-only">{t.account}</span>
-              </SidebarMenuButton>
+              {authed && email ? (
+                <SidebarMenuButton size="lg" tooltip={email} className="justify-center">
+                  <Avatar size="sm" className="size-8">
+                    <AvatarFallback className="bg-foreground text-xs font-medium text-background">
+                      {initials(email)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">{t.account}</span>
+                </SidebarMenuButton>
+              ) : (
+                <SidebarMenuButton tooltip={t.account}>
+                  <CircleUserRound strokeWidth={2} />
+                  <span>{t.account}</span>
+                </SidebarMenuButton>
+              )}
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="end" sideOffset={8} className="w-60">
               <AccountMenuItems
@@ -110,8 +136,8 @@ function UserMenu({ locale }: { locale: string }) {
                 email={email}
                 locale={locale}
                 messages={t}
+                showAbout={false}
                 onSignIn={() => setDialog("auth")}
-                onSubmitRace={() => setDialog("submit")}
                 onFeedback={() => setDialog("feedback")}
                 onSignOut={() => void signOutAndRefresh(router)}
               />

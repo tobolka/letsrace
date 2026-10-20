@@ -40,7 +40,7 @@ html[data-welcome-seen="1"] #letsrace-welcome {
      its active item one more (stone-200) — the same steps the chips use. */
   --sidebar: oklch(0.97 0.001 106.424);
   /* stone-500: the rail's icons sit well back; the active one is stone-900. */
-  --sidebar-foreground: oklch(0.553 0.013 58.071);
+  --sidebar-foreground: oklch(0.46 0.012 58.071);
   --sidebar-primary: oklch(0.216 0.006 56.043);
   --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
   --sidebar-accent: oklch(0.923 0.003 48.717);
