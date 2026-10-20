@@ -166,8 +166,8 @@ function MobileFilterRow({
                   );
                 })}
               </div>
-              {radius != null && state.place.status === "denied" ? (
-                <p className="text-xs text-muted-foreground">{t.distanceDenied}</p>
+              {radius != null && (state.place.status === "denied" || state.place.status === "outside") ? (
+                <p className="text-xs text-muted-foreground">{state.place.status === "outside" ? t.distanceOutside : t.distanceDenied}</p>
               ) : null}
             </section>
           }

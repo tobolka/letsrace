@@ -1501,6 +1501,7 @@ export function RaceMap({
       const lat = pos.coords.latitude;
       if (!isInEuropeMap(lat, lng)) {
         setLocating(false);
+        setLocError(messagesFor(locale).locationOutside);
         return;
       }
       setUserPos({
@@ -1570,7 +1571,7 @@ export function RaceMap({
         watchIdRef.current = null;
       }
     };
-  }, [mapEpoch, locationDeniedLabel]);
+  }, [mapEpoch, locationDeniedLabel, locale]);
 
   function goToMyLocation() {
     if (!navigator.geolocation) {
@@ -1584,7 +1585,10 @@ export function RaceMap({
       const lng = pos.coords.longitude;
       const lat = pos.coords.latitude;
       setLocating(false);
-      if (!isInEuropeMap(lat, lng)) return;
+      if (!isInEuropeMap(lat, lng)) {
+        setLocError(messagesFor(locale).locationOutside);
+        return;
+      }
       setUserPos({ lng, lat, accuracy: pos.coords.accuracy });
       const map = mapRef.current;
       if (!map) return;

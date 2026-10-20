@@ -206,11 +206,18 @@ export function LightRaceMap(props: RaceMapProps) {
       el.addEventListener("wheel", gesture, { passive: true });
       const detachWheel = embedded ? () => {} : attachSmoothWheelZoom(map as WheelMap, el);
       el.addEventListener("keydown", gesture);
+      // Outside Europe the map has nothing to show, so the camera stays put and
+      // says why — once for a remembered permission, every time when asked.
+      let outsideNoticed = false;
       const applyLocation = (pos: GeolocationPosition, explicit: boolean) => {
         if (disposed) return;
         setLocating(false);
         const { latitude: lat, longitude: lng } = pos.coords;
-        if (!isInEuropeMap(lat, lng)) return;
+        if (!isInEuropeMap(lat, lng)) {
+          if (explicit || !outsideNoticed) setLocationError(messagesFor(latest.current.locale ?? "en").locationOutside);
+          outsideNoticed = true;
+          return;
+        }
         setLocationError("");
         userMarker?.remove();
         const dot = document.createElement("div"); dot.className = "fast-user-location";
@@ -309,7 +316,7 @@ export function LightRaceMap(props: RaceMapProps) {
       <button type="button" aria-label={props.myLocationLabel ?? messages.myLocation} disabled={locating} aria-busy={locating} onClick={() => locateRef.current()}><LocateFixed size={19} /></button>
       <div className="fast-map-zoom"><button type="button" aria-label={zoom[0]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomIn(); }}><Plus size={19} /></button><button type="button" aria-label={zoom[1]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomOut(); }}><Minus size={19} /></button></div>
     </div>
-    {(error || locationError) && <div className="absolute left-3 top-16 z-[600] flex max-w-[calc(100%_-_1.5rem)] md:max-w-sm items-start gap-3 rounded-lg border bg-background px-3 py-2 text-sm shadow-sm" role="status">
+    {(error || locationError) && <div className="absolute left-1/2 top-16 z-[600] flex w-max max-w-[calc(100%_-_1.5rem)] -translate-x-1/2 md:top-3 md:max-w-md items-start gap-3 rounded-lg border bg-background px-3 py-2 text-sm shadow-sm" role="status">
       <span>{error || locationError}</span>
       <button type="button" aria-label={messages.close} className="-mr-1 -mt-1 grid size-8 shrink-0 place-items-center rounded-md hover:bg-muted" onClick={() => { setError(""); setLocationError(""); }}><X size={16} /></button>
     </div>}

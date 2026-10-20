@@ -46,7 +46,9 @@ export function DistanceFilter({
   const t = messagesFor(locale);
   // Keep the preference for a later successful location fix, but never show
   // an unavailable radius as an applied filter.
-  const selectedRadius = status === "denied" ? null : radius;
+  const unavailable = status === "denied" || status === "outside";
+  const unavailableLabel = status === "outside" ? t.distanceOutside : t.distanceDenied;
+  const selectedRadius = unavailable ? null : radius;
   const active = selectedRadius != null;
   const fullLabel = active ? t.distanceWithin.replace("{km}", String(selectedRadius)) : t.distanceFilter;
   const label = compact && active ? `${selectedRadius} km` : fullLabel;
@@ -64,11 +66,11 @@ export function DistanceFilter({
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
-          {status === "locating" || status === "denied" ? (
+          {status === "locating" || unavailable ? (
             <>
               <DropdownMenuSeparator />
               <p className="px-2 py-1.5 text-xs text-muted-foreground">
-                {status === "locating" ? t.distanceLocating : t.distanceDenied}
+                {status === "locating" ? t.distanceLocating : unavailableLabel}
               </p>
             </>
           ) : null}
@@ -97,7 +99,7 @@ export function DistanceFilter({
             aria-label={fullLabel}
             // A distance the browser will not let us measure is not in force,
             // and the chip must not look as if it were.
-            title={radius != null && status === "denied" ? t.distanceDenied : undefined}
+            title={radius != null && unavailable ? unavailableLabel : undefined}
             className={cn(
               "shrink-0 max-md:h-11 [@media(pointer:coarse)]:h-11",
               active && "rounded-r-none",
@@ -105,7 +107,7 @@ export function DistanceFilter({
           >
             {status === "locating" && active ? (
               <Spinner />
-            ) : status === "denied" ? (
+            ) : unavailable ? (
               <LocateOff />
             ) : (
               <LocateFixed />

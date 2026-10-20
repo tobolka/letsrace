@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { distanceKm } from "@/lib/geo/distance";
+import { isInEuropeMap } from "@/lib/geo/europe";
 
 type Origin = { lat: number; lng: number };
-export type OriginStatus = "idle" | "locating" | "ready" | "denied";
+/** `outside`: located, but beyond the Europe we cover, so no distance applies. */
+export type OriginStatus = "idle" | "locating" | "ready" | "denied" | "outside";
 
 const KEY = "letsrace.origin.v1";
 
@@ -13,7 +15,7 @@ function readCached(): Origin | null {
     const raw = window.sessionStorage.getItem(KEY);
     if (!raw) return null;
     const v = JSON.parse(raw) as Origin;
-    return Number.isFinite(v?.lat) && Number.isFinite(v?.lng) ? v : null;
+    return Number.isFinite(v?.lat) && Number.isFinite(v?.lng) && isInEuropeMap(v.lat, v.lng) ? v : null;
   } catch {
     return null;
   }
@@ -40,6 +42,12 @@ export function useUserOrigin() {
 
   const acceptOrigin = useCallback((next: Origin) => {
     if (!Number.isFinite(next.lat) || !Number.isFinite(next.lng)) return;
+    // A radius around a point in the US would send the map somewhere it has
+    // no tiles and no races; keep the European view instead.
+    if (!isInEuropeMap(next.lat, next.lng)) {
+      setStatus("outside");
+      return;
+    }
     setOrigin((prev) => prev && distanceKm(prev, next) < 0.3 ? prev : next);
     setStatus("ready");
     try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode */ }
