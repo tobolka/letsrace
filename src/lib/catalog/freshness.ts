@@ -128,7 +128,15 @@ export async function hideDroppedCalendarEvents(opts: {
   for (const id of upcomingExt) {
     if (opts.extractedExternalIds.has(id)) overlap += 1;
   }
-  const dropped = upcoming.filter((row) => !opts.extractedExternalIds.has(row.external_id));
+  // A race the listing renamed ("Mulda" → "BRNOCAR Mulda") keeps its old id
+  // beside the new one. The old id going missing is not the race going missing:
+  // only a race none of whose ids came back counts as dropped.
+  const stillListed = new Set(
+    upcoming.filter((row) => opts.extractedExternalIds.has(row.external_id)).map((row) => row.event_id),
+  );
+  const dropped = upcoming.filter(
+    (row) => !opts.extractedExternalIds.has(row.external_id) && !stillListed.has(row.event_id),
+  );
 
   if (
     !shouldHideDroppedFromCalendar({
