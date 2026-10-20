@@ -6,6 +6,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { MonthCalendar, MonthToolbar, type CalendarItem } from "@/components/calendar/month-calendar";
 import { ExploreFilterBar } from "@/components/shell/explore-filter-bar";
 import { SectionHeader } from "@/components/shell/section-header";
+import { SubscribeFeed } from "@/components/calendar/subscribe-feed";
 import { useExploreFilters } from "@/components/shell/use-explore-filters";
 import { useRaceFeed } from "@/components/shell/use-race-feed";
 import { Spinner } from "@/components/ui/spinner";
@@ -79,7 +80,9 @@ export function ScheduleView({ locale }: { locale: string }) {
             {feed.loading ? <Spinner className="size-3.5" /> : null}
           </span>
         }
-      />
+      >
+        <SubscribeFeed locale={locale} filters={filters} />
+      </MonthToolbar>
 
       <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-scroll overscroll-contain transition-opacity [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", feed.loading && "opacity-60")}>
         <MonthCalendar
