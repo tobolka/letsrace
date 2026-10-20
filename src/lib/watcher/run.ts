@@ -1151,10 +1151,13 @@ export async function watchOne(row: {
           .map((ev) => ev.externalId)
           .filter((id): id is string => Boolean(id)),
       );
+      const dates = candidates.map((ev) => ev.startDate).filter(Boolean).sort();
       droppedHidden = await hideDroppedCalendarEvents({
         watchedUrlId: row.id,
         extractedExternalIds: extractedIds,
         extractedCount: candidates.length,
+        extractedFrom: dates[0],
+        extractedUntil: dates.at(-1),
       });
     }
 

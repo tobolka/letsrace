@@ -93,6 +93,14 @@ export async function hideDroppedCalendarEvents(opts: {
   watchedUrlId: string;
   extractedExternalIds: Set<string>;
   extractedCount: number;
+  /**
+   * The span of race dates this read reached. FCI and Ride&Rest are read a
+   * month window at a time, so a December cyclocross was "missing" from every
+   * November read and hidden a few at a time; a race outside the read's reach
+   * was not looked for, so it cannot have dropped.
+   */
+  extractedFrom?: string;
+  extractedUntil?: string;
 }): Promise<number> {
   const supabase = createServerSupabase();
   const sources = await allSourceRows<{ event_id: string; external_id: string | null }>(
@@ -115,7 +123,8 @@ export async function hideDroppedCalendarEvents(opts: {
       .from("events")
       .select("id, start_date, visibility, status")
       .in("id", idsChunk)
-      .gte("start_date", today)
+      .gte("start_date", opts.extractedFrom && opts.extractedFrom > today ? opts.extractedFrom : today)
+      .lte("start_date", opts.extractedUntil ?? "9999-12-31")
       .eq("visibility", "public")
       .in("status", [...ACTIVE_EVENT_STATUSES]);
     events.push(...((data ?? []) as typeof events));
