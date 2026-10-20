@@ -38,7 +38,7 @@ describe("explore filter storage", () => {
       disciplines: ["mtb"],
       levels: ["hobby"],
       series: "",
-      country: "CZ",
+      country: ["CZ", "SK"],
       sort: "distance",
       dateFrom: "2026-01-01",
       dateTo: "2026-01-31",
@@ -52,9 +52,16 @@ describe("explore filter storage", () => {
 
     const patch = storedExploreFiltersToPatch(parsed!);
     expect(patch.disciplines).toEqual(["mtb"]);
-    expect(patch.country).toBe("CZ");
+    expect(patch.country).toEqual(["CZ", "SK"]);
     expect(patch.sort).toBe("distance");
     expect(patch.dateFrom).toBe("2026-01-01");
+  });
+
+  it("reads a single country saved before the filter took several", () => {
+    const parsed = parseStoredExploreFilters(
+      JSON.stringify({ v: 1, country: "AT", datePreset: "any", categories: [], disciplines: [], levels: [] }),
+    );
+    expect(parsed?.country).toEqual(["AT"]);
   });
 
   it("rejects garbage storage payloads", () => {

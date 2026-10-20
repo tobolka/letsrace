@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { parseAsInteger, useQueryState, useQueryStates } from "nuqs";
 import type { SeriesOption } from "@/components/explore/map-filter-bar";
-import { INT_COUNTRY, seriesCountryKey } from "@/components/explore/map-filter-bar";
+import { seriesOutsideCountries } from "@/components/explore/map-filter-bar";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { filterSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
 import { useUserOrigin } from "@/hooks/use-user-origin";
@@ -21,9 +21,9 @@ import { loadSeriesList } from "@/lib/series-list";
  * The map keeps its own copy of this logic because every change there also has
  * to move a camera and refetch a viewport. These two views have no camera, so
  * a filter change is just a new URL — and the data hook watches the URL. The
- * semantics are the map's, deliberately: one discipline at a time, a cup or a
- * country toggles off when pressed again, and picking a country that the chosen
- * cup does not race in drops the cup.
+ * semantics are the map's, deliberately: disciplines and countries add up, a
+ * cup toggles off when pressed again, and a country choice that leaves out the
+ * chosen cup's country drops the cup.
  */
 const RADIUS_STORAGE_KEY = "letsrace.explore.radius.v1";
 
@@ -135,22 +135,19 @@ export function useExploreFilters() {
 
   const actions = {
     onCategory: (value: string) => void setFilters({ categories: toggleIn(filters.categories, value) }),
-    onDiscipline: (value: string) =>
-      void setFilters({ disciplines: filters.disciplines[0] === value ? [] : [value] }),
+    onDiscipline: (value: string) => void setFilters({ disciplines: toggleIn(filters.disciplines, value) }),
     onLevel: (value: string) => void setFilters({ levels: toggleIn(filters.levels, value) }),
     onClearDisciplines: () => void setFilters({ disciplines: [] }),
     onClearLevels: () => void setFilters({ levels: [] }),
     onClearCategories: () => void setFilters({ categories: [] }),
     onSeries: (slug: string) => void setFilters({ series: filters.series === slug ? "" : slug }),
     onCountry: (code: string) => {
-      const next = filters.country === code ? "" : code;
+      const next = toggleIn(filters.country, code);
       const row = seriesList.find((s) => s.slug === filters.series);
-      const seriesCountry = seriesCountryKey(row?.countryCode);
-      const dropSeries = Boolean(
-        next && filters.series && seriesCountry !== INT_COUNTRY && seriesCountry !== next,
-      );
+      const dropSeries = seriesOutsideCountries(row?.countryCode, filters.series, next);
       void setFilters({ country: next, ...(dropSeries ? { series: "" } : {}) });
     },
+    onClearCountries: () => void setFilters({ country: [] }),
     onPreset: (dateFrom: string, dateTo: string) => void setFilters({ dateFrom, dateTo }),
     onQ: (q: string) => {
       // A search is a find, not a filter: the date window widens to upcoming so a
@@ -171,7 +168,7 @@ export function useExploreFilters() {
       disciplines: [],
       levels: [],
       series: null,
-      country: null,
+      country: [],
       dateFrom: w.from,
       dateTo: w.to,
     });

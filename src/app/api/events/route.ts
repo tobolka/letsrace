@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
     levels: levels.length ? levels : undefined,
     ageCategories: ageCategories.length ? ageCategories : undefined,
     seriesSlug: sp.get("series") || undefined,
-    countryCodes: sp.getAll("country").filter(Boolean),
+    countryCodes: sp.getAll("country").flatMap((v) => v.split(",")).filter(Boolean),
     season: sp.get("season") || undefined,
     eventTypes: sp.getAll("eventType").filter(Boolean),
     dateFrom: sp.get("dateFrom") || undefined,

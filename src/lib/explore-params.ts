@@ -17,7 +17,8 @@ export const filterSearchParams = {
   disciplines: parseAsArrayOf(parseAsString).withDefault([]),
   levels: parseAsArrayOf(parseAsString).withDefault([]),
   series: parseAsString.withDefault(""),
-  country: parseAsString.withDefault(""),
+  /** One or more ISO codes, comma-separated (`CZ,SK`); a lone code still parses. */
+  country: parseAsArrayOf(parseAsString).withDefault([]),
   dateFrom: parseAsString.withDefault(WEEKEND_DEFAULT.from),
   dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
   sort: parseAsString.withDefault(""),

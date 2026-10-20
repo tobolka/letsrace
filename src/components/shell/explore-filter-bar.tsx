@@ -98,7 +98,7 @@ function MobileFilterRow({
     (filters.disciplines.length ? 1 : 0) +
     (filters.categories.length ? 1 : 0) +
     (filters.levels.length ? 1 : 0) +
-    (filters.country ? 1 : 0) +
+    (filters.country.length ? 1 : 0) +
     (filters.series ? 1 : 0) +
     (radius != null ? 1 : 0);
 
@@ -180,6 +180,7 @@ function MobileFilterRow({
           onClearCategories={actions.onClearCategories}
           onSeries={actions.onSeries}
           onCountry={actions.onCountry}
+          onClearCountries={actions.onClearCountries}
           onReset={reset}
         />
       ) : null}

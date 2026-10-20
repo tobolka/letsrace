@@ -6,9 +6,8 @@ import { useRouter } from "next/navigation";
 import { parseAsInteger, useQueryState, useQueryStates } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
 import {
-  INT_COUNTRY,
   MapFilterBar,
-  seriesCountryKey,
+  seriesOutsideCountries,
   type SeriesOption,
 } from "@/components/explore/map-filter-bar";
 import { MapAccountButton } from "@/components/explore/map-account-button";
@@ -342,7 +341,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    */
   const visibleEvents = useMemo(() => {
     const box = cameraBounds;
-    if (radiusArea || !box || filters.series || filters.country) return radiusEvents;
+    if (radiusArea || !box || filters.series || filters.country.length) return radiusEvents;
     if (filters.q.trim() && !lastPlacedQ.current) return radiusEvents;
     return radiusEvents.filter((e) => {
       // The race you opened stays in the list even when the map has carried it
@@ -446,9 +445,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     refetch({ categories: next });
   }
 
-  function setDiscipline(value: string) {
-    const current = filters.disciplines[0];
-    const next = current === value ? [] : [value];
+  function toggleDiscipline(value: string) {
+    const next = filters.disciplines.includes(value)
+      ? filters.disciplines.filter((d) => d !== value)
+      : [...filters.disciplines, value];
     void setFilters({ disciplines: next });
     refetch({ disciplines: next });
   }
@@ -488,7 +488,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       disciplines: [],
       levels: [],
       series: null,
-      country: null,
+      country: [],
       dateFrom: w.from,
       dateTo: w.to,
     });
@@ -498,7 +498,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       disciplines: [],
       levels: [],
       series: "",
-      country: "",
+      country: [],
       dateFrom: w.from,
       dateTo: w.to,
       skipBounds: clearSearch,
@@ -509,7 +509,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   function setSeries(slug: string) {
     const next = filters.series === slug ? "" : slug;
     void setFilters({ series: next });
-    refetch({ series: next, skipBounds: Boolean(next) || Boolean(filters.country), fitMap: Boolean(next) });
+    refetch({ series: next, skipBounds: Boolean(next) || filters.country.length > 0, fitMap: Boolean(next) });
   }
 
   function applySeries(slug: string) {
@@ -521,18 +521,28 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     });
   }
 
-  function setCountry(code: string) {
-    const next = filters.country === code ? "" : code;
+  function applyCountries(next: string[]) {
     const seriesRow = seriesList.find((s) => s.slug === filters.series);
-    const seriesCountry = seriesCountryKey(seriesRow?.countryCode);
-    const dropSeries = Boolean(next && filters.series && seriesCountry !== INT_COUNTRY && seriesCountry !== next);
+    const dropSeries = seriesOutsideCountries(seriesRow?.countryCode, filters.series, next);
     void setFilters({ country: next, ...(dropSeries ? { series: "" } : {}) });
     refetch({
       country: next,
       ...(dropSeries ? { series: "" } : {}),
-      skipBounds: Boolean(next) || Boolean(filters.series && !dropSeries),
-      fitMap: Boolean(next),
+      skipBounds: next.length > 0 || Boolean(filters.series && !dropSeries),
+      fitMap: next.length > 0,
     });
+  }
+
+  function toggleCountry(code: string) {
+    applyCountries(
+      filters.country.includes(code)
+        ? filters.country.filter((c) => c !== code)
+        : [...filters.country, code],
+    );
+  }
+
+  function clearCountries() {
+    applyCountries([]);
   }
 
   function setDateRange(dateFrom: string, dateTo: string) {
@@ -558,12 +568,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       const disciplines = (overrides.disciplines as string[]) ?? filters.disciplines;
       const levels = (overrides.levels as string[]) ?? filters.levels;
       const series = (overrides.series as string) ?? filters.series;
-      const country = (overrides.country as string) ?? filters.country;
+      const country = (overrides.country as string[]) ?? filters.country;
       const dateFrom = (overrides.dateFrom as string) ?? filters.dateFrom;
       const dateTo = (overrides.dateTo as string) ?? filters.dateTo;
       const skipBounds =
         overrides.skipBounds === true ||
-        (Boolean(series || country) && overrides.forceBounds !== true);
+        (Boolean(series || country.length) && overrides.forceBounds !== true);
       /*
        * Fetch the padded box, and remember that we did.
        *
@@ -581,13 +591,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (b) lastAreaRef.current = b;
       if (q) params.set("q", q);
       if (series) params.set("series", series);
-      if (country) params.set("country", country);
       if (dateFrom) params.set("dateFrom", dateFrom);
       if (dateTo) params.set("dateTo", dateTo);
       if (!dateFrom && !dateTo) params.set("anyDate", "1");
       categories.forEach((a) => params.append("categories", a));
       disciplines.forEach((d) => params.append("disciplines", d));
       levels.forEach((l) => params.append("levels", l));
+      country.forEach((c) => params.append("country", c));
       // Always scope to the current map viewport when we know it — otherwise an
       // unfiltered query hits a global limit and looks emptier than a discipline filter.
       if (b) {
@@ -606,7 +616,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           // A series or country is a find, and a race outside it has no place
           // in the answer — a German kids' cup was sitting under Dětský MTB Cup
           // because it had been open when the filter was picked.
-          if (!focusSlug || series || country) return next;
+          if (!focusSlug || series || country.length) return next;
           const kept =
             next.find((e) => e.slug === focusSlug) ?? prev.find((e) => e.slug === focusSlug);
           if (!kept || next.some((e) => e.id === kept.id)) return next;
@@ -717,11 +727,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         south: String(data.bounds.south),
         east: String(data.bounds.east),
         north: String(data.bounds.north),
-        country: "",
+        country: [],
       });
       refetch({
         q: "",
-        country: "",
+        country: [],
         bounds: data.bounds,
         forceBounds: true,
       });
@@ -790,7 +800,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   searchViewportRef.current = (b) => {
-    if (filters.series || filters.country) return;
+    if (filters.series || filters.country.length) return;
     // A name search is a find, not a filter on the current window: let the map
     // move without quietly dropping matches that sit outside it.
     if (filters.q.trim() && !lastPlacedQ.current) return;
@@ -908,13 +918,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         wide={opts?.wide}
         onPreset={setDateRange}
         onCategory={toggleCategory}
-        onDiscipline={setDiscipline}
+        onDiscipline={toggleDiscipline}
         onLevel={toggleLevel}
         onClearDisciplines={clearDisciplines}
         onClearLevels={clearLevels}
         onClearCategories={clearCategories}
         onSeries={setSeries}
-        onCountry={setCountry}
+        onCountry={toggleCountry}
+        onClearCountries={clearCountries}
         q={filters.q}
         onQ={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
@@ -940,7 +951,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     (filters.disciplines.length ? 1 : 0) +
     (filters.categories.length ? 1 : 0) +
     (filters.levels.length ? 1 : 0) +
-    (filters.country ? 1 : 0) +
+    (filters.country.length ? 1 : 0) +
     (filters.series ? 1 : 0) +
     (radiusArea ? 1 : 0) +
     (isThisWeekend ? 0 : 1);
@@ -1019,7 +1030,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   void runSearch(filters.q);
                   return;
                 }
-                if (filters.series || filters.country) {
+                if (filters.series || filters.country.length) {
                   lastAreaRef.current = expandViewport(b);
                   refetch({ skipBounds: true, fitMap: true });
                 } else {
@@ -1340,13 +1351,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           seriesList={seriesList}
           onPreset={setDateRange}
           onCategory={toggleCategory}
-          onDiscipline={setDiscipline}
+          onDiscipline={toggleDiscipline}
           onLevel={toggleLevel}
           onClearDisciplines={clearDisciplines}
           onClearLevels={clearLevels}
           onClearCategories={clearCategories}
           onSeries={setSeries}
-          onCountry={setCountry}
+          onCountry={toggleCountry}
+        onClearCountries={clearCountries}
           onReset={() => resetExploreFilters()}
           extra={<div className="px-4 py-3"><DistanceFilter locale={locale} radius={radius} status={distanceOrigin ? "ready" : place.status} onRadius={setRadius} /></div>}
         />

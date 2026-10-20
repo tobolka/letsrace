@@ -28,7 +28,7 @@ export type StoredExploreFilters = {
   disciplines: string[];
   levels: string[];
   series: string;
-  country: string;
+  country: string[];
   sort: string;
   datePreset: ExploreDatePreset;
   /** Absolute dates — used when datePreset is "custom". */
@@ -42,7 +42,7 @@ export type ExploreFilterPatch = {
   disciplines: string[];
   levels: string[];
   series: string;
-  country: string;
+  country: string[];
   sort: string;
   dateFrom: string;
   dateTo: string;
@@ -139,7 +139,8 @@ export function parseStoredExploreFilters(raw: string | null): StoredExploreFilt
       disciplines: asStringArray(data.disciplines),
       levels: asStringArray(data.levels),
       series: typeof data.series === "string" ? data.series : "",
-      country: typeof data.country === "string" ? data.country : "",
+      // Saved before the country filter took several: a single code.
+      country: typeof data.country === "string" ? (data.country ? [data.country] : []) : asStringArray(data.country),
       sort: data.sort === "distance" ? "distance" : "",
       datePreset,
       dateFrom: typeof data.dateFrom === "string" ? data.dateFrom : "",
@@ -166,7 +167,7 @@ export function toStoredExploreFilters(filters: ExploreFilterPatch): StoredExplo
     disciplines: [...filters.disciplines],
     levels: [...filters.levels],
     series: filters.series,
-    country: filters.country,
+    country: [...filters.country],
     sort: filters.sort === "distance" ? "distance" : "",
     datePreset: matchExploreDatePreset(filters.dateFrom, filters.dateTo),
     dateFrom: filters.dateFrom,
@@ -196,7 +197,7 @@ export function storedExploreFiltersToPatch(
     disciplines: [...stored.disciplines],
     levels: [...stored.levels],
     series: stored.series,
-    country: stored.country,
+    country: [...stored.country],
     sort: stored.sort === "distance" ? "distance" : "",
     dateFrom: dates.from,
     dateTo: dates.to,

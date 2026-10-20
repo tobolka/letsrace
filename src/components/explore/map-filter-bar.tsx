@@ -33,8 +33,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -91,6 +89,17 @@ export type SeriesOption = {
 export function seriesCountryKey(code: string | null | undefined) {
   const cc = (code || "").trim().toUpperCase();
   return cc.length === 2 ? cc : INT_COUNTRY;
+}
+
+/** A national cup has no races outside its country; an international one fits any choice. */
+export function seriesOutsideCountries(
+  seriesCode: string | null | undefined,
+  series: string,
+  countries: string[],
+) {
+  if (!series || countries.length === 0) return false;
+  const key = seriesCountryKey(seriesCode);
+  return key !== INT_COUNTRY && !countries.includes(key);
 }
 
 type ExtraFilter = "discipline" | "category" | "level" | "country" | "series";
@@ -175,6 +184,7 @@ export function MapFilterBar({
   onClearCategories,
   onSeries,
   onCountry,
+  onClearCountries,
   q,
   onQ,
   onSearchSubmit,
@@ -193,7 +203,7 @@ export function MapFilterBar({
   disciplines: string[];
   levels: string[];
   series: string;
-  country: string;
+  country: string[];
   seriesList: SeriesOption[];
   onPreset: (from: string, to: string) => void;
   onCategory: (v: string) => void;
@@ -204,6 +214,7 @@ export function MapFilterBar({
   onClearCategories: () => void;
   onSeries: (slug: string) => void;
   onCountry: (code: string) => void;
+  onClearCountries: () => void;
   q: string;
   onQ: (q: string) => void;
   onSearchSubmit: () => void;
@@ -279,8 +290,8 @@ export function MapFilterBar({
     seriesList.map((s) => seriesCountryKey(s.countryCode)).filter((k) => k !== INT_COUNTRY),
     locale,
   );
-  const visibleSeries = country
-    ? seriesList.filter((s) => seriesCountryKey(s.countryCode) === country)
+  const visibleSeries = country.length
+    ? seriesList.filter((s) => country.includes(seriesCountryKey(s.countryCode)))
     : seriesList;
   const seriesGroups = groupSeriesByCountry(visibleSeries, locale, messages.international);
   const seriesQ = seriesQuery.trim().toLowerCase();
@@ -297,13 +308,15 @@ export function MapFilterBar({
         }))
         .filter((g) => g.items.length > 0)
     : seriesGroups;
-  const showSeriesHeaders = !country && seriesGroups.length > 1;
-  const selectedDisc = disciplines[0];
+  const showSeriesHeaders = country.length !== 1 && seriesGroups.length > 1;
 
   const extraMeta: Record<ExtraFilter, { label: string; value?: string }> = {
     discipline: {
       label: messages.typeFilter,
-      value: selectedDisc ? disciplineLabel(selectedDisc, locale) : undefined,
+      value:
+        disciplines.length === 0
+          ? undefined
+          : disciplines.map((id) => disciplineLabel(id, locale)).join(", "),
     },
     category: {
       label: messages.categoryFilter,
@@ -323,7 +336,10 @@ export function MapFilterBar({
     },
     country: {
       label: messages.countryFilter,
-      value: country ? countryDisplayName(country, locale) : undefined,
+      value:
+        country.length === 0
+          ? undefined
+          : country.map((code) => countryDisplayName(code, locale)).join(", "),
     },
     series: {
       label: messages.seriesFilter,
@@ -335,7 +351,7 @@ export function MapFilterBar({
     if (id === "discipline") return disciplines.length > 0;
     if (id === "category") return categories.length > 0;
     if (id === "level") return levels.length > 0;
-    if (id === "country") return Boolean(country);
+    if (id === "country") return country.length > 0;
     return Boolean(series);
   }
 
@@ -371,7 +387,7 @@ export function MapFilterBar({
     if (id === "discipline" && disciplines.length) onClearDisciplines();
     if (id === "category" && categories.length) onClearCategories();
     if (id === "level" && levels.length) onClearLevels();
-    if (id === "country" && country) onCountry(country);
+    if (id === "country" && country.length) onClearCountries();
     if (id === "series" && series) onSeries(series);
   }
 
@@ -417,14 +433,13 @@ export function MapFilterBar({
   function renderValues(id: ExtraFilter) {
     if (id === "discipline") {
       return (
-        <DropdownMenuRadioGroup
-          value={selectedDisc ?? ""}
-          onValueChange={(value) => onDiscipline(value)}
-        >
+        <>
           {DISCIPLINE_TREE.map((opt) => (
             <DropdownMenuGroup key={opt.id}>
-              <DropdownMenuRadioItem
-                value={opt.id}
+              <DropdownMenuCheckboxItem
+                checked={disciplines.includes(opt.id)}
+                onCheckedChange={() => onDiscipline(opt.id)}
+                onSelect={(e) => e.preventDefault()}
                 className={itemClass}
               >
                 <span
@@ -433,11 +448,13 @@ export function MapFilterBar({
                   aria-hidden
                 />
                 {disciplineLabel(opt.id, locale)}
-              </DropdownMenuRadioItem>
+              </DropdownMenuCheckboxItem>
               {opt.children?.map((child) => (
-                <DropdownMenuRadioItem
+                <DropdownMenuCheckboxItem
                   key={child.id}
-                  value={child.id}
+                  checked={disciplines.includes(child.id)}
+                  onCheckedChange={() => onDiscipline(child.id)}
+                  onSelect={(e) => e.preventDefault()}
                   className={cn(itemClass, "pl-12 [&>span]:left-6")}
                 >
                   <span
@@ -446,11 +463,11 @@ export function MapFilterBar({
                     aria-hidden
                   />
                   {disciplineLabel(child.id, locale)}
-                </DropdownMenuRadioItem>
+                </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuGroup>
           ))}
-        </DropdownMenuRadioGroup>
+        </>
       );
     }
     if (id === "category") {
@@ -486,25 +503,30 @@ export function MapFilterBar({
     }
     if (id === "country") {
       return (
-        <DropdownMenuRadioGroup
-          value={country || "all"}
-          onValueChange={(value) => {
-            if (value === "all") {
-              if (country) onCountry(country);
-              return;
-            }
-            onCountry(value);
-          }}
-        >
-          <DropdownMenuRadioItem value="all" className={itemClass}>
+        <>
+          <DropdownMenuCheckboxItem
+            checked={country.length === 0}
+            onCheckedChange={() => {
+              if (country.length) onClearCountries();
+            }}
+            onSelect={(e) => e.preventDefault()}
+            className={itemClass}
+          >
             {messages.allCountries}
-          </DropdownMenuRadioItem>
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuSeparator />
           {countryCodes.map((code) => (
-            <DropdownMenuRadioItem key={code} value={code} className={itemClass}>
+            <DropdownMenuCheckboxItem
+              key={code}
+              checked={country.includes(code)}
+              onCheckedChange={() => onCountry(code)}
+              onSelect={(e) => e.preventDefault()}
+              className={itemClass}
+            >
               {countryDisplayName(code, locale)}
-            </DropdownMenuRadioItem>
+            </DropdownMenuCheckboxItem>
           ))}
-        </DropdownMenuRadioGroup>
+        </>
       );
     }
     return (

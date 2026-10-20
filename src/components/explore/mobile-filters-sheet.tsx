@@ -111,6 +111,7 @@ export function MobileFiltersSheet({
   onClearCategories,
   onSeries,
   onCountry,
+  onClearCountries,
   onReset,
   hideDate = false,
   extra,
@@ -130,7 +131,7 @@ export function MobileFiltersSheet({
   disciplines: string[];
   levels: string[];
   series: string;
-  country: string;
+  country: string[];
   seriesList: SeriesOption[];
   onPreset: (from: string, to: string) => void;
   onCategory: (v: string) => void;
@@ -141,6 +142,7 @@ export function MobileFiltersSheet({
   onClearCategories: () => void;
   onSeries: (slug: string) => void;
   onCountry: (code: string) => void;
+  onClearCountries: () => void;
   onReset: () => void;
 }) {
   const [customOpen, setCustomOpen] = useState(false);
@@ -168,8 +170,8 @@ export function MobileFiltersSheet({
   );
 
   const visibleSeries = useMemo(() => {
-    const base = country
-      ? seriesList.filter((s) => seriesCountryKey(s.countryCode) === country)
+    const base = country.length
+      ? seriesList.filter((s) => country.includes(seriesCountryKey(s.countryCode)))
       : seriesList;
     const q = seriesQuery.trim().toLowerCase();
     if (!q) return base;
@@ -190,12 +192,11 @@ export function MobileFiltersSheet({
     { id: "any", label: messages.anyDate, active: !isCustom && anyDate, apply: () => { setCustomOpen(false); onPreset("", ""); } },
   ];
 
-  const selectedDisc = disciplines[0];
   const activeExtras =
     (disciplines.length ? 1 : 0) +
     (categories.length ? 1 : 0) +
     (levels.length ? 1 : 0) +
-    (country ? 1 : 0) +
+    (country.length ? 1 : 0) +
     (series ? 1 : 0) +
     (isThisWeekend ? 0 : 1);
 
@@ -281,13 +282,13 @@ export function MobileFiltersSheet({
 
             <Section title={messages.typeFilter}>
               <div className="flex flex-wrap gap-2">
-                <Chip active={!selectedDisc} onClick={onClearDisciplines}>
+                <Chip active={disciplines.length === 0} onClick={onClearDisciplines}>
                   {messages.filterAll}
                 </Chip>
                 {DISCIPLINE_TREE.map((opt) => (
                   <Chip
                     key={opt.id}
-                    active={selectedDisc === opt.id}
+                    active={disciplines.includes(opt.id)}
                     onClick={() => onDiscipline(opt.id)}
                   >
                     {disciplineLabel(opt.id, locale)}
@@ -332,13 +333,13 @@ export function MobileFiltersSheet({
             {countryCodes.length > 0 ? (
               <Section title={messages.countryFilter}>
                 <div className="flex flex-wrap gap-2">
-                  <Chip active={!country} onClick={() => country && onCountry(country)}>
+                  <Chip active={country.length === 0} onClick={onClearCountries}>
                     {messages.allCountries}
                   </Chip>
                   {countryCodes.map((code) => (
                     <Chip
                       key={code}
-                      active={country === code}
+                      active={country.includes(code)}
                       onClick={() => onCountry(code)}
                     >
                       {countryDisplayName(code, locale)}

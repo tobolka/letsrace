@@ -13,7 +13,7 @@ export type FeedQuery = {
   disciplines: string[];
   levels: string[];
   series: string;
-  country: string;
+  country: string[];
   dateFrom: string;
   dateTo: string;
 };
@@ -31,13 +31,13 @@ function toParams(query: FeedQuery, near: Near | null): string {
   }
   if (query.q.trim()) params.set("q", query.q.trim());
   if (query.series) params.set("series", query.series);
-  if (query.country) params.set("country", query.country);
   if (query.dateFrom) params.set("dateFrom", query.dateFrom);
   if (query.dateTo) params.set("dateTo", query.dateTo);
   if (!query.dateFrom && !query.dateTo) params.set("anyDate", "1");
   query.categories.forEach((v) => params.append("categories", v));
   query.disciplines.forEach((v) => params.append("disciplines", v));
   query.levels.forEach((v) => params.append("levels", v));
+  query.country.forEach((v) => params.append("country", v));
   return params.toString();
 }
 
