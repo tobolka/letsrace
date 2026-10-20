@@ -3,11 +3,12 @@ import { RaceListPagination } from "@/components/seo/race-list-pagination";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
+import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { countryDisplayName, isListedCountry, sortCountryCodes } from "@/lib/geo/europe";
 import { absoluteUrl, brandedTitle, fillCopy, inCountry, localeAlternates, localeOgImagePath, socialCard } from "@/lib/seo";
 import { raceCopy } from "@/lib/seo-race-copy";
-import { collectionCopy, collectionPeriod, isCollectionSlug, MIN_COLLECTION_RACES } from "@/lib/race-collections";
+import { collectionAgeCategories, collectionCopy, collectionDates, collectionPeriod, isCollectionSlug, MIN_COLLECTION_RACES, type CollectionSlug, type CollectionWindow } from "@/lib/race-collections";
+import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { collectionPath, hubPath } from "@/lib/localized-paths";
 import { getRaceCollection, listCollectionSummaries } from "@/lib/race-collection-data";
 import { BrowseHeader, BrowseIntro } from "@/components/browse/browse-ui";
@@ -45,6 +46,17 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
+/** The same races on the full map: the collection's dates, age band and country as map filters. */
+function mapHref(locale: Locale, slug: CollectionSlug, window: CollectionWindow, countryCode?: string) {
+  const { from, to } = collectionDates(slug, window);
+  const query = new URLSearchParams({ dateFrom: from, dateTo: to });
+  const ages = collectionAgeCategories(slug);
+  if (ages) query.set("categories", ages.join(","));
+  if (slug === "amateur") query.set("levels", "amateur");
+  if (countryCode) query.set("country", countryCode);
+  return `/${locale}?${query}`;
+}
+
 export default async function CollectionPage({ params, searchParams }: Props) {
   const data = resolve(await params);
   if (!data) notFound();
@@ -75,11 +87,16 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         </nav>
         <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">{copy.collections[slug].note}</p>
         {events.length ? (
-          <section className="mt-8">
-            <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
-            <RaceLinkList events={paginated.events} locale={locale} groupByMonth={slug !== "weekend" && slug !== "kids-weekend"} headingLevel="h3" />
-            <RaceListPagination page={paginated.page} pages={paginated.pages} path={`/${locale}/${path}`} locale={locale} />
-          </section>
+          <>
+            <section className="mt-8">
+              <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
+              <RaceLinkList events={paginated.events} locale={locale} groupByMonth={slug !== "weekend" && slug !== "kids-weekend"} headingLevel="h3" />
+              <RaceListPagination page={paginated.page} pages={paginated.pages} path={`/${locale}/${path}`} locale={locale} />
+            </section>
+            <section className="mt-8">
+              <RaceDetailMap events={events} locale={locale} href={mapHref(locale, slug, window, countryCode)} label={messages[locale].viewOnMap} />
+            </section>
+          </>
         ) : (
           <Empty className="mt-8 border">
             <EmptyHeader><EmptyTitle>{copy.emptyTitle}</EmptyTitle><EmptyDescription>{copy.emptyDescription}</EmptyDescription></EmptyHeader>
