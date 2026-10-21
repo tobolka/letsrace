@@ -688,6 +688,27 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
     reasons.push("place_unknown_same_weekend");
   }
 
+  /*
+   * A race-detail page an organiser has reused. TBC série reshuffled its 2026
+   * calendar and kept the pages: zavod-211 said "Tábor, 25. 10." and now says
+   * "Vimperk, 14. 11.". The page is the same; the race on it is not. A page
+   * that moves its race by weeks and to another town has changed races, and
+   * no title can vouch for it — place-only titles in one series reduce to
+   * the series name and agree with each other perfectly.
+   */
+  if (
+    sameUrl &&
+    !datesOk &&
+    daysBetween(a.startDate, b.startDate) > 3 &&
+    !near &&
+    !isGarbagePlace(a.placeText) &&
+    !isGarbagePlace(b.placeText) &&
+    (a.placeText || (a.lat != null && a.lng != null)) &&
+    (b.placeText || (b.lat != null && b.lng != null))
+  ) {
+    return { score: 0, reasons: ["same_url_other_race"] };
+  }
+
   // --- URL (strong, but still need plausible dates for multi-year reuse of pages)
   if (sameUrl) {
     score += 45;

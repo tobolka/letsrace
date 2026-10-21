@@ -365,3 +365,26 @@ describe("national championship mirrors", () => {
     expect(score).toBeLessThan(DEDUP_THRESHOLD);
   });
 });
+
+// TBC série reshuffled its 2026 calendar and kept the race pages: zavod-211
+// went from Tábor on 25 Oct to Vimperk on 14 Nov.
+describe("a reused race-detail page", () => {
+  const page = "https://tbcserie.cz/kalendar-2026/zavod-211/";
+
+  it("does not join two towns weeks apart", () => {
+    const { score, reasons } = scoreDuplicate(
+      { name: "TBC — VIMPERK", startDate: "2026-11-14", placeText: "Vimperk", seriesName: "TBC série cyklokros", urls: [page] },
+      { name: "TBC — TÁBOR", startDate: "2026-10-25", placeText: "Tábor", seriesName: "TBC série cyklokros", urls: [page] },
+    );
+    expect(score).toBeLessThan(DEDUP_THRESHOLD);
+    expect(reasons).toContain("same_url_other_race");
+  });
+
+  it("still follows a race the organiser moved at the same venue", () => {
+    const { score } = scoreDuplicate(
+      { name: "TBC — TÁBOR", startDate: "2026-11-01", placeText: "Tábor", seriesName: "TBC série cyklokros", urls: [page] },
+      { name: "TBC — TÁBOR", startDate: "2026-10-25", placeText: "Tábor", seriesName: "TBC série cyklokros", urls: [page] },
+    );
+    expect(score).toBeGreaterThanOrEqual(DEDUP_THRESHOLD);
+  });
+});

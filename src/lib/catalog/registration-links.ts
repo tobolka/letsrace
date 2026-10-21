@@ -29,6 +29,7 @@ export function findEntryLink(
   pageUrl: string,
   hints: string[],
   pageYear = String(new Date().getFullYear()),
+  opts?: { shared?: boolean },
 ): string | null {
   const $ = cheerio.load(html);
   const fold = (t: string) => t.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
@@ -57,9 +58,23 @@ export function findEntryLink(
   });
   if (!found.length) return null;
   const nearOnes = found.filter((f) => f.score >= 5 + 3);
+  // A page several races share — a series homepage — speaks for this race
+  // only beside its name or date. TBC série's "REGISTRACE 2026" button is the
+  // season's points sign-up, and it went onto every round as their entry form.
+  if (opts?.shared && !nearOnes.length) return null;
   // Many entry links and none near this race: it is someone else's list.
   if (!nearOnes.length && new Set(found.map((f) => f.url)).size > 3) return null;
   return (nearOnes.length ? nearOnes : found).sort((a, b) => b.score - a.score)[0]!.url;
+}
+
+/** Host without www and path without trailing slash: one key per page. */
+function pageKey(raw: string): string {
+  try {
+    const u = new URL(raw);
+    return `${u.hostname.replace(/^www\./i, "").toLowerCase()}${u.pathname.replace(/\/+$/, "")}`;
+  } catch {
+    return raw;
+  }
 }
 
 function hintsFor(name: string, startDate: string, municipality: string | null): string[] {
@@ -82,7 +97,14 @@ export async function fillRegistrationLinks(opts?: {
   const max = opts?.max ?? 60;
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "reg_links");
-  type Target = { id: string; name: string; startDate: string; website: string; municipality: string | null };
+  type Target = {
+    id: string;
+    name: string;
+    startDate: string;
+    website: string;
+    municipality: string | null;
+    shared?: boolean;
+  };
   const targets: Target[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
     const { data, error } = await supabase
@@ -120,6 +142,26 @@ export async function fillRegistrationLinks(opts?: {
     if (rows.length < PAGE) break;
   }
 
+  // Which websites more than one upcoming race points at.
+  const pagesInUse = new Map<string, number>();
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("events")
+      .select("website_url")
+      .is("merged_into_id", null)
+      .gte("start_date", today)
+      .not("website_url", "is", null)
+      .order("id", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    for (const row of data ?? []) {
+      const key = pageKey(row.website_url as string);
+      pagesInUse.set(key, (pagesInUse.get(key) ?? 0) + 1);
+    }
+    if ((data ?? []).length < PAGE) break;
+  }
+  for (const t of targets) t.shared = (pagesInUse.get(pageKey(t.website)) ?? 0) > 1;
+
   const result = { attempted: targets.length, proposed: 0, filled: 0, silent: 0, failed: 0 };
   const { mapPool } = await import("@/lib/watcher/pool");
   await mapPool(targets, 4, async (t) => {
@@ -152,6 +194,7 @@ export async function fillRegistrationLinks(opts?: {
           res.url || t.website,
           hintsFor(t.name, t.startDate, t.municipality),
           t.startDate.slice(0, 4),
+          { shared: t.shared },
         );
         if (link) {
           const $ = cheerio.load(html);
