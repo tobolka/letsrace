@@ -1907,11 +1907,25 @@ async function upsertParsedEvent(
     }
 
     // Reuse an existing location with same query + country (cuts geocode queue growth)
-    const { data: reused } = await supabase
+    let reuseQuery = supabase
       .from("locations")
       .select("id, lat, lng")
       .eq("geocode_query", geocodeQuery)
-      .eq("country_code", country)
+      .eq("country_code", country);
+    /*
+     * Same name is not same place: there are two Všetatys, and a parser pin at
+     * one must not be swapped for the other's coordinates just because the
+     * row says "Všetaty" too. With coordinates of our own, share a row only
+     * when it lies within a few kilometres of them.
+     */
+    if (ev.lat != null && ev.lng != null) {
+      reuseQuery = reuseQuery
+        .gte("lat", ev.lat - 0.03)
+        .lte("lat", ev.lat + 0.03)
+        .gte("lng", ev.lng - 0.045)
+        .lte("lng", ev.lng + 0.045);
+    }
+    const { data: reused } = await reuseQuery
       .order("updated_at", { ascending: false })
       .limit(1)
       .maybeSingle();

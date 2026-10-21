@@ -380,6 +380,48 @@ export function parseSumatorRaceDetail(url: string, html: string): ParsedEvent |
   };
 }
 
+/**
+ * Start pin from a Sumator race's /map page. The detail page names only the
+ * village, and Czech village names repeat: "Všetaty" is both the start of
+ * Praha – Doksy near Mělník and a village in Rakovník district 60 km away,
+ * and the geocoder picked the wrong one. The map page has the organiser's own
+ * pins, so prefer the start, then registration, then the map's centre.
+ */
+export function extractSumatorMapPoint(html: string): { lat: number; lng: number } | null {
+  const $ = cheerio.load(html);
+  const raw = $(".race-map[data-map]").first().attr("data-map");
+  if (!raw) return null;
+  let data: {
+    points?: { name?: string; latitude?: string | number; longitude?: string | number }[];
+    center?: { latitude?: string | number; longitude?: string | number };
+  };
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  const toPoint = (p?: { latitude?: string | number; longitude?: string | number }) => {
+    const lat = Number(p?.latitude);
+    const lng = Number(p?.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) return null;
+    if (lat < 34 || lat > 72 || lng < -25 || lng > 45) return null;
+    return { lat, lng };
+  };
+  const points = data.points ?? [];
+  const named = (re: RegExp) => toPoint(points.find((p) => re.test(p.name ?? "")));
+  return named(/^start/i) || named(/prezentace|registrace/i) || toPoint(data.center);
+}
+
+async function sumatorMapPoint(raceUrl: string): Promise<{ lat: number; lng: number } | null> {
+  const { fetchText } = await import("@/lib/watcher/http");
+  try {
+    const page = await fetchText(`${raceUrl.replace(/\/$/, "")}/map`, { timeoutMs: 15_000 });
+    return page.ok && page.text ? extractSumatorMapPoint(page.text) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function enrichOfficialWebsites(
   events: ParsedEvent[],
   opts?: { max?: number },
@@ -420,8 +462,10 @@ async function enrichOfficialWebsites(
           [...(ev.childUrls ?? []), ...(detail?.childUrls ?? []), home].filter(Boolean) as string[],
         ),
       ];
+      const pin = ev.lat == null ? await sumatorMapPoint(ev.sourceUrl) : null;
       return {
         ...ev,
+        ...(pin ?? {}),
         websiteUrl: links.websiteUrl || ev.websiteUrl,
         registrationUrl: links.registrationUrl || ev.registrationUrl,
         regulationsUrl: links.regulationsUrl || ev.regulationsUrl,
@@ -461,7 +505,9 @@ export async function parseSumator(url: string, html: string): Promise<ParsedEve
     const path = new URL(url).pathname.replace(/\/$/, "") || "/";
     if (/^\/race\/[^/]+$/.test(path)) {
       const one = parseSumatorRaceDetail(url, html);
-      return one ? [one] : [];
+      if (!one) return [];
+      const pin = await sumatorMapPoint(one.sourceUrl);
+      return [pin ? { ...one, ...pin } : one];
     }
   } catch {
     /* fall through */

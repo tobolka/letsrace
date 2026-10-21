@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  extractSumatorMapPoint,
   extractSumatorOfficialLinks,
   extractSumatorSeries,
   extractSumatorTrails,
@@ -94,5 +95,31 @@ describe("Sumator race detail", () => {
       ]),
     );
     expect(ev?.categories?.some((c) => /šneček/i.test(c.name))).toBe(true);
+  });
+});
+
+describe("Sumator map pin", () => {
+  const mapPage = (points: object[], center?: object) =>
+    `<div class="race-map" data-map="${JSON.stringify({ gpx_urls: [], points, center }).replace(/"/g, "&quot;")}"></div>`;
+
+  it("takes the start pin over registration and centre (Praha – Doksy, Všetaty u Mělníka)", () => {
+    const html = mapPage(
+      [
+        { name: "prezentace", latitude: "50.282841", longitude: "14.588407" },
+        { name: "vyhlášení", latitude: "50.56939", longitude: "14.665461" },
+        { name: "start", latitude: "50.282164", longitude: "14.591819" },
+      ],
+      { latitude: "50.282159", longitude: "14.592423" },
+    );
+    expect(extractSumatorMapPoint(html)).toEqual({ lat: 50.282164, lng: 14.591819 });
+  });
+
+  it("falls back to the map centre and ignores empty pins", () => {
+    const html = mapPage([{ name: "start", latitude: "0", longitude: "0" }], {
+      latitude: "49.5",
+      longitude: "17.1",
+    });
+    expect(extractSumatorMapPoint(html)).toEqual({ lat: 49.5, lng: 17.1 });
+    expect(extractSumatorMapPoint("<div>no map</div>")).toBeNull();
   });
 });
