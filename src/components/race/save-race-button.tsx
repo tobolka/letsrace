@@ -45,8 +45,8 @@ export function SaveRaceButton({
 
   if (added) {
     return (
-      <Button asChild size={size} variant={variant === "icon" ? "ghost" : "outline"} className={cn(variant === "icon" && "text-primary", className)}>
-        <Link href={localePath(locale, `account`)} aria-label={`${label} — ${raceName}`} title={label}>
+      <Button asChild size={size} variant={variant === "icon" ? "ghost" : "outline"} tooltip={variant === "icon" ? label : false} className={cn(variant === "icon" && "text-primary", className)}>
+        <Link href={localePath(locale, `account`)} aria-label={`${label} — ${raceName}`}>
           {icon}
           {variant === "full" ? label : null}
         </Link>

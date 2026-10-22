@@ -6,6 +6,7 @@ import { Maximize2 } from "lucide-react";
 import { RaceMapLazy } from "@/components/map/race-map-lazy";
 import type { EventListItem } from "@/lib/events";
 import { eventPagePath } from "@/lib/event-url";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const noop = () => {};
 const MIN_HALF_SPAN = 0.06;
@@ -39,14 +40,18 @@ export function RaceDetailMap({ events, locale, href, label }: {
         destination={{ west: west - dLng, east: east + dLng, south: south - dLat, north: north + dLat }}
         destinationSeq={1}
       />
-      <Link
-        href={href}
-        aria-label={label}
-        title={label}
-        className="absolute right-2.5 top-2.5 z-[700] grid size-10 place-items-center rounded-full bg-white text-stone-800 shadow-[0_1px_5px_#00000026] hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3778d7]"
-      >
-        <Maximize2 size={18} />
-      </Link>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            href={href}
+            aria-label={label}
+            className="absolute right-2.5 top-2.5 z-[700] grid size-10 place-items-center rounded-full bg-white text-stone-800 shadow-[0_1px_5px_#00000026] hover:bg-stone-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3778d7]"
+          >
+            <Maximize2 size={18} />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent side="left">{label}</TooltipContent>
+      </Tooltip>
     </div>
   );
 }

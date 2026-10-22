@@ -25,9 +25,22 @@ function Tooltip({
 }
 
 function TooltipTrigger({
+  onFocus,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+  return (
+    <TooltipPrimitive.Trigger
+      data-slot="tooltip-trigger"
+      // A dialog or card that focuses its first button on open would
+      // otherwise greet you with that button's tooltip. Only a focus the
+      // browser would ring (keyboard) opens it.
+      onFocus={(event) => {
+        onFocus?.(event)
+        if (!event.currentTarget.matches(":focus-visible")) event.preventDefault()
+      }}
+      {...props}
+    />
+  )
 }
 
 function TooltipContent({

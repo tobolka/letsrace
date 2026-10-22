@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import { LocateFixed, Minus, Plus, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import type { MapBounds, BoundsChangeReason, RaceMapProps } from "./race-map";
@@ -11,6 +11,7 @@ import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Ma
 import { attachSmoothWheelZoom, type WheelMap } from "./smooth-wheel-zoom";
 import { clusterAction } from "./cluster-action";
 import { addLightBasemap, drawCityLabels, loadCities, type City } from "./light-basemap";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import "./light-race-map.css";
 
 const defaultPadding = { top: 16, right: 56, bottom: 56, left: 48 };
@@ -313,14 +314,18 @@ export function LightRaceMap(props: RaceMapProps) {
   return <div className={`fast-map light-race-map${props.embedded ? " light-race-map-embedded" : ""}`}>
     <div ref={container} className="absolute inset-0 h-full w-full" />
     <div className="fast-map-controls">
-      <button type="button" aria-label={props.myLocationLabel ?? messages.myLocation} disabled={locating} aria-busy={locating} onClick={() => locateRef.current()}><LocateFixed size={19} /></button>
-      <div className="fast-map-zoom"><button type="button" aria-label={zoom[0]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomIn(); }}><Plus size={19} /></button><button type="button" aria-label={zoom[1]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomOut(); }}><Minus size={19} /></button></div>
+      <MapControlTip label={props.myLocationLabel ?? messages.myLocation}><button type="button" aria-label={props.myLocationLabel ?? messages.myLocation} disabled={locating} aria-busy={locating} onClick={() => locateRef.current()}><LocateFixed size={19} /></button></MapControlTip>
+      <div className="fast-map-zoom"><MapControlTip label={zoom[0]}><button type="button" aria-label={zoom[0]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomIn(); }}><Plus size={19} /></button></MapControlTip><MapControlTip label={zoom[1]}><button type="button" aria-label={zoom[1]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomOut(); }}><Minus size={19} /></button></MapControlTip></div>
     </div>
     {(error || locationError) && <div className="absolute left-1/2 top-16 z-[600] flex w-max max-w-[calc(100%_-_1.5rem)] -translate-x-1/2 md:top-3 md:max-w-md items-start gap-3 rounded-lg border bg-background px-3 py-2 text-sm shadow-sm" role="status">
       <span>{error || locationError}</span>
       <button type="button" aria-label={messages.close} className="-mr-1 -mt-1 grid size-8 shrink-0 place-items-center rounded-md hover:bg-muted" onClick={() => { setError(""); setLocationError(""); }}><X size={16} /></button>
     </div>}
   </div>;
+}
+/** The map's own controls are bare buttons, not `Button`, so they get their tooltip here. */
+function MapControlTip({ label, children }: { label: string; children: ReactElement }) {
+  return <Tooltip><TooltipTrigger asChild>{children}</TooltipTrigger><TooltipContent side="left">{label}</TooltipContent></Tooltip>;
 }
 function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [number, number], count: number, props: RaceMapProps, onClick: () => void) {
   const messages = messagesFor(props.locale ?? "en");

@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Toggle } from "@/components/ui/toggle";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Card,
   CardAction,
@@ -387,11 +388,11 @@ export function EventDetailPanel({
           variant="ghost"
           size="icon"
           className="size-9 [@media(pointer:coarse)]:size-11"
+          tooltip={t.openRaceDetail}
         >
           <Link
             href={eventPagePath(locale, event.slug)}
             aria-label={t.openRaceDetail}
-            title={t.openRaceDetail}
             onClick={() => track("open_race_page", { slug: event.slug })}
           >
             <Maximize2 />
@@ -403,18 +404,22 @@ export function EventDetailPanel({
           locale={locale}
           className="size-9 [@media(pointer:coarse)]:size-11"
         />
-        <Toggle
-          pressed={linkCopied}
-          size="lg"
-          aria-label={linkCopied ? t.linkCopied : t.shareRace}
-          title={linkCopied ? t.linkCopied : t.shareRace}
-          className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          onPressedChange={() => {
-            if (!linkCopied) void copyShareLink();
-          }}
-        >
-          <Share />
-        </Toggle>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Toggle
+              pressed={linkCopied}
+              size="lg"
+              aria-label={linkCopied ? t.linkCopied : t.shareRace}
+              className="size-9 min-w-9 [@media(pointer:coarse)]:size-11 [@media(pointer:coarse)]:min-w-11 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              onPressedChange={() => {
+                if (!linkCopied) void copyShareLink();
+              }}
+            >
+              <Share />
+            </Toggle>
+          </TooltipTrigger>
+          <TooltipContent>{linkCopied ? t.linkCopied : t.shareRace}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

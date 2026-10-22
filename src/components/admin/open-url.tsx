@@ -8,7 +8,6 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 /*
  * Only `openableUrl`, and only for this file's own components.
  *
@@ -37,16 +36,11 @@ export function OpenUrlButton({
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button variant="ghost" size="icon-sm" asChild>
-          <a href={url} target="_blank" rel="noreferrer" aria-label={label}>
-            <ExternalLink />
-          </a>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+    <Button variant="ghost" size="icon-sm" asChild tooltip={label}>
+      <a href={url} target="_blank" rel="noreferrer" aria-label={label}>
+        <ExternalLink />
+      </a>
+    </Button>
   );
 }
 
@@ -79,7 +73,7 @@ export function UrlInput({
       />
       <InputGroupAddon align="inline-end">
         {url ? (
-          <InputGroupButton size="icon-xs" asChild>
+          <InputGroupButton size="icon-xs" asChild tooltip={openLabel}>
             <a href={url} target="_blank" rel="noreferrer" aria-label={openLabel}>
               <ExternalLink />
             </a>
