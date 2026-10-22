@@ -11,6 +11,7 @@
  * renders for anyone who follows a link, but asks not to be indexed.
  */
 import { unstable_cache } from "next/cache";
+import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { Discipline } from "@/lib/taxonomy";
@@ -146,7 +147,7 @@ const loadUpcomingTallies = unstable_cache(async (today: string): Promise<Countr
     by.set(cc, t);
   }
   return [...by.values()];
-}, ["upcoming-country-tallies-v1"], { revalidate: 3600, tags: ["public-catalogue"] });
+}, ["upcoming-country-tallies-v1"], { revalidate: 60 * 60 * 24 * 7, tags: [PUBLIC_CATALOGUE_TAG] });
 
 async function tallyUpcoming(countryCodes: string[]): Promise<CountryTally[]> {
   if (!countryCodes.length) return [];

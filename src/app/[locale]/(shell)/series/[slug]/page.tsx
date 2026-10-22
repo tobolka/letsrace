@@ -18,10 +18,7 @@ import { todayIso } from "@/lib/date-presets";
 import { Button } from "@/components/ui/button";
 import { SeriesSkeleton } from "./series-skeleton";
 
-/**
- * Render series on demand, as with race details: a crawler's first visit
- * must not persist another large HTML/RSC entry for every language and slug.
- */
+/** Same as race details: on demand, not held — a watch must show up at once. */
 export const revalidate = 0;
 
 type Props = { params: Promise<{ locale: string; slug: string }> };

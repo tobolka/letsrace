@@ -27,4 +27,12 @@ describe("cached map entry routing", () => {
     expect(proxy(request("/cs?e=author-cup-2026", "text/markdown")).headers.get("Content-Type")).toContain("text/markdown");
     expect(new URL(proxy(request("/cs/zavod/author-cup-2026")).headers.get("x-middleware-rewrite")!).pathname).toBe("/cs/e/author-cup-2026");
   });
+
+  it("holds the map shell on the CDN, not race details or accounts", () => {
+    expect(proxy(request("/cs")).headers.get("Vercel-CDN-Cache-Control")).toContain("s-maxage=604800");
+    expect(proxy(request("/cs/zavod/author-cup-2026")).headers.get("Vercel-CDN-Cache-Control")).toBeNull();
+    expect(proxy(request("/cs/serie/author-cup")).headers.get("Vercel-CDN-Cache-Control")).toBeNull();
+    expect(proxy(request("/cs/muj-plan")).headers.get("Vercel-CDN-Cache-Control")).toBeNull();
+    expect(proxy(request("/cs?e=author-cup-2026")).headers.get("Vercel-CDN-Cache-Control")).toBeNull();
+  });
 });

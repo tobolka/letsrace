@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { EventListItem } from "@/lib/events";
 import { boxAround } from "@/hooks/use-user-origin";
+import { todayIso } from "@/lib/date-presets";
 import { eventDistanceKm } from "@/lib/geo/distance";
+import type { EventListItem } from "@/lib/events";
+import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
+import { loadCatalogue } from "@/lib/load-catalogue";
 
 export type Near = { origin: { lat: number; lng: number }; km: number };
 
@@ -20,9 +23,11 @@ export type FeedQuery = {
 
 function toParams(query: FeedQuery, near: Near | null): string {
   const params = new URLSearchParams();
-  // Ask the database for the box around you, so the thousand-row ceiling is
-  // spent on races that can be near; the circle is cut exactly below.
-  if (near) {
+  // The shared catalogue is filtered here. A text search or a series still
+  // asks the server, and so does a date before today — the feed starts at today.
+  const shared =
+    !query.q.trim() && !query.series && catalogueCovers(query.dateFrom, todayIso());
+  if (!shared && near) {
     const box = boxAround(near.origin, near.km);
     params.set("west", box.west.toFixed(4));
     params.set("south", box.south.toFixed(4));
@@ -33,11 +38,12 @@ function toParams(query: FeedQuery, near: Near | null): string {
   if (query.series) params.set("series", query.series);
   if (query.dateFrom) params.set("dateFrom", query.dateFrom);
   if (query.dateTo) params.set("dateTo", query.dateTo);
-  if (!query.dateFrom && !query.dateTo) params.set("anyDate", "1");
+  if (!shared && !query.dateFrom && !query.dateTo) params.set("anyDate", "1");
   query.categories.forEach((v) => params.append("categories", v));
   query.disciplines.forEach((v) => params.append("disciplines", v));
   query.levels.forEach((v) => params.append("levels", v));
   query.country.forEach((v) => params.append("country", v));
+  if (shared) params.set("catalogue", "1");
   return params.toString();
 }
 
@@ -67,19 +73,32 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | nul
     first.current = false;
     setLoading(true);
     const timer = window.setTimeout(() => {
-      void fetch(`/api/events?${qs}`, { signal: ac.signal })
-        .then(async (res) => {
-          if (!res.ok) throw new Error(`events ${res.status}`);
-          return (await res.json()) as EventListItem[];
-        })
+      const shared = qs.includes("catalogue=1");
+      const loaded = shared
+        ? loadCatalogue()
+        : fetch(`/api/events?${qs}`, { signal: ac.signal }).then(async (res) => {
+            if (!res.ok) throw new Error(`events ${res.status}`);
+            return (await res.json()) as EventListItem[];
+          });
+      void loaded
         .then((data) => {
+          const filtered = shared
+            ? filterCatalogue(data, {
+                categories: query.categories,
+                disciplines: query.disciplines,
+                levels: query.levels,
+                country: query.country,
+                dateFrom: query.dateFrom,
+                dateTo: query.dateTo,
+              })
+            : data;
           setEvents(
             near
-              ? data.filter((e) => {
+              ? filtered.filter((e) => {
                   const km = eventDistanceKm(e, near.origin);
                   return km != null && km <= near.km;
                 })
-              : data,
+              : filtered,
           );
           setFailed(false);
           setSettled(true);

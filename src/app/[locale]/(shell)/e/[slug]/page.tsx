@@ -31,9 +31,10 @@ import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
 
 /**
- * The long-tail catalogue is rendered on demand. Persisting a full HTML/RSC
- * response for every race × language made crawler visits write thousands of
- * large ISR entries, even when each URL was requested only once.
+ * Rendered on demand and not held on the CDN. A week-long document would keep
+ * a cancelled race or a new registration link invisible after a watch. The
+ * hobby transfer budget is saved on the map shell and the shared events feed
+ * instead — those pages do not need to be this fresh.
  */
 export const revalidate = 0;
 

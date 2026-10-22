@@ -10,7 +10,7 @@ import { collectionPath, hubPath, localePath } from "@/lib/localized-paths";
 
 // Built at most once an hour and served from the cache: a crawler never waits on the
 // database, which a cold start could make slow enough for it to give up.
-export const revalidate = 3600;
+export const revalidate = 60 * 60 * 24 * 7;
 
 type Freq = NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
 

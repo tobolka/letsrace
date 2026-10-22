@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCronSecret } from "@/lib/cron-auth";
+import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { runDueWatches } from "@/lib/watcher/run";
 import { geocodePendingLocations } from "@/lib/geocode";
 import { sendOpsAlert } from "@/lib/ops/alerts";
@@ -29,6 +30,11 @@ export async function GET(req: NextRequest) {
     geocode = await geocodePendingLocations(80);
   } catch (e) {
     console.error("geocode after watch failed", e);
+  }
+
+  // A row written into the catalogue — public pages must see it on the next visit.
+  if (outcomes.some((o) => o?.ok && (o.eventsUpserted ?? 0) > 0)) {
+    refreshPublicCatalogue();
   }
 
   const fails = outcomes.filter((o) => o && "ok" in o && o.ok === false);

@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
-import { routePath } from "@/lib/localized-paths";
+import { CATALOGUE_CDN_CACHE } from "@/lib/catalogue-cache";
+import { routePath, SECTION_SLUGS } from "@/lib/localized-paths";
 
 const LOCALE_PREFIX = new RegExp(`^/(${locales.join("|")})(/|$)`);
 
@@ -47,6 +48,41 @@ export function preferredLocale(acceptLanguage: string | null): Locale | null {
 /** Top-level routes outside the language segment that the matcher lets through. */
 const ROOT_ROUTES = new Set(["docs", "auth", "race-card", "opengraph-image"]);
 
+function isAccountPath(pathname: string): boolean {
+  const [, locale, section] = pathname.split("/");
+  if (!locale || !locales.includes(locale as Locale)) return false;
+  return section === "account" || section === SECTION_SLUGS[locale as Locale].account;
+}
+
+/** Race and series detail pages — not held: an edit must show on the next visit. */
+function isCatalogueDetail(pathname: string): boolean {
+  const [, locale, section] = pathname.split("/");
+  if (!locale || !locales.includes(locale as Locale) || !section) return false;
+  const s = SECTION_SLUGS[locale as Locale];
+  return section === s.e || section === s.series || section === "e" || section === "series";
+}
+
+/**
+ * Shell pages (home, list, schedule, hubs) are the same for every visitor.
+ * Hold those on the CDN so crawlers do not pull a fresh copy from compute on
+ * every pass. Race and series details, accounts and map deep links stay off
+ * the CDN — details follow the catalogue; accounts are private; deep links
+ * redirect from the race they were opened on.
+ */
+function holdOnCdn(response: NextResponse, request: NextRequest) {
+  if (request.method !== "GET" && request.method !== "HEAD") return response;
+  const { pathname } = request.nextUrl;
+  if (
+    isAccountPath(pathname) ||
+    isCatalogueDetail(pathname) ||
+    pathname.includes("/map-entry")
+  ) {
+    return response;
+  }
+  response.headers.set("Vercel-CDN-Cache-Control", CATALOGUE_CDN_CACHE);
+  return response;
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -54,7 +90,7 @@ export function proxy(request: NextRequest) {
   if (browse && "redirect" in browse) {
     const url = request.nextUrl.clone();
     url.pathname = browse.redirect;
-    return NextResponse.redirect(url, 308);
+    return holdOnCdn(NextResponse.redirect(url, 308), request);
   }
 
   // A Czech reader typing letsrace.cz gets the Czech site, not the English one.
@@ -73,7 +109,7 @@ export function proxy(request: NextRequest) {
     // root layout above the language segment just to redirect.)
     const url = request.nextUrl.clone();
     url.pathname = `/${defaultLocale}`;
-    return NextResponse.redirect(url, 308);
+    return holdOnCdn(NextResponse.redirect(url, 308), request);
   }
 
   if (isHomepage(pathname) && wantsMarkdown(request)) {
@@ -110,7 +146,7 @@ export function proxy(request: NextRequest) {
     url.pathname = `/${defaultLocale}/_missing${pathname}`;
     const missing = NextResponse.rewrite(url);
     missing.headers.set("x-locale", defaultLocale);
-    return missing;
+    return holdOnCdn(missing, request);
   }
 
   let response: NextResponse;
@@ -125,7 +161,7 @@ export function proxy(request: NextRequest) {
   if (isHomepage(pathname)) {
     response.headers.set("Link", agentLinkHeaders().join(", "));
   }
-  return response;
+  return holdOnCdn(response, request);
 }
 
 export const config = {

@@ -1,5 +1,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
+import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
 import {
@@ -453,7 +455,7 @@ export const getPublicSeriesRow = cache(unstable_cache(async function getPublicS
     .maybeSingle();
   if (error) throw new Error(error.message);
   return row;
-}, ["public-series-row-v1"], { revalidate: 3600, tags: ["public-catalogue"] }));
+}, ["public-series-row-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
 
 export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySlug(
   slug: string,
@@ -483,7 +485,7 @@ export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySl
     series: mapSeriesRow(row as Record<string, unknown>, events.length),
     events,
   };
-}, ["public-series-rounds-v1"], { revalidate: 3600, tags: ["public-catalogue"] }));
+}, ["public-series-rounds-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();
@@ -559,7 +561,7 @@ export const getPublicEventBySlug = cache(unstable_cache(async function getPubli
   const cc = event.location?.countryCode;
   if (cc && !isListedCountry(cc)) return null;
   return event;
-}, ["public-event-by-slug-v1"], { revalidate: 3600, tags: ["public-catalogue"] }));
+}, ["public-event-by-slug-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
 
 /**
  * Races an address no race has may mean: the one to send it to, when the
@@ -961,6 +963,7 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
     );
   }
 
+  refreshPublicCatalogue();
   return id!;
 }
 
@@ -1034,4 +1037,6 @@ export async function updateEventFields(
       { onConflict: "event_id" },
     );
   }
+
+  refreshPublicCatalogue();
 }

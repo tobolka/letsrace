@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
 import { listEvents } from "@/lib/events";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
 import { belongsToCollection, collectionAgeCategories, collectionDates, collectionWindow, COLLECTION_SLUGS, type CollectionSlug, type CollectionWindow } from "@/lib/race-collections";
@@ -15,7 +16,7 @@ const loadSummaries = unstable_cache(async (window: CollectionWindow): Promise<C
       ...PUBLIC_COUNTRY_CODES.map((countryCode) => ({ slug, countryCode, count: matches.filter((event) => event.location?.countryCode === countryCode).length })),
     ];
   });
-}, ["race-collection-summaries-v2"], { revalidate: 3600 });
+}, ["race-collection-summaries-v2"], { revalidate: 60 * 60 * 24 * 7, tags: [PUBLIC_CATALOGUE_TAG] });
 
 /** Cache the small counts, rather than megabytes of full race records. */
 export const listCollectionSummaries = cache(() => loadSummaries(collectionWindow()));

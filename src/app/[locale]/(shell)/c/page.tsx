@@ -12,7 +12,7 @@ import { CollectionGrid } from "@/components/browse/collection-grid";
 import { collectionCopy } from "@/lib/race-collections";
 import { BrowseSkeleton } from "./browse-skeleton";
 
-export const revalidate = 3600;
+export const revalidate = 60 * 60 * 24 * 7;
 
 type Props = { params: Promise<{ locale: string }> };
 

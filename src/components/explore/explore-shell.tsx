@@ -45,6 +45,8 @@ import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
+import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
+import { loadCatalogue } from "@/lib/load-catalogue";
 import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
@@ -598,17 +600,30 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       disciplines.forEach((d) => params.append("disciplines", d));
       levels.forEach((l) => params.append("levels", l));
       country.forEach((c) => params.append("country", c));
-      // Always scope to the current map viewport when we know it — otherwise an
-      // unfiltered query hits a global limit and looks emptier than a discipline filter.
-      if (b) {
+      const shared = !q && !series && catalogueCovers(dateFrom, todayIso());
+      // The viewport used to be part of the request, so every pan was a new
+      // copy of the catalogue leaving compute. The shared feed is filtered here.
+      if (!shared && b) {
         params.set("west", String(b.west));
         params.set("south", String(b.south));
         params.set("east", String(b.east));
         params.set("north", String(b.north));
       }
       try {
-        const res = await fetch(`/api/events?${params.toString()}`);
-        const data = (await res.json()) as EventListItem[];
+        const data = shared
+          ? filterCatalogue(await loadCatalogue(), {
+              categories,
+              disciplines,
+              levels,
+              country,
+              dateFrom,
+              dateTo,
+              west: b?.west,
+              south: b?.south,
+              east: b?.east,
+              north: b?.north,
+            })
+          : ((await (await fetch(`/api/events?${params.toString()}`)).json()) as EventListItem[]);
         if (gen !== eventsFetchGen.current) return null;
         const focusSlug = filters.e;
         setEvents((prev) => {

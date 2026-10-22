@@ -1,5 +1,19 @@
+import { unstable_cache } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
 import { isIsoDay, listEvents } from "@/lib/events";
+
+/**
+ * The map, list and calendar share this. One URL, held on the CDN, instead of
+ * a new function response for every pan and chip. The window is "from today":
+ * a date in the past is a different query and is not served from here.
+ * Dropped by `refreshPublicCatalogue` when a watch or an admin write lands.
+ */
+const upcomingCatalogue = unstable_cache(
+  () => listEvents({}),
+  ["public-catalogue-feed-v1"],
+  { revalidate: 60 * 60 * 12, tags: [PUBLIC_CATALOGUE_TAG] },
+);
 
 /** Guard against a huge ring turning the polygon filter into a CPU sink. */
 const MAX_POLYGON_POINTS = 500;
@@ -35,6 +49,15 @@ function parsePolygon(raw: string | null): [number, number][] | undefined {
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
+  if (sp.get("catalogue") === "1") {
+    const events = await upcomingCatalogue();
+    return NextResponse.json(events, {
+      headers: {
+        "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+        "Vercel-CDN-Cache-Control": "public, s-maxage=43200, stale-while-revalidate=86400",
+      },
+    });
+  }
   const audience = sp.getAll("audience").filter(Boolean);
   const disciplines = sp.getAll("disciplines").filter(Boolean);
   const levels = sp.getAll("levels").filter(Boolean);
