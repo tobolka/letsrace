@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, CreditCard, User } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { messagesFor } from "@/lib/i18n/messages";
 import { PLAN_MEMBER_STATUSES, type PlanMemberStatus } from "@/lib/planner";
 import { cn } from "@/lib/utils";
@@ -70,10 +70,10 @@ export function PlanStatusToggle({
           className,
         )}
       >
-        <span className="flex min-w-0 items-center gap-1.5">
+        <SelectValue className="min-w-0">
           {CurrentIcon ? <CurrentIcon className="size-3.5" aria-hidden /> : null}
           <span className="truncate">{label[value]}</span>
-        </span>
+        </SelectValue>
       </SelectTrigger>
       <SelectContent align="end">
         {STEPS.map((step) => {
