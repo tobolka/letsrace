@@ -19,6 +19,7 @@
  *   - Never a locked row. An editor who set a status by hand meant it.
  */
 import { createServerSupabase } from "@/lib/supabase/server";
+import { lockedFieldsOf, type OverridesEmbed } from "@/lib/catalog/overrides";
 import { readAllRows } from "@/lib/supabase/read-all";
 
 export type CompletableEvent = {
@@ -61,7 +62,7 @@ export async function completePastEvents(opts?: {
   const max = opts?.max ?? 2000;
 
   const rows = await readAllRows<
-    CompletableEvent & { overrides: { locked_fields: string[] | null }[] | null }
+    CompletableEvent & { overrides: OverridesEmbed }
   >((from, to) =>
     supabase
       .from("events")
@@ -82,9 +83,7 @@ export async function completePastEvents(opts?: {
   const due: string[] = [];
   for (const row of rows) {
     if (!hasRun(row, today)) continue;
-    const locked = (Array.isArray(row.overrides) ? row.overrides : [])
-      .flatMap((o) => o.locked_fields ?? []);
-    if (locked.includes("status")) {
+    if (lockedFieldsOf(row.overrides).includes("status")) {
       result.skippedLocked += 1;
       continue;
     }
