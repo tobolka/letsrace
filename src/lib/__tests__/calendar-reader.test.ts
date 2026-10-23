@@ -98,12 +98,26 @@ it("follows only source-backed anchors to calendars or documents", () => {
   ], text, new Set([pdf, other]), "https://club.test/")).toEqual([pdf]);
 });
 
-it("names a single-event site's next edition after the page title", () => {
+it("names a single-event site's race after the page title, but not on a long calendar", () => {
+  const url = "https://www.ctauthorcup.cz/";
   const text = "30. ročník 2026 je za námi.\n31. ROČNÍK 9. října 2027, Bedřichov\nO spuštění registrace vás budem informovat.";
   const raw = { name: "ČT Author Cup", start_date: "2027-10-09", quote: "31. ROČNÍK 9. října 2027, Bedřichov", place: "Bedřichov" };
-  const url = "https://www.ctauthorcup.cz/";
   expect(verifyRaces([raw], text, new Set(), url, "2026-10-23", "ČT Author Cup")[0]?.name).toBe("ČT Author Cup");
-  // Without the edition line or a matching title the name still has to be in the row.
   expect(verifyRaces([raw], text, new Set(), url, "2026-10-23", "Jiný závod")).toEqual([]);
-  expect(verifyRaces([{ ...raw, quote: "9. října 2027, Bedřichov" }], "9. října 2027, Bedřichov", new Set(), url, "2026-10-23", "ČT Author Cup")).toEqual([]);
+  // A row without the name, from a page that proposes few races, takes the title.
+  const row = { name: "Rusavská 50", start_date: "2027-06-12", quote: "Termín | 12. 6. 2027 | Místo | Rusava" };
+  expect(verifyRaces([row], row.quote, new Set(), url, "2026-10-23", "Rusavská 50 - propozice")[0]?.name).toBe("Rusavská 50");
+  // Many proposed races, one of them named only in the title: not a single-event site.
+  const many = Array.from({ length: 4 }, () => row);
+  expect(verifyRaces(many, row.quote, new Set(), url, "2026-10-23", "Rusavská 50 - propozice")).toEqual([]);
+});
+
+it("takes the month of a day-only table row from the heading above it", () => {
+  const text = "Máj 2027\n22 | Mamut Tour | M | Prosenice | CZ\nJún 2027\n5 | Road Stage | M | Deštné | CZ";
+  const mamut = { name: "Mamut Tour", start_date: "2027-05-22", quote: "22 | Mamut Tour | M | Prosenice | CZ" };
+  expect(verifyRaces([mamut], text, new Set(), "https://x.cz/", "2026-10-23")[0]?.startDate).toBe("2027-05-22");
+  expect(verifyRaces([{ ...mamut, start_date: "2027-06-22" }], text, new Set(), "https://x.cz/", "2026-10-23")).toEqual([]);
+  const stage = { name: "Road Stage", start_date: "2027-06-05", quote: "5 | Road Stage | M | Deštné | CZ" };
+  expect(verifyRaces([stage], text, new Set(), "https://x.cz/", "2026-10-23")).toHaveLength(1);
+  expect(verifyRaces([{ ...stage, start_date: "2027-05-05" }], text, new Set(), "https://x.cz/", "2026-10-23")).toEqual([]);
 });

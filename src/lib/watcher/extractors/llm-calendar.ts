@@ -117,6 +117,30 @@ export const skeleton = (s: string) =>
     .replace(/[|[\]()*_#>"“”„'«»]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+const MONTH_HEADINGS = [
+  "leden|january|januar|janvier|enero|gennaio", "unor|february|februar|fevrier|febrero|febbraio", "brezen|marec|march|marz|mars|marzo",
+  "duben|april|aprilis", "kveten|maj|may|mai|mayo|maggio", "cerven|jun|june|juni|juin|junio|giugno",
+  "cervenec|jul|july|juli|juillet|julio|luglio", "srpen|august|aout|agosto", "zari|september|septembre|settembre|septiembre",
+  "rijen|oktober|october|octobre|ottobre|octubre", "listopad|november|novembre|noviembre", "prosinec|december|decembre|diciembre|dicembre",
+];
+
+/** A table row that gives only the day belongs to the month heading above it ("Máj 2027"). */
+function monthHeadingStates(text: string, quote: string, start: string): boolean {
+  const day = Number(start.slice(8, 10));
+  const lead = fold(quote).match(/^0?(\d{1,2})\b\s*(?:[|:]|\.\s*[|:]?)?/);
+  if (!lead || Number(lead[1]) !== day) return false;
+  const at = text.indexOf(quote);
+  if (at < 0) return false;
+  const aliases = MONTH_HEADINGS[Number(start.slice(5, 7)) - 1]!;
+  const heading = new RegExp(`^(?:${aliases})\\s+${start.slice(0, 4)}\\s*$`);
+  const other = new RegExp(`^(?:${MONTH_HEADINGS.join("|")})\\s+20\\d{2}\\s*$`);
+  const lines = text.slice(Math.max(0, at - 6000), at).split("\n").map((l) => fold(l).replace(/[^a-z0-9 ]/g, "").trim());
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (other.test(lines[i]!)) return heading.test(lines[i]!);
+  }
+  return false;
+}
+
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
@@ -124,7 +148,7 @@ const ISO = /^\d{4}-\d{2}-\d{2}$/;
  * name inside that row, the day of the month inside it too, and a link that
  * was really on the page.
  */
-export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, sourceUrl: string, today: string, pageTitle = ""): ParsedEvent[] {
+export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, sourceUrl: string, today: string, pageTitle = "", reject?: (why: string, race: RawRace) => void): ParsedEvent[] {
   const hay = skeleton(text);
   const out: ParsedEvent[] = [];
   const host = (() => {
@@ -139,30 +163,31 @@ export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, so
     if (typeof r.name !== "string" || typeof r.start_date !== "string" || typeof r.quote !== "string") continue;
     const rowName = r.name.replace(/\s+/g, " ").trim();
     const start = r.start_date.trim();
-    if (rowName.length < 3 || !ISO.test(start)) continue;
+    if (rowName.length < 2 || !ISO.test(start)) { reject?.("name_or_date_malformed", r); continue; }
     const quote = skeleton(r.quote);
-    if (quote.length < 6 || !hay.includes(quote)) continue;
+    if (quote.length < 6 || !hay.includes(quote)) { reject?.("quote_not_on_page", r); continue; }
     // The name must come from the row, not from the model.
-    const words = fold(rowName).split(/[^a-z0-9]+/).filter((w) => w.length >= 3);
-    // A single-event site announces its next edition under the logo ("31. ročník
-    // 9. října 2027, Bedřichov"); the race's name is then the page title, not
-    // part of that line.
+    const words = fold(rowName).split(/[^a-z0-9]+/).filter((w) => w.length >= 3 || /\d/.test(w));
+    // A single-event site names its race in the page title or heading, not in
+    // the line that gives the date ("Termín | 12. 6. 2027 | Místo | Rusava").
+    // Accepted when the page proposes few races, or the line announces the
+    // next edition ("31. ročník 9. října 2027").
     const nameInRow = words.length > 0 && words.filter((w) => quote.includes(w)).length >= Math.ceil(words.length * 0.7);
     const editionNotice = /\b\d+\.\s*(?:ro[cč]n[ií]k|edition|ausgabe)\b/i.test(fold(r.quote)) || /\b\d+\.\s*ro[cč]n[ií]k\b/i.test(r.quote);
     const titleWords = fold(pageTitle);
-    const nameFromTitle = editionNotice && words.length > 0 && words.every((w) => titleWords.includes(w));
-    if (!nameInRow && !nameFromTitle) continue;
+    const nameFromTitle = words.length > 0 && words.every((w) => titleWords.includes(w)) && (editionNotice || raw.length <= 3);
+    if (!nameInRow && !nameFromTitle) { reject?.("name_not_in_row", r); continue; }
     // The day must be in the row (or a nearby heading the quote includes).
-    if (!quoteStatesDate(quote, start)) continue;
+    if (!quoteStatesDate(quote, start) && !monthHeadingStates(text, r.quote, start)) { reject?.("date_not_in_quote", r); continue; }
     // When the row omits a year, the page must state the requested season.
     if (!/\b20\d{2}\b/.test(quote)) {
       const years = new Set(text.match(/\b20\d{2}\b/g) ?? []);
       // Several seasons on a page are not permission to guess which one a
       // yearless row belongs to. Ask for the heading in the verbatim quote.
-      if (years.size !== 1 || !years.has(start.slice(0, 4))) continue;
+      if (years.size !== 1 || !years.has(start.slice(0, 4))) { reject?.("yearless_row_ambiguous_season", r); continue; }
     }
     const end = typeof r.end_date === "string" && ISO.test(r.end_date) && r.end_date >= start && quoteStatesDate(quote.replace(/\b\d{1,2}\.?\s*[-–]\s*(?=\d{1,2}[./])/, ""), r.end_date) ? r.end_date : undefined;
-    if ((end ?? start) < today) continue;
+    if ((end ?? start) < today) { reject?.("in_the_past", r); continue; }
     const disciplines = Array.isArray(r.disciplines)
       ? (r.disciplines.filter((d) => typeof d === "string" && (DISCIPLINES as readonly string[]).includes(d) && d !== "other" && DISCIPLINE_WORDS[d]?.test(quote)) as Discipline[])
       : [];
@@ -237,7 +262,8 @@ export async function extractWithLlm(
 ): Promise<CalendarRead> {
   const today = opts?.today ?? new Date().toISOString().slice(0, 10);
   const { text, links } = pageAsText(html, url);
-  const pageTitle = cheerio.load(html)("title").first().text().replace(/\s+/g, " ").trim();
+  const $page = cheerio.load(html);
+  const pageTitle = `${$page("title").first().text()} ${$page("h1").first().text()}`.replace(/\s+/g, " ").trim();
   const all = chunks(text, CHUNK, Number.MAX_SAFE_INTEGER);
   const result: CalendarRead = { events: [], usage: NO_USAGE, truncated: false,
     chunksTotal: all.length, chunksRead: 0, cacheHits: 0, proposed: 0, rejected: 0, issues: [], childUrls: [] };
@@ -267,7 +293,8 @@ export async function extractWithLlm(
       result.cacheHits += Number(read.cached);
       result.chunksRead++;
       result.proposed += read.value.races.length;
-      const verified = verifyRaces(read.value.races, part, links, url, today, pageTitle);
+      const verified = verifyRaces(read.value.races, part, links, url, today, pageTitle,
+        process.env.LLM_CALENDAR_DEBUG ? (why, race) => console.log(`calendar_reject ${url} ${why} ${JSON.stringify({ name: race.name, start: race.start_date, quote: race.quote })}`) : undefined);
       result.rejected += read.value.races.length - verified.length;
       result.events.push(...verified);
       result.childUrls.push(...verifyFollowLinks(Array.isArray(read.value.follow_links) ? read.value.follow_links : [], part, links, url));

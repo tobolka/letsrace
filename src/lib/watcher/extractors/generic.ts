@@ -131,7 +131,7 @@ export function isSiteIdentityName(name: string, url?: string): boolean {
   const t = fold(name).replace(/[^a-z0-9]+/g, " ").trim();
   if (!t) return true;
   if (NAV_LABEL.test(t) || /^(?:rozpis|ausschreibung|generalausschreibung|ergebnisse|rennserie|race days and events)(?:\s+20\d{2})?$/.test(t)) return true;
-  if (/\b(?:termine|renntermine|terminkalender)$/.test(t)) return true;
+  if (/\b(?:termine|renntermine|terminkalender)$/.test(t) || /^informacni panel\b/.test(t)) return true;
   if (/^(?:termine|renntermine|terminkalender|calendar|calendrier|calendario|kalendarz|kalendar|zavody|events|veranstaltungen|race calendar)(?:\s+20\d{2}(?:\s+20\d{2})?)?$/.test(t)) return true;
   if (!url) return false;
 
