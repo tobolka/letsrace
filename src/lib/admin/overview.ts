@@ -79,7 +79,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         .from("discovered_links")
         .select("*", { count: "exact", head: true })
         .eq("status", "pending"),
-      supabase.from("feedback").select("*", { count: "exact", head: true }).eq("status", "new"),
+      supabase.from("feedback_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
       supabase
         .from("ingest_runs")
         .select("ok, events_upserted, started_at")
