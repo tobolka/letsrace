@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import type {
   ExpressionSpecification,
   GeoJSONSource,
@@ -371,6 +371,27 @@ function stackKey(lng: number, lat: number): string {
   return `${lat.toFixed(4)},${lng.toFixed(4)}`;
 }
 
+const noSubscription = () => () => {};
+
+/**
+ * The pile to fan out so the chosen race is one of its visible pins, if it
+ * sits in one and is not already the pile's first, top pin.
+ */
+function stackToFan(events: EventListItem[], selectedId: string | null | undefined): string | null {
+  if (!selectedId) return null;
+  const chosen = events.find((e) => e.id === selectedId);
+  const lat = Number(chosen?.location?.lat);
+  const lng = Number(chosen?.location?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const key = stackKey(lng, lat);
+  const shared = events.filter((e) => {
+    const y = Number(e.location?.lat);
+    const x = Number(e.location?.lng);
+    return Number.isFinite(y) && Number.isFinite(x) && stackKey(x, y) === key;
+  });
+  return shared.length > 1 && shared[0].id !== selectedId ? key : null;
+}
+
 /**
  * How far from the true point the fanned pins sit, so that neighbours in the
  * ring clear each other by a few pixels. Two races need barely any room; a
@@ -704,11 +725,18 @@ export function RaceMap({
   const skipInitialLocateRef = useRef(skipInitialLocate);
   const fallbackCenterRef = useRef(fallbackCenter);
   const localeRef = useRef(locale);
-  selectedIdRef.current = selectedId;
   const fitSeqRef = useRef(0);
   const destSeqRef = useRef(0);
   const [mapEpoch, setMapEpoch] = useState(0);
-  const [noWebgl, setNoWebgl] = useState(false);
+  // The browser either has WebGL 2 or does not (the server cannot say, and
+  // shows a map), or has it and the map still failed to start.
+  const lacksWebgl = useSyncExternalStore(
+    noSubscription,
+    () => typeof WebGL2RenderingContext === "undefined",
+    () => false,
+  );
+  const [mapFailed, setMapFailed] = useState(false);
+  const noWebgl = lacksWebgl || mapFailed;
   /**
    * Which pile of races is currently fanned out, keyed by its shared point.
    * One at a time: two open fans over the same map would be a puzzle, not a
@@ -722,15 +750,22 @@ export function RaceMap({
   const [locating, setLocating] = useState(false);
   const [locError, setLocError] = useState<string | null>(null);
 
-  onSelectRef.current = onSelect;
-  onBackgroundClickRef.current = onBackgroundClick;
-  onBoundsChangeRef.current = onBoundsChange;
-  onUserLocationRef.current = onUserLocation;
-  paddingRef.current = padding;
-  initialFocusRef.current = initialFocus;
-  skipInitialLocateRef.current = skipInitialLocate;
-  fallbackCenterRef.current = fallbackCenter;
-  localeRef.current = locale;
+  // The map's listeners outlive any one render, so they read the latest props
+  // through refs. They are refreshed as the render commits - before any effect
+  // or event of that commit can look - rather than while it is still being
+  // computed, which a render that is thrown away would leave behind.
+  useLayoutEffect(() => {
+    selectedIdRef.current = selectedId;
+    onSelectRef.current = onSelect;
+    onBackgroundClickRef.current = onBackgroundClick;
+    onBoundsChangeRef.current = onBoundsChange;
+    onUserLocationRef.current = onUserLocation;
+    paddingRef.current = padding;
+    initialFocusRef.current = initialFocus;
+    skipInitialLocateRef.current = skipInitialLocate;
+    fallbackCenterRef.current = fallbackCenter;
+    localeRef.current = locale;
+  });
 
   const goToMyLocationRef = useRef<() => void>(() => {});
 
@@ -742,7 +777,7 @@ export function RaceMap({
    * shell — so one tap on a race re-rendered the page four times over with a
    * box that had not moved. Reporting only what changed is most of that gone.
    */
-  function emitBounds(map: MapLibreMap, reason: BoundsChangeReason = "sync") {
+  const emitBounds = useCallback((map: MapLibreMap, reason: BoundsChangeReason = "sync") => {
     const b = map.getBounds();
     const visible = visibleBounds(map, paddingRef.current);
     const camera = {
@@ -762,9 +797,9 @@ export function RaceMap({
     }
     lastEmitRef.current = { reason, visible, camera };
     onBoundsChangeRef.current(visible, reason, camera);
-  }
+  }, []);
 
-  function emitBoundsWhenIdle(map: MapLibreMap, reason: BoundsChangeReason) {
+  const emitBoundsWhenIdle = useCallback((map: MapLibreMap, reason: BoundsChangeReason) => {
     let done = false;
     const fire = () => {
       if (done || mapRef.current !== map) return;
@@ -777,15 +812,15 @@ export function RaceMap({
     }
     map.once("idle", fire);
     window.setTimeout(fire, 350);
-  }
+  }, [emitBounds]);
 
-  function applyInitialView(map: MapLibreMap, lng: number, lat: number, duration = 0) {
+  const applyInitialView = useCallback((map: MapLibreMap, lng: number, lat: number, duration = 0) => {
     if (skipInitialLocateRef.current) return;
     if (initialViewDoneRef.current || userMovedRef.current) return;
     fitRadius(map, lng, lat, DEFAULT_RADIUS_KM, paddingRef.current, duration);
     initialViewDoneRef.current = true;
     emitBoundsWhenIdle(map, "gps");
-  }
+  }, [emitBoundsWhenIdle]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -936,7 +971,6 @@ export function RaceMap({
     // Checking by creating a throwaway WebGL context initializes the GPU twice.
     // Let the real map constructor verify driver support and handle failure below.
     if (typeof WebGL2RenderingContext === "undefined") {
-      setNoWebgl(true);
       return () => {
         cancelled = true;
       };
@@ -1133,7 +1167,7 @@ export function RaceMap({
     };
     }).catch((err) => {
       console.error(err);
-      if (!cancelled) setNoWebgl(true);
+      if (!cancelled) setMapFailed(true);
     });
 
     return () => {
@@ -1374,20 +1408,12 @@ export function RaceMap({
    * the map only draws the first. Opening its pile is the only way the ring
    * around "this one" can land on the race you actually chose.
    */
-  useEffect(() => {
-    if (!selectedId) return;
-    const chosen = events.find((e) => e.id === selectedId);
-    const lat = Number(chosen?.location?.lat);
-    const lng = Number(chosen?.location?.lng);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-    const key = stackKey(lng, lat);
-    const shared = events.filter((e) => {
-      const y = Number(e.location?.lat);
-      const x = Number(e.location?.lng);
-      return Number.isFinite(y) && Number.isFinite(x) && stackKey(x, y) === key;
-    });
-    if (shared.length > 1 && shared[0].id !== selectedId) setExpandedKey(key);
-  }, [selectedId, events]);
+  const [stackFor, setStackFor] = useState<{ selectedId: typeof selectedId; events: typeof events } | null>(null);
+  if (stackFor?.selectedId !== selectedId || stackFor?.events !== events) {
+    setStackFor({ selectedId, events });
+    const key = stackToFan(events, selectedId);
+    if (key) setExpandedKey(key);
+  }
 
   const prevSelectedIdRef = useRef(selectedId);
   useEffect(() => {
@@ -1414,7 +1440,7 @@ export function RaceMap({
     fitRadius(map, initialFocus.lng, initialFocus.lat, DEFAULT_RADIUS_KM, paddingRef.current, 0);
     initialViewDoneRef.current = true;
     emitBoundsWhenIdle(map, "gps");
-  }, [initialFocus, mapEpoch]);
+  }, [initialFocus, mapEpoch, emitBoundsWhenIdle]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1471,7 +1497,7 @@ export function RaceMap({
 
     const btn = locateBtnRef.current;
     if (btn) btn.dataset.active = userPos ? "true" : "";
-  }, [userPos, mapEpoch]);
+  }, [userPos, mapEpoch, applyInitialView]);
 
   // "Sort by distance" with no position yet is a request for one. It goes
   // through the same button a finger would press, so it asks once, the same
@@ -1614,7 +1640,9 @@ export function RaceMap({
     );
   }
 
-  goToMyLocationRef.current = goToMyLocation;
+  useLayoutEffect(() => {
+    goToMyLocationRef.current = goToMyLocation;
+  });
 
   useEffect(() => {
     const btn = locateBtnRef.current;
