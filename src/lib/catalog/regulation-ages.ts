@@ -332,15 +332,7 @@ export async function fillRegulationAgeCategories(opts?: {
     if (opts?.countries?.length) query = query.in("location.country_code", opts.countries);
     if (opts?.ids?.length) query = query.in("id", opts.ids);
     const { data } = await query;
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      name: string;
-      start_date: string;
-      regulations_url: string | null;
-      website_url: string | null;
-      age_categories: string[] | null;
-      location: { municipality: string | null } | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id) && !opts?.ids?.length) continue;
       // A national championship runs the federation's classes, not the ones

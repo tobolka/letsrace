@@ -57,15 +57,7 @@ export async function fillRaceResultAgeCategories(opts?: {
       .range(from, from + PAGE - 1);
     if (error) throw error;
 
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      name: string; start_date: string; age_categories: string[] | null; age_confidence: string | null; audience: string | null;
-      end_date: string | null; regulations_url: string | null;
-      overrides: { locked_fields: string[] | null } | null;
-      website_url: string | null;
-      registration_url: string | null;
-      sources: { source_url: string | null }[] | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (opts?.ids && !opts.ids.includes(row.id)) continue;
       if (skip.has(row.id) && !opts?.ids) continue;

@@ -139,7 +139,7 @@ export async function applySeriesAgesToRounds(seriesId?: string, opts?: { dryRun
         .eq("series_id", s.id).is("merged_into_id", null).gte("start_date", today)
         .in("status", [...ACTIVE_EVENT_STATUSES]).order("id").range(from, from + PAGE - 1);
       if (error) throw new Error(error.message);
-      candidates.push(...((data ?? []) as unknown as Round[]));
+      candidates.push(...(data ?? []));
       if (!data || data.length < PAGE) break;
     }
     for (const round of candidates) {

@@ -99,7 +99,7 @@ export async function fillEmptyAgeCategories(opts?: {
     age_confidence: "explicit" | "default";
   }[] = [];
   let stillUnknown = 0;
-  for (const row of (rows ?? []) as unknown as EventRow[]) {
+  for (const row of rows ?? []) {
     if (!emptyAges(row.age_categories)) continue;
 
     const series = seriesOf(row);

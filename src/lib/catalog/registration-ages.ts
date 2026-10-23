@@ -21,7 +21,7 @@ export async function fillRegistrationAgeEvidence(opts?: { max?: number; dryRun?
       .or("age_confidence.is.null,age_confidence.neq.explicit,age_categories.is.null,age_categories.eq.{}")
       .order("start_date").order("id").range(from, from + 999);
     if (error) throw error;
-    for (const row of (data ?? []) as unknown as Row[]) {
+    for (const row of data ?? []) {
       if (skip.has(row.id) || !mayInheritSeriesAges({ ...row, locked_fields: row.overrides?.locked_fields })) continue;
       if (row.registration_url || [row.website_url, ...(row.sources ?? []).map((s) => s.source_url)].some((url) => raceResultEventId(url))) targets.push(row);
       if (targets.length >= max) break;

@@ -110,9 +110,7 @@ export async function fillAgesWithModel(opts?: {
       .range(from, from + PAGE - 1);
     if (opts?.ids?.length) q = q.in("id", opts.ids);
     const { data } = await q;
-    const rows = (data ?? []) as unknown as {
-      id: string; name: string; start_date: string; regulations_url: string | null; website_url: string | null; age_categories: string[] | null; location: { municipality: string | null } | null;
-    }[];
+    const rows = data ?? [];
     for (const r of rows) {
       if (skip.has(r.id) && !opts?.ids?.length) continue;
       if (CHAMPIONSHIP.test(r.name)) continue;

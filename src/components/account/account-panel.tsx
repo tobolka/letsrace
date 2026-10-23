@@ -178,10 +178,7 @@ export function AccountPanel({
       .select("member_id, event:events(start_date)")
       .eq("user_id", auth.user.id);
     const counts: Record<string, number> = {};
-    for (const row of (rides ?? []) as unknown as {
-      member_id: string;
-      event: { start_date: string } | { start_date: string }[] | null;
-    }[]) {
+    for (const row of rides ?? []) {
       const ev = Array.isArray(row.event) ? row.event[0] : row.event;
       if (!ev?.start_date?.startsWith(String(year))) continue;
       counts[row.member_id] = (counts[row.member_id] ?? 0) + 1;

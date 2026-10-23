@@ -459,11 +459,11 @@ export async function runWeeklyDigest(now = new Date()) {
     eventsByUser.set(userId, bag);
   }
 
-  for (const row of (favs ?? [])) {
+  for (const row of favs ?? []) {
     addEvent(row.user_id, row.event);
     favsByUser.set(row.user_id, [...(favsByUser.get(row.user_id) ?? []), row.event_id]);
   }
-  for (const row of (atts ?? [])) {
+  for (const row of atts ?? []) {
     addEvent(row.user_id, row.event);
     attByUser.set(row.user_id, [
       ...(attByUser.get(row.user_id) ?? []),
@@ -478,18 +478,7 @@ export async function runWeeklyDigest(now = new Date()) {
   }
 
   const alertsByUser = new Map<string, RaceAlert[]>();
-  for (const row of (alerts ?? []) as unknown as {
-    id: string;
-    user_id: string;
-    enabled: boolean;
-    label: string;
-    lat: number;
-    lng: number;
-    radius_km: number;
-    disciplines: string[] | null;
-    locale: string;
-    created_at: string;
-  }[]) {
+  for (const row of alerts ?? []) {
     const list = alertsByUser.get(row.user_id) ?? [];
     list.push({
       id: row.id,

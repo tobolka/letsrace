@@ -87,12 +87,7 @@ export async function fillFciWebsites(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      name: string;
-      start_date: string;
-      sources: { source_url: string | null }[] | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       const url = (row.sources ?? [])

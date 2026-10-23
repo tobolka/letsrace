@@ -20,7 +20,7 @@ export async function fillDisciplinesFromSeries(): Promise<{ filled: number }> {
     .not("series_id", "is", null)
     .limit(3000);
   let filled = 0;
-  for (const e of (data ?? []) as unknown as { id: string; disciplines: string[] | null; series: { disciplines: string[] | null } | null }[]) {
+  for (const e of data ?? []) {
     if ((e.disciplines ?? []).length) continue;
     const fromSeries = e.series?.disciplines ?? [];
     if (!fromSeries.length) continue;

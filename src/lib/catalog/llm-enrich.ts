@@ -375,10 +375,7 @@ export async function enrichFromPages(opts?: {
     if (opts?.ids?.length) q = q.in("id", opts.ids);
     const { data, error } = await q;
     if (error) throw new Error(`Loading enrichment targets: ${error.message}`);
-    const rows = (data ?? []) as unknown as {
-      id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; registration_closes_at: string | null;
-      disciplines: string[] | null; age_categories: string[] | null; age_confidence: string | null; location: { municipality: string | null; country_code: string | null } | null;
-    }[];
+    const rows = data ?? [];
     for (const r of rows) {
       if (!opts?.ids?.length && process.env.CATALOG_COUNTRIES && !process.env.CATALOG_COUNTRIES.split(",").includes(r.location?.country_code ?? "")) continue;
       if (skip.has(r.id) && !opts?.ids?.length && !opts?.agesOnly) continue;

@@ -60,7 +60,7 @@ export async function proposeSeriesLinks(opts?: { countries?: string[] }): Promi
       .gte("start_date", today)
       .order("id")
       .range(from, from + PAGE - 1);
-    for (const r of (data ?? []) as unknown as { id: string; name: string; start_date: string; location: { country_code: string | null } | null }[]) {
+    for (const r of data ?? []) {
       const cc = r.location?.country_code ?? null;
       if (opts?.countries?.length && (!cc || !opts.countries.includes(cc))) continue;
       races.push({ id: r.id, name: r.name, start_date: r.start_date, cc });

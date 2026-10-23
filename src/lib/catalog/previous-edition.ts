@@ -67,7 +67,7 @@ async function readRange(from: string, to: string): Promise<Row[]> {
       .order("id", { ascending: true })
       .range(offset, offset + PAGE - 1);
     if (error) throw new Error(error.message);
-    out.push(...((data ?? []) as unknown as Row[]));
+    out.push(...(data ?? []));
     if (!data || data.length < PAGE) break;
   }
   return out;

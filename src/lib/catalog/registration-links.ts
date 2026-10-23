@@ -120,14 +120,7 @@ export async function fillRegistrationLinks(opts?: {
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error) throw error;
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      name: string;
-      start_date: string;
-      website_url: string;
-      location: { municipality: string | null } | null;
-      overrides: { locked_fields: string[] | null } | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id) || row.overrides?.locked_fields?.includes("registration_url")) continue;
       targets.push({
@@ -210,7 +203,7 @@ export async function fillRegistrationLinks(opts?: {
         .select("name,start_date,overrides:event_overrides(locked_fields)").eq("id", t.id)
         .eq("visibility", "public").is("merged_into_id", null).single();
       if (check) throw check;
-      const overrides = current?.overrides as unknown as { locked_fields: string[] | null } | null;
+      const overrides = current?.overrides;
       if (!current || current.name !== t.name || current.start_date !== t.startDate || overrides?.locked_fields?.includes("registration_url")) return;
       const { data: changed, error: writeError } = await supabase.from("events")
         .update({ registration_url: link, updated_at: new Date().toISOString() })

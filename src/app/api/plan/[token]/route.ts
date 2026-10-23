@@ -77,7 +77,7 @@ export async function GET(
   ]);
 
   const byId = new Map<string, Row>();
-  for (const row of [...(favs ?? []), ...(atts ?? [])] as unknown as { event: Row | Row[] | null }[]) {
+  for (const row of [...(favs ?? []), ...(atts ?? [])]) {
     const ev = unwrap(row.event);
     if (!ev || ev.start_date < since) continue;
     byId.set(ev.id, ev);

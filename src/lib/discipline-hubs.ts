@@ -125,7 +125,7 @@ const loadUpcomingTallies = unstable_cache(async (today: string): Promise<Countr
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw new Error(error.message);
-    rows.push(...((data ?? []) as unknown as typeof rows));
+    rows.push(...(data ?? []));
     if (!data || data.length < 1000) break;
   }
 

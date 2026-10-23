@@ -250,7 +250,7 @@ export async function findWebsites(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
-    const rows = (data ?? []) as unknown as { id: string; name: string; start_date: string; registration_url: string | null; website_url: string | null; location: { municipality: string | null; country_code: string | null } | null }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       if (opts?.countries?.length && !opts.countries.includes(row.location?.country_code ?? "")) continue;

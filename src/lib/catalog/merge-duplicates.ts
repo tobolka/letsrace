@@ -784,7 +784,7 @@ export async function collapseFingerprintCollisions(opts?: {
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw error;
-    rows.push(...((data ?? []) as unknown as FpRow[]));
+    rows.push(...(data ?? []));
     if (!data || data.length < 1000) break;
   }
 

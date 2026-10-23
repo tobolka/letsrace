@@ -169,13 +169,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
       const nextAtt: Record<string, AttendanceRecord[]> = {};
       const nextFavs: string[] = [];
 
-      for (const row of (att ?? []) as unknown as {
-        member_id: string;
-        status: string;
-        registered: boolean;
-        paid: boolean;
-        event: EventEmbed | EventEmbed[] | null;
-      }[]) {
+      for (const row of att ?? []) {
         const ev = unwrap(row.event);
         if (!ev) continue;
         nextEvents[ev.id] = toPlannerEvent(ev);
@@ -190,7 +184,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
         ];
       }
 
-      for (const row of (favs ?? []) as unknown as { event: EventEmbed | EventEmbed[] | null }[]) {
+      for (const row of favs ?? []) {
         const ev = unwrap(row.event);
         if (!ev) continue;
         nextEvents[ev.id] = toPlannerEvent(ev);
@@ -268,22 +262,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
       .order("start_date");
 
     const rounds: SeriesRound[] = [];
-    for (const row of (data ?? []) as unknown as {
-      id: string;
-      name: string;
-      slug: string;
-      start_date: string;
-      end_date: string | null;
-      series_id: string | null;
-      series:
-        | { id: string; name: string; slug: string }
-        | { id: string; name: string; slug: string }[]
-        | null;
-      location:
-        | { name: string | null; municipality: string | null }
-        | { name: string | null; municipality: string | null }[]
-        | null;
-    }[]) {
+    for (const row of data ?? []) {
       const ser = unwrap(row.series);
       if (!row.series_id || !ser) continue;
       const place = unwrap(row.location);

@@ -47,11 +47,7 @@ export async function fillSportsoftLinks(opts?: {
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error) throw new Error(error.message);
-    const rows = (data ?? []) as unknown as {
-      id: string; name: string; start_date: string;
-      registration_url: string | null; regulations_url: string | null;
-      sources: { source_url: string | null }[] | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       const page = (row.sources ?? [])
         .map((s) => s.source_url ?? "")

@@ -279,11 +279,7 @@ export async function researchRaces(opts?: {
     q = opts?.ids?.length ? q.in("id", opts.ids) : q.gte("start_date", today).lte("start_date", until);
     const { data, error } = await q.order("start_date", { ascending: true }).order("id", { ascending: true }).range(from, from + PAGE - 1);
     if (error) throw new Error(error.message);
-    const rows = (data ?? []) as unknown as {
-      id: string; name: string; start_date: string; disciplines: string[] | null;
-      website_url: string | null; registration_url: string | null; regulations_url: string | null;
-      location: { municipality: string | null; country_code: string | null } | null;
-    }[];
+    const rows = data ?? [];
     for (const r of rows) {
       if (skip.has(r.id)) continue;
       if (opts?.countries?.length && !opts.countries.includes(r.location?.country_code ?? "")) continue;

@@ -66,12 +66,7 @@ export async function fillFciAgeCategories(opts?: {
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
 
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      age_categories: string[] | null;
-      registration_closes_at: string | null;
-      sources: { source_url: string | null }[] | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       const url = (row.sources ?? [])

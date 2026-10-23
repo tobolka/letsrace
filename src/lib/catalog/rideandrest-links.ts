@@ -28,7 +28,7 @@ export async function fillRideAndRestLinks(opts?: {
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error) throw new Error(error.message);
-    const rows = (data ?? []) as unknown as { id: string; name: string; start_date: string; sources: { source_url: string | null }[] | null }[];
+    const rows = data ?? [];
     for (const row of rows) {
       const url = (row.sources ?? [])
         .map((s) => s.source_url ?? "")

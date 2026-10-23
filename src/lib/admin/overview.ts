@@ -64,7 +64,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .order("start_date")
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
-    rows.push(...((data ?? []) as unknown as typeof rows));
+    rows.push(...(data ?? []));
     if (!data || data.length < PAGE) break;
   }
 

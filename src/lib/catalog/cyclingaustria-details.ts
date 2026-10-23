@@ -107,16 +107,7 @@ export async function fillCyclingAustriaDetails(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      name: string;
-      start_date: string;
-      age_categories: string[] | null;
-      age_confidence: string | null;
-      website_url: string | null;
-      location: { municipality: string | null } | null;
-      sources: { source_url: string | null }[] | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       const url = (row.sources ?? []).map((s) => s.source_url ?? "").find((u) => CA_EVENT.test(u));

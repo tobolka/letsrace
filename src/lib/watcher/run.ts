@@ -283,7 +283,7 @@ export async function watchOne(row: {
         // Ordered, or the ranges overlap and miss rows between them.
         .order("id", { ascending: true })
         .range(from, from + 999);
-      const rows = (page ?? []) as unknown as typeof knownRows;
+      const rows = page ?? [];
       knownRows.push(...rows);
       if (rows.length < 1000) break;
     }

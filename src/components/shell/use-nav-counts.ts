@@ -44,12 +44,7 @@ export function useNavCounts(refreshKey: string | null, authed: boolean | null):
       ]);
 
       const unsettled = new Set<string>();
-      for (const row of (atts ?? []) as unknown as {
-        event_id: string;
-        status: string;
-        paid: boolean;
-        event: { start_date: string } | { start_date: string }[] | null;
-      }[]) {
+      for (const row of atts ?? []) {
         const ev = Array.isArray(row.event) ? row.event[0] : row.event;
         if (!ev || ev.start_date < today) continue;
         if (row.status !== "none" && !row.paid) unsettled.add(row.event_id);
@@ -65,13 +60,7 @@ export function useNavCounts(refreshKey: string | null, authed: boolean | null):
           .in("alert_id", alertRows.map((a) => a.id))
           .gte("created_at", since.toISOString());
         const fresh = new Set<string>();
-        for (const hit of (hits ?? []) as unknown as {
-          event_id: string;
-          event:
-            | { start_date: string; end_date: string | null }
-            | { start_date: string; end_date: string | null }[]
-            | null;
-        }[]) {
+        for (const hit of hits ?? []) {
           const ev = Array.isArray(hit.event) ? hit.event[0] : hit.event;
           if (ev && (ev.end_date ?? ev.start_date) >= today) fresh.add(hit.event_id);
         }

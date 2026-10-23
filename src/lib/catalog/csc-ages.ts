@@ -70,16 +70,7 @@ export async function fillCscAgeCategories(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
-    const rows = (data ?? []) as unknown as {
-      id: string;
-      name: string;
-      start_date: string;
-      registration_closes_at: string | null;
-      website_url: string | null;
-      age_categories: string[] | null;
-      age_confidence: string | null;
-      sources: { source_url: string | null }[] | null;
-    }[];
+    const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       const url = (row.sources ?? []).map((s) => s.source_url ?? "").find((u) => CSC_RACE.test(u));

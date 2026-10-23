@@ -15,19 +15,6 @@ import { repairText } from "@/lib/text";
 
 type Hit = RaceItemData;
 
-type EventRow = {
-  id: string;
-  name: string;
-  slug: string;
-  start_date: string;
-  end_date: string | null;
-  disciplines: string[] | null;
-  location:
-    | { name: string | null; municipality: string | null; country_code: string | null }
-    | { name: string | null; municipality: string | null; country_code: string | null }[]
-    | null;
-};
-
 function unwrap<T>(v: T | T[] | null | undefined): T | null {
   if (!v) return null;
   return Array.isArray(v) ? (v[0] ?? null) : v;
@@ -74,10 +61,7 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
       if (!alive) return;
       const out: Hit[] = [];
       const seen = new Set<string>();
-      for (const row of (data ?? []) as unknown as {
-        distance_km: number | null;
-        event: EventRow | EventRow[] | null;
-      }[]) {
+      for (const row of data ?? []) {
         const ev = unwrap(row.event);
         if (!ev || seen.has(ev.id)) continue;
         // A match for a race that has already been run is not news any more.
