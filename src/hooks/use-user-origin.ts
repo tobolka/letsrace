@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { distanceKm } from "@/lib/geo/distance";
 import { isInEuropeMap } from "@/lib/geo/europe";
 
@@ -10,15 +10,40 @@ export type OriginStatus = "idle" | "locating" | "ready" | "denied" | "outside";
 
 const KEY = "letsrace.origin.v1";
 
-function readCached(): Origin | null {
+function parseOrigin(raw: string | null): Origin | null {
+  if (!raw) return null;
   try {
-    const raw = window.sessionStorage.getItem(KEY);
-    if (!raw) return null;
     const v = JSON.parse(raw) as Origin;
     return Number.isFinite(v?.lat) && Number.isFinite(v?.lng) && isInEuropeMap(v.lat, v.lng) ? v : null;
   } catch {
     return null;
   }
+}
+
+function readRaw(): string | null {
+  try {
+    return window.sessionStorage.getItem(KEY);
+  } catch {
+    return null;
+  }
+}
+
+// sessionStorage tells nobody when it changes inside this tab.
+const listeners = new Set<() => void>();
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  return () => {
+    listeners.delete(onChange);
+  };
+}
+
+function remember(origin: Origin) {
+  try {
+    sessionStorage.setItem(KEY, JSON.stringify(origin));
+  } catch {
+    /* private mode */
+  }
+  listeners.forEach((notify) => notify());
 }
 
 /**
@@ -29,49 +54,45 @@ function readCached(): Origin | null {
  * so moving between the list and the calendar does not ask again.
  */
 export function useUserOrigin() {
-  const [origin, setOrigin] = useState<Origin | null>(null);
-  const [status, setStatus] = useState<OriginStatus>("idle");
+  // The server has no session storage, so it and the first client render see
+  // no fix; the stored one arrives with the next render.
+  const cachedRaw = useSyncExternalStore(subscribe, readRaw, () => null);
+  const cached = useMemo(() => parseOrigin(cachedRaw), [cachedRaw]);
+  const [fix, setFix] = useState<Origin | null>(null);
+  const [attempt, setAttempt] = useState<OriginStatus>("idle");
 
-  useEffect(() => {
-    const cached = readCached();
-    if (cached) {
-      setOrigin(cached);
-      setStatus("ready");
-    }
-  }, []);
+  const origin = fix ?? cached;
+  const status: OriginStatus = attempt !== "idle" ? attempt : cached ? "ready" : "idle";
 
   const acceptOrigin = useCallback((next: Origin) => {
     if (!Number.isFinite(next.lat) || !Number.isFinite(next.lng)) return;
     // A radius around a point in the US would send the map somewhere it has
     // no tiles and no races; keep the European view instead.
     if (!isInEuropeMap(next.lat, next.lng)) {
-      setStatus("outside");
+      setAttempt("outside");
       return;
     }
-    setOrigin((prev) => prev && distanceKm(prev, next) < 0.3 ? prev : next);
-    setStatus("ready");
-    try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch { /* private mode */ }
+    setFix((prev) => (prev && distanceKm(prev, next) < 0.3 ? prev : next));
+    setAttempt("ready");
+    remember(next);
   }, []);
 
   const locate = useCallback(() => {
     // A fix from earlier in the session answers without asking again.
-    const cached = readCached();
-    if (cached) {
-      setOrigin(cached);
-      setStatus("ready");
+    const earlier = parseOrigin(readRaw());
+    if (earlier) {
+      setFix(earlier);
+      setAttempt("ready");
       return;
     }
     if (!("geolocation" in navigator)) {
-      setStatus("denied");
+      setAttempt("denied");
       return;
     }
-    setStatus("locating");
+    setAttempt("locating");
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const next = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        acceptOrigin(next);
-      },
-      () => setStatus("denied"),
+      (pos) => acceptOrigin({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => setAttempt("denied"),
       { maximumAge: 300_000, timeout: 10_000 },
     );
   }, [acceptOrigin]);

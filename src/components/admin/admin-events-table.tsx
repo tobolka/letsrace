@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -111,9 +111,11 @@ export function AdminEventsTable({
   }
 
   // Selection belongs to the rows on screen; changing the question clears it.
-  useEffect(() => {
+  const [selectionFor, setSelectionFor] = useState(events);
+  if (events !== selectionFor) {
+    setSelectionFor(events);
     setSelected(new Set());
-  }, [events]);
+  }
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -394,7 +396,12 @@ export function AdminEventsTable({
  *  trip to the server, and 2,000 races do not need filtering as you type. */
 function SearchBox({ value, onSubmit }: { value: string; onSubmit: (term: string) => void }) {
   const [term, setTerm] = useState(value);
-  useEffect(() => setTerm(value), [value]);
+  // The address changed under us (back button, a filter chip): show its term.
+  const [shownValue, setShownValue] = useState(value);
+  if (value !== shownValue) {
+    setShownValue(value);
+    setTerm(value);
+  }
   return (
     <form
       className="min-w-48 flex-1"

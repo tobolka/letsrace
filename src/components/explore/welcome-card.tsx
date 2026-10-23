@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { MapPin, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { hasAuthCookie, markWelcomeSeen, WELCOME_SEEN_KEY } from "@/lib/welcome";
+import { markWelcomeSeen, readWelcomeSeen, subscribeWelcome } from "@/lib/welcome";
 
 /**
  * What this app is, said once.
@@ -34,23 +34,17 @@ export function WelcomeCard({
   };
   onSignIn: () => void;
 }) {
-  const [show, setShow] = useState(true);
+  // The server cannot know, so it and hydration show the card; a returning
+  // visitor's render right after hydration takes it away.
+  const seen = useSyncExternalStore(subscribeWelcome, readWelcomeSeen, () => false);
 
   useEffect(() => {
-    try {
-      if (window.localStorage.getItem(WELCOME_SEEN_KEY) === "1" || hasAuthCookie()) {
-        document.documentElement.dataset.welcomeSeen = "1";
-        setShow(false);
-      }
-    } catch {
-      /* private mode — show again, which is survivable */
-    }
-  }, []);
+    if (seen) document.documentElement.dataset.welcomeSeen = "1";
+  }, [seen]);
 
-  if (!show) return null;
+  if (seen) return null;
 
   function dismiss() {
-    setShow(false);
     markWelcomeSeen();
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import Link from "next/link";
 import { Radar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,13 +56,15 @@ export function AlertPreview({
 }) {
   const t = messagesFor(locale);
   const loc = asLocale(locale);
-  const [hits, setHits] = useState<Hit[] | null>(null);
-  const onHitsRef = useRef(onHits);
-  onHitsRef.current = onHits;
+  // The answer is kept with the question it answers, so a new question reads as
+  // "loading" until its own answer arrives.
+  const key = `${lat},${lng},${radiusKm},${disciplines.join(",")}`;
+  const [answer, setAnswer] = useState<{ key: string; hits: Hit[] } | null>(null);
+  const hits = answer?.key === key ? answer.hits : null;
+  const reportHits = useEffectEvent((found: Hit[]) => onHits?.(found));
 
   useEffect(() => {
     let alive = true;
-    setHits(null);
     const run = window.setTimeout(() => {
       void (async () => {
         const today = new Date();
@@ -105,11 +107,11 @@ export function AlertPreview({
           }
           matched.sort((a, b) => a.km - b.km || a.startDate.localeCompare(b.startDate));
           if (alive) {
-            setHits(matched);
-            onHitsRef.current?.(matched);
+            setAnswer({ key, hits: matched });
+            reportHits(matched);
           }
         } catch {
-          if (alive) setHits([]);
+          if (alive) setAnswer({ key, hits: [] });
         }
       })();
     }, 300);
@@ -117,7 +119,8 @@ export function AlertPreview({
       alive = false;
       window.clearTimeout(run);
     };
-  }, [lat, lng, radiusKm, disciplines]);
+    // `reportHits` is an effect event: it always sees the latest `onHits`.
+  }, [key, lat, lng, radiusKm, disciplines]);
 
   if (hits === null) {
     return (

@@ -6,6 +6,7 @@ import type { SeriesOption } from "@/components/explore/map-filter-bar";
 import { seriesOutsideCountries } from "@/components/explore/map-filter-bar";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { filterSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
+import { useLoadEffect } from "@/hooks/use-load-effect";
 import { useUserOrigin } from "@/hooks/use-user-origin";
 import {
   readExploreFilterPrefs,
@@ -71,25 +72,11 @@ export function useExploreFilters() {
 
   // Same rule as the map: a URL that names filters wins; a bare visit gets what
   // the last visit left behind.
-  useEffect(() => {
-    if (urlHasExploreFilterParams(window.location.search)) {
-      setReady(true);
-      return;
-    }
-    const stored = readExploreFilterPrefs();
-    if (!stored) {
-      setReady(true);
-      return;
-    }
-    let cancelled = false;
-    void setFilters(storedExploreFiltersToPatch(stored)).then(() => {
-      if (!cancelled) setReady(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-    // Restore once on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Restored once on mount.
+  useLoadEffect(async () => {
+    const stored = urlHasExploreFilterParams(window.location.search) ? null : readExploreFilterPrefs();
+    if (stored) await setFilters(storedExploreFiltersToPatch(stored));
+    setReady(true);
   }, []);
 
   useEffect(() => {

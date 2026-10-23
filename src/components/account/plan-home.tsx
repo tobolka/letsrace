@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useLoadEffect } from "@/hooks/use-load-effect";
+import { useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { AlertInbox } from "@/components/account/alert-inbox";
 import { AuthForm } from "@/components/account/auth-form";
@@ -301,10 +302,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     setSeries(buildSeriesProgress(rounds, { plannedEventIds: new Set(Object.keys(planned)) }));
   }
 
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locale]);
+  useLoadEffect(load, [locale]);
 
   const attendance = useMemo(
     () =>

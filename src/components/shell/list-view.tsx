@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { EventCard } from "@/components/explore/event-rows";
 import { ColumnPicker } from "@/components/shell/column-picker";
 import { RaceTable, sortTableEvents, type ListSort } from "@/components/shell/race-table";
@@ -21,7 +21,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { eventDistanceKm, sortEvents, type EventSort } from "@/lib/geo/distance";
 import { messagesFor } from "@/lib/i18n/messages";
 import { listViewState } from "@/lib/list-view-state";
-import { DEFAULT_LAYOUT, readLayout, writeLayout, type ColumnLayout, type ListColumn } from "@/lib/list-columns";
+import {
+  DEFAULT_LAYOUT,
+  parseLayout,
+  readLayoutRaw,
+  subscribeLayout,
+  writeLayout,
+  type ColumnLayout,
+  type ListColumn,
+} from "@/lib/list-columns";
 
 /**
  * Every race that matches, on a page of its own.
@@ -57,12 +65,11 @@ export function ListView({ locale }: { locale: string }) {
   );
   const view = listViewState({ settled: feed.settled, count: rows.length });
 
-  const [layout, setLayoutState] = useState<ColumnLayout>(DEFAULT_LAYOUT);
-  // Read after mount: the server renders the default and local storage only
-  // exists here.
-  useEffect(() => setLayoutState(readLayout()), []);
+  // The server renders the default and local storage only exists in the
+  // browser, so the stored layout arrives with the render after hydration.
+  const storedLayout = useSyncExternalStore(subscribeLayout, readLayoutRaw, () => null);
+  const layout = useMemo(() => parseLayout(storedLayout), [storedLayout]);
   function setLayout(next: ColumnLayout | null) {
-    setLayoutState(next ?? DEFAULT_LAYOUT);
     writeLayout(next);
   }
   const columns = layout.order.filter((c) => !layout.hidden.includes(c));

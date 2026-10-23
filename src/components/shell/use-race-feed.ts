@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useIsClient } from "@/hooks/use-is-client";
 import { boxAround } from "@/hooks/use-user-origin";
 import { todayIso } from "@/lib/date-presets";
 import { eventDistanceKm } from "@/lib/geo/distance";
@@ -58,11 +59,14 @@ function toParams(query: FeedQuery, near: Near | null): string {
 export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | null = null) {
   const [events, setEvents] = useState<EventListItem[]>([]);
   const [settled, setSettled] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // The request the last answer was for; a different current one means loading.
+  const [answeredKey, setAnsweredKey] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   // A plain string, so the effect below re-runs exactly when the query does.
   const qs = toParams(query, near);
   const nearKey = near ? `${near.origin.lat},${near.origin.lng},${near.km}` : "";
+  const requestKey = `${qs}|${nearKey}`;
+  const isClient = useIsClient();
   const first = useRef(true);
 
   useEffect(() => {
@@ -71,7 +75,6 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | nul
     // The first request goes out at once; later ones wait for typing to stop.
     const delay = first.current ? 0 : 250;
     first.current = false;
-    setLoading(true);
     const timer = window.setTimeout(() => {
       const shared = qs.includes("catalogue=1");
       const loaded = shared
@@ -102,13 +105,13 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | nul
           );
           setFailed(false);
           setSettled(true);
-          setLoading(false);
+          setAnsweredKey(requestKey);
         })
         .catch((err: unknown) => {
           if ((err as { name?: string })?.name === "AbortError") return;
           setFailed(true);
           setSettled(true);
-          setLoading(false);
+          setAnsweredKey(requestKey);
         });
     }, delay);
     return () => {
@@ -117,7 +120,9 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | nul
     };
     // `near` is read inside; `nearKey` is its identity.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qs, enabled, nearKey]);
+  }, [qs, enabled, nearKey, requestKey]);
 
+  // Not "loading" in the server's HTML: the request only starts in the browser.
+  const loading = isClient && enabled && answeredKey !== requestKey;
   return { events, settled, loading, failed };
 }

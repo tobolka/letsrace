@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DayPicker, type DateRange } from "react-day-picker";
 import { cs, enGB, pl, sk } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -20,10 +20,13 @@ type Props = {
 export function DateRangeCalendar({ locale, selected, onSelect }: Props) {
   const dfLocale = LOCALES[locale as keyof typeof LOCALES] ?? enGB;
   const [month, setMonth] = useState<Date>(selected?.from ?? new Date());
-
-  useEffect(() => {
+  // A range chosen from outside (a preset, a typed date) brings its month into view.
+  const fromTime = selected?.from?.getTime();
+  const [shownFrom, setShownFrom] = useState(fromTime);
+  if (fromTime !== shownFrom) {
+    setShownFrom(fromTime);
     if (selected?.from) setMonth(selected.from);
-  }, [selected?.from]);
+  }
 
   return (
     <div className="letsrace-date-cal min-w-0 px-1.5 pb-1.5 pt-1">

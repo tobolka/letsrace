@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLoadEffect } from "@/hooks/use-load-effect";
+import { useState } from "react";
 import { AlertSettings } from "@/components/account/alert-settings";
 import { AuthForm } from "@/components/account/auth-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,9 +36,7 @@ export function AlertsPanel({ locale, embedded = false }: { locale: string; embe
     setReady(true);
   }
 
-  useEffect(() => {
-    void load();
-  }, []);
+  useLoadEffect(load, []);
 
   if (!ready) {
     return <DocPageSkeleton boxes={1} />;

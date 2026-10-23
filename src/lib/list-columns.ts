@@ -47,22 +47,47 @@ export function normalizeLayout(raw: unknown): ColumnLayout {
   };
 }
 
-export function readLayout(): ColumnLayout {
+export function parseLayout(raw: string | null): ColumnLayout {
   try {
-    const raw = window.localStorage.getItem(KEY);
     return raw ? normalizeLayout(JSON.parse(raw)) : DEFAULT_LAYOUT;
   } catch {
     return DEFAULT_LAYOUT;
   }
 }
 
-export function writeLayout(layout: ColumnLayout | null): void {
+// Where storage is blocked, a choice still holds for as long as the page is open.
+let memory: string | null = null;
+const listeners = new Set<() => void>();
+
+/** The stored layout as text, so a store snapshot compares by value. */
+export function readLayoutRaw(): string | null {
   try {
-    if (layout) window.localStorage.setItem(KEY, JSON.stringify(layout));
+    return window.localStorage.getItem(KEY);
+  } catch {
+    return memory;
+  }
+}
+
+export function subscribeLayout(onChange: () => void): () => void {
+  listeners.add(onChange);
+  return () => {
+    listeners.delete(onChange);
+  };
+}
+
+export function readLayout(): ColumnLayout {
+  return parseLayout(readLayoutRaw());
+}
+
+export function writeLayout(layout: ColumnLayout | null): void {
+  memory = layout ? JSON.stringify(layout) : null;
+  try {
+    if (memory) window.localStorage.setItem(KEY, memory);
     else window.localStorage.removeItem(KEY);
   } catch {
     /* private mode */
   }
+  listeners.forEach((notify) => notify());
 }
 
 /** Move `col` one place towards `dir`, skipping nothing. */

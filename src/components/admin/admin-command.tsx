@@ -68,10 +68,7 @@ export function AdminCommand({
   useEffect(() => {
     window.clearTimeout(timer.current);
     const q = term.trim();
-    if (q.length < 2) {
-      setHits([]);
-      return;
-    }
+    if (q.length < 2) return;
     timer.current = window.setTimeout(() => {
       void (async () => {
         try {
@@ -86,6 +83,12 @@ export function AdminCommand({
     }, 220);
     return () => window.clearTimeout(timer.current);
   }, [term]);
+
+  /** A term too short to search for shows nothing, and forgets what the last one found. */
+  function changeTerm(next: string) {
+    setTerm(next);
+    if (next.trim().length < 2) setHits([]);
+  }
 
   const close = useCallback(() => {
     onOpenChange(false);
@@ -123,7 +126,7 @@ export function AdminCommand({
       <CommandInput
         placeholder="Find a race, jump to a page, run a job…"
         value={term}
-        onValueChange={setTerm}
+        onValueChange={changeTerm}
       />
       <CommandList>
         <CommandEmpty>Nothing matches that.</CommandEmpty>

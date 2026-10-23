@@ -62,10 +62,7 @@ export function AccountCommand({
   useEffect(() => {
     window.clearTimeout(timer.current);
     const q = term.trim();
-    if (q.length < 2) {
-      setHits([]);
-      return;
-    }
+    if (q.length < 2) return;
     timer.current = window.setTimeout(() => {
       void (async () => {
         try {
@@ -80,6 +77,12 @@ export function AccountCommand({
     }, 220);
     return () => window.clearTimeout(timer.current);
   }, [term]);
+
+  /** A term too short to search for shows nothing, and forgets what the last one found. */
+  function changeTerm(next: string) {
+    setTerm(next);
+    if (next.trim().length < 2) setHits([]);
+  }
 
   function close() {
     onOpenChange(false);
@@ -118,7 +121,7 @@ export function AccountCommand({
       <CommandInput
         placeholder={t.searchPlaceholder}
         value={term}
-        onValueChange={setTerm}
+        onValueChange={changeTerm}
       />
       <CommandList>
         <CommandEmpty>{t.noResults}</CommandEmpty>

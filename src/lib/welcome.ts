@@ -20,7 +20,30 @@ export function hasAuthCookie(): boolean {
 /** Inline in <head> so returning visitors never paint the card for one frame. */
 export const WELCOME_SEEN_BOOT_SCRIPT = `try{if(localStorage.getItem(${JSON.stringify(WELCOME_SEEN_KEY)})==="1"||${AUTH_COOKIE_PATTERN.toString()}.test(document.cookie))document.documentElement.dataset.welcomeSeen="1"}catch(e){}`;
 
+const listeners = new Set<() => void>();
+
+export function subscribeWelcome(onChange: () => void): () => void {
+  listeners.add(onChange);
+  return () => {
+    listeners.delete(onChange);
+  };
+}
+
+/** Has this visitor dismissed the intro, or already got an account? */
+export function readWelcomeSeen(): boolean {
+  try {
+    return window.localStorage.getItem(WELCOME_SEEN_KEY) === "1" || hasAuthCookie() || dismissedHere;
+  } catch {
+    /* private mode — show again, which is survivable */
+    return dismissedHere;
+  }
+}
+
+// Where storage is blocked, a dismissal still holds until the page is closed.
+let dismissedHere = false;
+
 export function markWelcomeSeen() {
+  dismissedHere = true;
   try {
     window.localStorage.setItem(WELCOME_SEEN_KEY, "1");
   } catch {
@@ -28,4 +51,5 @@ export function markWelcomeSeen() {
   }
   document.documentElement.dataset.welcomeSeen = "1";
   document.cookie = `${WELCOME_SEEN_KEY}=1; path=/; max-age=31536000; samesite=lax`;
+  listeners.forEach((notify) => notify());
 }

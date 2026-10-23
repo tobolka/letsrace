@@ -55,6 +55,7 @@ export async function renderRaceOgImage(raw: string, slug: string, init?: { head
         }}
       >
         {/* The supplied path wordmark renders identically on every server. */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse renders to a PNG; next/image does not apply */}
         <img src={wordmark} alt="Let's Race" width={398} height={60} />
         <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 980 }}>
           <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.08, letterSpacing: "-0.03em" }}>

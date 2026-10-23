@@ -43,18 +43,16 @@ export function FreeWeekendSuggestions({
   const [items, setItems] = useState<Suggestion[] | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
   const hasHome = context.home != null;
+  // No place, no suggestions: forget the last ones rather than show them again
+  // when a place comes back.
+  if (!hasHome && items !== null) setItems(null);
 
   useEffect(() => {
     let alive = true;
     // Without a place to measure from, the ranker has nothing to rank by and
     // would offer whatever the catalogue happens to hold that weekend — races
     // three countries away. Ask for the place instead of guessing.
-    if (!context.home) {
-      setItems(null);
-      return () => {
-        alive = false;
-      };
-    }
+    if (!context.home) return;
     void (async () => {
       const params = new URLSearchParams({ dateFrom: from, dateTo: to });
       if (context.home) {

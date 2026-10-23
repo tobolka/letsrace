@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLoadEffect } from "@/hooks/use-load-effect";
+import { useState } from "react";
 import { LogOut, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { persist } from "@/lib/account/save";
@@ -189,9 +190,7 @@ export function AccountPanel({
     setReady(true);
   }
 
-  useEffect(() => {
-    void load();
-  }, []);
+  useLoadEffect(load, []);
 
   const [editing, setEditing] = useState<Member | null>(null);
 

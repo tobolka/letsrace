@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLoadEffect } from "@/hooks/use-load-effect";
+import { useState } from "react";
 import { toast } from "sonner";
 import { persist } from "@/lib/account/save";
 import {
@@ -75,10 +76,7 @@ export function AlertSettings({
     setReady(true);
   }
 
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  useLoadEffect(load, [userId]);
 
   async function patch(id: string, next: Partial<AlertRow>) {
     const supabase = createBrowserSupabase();
