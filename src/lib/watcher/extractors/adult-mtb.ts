@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { dmy, fold, pushOnce } from "@/lib/watcher/extractors/parse-helpers";
 
 const EN_MON: Record<string, string> = {
   january: "01",
@@ -39,12 +40,6 @@ const CZ_MON: Record<string, string> = {
   prosince: "12",
 };
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
 function bodyText(html: string): string {
   const $ = cheerio.load(html);
@@ -57,16 +52,7 @@ function bodyText(html: string): string {
     .trim();
 }
 
-function push(events: ParsedEvent[], seen: Set<string>, ev: ParsedEvent): void {
-  if (seen.has(ev.externalId)) return;
-  seen.add(ev.externalId);
-  if (ev.endDate && ev.endDate === ev.startDate) delete ev.endDate;
-  events.push(ev);
-}
 
-function dmy(day: string, month: string, year: string): string {
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
 
 function namedMonth(raw: string, table: Record<string, string>): string | null {
   return table[raw.toLowerCase()] || table[fold(raw)] || null;
@@ -108,7 +94,7 @@ export function parseMarathonMan(url: string, html: string): ParsedEvent[] {
     const name = m[4]!.replace(/\s+/g, " ").trim();
     const meta = places[fold(name)];
     if (!meta) continue;
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `marathon-man-${startDate}-${normalizeName(name)}`,
       name,
       startDate,
@@ -315,7 +301,7 @@ export function parseMtbPomerania(url: string, html: string): ParsedEvent[] {
         /* keep */
       }
     }
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `pomerania-${startDate}-${normalizeName(place)}`,
       name: `MTB Pomerania — ${place}`,
       startDate,
@@ -357,7 +343,7 @@ export function parseSilesiaBike(url: string, html: string): ParsedEvent[] {
     } catch {
       /* keep */
     }
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `silesia-bike-${startDate}-${normalizeName(place)}`,
       name: `Silesia Bike — ${place}`,
       startDate,
@@ -462,7 +448,7 @@ export function parseSloEnduro(url: string, html: string): ParsedEvent[] {
         /* keep */
       }
     }
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `sloenduro-${startDate}-${normalizeName(place)}`,
       name,
       startDate,

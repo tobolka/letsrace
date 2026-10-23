@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
-import type { AnyNode } from "domhandler";
 import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { cells, dmy } from "@/lib/watcher/extractors/parse-helpers";
 
 const IT_MON_ABBR: Record<string, string> = {
   gen: "01",
@@ -33,16 +33,7 @@ const ES_MON: Record<string, string> = {
   diciembre: "12",
 };
 
-function dmy(day: string, month: string, year: string): string {
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
 
-function cells($: cheerio.CheerioAPI, tr: AnyNode): string[] {
-  return $(tr)
-    .find("td")
-    .toArray()
-    .map((td) => $(td).text().replace(/\s+/g, " ").trim());
-}
 
 function stripItPlace(raw: string): string {
   const p = raw

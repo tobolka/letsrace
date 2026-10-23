@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { isNonRaceEventName } from "@/lib/event-visibility";
+import { fold } from "@/lib/watcher/extractors/parse-helpers";
 
 /** Czech month names as used on Hynek Musil series sites (talentcup, pkk-hk, mtb-biatlon, …). */
 const CS_MONTHS: Record<string, string> = {
@@ -86,12 +87,6 @@ const HOST_SERIES: { test: RegExp; meta: SeriesMeta }[] = [
   },
 ];
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
 function monthNum(raw: string): string | null {
   const key = raw.trim().toLowerCase();

@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { dmy, fold } from "@/lib/watcher/extractors/parse-helpers";
 
 const EN_MON: Record<string, string> = {
   january: "01",
@@ -59,16 +60,7 @@ const FLAG_CC: Record<string, string> = {
   duitsland: "DE",
 };
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
-function dmy(day: string, month: string, year: string): string {
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
 
 function push(events: ParsedEvent[], seen: Set<string>, ev: ParsedEvent): void {
   if (seen.has(ev.externalId)) return;

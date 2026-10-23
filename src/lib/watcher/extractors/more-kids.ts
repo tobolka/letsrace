@@ -3,6 +3,7 @@ import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { fetchText } from "@/lib/watcher/http";
 import { attachDeAtHub, deAtPageLinks } from "@/lib/watcher/extractors/kids-mtb-cups";
+import { fold, pushOnce } from "@/lib/watcher/extractors/parse-helpers";
 
 const EN_MON: Record<string, string> = {
   jan: "01",
@@ -50,19 +51,7 @@ const ES_MON: Record<string, string> = {
   diciembre: "12",
 };
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
-function push(events: ParsedEvent[], seen: Set<string>, ev: ParsedEvent): void {
-  if (seen.has(ev.externalId)) return;
-  seen.add(ev.externalId);
-  if (ev.endDate && ev.endDate === ev.startDate) delete ev.endDate;
-  events.push(ev);
-}
 
 function deMonthDay(day: string, monthRaw: string, year: number): string | null {
   const mo = DE_MON[monthRaw.toLowerCase()] || DE_MON[fold(monthRaw)];
@@ -100,7 +89,7 @@ export function parseXcoNrw(url: string, html: string): ParsedEvent[] {
         /* keep */
       }
     }
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `xco-nrw-${startDate}-${normalizeName(shortPlace)}`,
       name: `XCO-NRW / Schüler-Cup — ${shortPlace}`,
       startDate,
@@ -242,7 +231,7 @@ function parseBahnoHtml(url: string, html: string): ParsedEvent[] {
         : /kino/i.test(place)
           ? "Karlovy Vary"
           : "Karlovy Vary";
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `bahno-${startDate}-${normalizeName(place)}`,
       name: `Jarní Bahno — ${place}`,
       startDate,
@@ -283,7 +272,7 @@ export function parseBikeRevolutionKids(url: string, html: string): ParsedEvent[
   ];
   for (const row of rounds) {
     if (!row.re.test(text)) continue;
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `bike-revolution-kids-${row.start}-${normalizeName(row.place)}`,
       name: `BIKE REVOLUTION Kids Race — ${row.place}`,
       startDate: row.start,
@@ -395,7 +384,7 @@ export function parseCopaMadridKids(url: string, html: string): ParsedEvent[] {
     else if (/arroyomolinos/i.test(blob)) place = "Arroyomolinos";
     else if (/paracuellos/i.test(blob)) place = "Paracuellos";
     else continue;
-    push(events, seen, {
+    pushOnce(events, seen, {
       externalId: `copa-madrid-kids-${startDate}-${normalizeName(place)}`,
       name: `Copa Madrid MTB Kids — ${place}`,
       startDate,

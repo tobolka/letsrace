@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { dmy, fold } from "@/lib/watcher/extractors/parse-helpers";
 
 const HR_MON: Record<string, string> = {
   sijecanj: "01",
@@ -17,16 +18,7 @@ const HR_MON: Record<string, string> = {
   prosinac: "12",
 };
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
-function dmy(day: string, month: string, year: string): string {
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
 
 function placeFromHrTitle(name: string): string {
   const t = fold(name);

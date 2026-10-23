@@ -3,6 +3,7 @@ import type { Audience, Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { fetchText } from "@/lib/watcher/http";
 import { isAggregatorUrl } from "@/lib/watcher/public-url";
+import { fold } from "@/lib/watcher/extractors/parse-helpers";
 
 const DE_MONTHS: Record<string, string> = {
   januar: "01",
@@ -37,12 +38,6 @@ const PL_MONTHS: Record<string, string> = {
   grudnia: "12",
 };
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
 function deNamed(raw: string, year: number): string | null {
   const m = raw

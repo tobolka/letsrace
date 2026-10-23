@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { fetchText } from "@/lib/watcher/http";
+import { fold } from "@/lib/watcher/extractors/parse-helpers";
 
 const EN_MONTHS: Record<string, string> = {
   january: "01",
@@ -34,12 +35,6 @@ const DE_MONTHS: Record<string, string> = {
   dezember: "12",
 };
 
-function fold(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
 
 function enRange(raw: string): { start: string; end?: string } | null {
   const t = raw.replace(/\s+/g, " ");

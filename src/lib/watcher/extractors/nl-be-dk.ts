@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
-import type { AnyNode } from "domhandler";
 import type { Audience, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { cells, dmy } from "@/lib/watcher/extractors/parse-helpers";
 
 const NL_MON: Record<string, string> = {
   januari: "01",
@@ -18,16 +18,7 @@ const NL_MON: Record<string, string> = {
   december: "12",
 };
 
-function dmy(day: string, month: string, year: string): string {
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
 
-function cells($: cheerio.CheerioAPI, tr: AnyNode): string[] {
-  return $(tr)
-    .find("td")
-    .toArray()
-    .map((td) => $(td).text().replace(/\s+/g, " ").trim());
-}
 
 function namedNlDate(text: string, year: string): string | null {
   const m = text.match(

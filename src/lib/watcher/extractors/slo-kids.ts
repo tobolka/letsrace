@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { dmy } from "@/lib/watcher/extractors/parse-helpers";
 
 function fold(s: string): string {
   return s
@@ -11,9 +12,6 @@ function fold(s: string): string {
     .replace(/['’]/g, "");
 }
 
-function dmy(day: string, month: string, year: string): string {
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
 
 function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
   return $(el)
