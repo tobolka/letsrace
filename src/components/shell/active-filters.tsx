@@ -9,11 +9,10 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Spinner } from "@/components/ui/spinner";
+import { RaceCount } from "@/components/shell/race-count";
 import type { SeriesOption } from "@/lib/explore-filters";
 import type { EventSort } from "@/lib/geo/distance";
-import { asLocale, messagesFor } from "@/lib/i18n/messages";
-import { pluralForm } from "@/lib/i18n/plural";
+import { messagesFor } from "@/lib/i18n/messages";
 import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { cn } from "@/lib/utils";
 
@@ -139,17 +138,6 @@ export function ActiveFilterChips({
   );
 }
 
-/** "1 závod", "3 závody", "64 závodů" — the count said as a sentence would. */
-export function raceCountLabel(n: number, locale: string): string {
-  const t = messagesFor(locale);
-  const loc = asLocale(locale);
-  const abs = Math.abs(n);
-  // Czech and Slovak take the "few" form for 2–4 only; 22 is "22 závodů".
-  const form = loc === "cs" || loc === "sk" ? (abs === 1 ? "one" : abs >= 2 && abs <= 4 ? "few" : "many") : pluralForm(n, loc);
-  const word = form === "one" ? t.racesCountOne : form === "few" ? t.racesCountFew : t.racesCount;
-  return `${n} ${word}`;
-}
-
 /**
  * The count of what matched and how it is ordered: the head of every race
  * list on a phone, scrolling away with the races under it.
@@ -173,16 +161,7 @@ export function ListMetaRow({
   const t = messagesFor(locale);
   return (
     <div className={cn("flex h-10 shrink-0 items-center justify-between gap-2 pl-4 pr-2", className)}>
-      <span
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
-        aria-live="polite"
-        aria-busy={loading}
-      >
-        {count == null ? <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" /> : raceCountLabel(count, locale)}
-        <span className="inline-flex size-4 items-center justify-center" aria-hidden={!loading}>
-          {loading ? <Spinner className="size-3.5" /> : null}
-        </span>
-      </span>
+      <RaceCount count={count} locale={locale} loading={loading} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

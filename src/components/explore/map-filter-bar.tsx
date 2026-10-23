@@ -67,6 +67,7 @@ import {
   DISCIPLINE_TREE,
   RACE_LEVELS,
 } from "@/lib/taxonomy";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -78,7 +79,7 @@ const DateRangeCalendar = dynamic(
     })),
   {
     loading: () => (
-      <div className="h-64 w-[280px] animate-pulse rounded-md bg-muted/50" aria-hidden />
+      <Skeleton className="h-64 w-[280px] bg-muted/50" aria-hidden />
     ),
   },
 );

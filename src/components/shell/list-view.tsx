@@ -15,7 +15,7 @@ import { useRaceFeed } from "@/components/shell/use-race-feed";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { ItemGroup } from "@/components/ui/item";
-import { Spinner } from "@/components/ui/spinner";
+import { RaceCount } from "@/components/shell/race-count";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { eventDistanceKm, sortEvents, type EventSort } from "@/lib/geo/distance";
@@ -115,16 +115,7 @@ export function ListView({ locale }: { locale: string }) {
         </SectionHeader>
 
         <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4 max-md:hidden">
-          <span
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
-            aria-live="polite"
-            aria-busy={feed.loading}
-          >
-            {feed.settled ? `${rows.length} ${t.racesCount}` : <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" />}
-            <span className="inline-flex size-4 items-center justify-center" aria-hidden={!feed.loading}>
-              {feed.loading ? <Spinner className="size-3.5" /> : null}
-            </span>
-          </span>
+          <RaceCount count={feed.settled ? rows.length : null} locale={locale} loading={feed.loading} />
           <div className="flex items-center gap-1">
           {isMobile ? null : (
             <ColumnPicker

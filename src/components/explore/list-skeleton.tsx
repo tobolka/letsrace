@@ -1,3 +1,5 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
 /**
  * Placeholder rows for the race list.
  *
@@ -13,10 +15,10 @@ export function ListSkeleton({ rows }: { rows: number }) {
           key={i}
           aria-hidden
           role="listitem"
-          className="flex h-[60px] animate-pulse flex-col justify-center gap-1.5 border-b border-border/50 px-4 last:border-b-0"
+          className="flex h-[60px] flex-col justify-center gap-1.5 border-b border-border/50 px-4 last:border-b-0"
         >
-          <div className="h-3.5 w-2/3 rounded bg-muted" />
-          <div className="h-3 w-1/2 rounded bg-muted" />
+          <Skeleton className="h-3.5 w-2/3 rounded bg-muted" />
+          <Skeleton className="h-3 w-1/2 rounded bg-muted" />
         </div>
       ))}
     </>

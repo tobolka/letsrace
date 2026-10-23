@@ -8,7 +8,6 @@ import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-ma
 import { MapFilterBar } from "@/components/explore/map-filter-bar";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -28,6 +27,7 @@ import {
 } from "@/components/ui/empty";
 import { ItemGroup } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
@@ -44,6 +44,7 @@ import { buildEventsQuery } from "@/lib/events-query";
 import { filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
 import { exploreSearchParams } from "@/lib/explore-params";
+import { RaceCount } from "@/components/shell/race-count";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { useRaceParam } from "@/components/shell/use-race-param";
 import { useExploreFilterPrefs } from "@/components/shell/use-explore-filter-prefs";
@@ -888,9 +889,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             // between the two is invisible. Bare "Loading map…" text in the
             // middle of the screen was the one part of the load that announced
             // itself, and it announced a wait rather than progress.
-            <div className="h-full w-full animate-pulse bg-muted" role="status">
+            <Skeleton className="h-full w-full rounded-none bg-muted" role="status">
               <span className="sr-only">{messages.mapLoading}</span>
-            </div>
+            </Skeleton>
           }
         >
           <RaceMap
@@ -1002,6 +1003,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             sort={listSort}
             distanceEnabled
             messages={messages}
+            locale={locale}
             onSort={setListSort}
           />
           <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
@@ -1320,6 +1322,7 @@ function ListToolbar({
   sort,
   distanceEnabled,
   messages,
+  locale,
   onSort,
 }: {
   count: number | null;
@@ -1327,6 +1330,7 @@ function ListToolbar({
   sort: EventSort;
   distanceEnabled: boolean;
   messages: Messages;
+  locale: string;
   onSort: (sort: EventSort) => void;
 }) {
   const sortItemClass =
@@ -1351,25 +1355,7 @@ function ListToolbar({
     // A bottom border inside its 44px, like the list page's row, so the races
     // start on the same line in both.
     <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4">
-      <span
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
-        aria-live="polite"
-        aria-busy={pending}
-      >
-        {count == null ? (
-          <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" />
-        ) : (
-          <>
-            {`${count} ${messages.racesCount}`}
-            <span
-              className="inline-flex size-4 shrink-0 items-center justify-center"
-              aria-hidden={!pending}
-            >
-              {pending ? <Spinner className="size-3.5" /> : null}
-            </span>
-          </>
-        )}
-      </span>
+      <RaceCount count={count} locale={locale} loading={pending} />
       <div className="flex items-center gap-2">
         <ToggleGroup
           type="single"

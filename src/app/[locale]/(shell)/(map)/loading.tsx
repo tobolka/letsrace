@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Loading() {
   return (
     <div className="absolute inset-0 overflow-hidden bg-background">
-      <div className="absolute inset-0 animate-pulse bg-muted" aria-hidden />
+      <Skeleton className="absolute inset-0 rounded-none bg-muted" aria-hidden />
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-end p-3 md:hidden">
         <Skeleton className="size-9 rounded-full" />

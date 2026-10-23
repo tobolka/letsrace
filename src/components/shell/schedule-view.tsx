@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { MonthCalendar, MonthToolbar, type CalendarItem } from "@/components/calendar/month-calendar";
 import { ExploreActiveChips, ExploreFilterBar } from "@/components/shell/explore-filter-bar";
-import { raceCountLabel } from "@/components/shell/active-filters";
+import { RaceCount } from "@/components/shell/race-count";
 import { RacePreview } from "@/components/shell/race-preview";
 import { SectionHeader } from "@/components/shell/section-header";
 import { SubscribeFeed } from "@/components/calendar/subscribe-feed";
@@ -161,12 +161,7 @@ export function ScheduleView({ locale }: { locale: string }) {
           <div className="shrink-0 border-b">
             <ExploreActiveChips locale={locale} state={state} onOpenFilters={() => setFiltersOpen(true)} className="pb-0" />
             <div className="flex h-10 items-center justify-between gap-2 pr-2 pl-4">
-              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums" aria-live="polite">
-                {feed.settled ? raceCountLabel(inMonth, locale) : <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" />}
-                <span className="inline-flex size-4 items-center justify-center" aria-hidden={!feed.loading}>
-                  {feed.loading ? <Spinner className="size-3.5" /> : null}
-                </span>
-              </span>
+              <RaceCount count={feed.settled ? inMonth : null} locale={locale} loading={feed.loading} />
               <SubscribeFeed locale={locale} filters={filters} />
             </div>
           </div>
