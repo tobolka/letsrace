@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 /** The row classes of a race in any list — the app's list and the browse pages alike. */
 export const EVENT_ROW_CLASS =
-  "rounded-none border-0 px-4 py-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50";
+  "rounded-none border-0 px-4 py-3 max-md:px-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50";
 
 /**
  * What a race row shows: the discipline's colour down the edge, the name on
@@ -25,10 +25,17 @@ export function EventRowBody({
   event,
   locale,
   distanceKm: km,
+  wrapName = false,
 }: {
   event: EventListItem;
   locale: string;
   distanceKm?: number | null;
+  /**
+   * Up to two lines for the name. The list page has no map rebuilding it
+   * under the reader, so a name cut at "Mistrzostwa Polski w konk…" is
+   * the only cost of one line there — and it is the race's whole identity.
+   */
+  wrapName?: boolean;
 }) {
   const t = messagesFor(locale);
   const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
@@ -55,7 +62,9 @@ export function EventRowBody({
       */}
       <span
         aria-hidden
-        className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full"
+        // On a phone the rule sits in the 12px gutter against the screen's
+        // edge, so the text lines up with the filter row above it.
+        className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full max-md:inset-y-2 max-md:left-0 max-md:rounded-l-none"
         style={{ background: disciplineColor(event.disciplines) }}
       />
       {/* Without this a flex child refuses to shrink below its content, and
@@ -72,7 +81,7 @@ export function EventRowBody({
           // any truncation inside it.
           className="w-full min-w-0 text-sm leading-snug"
         >
-          <span className="block min-w-0 truncate">{event.name}</span>
+          <span className={cn("block min-w-0", wrapName ? "line-clamp-2 break-words" : "truncate")}>{event.name}</span>
         </ItemTitle>
         <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug">
           <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>

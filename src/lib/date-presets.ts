@@ -57,3 +57,25 @@ export function nextMonthRange(now = new Date()): { from: string; to: string } {
   const to = new Date(now.getFullYear(), now.getMonth() + 2, 0);
   return { from: iso(from), to: iso(to) };
 }
+
+export type DatePresetId = "weekend" | "nextWeekend" | "upcoming" | "thisMonth" | "nextMonth" | "any";
+
+/**
+ * The quick choices for the date filter, in the order a phone offers them,
+ * each with the range it sets and whether it is the one in force.
+ */
+export function datePresetRanges(
+  dateFrom: string,
+  dateTo: string,
+  now = new Date(),
+): { id: DatePresetId; from: string; to: string; active: boolean }[] {
+  const ranges: { id: DatePresetId; from: string; to: string }[] = [
+    { id: "weekend", ...thisWeekendRange(now) },
+    { id: "nextWeekend", ...nextWeekendRange(now) },
+    { id: "upcoming", from: todayIso(now), to: "" },
+    { id: "thisMonth", ...thisMonthRange(now) },
+    { id: "nextMonth", ...nextMonthRange(now) },
+    { id: "any", from: "", to: "" },
+  ];
+  return ranges.map((r) => ({ ...r, active: r.from === dateFrom && r.to === dateTo }));
+}

@@ -62,6 +62,9 @@ export function MonthCalendar({
   selectedDay,
   onPickDay,
   fill = false,
+  day: dayProp,
+  onDay,
+  onOpenItem,
   className,
 }: {
   locale: string;
@@ -75,6 +78,17 @@ export function MonthCalendar({
   onPickDay?: (iso: string) => void;
   /** Stretch the rows to fill the height the calendar is given. */
   fill?: boolean;
+  /**
+   * The day whose races are listed under the month on a phone, when the
+   * caller keeps it (the schedule keeps it in the address).
+   */
+  day?: string | null;
+  onDay?: (iso: string) => void;
+  /**
+   * A race tapped in that list, when the caller opens it itself — the
+   * schedule's sheet. Without it the card replaces the list in place.
+   */
+  onOpenItem?: (id: string) => void;
   className?: string;
 }) {
   const t = messagesFor(locale);
@@ -111,11 +125,15 @@ export function MonthCalendar({
 
   // On a phone the day's races are listed under the month, not in a popover
   // that has no room: today when it is in this month, else the first day with races.
-  const [phoneDay, setPhoneDay] = useState<string | null>(null);
+  const [ownDay, setOwnDay] = useState<string | null>(null);
+  const phoneDay = dayProp !== undefined ? dayProp : ownDay;
   const [phoneDetail, setPhoneDetail] = useState<string | null>(null);
   const today = days.find((d) => d.isToday && d.inMonth)?.iso;
   const firstWithRaces = days.find((d) => d.inMonth && (byDay.get(d.iso)?.length ?? 0) > 0)?.iso;
-  const activeDay = phoneDay && days.some((d) => d.iso === phoneDay) ? phoneDay : (today ?? firstWithRaces ?? null);
+  // A month with nothing in it still says so under the grid, rather than ending
+  // at the grid and leaving the reader to wonder whether it is still loading.
+  const firstInMonth = days.find((d) => d.inMonth)?.iso ?? null;
+  const activeDay = phoneDay && days.some((d) => d.iso === phoneDay) ? phoneDay : (today ?? firstWithRaces ?? firstInMonth);
 
   return (
     <div className={cn("flex min-h-0 min-w-0 flex-col", fill && "flex-1", className)}>
@@ -153,11 +171,14 @@ export function MonthCalendar({
                 aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
                 onClick={() => {
                   onPickDay?.(day.iso);
-                  setPhoneDay(day.iso);
+                  if (onDay) onDay(day.iso);
+                  else setOwnDay(day.iso);
                   setPhoneDetail(null);
                 }}
                 className={cn(
-                  "flex min-h-12 min-w-0 flex-col items-center gap-1 border-r border-b py-1.5 transition-colors",
+                  // 44 points: as tall as a finger needs and no taller, so a
+                  // six-week month leaves the day's races on screen.
+                  "flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 border-r border-b py-1 transition-colors",
                   i % 7 === 6 && "border-r-0",
                   !day.inMonth && "bg-muted/40",
                   day.isWeekend && day.inMonth && "bg-muted/25",
@@ -337,24 +358,25 @@ export function MonthCalendar({
           ) : (
             <>
               {/* Stays in view while the day's races scroll under it. */}
-              <div className="sticky top-0 z-10 border-b bg-background px-4 py-2.5 text-sm font-semibold first-letter:uppercase">
+              <div className="sticky top-0 z-10 border-b bg-background px-3 py-2.5 text-sm font-semibold first-letter:uppercase">
                 {format(parseISO(activeDay), "EEEE d. MMMM", { locale: df })}
                 <span className="ml-2 font-normal text-muted-foreground tabular-nums">{byDay.get(activeDay)?.length ?? 0}</span>
               </div>
               {(byDay.get(activeDay) ?? []).length === 0 ? (
-                <p className="px-4 pb-4 text-sm text-muted-foreground">{t.scheduleEmptyDay}</p>
+                <p className="px-3 py-4 text-sm text-muted-foreground">{t.scheduleEmptyDay}</p>
               ) : (
-                <ul className="flex flex-col pb-4">
+                <ul className="flex flex-col pb-[max(1rem,env(safe-area-inset-bottom))]">
                   {(byDay.get(activeDay) ?? []).map((item) => (
-                    <li key={item.id}>
+                    <li key={item.id} className="border-b border-border/50 last:border-b-0">
                       <button
                         type="button"
-                        onClick={() => setPhoneDetail(item.id)}
-                        className="flex w-full min-w-0 items-start gap-2.5 px-4 py-2.5 text-left transition-colors active:bg-accent"
+                        onClick={() => (onOpenItem ? onOpenItem(item.id) : setPhoneDetail(item.id))}
+                        className="relative flex min-h-12 w-full min-w-0 items-center px-3 py-1.5 text-left transition-colors active:bg-accent"
                       >
-                        <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: item.color }} />
+                        {/* The list's own rule, so a race reads the same here and there. */}
+                        <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-r-full" style={{ background: item.color }} />
                         <span className="min-w-0">
-                          <span className="block truncate text-sm font-medium">{item.name}</span>
+                          <span className="line-clamp-2 block text-sm leading-snug font-medium break-words">{item.name}</span>
                           {item.meta ? <span className="block truncate text-xs text-muted-foreground">{item.meta}</span> : null}
                         </span>
                       </button>

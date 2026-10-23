@@ -190,9 +190,12 @@ export function AppSidebar({ locale }: { locale: string }) {
 }
 
 /**
- * The same destinations for a phone: a row of icons along the bottom, the way
- * Instagram does it — on every screen, the map included, where the race sheet
- * now rides on top of it. Names are for screen readers; the icons carry it.
+ * The same destinations for a phone: a row along the bottom on every screen,
+ * the map included, where the race sheet rides on top of it.
+ *
+ * Each icon carries a one-word name under it. Five bare icons asked people to
+ * guess which grid meant "browse" and which list meant "list"; the words fit
+ * in the same 52 points the icons alone used to take.
  */
 export function MobileTabBar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
@@ -201,7 +204,8 @@ export function MobileTabBar({ locale }: { locale: string }) {
   const { authed } = useAuthUser();
   const counts = useNavCounts(pathname, authed);
   const items: NavItem[] = [
-    ...exploreNav(locale, t, pathname),
+    // "Durchsuchen" and "Prehľadávať" do not fit a fifth of a 360-point phone.
+    ...exploreNav(locale, t, pathname).map((item) => (item.key === "browse" ? { ...item, label: t.tabBrowse } : item)),
     {
       key: "profile",
       href: localePath(locale, `account`),
@@ -221,17 +225,19 @@ export function MobileTabBar({ locale }: { locale: string }) {
         <Link
           key={item.key}
           href={item.href}
-          aria-label={item.label}
           aria-current={item.active ? "page" : undefined}
           onClick={item.key === "profile" ? undefined : carry(item.href)}
           className={cn(
-            "relative flex items-center justify-center transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
+            "relative flex min-w-0 flex-col items-center justify-center gap-1 transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
             item.active ? "text-brand" : "text-muted-foreground",
           )}
         >
-          <item.icon className="size-6" strokeWidth={item.active ? 2.25 : 1.75} aria-hidden />
+          <item.icon className="size-[22px]" strokeWidth={item.active ? 2.25 : 1.75} aria-hidden />
+          <span className={cn("max-w-full truncate px-0.5 text-[11px] leading-none", item.active && "font-semibold")}>
+            {item.label}
+          </span>
           {item.badge ? (
-            <span className="absolute top-2 left-1/2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
+            <span className="absolute top-1 left-1/2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
               {item.badge > 9 ? "9+" : item.badge}
             </span>
           ) : null}

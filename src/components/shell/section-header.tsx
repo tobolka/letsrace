@@ -38,11 +38,16 @@ export function SectionHeader({
   brandHref?: string;
 }) {
   if (brandHref) {
+    // On a phone the logo bar was a row of a small screen spent saying where
+    // you already are — the map dropped it long ago, and the tab bar names the
+    // view. The filter row is the whole header there, with its own gutter.
     return (
       <header className="shrink-0 border-b">
-        <BrandBar href={brandHref} />
+        <div className="max-md:hidden">
+          <BrandBar href={brandHref} />
+        </div>
         <h1 className="sr-only">{title}</h1>
-        {children ? <div className="px-4 py-3 md:px-6">{children}</div> : null}
+        {children ? <div className="md:px-6 md:py-3">{children}</div> : null}
       </header>
     );
   }

@@ -19,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import {
   FULL,
   COMPACT,
+  DETAIL_FULL,
   LIST_PEEK,
   MobileDetailSheet,
   MobileListSheet,
@@ -42,9 +43,8 @@ import {
   type EventSort,
 } from "@/lib/geo/distance";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
-import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import { thisWeekendRange, todayIso } from "@/lib/date-presets";
+import { datePresetRanges, thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
 import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
@@ -66,6 +66,9 @@ import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
+import { dateFilterLabel } from "@/components/explore/date-range";
+import { ActiveFilterChips, ListMetaRow, activeFilterGroups } from "@/components/shell/active-filters";
+import { datePresetLabels } from "@/components/shell/explore-filter-bar";
 import { EventCard } from "@/components/explore/event-rows";
 import { localePath } from "@/lib/localized-paths";
 
@@ -96,12 +99,6 @@ const MobileFiltersSheet = dynamic(
   () =>
     import("@/components/explore/mobile-filters-sheet").then((m) => ({
       default: m.MobileFiltersSheet,
-    })),
-);
-const MobileSearchSheet = dynamic(
-  () =>
-    import("@/components/explore/mobile-search-sheet").then((m) => ({
-      default: m.MobileSearchSheet,
     })),
 );
 
@@ -235,6 +232,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [filterBarReset, setFilterBarReset] = useState(0);
   const [mobileSheetReady, setMobileSheetReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [customDate, setCustomDate] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [listSnap, setListSnap] = useState<number | string>(COMPACT);
   // A tapped pin opens the card at compact height. The map stays visible above
@@ -273,10 +271,34 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     return () => window.clearTimeout(id);
   }, []);
 
+  /*
+   * Opening a race adds a history entry, so the back gesture closes the card
+   * rather than leaving the map; picking another race while one is open
+   * replaces it. `selectEvent(null)` closes in place — for a card handing over
+   * to something else, a series or a new filter — and `closeDetail` is the
+   * card's own way out, stepping back over the entry it added.
+   */
+  const detailPushed = useRef(false);
   function selectEvent(id: string | null) {
     setSelectedId(id);
     const slug = id ? (events.find((ev) => ev.id === id)?.slug ?? "") : "";
-    void setFilters({ e: slug || null });
+    if (!slug) {
+      detailPushed.current = false;
+      void setFilters({ e: null });
+      return;
+    }
+    const push = !filters.e;
+    if (push) detailPushed.current = true;
+    void setFilters({ e: slug }, { history: push ? "push" : "replace" });
+  }
+  function closeDetail() {
+    if (!detailPushed.current) {
+      selectEvent(null);
+      return;
+    }
+    detailPushed.current = false;
+    setSelectedId(null);
+    window.history.back();
   }
 
   /*
@@ -301,6 +323,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     const hit = events.find((ev) => ev.slug === filters.e);
     if (hit && hit.id !== selectedId) setSelectedId(hit.id);
   }, [filters.e, events, selectedId]);
+
+  // Back took `e` away: the card goes with it, and the list is as it was.
+  const lastE = useRef(filters.e);
+  useEffect(() => {
+    if (lastE.current && !filters.e) {
+      detailPushed.current = false;
+      setSelectedId(null);
+    }
+    lastE.current = filters.e;
+  }, [filters.e]);
 
   // The cup and country pickers list what exists, not what survives the other
   // filters — "kids" on a single weekend left them empty and the menu bare.
@@ -950,26 +982,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   const df = dateFnsLocale(locale);
-
-  const weekend = thisWeekendRange();
-  const isThisWeekend = filters.dateFrom === weekend.from && filters.dateTo === weekend.to;
-  const weekendLabel = isThisWeekend
-    ? messages.thisWeekend
-    : filters.dateFrom && filters.dateTo
-      ? filters.dateFrom === filters.dateTo
-        ? format(parseISO(filters.dateFrom), "d MMM", { locale: df })
-        : `${format(parseISO(filters.dateFrom), "d MMM", { locale: df })} – ${format(parseISO(filters.dateTo), "d MMM", { locale: df })}`
-      : filters.dateFrom
-        ? format(parseISO(filters.dateFrom), "d MMM", { locale: df })
-        : messages.date;
-  const filterCount =
-    (filters.disciplines.length ? 1 : 0) +
-    (filters.categories.length ? 1 : 0) +
-    (filters.levels.length ? 1 : 0) +
-    (filters.country.length ? 1 : 0) +
-    (filters.series ? 1 : 0) +
-    (radiusArea ? 1 : 0) +
-    (isThisWeekend ? 0 : 1);
+  const presetLabels = datePresetLabels(messages);
+  const datePresets = datePresetRanges(filters.dateFrom, filters.dateTo);
+  const dateLabel = dateFilterLabel(filters.dateFrom, filters.dateTo, presetLabels, df);
+  const filterCount = activeFilterGroups({ ...filters, radius: radiusArea ? radius : null });
 
   const listView = listViewState({ settled: listSettled, count: visibleEvents.length });
 
@@ -1029,7 +1045,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               // A tap on the map puts the card away and does nothing else. It
               // used to collapse the list too, so every stray tap while panning
               // yanked the list down — the list is the handle's to resize.
-              if (!isDesktop && selectedId) selectEvent(null);
+              if (!isDesktop && selectedId) closeDetail();
             }}
             onBoundsChange={(b, reason, camera) => {
               setBounds(b);
@@ -1225,7 +1241,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           <EventDetailPanel
             event={selected}
             locale={locale}
-            onClose={() => selectEvent(null)}
+            onClose={closeDetail}
             onSelectSeries={applySeries}
                         leftX={mapWidth + 12}
           />
@@ -1246,31 +1262,41 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             mapLabel={messages.navMap}
           >
             <MobileTopBar
-              weekendLabel={weekendLabel}
-              weekendActive={isThisWeekend}
-              onWeekend={() => {
-                if (isThisWeekend) {
-                  setFiltersOpen(true);
-                  return;
-                }
-                const w = thisWeekendRange();
-                setDateRange(w.from, w.to);
+              className="-mt-1"
+              dateLabel={dateLabel}
+              dateCustom={!datePresets.some((p) => p.active)}
+              dateChoices={datePresets.map((p) => ({
+                id: p.id,
+                label: presetLabels[p.id],
+                active: p.active,
+                apply: () => setDateRange(p.from, p.to),
+              }))}
+              customDateLabel={messages.customDate}
+              onCustomDate={() => {
+                setCustomDate(true);
+                setFiltersOpen(true);
               }}
-              filtersLabel={messages.addFilter}
+              filtersLabel={messages.filtersButton}
               filterCount={filterCount}
-              onFilters={() => setFiltersOpen(true)}
+              onFilters={() => {
+                setCustomDate(false);
+                setFiltersOpen(true);
+              }}
               searchLabel={messages.search}
-              searchActive={Boolean(filters.q.trim())}
-              onSearch={() => setSearchOpen(true)}
-              sort={listSort}
-              sortByLabel={messages.sortBy}
-              sortDateLabel={messages.sortByDate}
-              sortDistanceLabel={messages.sortByDistance}
-              sortDateShort={messages.date}
-              sortDistanceShort={messages.sortDistance}
-              sortNeedsLocationLabel={messages.sortNeedsLocation}
-              distanceEnabled
-              onSort={setListSort}
+              searchPlaceholder={messages.searchPlaceholder}
+              doneLabel={messages.filtersDone}
+              clearLabel={messages.clearFilter}
+              q={filters.q}
+              onQ={handleSearchChange}
+              onSearchSubmit={handleSearchSubmit}
+              searchOpen={searchOpen}
+              onSearchOpenChange={(open) => {
+                setSearchOpen(open);
+                // The field is at the foot of the screen at the lower stops,
+                // which is where the keyboard comes up. Raised, the sheet puts
+                // it at the top and the answers right under it.
+                if (open) setListSnap(FULL);
+              }}
             />
 
             <div
@@ -1278,6 +1304,32 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               ref={mobileListRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain md:hidden"
             >
+              <div className="border-b border-border/50">
+                <ActiveFilterChips
+                  locale={locale}
+                  filters={{ ...filters, radius: radiusArea ? radius : null }}
+                  seriesList={seriesList}
+                  onOpenFilters={() => {
+                    setCustomDate(false);
+                    setFiltersOpen(true);
+                  }}
+                  className="pb-0"
+                  onClearDisciplines={clearDisciplines}
+                  onClearCategories={clearCategories}
+                  onClearLevels={clearLevels}
+                  onClearCountries={clearCountries}
+                  onClearSeries={() => setSeries(filters.series)}
+                  onClearRadius={() => setRadius(null)}
+                  onClearQ={() => handleSearchChange("")}
+                />
+                <ListMetaRow
+                  locale={locale}
+                  count={listSettled ? visibleEvents.length : null}
+                  loading={listLoading}
+                  sort={listSort}
+                  onSort={setListSort}
+                />
+              </div>
               {listView === "empty" ? (
                 <Empty className="border-0 p-6">
                   <EmptyHeader>
@@ -1296,7 +1348,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   </EmptyContent>
                 </Empty>
               ) : (
-                <ItemGroup>
+                // Room under the last race for the "Map" pill the full sheet
+                // floats over it, so the end of the list can be read.
+                <ItemGroup className={cn(listSnap === FULL && "pb-16")}>
                   {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
                   {listView === "rows" &&
                     sortedEvents.map((event) => (
@@ -1325,18 +1379,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             snap={detailSnap}
             onSnap={setDetailSnap}
             viewportH={viewportH}
-            onClose={() => selectEvent(null)}
+            onClose={closeDetail}
             title={selected?.name ?? ""}
-            handleLabel={detailSnap === FULL ? messages.sheetCollapse : messages.sheetExpand}
+            handleLabel={detailSnap === DETAIL_FULL ? messages.sheetCollapse : messages.raceExpand}
           >
             {selected ? (
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1 pb-1">
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                 <Suspense fallback={null}>
                 <EventDetailPanel
                   event={selected}
                   locale={locale}
                   embedded
-                  onClose={() => selectEvent(null)}
+                  // The preview says what a race is; one tap shows the rest,
+                  // without hunting for the grab bar.
+                  onExpand={detailSnap === COMPACT ? () => setDetailSnap(DETAIL_FULL) : undefined}
+                  onClose={closeDetail}
                   onSelectSeries={(slug) => {
                     applySeries(slug);
                     selectEvent(null);
@@ -1373,19 +1430,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onClearCategories={clearCategories}
           onSeries={setSeries}
           onCountry={toggleCountry}
-        onClearCountries={clearCountries}
+          onClearCountries={clearCountries}
           onReset={() => resetExploreFilters()}
-          extra={<div className="px-4 py-3"><DistanceFilter locale={locale} radius={radius} status={distanceOrigin ? "ready" : place.status} onRadius={setRadius} /></div>}
-        />
-      ) : null}
-      {searchOpen ? (
-        <MobileSearchSheet
-          open={searchOpen}
-          onOpenChange={setSearchOpen}
-          messages={messages}
-          q={filters.q}
-          onQ={handleSearchChange}
-          onSubmit={handleSearchSubmit}
+          customDate={customDate}
+          radius={radius}
+          radiusStatus={distanceOrigin ? "ready" : place.status}
+          onRadius={setRadius}
+          resultCount={listSettled ? visibleEvents.length : null}
         />
       ) : null}
 

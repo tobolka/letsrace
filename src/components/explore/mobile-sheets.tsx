@@ -35,6 +35,11 @@ import { cn } from "@/lib/utils";
 export const LIST_PEEK = "112px";
 export const COMPACT = 0.5;
 export const FULL = 0.92;
+/**
+ * A race's card at its tallest: everything but a strip of the page above it,
+ * enough to see where it came from and to tap away.
+ */
+export const DETAIL_FULL = 0.94;
 
 /**
  * The sheet vaul moves is an invisible frame; the card you see is drawn
@@ -50,17 +55,26 @@ export const FULL = 0.92;
  */
 const FRAME = cn(
   "border-0 bg-transparent shadow-none md:hidden",
-  // On the tab bar, not on the bottom edge: the tabs stay reachable from the
-  // map, the way they are from every other screen.
-  "data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-[calc(var(--mobile-tabbar)+0.5rem)]",
+  // Edge to edge: an 8px margin on either side of a 360px screen was 16px of
+  // every row's name spent on showing the map behind a list.
+  "data-[vaul-drawer-direction=bottom]:inset-x-0",
   "data-[vaul-drawer-direction=bottom]:rounded-none data-[vaul-drawer-direction=bottom]:mt-0",
   "data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh]",
 );
 
+/** The list sits on the tab bar, so the tabs stay reachable from the map. */
+const LIST_FRAME = "data-[vaul-drawer-direction=bottom]:bottom-[var(--mobile-tabbar)]";
+
+/**
+ * A race covers the tab bar: it is a sheet of its own, closed by its cross,
+ * and the tabs under it would only be a way to leave it by accident.
+ */
+const DETAIL_FRAME = "data-[vaul-drawer-direction=bottom]:bottom-0";
+
 const FRAME_STYLE = { height: "100dvh", maxHeight: "100dvh" } as const;
 
 const CARD = cn(
-  "relative flex min-h-0 flex-col overflow-hidden rounded-2xl bg-card",
+  "relative flex min-h-0 flex-col overflow-hidden rounded-t-2xl bg-card",
   "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
 );
 
@@ -73,8 +87,8 @@ export const MODAL_SURFACE = cn(
   "border-0 bg-card md:hidden",
   "pb-[max(0.5rem,env(safe-area-inset-bottom))]",
   "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
-  "data-[vaul-drawer-direction=bottom]:inset-x-2 data-[vaul-drawer-direction=bottom]:bottom-2",
-  "data-[vaul-drawer-direction=bottom]:rounded-2xl",
+  "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
+  "data-[vaul-drawer-direction=bottom]:rounded-t-2xl",
 );
 
 /**
@@ -201,7 +215,7 @@ export function MobileListSheet({
         if (point != null) onSnap(point);
       }}
     >
-      <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, "z-20")}>
+      <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, LIST_FRAME, "z-20")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
         <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel}>
           {children}
@@ -270,17 +284,71 @@ export function MobileDetailSheet({
       // Same rule as the list, for the same reason: the card's content
       // scrolls, the pill resizes or closes.
       handleOnly
-      snapPoints={[COMPACT, FULL]}
+      snapPoints={[COMPACT, DETAIL_FULL]}
       activeSnapPoint={snap}
       setActiveSnapPoint={(point) => {
         if (typeof point === "number") onSnap(point);
       }}
     >
-      <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, "z-30")}>
+      {/* Above the tab bar (z-40): the card is a sheet of its own. */}
+      <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, DETAIL_FRAME, "z-50")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
         <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel} compactHandle>
           {children}
         </Visible>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
+/**
+ * A race opened from the list or the calendar: the whole card at once, as a
+ * modal over the page and the tab bar, sized to the card.
+ *
+ * There is no map to keep in sight here, so no compact stop on the way up —
+ * the half-height preview the map uses would only hide the entry button.
+ * The page under it is left exactly as it was, scroll and all, and comes back
+ * when the card goes: by its cross, by the back button, or by a swipe on the
+ * grab zone. Only the grab zone moves the sheet, so scrolling a long card
+ * never shrinks it.
+ */
+export function MobileRaceModal({
+  open,
+  onClose,
+  title,
+  handleLabel,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  handleLabel: string;
+  children: ReactNode;
+}) {
+  return (
+    <Drawer
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      shouldScaleBackground={false}
+      setBackgroundColorOnScale={false}
+      repositionInputs={false}
+      handleOnly
+    >
+      <DrawerContent
+        className={cn(
+          "border-0 bg-card md:hidden",
+          "data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:rounded-t-2xl",
+          // As tall as the race needs, up to all but a strip of the page: a
+          // short card at full height was half a screen of white under it.
+          "data-[vaul-drawer-direction=bottom]:max-h-[94dvh]",
+          "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
+        )}
+      >
+        <DrawerTitle className="sr-only">{title}</DrawerTitle>
+        <GrabZone label={handleLabel} compact />
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </DrawerContent>
     </Drawer>
   );

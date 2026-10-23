@@ -4,8 +4,8 @@ import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from 
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { addDays, endOfMonth, format, parseISO, startOfMonth } from "date-fns";
-import { X } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { LocateFixed, X } from "lucide-react";
 import { isoToRange } from "@/components/explore/date-range";
 import { seriesCountryKey, INT_COUNTRY, type SeriesOption } from "@/components/explore/map-filter-bar";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,8 @@ import {
 import { MODAL_SURFACE } from "@/components/explore/mobile-sheets";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { thisWeekendRange, nextWeekendRange, todayIso } from "@/lib/date-presets";
+import { nextMonthRange, nextWeekendRange, thisMonthRange, thisWeekendRange, todayIso } from "@/lib/date-presets";
+import { RADIUS_OPTIONS } from "@/lib/explore-params";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
 import {
@@ -38,22 +39,6 @@ const DateRangeCalendar = dynamic(
       default: m.DateRangeCalendar,
     })),
 );
-
-function thisMonthRange() {
-  const now = new Date();
-  return {
-    from: format(startOfMonth(now), "yyyy-MM-dd"),
-    to: format(endOfMonth(now), "yyyy-MM-dd"),
-  };
-}
-
-function nextMonthRange() {
-  const next = addDays(endOfMonth(new Date()), 1);
-  return {
-    from: format(startOfMonth(next), "yyyy-MM-dd"),
-    to: format(endOfMonth(next), "yyyy-MM-dd"),
-  };
-}
 
 function Chip({
   active,
@@ -78,10 +63,11 @@ function Chip({
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2.5">
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        {icon}
         {title}
       </h3>
       {children}
@@ -114,13 +100,22 @@ export function MobileFiltersSheet({
   onClearCountries,
   onReset,
   hideDate = false,
-  extra,
+  customDate = false,
+  radius,
+  radiusStatus,
+  onRadius,
+  resultCount,
 }: {
-  /** Only races whose stated categories fit; unconfirmed ones hidden. */
   /** The calendar picks its dates by month, so it has no date section. */
   hideDate?: boolean;
-  /** One more section first in the sheet — the list's distance filter. */
-  extra?: React.ReactNode;
+  /** Open on the date picker — "Vlastní datum" chosen from the date pill. */
+  customDate?: boolean;
+  /** The distance from you, the same chips on every view. */
+  radius?: number | null;
+  radiusStatus?: string;
+  onRadius?: (km: number | null) => void;
+  /** How many races the filters leave, for the button that shows them. */
+  resultCount?: number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   messages: Messages;
@@ -145,8 +140,8 @@ export function MobileFiltersSheet({
   onClearCountries: () => void;
   onReset: () => void;
 }) {
-  const [customOpen, setCustomOpen] = useState(false);
-  const [dateDraft, setDateDraft] = useState<DateRange | undefined>();
+  const [customOpen, setCustomOpen] = useState(customDate);
+  const [dateDraft, setDateDraft] = useState<DateRange | undefined>(() => (customDate ? isoToRange(dateFrom, dateTo) : undefined));
   const [seriesQuery, setSeriesQuery] = useState("");
 
   const thisW = thisWeekendRange();
@@ -198,7 +193,8 @@ export function MobileFiltersSheet({
     (levels.length ? 1 : 0) +
     (country.length ? 1 : 0) +
     (series ? 1 : 0) +
-    (isThisWeekend ? 0 : 1);
+    (radius != null ? 1 : 0) +
+    (hideDate || isThisWeekend ? 0 : 1);
 
   return (
     <Drawer
@@ -212,12 +208,15 @@ export function MobileFiltersSheet({
       }}
       shouldScaleBackground={false}
       repositionInputs={false}
+      // The chips scroll; only the grab bar moves the sheet. A flick at the
+      // top of the list used to start dragging the whole panel instead.
+      handleOnly
     >
       <DrawerContent className={cn(MODAL_SURFACE, "flex max-h-[92dvh] flex-col")}>
         <DrawerHandle />
         <div className="flex items-center justify-between gap-3 px-4 pb-2">
           <DrawerTitle className="text-left text-base font-semibold">
-            {messages.addFilter}
+            {messages.filtersButton}
           </DrawerTitle>
           <div className="flex items-center gap-1">
             {activeExtras > 0 ? (
@@ -235,8 +234,9 @@ export function MobileFiltersSheet({
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
           <div className="flex flex-col gap-6">
-            {extra}
-            {hideDate ? null : (
+            {/* The date has a pill of its own in the row; the panel holds it
+                only when a range is being picked by hand. */}
+            {hideDate || !customOpen ? null : (
             <Section title={messages.date}>
               <div className="flex flex-wrap gap-2">
                 {datePresets.map((p) => (
@@ -278,7 +278,7 @@ export function MobileFiltersSheet({
             </Section>
             )}
 
-            {hideDate && !extra ? null : <Separator />}
+            {hideDate || !customOpen ? null : <Separator />}
 
             <Section title={messages.typeFilter}>
               <div className="flex flex-wrap gap-2">
@@ -349,6 +349,22 @@ export function MobileFiltersSheet({
               </Section>
             ) : null}
 
+            {onRadius ? (
+              <Section title={messages.distanceFilter} icon={<LocateFixed className="size-3.5" aria-hidden />}>
+                <div className="flex flex-wrap gap-2">
+                  {[null, ...RADIUS_OPTIONS].map((km) => (
+                    <Chip key={km ?? "any"} active={(radius ?? null) === km} onClick={() => onRadius(km)}>
+                      {km == null ? messages.distanceAny : messages.distanceWithin.replace("{km}", String(km))}
+                    </Chip>
+                  ))}
+                </div>
+                {radius != null && (radiusStatus === "denied" || radiusStatus === "outside") ? (
+                  <p className="text-xs text-muted-foreground">
+                    {radiusStatus === "outside" ? messages.distanceOutside : messages.distanceDenied}
+                  </p>
+                ) : null}
+              </Section>
+            ) : null}
             {seriesList.length > 0 ? (
               <Section title={messages.seriesFilter}>
                 <Input
@@ -405,7 +421,7 @@ export function MobileFiltersSheet({
             className="h-12 w-full text-base"
             onClick={() => onOpenChange(false)}
           >
-            {messages.filtersDone}
+            {resultCount != null ? messages.showResults.replace("{n}", String(resultCount)) : messages.filtersDone}
           </Button>
         </DrawerFooter>
       </DrawerContent>

@@ -1,42 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { format, parseISO } from "date-fns";
-import { LocateFixed } from "lucide-react";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { MapFilterBar } from "@/components/explore/map-filter-bar";
+import { dateFilterLabel } from "@/components/explore/date-range";
+import { ActiveFilterChips, activeFilterGroups } from "@/components/shell/active-filters";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import type { useExploreFilters } from "@/components/shell/use-explore-filters";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { thisWeekendRange } from "@/lib/date-presets";
-import { RADIUS_OPTIONS } from "@/lib/explore-params";
+import { datePresetRanges, type DatePresetId } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
-import { messagesFor } from "@/lib/i18n/messages";
+import { messagesFor, type Messages } from "@/lib/i18n/messages";
 
 const MobileFiltersSheet = dynamic(() =>
   import("@/components/explore/mobile-filters-sheet").then((m) => ({ default: m.MobileFiltersSheet })),
 );
-const MobileSearchSheet = dynamic(() =>
-  import("@/components/explore/mobile-search-sheet").then((m) => ({ default: m.MobileSearchSheet })),
-);
+
+type FilterState = ReturnType<typeof useExploreFilters>;
+
+/** What each quick date choice is called, for the pill and its menu. */
+export function datePresetLabels(t: Messages): Record<DatePresetId, string> {
+  return {
+    weekend: t.thisWeekend,
+    nextWeekend: t.nextWeekend,
+    upcoming: t.upcoming,
+    thisMonth: t.thisMonth,
+    nextMonth: t.nextMonth,
+    any: t.anyDate,
+  };
+}
 
 /** The filter row the map wears, fed by the shared filters instead of the map's. */
 export function ExploreFilterBar({
   locale,
   state,
   hideDate,
+  leading,
+  filtersOpen,
+  onFiltersOpenChange,
+  resultCount,
 }: {
   locale: string;
-  state: ReturnType<typeof useExploreFilters>;
+  state: FilterState;
   hideDate?: boolean;
+  /** On a phone, in place of the date: the calendar's month. */
+  leading?: ReactNode;
+  /** The phone's filter panel, opened from here or from a chip under the row. */
+  filtersOpen: boolean;
+  onFiltersOpenChange: (open: boolean) => void;
+  resultCount?: number | null;
 }) {
   const { filters, seriesList, resetKey, actions, radius, setRadius, place } = state;
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    return <MobileFilterRow locale={locale} state={state} hideDate={hideDate} />;
+    return (
+      <MobileFilterRow
+        locale={locale}
+        state={state}
+        hideDate={hideDate}
+        leading={leading}
+        filtersOpen={filtersOpen}
+        onFiltersOpenChange={onFiltersOpenChange}
+        resultCount={resultCount}
+      />
+    );
   }
 
   return (
@@ -66,71 +95,71 @@ export function ExploreFilterBar({
  *
  * The desktop row is a strip of menus, and on a phone it had to scroll — but a
  * menu opens the moment a finger lands on it, so every swipe to reach the next
- * chip opened the one under the thumb. Here the row is two buttons and a
- * search, and every filter lives in one sheet from the bottom, the same one
- * the map uses.
+ * chip opened the one under the thumb. Here the row is the date, the filters
+ * and the search, and every other filter lives in one sheet from the bottom,
+ * the same one the map uses.
  */
 function MobileFilterRow({
   locale,
   state,
   hideDate,
+  leading,
+  filtersOpen,
+  onFiltersOpenChange,
+  resultCount,
 }: {
   locale: string;
-  state: ReturnType<typeof useExploreFilters>;
+  state: FilterState;
   hideDate?: boolean;
+  leading?: ReactNode;
+  filtersOpen: boolean;
+  onFiltersOpenChange: (open: boolean) => void;
+  resultCount?: number | null;
 }) {
   const t = messagesFor(locale);
-  const df = dateFnsLocale(locale);
   const { filters, seriesList, actions, radius, setRadius, reset } = state;
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [customDate, setCustomDate] = useState(false);
+  const labels = datePresetLabels(t);
+  const presets = datePresetRanges(filters.dateFrom, filters.dateTo);
 
-  const weekend = thisWeekendRange();
-  const isThisWeekend = filters.dateFrom === weekend.from && filters.dateTo === weekend.to;
-  const dateLabel = isThisWeekend
-    ? t.thisWeekend
-    : filters.dateFrom && filters.dateTo
-      ? `${format(parseISO(filters.dateFrom), "d MMM", { locale: df })} – ${format(parseISO(filters.dateTo), "d MMM", { locale: df })}`
-      : filters.dateFrom
-        ? format(parseISO(filters.dateFrom), "d MMM", { locale: df })
-        : t.anyDate;
-  const count =
-    (filters.disciplines.length ? 1 : 0) +
-    (filters.categories.length ? 1 : 0) +
-    (filters.levels.length ? 1 : 0) +
-    (filters.country.length ? 1 : 0) +
-    (filters.series ? 1 : 0) +
-    (radius != null ? 1 : 0);
-
-
-  // The very row the map uses — the same pills, the same "Filter" with its
-  // count, the same search — so every screen reads alike.
   return (
-    <div>
+    <>
       <MobileTopBar
-        className="px-0 pb-0"
-        hideWeekend={hideDate}
-        weekendLabel={dateLabel}
-        weekendActive={isThisWeekend}
-        onWeekend={() => {
-          if (isThisWeekend) {
-            setFiltersOpen(true);
-            return;
-          }
-          actions.onPreset(weekend.from, weekend.to);
+        leading={leading}
+        dateLabel={hideDate ? undefined : dateFilterLabel(filters.dateFrom, filters.dateTo, labels, dateFnsLocale(locale))}
+        dateCustom={!presets.some((p) => p.active)}
+        dateChoices={presets.map((p) => ({
+          id: p.id,
+          label: labels[p.id],
+          active: p.active,
+          apply: () => actions.onPreset(p.from, p.to),
+        }))}
+        customDateLabel={t.customDate}
+        onCustomDate={() => {
+          setCustomDate(true);
+          onFiltersOpenChange(true);
         }}
-        filtersLabel={t.addFilter}
-        filterCount={count}
-        onFilters={() => setFiltersOpen(true)}
+        filtersLabel={t.filtersButton}
+        filterCount={activeFilterGroups({ ...filters, radius })}
+        onFilters={() => {
+          setCustomDate(false);
+          onFiltersOpenChange(true);
+        }}
         searchLabel={t.search}
-        searchActive={Boolean(filters.q.trim())}
-        onSearch={() => setSearchOpen(true)}
+        searchPlaceholder={t.searchPlaceholder}
+        doneLabel={t.filtersDone}
+        clearLabel={t.clearFilter}
+        q={filters.q}
+        onQ={actions.onQ}
+        searchOpen={searchOpen}
+        onSearchOpenChange={setSearchOpen}
       />
 
       {filtersOpen ? (
         <MobileFiltersSheet
           open={filtersOpen}
-          onOpenChange={setFiltersOpen}
+          onOpenChange={onFiltersOpenChange}
           messages={t}
           locale={locale}
           dateFrom={filters.dateFrom}
@@ -142,35 +171,11 @@ function MobileFilterRow({
           country={filters.country}
           seriesList={seriesList}
           hideDate={hideDate}
-          extra={
-            <section className="flex flex-col gap-2.5">
-              <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                <LocateFixed className="size-3.5" aria-hidden />
-                {t.distanceFilter}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[null, ...RADIUS_OPTIONS].map((km) => {
-                  const active = radius === km;
-                  return (
-                    <Button
-                      key={km ?? "any"}
-                      type="button"
-                      variant={active ? "default" : "outline"}
-                      size="sm"
-                      className="h-11 shrink-0 rounded-full px-3.5 text-sm"
-                      aria-pressed={active}
-                      onClick={() => setRadius(km)}
-                    >
-                      {km == null ? t.distanceAny : t.distanceWithin.replace("{km}", String(km))}
-                    </Button>
-                  );
-                })}
-              </div>
-              {radius != null && (state.place.status === "denied" || state.place.status === "outside") ? (
-                <p className="text-xs text-muted-foreground">{state.place.status === "outside" ? t.distanceOutside : t.distanceDenied}</p>
-              ) : null}
-            </section>
-          }
+          customDate={customDate}
+          radius={radius}
+          radiusStatus={state.place.status}
+          onRadius={setRadius}
+          resultCount={resultCount}
           onPreset={actions.onPreset}
           onCategory={actions.onCategory}
           onDiscipline={actions.onDiscipline}
@@ -184,16 +189,37 @@ function MobileFilterRow({
           onReset={reset}
         />
       ) : null}
-      {searchOpen ? (
-        <MobileSearchSheet
-          open={searchOpen}
-          onOpenChange={setSearchOpen}
-          messages={t}
-          q={filters.q}
-          onQ={actions.onQ}
-          onSubmit={() => setSearchOpen(false)}
-        />
-      ) : null}
-    </div>
+    </>
+  );
+}
+
+/** The chips under the phone's filter row, wired to the shared filters. */
+export function ExploreActiveChips({
+  locale,
+  state,
+  onOpenFilters,
+  className,
+}: {
+  locale: string;
+  state: FilterState;
+  onOpenFilters: () => void;
+  className?: string;
+}) {
+  const { filters, seriesList, actions, radius, setRadius } = state;
+  return (
+    <ActiveFilterChips
+      locale={locale}
+      filters={{ ...filters, radius }}
+      seriesList={seriesList}
+      onOpenFilters={onOpenFilters}
+      className={className}
+      onClearDisciplines={actions.onClearDisciplines}
+      onClearCategories={actions.onClearCategories}
+      onClearLevels={actions.onClearLevels}
+      onClearCountries={actions.onClearCountries}
+      onClearSeries={() => actions.onSeries(filters.series)}
+      onClearRadius={() => setRadius(null)}
+      onClearQ={() => actions.onQ("")}
+    />
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EventCard } from "@/components/explore/event-rows";
 import { ColumnPicker } from "@/components/shell/column-picker";
 import { RaceTable, sortTableEvents, type ListSort } from "@/components/shell/race-table";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
-import { ExploreFilterBar } from "@/components/shell/explore-filter-bar";
+import { ExploreActiveChips, ExploreFilterBar } from "@/components/shell/explore-filter-bar";
+import { ListMetaRow } from "@/components/shell/active-filters";
+import { useLinkedRace, useRaceParam } from "@/components/shell/use-race-param";
 import { RacePreview } from "@/components/shell/race-preview";
 import { SectionHeader } from "@/components/shell/section-header";
 import { useExploreFilters } from "@/components/shell/use-explore-filters";
@@ -35,16 +37,23 @@ export function ListView({ locale }: { locale: string }) {
   const { filters, setFilters, ready, reset, near, place } = state;
   const feed = useRaceFeed(filters, ready, near);
   const isMobile = useIsMobile();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const race = useRaceParam();
   const origin = place.origin;
 
   const sort: EventSort = filters.sort === "distance" && origin ? "distance" : "date";
   const [tableSort, setTableSort] = useState<ListSort | null>(null);
   const activeSort: ListSort = tableSort ?? { column: sort, direction: "asc" };
   const rows = useMemo(() => sortTableEvents(sortEvents(feed.events, "date", origin), { column: tableSort?.column ?? sort, direction: tableSort?.direction ?? "asc" }, locale, origin), [feed.events, sort, tableSort, locale, origin]);
-  const selected = useMemo(
-    () => feed.events.find((e) => e.id === selectedId) ?? null,
-    [feed.events, selectedId],
+  const selected = useLinkedRace(race.slug, feed.events);
+  const selectedId = selected?.id ?? null;
+  const bySlug = useMemo(() => new Map(feed.events.map((e) => [e.id, e.slug])), [feed.events]);
+  const openRace = useCallback(
+    (id: string) => {
+      const slug = bySlug.get(id);
+      if (slug) race.open(slug);
+    },
+    [bySlug, race],
   );
   const view = listViewState({ settled: feed.settled, count: rows.length });
 
@@ -89,10 +98,16 @@ export function ListView({ locale }: { locale: string }) {
     <div className="absolute inset-0 flex">
       <section className="flex min-w-0 flex-1 flex-col">
         <SectionHeader title={t.navList} brandHref={`/${locale}`}>
-          <ExploreFilterBar locale={locale} state={state} />
+          <ExploreFilterBar
+            locale={locale}
+            state={state}
+            filtersOpen={filtersOpen}
+            onFiltersOpenChange={setFiltersOpen}
+            resultCount={feed.settled ? rows.length : null}
+          />
         </SectionHeader>
 
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b px-4 py-2 md:px-6">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b px-4 py-2 max-md:hidden md:px-6">
           <span
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
             aria-live="polite"
@@ -135,7 +150,21 @@ export function ListView({ locale }: { locale: string }) {
           </div>
         </div>
 
-        <div id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none [&>[data-slot=table-container]]:overflow-x-visible">
+        <div id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto overscroll-contain outline-none [&>[data-slot=table-container]]:overflow-x-visible">
+          {/* On a phone the count and the order head the list and scroll away
+              with it; only the filter row above stays. */}
+          {isMobile ? (
+            <div className="border-b border-border/50">
+              <ExploreActiveChips locale={locale} state={state} onOpenFilters={() => setFiltersOpen(true)} className="pb-0" />
+              <ListMetaRow
+                locale={locale}
+                count={feed.settled ? rows.length : null}
+                loading={feed.loading}
+                sort={activeSort.column === "distance" ? "distance" : "date"}
+                onSort={setSort}
+              />
+            </div>
+          ) : null}
           {view === "empty" ? (
             <Empty className="border-0 p-8">
               <EmptyHeader>
@@ -156,7 +185,7 @@ export function ListView({ locale }: { locale: string }) {
                 </ItemGroup>
               ) : null}
               {view === "rows" && isMobile ? (
-                <ItemGroup>
+                <ItemGroup className="pb-[env(safe-area-inset-bottom)]">
                   {rows.map((event) => (
                     <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
                       <EventCard
@@ -164,7 +193,8 @@ export function ListView({ locale }: { locale: string }) {
                         locale={locale}
                         distanceKm={eventDistanceKm(event, origin)}
                         active={event.id === selectedId}
-                        onSelect={setSelectedId}
+                        onSelect={openRace}
+                        wrapName
                       />
                     </div>
                   ))}
@@ -178,7 +208,7 @@ export function ListView({ locale }: { locale: string }) {
                   locale={locale}
                   origin={origin}
                   selectedId={selectedId}
-                  onSelect={setSelectedId}
+                  onSelect={openRace}
                   sort={activeSort}
                   onSort={sortColumn}
                 />
@@ -191,9 +221,9 @@ export function ListView({ locale }: { locale: string }) {
       <RacePreview
         event={selected}
         locale={locale}
-        onClose={() => setSelectedId(null)}
+        onClose={race.close}
         onSelectSeries={(slug) => {
-          setSelectedId(null);
+          race.drop();
           void setFilters({ series: slug });
         }}
       />

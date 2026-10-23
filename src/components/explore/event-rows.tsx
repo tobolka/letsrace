@@ -37,6 +37,7 @@ export const EventCard = memo(function EventCard({
   active,
   onSelect,
   onHover,
+  wrapName = false,
 }: {
   event: EventListItem;
   locale: string;
@@ -44,6 +45,8 @@ export const EventCard = memo(function EventCard({
   active: boolean;
   onSelect: (id: string) => void;
   onHover?: (id: string | null) => void;
+  /** Let a long name take a second line (see `EventRowBody`). */
+  wrapName?: boolean;
 }) {
   return (
     <Item
@@ -72,7 +75,7 @@ export const EventCard = memo(function EventCard({
         onBlur={() => onHover?.(null)}
         className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
-        <EventRowBody event={event} locale={locale} distanceKm={km} />
+        <EventRowBody event={event} locale={locale} distanceKm={km} wrapName={wrapName} />
       </button>
     </Item>
   );
