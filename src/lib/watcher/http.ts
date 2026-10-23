@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import { assertPublicHttpUrl, fetchPublic, UnsafeUrlError } from "@/lib/http/safe-url";
 import { hostnameOf, hostIntervalMs, sleep, withHostGate } from "@/lib/watcher/pool";
 
 export const BOT_UA =
@@ -50,11 +51,10 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
   if (opts.lastModified) headers["If-Modified-Since"] = opts.lastModified;
   if (opts.contentType) headers["Content-Type"] = opts.contentType;
 
-  const res = await fetch(url, {
+  const res = await fetchPublic(url, {
     headers,
     method: opts.method ?? "GET",
     ...(opts.body != null ? { body: opts.body } : {}),
-    redirect: "follow",
     signal: AbortSignal.timeout(opts.timeoutMs ?? 25_000),
   });
 
@@ -136,6 +136,8 @@ function isTlsVerifyError(err: unknown): boolean {
 }
 
 async function fetchViaCurl(url: string, insecure = false): Promise<FetchResult> {
+  // curl follows redirects on its own, so only the address we hand it can be vetted.
+  await assertPublicHttpUrl(url);
   const { execFile } = await import("node:child_process");
   const { promisify } = await import("node:util");
   const execFileAsync = promisify(execFile);
@@ -185,6 +187,8 @@ export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<Fetc
           Math.min(12_000, 400 * 2 ** attempt) + Math.floor(Math.random() * 250);
         await sleep(backoff);
       } catch (e) {
+        // A refused address is the same answer every time; do not retry it.
+        if (e instanceof UnsafeUrlError) throw e;
         lastErr = e;
         if (
           (isTlsVerifyError(e) && CURL_TLS_FALLBACK_HOSTS.has(host)) ||
