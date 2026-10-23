@@ -3,47 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
 import { boxAround } from "@/hooks/use-user-origin";
-import { todayIso } from "@/lib/date-presets";
 import { eventDistanceKm } from "@/lib/geo/distance";
 import type { EventListItem } from "@/lib/events";
-import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
+import { buildEventsQuery, type EventsQuery } from "@/lib/events-query";
+import { filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
 
 export type Near = { origin: { lat: number; lng: number }; km: number };
 
-export type FeedQuery = {
-  q: string;
-  categories: string[];
-  disciplines: string[];
-  levels: string[];
-  series: string;
-  country: string[];
-  dateFrom: string;
-  dateTo: string;
-};
+export type FeedQuery = EventsQuery;
 
 function toParams(query: FeedQuery, near: Near | null): string {
-  const params = new URLSearchParams();
-  // The shared catalogue is filtered here. A text search or a series still
-  // asks the server, and so does a date before today — the feed starts at today.
-  const shared =
-    !query.q.trim() && !query.series && catalogueCovers(query.dateFrom, todayIso());
-  if (!shared && near) {
-    const box = boxAround(near.origin, near.km);
-    params.set("west", box.west.toFixed(4));
-    params.set("south", box.south.toFixed(4));
-    params.set("east", box.east.toFixed(4));
-    params.set("north", box.north.toFixed(4));
-  }
-  if (query.q.trim()) params.set("q", query.q.trim());
-  if (query.series) params.set("series", query.series);
-  if (query.dateFrom) params.set("dateFrom", query.dateFrom);
-  if (query.dateTo) params.set("dateTo", query.dateTo);
-  if (!shared && !query.dateFrom && !query.dateTo) params.set("anyDate", "1");
-  query.categories.forEach((v) => params.append("categories", v));
-  query.disciplines.forEach((v) => params.append("disciplines", v));
-  query.levels.forEach((v) => params.append("levels", v));
-  query.country.forEach((v) => params.append("country", v));
+  // Rounded, so a position that wobbles in the fifth decimal is one address.
+  const round = (v: number) => Number(v.toFixed(4));
+  const box = near ? boxAround(near.origin, near.km) : null;
+  const { shared, params } = buildEventsQuery(
+    query,
+    box && { west: round(box.west), south: round(box.south), east: round(box.east), north: round(box.north) },
+  );
   if (shared) params.set("catalogue", "1");
   return params.toString();
 }

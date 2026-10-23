@@ -53,6 +53,13 @@ import {
   todayIso,
 } from "@/lib/date-presets";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
+import {
+  INT_COUNTRY,
+  seriesCountryCodes,
+  seriesCountryKey,
+  seriesInCountries,
+  type SeriesOption,
+} from "@/lib/explore-filters";
 import type { Messages } from "@/lib/i18n/messages";
 import { familyColor } from "@/lib/map-visuals";
 import {
@@ -75,32 +82,6 @@ const DateRangeCalendar = dynamic(
     ),
   },
 );
-
-export const INT_COUNTRY = "INT";
-
-export type SeriesOption = {
-  slug: string;
-  name: string;
-  eventCount: number;
-  countryCode: string | null;
-  shortName?: string | null;
-};
-
-export function seriesCountryKey(code: string | null | undefined) {
-  const cc = (code || "").trim().toUpperCase();
-  return cc.length === 2 ? cc : INT_COUNTRY;
-}
-
-/** A national cup has no races outside its country; an international one fits any choice. */
-export function seriesOutsideCountries(
-  seriesCode: string | null | undefined,
-  series: string,
-  countries: string[],
-) {
-  if (!series || countries.length === 0) return false;
-  const key = seriesCountryKey(seriesCode);
-  return key !== INT_COUNTRY && !countries.includes(key);
-}
 
 type ExtraFilter = "discipline" | "category" | "level" | "country" | "series";
 
@@ -286,13 +267,8 @@ export function MapFilterBar({
                 : messages.date;
 
   const seriesName = seriesList.find((s) => s.slug === series)?.name;
-  const countryCodes = sortCountryCodes(
-    seriesList.map((s) => seriesCountryKey(s.countryCode)).filter((k) => k !== INT_COUNTRY),
-    locale,
-  );
-  const visibleSeries = country.length
-    ? seriesList.filter((s) => country.includes(seriesCountryKey(s.countryCode)))
-    : seriesList;
+  const countryCodes = seriesCountryCodes(seriesList, locale);
+  const visibleSeries = seriesInCountries(seriesList, country);
   const seriesGroups = groupSeriesByCountry(visibleSeries, locale, messages.international);
   const seriesQ = seriesQuery.trim().toLowerCase();
   const filteredSeriesGroups = seriesQ

@@ -3,13 +3,9 @@
 import { Suspense, type CSSProperties, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { parseAsInteger, useQueryState, useQueryStates } from "nuqs";
+import { useQueryStates } from "nuqs";
 import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
-import {
-  MapFilterBar,
-  seriesOutsideCountries,
-  type SeriesOption,
-} from "@/components/explore/map-filter-bar";
+import { MapFilterBar } from "@/components/explore/map-filter-bar";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -44,22 +40,20 @@ import {
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import Link from "next/link";
 import { datePresetRanges, thisWeekendRange, todayIso } from "@/lib/date-presets";
-import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
+import { buildEventsQuery } from "@/lib/events-query";
+import { filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
-import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
+import { exploreSearchParams } from "@/lib/explore-params";
 import { DistanceFilter } from "@/components/shell/distance-filter";
+import { useRaceParam } from "@/components/shell/use-race-param";
+import { useExploreFilterPrefs } from "@/components/shell/use-explore-filter-prefs";
+import { useRadiusParam } from "@/components/shell/use-radius-param";
+import { useSeriesList } from "@/components/shell/use-series-list";
 import { useIsClient } from "@/hooks/use-is-client";
-import { useLoadEffect } from "@/hooks/use-load-effect";
 import { useMediaQuery, useViewportHeight } from "@/hooks/use-viewport";
 import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
 import { eventsWithinRadius } from "@/lib/geo/radius";
-import { loadSeriesList } from "@/lib/series-list";
-import {
-  readExploreFilterPrefs,
-  storedExploreFiltersToPatch,
-  urlHasExploreFilterParams,
-  writeExploreFilterPrefs,
-} from "@/lib/explore-filter-storage";
+import { countryChange, toggleIn } from "@/lib/explore-filters";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
 import { BrandBar } from "@/components/shell/section-header";
@@ -161,12 +155,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const initialBoundsFetchDone = useRef(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [radius, setRadiusParam] = useQueryState(RADIUS_PARAM, parseAsInteger);
+  const { radius, setRadius: storeRadius } = useRadiusParam();
   const place = useUserOrigin();
   const [submitOpen, setSubmitOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [seriesList, setSeriesList] = useState<SeriesOption[]>([]);
+  const seriesList = useSeriesList();
   const [listLoading, setListLoading] = useState(false);
   /**
    * The rows are placeholders until the map settles on its bounds and the list
@@ -201,21 +195,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   useEffect(() => {
     if (radius != null && !distanceOrigin && originStatus === "idle") locateOrigin();
   }, [radius, distanceOrigin, originStatus, locateOrigin]);
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).has(RADIUS_PARAM)) return;
-    try {
-      const saved = Number(localStorage.getItem("letsrace.explore.radius.v1"));
-      if (saved > 0) void setRadiusParam(saved);
-    } catch { /* storage unavailable */ }
-    // Restore once, matching the list and calendar's distance preference.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   function setRadius(km: number | null) {
-    try {
-      if (km == null) localStorage.removeItem("letsrace.explore.radius.v1");
-      else localStorage.setItem("letsrace.explore.radius.v1", String(km));
-    } catch { /* storage unavailable */ }
-    void setRadiusParam(km);
+    storeRadius(km);
     if (km != null) {
       selectEvent(null);
       if (!distanceOrigin) locateOrigin();
@@ -261,7 +242,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     const qs = params.toString();
     router.replace(`${localePath(locale, "list")}${qs ? `?${qs}` : ""}`);
   }, [filters.view, locale, router]);
-  const [prefsReady, setPrefsReady] = useState(false);
 
   // Fetch the race card's code once the map is idle, so the first click opens
   // it at once instead of waiting on the network.
@@ -282,27 +262,16 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    * to something else, a series or a new filter — and `closeDetail` is the
    * card's own way out, stepping back over the entry it added.
    */
-  const detailPushed = useRef(false);
+  const race = useRaceParam();
   function selectEvent(id: string | null) {
     setSelectedId(id);
     const slug = id ? (events.find((ev) => ev.id === id)?.slug ?? "") : "";
-    if (!slug) {
-      detailPushed.current = false;
-      void setFilters({ e: null });
-      return;
-    }
-    const push = !filters.e;
-    if (push) detailPushed.current = true;
-    void setFilters({ e: slug }, { history: push ? "push" : "replace" });
+    if (slug) race.open(slug);
+    else race.drop();
   }
   function closeDetail() {
-    if (!detailPushed.current) {
-      selectEvent(null);
-      return;
-    }
-    detailPushed.current = false;
     setSelectedId(null);
-    window.history.back();
+    race.close();
   }
 
   /*
@@ -329,27 +298,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   // Back took `e` away: the card goes with it, and the list is as it was.
   const lastE = useRef(filters.e);
   useEffect(() => {
-    if (lastE.current && !filters.e) {
-      detailPushed.current = false;
-      setSelectedId(null);
-    }
+    if (lastE.current && !filters.e) setSelectedId(null);
     lastE.current = filters.e;
   }, [filters.e]);
-
-  // The cup and country pickers list what exists, not what survives the other
-  // filters — "kids" on a single weekend left them empty and the menu bare.
-  const seriesQuery = "";
-  useEffect(() => {
-    let alive = true;
-    void loadSeriesList(seriesQuery)
-      .then((data) => {
-        if (alive) setSeriesList(data);
-      })
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, [seriesQuery]);
 
   const selected = useMemo(
     () => events.find((e) => e.id === selectedId) ?? null,
@@ -474,25 +425,19 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }, [selectedId, listSettled]);
 
   function toggleCategory(value: string) {
-    const next = filters.categories.includes(value)
-      ? filters.categories.filter((a) => a !== value)
-      : [...filters.categories, value];
+    const next = toggleIn(filters.categories, value);
     void setFilters({ categories: next });
     refetch({ categories: next });
   }
 
   function toggleDiscipline(value: string) {
-    const next = filters.disciplines.includes(value)
-      ? filters.disciplines.filter((d) => d !== value)
-      : [...filters.disciplines, value];
+    const next = toggleIn(filters.disciplines, value);
     void setFilters({ disciplines: next });
     refetch({ disciplines: next });
   }
 
   function toggleLevel(value: string) {
-    const next = filters.levels.includes(value)
-      ? filters.levels.filter((l) => l !== value)
-      : [...filters.levels, value];
+    const next = toggleIn(filters.levels, value);
     void setFilters({ levels: next });
     refetch({ levels: next });
   }
@@ -558,8 +503,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   function applyCountries(next: string[]) {
-    const seriesRow = seriesList.find((s) => s.slug === filters.series);
-    const dropSeries = seriesOutsideCountries(seriesRow?.countryCode, filters.series, next);
+    const { dropSeries } = countryChange(filters, next, seriesList);
     void setFilters({ country: next, ...(dropSeries ? { series: "" } : {}) });
     refetch({
       country: next,
@@ -570,11 +514,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }
 
   function toggleCountry(code: string) {
-    applyCountries(
-      filters.country.includes(code)
-        ? filters.country.filter((c) => c !== code)
-        : [...filters.country, code],
-    );
+    applyCountries(toggleIn(filters.country, code));
   }
 
   function clearCountries() {
@@ -595,7 +535,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     fetchStartedRef.current = true;
     setListLoading(true);
     return (async () => {
-      const params = new URLSearchParams();
       const qRaw = (overrides.q as string) ?? filters.q;
       const placed = lastPlacedQ.current;
       const q =
@@ -625,24 +564,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       const near = overrides.clearRadius ? null : radiusArea;
       const b = near ? boxAround(near, near.km) : skipBounds ? null : (explicit ?? (bounds ? expandViewport(bounds) : null));
       if (b) lastAreaRef.current = b;
-      if (q) params.set("q", q);
-      if (series) params.set("series", series);
-      if (dateFrom) params.set("dateFrom", dateFrom);
-      if (dateTo) params.set("dateTo", dateTo);
-      if (!dateFrom && !dateTo) params.set("anyDate", "1");
-      categories.forEach((a) => params.append("categories", a));
-      disciplines.forEach((d) => params.append("disciplines", d));
-      levels.forEach((l) => params.append("levels", l));
-      country.forEach((c) => params.append("country", c));
-      const shared = !q && !series && catalogueCovers(dateFrom, todayIso());
-      // The viewport used to be part of the request, so every pan was a new
-      // copy of the catalogue leaving compute. The shared feed is filtered here.
-      if (!shared && b) {
-        params.set("west", String(b.west));
-        params.set("south", String(b.south));
-        params.set("east", String(b.east));
-        params.set("north", String(b.north));
-      }
+      const { shared, params } = buildEventsQuery(
+        { q, series, dateFrom, dateTo, categories, disciplines, levels, country },
+        b,
+      );
       try {
         const data = shared
           ? filterCatalogue(await loadCatalogue(), {
@@ -703,44 +628,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radiusArea]);
 
-  // Restored once on mount.
-  useLoadEffect(async () => {
-    if (prefsReady) return;
-    const stored = urlHasExploreFilterParams(window.location.search) ? null : readExploreFilterPrefs();
-    if (stored) {
-      const patch = storedExploreFiltersToPatch(stored);
-      await setFilters(patch);
-      void refetch(patch);
-      if (patch.sort === "distance") setLocateSeq((n) => n + 1);
-    }
-    setPrefsReady(true);
-  }, [prefsReady]);
-
-  useEffect(() => {
-    if (!prefsReady) return;
-    writeExploreFilterPrefs({
-      q: filters.q,
-      categories: filters.categories,
-      disciplines: filters.disciplines,
-      levels: filters.levels,
-      series: filters.series,
-      country: filters.country,
-      sort: filters.sort,
-      dateFrom: filters.dateFrom,
-      dateTo: filters.dateTo,
-    });
-  }, [
-    prefsReady,
-    filters.q,
-    filters.categories,
-    filters.disciplines,
-    filters.levels,
-    filters.series,
-    filters.country,
-    filters.sort,
-    filters.dateFrom,
-    filters.dateTo,
-  ]);
+  // Saved filters come back with a refetch for them; nothing here waits on `ready`.
+  useExploreFilterPrefs(filters, setFilters, (patch) => {
+    void refetch(patch);
+    if (patch.sort === "distance") setLocateSeq((n) => n + 1);
+  });
 
   async function flyToPlace(q: string, gen: number): Promise<boolean> {
     placeAbortRef.current?.abort();

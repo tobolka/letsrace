@@ -1,4 +1,4 @@
-import type { SeriesOption } from "@/components/explore/map-filter-bar";
+import type { SeriesOption } from "@/lib/explore-filters";
 
 const seriesResultCache = new Map<string, SeriesOption[]>();
 const seriesInflight = new Map<string, Promise<SeriesOption[]>>();

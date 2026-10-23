@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { format, parseISO } from "date-fns";
 import { LocateFixed, X } from "lucide-react";
 import { isoToRange } from "@/components/explore/date-range";
-import { seriesCountryKey, INT_COUNTRY, type SeriesOption } from "@/components/explore/map-filter-bar";
+import { seriesCountryCodes, seriesInCountries, type SeriesOption } from "@/lib/explore-filters";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { nextMonthRange, nextWeekendRange, thisMonthRange, thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { RADIUS_OPTIONS } from "@/lib/explore-params";
-import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
+import { countryDisplayName } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
 import {
   AGE_CATEGORY_FILTERS,
@@ -169,15 +169,10 @@ export function MobileFiltersSheet({
     isThisWeekend || isNextWeekend || isThisMonth || isNextMonth || anyDate || isUpcoming;
   const isCustom = customOpen || (Boolean(dateFrom || dateTo) && !isPreset);
 
-  const countryCodes = sortCountryCodes(
-    seriesList.map((s) => seriesCountryKey(s.countryCode)).filter((k) => k !== INT_COUNTRY),
-    locale,
-  );
+  const countryCodes = seriesCountryCodes(seriesList, locale);
 
   const visibleSeries = useMemo(() => {
-    const base = country.length
-      ? seriesList.filter((s) => country.includes(seriesCountryKey(s.countryCode)))
-      : seriesList;
+    const base = seriesInCountries(seriesList, country);
     const q = seriesQuery.trim().toLowerCase();
     if (!q) return base;
     return base.filter(

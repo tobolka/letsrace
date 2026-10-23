@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
-import type { SeriesOption } from "@/components/explore/map-filter-bar";
+import type { SeriesOption } from "@/lib/explore-filters";
 import type { EventSort } from "@/lib/geo/distance";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
 import { pluralForm } from "@/lib/i18n/plural";
