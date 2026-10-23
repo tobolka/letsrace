@@ -142,6 +142,16 @@ export function MobileFiltersSheet({
 }) {
   const [customOpen, setCustomOpen] = useState(customDate);
   const [dateDraft, setDateDraft] = useState<DateRange | undefined>(() => (customDate ? isoToRange(dateFrom, dateTo) : undefined));
+  // The panel stays mounted between openings so it can finish closing; each
+  // opening starts where the button that opened it asked.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) {
+      setCustomOpen(customDate);
+      setDateDraft(customDate ? isoToRange(dateFrom, dateTo) : undefined);
+    }
+  }
   const [seriesQuery, setSeriesQuery] = useState("");
 
   const thisW = thisWeekendRange();
@@ -207,12 +217,16 @@ export function MobileFiltersSheet({
         }
       }}
       shouldScaleBackground={false}
+      // vaul pins the body while open and restores it on close; the shell
+      // never scrolls the body, and a restore that did not run left a strip
+      // of overlay at the foot of the page.
+      noBodyStyles
       repositionInputs={false}
       // The chips scroll; only the grab bar moves the sheet. A flick at the
       // top of the list used to start dragging the whole panel instead.
       handleOnly
     >
-      <DrawerContent className={cn(MODAL_SURFACE, "flex max-h-[92dvh] flex-col")}>
+      <DrawerContent className={cn(MODAL_SURFACE, "flex flex-col")}>
         <DrawerHandle />
         <div className="flex items-center justify-between gap-3 px-4 pb-2">
           <DrawerTitle className="text-left text-base font-semibold">

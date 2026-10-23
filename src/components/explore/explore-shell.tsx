@@ -10,7 +10,6 @@ import {
   seriesOutsideCountries,
   type SeriesOption,
 } from "@/components/explore/map-filter-bar";
-import { MapAccountButton } from "@/components/explore/map-account-button";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -47,7 +46,7 @@ import Link from "next/link";
 import { datePresetRanges, thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
-import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
+import { carryFilterQuery, exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
 import { eventsWithinRadius } from "@/lib/geo/radius";
@@ -233,6 +232,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [mobileSheetReady, setMobileSheetReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [customDate, setCustomDate] = useState(false);
+  // Loaded on first use, then kept, so closing can finish its animation.
+  const [filtersMounted, setFiltersMounted] = useState(false);
+  if (filtersOpen && !filtersMounted) setFiltersMounted(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [listSnap, setListSnap] = useState<number | string>(COMPACT);
   // A tapped pin opens the card at compact height. The map stays visible above
@@ -1106,17 +1108,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             <BrandMark mark="lr" size="sm" tone="inverse" className="px-0" />
           </Link>
         </Button>
-        {/* A desktop keeps the account at the foot of the sidebar. */}
-        <span aria-hidden className="hidden md:block" />
-        <div className="md:hidden">
-        <MapAccountButton
-          locale={locale}
-          messages={messages}
-          onSignIn={() => setAuthOpen(true)}
-          onSubmitRace={() => setSubmitOpen(true)}
-          onFeedback={() => setFeedbackOpen(true)}
-        />
-        </div>
+        {/* The account lives behind the tab bar's "More" on a phone and at
+            the foot of the sidebar on a desktop — not in a corner of the map. */}
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
@@ -1255,7 +1248,17 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         <>
           <MobileListSheet
             snap={listSnap}
-            onSnap={setListSnap}
+            onSnap={(next) => {
+              setListSnap(next);
+              // A list pulled up over the whole map is the list page — the
+              // same races, the same filters — so it goes there instead of
+              // being a second, narrower copy of it. Search still raises the
+              // sheet in place: it sets the snap itself, not through here.
+              if (next === FULL) {
+                const carry = carryFilterQuery(new URLSearchParams(window.location.search));
+                router.push(`${localePath(locale, "list")}${carry}`);
+              }
+            }}
             viewportH={viewportH}
             title={messages.racesCount}
             handleLabel={listSnap === LIST_PEEK ? messages.sheetExpand : messages.sheetCollapse}
@@ -1407,7 +1410,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </>
       ) : null}
 
-      {filtersOpen ? (
+      {filtersMounted ? (
         <MobileFiltersSheet
           open={filtersOpen}
           onOpenChange={setFiltersOpen}

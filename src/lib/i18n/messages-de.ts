@@ -469,5 +469,13 @@ export const de = {
   activeFilters: "Aktive Filter",
   racesCountOne: "Rennen",
   racesCountFew: "Rennen",
+  actionSave: "Merken",
+  actionSaved: "Im Plan",
+  actionShare: "Teilen",
+  actionDetail: "Details",
+  navMore: "Mehr",
+  moreTitle: "Mehr",
+  moreAccount: "Mein Konto",
+  moreApp: "Let's Race",
   submit: "Senden",
 } as const;

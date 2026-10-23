@@ -120,6 +120,10 @@ function MobileFilterRow({
   const { filters, seriesList, actions, radius, setRadius, reset } = state;
   const [searchOpen, setSearchOpen] = useState(false);
   const [customDate, setCustomDate] = useState(false);
+  // Loaded on first use, then kept: unmounted the moment it was told to
+  // close, the panel never finished closing and left its overlay behind.
+  const [filtersMounted, setFiltersMounted] = useState(false);
+  if (filtersOpen && !filtersMounted) setFiltersMounted(true);
   const labels = datePresetLabels(t);
   const presets = datePresetRanges(filters.dateFrom, filters.dateTo);
 
@@ -156,7 +160,7 @@ function MobileFilterRow({
         onSearchOpenChange={setSearchOpen}
       />
 
-      {filtersOpen ? (
+      {filtersMounted ? (
         <MobileFiltersSheet
           open={filtersOpen}
           onOpenChange={onFiltersOpenChange}

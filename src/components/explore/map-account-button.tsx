@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Check, Flag, Info, Languages, LogIn, LogOut, MessageSquare, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, Flag, Info, Languages, LogIn, LogOut, MessageSquare } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuPortal,
@@ -14,9 +11,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthUser } from "@/hooks/use-auth-user";
 import { locales, type Locale, type Messages } from "@/lib/i18n/messages";
 import { translatePathname, localePath } from "@/lib/localized-paths";
 
@@ -24,58 +19,6 @@ export async function signOutAndRefresh(router: ReturnType<typeof useRouter>) {
   const { createBrowserSupabase } = await import("@/lib/supabase/browser");
   await createBrowserSupabase().auth.signOut();
   router.refresh();
-}
-
-/**
- * The account menu floating over the map on a phone.
- *
- * On a desktop the same menu sits at the foot of the sidebar. A phone's map
- * has no sidebar and no tab bar — its sheet owns the bottom edge — so the menu
- * keeps a corner of the map there.
- */
-export function MapAccountButton({
-  locale,
-  messages,
-  onSignIn,
-  onSubmitRace,
-  onFeedback,
-}: {
-  locale: string;
-  messages: Messages;
-  onSignIn?: () => void;
-  onSubmitRace?: () => void;
-  onFeedback?: () => void;
-}) {
-  const router = useRouter();
-  const { authed, email } = useAuthUser();
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          size="icon"
-          variant="secondary"
-          aria-label={messages.account}
-          className="pointer-events-auto rounded-full shadow-md"
-        >
-          <User />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <AccountMenuItems
-          authed={authed}
-          email={email}
-          locale={locale}
-          messages={messages}
-          onSignIn={onSignIn}
-          onSubmitRace={onSubmitRace}
-          onFeedback={onFeedback}
-          onSignOut={() => void signOutAndRefresh(router)}
-        />
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
 }
 
 /**

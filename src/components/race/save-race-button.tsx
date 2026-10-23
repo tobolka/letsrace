@@ -30,8 +30,12 @@ export function SaveRaceButton({
   eventId: string;
   raceName: string;
   locale: string;
-  /** `icon` for the map card and browse rows; `full` for the race's own page. */
-  variant?: "icon" | "full";
+  /**
+   * `icon` for the map card and browse rows; `full` for the race's own page;
+   * `tile` for the phone's race sheet — icon over a one-word label, styled by
+   * `className` like the tiles beside it.
+   */
+  variant?: "icon" | "full" | "tile";
   className?: string;
 }) {
   const t = messagesFor(locale);
@@ -42,6 +46,42 @@ export function SaveRaceButton({
   const label = added ? t.suggestAdded : t.suggestAdd;
   const icon = busy ? <Spinner /> : added ? <CalendarCheck /> : <CalendarPlus />;
   const size = variant === "icon" ? "icon-sm" : "default";
+
+  if (variant === "tile") {
+    const tileLabel = added ? t.actionSaved : t.actionSave;
+    if (added) {
+      return (
+        <Link href={localePath(locale, `account`)} aria-label={`${label} — ${raceName}`} className={cn(className, "text-primary")}>
+          {icon}
+          <span>{tileLabel}</span>
+        </Link>
+      );
+    }
+    return (
+      <>
+        <button
+          type="button"
+          disabled={busy}
+          aria-label={`${label} — ${raceName}`}
+          className={className}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              if ((await saveRace({ eventId, name: raceName, locale })) === "auth") setAuthOpen(true);
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          {icon}
+          <span>{tileLabel}</span>
+        </button>
+        {authOpen ? (
+          <AuthDialog open locale={locale} reason={t.saveAuthReason} onClose={() => setAuthOpen(false)} onSuccess={() => setAuthOpen(false)} />
+        ) : null}
+      </>
+    );
+  }
 
   if (added) {
     return (

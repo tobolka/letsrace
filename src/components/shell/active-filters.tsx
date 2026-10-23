@@ -104,7 +104,7 @@ export function ActiveFilterChips({
     <ul
       aria-label={t.activeFilters}
       className={cn(
-        "flex min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain py-1.5 pr-6 pl-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "flex min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain py-1.5 pr-6 pl-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className,
       )}
       // A chip cut at the edge reads as more to come, not as a broken row.
@@ -172,7 +172,7 @@ export function ListMetaRow({
 }) {
   const t = messagesFor(locale);
   return (
-    <div className={cn("flex h-10 shrink-0 items-center justify-between gap-2 pl-3 pr-1", className)}>
+    <div className={cn("flex h-10 shrink-0 items-center justify-between gap-2 pl-4 pr-2", className)}>
       <span
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
         aria-live="polite"

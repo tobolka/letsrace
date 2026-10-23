@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 /** The row classes of a race in any list — the app's list and the browse pages alike. */
 export const EVENT_ROW_CLASS =
-  "rounded-none border-0 px-4 py-3 max-md:px-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50";
+  "rounded-none border-0 px-4 py-3 max-md:py-1.5 active:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50";
 
 /**
  * What a race row shows: the discipline's colour down the edge, the name on
@@ -62,9 +62,9 @@ export function EventRowBody({
       */}
       <span
         aria-hidden
-        // On a phone the rule sits in the 12px gutter against the screen's
-        // edge, so the text lines up with the filter row above it.
-        className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full max-md:inset-y-2 max-md:left-0 max-md:rounded-l-none"
+        // Inset from the screen's edge: flush against it, the colour was lost
+        // in the bezel. The text keeps the 16px gutter the rows above it use.
+        className="absolute inset-y-2.5 left-1.5 w-[3px] rounded-full max-md:inset-y-2"
         style={{ background: disciplineColor(event.disciplines) }}
       />
       {/* Without this a flex child refuses to shrink below its content, and

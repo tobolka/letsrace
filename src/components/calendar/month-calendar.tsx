@@ -358,12 +358,12 @@ export function MonthCalendar({
           ) : (
             <>
               {/* Stays in view while the day's races scroll under it. */}
-              <div className="sticky top-0 z-10 border-b bg-background px-3 py-2.5 text-sm font-semibold first-letter:uppercase">
+              <div className="sticky top-0 z-10 border-b bg-background px-4 py-2.5 text-sm font-semibold first-letter:uppercase">
                 {format(parseISO(activeDay), "EEEE d. MMMM", { locale: df })}
                 <span className="ml-2 font-normal text-muted-foreground tabular-nums">{byDay.get(activeDay)?.length ?? 0}</span>
               </div>
               {(byDay.get(activeDay) ?? []).length === 0 ? (
-                <p className="px-3 py-4 text-sm text-muted-foreground">{t.scheduleEmptyDay}</p>
+                <p className="px-4 py-4 text-sm text-muted-foreground">{t.scheduleEmptyDay}</p>
               ) : (
                 <ul className="flex flex-col pb-[max(1rem,env(safe-area-inset-bottom))]">
                   {(byDay.get(activeDay) ?? []).map((item) => (
@@ -371,10 +371,10 @@ export function MonthCalendar({
                       <button
                         type="button"
                         onClick={() => (onOpenItem ? onOpenItem(item.id) : setPhoneDetail(item.id))}
-                        className="relative flex min-h-12 w-full min-w-0 items-center px-3 py-1.5 text-left transition-colors active:bg-accent"
+                        className="relative flex min-h-12 w-full min-w-0 items-center px-4 py-1.5 text-left transition-colors active:bg-accent"
                       >
                         {/* The list's own rule, so a race reads the same here and there. */}
-                        <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-r-full" style={{ background: item.color }} />
+                        <span aria-hidden className="absolute inset-y-2 left-1.5 w-[3px] rounded-full" style={{ background: item.color }} />
                         <span className="min-w-0">
                           <span className="line-clamp-2 block text-sm leading-snug font-medium break-words">{item.name}</span>
                           {item.meta ? <span className="block truncate text-xs text-muted-foreground">{item.meta}</span> : null}

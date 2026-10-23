@@ -89,6 +89,10 @@ export const MODAL_SURFACE = cn(
   "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
   "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
   "data-[vaul-drawer-direction=bottom]:rounded-t-2xl",
+  // The drawer's own cap is 80vh, and on a phone vh is the height with the
+  // browser's toolbar hidden — taller than the screen while it shows, so the
+  // top of the panel went off it. dvh is what is actually there.
+  "data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:max-h-[90dvh]",
 );
 
 /**
@@ -333,6 +337,9 @@ export function MobileRaceModal({
       }}
       shouldScaleBackground={false}
       setBackgroundColorOnScale={false}
+      // The page under it never scrolls (the shell does), so there is no body
+      // to pin — and pinning it is what left a strip at the foot after closing.
+      noBodyStyles
       repositionInputs={false}
       handleOnly
     >

@@ -87,7 +87,7 @@ export function MobileTopBar({
     return (
       <form
         role="search"
-        className={cn("flex h-13 items-center gap-2 px-3", className)}
+        className={cn("flex h-13 items-center gap-2 px-4", className)}
         onSubmit={(e) => {
           e.preventDefault();
           onSearchSubmit?.();
@@ -136,7 +136,7 @@ export function MobileTopBar({
   }
 
   return (
-    <div className={cn("flex h-13 items-center gap-1.5 px-3", className)}>
+    <div className={cn("flex h-13 items-center gap-1.5 px-4", className)}>
       {leading}
       {dateLabel && dateChoices ? (
         <DropdownMenu>

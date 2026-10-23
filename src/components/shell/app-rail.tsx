@@ -4,9 +4,10 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CirclePlus, CircleUserRound, Info, UserRound } from "lucide-react";
+import { CirclePlus, CircleUserRound, Info, Menu } from "lucide-react";
 import { AccountMenuItems, signOutAndRefresh } from "@/components/explore/map-account-button";
 import { exploreNav, profileNav, type NavItem } from "@/components/shell/nav-items";
+import { MoreSheet } from "@/components/shell/more-sheet";
 import { useCarryFilters } from "@/components/shell/use-carried-query";
 import { useNavCounts } from "@/components/shell/use-nav-counts";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -193,6 +194,7 @@ export function AppSidebar({ locale }: { locale: string }) {
  * The same destinations for a phone: a row along the bottom on every screen,
  * the map included, where the race sheet rides on top of it.
  *
+ * Four views and "More", which holds the account and everything else.
  * Each icon carries a one-word name under it. Five bare icons asked people to
  * guess which grid meant "browse" and which list meant "list"; the words fit
  * in the same 52 points the icons alone used to take.
@@ -201,20 +203,30 @@ export function MobileTabBar({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const pathname = usePathname() ?? "";
   const carry = useCarryFilters();
-  const { authed } = useAuthUser();
+  const { authed, email } = useAuthUser();
   const counts = useNavCounts(pathname, authed);
-  const items: NavItem[] = [
+  const [moreOpen, setMoreOpen] = useState(false);
+  // Loaded on first use and kept, so it can finish closing.
+  const [moreMounted, setMoreMounted] = useState(false);
+  if (moreOpen && !moreMounted) setMoreMounted(true);
+  const items: NavItem[] = exploreNav(locale, t, pathname).map((item) =>
     // "Durchsuchen" and "Prehľadávať" do not fit a fifth of a 360-point phone.
-    ...exploreNav(locale, t, pathname).map((item) => (item.key === "browse" ? { ...item, label: t.tabBrowse } : item)),
-    {
-      key: "profile",
-      href: localePath(locale, `account`),
-      label: t.navProfileGroup,
-      icon: UserRound,
-      active: pathname.startsWith(localePath(locale, `account`)),
-      badge: counts.action + counts.alerts,
-    },
-  ];
+    item.key === "browse" ? { ...item, label: t.tabBrowse } : item,
+  );
+  const moreActive =
+    pathname.startsWith(localePath(locale, `account`)) || pathname.startsWith(localePath(locale, "about"));
+  const moreBadge = counts.action + counts.alerts;
+  const tabClass = (active: boolean) =>
+    cn(
+      "relative flex min-w-0 flex-col items-center justify-center gap-1 transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
+      active ? "text-brand" : "text-muted-foreground",
+    );
+  const badge = (n: number) =>
+    n ? (
+      <span className="absolute top-1 left-1/2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
+        {n > 9 ? "9+" : n}
+      </span>
+    ) : null;
 
   return (
     <nav
@@ -226,23 +238,35 @@ export function MobileTabBar({ locale }: { locale: string }) {
           key={item.key}
           href={item.href}
           aria-current={item.active ? "page" : undefined}
-          onClick={item.key === "profile" ? undefined : carry(item.href)}
-          className={cn(
-            "relative flex min-w-0 flex-col items-center justify-center gap-1 transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
-            item.active ? "text-brand" : "text-muted-foreground",
-          )}
+          onClick={carry(item.href)}
+          className={tabClass(item.active)}
         >
           <item.icon className="size-[22px]" strokeWidth={item.active ? 2.25 : 1.75} aria-hidden />
           <span className={cn("max-w-full truncate px-0.5 text-[11px] leading-none", item.active && "font-semibold")}>
             {item.label}
           </span>
-          {item.badge ? (
-            <span className="absolute top-1 left-1/2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] leading-none font-medium text-white tabular-nums">
-              {item.badge > 9 ? "9+" : item.badge}
-            </span>
-          ) : null}
+          {badge(item.badge ?? 0)}
         </Link>
       ))}
+      {/* The account, its pages and the rest — one sheet instead of a
+          profile tab here and a person icon over the map. */}
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={moreOpen}
+        aria-current={moreActive ? "page" : undefined}
+        onClick={() => setMoreOpen(true)}
+        className={tabClass(moreActive || moreOpen)}
+      >
+        <Menu className="size-[22px]" strokeWidth={moreActive ? 2.25 : 1.75} aria-hidden />
+        <span className={cn("max-w-full truncate px-0.5 text-[11px] leading-none", moreActive && "font-semibold")}>
+          {t.navMore}
+        </span>
+        {badge(moreBadge)}
+      </button>
+      {moreMounted ? (
+        <MoreSheet open={moreOpen} onOpenChange={setMoreOpen} locale={locale} authed={authed} email={email} counts={counts} />
+      ) : null}
     </nav>
   );
 }

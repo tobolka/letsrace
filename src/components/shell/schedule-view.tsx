@@ -160,7 +160,7 @@ export function ScheduleView({ locale }: { locale: string }) {
           // away with the month under it.
           <div className="shrink-0 border-b">
             <ExploreActiveChips locale={locale} state={state} onOpenFilters={() => setFiltersOpen(true)} className="pb-0" />
-            <div className="flex h-10 items-center justify-between gap-2 pr-1 pl-3">
+            <div className="flex h-10 items-center justify-between gap-2 pr-2 pl-4">
               <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums" aria-live="polite">
                 {feed.settled ? raceCountLabel(inMonth, locale) : <span aria-hidden className="h-3 w-20 animate-pulse rounded bg-muted" />}
                 <span className="inline-flex size-4 items-center justify-center" aria-hidden={!feed.loading}>

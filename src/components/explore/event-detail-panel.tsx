@@ -15,6 +15,7 @@ import {
   ChartNoAxesColumnIncreasing,
   Maximize2,
   ChevronUp,
+  Check,
 } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -458,7 +459,7 @@ export function EventDetailPanel({
         className={cn(
           "flex shrink-0 flex-row items-center gap-2 border-b px-4 py-3 [.border-b]:pb-3",
           "grid-cols-none grid-rows-none",
-          embedded && "px-3 pt-0 pb-2 [.border-b]:pb-2",
+          embedded && "px-4 pt-0 pb-2 [.border-b]:pb-2",
           !embedded && !anchored && "cursor-grab touch-none select-none",
           dragging && "cursor-grabbing",
         )}
@@ -533,7 +534,7 @@ export function EventDetailPanel({
         className={cn(
           "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4",
           embedded
-            ? "px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            ? "px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             : "py-3",
         )}
         inert={dragging || undefined}
@@ -729,11 +730,11 @@ export function googleDirectionsUrl(
  * The race on a phone, in the order it is read: when and where and what kind
  * of racing — one line each, under the name — then the way in, then the rest.
  *
- * The desktop card spends a row on each fact. Here the discipline rides on
- * the place's line instead of a row of its own, saving, sharing and the
- * entry button share one row, and the race's own page is a link at the foot
- * rather than a third icon beside them — so at the preview's half height the
- * entry button is on screen without a drag.
+ * The way in is one wide button of its own. Everything else you can do with
+ * the race sits under it as a row of equal tiles — directions, save, share,
+ * the full page — the shape a maps app gives a place, so four small things
+ * are not crowded against the one big one. The organiser's other pages are
+ * rows of a list at the foot, not more buttons in the pile.
  */
 function EmbeddedBody({
   event,
@@ -781,6 +782,8 @@ function EmbeddedBody({
     (event.endDate && event.endDate !== event.startDate
       ? ` – ${format(parseISO(event.endDate), "d. MMMM", { locale: df })}`
       : "");
+  const tile =
+    "flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-xl bg-muted/70 px-1 text-xs font-medium text-foreground touch-manipulation transition-colors active:bg-muted disabled:opacity-60 [&_svg]:size-5 [&>span]:max-w-full [&>span]:truncate";
 
   return (
     <div className="flex flex-col gap-3">
@@ -791,9 +794,9 @@ function EmbeddedBody({
             {dateLabel}
           </time>
         </p>
-        <div className="flex items-start gap-2 text-sm">
+        <p className="flex items-start gap-2 text-sm">
           <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <p className="min-w-0 flex-1 break-words">
+          <span className="min-w-0 flex-1 break-words">
             <span className="font-medium">{placeLabel || "—"}</span>
             {discChips.length > 0 ? (
               <span className="text-muted-foreground">
@@ -802,48 +805,55 @@ function EmbeddedBody({
                 {discChips.join(", ")}
               </span>
             ) : null}
-          </p>
-          {directionsUrl ? (
-            // The question asked most often of a race: how long to get there.
-            <Button asChild variant="outline" size="sm" className="-my-1 h-9 shrink-0 font-normal">
-              <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp}>
-                <Navigation data-icon="inline-start" />
-                {t.directions}
-              </a>
-            </Button>
-          ) : null}
-        </div>
+          </span>
+        </p>
       </div>
 
-      <div className="flex items-center gap-1.5">
-        {primary ? (
-          <Button asChild size="lg" className="h-11 min-w-0 flex-1 text-base">
-            <a href={primary.href} target="_blank" rel="noopener noreferrer" onClick={() => trackEnter(primary.kind)}>
-              <ExternalLink data-icon="inline-start" />
-              <span className="truncate">{primary.label}</span>
-            </a>
-          </Button>
+      {primary ? (
+        <Button asChild size="lg" className="h-12 w-full text-base">
+          <a href={primary.href} target="_blank" rel="noopener noreferrer" onClick={() => trackEnter(primary.kind)}>
+            <ExternalLink data-icon="inline-start" />
+            <span className="truncate">{primary.label}</span>
+          </a>
+        </Button>
+      ) : (
+        <p className="text-sm text-muted-foreground">{t.noOnlineEntry}</p>
+      )}
+
+      <div className="grid grid-cols-4 gap-2">
+        {directionsUrl ? (
+          <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile}>
+            <Navigation aria-hidden />
+            <span>{t.directions}</span>
+          </a>
         ) : (
-          <p className="min-w-0 flex-1 text-sm text-muted-foreground">{t.noOnlineEntry}</p>
+          <span aria-hidden className={cn(tile, "opacity-40")}>
+            <Navigation />
+            <span>{t.directions}</span>
+          </span>
         )}
-        <SaveRaceButton
-          eventId={event.id}
-          raceName={event.name}
-          locale={locale}
-          className="size-11 shrink-0 rounded-md border"
-        />
-        <Toggle
-          pressed={linkCopied}
-          size="lg"
-          variant="outline"
+        <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="tile" className={tile} />
+        <button
+          type="button"
           aria-label={linkCopied ? t.linkCopied : t.shareRace}
-          className="size-11 min-w-11 shrink-0 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          onPressedChange={() => {
+          aria-pressed={linkCopied}
+          className={cn(tile, linkCopied && "bg-primary text-primary-foreground active:bg-primary")}
+          onClick={() => {
             if (!linkCopied) onShare();
           }}
         >
-          <Share />
-        </Toggle>
+          {linkCopied ? <Check aria-hidden /> : <Share aria-hidden />}
+          <span>{linkCopied ? t.linkCopied : t.actionShare}</span>
+        </button>
+        <Link
+          href={eventPagePath(locale, event.slug)}
+          aria-label={t.openRaceDetail}
+          onClick={() => track("open_race_page", { slug: event.slug })}
+          className={tile}
+        >
+          <Maximize2 aria-hidden />
+          <span>{t.actionDetail}</span>
+        </Link>
         <p className="sr-only" aria-live="polite">
           {linkCopied ? t.linkCopied : ""}
         </p>
@@ -896,20 +906,29 @@ function EmbeddedBody({
       </div>
 
       {secondaryLinks.length > 0 ? (
-        <div className="flex flex-wrap gap-1.5">
+        <ul className="-mx-4 border-y">
           {secondaryLinks.map((link) => (
-            <Button key={link.href} asChild variant="outline" size="sm" className="h-10 min-w-0 max-w-full">
-              <a href={link.href} target="_blank" rel="noopener noreferrer" onClick={() => trackEnter(link.kind)}>
-                <ExternalLink data-icon="inline-start" />
+            <li key={link.href} className="border-b last:border-b-0">
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEnter(link.kind)}
+                className="flex h-12 items-center justify-between gap-3 px-4 text-sm font-medium transition-colors active:bg-accent"
+              >
                 <span className="truncate">{link.label}</span>
+                <ExternalLink className="size-4 shrink-0 text-muted-foreground" aria-hidden />
               </a>
-            </Button>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : null}
 
-      <div className="flex min-w-0 items-center gap-2 border-t pt-2" title={t.trustExplanation}>
-        <p className={cn("min-w-0 flex-1 truncate text-xs leading-snug", trustLow ? "text-destructive" : "text-muted-foreground")}>
+      {trustText || checkedText ? (
+        <p
+          className={cn("text-xs leading-snug", trustLow ? "text-destructive" : "text-muted-foreground")}
+          title={t.trustExplanation}
+        >
           {trustText}
           {checkedText ? (
             <>
@@ -920,16 +939,7 @@ function EmbeddedBody({
             </>
           ) : null}
         </p>
-        <Button asChild variant="ghost" size="sm" className="-mr-2 h-10 shrink-0 text-sm">
-          <Link
-            href={eventPagePath(locale, event.slug)}
-            onClick={() => track("open_race_page", { slug: event.slug })}
-          >
-            <Maximize2 data-icon="inline-start" />
-            {t.openRaceDetail}
-          </Link>
-        </Button>
-      </div>
+      ) : null}
     </div>
   );
 }
