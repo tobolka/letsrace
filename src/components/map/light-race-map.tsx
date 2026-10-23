@@ -15,17 +15,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import "./light-race-map.css";
 
 const defaultPadding = { top: 16, right: 56, bottom: 56, left: 48 };
-const zoomLabels: Record<string, [string, string]> = {
-  cs: ["Přiblížit", "Oddálit"], en: ["Zoom in", "Zoom out"],
-  de: ["Vergrößern", "Verkleinern"], pl: ["Przybliż", "Oddal"], sk: ["Priblížiť", "Oddialiť"],
-};
-const errorLabels: Record<string, string> = {
-  cs: "Mapu se nepodařilo načíst. Seznam závodů je stále k dispozici.",
-  en: "The map could not load. The race list is still available.",
-  de: "Die Karte konnte nicht geladen werden. Die Rennliste ist weiterhin verfügbar.",
-  pl: "Nie udało się wczytać mapy. Lista wyścigów jest nadal dostępna.",
-  sk: "Mapu sa nepodarilo načítať. Zoznam pretekov je stále k dispozícii.",
-};
 function pin(event: EventListItem, count: number, selected: boolean) {
   const root = document.createElement("div");
   root.className = `fast-pin${selected ? " fast-pin-selected" : ""}`;
@@ -260,7 +249,7 @@ export function LightRaceMap(props: RaceMapProps) {
         if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
         map.remove(); mapRef.current = null; radiusLayer.current = null; apiRef.current = null; highlight.current = () => {}; redraw.current = () => {}; reportRef.current = () => {}; locateRef.current = () => {};
       };
-    }).catch(() => { if (!disposed) setError(errorLabels[latest.current.locale ?? "en"] ?? errorLabels.en); });
+    }).catch(() => { if (!disposed) setError(messagesFor(latest.current.locale ?? "en").mapLoadFailed); });
     return () => { disposed = true; cleanup?.(); };
   }, []);
 
@@ -310,12 +299,11 @@ export function LightRaceMap(props: RaceMapProps) {
     if (!epoch || !props.locateSeq || props.locateSeq === handled.current.locate) return;
     handled.current.locate = props.locateSeq; locateRef.current();
   }, [props.locateSeq, epoch]);
-  const zoom = zoomLabels[locale] ?? zoomLabels.en;
   return <div className={`fast-map light-race-map${props.embedded ? " light-race-map-embedded" : ""}`}>
     <div ref={container} className="absolute inset-0 h-full w-full" />
     <div className="fast-map-controls">
       <MapControlTip label={props.myLocationLabel ?? messages.myLocation}><button type="button" aria-label={props.myLocationLabel ?? messages.myLocation} disabled={locating} aria-busy={locating} onClick={() => locateRef.current()}><LocateFixed size={19} /></button></MapControlTip>
-      <div className="fast-map-zoom"><MapControlTip label={zoom[0]}><button type="button" aria-label={zoom[0]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomIn(); }}><Plus size={19} /></button></MapControlTip><MapControlTip label={zoom[1]}><button type="button" aria-label={zoom[1]} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomOut(); }}><Minus size={19} /></button></MapControlTip></div>
+      <div className="fast-map-zoom"><MapControlTip label={messages.mapZoomIn}><button type="button" aria-label={messages.mapZoomIn} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomIn(); }}><Plus size={19} /></button></MapControlTip><MapControlTip label={messages.mapZoomOut}><button type="button" aria-label={messages.mapZoomOut} onClick={() => { reason.current = "user"; userMoved.current = true; mapRef.current?.zoomOut(); }}><Minus size={19} /></button></MapControlTip></div>
     </div>
     {(error || locationError) && <div className="absolute left-1/2 top-16 z-[600] flex w-max max-w-[calc(100%_-_1.5rem)] -translate-x-1/2 md:top-3 md:max-w-md items-start gap-3 rounded-lg border bg-background px-3 py-2 text-sm shadow-sm" role="status">
       <span>{error || locationError}</span>

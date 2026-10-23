@@ -157,3 +157,32 @@ export function uciClassHelp(id: string, locale: string): string {
   };
   return copy[locale]?.[id] ?? copy.en[id] ?? "";
 }
+
+/** The age bands a series review ticks, in the order the form lists them. */
+export const AGE_BAND_IDS = ["u7", "u9", "u11", "u13", "u15", "u17", "junior", "u23", "elite", "amateur", "masters"] as const;
+
+export const AGE_BAND_LABELS: Record<(typeof AGE_BAND_IDS)[number], string> = {
+  u7: "U7", u9: "U9", u11: "U11", u13: "U13", u15: "U15", u17: "U17",
+  junior: "Junior", u23: "U23", elite: "Elite", amateur: "Amateur", masters: "Masters",
+};
+
+/**
+ * What the Czech federation calls each band. The series review is a tool for
+ * reading Czech calendars, whose organisers write these names, so the hint is
+ * in their words and exists in no other language.
+ */
+export function czechAgeBandName(id: (typeof AGE_BAND_IDS)[number]): string {
+  return {
+    u7: "školka, odrážedla",
+    u9: "předžáci",
+    u11: "přípravka",
+    u13: "mladší žáci",
+    u15: "starší žáci",
+    u17: "kadeti",
+    junior: "17–18",
+    u23: "",
+    elite: "muži, ženy",
+    amateur: "hobby, open",
+    masters: "veteráni",
+  }[id];
+}

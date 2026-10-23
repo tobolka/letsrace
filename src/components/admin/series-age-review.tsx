@@ -6,21 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { SeriesAgeRow } from "@/lib/catalog/series-ages";
+import { AGE_BAND_IDS, AGE_BAND_LABELS, czechAgeBandName } from "@/lib/i18n/taxonomy";
 import { cn } from "@/lib/utils";
 
-const BANDS: { id: string; label: string; hint: string }[] = [
-  { id: "u7", label: "U7", hint: "školka, odrážedla" },
-  { id: "u9", label: "U9", hint: "předžáci" },
-  { id: "u11", label: "U11", hint: "přípravka" },
-  { id: "u13", label: "U13", hint: "mladší žáci" },
-  { id: "u15", label: "U15", hint: "starší žáci" },
-  { id: "u17", label: "U17", hint: "kadeti" },
-  { id: "junior", label: "Junior", hint: "17–18" },
-  { id: "u23", label: "U23", hint: "" },
-  { id: "elite", label: "Elite", hint: "muži, ženy" },
-  { id: "amateur", label: "Amateur", hint: "hobby, open" },
-  { id: "masters", label: "Masters", hint: "veteráni" },
-];
+const BANDS = AGE_BAND_IDS.map((id) => ({ id, label: AGE_BAND_LABELS[id], hint: czechAgeBandName(id) }));
 
 /** One series per card: tick who may start, save, and every round follows. */
 export function SeriesAgeReview({
