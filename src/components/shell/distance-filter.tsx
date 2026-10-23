@@ -80,7 +80,6 @@ export function DistanceFilter({
       <DropdownMenuSubTrigger className={cn(active && "bg-accent/70 font-medium")}>
         <LocateFixed /> {t.distanceFilter}
         {active ? <span className="ml-auto text-xs text-muted-foreground">{selectedRadius} km</span> : null}
-        {active ? <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" /> : null}
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent className="w-56">{options}</DropdownMenuSubContent>

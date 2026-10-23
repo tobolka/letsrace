@@ -670,8 +670,6 @@ export function MapFilterBar({
                     <span className="max-w-[12rem] truncate">
                       {extraMeta[id].value || extraMeta[id].label}
                     </span>
-                    {/* On, in the brand red of the LR mark — the same dot on every screen. */}
-                    {active ? <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" /> : null}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -729,10 +727,7 @@ export function MapFilterBar({
                       <Icon />
                       <span className="min-w-0 truncate">{extraMeta[id].label}</span>
                       {active ? (
-                        <>
-                          <span className="ml-auto max-w-24 truncate text-xs text-muted-foreground">{extraMeta[id].value}</span>
-                          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-brand" />
-                        </>
+                        <span className="ml-auto max-w-24 truncate text-xs text-muted-foreground">{extraMeta[id].value}</span>
                       ) : null}
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
