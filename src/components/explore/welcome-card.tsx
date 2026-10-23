@@ -73,7 +73,6 @@ export function WelcomeCard({
       */}
       <picture>
         <source type="image/avif" srcSet="/intro-race-v2.avif 1x, /intro-race-v2@2x.avif 2x" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/intro-race-v2.webp"
           srcSet="/intro-race-v2.webp 1x, /intro-race-v2@2x.webp 2x"
