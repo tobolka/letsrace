@@ -1,24 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isIsoDay, listSeries } from "@/lib/events";
+import { z } from "zod";
+import { parseQuery } from "@/lib/api/validate";
+import { all, dayParam } from "@/lib/api/schemas";
+import { listSeries } from "@/lib/events";
+
+const querySchema = z.object({
+  dateFrom: dayParam("dateFrom"),
+  dateTo: dayParam("dateTo"),
+  disciplines: all,
+  levels: all,
+  categories: all,
+});
 
 export async function GET(req: NextRequest) {
-  const sp = req.nextUrl.searchParams;
-  const disciplines = sp.getAll("disciplines").filter(Boolean);
-  const levels = sp.getAll("levels").filter(Boolean);
-  const ageCategories = sp.getAll("categories").filter(Boolean);
-  // Same answer as /api/events gives: an unreadable date is a client error.
-  for (const key of ["dateFrom", "dateTo"] as const) {
-    const raw = sp.get(key);
-    if (raw && !isIsoDay(raw)) {
-      return NextResponse.json({ error: `${key} must be YYYY-MM-DD` }, { status: 400 });
-    }
-  }
+  const parsed = parseQuery(req.nextUrl.searchParams, querySchema);
+  if (!parsed.ok) return parsed.response;
+  const query = parsed.data;
   const series = await listSeries({
-    dateFrom: sp.get("dateFrom") || undefined,
-    dateTo: sp.get("dateTo") || undefined,
-    disciplines: disciplines.length ? disciplines : undefined,
-    levels: levels.length ? levels : undefined,
-    ageCategories: ageCategories.length ? ageCategories : undefined,
+    dateFrom: query.dateFrom,
+    dateTo: query.dateTo,
+    disciplines: query.disciplines.length ? query.disciplines : undefined,
+    levels: query.levels.length ? query.levels : undefined,
+    ageCategories: query.categories.length ? query.categories : undefined,
   });
   return NextResponse.json(series, {
     headers: {

@@ -1,7 +1,10 @@
 import { unstable_cache } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { parseQuery } from "@/lib/api/validate";
+import { all, dayParam, first } from "@/lib/api/schemas";
 import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
-import { isIsoDay, listEvents } from "@/lib/events";
+import { listEvents } from "@/lib/events";
 
 /**
  * The map, list and calendar share this. One URL, held on the CDN, instead of
@@ -18,14 +21,15 @@ const upcomingCatalogue = unstable_cache(
 /** Guard against a huge ring turning the polygon filter into a CPU sink. */
 const MAX_POLYGON_POINTS = 500;
 
-function finiteNumber(raw: string | null): number | undefined {
-  if (raw === null || raw.trim() === "") return undefined;
+/** A number, or nothing: a blank or unreadable value is no value at all. */
+const finiteNumber = first.transform((raw) => {
+  if (raw == null || raw.trim() === "") return undefined;
   const n = Number(raw);
   return Number.isFinite(n) ? n : undefined;
-}
+});
 
 /** Parse `polygon` as a ring of [lng, lat] pairs; reject anything else. */
-function parsePolygon(raw: string | null): [number, number][] | undefined {
+function parsePolygon(raw: string | undefined): [number, number][] | undefined {
   if (!raw) return undefined;
   let parsed: unknown;
   try {
@@ -47,6 +51,48 @@ function parsePolygon(raw: string | null): [number, number][] | undefined {
   return ring;
 }
 
+const querySchema = z
+  .object({
+    q: first.transform((v) => v || undefined),
+    audience: all,
+    disciplines: all,
+    levels: all,
+    categories: all,
+    series: first.transform((v) => v || undefined),
+    country: all.transform((values) => values.flatMap((v) => v.split(",")).filter(Boolean)),
+    season: first.transform((v) => v || undefined),
+    eventType: all,
+    dateFrom: dayParam("dateFrom"),
+    dateTo: dayParam("dateTo"),
+    anyDate: first.transform((v) => v === "1"),
+    west: finiteNumber,
+    south: finiteNumber,
+    east: finiteNumber,
+    north: finiteNumber,
+    polygon: first,
+  })
+  // A bbox is only meaningful whole — a partial or non-numeric one used to
+  // slip through as NaN and silently return an empty list.
+  .refine(
+    ({ west, south, east, north }) => {
+      const given = [west, south, east, north].filter((v) => v !== undefined).length;
+      return given === 0 || given === 4;
+    },
+    { error: "west, south, east and north must all be finite numbers" },
+  )
+  .transform((query, ctx) => {
+    const polygon = parsePolygon(query.polygon);
+    if (query.polygon && !polygon) {
+      ctx.issues.push({
+        code: "custom",
+        message: `polygon must be 3–${MAX_POLYGON_POINTS} [lng, lat] pairs`,
+        input: query.polygon,
+      });
+      return z.NEVER;
+    }
+    return { ...query, polygon };
+  });
+
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   if (sp.get("catalogue") === "1") {
@@ -58,61 +104,29 @@ export async function GET(req: NextRequest) {
       },
     });
   }
-  const audience = sp.getAll("audience").filter(Boolean);
-  const disciplines = sp.getAll("disciplines").filter(Boolean);
-  const levels = sp.getAll("levels").filter(Boolean);
-  const ageCategories = sp.getAll("categories").filter(Boolean);
 
-  // A bbox is only meaningful whole — a partial or non-numeric one used to
-  // slip through as NaN and silently return an empty list.
-  const west = finiteNumber(sp.get("west"));
-  const south = finiteNumber(sp.get("south"));
-  const east = finiteNumber(sp.get("east"));
-  const north = finiteNumber(sp.get("north"));
-  const bboxParts = [west, south, east, north].filter((v) => v !== undefined);
-  if (bboxParts.length > 0 && bboxParts.length < 4) {
-    return NextResponse.json(
-      { error: "west, south, east and north must all be finite numbers" },
-      { status: 400 },
-    );
-  }
-
-  // Same shape as the bbox check: an unreadable date is a client error, not a
-  // 500 from the database — `?dateFrom=notadate` used to be exactly that.
-  for (const key of ["dateFrom", "dateTo"] as const) {
-    const raw = sp.get(key);
-    if (raw && !isIsoDay(raw)) {
-      return NextResponse.json({ error: `${key} must be YYYY-MM-DD` }, { status: 400 });
-    }
-  }
-
-  const polygonRaw = sp.get("polygon");
-  const polygon = parsePolygon(polygonRaw);
-  if (polygonRaw && !polygon) {
-    return NextResponse.json(
-      { error: `polygon must be 3–${MAX_POLYGON_POINTS} [lng, lat] pairs` },
-      { status: 400 },
-    );
-  }
+  const parsed = parseQuery(sp, querySchema);
+  if (!parsed.ok) return parsed.response;
+  const query = parsed.data;
 
   const events = await listEvents({
-    q: sp.get("q") || undefined,
-    audience: audience.length ? audience : undefined,
-    disciplines: disciplines.length ? disciplines : undefined,
-    levels: levels.length ? levels : undefined,
-    ageCategories: ageCategories.length ? ageCategories : undefined,
-    seriesSlug: sp.get("series") || undefined,
-    countryCodes: sp.getAll("country").flatMap((v) => v.split(",")).filter(Boolean),
-    season: sp.get("season") || undefined,
-    eventTypes: sp.getAll("eventType").filter(Boolean),
-    dateFrom: sp.get("dateFrom") || undefined,
-    dateTo: sp.get("dateTo") || undefined,
-    anyDate: sp.get("anyDate") === "1",
-    west,
-    south,
-    east,
-    north,
-    polygon,
+    q: query.q,
+    audience: query.audience.length ? query.audience : undefined,
+    disciplines: query.disciplines.length ? query.disciplines : undefined,
+    levels: query.levels.length ? query.levels : undefined,
+    ageCategories: query.categories.length ? query.categories : undefined,
+    seriesSlug: query.series,
+    countryCodes: query.country,
+    season: query.season,
+    eventTypes: query.eventType,
+    dateFrom: query.dateFrom,
+    dateTo: query.dateTo,
+    anyDate: query.anyDate,
+    west: query.west,
+    south: query.south,
+    east: query.east,
+    north: query.north,
+    polygon: query.polygon,
   });
   return NextResponse.json(events, {
     headers: {

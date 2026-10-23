@@ -1,28 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { bootstrapAccount, displayNameFromAuthUser } from "@/lib/account-bootstrap";
+import { apiError } from "@/lib/api/respond";
+import { parseJson } from "@/lib/api/validate";
 import { clientIp, rateLimit } from "@/lib/security";
 import { requireSessionUser } from "@/lib/supabase/user-server";
+
+const bodySchema = z.object({
+  displayName: z
+    .unknown()
+    .optional()
+    .transform((v) => (typeof v === "string" ? v.trim() : "")),
+});
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   if (!rateLimit(`bootstrap:${ip}`, 20, 60_000)) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return apiError(429, "Too many requests");
   }
 
   const user = await requireSessionUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!user) return apiError(401, "Unauthorized");
 
-  const body = await req.json().catch(() => ({}));
-  const displayName =
-    (typeof body.displayName === "string" && body.displayName.trim()) ||
-    displayNameFromAuthUser(user);
+  // The sign-in form sends a name when it has one and nothing when it has not.
+  const parsed = await parseJson(req, bodySchema, { optional: true });
+  if (!parsed.ok) return parsed.response;
 
   await bootstrapAccount({
     userId: user.id,
     email: user.email,
-    displayName,
+    displayName: parsed.data.displayName || displayNameFromAuthUser(user),
   });
   return NextResponse.json({ ok: true });
 }

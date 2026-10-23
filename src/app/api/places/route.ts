@@ -1,25 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { parseQuery } from "@/lib/api/validate";
+import { apiError } from "@/lib/api/respond";
+import { first } from "@/lib/api/schemas";
 import { geocodePublicPlace } from "@/lib/geocode";
 import { clientIp, rateLimit } from "@/lib/security";
+
+const querySchema = z.object({
+  q: first
+    .transform((v) => (v ?? "").trim())
+    .refine((v) => v.length >= 3, { error: "query too short" })
+    .refine((v) => v.length <= 80, { error: "query too long" }),
+});
 
 export async function GET(req: NextRequest) {
   const ip = clientIp(req);
   if (!rateLimit(`places:${ip}`, 30, 60_000)) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return apiError(429, "Too many requests");
   }
 
-  const q = (req.nextUrl.searchParams.get("q") || "").trim();
-  if (q.length < 3) {
-    return NextResponse.json({ error: "query too short" }, { status: 400 });
-  }
-  if (q.length > 80) {
-    return NextResponse.json({ error: "query too long" }, { status: 400 });
-  }
+  const parsed = parseQuery(req.nextUrl.searchParams, querySchema);
+  if (!parsed.ok) return parsed.response;
+  const { q } = parsed.data;
 
   const hit = await geocodePublicPlace(q);
-  if (!hit?.bounds) {
-    return NextResponse.json({ error: "not found" }, { status: 404 });
-  }
+  if (!hit?.bounds) return apiError(404, "not found");
 
   return NextResponse.json(
     {

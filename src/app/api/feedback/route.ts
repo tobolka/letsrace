@@ -1,33 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { apiError, serverError } from "@/lib/api/respond";
+import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { requireSessionUser } from "@/lib/supabase/user-server";
 import { clientIp, rateLimit } from "@/lib/security";
 
-const KINDS = new Set(["feature", "feedback", "bug"]);
+const TITLES = {
+  feature: "Feature request",
+  feedback: "Feedback",
+  bug: "Bug report",
+} as const;
+
+const bodySchema = z.object({
+  message: z.string().trim().min(3, { error: "message required" }).max(4000, { error: "message too long" }),
+  kind: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.enum(["feature", "feedback", "bug"], { error: "invalid kind" }))
+    .default("feedback"),
+  email: z
+    .string()
+    .trim()
+    .max(320, { error: "email too long" })
+    .nullish()
+    .transform((v) => v || null),
+});
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   if (!rateLimit(`feedback:${ip}`, 10, 60_000)) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return apiError(429, "Too many requests");
   }
 
-  const body = await req.json().catch(() => ({}));
-  const message = String(body.message || "").trim();
-  const kind = String(body.kind || "feedback").trim().toLowerCase();
-  const email = String(body.email || "").trim() || null;
-
-  if (!message || message.length < 3) {
-    return NextResponse.json({ error: "message required" }, { status: 400 });
-  }
-  if (!KINDS.has(kind)) {
-    return NextResponse.json({ error: "invalid kind" }, { status: 400 });
-  }
-  if (message.length > 4000) {
-    return NextResponse.json({ error: "message too long" }, { status: 400 });
-  }
-  if (email && email.length > 320) {
-    return NextResponse.json({ error: "email too long" }, { status: 400 });
-  }
+  const parsed = await parseJson(req, bodySchema);
+  if (!parsed.ok) return parsed.response;
+  const { message, kind, email } = parsed.data;
 
   const user = await requireSessionUser();
   const supabase = createServerSupabase();
@@ -43,17 +52,11 @@ export async function POST(req: NextRequest) {
     .select("id")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  const titles: Record<string, string> = {
-    feature: "Feature request",
-    feedback: "Feedback",
-    bug: "Bug report",
-  };
+  if (error) return serverError("feedback insert failed", error);
 
   await supabase.from("admin_notifications").insert({
     kind: "feedback",
-    title: titles[kind] || "Feedback",
+    title: TITLES[kind],
     body: message.slice(0, 280),
     payload: {
       feedbackId: row.id,
