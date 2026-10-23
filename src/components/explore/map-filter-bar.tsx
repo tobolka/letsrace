@@ -4,13 +4,7 @@ import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from 
 
 import { useCallback, useState, type ComponentType, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import {
-  addDays,
-  endOfMonth,
-  format,
-  parseISO,
-  startOfMonth,
-} from "date-fns";
+import { format, parseISO } from "date-fns";
 import {
   Bike,
   Calendar,
@@ -47,11 +41,7 @@ import {
 } from "@/components/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import {
-  nextWeekendRange,
-  thisWeekendRange,
-  todayIso,
-} from "@/lib/date-presets";
+import { datePresetRanges, type DatePresetId } from "@/lib/date-presets";
 import { countryDisplayName, sortCountryCodes } from "@/lib/geo/europe";
 import {
   INT_COUNTRY,
@@ -101,22 +91,6 @@ const FILTER_ICONS: Record<ExtraFilter, ComponentType<{ className?: string }>> =
   country: Globe,
   series: Trophy,
 };
-
-function thisMonthRange() {
-  const now = new Date();
-  return {
-    from: format(startOfMonth(now), "yyyy-MM-dd"),
-    to: format(endOfMonth(now), "yyyy-MM-dd"),
-  };
-}
-
-function nextMonthRange() {
-  const next = addDays(endOfMonth(new Date()), 1);
-  return {
-    from: format(startOfMonth(next), "yyyy-MM-dd"),
-    to: format(endOfMonth(next), "yyyy-MM-dd"),
-  };
-}
 
 function groupSeriesByCountry(
   list: SeriesOption[],
@@ -224,17 +198,19 @@ export function MapFilterBar({
   const [seriesQuery, setSeriesQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const thisW = thisWeekendRange();
-  const nextW = nextWeekendRange();
-  const thisM = thisMonthRange();
-  const nextM = nextMonthRange();
-  const isThisWeekend = dateFrom === thisW.from && dateTo === thisW.to;
-  const isNextWeekend = dateFrom === nextW.from && dateTo === nextW.to;
-  const isThisMonth = dateFrom === thisM.from && dateTo === thisM.to;
-  const isNextMonth = dateFrom === nextM.from && dateTo === nextM.to;
-  const today = todayIso();
-  const isUpcoming = dateFrom === today && !dateTo;
-  const anyDate = !dateFrom && !dateTo;
+  const presets = datePresetRanges(dateFrom, dateTo);
+  const preset = (id: DatePresetId) => presets.find((p) => p.id === id)!;
+  const thisW = preset("weekend");
+  const nextW = preset("nextWeekend");
+  const thisM = preset("thisMonth");
+  const nextM = preset("nextMonth");
+  const today = preset("upcoming").from;
+  const isThisWeekend = thisW.active;
+  const isNextWeekend = nextW.active;
+  const isThisMonth = thisM.active;
+  const isNextMonth = nextM.active;
+  const isUpcoming = preset("upcoming").active;
+  const anyDate = preset("any").active;
   const dateActive = Boolean(dateFrom || dateTo);
   const isPreset =
     isThisWeekend || isNextWeekend || isThisMonth || isNextMonth || anyDate || isUpcoming;
