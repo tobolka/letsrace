@@ -46,7 +46,7 @@ import Link from "next/link";
 import { datePresetRanges, thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
-import { carryFilterQuery, exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
+import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
 import { eventsWithinRadius } from "@/lib/geo/radius";
@@ -1247,17 +1247,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         <>
           <MobileListSheet
             snap={listSnap}
-            onSnap={(next) => {
-              setListSnap(next);
-              // A list pulled up over the whole map is the list page — the
-              // same races, the same filters — so it goes there instead of
-              // being a second, narrower copy of it. Search still raises the
-              // sheet in place: it sets the snap itself, not through here.
-              if (next === FULL) {
-                const carry = carryFilterQuery(new URLSearchParams(window.location.search));
-                router.push(`${localePath(locale, "list")}${carry}`);
-              }
-            }}
+            onSnap={setListSnap}
             viewportH={viewportH}
             title={messages.racesCount}
             handleLabel={listSnap === LIST_PEEK ? messages.sheetExpand : messages.sheetCollapse}
