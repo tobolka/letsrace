@@ -1,3 +1,5 @@
+import { summarizeWatches } from "../src/lib/watcher/run-summary";
+import type { WatchOutcome } from "../src/lib/watcher/run";
 /**
  * Force-poll official calendars and print watch outcomes.
  * Usage: node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/reload-calendars.ts
@@ -34,6 +36,7 @@ async function main() {
     .not("url", "ilike", "%ffvelo.fr%");
   if (dueErr) throw new Error(dueErr.message);
 
+  const latest = new Map<string, WatchOutcome>();
   let watched = 0;
   let upserted = 0;
   let failed = 0;
@@ -41,6 +44,7 @@ async function main() {
 
   for (let round = 1; round <= 5; round++) {
     const outcomes = await runDueWatches(60, { concurrency: 4, budgetMs: 170_000 });
+    for (const outcome of outcomes) latest.set(outcome.watchedUrlId, outcome);
     if (!outcomes.length) {
       console.log({ round, stopped: "nothing due" });
       break;
@@ -59,10 +63,15 @@ async function main() {
       upserted: okUpsert,
       failed: roundFail.length,
       ok: outcomes.filter((o) => o?.ok).length,
+      deferred: summarizeWatches(outcomes).deferred,
     });
+    if (summarizeWatches(outcomes).deferred > 0) { console.log("AI work deferred; stopping this process instead of repeatedly rereading sources."); break; }
   }
 
   console.log({ summary: { watched, upserted, failed, failSamples: fails.slice(0, 12) } });
+  const remaining = summarizeWatches([...latest.values()]);
+  console.log({ remaining });
+  process.exitCode = remaining.failed ? 1 : remaining.deferred ? 2 : 0;
 }
 
 main().catch((e) => {

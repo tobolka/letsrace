@@ -26,6 +26,8 @@ import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
 import { protectOfficialFields } from "@/lib/watcher/update-policy";
+import { isBudgetDeferral } from "@/lib/watcher/run-summary";
+import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 import type { Insert, Update } from "@/lib/supabase/tables";
 import type { Json } from "@/lib/supabase/database.types";
@@ -413,6 +415,7 @@ export async function watchOne(row: {
     let linksDiscovered = 0;
     for (const child of extracted.childUrls) {
       try {
+        if (isArchiveDiscoveryUrl(child)) continue;
         if (
           /mtbkalender\.dk|kidsmtbcup\.dk|dgi\.dk|kenniscentrum\.knwu\.nl|mijn\.knwu\.nl|velo\.ffc\.fr|competitions\.ffc\.fr|rfec\.com|orobiecup\.it|mtbsport\.it|jiskra\.potocky\.cz|potocky\.cz/i.test(
             child,
@@ -1178,6 +1181,9 @@ export async function watchOne(row: {
     const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
     const incomplete = extracted.complete === false || writeBacklog || writeFailures.length > 0;
     const issues = [...(extracted.issues ?? []), ...(writeBacklog ? ["write_backlog"] : []), ...writeFailures.map(f => `write_failed:${f.externalId}:${f.error}`)];
+    const budgetDeferred = incomplete && !writeFailures.length && issues.some(isBudgetDeferral);
+    const identityReview = writeFailures.some(f => f.error.includes("identity_review_required"));
+    const unsupportedDocument = issues.some(i => /dynamic_render_unavailable|source_document_too_large/.test(i));
     const needsReview = incomplete ||
       (!offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4));
 
@@ -1220,7 +1226,9 @@ export async function watchOne(row: {
             : "ok",
         // Stay active — retry later instead of permanent pause
         status: "active",
-        next_poll_at: incomplete ? errorPollAt(1).toISOString() : emptyButLive
+        next_poll_at: budgetDeferred ? new Date(Date.now() + 2 * 60 * 60_000).toISOString()
+          : identityReview || unsupportedDocument ? reviewPollAt().toISOString()
+          : incomplete ? errorPollAt(1).toISOString() : emptyButLive
           ? // Soon, the way a fetch error is retried: the page is up, it
             // just did not render this time.
             errorPollAt(1).toISOString()
@@ -1245,7 +1253,7 @@ export async function watchOne(row: {
       extracted: extracted.events.length, attempted: toUpsert.length, upserted,
       created: upsertResults.filter(r => r?.created).length,
       updated: upsertResults.filter(r => r && !r.created).length,
-      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: writeFailures.length, complete: !incomplete,
+      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: writeFailures.length, complete: !incomplete, deferred: budgetDeferred,
       issues, usage: extracted.usage ?? null, extraction: extracted.diagnostics ?? null };
     console.info("watcher_run_metrics", JSON.stringify(metrics));
     await finishRun(runInsert.data?.id, {
@@ -1415,6 +1423,8 @@ async function resolveSeriesId(
   websiteFn: (url?: string | null, fallback?: string | null) => string | null,
 ): Promise<string | undefined> {
   if (!ev.seriesName && !ev.seriesSlug) return undefined;
+  const { isSiteIdentityName } = await import("@/lib/watcher/extractors/generic");
+  if (ev.seriesName && isSiteIdentityName(ev.seriesName)) return undefined;
 
   const { inferSeriesType, inferSeriesSourceKind, audienceFromAgeCategories } =
     await import("@/lib/taxonomy");
@@ -1697,7 +1707,7 @@ async function upsertParsedEvent(
         lat: loc?.lat,
         lng: loc?.lng,
         placeText: loc?.municipality || loc?.name,
-        countryCode: loc?.country_code ?? null,
+        countryCode: countryCodeFromName(loc?.name) ?? loc?.country_code ?? null,
         seriesName: series?.name,
         fingerprint: row.fingerprint ?? undefined,
         disciplines: row.disciplines,
@@ -2254,20 +2264,11 @@ async function upsertParsedEvent(
     payload.event_type = "training";
   } else if (skipDump && !lockedFields.includes("visibility")) {
     payload.visibility = "hidden";
-  } else if (!existingId && looksLikeTextFragment(ev.name)) {
+  } else if (!existingId && (ev.confidence < 0.5 || looksLikeTextFragment(ev.name))) {
     // A new row named with a slice of page text ("CYKLO�VEC s.r.o.",
     // "> Sa, | 09.00&ndash;17.00 Uhr …") is kept for its sources but not shown;
     // an existing row keeps its own, better name through preferEventName.
     payload.visibility = "hidden";
-  } else if (
-    existingRow?.visibility === "hidden" &&
-    audience === "kids" &&
-    !lockedFields.includes("visibility")
-  ) {
-    payload.visibility = "public";
-    if (existingRow.status === "hidden" && !lockedFields.includes("status")) {
-      payload.status = "scheduled";
-    }
   }
 
   if (beforeSnap && isCancelledRaceName(mergedName) && !lockedFields.includes("status")) {
@@ -2368,8 +2369,9 @@ async function upsertParsedEvent(
   let eventId = existingId;
   let created = false;
   if (eventId) {
-    const { error } = await supabase.from("events").update(payload).eq("id", eventId);
-    if (error) throw new Error(`Updating race: ${error.message}`);
+    const { updateEventPreservingKey } = await import("@/lib/watcher/write-event");
+    const { retainedKey } = await updateEventPreservingKey(supabase, eventId, payload);
+    if (retainedKey) console.info("watcher_key_collision", JSON.stringify({ eventId, source: watchedUrl, retainedExistingKey: true }));
   } else {
     const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
     const { data, error } = await supabase
@@ -2378,33 +2380,37 @@ async function upsertParsedEvent(
       .select("id")
       .single();
     if (error) {
+      if (error.code !== "23505") throw new Error(`Inserting race: ${error.message}`);
       /**
        * `events_fingerprint_key` is what stops two concurrent source fetches
        * from both creating the same race — but it surfaces here as an insert
        * error, and the row the other run just wrote is the one we wanted. Adopt
        * it instead of failing the watch or minting a second slug.
        */
-      const { data: raced } = await supabase
+      const { data: raced, error: collisionReadError } = await supabase
         .from("events")
         .select(fpCols)
         .eq("fingerprint", payload.fingerprint!)
         .maybeSingle();
+      if (collisionReadError) throw new Error(`Reading fingerprint owner: ${collisionReadError.message}`);
       if (raced?.id) {
         if (!pickIncomingDuplicate(incomingDedup, [asCandidate(raced as unknown as CandidateRow)])) {
-          throw new Error(`Identity conflict on fingerprint: ${raced.id}`);
+          throw new Error(`identity_review_required: conflicting fingerprint owned by ${raced.id}`);
         }
         eventId = raced.id;
-        await supabase
+        const { error: seenError } = await supabase
           .from("events")
           .update({ last_seen_at: new Date().toISOString() })
           .eq("id", raced.id);
+        if (seenError) throw new Error(`Touching matched race: ${seenError.message}`);
       } else {
         // Not a fingerprint clash — a slug collision with an unrelated race.
-        const { data: d2 } = await supabase
+        const { data: d2, error: retryError } = await supabase
           .from("events")
           .insert({ ...payload, slug: `${slug}-${Date.now().toString(36)}` })
           .select("id")
           .single();
+        if (retryError) throw new Error(`Inserting race after slug collision: ${retryError.message}`);
         eventId = d2?.id;
         created = Boolean(eventId);
       }

@@ -13,9 +13,10 @@ it("resumes failed and deadline-skipped daily steps while preserving successful 
 ${functions}
 TODAY=2026-10-08
 FAILURES=0
+DEFERRED=0
 CALLS=0
 FAIL_ON=0
-node() { CALLS=$((CALLS + 1)); [ "$FAIL_ON" = "0" ]; }
+node() { CALLS=$((CALLS + 1)); return "$FAIL_ON"; }
 daily_step "Series" scripts/enrich-series-documents.ts --apply
 [ "$CALLS" = "1" ]
 daily_step "Series" scripts/enrich-series-documents.ts --apply
@@ -39,6 +40,15 @@ SOURCE_RUN_DEADLINE=0
 LLM_FORCE_DAILY=1
 daily_step "Reader" scripts/fill-llm-enrich.ts --apply
 [ "$CALLS" = "5" ]
+# A deferred read must not stamp the step complete or count as a crash.
+FAIL_ON=2
+daily_step "Deferred" scripts/deferred-reader.ts --apply
+[ "$DEFERRED" = "1" ]
+[ "$FAILURES" = "1" ]
+[ ! -f tmp/.llm-steps/deferred-reader-apply ]
+FAIL_ON=0
+daily_step "Deferred" scripts/deferred-reader.ts --apply
+[ -f tmp/.llm-steps/deferred-reader-apply ]
 `], { cwd: directory, stdio: "pipe" });
     expect(true).toBe(true);
   } finally { rmSync(directory, { recursive: true, force: true }); }

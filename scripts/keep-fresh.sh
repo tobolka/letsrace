@@ -43,7 +43,11 @@ while true; do
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then break; fi
   LOG="tmp/refresh-$(date +%F-%H%M).log"
   echo "=== run started $(date '+%F %H:%M'), log: $LOG"
-  if ! caffeinate -i bash scripts/refresh-data.sh 2>&1 | tee "$LOG"; then
+  caffeinate -i bash scripts/refresh-data.sh 2>&1 | tee "$LOG"
+  RESULT=${PIPESTATUS[0]}
+  if [ "$RESULT" -eq 2 ]; then
+    echo "Refresh finished with deferred work; details: $LOG"
+  elif [ "$RESULT" -ne 0 ]; then
     echo "Refresh reported errors; details: $LOG"
   fi
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ]; then

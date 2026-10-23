@@ -120,3 +120,12 @@ describe("parsePzkolCalendar", () => {
     expect(events).toHaveLength(1);
   });
 });
+
+it("uses the championship venue instead of the publisher's POL column", () => {
+  const events = parsePzkolCalendar("https://pzkol.pl/kalendarz", table(
+    row("1-5.02.2026", "Mistrzostwa Europy", "Konya (TUR)", "2750"),
+    row("7-12.07.2026", "Młodzieżowe Mistrzostwa Europy", "Cottbus (GER)", "2751"),
+    row("11-12.07.2026", "Mistrzostwa Europy Maraton MTB (XCM)", "Ramales de la Victoria", "2753"),
+  ));
+  expect(events.map(e => e.countryHint)).toEqual(["TR", "DE", "ES"]);
+});

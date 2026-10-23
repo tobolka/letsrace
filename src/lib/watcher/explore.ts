@@ -5,6 +5,7 @@ import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { fetchPage } from "@/lib/watcher/http";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { isAggregatorUrl } from "@/lib/watcher/public-url";
+import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 
 const SEARCH_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
@@ -190,6 +191,7 @@ export function canonicalExploreUrl(raw: string): string | null {
 }
 
 export function looksLikeIndependentRaceUrl(raw: string): boolean {
+  if (isArchiveDiscoveryUrl(raw)) return false;
   const url = canonicalExploreUrl(raw);
   if (!url) return false;
   if (isAggregatorUrl(url)) return false;

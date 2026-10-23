@@ -199,7 +199,7 @@ const IOC_TO_ISO: Record<string, string> = {
   EST: "EE", FIN: "FI", FRA: "FR", GBR: "GB", GER: "DE", GRE: "GR", HUN: "HU",
   IRL: "IE", ITA: "IT", LAT: "LV", LTU: "LT", LUX: "LU", NED: "NL", NOR: "NO",
   POL: "PL", POR: "PT", ROU: "RO", SLO: "SI", SRB: "RS", SUI: "CH", SVK: "SK",
-  SWE: "SE", UKR: "UA",
+  SWE: "SE", UKR: "UA", TUR: "TR",
 };
 
 /** Country code stated in a race title as a bracketed IOC code, if any. */

@@ -1,0 +1,1449 @@
+[
+  {
+    "id": "027c8303-0877-4d98-8d56-4a388fa92251",
+    "name": "3. závod SP (ME,WE) — Glasgow (VB)",
+    "date": "2026-12-13",
+    "decision": "merged",
+    "mergedInto": "9287115e-9845-45e8-a4e5-31f4eda17422",
+    "sources": []
+  },
+  {
+    "id": "0556bd8a-5dcc-4c40-ac3a-0f89f7bef9bc",
+    "name": "Most - Lesná RR 67 km",
+    "date": "2027-08-08",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "0562f4ea-0503-4292-b73b-92c0b43aa4ac",
+    "name": "WroWelo Traczek | Wrocław",
+    "date": "2026-08-19",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://dzkol.pl/kalendarz/wrowelo-traczek-wroclaw/"
+    ]
+  },
+  {
+    "id": "05a28ad3-3fde-4996-a663-c4f19b59e03e",
+    "name": "BONNET-Radmarathon",
+    "date": "2027-05-30",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/228"
+    ]
+  },
+  {
+    "id": "062d1e70-6478-47dd-8880-6e8deea00ae3",
+    "name": "Ergebnisse 2026",
+    "date": "2026-10-11",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.dsergebnis.de/ergebnisse-2026/"
+    ]
+  },
+  {
+    "id": "090d6812-163a-4424-a431-ca9ad3121437",
+    "name": "Mamut Tour RR 80 km",
+    "date": "2027-05-22",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "0920d621-8a70-4c83-991a-31a7650f1330",
+    "name": "Rozpis",
+    "date": "2026-09-27",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+      "https://www.cykloman.cz/rozpis-silnicni-casovka-cyklomanek-2026",
+      "https://www.cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+      "https://cykloman.cz/rozpis-silnicni-casovka-cyklomanek-2026"
+    ]
+  },
+  {
+    "id": "0c7e115d-8225-4734-ac5d-bae2481e6eb8",
+    "name": "CUBE Cup — Pegnitz",
+    "date": "2027-07-19",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/pegnitz-d"
+    ]
+  },
+  {
+    "id": "0e3d2362-ede4-4bc8-a120-f3ee6ba2f843",
+    "name": "Road Stage Orlické hory RR 77 km",
+    "date": "2027-06-06",
+    "decision": "merged",
+    "mergedInto": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+    "sources": []
+  },
+  {
+    "id": "11c723f8-2f5f-49a3-ab3d-19a42d91ce03",
+    "name": "RDC #3 - Saalbach (AUT)",
+    "date": "2026-07-10",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.rookiescup.bike/en/race/2026-rdc-3-saalbach"
+    ]
+  },
+  {
+    "id": "134db97e-dd3d-4d2f-8f83-46d2227bf684",
+    "name": "CASIA Krakonošův cyklomaraton RR 100,5 km",
+    "date": "2027-06-12",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "144fb2c6-3e3c-4958-a6fe-9e3dea19dd3b",
+    "name": "CX Bundesliga 8 — München",
+    "date": "2026-10-25",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "id": "157d3025-118a-41bd-bac6-e8b8610acb71",
+    "name": "CUBE Cup — Baunach",
+    "date": "2027-09-20",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/baunach-d"
+    ]
+  },
+  {
+    "id": "15abfbdf-4ab1-4298-99ce-544b165ca846",
+    "name": "Mühlenbrevet - ARA Weser-Leinebergland",
+    "date": "2027-03-20",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/55"
+    ]
+  },
+  {
+    "id": "182e1e01-6e07-4b84-a175-9b2c51e0a78c",
+    "name": "Ergebnisse",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/ergebnisse/"
+    ]
+  },
+  {
+    "id": "1877d337-5e68-48ba-9e76-ae361977f94b",
+    "name": "MTB-Fahrtechnikkurs \"Allround\", Nürnberg",
+    "date": "2027-03-13",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27860"
+    ]
+  },
+  {
+    "id": "1a83e9b5-a02c-4888-9c19-59908f01a6d8",
+    "name": "UCI MTB World CUP",
+    "date": "2026-07-18",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz"
+    ]
+  },
+  {
+    "id": "1d4fd4be-9e8c-43d2-b574-5cc11c5b6c26",
+    "name": "Istria Granfondo",
+    "date": "2025-04-12",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://sumator.cz/race/istria-granfondo-11-4-2025"
+    ]
+  },
+  {
+    "id": "1e0402e8-d3ee-42ff-93d0-5ec98007c608",
+    "name": "Ergebnisse von Kirrlach sind online",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/ergebnisse-von-kirrlach-sind-online/"
+    ]
+  },
+  {
+    "id": "21a1b5da-b07e-49a6-a28c-34e8294d8b16",
+    "name": "RoadlbergRACE XCC & XCO - velo.crew PopaFlo",
+    "date": "2027-08-13",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=452DFB0B47244435BD05A58A3877EE47&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=452DFB0B47244435BD05A58A3877EE47&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "22775ae7-f7ef-401a-b16c-24b28aa54fe5",
+    "name": "Vysocká časovka",
+    "date": "2026-08-23",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://portal.czechcyclingfederation.com/RaceDetail/Race/1828"
+    ]
+  },
+  {
+    "id": "248ee964-12c4-4de7-9ba4-81f2a27d2020",
+    "name": "Bike the Rock",
+    "date": "2026-05-16",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz/?serialosss=mtbbl"
+    ]
+  },
+  {
+    "id": "259c8781-c882-4258-8492-b7d8875b06c3",
+    "name": "Peklo Severu — 32. SEBNITZER MTB-CUP",
+    "date": "2026-05-02",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.pekloseveru.cz/cz/rocnik-2026/2-zavod/",
+      "https://www.pekloseveru.cz/cz/rocnik-2026/2-zavod/"
+    ]
+  },
+  {
+    "id": "28c93574-db6d-4fbd-a472-52956f488767",
+    "name": "Meldungen 2026 allgemein",
+    "date": "2026-10-24",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.dsergebnis.de/meldelisten/"
+    ]
+  },
+  {
+    "id": "298db766-49bb-4df3-9096-c80c8b8b7d82",
+    "name": "8. závod SP (ME,WE,MU,MJ,WJ) — Besançon (Francie)",
+    "date": "2026-12-29",
+    "decision": "merged",
+    "mergedInto": "b4505932-81e5-4a94-a987-474d6d1b6069",
+    "sources": []
+  },
+  {
+    "id": "2a18b813-dd5b-4674-9f57-caeedc3b56f7",
+    "name": "Ausschreibung 2016",
+    "date": "2026-10-23",
+    "decision": "merged",
+    "mergedInto": "42478529-f6cc-4a9f-8ae6-a62ca33bd26a",
+    "sources": []
+  },
+  {
+    "id": "2b965e9a-615b-429f-b917-759e65383785",
+    "name": "The Grand Escape Tuscany",
+    "date": "2027-10-09",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27839"
+    ]
+  },
+  {
+    "id": "2fecf360-b4a4-4cde-a93c-032cd985e5d8",
+    "name": "5. závod SP (ME,WE,MU,MJ,WJ) — Koksijde (Belgie)",
+    "date": "2026-12-20",
+    "decision": "merged",
+    "mergedInto": "08bef84a-a766-4f4b-a1c6-e02f4549311d",
+    "sources": []
+  },
+  {
+    "id": "30494702-b0a3-4ed5-b0c0-87f7ebccda86",
+    "name": "M³ Montafon Kids Challenge",
+    "date": "2027-07-31",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=A8C9E302F1D74E6A90C524F710F52FD7&filter=page=4",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=A8C9E302F1D74E6A90C524F710F52FD7&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "30b7fdcb-4319-441e-9d38-39bf8cf2acd9",
+    "name": "Milano-Sanremo",
+    "date": "2027-03-20",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://eventivsport.com/events/milano-sanremo"
+    ]
+  },
+  {
+    "id": "3197d072-6211-4dc5-b37c-1033686fac36",
+    "name": "CX Bundesliga 9 — Chemnitz",
+    "date": "2026-11-01",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "id": "343287d3-8cd6-40e2-a91b-1c16186e7a8f",
+    "name": "Athletiktest",
+    "date": "2026-11-22",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-thueringen.de/"
+    ]
+  },
+  {
+    "id": "373137a4-dbd4-4d1c-9adf-09d703dd6443",
+    "name": "Beskyd Tour RR 121 km a 53 km",
+    "date": "2027-06-26",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "38cc5e9a-cb1f-4ad6-ba3e-a18e55b2e50f",
+    "name": "UCI MTB World CUP",
+    "date": "2026-06-20",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz"
+    ]
+  },
+  {
+    "id": "3ad150e0-40ad-47be-a079-a4c4f45571a4",
+    "name": "MTB Saarlandliga — Neunkirchen",
+    "date": "2026-05-09",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://mtbsaarlandliga.de/rennen/neunkirchen/",
+      "https://mtbsaarlandliga.de/rennen/neunkirchen/"
+    ]
+  },
+  {
+    "id": "3cf95190-bbe2-41ff-9af4-3158739235b5",
+    "name": "Marmotte GranFondo Alpes",
+    "date": "2027-06-27",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27475"
+    ]
+  },
+  {
+    "id": "3d503919-1af6-41ed-bbfc-a5e3af10aeb6",
+    "name": "Vulkan Race Gedern",
+    "date": "2026-05-23",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz/?serialosss=mtbbl"
+    ]
+  },
+  {
+    "id": "3e5c6a47-0b69-4fae-abb2-8f3465c8c45f",
+    "name": "Kettwiger Hügeltour",
+    "date": "2027-09-26",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/19161"
+    ]
+  },
+  {
+    "id": "42478529-f6cc-4a9f-8ae6-a62ca33bd26a",
+    "name": "Generalausschreibung 2020",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/generalausschreibung-2020/",
+      "https://www.bawue-schueler-cup.de/ausschreibung-2015-archiv/",
+      "https://www.bawue-schueler-cup.de/tag/ausschreibung/",
+      "https://www.bawue-schueler-cup.de/ausschreibung-2016/",
+      "https://www.bawue-schueler-cup.de/tag/generalausschreibung/"
+    ]
+  },
+  {
+    "id": "43bee1c2-947f-4070-9bbc-8595c50cc66e",
+    "name": "Thermenregion Cup 2026 #3: Alland &#8211; Holzschlag",
+    "date": "2026-05-22",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.radclub-moedling.at/event/thermenregion-cup-2026-3-alland-holzschlag/"
+    ]
+  },
+  {
+    "id": "46a6c3e1-76e7-483b-a0d1-4385b1d26cbb",
+    "name": "Gravelissimo",
+    "date": "2027-05-08",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/744"
+    ]
+  },
+  {
+    "id": "475473db-0a79-4021-950a-569cd3656c4e",
+    "name": "Ischgl Ironbike Marathon",
+    "date": "2027-08-07",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=A39E041F597746F9AFC2CB30839FD8B0&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "49288d23-efda-47aa-b907-a426963d876e",
+    "name": "5. Etappe beim RSV Ebringen",
+    "date": "2026-10-23",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/etappe-beim-rsv-hofweier/",
+      "https://www.bawue-schueler-cup.de/5-etappe-beim-rsv-ebringen/",
+      "https://www.bawue-schueler-cup.de/6-etappe-beim-rvc-reute/"
+    ]
+  },
+  {
+    "id": "4d8168be-72f9-4ecc-a782-e907ac824779",
+    "name": "Kühtaier Bergkaiser",
+    "date": "2027-08-07",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/26998"
+    ]
+  },
+  {
+    "id": "4df6e800-473e-477a-8176-9e70194a3ff9",
+    "name": "Ples cyklistů – 70 let Slovanu",
+    "date": "2026-11-07",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cykloman.cz/zavody-a-akce/2026/galavecer",
+      "https://www.cykloman.cz/zavody-a-akce/2026/galavecer"
+    ]
+  },
+  {
+    "id": "4f56724e-717d-43bb-ba08-17a864094bac",
+    "name": "11. závod SP (ME,WE) — Hamme (Belgie)",
+    "date": "2027-01-23",
+    "decision": "merged",
+    "mergedInto": "6868fc5c-619c-4d39-aeae-d0ec25704fb9",
+    "sources": []
+  },
+  {
+    "id": "503c09ad-f467-4186-9ac9-8b80d4d4d5b7",
+    "name": "MTB Marathon Mank",
+    "date": "2027-08-14",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=0F23369DF5374B40BC7EC5E575C7BEE5&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=0F23369DF5374B40BC7EC5E575C7BEE5&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "5401c393-59de-48e7-aea7-081d9b6411f1",
+    "name": "Rennserie",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/tag/rennserie/"
+    ]
+  },
+  {
+    "id": "57754ed3-dd9a-4b81-b83b-58e4c9331e51",
+    "name": "Presseinformation zum BAWÜ",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/presseinformation-zum-bawue-schueler-cup-2017/"
+    ]
+  },
+  {
+    "id": "5be36045-0a6e-4a7e-af5f-0252eacd5323",
+    "name": "CUBE Cup — Steinbach am Wald",
+    "date": "2027-07-25",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/steinbach-am-wald-d"
+    ]
+  },
+  {
+    "id": "5dc24750-b3f9-41b0-a239-79fd826a4169",
+    "name": "Dortmund 300 - ARA Ruhrgebiet",
+    "date": "2027-04-24",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/4953"
+    ]
+  },
+  {
+    "id": "5eca21ad-4450-43b0-b209-414f502176f9",
+    "name": "MTB XCO 2027 Hohenems-Schwefel",
+    "date": "2027-06-19",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=B1406309CCEE4D11A607F2AC57E4DBFC&filter=page=3",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=B1406309CCEE4D11A607F2AC57E4DBFC&filter=view=events&page=2"
+    ]
+  },
+  {
+    "id": "66ce4489-6d2d-4796-952e-4fdcbd5ae233",
+    "name": "10. závod SP (ME,WE,MU,MJ,WJ) — Benidorm (Španělsko)",
+    "date": "2027-01-17",
+    "decision": "merged",
+    "mergedInto": "10867762-cf43-4d74-a339-552ec5925109",
+    "sources": []
+  },
+  {
+    "id": "67f7b58a-dbd3-430b-b74a-b5f924e95b45",
+    "name": "Kirrlach für Stuttgart",
+    "date": "2026-10-23",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/kirrlach-fuer-stuttgart/"
+    ]
+  },
+  {
+    "id": "6b7a561e-3e9b-46c4-9b97-e12e58b9c00b",
+    "name": "Kraslický šíp RR 86,2 km",
+    "date": "2027-05-23",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "6bf0f003-9745-45bd-bed8-56902dee2b47",
+    "name": "2. Etappe in Ellmendingen: Ergebnisse online",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/2-etappe-in-ellmendingen-ergebnisse-online/"
+    ]
+  },
+  {
+    "id": "7385d3b3-5c63-4497-b529-29c0fd7c1704",
+    "name": "Bohemian Adventures CHallenge",
+    "date": "2026-05-30",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cykloman.cz/zavody-a-akce/2026/bohemian-adventures-challenge",
+      "https://www.cykloman.cz/zavody-a-akce/2026/bohemian-adventures-challenge"
+    ]
+  },
+  {
+    "id": "73affc8e-24bb-4fcd-9ddc-91e620d00e06",
+    "name": "Ergebnisse",
+    "date": "2026-10-18",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.mtb-isarcup.de/index.php/ergebnisse"
+    ]
+  },
+  {
+    "id": "76fe3739-ea6a-4ac4-8d93-c694b175848f",
+    "name": "Moravskotřebovský cyklokros",
+    "date": "2026-10-10",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cykloman.cz/zavody-a-akce/2026/moravskotrebovsky-cyklokros",
+      "https://www.cykloman.cz/zavody-a-akce/2026/moravskotrebovsky-cyklokros"
+    ]
+  },
+  {
+    "id": "78ba04d8-1035-433c-9415-b59378ed0fdd",
+    "name": "Thermenregion Cup 2026 #1: Seibersdorf",
+    "date": "2026-04-24",
+    "decision": "merged",
+    "mergedInto": "ab3933cb-ad7f-4cdb-b081-6e95c4118c3e",
+    "sources": []
+  },
+  {
+    "id": "79713938-7fbb-4eb4-8ff4-b6d7bb9789b0",
+    "name": "Syker Hügeltour",
+    "date": "2027-04-11",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/851"
+    ]
+  },
+  {
+    "id": "7aef5061-bee3-4823-b0ff-c1c7b296baad",
+    "name": "RDC # zum GlemmRide Bikefestival 2027",
+    "date": "2027-07-10",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=408CAA45F92F4AE1812E56103CD5EA49&filter=page=4",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=408CAA45F92F4AE1812E56103CD5EA49&filter=view=events&page=2"
+    ]
+  },
+  {
+    "id": "7bf4529e-d5f0-4656-88b5-7fc7f0243e25",
+    "name": "GPS 2026",
+    "date": "2026-09-26",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://www.german-pumptrack-series.de/termine/essen-steele"
+    ]
+  },
+  {
+    "id": "7c3151be-a9a7-4a1c-bed2-b96f85f59a96",
+    "name": "RSV Wenigumstadt Gravel Day",
+    "date": "2027-05-30",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/7354"
+    ]
+  },
+  {
+    "id": "7cac371f-3e6f-4959-964c-f51111176403",
+    "name": "LAWI Tour RR 100 km",
+    "date": "2027-08-29",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "7cdc9efe-e2e4-4ad0-9983-7727f8290d77",
+    "name": "7. závod SP (ME,WE) — Namur (Belgie)",
+    "date": "2026-12-27",
+    "decision": "merged",
+    "mergedInto": "aded9f9c-5e81-4442-b5e2-9421c44d2589",
+    "sources": []
+  },
+  {
+    "id": "7f7dcebd-9543-43e7-9fc7-802f39589460",
+    "name": "MTB-Fahrtechnikkurs \"Bikepark\", Osternohe",
+    "date": "2027-04-04",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27280"
+    ]
+  },
+  {
+    "id": "7fb9807f-1fac-4e5f-9b03-286ba735f177",
+    "name": "Meldeliste geschlossen",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/veroeffentlichung-von-anpassungen-in-der-ausschreibung/"
+    ]
+  },
+  {
+    "id": "84e93ff3-1788-4799-b72d-f2d7b6e26b59",
+    "name": "Kettwiger Gravelride und Gravelfondo",
+    "date": "2027-09-26",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/14464"
+    ]
+  },
+  {
+    "id": "8619e4c2-cf31-4ec9-9e83-00ac02eed2b2",
+    "name": "Alb-Packa",
+    "date": "2027-05-07",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27865"
+    ]
+  },
+  {
+    "id": "863b2160-c948-4c7a-be82-d59bb3656858",
+    "name": "Austrian Gravity Series Bikepark SERFAUS-FISS-LADIS",
+    "date": "2027-10-09",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=F5CE2C580C65449EA157E746AFA65AEA&filter=view=events&page=4"
+    ]
+  },
+  {
+    "id": "8664e78b-28c6-49c4-a37e-c31f10673f35",
+    "name": "Montafon Mountainbke Hillclimb",
+    "date": "2027-07-30",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=3AD71913E4814A72B6F63B263CDD6774&filter=page=4",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=3AD71913E4814A72B6F63B263CDD6774&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "87850867-b6d4-4f05-9b3a-7d08a8b2c488",
+    "name": "Dortmund 400 - ARA Ruhrgebiet",
+    "date": "2027-05-21",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/5020"
+    ]
+  },
+  {
+    "id": "8964e41b-9532-40ca-9d1c-1ebf327b1c0a",
+    "name": "Werdenfelser MTB-Kids-Cup — Oberammergau",
+    "date": "2026-08-21",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://mtb.skiclub-bb.com/werdenfelscup.html"
+    ]
+  },
+  {
+    "id": "8cc31e06-7a6a-460c-b581-53cbc5ca2f56",
+    "name": "CUBE Cup — Hof",
+    "date": "2027-09-12",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/hof-d"
+    ]
+  },
+  {
+    "id": "8dff1805-61a7-4b8a-a6c1-300cb463ea28",
+    "name": "MTB-Fahrtechnikkurs \"Pumptrack\", Nürnberg",
+    "date": "2027-03-21",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27859"
+    ]
+  },
+  {
+    "id": "9057ca79-713b-4f7b-95ea-401034405a07",
+    "name": "CUBE Cup — Stammbach",
+    "date": "2027-06-27",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/stammbach-d"
+    ]
+  },
+  {
+    "id": "90d796e5-4fd9-4091-8a31-4069ea93ec76",
+    "name": "Thermenregion Cup 2026 #2: Pottendorf &#8211; Tattendorf",
+    "date": "2026-05-08",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.radclub-moedling.at/event/5688/"
+    ]
+  },
+  {
+    "id": "94d47a75-a009-4808-a18c-7c32a4ce014c",
+    "name": "Silniční cyklistický závod k 70. výročí TJ Slovan MT",
+    "date": "2026-05-16",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt",
+      "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt"
+    ]
+  },
+  {
+    "id": "959c4daf-908c-4d3b-a1e3-9419cba18300",
+    "name": "MTB XCO 2027 Hohenems-Schwefel",
+    "date": "2027-09-11",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=508238D9DF314BB586F73D2113FEBFCB&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=508238D9DF314BB586F73D2113FEBFCB&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "96421ff2-cfd6-42ad-b822-51786e97388a",
+    "name": "66 Degrés Sud",
+    "date": "2025-04-26",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://sumator.cz/race/66-degres-sud-24-4-2025"
+    ]
+  },
+  {
+    "id": "983b2309-de7d-43f7-96a2-dd1cff9fcebb",
+    "name": "CX Bundesliga 11 — Magstadt",
+    "date": "2026-11-07",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf",
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "id": "98f4fbb2-7ed8-4b7c-8126-3bd3daa76390",
+    "name": "Radwandertag Kirchschlag",
+    "date": "2027-08-21",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=023C64768A7C4302BE59BA7C69757337&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=023C64768A7C4302BE59BA7C69757337&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "9bb0bf5a-2918-4360-93e8-cd1a34014a90",
+    "name": "Syker Gravelride",
+    "date": "2027-04-11",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/724"
+    ]
+  },
+  {
+    "id": "9d94b81f-5fe8-4bf3-b992-112e560f99fa",
+    "name": "Ischgl Ironbike Short-Track",
+    "date": "2027-08-06",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/26916",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=A39E041F597746F9AFC2CB30839FD8B0&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=8DF995AD18184F41A9746F40CF27B4FC&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=8DF995AD18184F41A9746F40CF27B4FC&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "9dad05de-f849-4e5b-8267-fd6a7ca67b46",
+    "name": "Harter MTB Kreiscup 2026 Termine",
+    "date": "2026-10-04",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://mtbkreiscup.lima-city.de/Andere_Termine.html"
+    ]
+  },
+  {
+    "id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "name": "38. Internationales Kitzbühler Hahnenkamm Mountainbike Rennen",
+    "date": "2027-08-15",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=60A6059023A24BF7A8307C619BB1B41C&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=60A6059023A24BF7A8307C619BB1B41C&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "a3e7e859-d3a9-4f1a-8170-576062c350fd",
+    "name": "CUBE Cup — Bad Alexandersbad",
+    "date": "2027-05-09",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/bad-alexandersbad-d"
+    ]
+  },
+  {
+    "id": "a455260f-be77-416e-b4a3-5b830d86300d",
+    "name": "Bahenní král",
+    "date": "2026-10-24",
+    "decision": "merged",
+    "mergedInto": "626db111-79d4-41da-a41a-74b0979d41f9",
+    "sources": []
+  },
+  {
+    "id": "a4610665-397f-48cd-86aa-4ae7be4698f0",
+    "name": "Race Around Poland",
+    "date": "2027-06-26",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://odjazd.pl/wydarzenie/806befd9-eb2e-4f11-a313-6ef77e40754f",
+      "https://radsport-events.de/events/27679"
+    ]
+  },
+  {
+    "id": "a4b8fc31-87a5-4afc-bafd-f2c5eaaff4a4",
+    "name": "SCOTT Junior Trophy",
+    "date": "2027-07-18",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=34833188208548AB91165204885F7055&filter=page=4",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=34833188208548AB91165204885F7055&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "ae6f6f4f-c100-445a-a014-6464773e4bfe",
+    "name": "12. závod SP (ME,WE,MU,MJ,WJ) — Hoogerheide (Niz.)",
+    "date": "2027-01-24",
+    "decision": "merged",
+    "mergedInto": "30e6e700-e9c4-486c-b63a-4131c3f87b9d",
+    "sources": []
+  },
+  {
+    "id": "b0870b3d-b1a3-4170-8cad-139393dccc71",
+    "name": "Gravel po łódzku - Dogrywka",
+    "date": "2027-09-25",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://odjazd.pl/wydarzenie/af5ca43c-7c2f-4977-bee2-152e7a65dbe2"
+    ]
+  },
+  {
+    "id": "b175272f-7bb9-4746-991a-d93e43344b12",
+    "name": "City Hill Climb Salzburg",
+    "date": "2027-09-11",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4E21583230684228AC375B9AE77F2D51&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4E21583230684228AC375B9AE77F2D51&filter=view=events&page=2"
+    ]
+  },
+  {
+    "id": "b1a7dd66-ea49-4757-bdf6-fc1e3f2c35ca",
+    "name": "Włóczęga Gravel Series",
+    "date": "2027-06-12",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://odjazd.pl/wydarzenie/4446b9ea-3b93-4fd5-90df-5ca6b4fafa3c"
+    ]
+  },
+  {
+    "id": "b2e93c2e-75de-40d8-893a-840dad0a42f7",
+    "name": "CUBE Cup — Trieb",
+    "date": "2027-04-26",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/trieb-d"
+    ]
+  },
+  {
+    "id": "b4dce007-483a-4e96-88a6-515e17574730",
+    "name": "Mannheim",
+    "date": "2026-10-23",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/tag/mannheim/"
+    ]
+  },
+  {
+    "id": "b53be5fc-2716-472c-bbb8-64f06ac7a8f8",
+    "name": "TBC — Memoriál Pavla Havránka",
+    "date": "2026-11-01",
+    "decision": "merged",
+    "mergedInto": "4f7bc0dc-c53d-4559-922d-caf9f3b045aa",
+    "sources": []
+  },
+  {
+    "id": "b601ff27-10d1-49d4-8abf-e4e801f2af50",
+    "name": "Wataha Ultra Race 'Koza'",
+    "date": "2027-07-16",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://odjazd.pl/wydarzenie/ac64de86-59f6-4766-afbf-117d90117510"
+    ]
+  },
+  {
+    "id": "b6378f15-5728-4729-8036-7ef14a5c6099",
+    "name": "MTB-Fahrtechnikkurs \"Allround\", Nürnberg",
+    "date": "2027-03-14",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27861"
+    ]
+  },
+  {
+    "id": "b671637c-36ac-4788-a2b2-457583ff2238",
+    "name": "3. Etappe Oberschwaben Grand Prix",
+    "date": "2026-10-23",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/3-etappe-oberschwaben-grand-prix/"
+    ]
+  },
+  {
+    "id": "b844e4e0-2583-4d9a-ba4f-068d10392a12",
+    "name": "CX Bundesliga 7 — München",
+    "date": "2026-10-24",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "id": "ba925449-50fe-4e4b-b300-8f828ef203b6",
+    "name": "Wexl School Race 2027",
+    "date": "2027-05-20",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=799ED1A68BEE40DF802340E353B30900&filter=view=events",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=799ED1A68BEE40DF802340E353B30900&filter=page=2"
+    ]
+  },
+  {
+    "id": "bf34b0d7-1933-41ef-9cf1-ef42b48e5956",
+    "name": "DEKOM Sudety Tour MEDIO FONDO RR 85 km",
+    "date": "2027-05-09",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "c1912dc2-e546-4925-a586-49c01d5fe6c6",
+    "name": "CUBE Cup — Schesslitz",
+    "date": "2027-09-27",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/schesslitz-d"
+    ]
+  },
+  {
+    "id": "c3ec2ea8-ae36-494c-a0f9-63a720971ae4",
+    "name": "Puchar Polski w Maratonie MTB - Bike Maraton Harrachov - Jakuszyce",
+    "date": "2026-05-09",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://pzkol.pl/kalendarz/2772,puchar-polski-w-maratonie-mtb-bike-maraton-harrachov-jakuszyce.html"
+    ]
+  },
+  {
+    "id": "c5dd84c6-337a-43f1-9ac1-de5f1f3ca3de",
+    "name": "MTB-Fahrtechnikkurs \"Allround\", Nürnberg",
+    "date": "2027-03-20",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27863"
+    ]
+  },
+  {
+    "id": "c68f18f1-5146-4d6c-ba15-756c1e9bf4b7",
+    "name": "Weissensee Downhill",
+    "date": "2027-05-21",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=A7F51126ADAF476A8CD81355E9278C5C&filter=view=events",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=A7F51126ADAF476A8CD81355E9278C5C&filter=page=2"
+    ]
+  },
+  {
+    "id": "ca8c9779-f418-4dd0-9325-f0087c148ef6",
+    "name": "Volksradfahren Wenigumstadt",
+    "date": "2027-05-30",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/12138"
+    ]
+  },
+  {
+    "id": "cf41852d-aeac-459a-b10c-dd38f0c2051c",
+    "name": "Mistrzostwa Europy w kolarstwie szosowym",
+    "date": "2026-10-03",
+    "decision": "merged",
+    "mergedInto": "7240dbac-203f-4835-aeb4-2fdaf8e915be",
+    "sources": []
+  },
+  {
+    "id": "d0022eb3-7696-43e3-8d1b-d8b51997f8f3",
+    "name": "Brevet 200 - Nachts durchs Braunkohlerevier",
+    "date": "2026-12-19",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27830"
+    ]
+  },
+  {
+    "id": "d16d3528-c6ac-4dc5-a0c5-78784781163d",
+    "name": "Bahnrennen in Mannheim leider abgesagt",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/bahnrennen-in-mannheim-leider-abgesagt/"
+    ]
+  },
+  {
+    "id": "d1fde7ec-98be-4664-a5fb-144f59c3b843",
+    "name": "Radmarathon 'Tecklenburger Höhen'",
+    "date": "2027-05-22",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/212",
+      "https://radsport-events.de/events/760"
+    ]
+  },
+  {
+    "id": "d37bca24-48f7-4a8d-b713-42c52b53551c",
+    "name": "Wataha Ultra Race 'Wiosna'",
+    "date": "2027-03-19",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://odjazd.pl/wydarzenie/82fc427c-9f57-45fd-86d4-7f5f44f149b7"
+    ]
+  },
+  {
+    "id": "d3a64374-8a91-472d-b91e-a39da78aec87",
+    "name": "9. závod SP (ME,WE) — Zonhoven (Belgie)",
+    "date": "2027-01-03",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyklokros.cz/kalendar"
+    ]
+  },
+  {
+    "id": "d46a6c4f-e8ab-4930-bb2e-c0a34a1ebb09",
+    "name": "Teutoburger Land Brevet - ARA Weser-Leinebergland",
+    "date": "2027-05-15",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/243"
+    ]
+  },
+  {
+    "id": "d4e26f4c-a52a-42d7-946d-d0a1ed53de49",
+    "name": "Puchar Polski MTB XCO \"Puchar Burmistrza Sobótki\"",
+    "date": "2026-07-05",
+    "decision": "merged",
+    "mergedInto": "578908c7-4764-49b4-8f56-84a46ee017ca",
+    "sources": []
+  },
+  {
+    "id": "d505381e-4cc4-4a49-8740-0ba624f5346d",
+    "name": "7. Etappe in Leutkirch",
+    "date": "2026-10-23",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "https://www.bawue-schueler-cup.de/7-etappe-in-leutkirch/"
+    ]
+  },
+  {
+    "id": "d58c7a66-04bc-4cd2-9711-89078195eaa5",
+    "name": "UCI MTB World CUP",
+    "date": "2026-06-12",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz"
+    ]
+  },
+  {
+    "id": "d79d60ec-04c2-43d2-a0cd-32b6edfb6e15",
+    "name": "4. závod allwyn Českého poháru",
+    "date": "2026-05-03",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://portal.czechcyclingfederation.com/RaceDetail/Race/1688"
+    ]
+  },
+  {
+    "id": "d9277559-9378-4344-b0c7-973fb29b5314",
+    "name": "Ischgl Ironbike Kids & Juniors Trophy presented by Volksbank Tirol",
+    "date": "2027-08-06",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=8A48FD81C26D4545BFF9C5DD3BC8DB4A&filter=page=5",
+      "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=8A48FD81C26D4545BFF9C5DD3BC8DB4A&filter=view=events&page=3"
+    ]
+  },
+  {
+    "id": "d968a6b9-ad13-4314-b695-500e68813d16",
+    "name": "Grimpée Alpe d’Huez",
+    "date": "2027-06-25",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27864"
+    ]
+  },
+  {
+    "id": "db34cd9d-503c-4b0b-8ee9-d93beb72c3aa",
+    "name": "CUBE Cup — Sili Marathon Warmensteinach",
+    "date": "2027-07-12",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/sili-marathon-d"
+    ]
+  },
+  {
+    "id": "db4264f7-dc5b-48d9-9e17-3caeb4d21635",
+    "name": "6. závod SP (ME,WE) — Gavere (Belgie)",
+    "date": "2026-12-26",
+    "decision": "merged",
+    "mergedInto": "66be02a1-9638-41f5-8dab-12a7b8a124bd",
+    "sources": []
+  },
+  {
+    "id": "dd5cd092-ace7-4af9-b3a1-e09edd650fda",
+    "name": "Moravský pohár",
+    "date": "2026-10-23",
+    "decision": "quarantined",
+    "mergedInto": null,
+    "sources": [
+      "http://sk-mp.cz"
+    ]
+  },
+  {
+    "id": "ddc93e04-cd95-434b-b5fa-f9ae43af67aa",
+    "name": "Puchar Polski MTB XCO #6 — Sobótka",
+    "date": "2026-07-05",
+    "decision": "merged",
+    "mergedInto": "578908c7-4764-49b4-8f56-84a46ee017ca",
+    "sources": []
+  },
+  {
+    "id": "e0c69fd1-d705-43e7-8f27-2760957e7f95",
+    "name": "Race Days and Events",
+    "date": "2026-10-23",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.vicc.racing/race-days"
+    ]
+  },
+  {
+    "id": "e11260a0-3826-4bf7-a79e-5ab96963639f",
+    "name": "CTF Wenigumstadt",
+    "date": "2027-05-29",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/897"
+    ]
+  },
+  {
+    "id": "e2529f31-870c-48e8-a459-3112e3e027a2",
+    "name": "Brevet 200 - ARA Mittelhessen",
+    "date": "2026-11-14",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/27807"
+    ]
+  },
+  {
+    "id": "e4bb8a49-3113-4798-b5ea-053d5b772bc8",
+    "name": "Jesienny Przełaj nad Dunajcem",
+    "date": "2026-10-25",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://dostartu.pl/permalink-v17516"
+    ]
+  },
+  {
+    "id": "e5eac873-fbaf-478c-a47a-c18cc1c7a5de",
+    "name": "Tour de Zeleňák RM 106 km",
+    "date": "2027-09-04",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.roadcycling.cz/roadcup/rocnik-2027"
+    ]
+  },
+  {
+    "id": "e6ceea5c-9518-4bc6-918c-bd761d73e23e",
+    "name": "Cyclo-Cross Bundesliga 2026-27 — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+    "date": "2026-11-15",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/participants",
+      "https://race-hub.io/events/ce46d0c4-00fc-4590-9b3e-f657b2ff6a0c/info",
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "id": "e78978ff-4d4a-4f43-9757-38627c631f20",
+    "name": "Wataha Ultra Race 'Zima'",
+    "date": "2027-01-22",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://odjazd.pl/wydarzenie/1a11247a-25cd-46ab-84ec-94012d3655ac"
+    ]
+  },
+  {
+    "id": "e7bbd201-69b1-4bd0-9df2-a3c609e4b2f6",
+    "name": "4. závod SP (ME,WE) — Antverpy (Belgie)",
+    "date": "2026-12-19",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.cyklokros.cz/kalendar"
+    ]
+  },
+  {
+    "id": "e7da7a9c-c7e8-4f98-96de-cfbddf87620f",
+    "name": "UCI MTB World CUP",
+    "date": "2026-06-14",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz"
+    ]
+  },
+  {
+    "id": "ea909a2c-7d1c-4e0b-8e4e-63a96b54cc8b",
+    "name": "Vulkan Race Gedern",
+    "date": "2026-05-24",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://hynekmusil.cz/?serialosss=mtbbl"
+    ]
+  },
+  {
+    "id": "ead2527c-c2a7-440c-91e1-bbe84664ff4c",
+    "name": "CUBE Cup — Wüstenselbitz",
+    "date": "2027-05-16",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/wustenselbitz-d"
+    ]
+  },
+  {
+    "id": "eee9e5d1-1804-4523-9aff-bc0502f57ca1",
+    "name": "CUBE Cup — Schneckenlohe",
+    "date": "2027-09-06",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://cup.cube.eu/rennen-detail/schneckenlohe-d"
+    ]
+  },
+  {
+    "id": "f115987a-21ba-43d0-abc3-b3cb5dce5e58",
+    "name": "6. závod allwyn Českého poháru",
+    "date": "2026-05-24",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://portal.czechcyclingfederation.com/RaceDetail/Race/1706"
+    ]
+  },
+  {
+    "id": "f70388fe-d7cb-4203-8797-7fc867d43a81",
+    "name": "Thermenregion Cup 2026 #5 (und Siegerehrung): Grub",
+    "date": "2026-06-12",
+    "decision": "previously_hidden",
+    "mergedInto": null,
+    "sources": [
+      "https://www.radclub-moedling.at/event/thermenregion-cup-2026-5-und-siegerehrung-grub/"
+    ]
+  },
+  {
+    "id": "f84b4ad8-863d-488f-87d6-453d3b07862c",
+    "name": "RTF - Rund um Syke",
+    "date": "2027-04-11",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/44"
+    ]
+  },
+  {
+    "id": "f860da53-1dac-416a-85fd-5f27db6625e6",
+    "name": "Lausitzer Seenland100",
+    "date": "2027-07-03",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://radsport-events.de/events/362"
+    ]
+  },
+  {
+    "id": "f88dce95-ef66-4992-bedd-3e7a0dcd8d12",
+    "name": "Cyclo-Cross Bundesliga 2026-27 — Cyclo-Cross Bundesliga 2026/2027 Stahnsdorf",
+    "date": "2026-11-14",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://race-hub.io/events/3a8a36e2-2e59-4f68-bb9f-462f2263a289/participants",
+      "https://race-hub.io/events/3a8a36e2-2e59-4f68-bb9f-462f2263a289/info",
+      "https://static.rad-net.de/html/bdr/generalausschreibungen/2026/ga-bl-cyclo-cross_26-27.pdf"
+    ]
+  },
+  {
+    "id": "fe94e0d1-2832-4d39-87e6-7926f8ca40fb",
+    "name": "Thermenregion Cup 2026 #4: Klausenleopoldsdorf",
+    "date": "2026-05-29",
+    "decision": "source_confirmed",
+    "mergedInto": null,
+    "sources": [
+      "https://www.radclub-moedling.at/event/thermenregion-cup-2026-4-klausenleopoldsdorf/"
+    ]
+  }
+]

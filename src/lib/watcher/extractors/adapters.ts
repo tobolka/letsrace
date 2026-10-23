@@ -209,6 +209,7 @@ export const WHOLE_CALENDAR_HOSTS = [
   "radsport-events.de",
   "nazavody.cz",
   "sportt.cz",
+  "pzkol.pl",
 ];
 
 export function isWholeCalendarHost(host: string): boolean {

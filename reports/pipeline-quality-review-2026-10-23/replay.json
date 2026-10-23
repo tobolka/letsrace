@@ -1,0 +1,99 @@
+{
+  "repairRun": {
+    "startedAt": "2026-10-23T20:41:05.514Z",
+    "finishedAt": "2026-10-23T20:41:53.980Z",
+    "outcomes": [
+      {
+        "watchedUrlId": "b8961f80-a49d-43fc-bd19-9e02f4e08008",
+        "url": "https://pzkol.pl/kalendarz",
+        "ok": true,
+        "eventsUpserted": 197,
+        "eventsExtracted": 198,
+        "eventsCreated": 1,
+        "eventsUpdated": 196,
+        "eventsRejected": 1,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 0,
+        "droppedHidden": 0,
+        "strategy": "adapter:pzkol",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "f4c6dff8-b49e-4c8b-910b-8bed131fa063",
+        "url": "https://sumator.cz/cup/tbc-serie-2026",
+        "ok": true,
+        "eventsUpserted": 11,
+        "eventsExtracted": 11,
+        "eventsCreated": 0,
+        "eventsUpdated": 11,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 2,
+        "droppedHidden": 0,
+        "strategy": "adapter:sumator",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "cdfe2e16-90af-43bd-ad05-c3f3e7661d35",
+        "url": "https://sumator.cz/cup/skoda-cup-2026",
+        "ok": true,
+        "eventsUpserted": 7,
+        "eventsExtracted": 7,
+        "eventsCreated": 0,
+        "eventsUpdated": 7,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 2,
+        "droppedHidden": 0,
+        "strategy": "adapter:sumator",
+        "httpStatus": 200
+      },
+      {
+        "watchedUrlId": "4547d0a7-f2f2-41d8-9cce-a7a8d0d7a935",
+        "url": "https://www.czechcyclingfederation.com/events/skoda-cup/",
+        "ok": true,
+        "eventsUpserted": 7,
+        "eventsExtracted": 7,
+        "eventsCreated": 0,
+        "eventsUpdated": 7,
+        "eventsRejected": 0,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 0,
+        "droppedHidden": 0,
+        "strategy": "adapter:csc-skoda",
+        "httpStatus": 200
+      }
+    ]
+  },
+  "repeat": {
+    "startedAt": "2026-10-23T20:43:33.226Z",
+    "finishedAt": "2026-10-23T20:43:54.790Z",
+    "outcomes": [
+      {
+        "watchedUrlId": "b8961f80-a49d-43fc-bd19-9e02f4e08008",
+        "url": "https://pzkol.pl/kalendarz",
+        "ok": true,
+        "eventsUpserted": 197,
+        "eventsExtracted": 198,
+        "eventsCreated": 0,
+        "eventsUpdated": 197,
+        "eventsRejected": 1,
+        "eventsFailed": 0,
+        "extractionComplete": true,
+        "issues": [],
+        "linksDiscovered": 0,
+        "droppedHidden": 0,
+        "strategy": "adapter:pzkol",
+        "httpStatus": 200
+      }
+    ]
+  }
+}

@@ -9,7 +9,7 @@ import type { LlmUsage } from "@/lib/llm/anthropic";
 import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
-export const WATCH_READER_VERSION = "pipeline-v2";
+export const WATCH_READER_VERSION = "pipeline-v3";
 
 export type ExtractResult = {
   events: ParsedEvent[];
@@ -52,6 +52,7 @@ export function combineExtractedEvents(parsed: ParsedEvent[], ai: ParsedEvent[])
       ageCategories: held.ageCategories?.length ? held.ageCategories : event.ageCategories,
       status: held.status ?? event.status,
       evidence: held.evidence ?? event.evidence,
+      confidence: Math.max(held.confidence, event.confidence),
     };
   }
   return out;

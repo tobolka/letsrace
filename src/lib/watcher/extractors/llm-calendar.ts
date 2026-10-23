@@ -9,6 +9,7 @@ import { ageCategoriesFromList } from "@/lib/age-bands";
 import { askJson, addUsage, NO_USAGE, HAIKU, LlmResponseError, type LlmUsage } from "@/lib/llm/anthropic";
 
 import { cachedExtraction } from "@/lib/llm/extraction-cache";
+import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 
 export const CALENDAR_READER_VERSION = "calendar-v2";
 const CHUNK = 36_000;
@@ -100,6 +101,7 @@ export function verifyFollowLinks(raw: RawLink[], text: string, links: Set<strin
     if (!link || typeof link !== "object") return [];
     if (typeof link.url !== "string" || typeof link.quote !== "string" || !["calendar", "race", "regulations"].includes(String(link.kind))) return [];
     const url = link.url;
+    if (isArchiveDiscoveryUrl(url)) return [];
     const quote = skeleton(link.quote);
     if (url === base || !links.has(url) || !/^https?:\/\//i.test(url) || quote.length < 4) return [];
     if (/login|sign.?in|account|privacy|cookies|facebook|instagram/i.test(url)) return [];

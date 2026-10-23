@@ -15,13 +15,17 @@ export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-25}"
 export LLM_EXTRACTION_CACHE_DIR="${LLM_EXTRACTION_CACHE_DIR:-$PWD/tmp/extraction-cache}"
 export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE,PL,CH}"
 FAILURES=0
+DEFERRED=0
 
 step() {
   local title="$1"; shift
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then echo "Time limit reached; pending: $title"; return 0; fi
   echo
   echo "=== $title  ($(date '+%H:%M:%S'))"
-  if ! node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@"; then echo "!!! $title failed"; FAILURES=$((FAILURES + 1)); fi
+  local result=0
+  node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@" || result=$?
+  if [ "$result" -eq 2 ]; then echo "... $title has deferred work"; DEFERRED=$((DEFERRED + 1));
+  elif [ "$result" -ne 0 ]; then echo "!!! $title failed"; FAILURES=$((FAILURES + 1)); fi
 }
 
 # Resume individual daily steps: a failed or deadline-skipped step remains due.
@@ -32,15 +36,15 @@ daily_step() {
   local stamp="tmp/.llm-steps/$(basename "$2" .ts)-$mode"
   if [ "${LLM_FORCE_DAILY:-0}" != "1" ] && [ "$(cat "$stamp" 2>/dev/null)" = "$TODAY" ]; then return 0; fi
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then echo "Time limit reached; pending: $1"; return 0; fi
-  local before="$FAILURES"
+  local before="$FAILURES:$DEFERRED"
   step "$@"
-  if [ "$FAILURES" -eq "$before" ]; then mkdir -p tmp/.llm-steps; echo "$TODAY" > "$stamp"; fi
+  if [ "$FAILURES:$DEFERRED" = "$before" ]; then mkdir -p tmp/.llm-steps; echo "$TODAY" > "$stamp"; fi
 }
 
 step "Coverage before"                     scripts/data-stats.ts
 # Calendar fallbacks must leave room for completing already discovered races.
-LLM_BUDGET_USD=0.40 step "Official calendars (force-poll)" scripts/reload-calendars.ts
-LLM_BUDGET_USD=0.10 step "Everything else that is due" scripts/drain-due-watches.ts 40
+LLM_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-1.25}" LLM_CALENDAR_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-1.25}" step "Official calendars (force-poll)" scripts/reload-calendars.ts
+LLM_BUDGET_USD="${DUE_AI_BUDGET_USD:-1.00}" LLM_CALENDAR_BUDGET_USD="${DUE_AI_BUDGET_USD:-1.00}" step "Everything else that is due" scripts/drain-due-watches.ts 40
 if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
   step "Duplicates (review only)"          scripts/merge-duplicates.ts --dry
 else
@@ -96,4 +100,6 @@ SOURCE_RUN_DEADLINE=0 step "90 percent completeness by country" scripts/audit-da
 echo
 echo "=== done $(date '+%H:%M:%S')"
 echo "=== failed steps: $FAILURES"
+echo "=== deferred steps: $DEFERRED"
 if [ "$FAILURES" -gt 0 ]; then exit 1; fi
+if [ "$DEFERRED" -gt 0 ]; then exit 2; fi

@@ -621,7 +621,7 @@ export type DedupScore = {
 export const DEDUP_THRESHOLD = 50;
 
 export function hasIdentityConflict(reasons: string[]): boolean {
-  return reasons.some(reason => ["edition_conflict", "country_conflict", "round_conflict", "format_conflict", "gender_conflict", "same_url_other_race"].includes(reason));
+  return reasons.some(reason => ["edition_conflict", "country_conflict", "round_conflict", "format_conflict", "discipline_conflict", "gender_conflict", "same_url_other_race"].includes(reason));
 }
 
 export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
@@ -659,6 +659,11 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   // Distinct formats at the same venue/weekend (XCO vs biatlon, DH vs XCM, …)
   if (formatConflict(a.name, b.name)) {
     return { score: 0, reasons: ["format_conflict"] };
+  }
+  // A road ride next to a gravel ride has its own listing and entry route.
+  // Shared venue/date/URL cannot turn disjoint known sports into one event.
+  if (a.disciplines?.length && b.disciplines?.length && !sharesDisciplineFamily(a.disciplines, b.disciplines)) {
+    return { score: 0, reasons: ["discipline_conflict"] };
   }
 
   // Round 9 and round 10 of one cup are two races, however alike they read.

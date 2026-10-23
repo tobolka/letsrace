@@ -135,10 +135,12 @@ export async function confirmSeriesProposals(proposals: SeriesProposal[]): Promi
 }
 
 export async function applySeriesLinks(proposals: SeriesProposal[], log?: (l: string) => void): Promise<{ linked: number; created: number }> {
+  const { isSiteIdentityName } = await import("@/lib/watcher/extractors/generic");
   const supabase = createServerSupabase();
   let linked = 0;
   let created = 0;
   for (const g of proposals) {
+    if (isSiteIdentityName(g.name)) continue;
     let id = g.existing?.id ?? null;
     if (!id) {
       const slug = slugifySeries(g.name);

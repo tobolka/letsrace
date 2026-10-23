@@ -33,12 +33,17 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
   // RoadCup's season index lists many races. Treating its heading as one race
   // invented a "RoadCup 2027" event on the first date found in the table.
   if (/roadcycling\.cz\/roadcup\/rocnik-20\d{2}(?:\/|$)/i.test(url)) return [];
+  // Result archives, tag listings and press releases carry publication dates,
+  // often mixed with the site's live date. Neither is an event date.
+  if (/\/(?:tag|category|ergebnisse|results|meldelisten)(?:\/|$)|presseinformation|ergebnisse-.*online/i.test(new URL(url).pathname)) return [];
   const $ = cheerio.load(html);
   const title =
     $('meta[property="og:title"]').attr("content") ||
     $("h1").first().text().trim() ||
     $("title").text().trim();
-  const text = $("body").text().replace(/\s+/g, " ");
+  $("script,style,noscript,nav,header,footer,aside,time[datetime],[class*=sidebar],[class*=calendar-widget]").remove();
+  const content = $("main,article,[role=main]").first();
+  const text = (content.length ? content : $("body")).text().replace(/\s+/g, " ");
 
   const validDay = (day: string): boolean => {
     const parsed = new Date(`${day}T12:00:00Z`);
@@ -58,6 +63,8 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
 
   const name = title.replace(/\s*[|\-–].*$/, "").trim().slice(0, 140);
   if (!startDate || !name) return [];
+  const statedYears = [...`${title} ${new URL(url).pathname}`.matchAll(/\b20\d{2}\b/g)].map(m => m[0]);
+  if (statedYears.length && !statedYears.includes(startDate.slice(0, 4))) return [];
   if (isJunkListingName(name)) return [];
   if (isSiteIdentityName(name, url)) return [];
   if (isStaleDate(startDate)) return [];
@@ -123,7 +130,8 @@ export function isSiteIdentityName(name: string, url?: string): boolean {
   if (/(?:…|\.\.\.)$/.test(name.trim())) return true;
   const t = fold(name).replace(/[^a-z0-9]+/g, " ").trim();
   if (!t) return true;
-  if (NAV_LABEL.test(t)) return true;
+  if (NAV_LABEL.test(t) || /^(?:rozpis|ausschreibung|generalausschreibung|ergebnisse|rennserie|race days and events)(?:\s+20\d{2})?$/.test(t)) return true;
+  if (/\b(?:termine|renntermine|terminkalender)$/.test(t)) return true;
   if (/^(?:termine|renntermine|terminkalender|calendar|calendrier|calendario|kalendarz|kalendar|zavody|events|veranstaltungen|race calendar)(?:\s+20\d{2}(?:\s+20\d{2})?)?$/.test(t)) return true;
   if (!url) return false;
 

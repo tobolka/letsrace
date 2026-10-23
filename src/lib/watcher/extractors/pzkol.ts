@@ -4,6 +4,8 @@ import { normalizeName } from "@/lib/domain";
 import { inferDisciplines } from "@/lib/taxonomy";
 import { fetchText } from "@/lib/watcher/http";
 import { isPolishYouthRace } from "@/lib/watcher/extractors/pl-shared";
+import { countryCodeFromName } from "@/lib/geo/europe";
+import { geocodeFromGazetteer } from "@/lib/geocode";
 
 const ORIGIN = "https://pzkol.pl";
 
@@ -88,7 +90,9 @@ export function parsePzkolCalendar(url: string, html: string): ParsedEvent[] {
       startDate: range.startDate,
       endDate: range.endDate,
       placeText: place || "Poland",
-      countryHint: countryFromRegion(cell(4)),
+      // POL in the last column can mean the publishing federation, including
+      // European championships in Spain and Germany. The stated venue wins.
+      countryHint: countryCodeFromName(place) ?? geocodeFromGazetteer(place)?.countryCode ?? countryFromRegion(cell(4)),
       discipline: discipline.length ? discipline : undefined,
       audience: isPolishYouthRace(name) ? "kids" : "mixed",
       sourceUrl,
