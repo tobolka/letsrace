@@ -124,7 +124,7 @@ const ISO = /^\d{4}-\d{2}-\d{2}$/;
  * name inside that row, the day of the month inside it too, and a link that
  * was really on the page.
  */
-export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, sourceUrl: string, today: string): ParsedEvent[] {
+export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, sourceUrl: string, today: string, pageTitle = ""): ParsedEvent[] {
   const hay = skeleton(text);
   const out: ParsedEvent[] = [];
   const host = (() => {
@@ -144,7 +144,14 @@ export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, so
     if (quote.length < 6 || !hay.includes(quote)) continue;
     // The name must come from the row, not from the model.
     const words = fold(rowName).split(/[^a-z0-9]+/).filter((w) => w.length >= 3);
-    if (!words.length || words.filter((w) => quote.includes(w)).length < Math.ceil(words.length * 0.7)) continue;
+    // A single-event site announces its next edition under the logo ("31. ročník
+    // 9. října 2027, Bedřichov"); the race's name is then the page title, not
+    // part of that line.
+    const nameInRow = words.length > 0 && words.filter((w) => quote.includes(w)).length >= Math.ceil(words.length * 0.7);
+    const editionNotice = /\b\d+\.\s*(?:ro[cč]n[ií]k|edition|ausgabe)\b/i.test(fold(r.quote)) || /\b\d+\.\s*ro[cč]n[ií]k\b/i.test(r.quote);
+    const titleWords = fold(pageTitle);
+    const nameFromTitle = editionNotice && words.length > 0 && words.every((w) => titleWords.includes(w));
+    if (!nameInRow && !nameFromTitle) continue;
     // The day must be in the row (or a nearby heading the quote includes).
     if (!quoteStatesDate(quote, start)) continue;
     // When the row omits a year, the page must state the requested season.
@@ -230,6 +237,7 @@ export async function extractWithLlm(
 ): Promise<CalendarRead> {
   const today = opts?.today ?? new Date().toISOString().slice(0, 10);
   const { text, links } = pageAsText(html, url);
+  const pageTitle = cheerio.load(html)("title").first().text().replace(/\s+/g, " ").trim();
   const all = chunks(text, CHUNK, Number.MAX_SAFE_INTEGER);
   const result: CalendarRead = { events: [], usage: NO_USAGE, truncated: false,
     chunksTotal: all.length, chunksRead: 0, cacheHits: 0, proposed: 0, rejected: 0, issues: [], childUrls: [] };
@@ -259,7 +267,7 @@ export async function extractWithLlm(
       result.cacheHits += Number(read.cached);
       result.chunksRead++;
       result.proposed += read.value.races.length;
-      const verified = verifyRaces(read.value.races, part, links, url, today);
+      const verified = verifyRaces(read.value.races, part, links, url, today, pageTitle);
       result.rejected += read.value.races.length - verified.length;
       result.events.push(...verified);
       result.childUrls.push(...verifyFollowLinks(Array.isArray(read.value.follow_links) ? read.value.follow_links : [], part, links, url));

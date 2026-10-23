@@ -97,3 +97,13 @@ it("follows only source-backed anchors to calendars or documents", () => {
     { url: invented, kind: "calendar", quote: "Calendar 2027" },
   ], text, new Set([pdf, other]), "https://club.test/")).toEqual([pdf]);
 });
+
+it("names a single-event site's next edition after the page title", () => {
+  const text = "30. ročník 2026 je za námi.\n31. ROČNÍK 9. října 2027, Bedřichov\nO spuštění registrace vás budem informovat.";
+  const raw = { name: "ČT Author Cup", start_date: "2027-10-09", quote: "31. ROČNÍK 9. října 2027, Bedřichov", place: "Bedřichov" };
+  const url = "https://www.ctauthorcup.cz/";
+  expect(verifyRaces([raw], text, new Set(), url, "2026-10-23", "ČT Author Cup")[0]?.name).toBe("ČT Author Cup");
+  // Without the edition line or a matching title the name still has to be in the row.
+  expect(verifyRaces([raw], text, new Set(), url, "2026-10-23", "Jiný závod")).toEqual([]);
+  expect(verifyRaces([{ ...raw, quote: "9. října 2027, Bedřichov" }], "9. října 2027, Bedřichov", new Set(), url, "2026-10-23", "ČT Author Cup")).toEqual([]);
+});
