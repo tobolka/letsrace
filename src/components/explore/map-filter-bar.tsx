@@ -639,7 +639,7 @@ export function MapFilterBar({
                     aria-label={`${extraMeta[id].label} ${extraMeta[id].value ?? ""}`.trim()}
                     className={cn(
                       "max-md:h-11 [@media(pointer:coarse)]:h-11",
-                      active && "rounded-r-none",
+                      active && cn("rounded-r-none", ACTIVE_CHIP),
                     )}
                   >
                     <Icon />
@@ -665,7 +665,7 @@ export function MapFilterBar({
                   variant="secondary"
                   size="icon-sm"
                   aria-label={`${messages.clearFilter} ${extraMeta[id].label}`}
-                  className="rounded-l-none max-md:size-11 [@media(pointer:coarse)]:size-11"
+                  className={cn("rounded-l-none max-md:size-11 [@media(pointer:coarse)]:size-11", ACTIVE_CHIP)}
                   onClick={() => unpin(id)}
                 >
                   <X />
@@ -831,5 +831,9 @@ function PlaceSearchForm({
     </form>
   );
 }
+
+/** A filter that is on, and the cross that clears it: a step darker than a chip that is off. */
+const ACTIVE_CHIP =
+  "bg-foreground/[0.09] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-foreground/[0.13]";
 
 const itemClass = "max-md:min-h-11 [@media(pointer:coarse)]:min-h-11";
