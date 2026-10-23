@@ -8,8 +8,6 @@ import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-ma
 import { MapFilterBar } from "@/components/explore/map-filter-bar";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   FULL,
   COMPACT,
@@ -18,21 +16,12 @@ import {
   MobileDetailSheet,
   MobileListSheet,
 } from "@/components/explore/mobile-sheets";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { ItemGroup } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
 import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
 import {
-  eventDistanceKm,
   sortEvents,
   distanceKm,
   type EventSort,
@@ -41,10 +30,13 @@ import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import Link from "next/link";
 import { datePresetRanges, thisWeekendRange, todayIso } from "@/lib/date-presets";
 import { buildEventsQuery } from "@/lib/events-query";
+import { reuseUnchanged } from "@/lib/reuse-unchanged";
 import { filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
 import { exploreSearchParams } from "@/lib/explore-params";
-import { RaceCount } from "@/components/shell/race-count";
+import { ExploreRaceRows } from "@/components/explore/explore-race-rows";
+import { ListToolbar } from "@/components/explore/list-toolbar";
+import { PanelResizeHandle, usePanelResize } from "@/components/explore/panel-resize";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { useRaceParam } from "@/components/shell/use-race-param";
 import { useExploreFilterPrefs } from "@/components/shell/use-explore-filter-prefs";
@@ -59,14 +51,12 @@ import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
 import { BrandBar } from "@/components/shell/section-header";
 import { SITE_NAME } from "@/lib/seo";
-import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { listViewState } from "@/lib/list-view-state";
 import { cn } from "@/lib/utils";
 import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { dateFilterLabel } from "@/components/explore/date-range";
 import { ActiveFilterChips, ListMetaRow, activeFilterGroups } from "@/components/shell/active-filters";
 import { datePresetLabels } from "@/components/shell/explore-filter-bar";
-import { EventCard } from "@/components/explore/event-rows";
 import { localePath } from "@/lib/localized-paths";
 
 const loadEventDetailPanel = () =>
@@ -99,57 +89,12 @@ const MobileFiltersSheet = dynamic(
     })),
 );
 
-const MAP_PANEL_W = 400;
-const MIN_PANEL_W = 340;
-const MAX_PANEL_W = 560;
-
-/**
- * How wide the panel may be dragged. The full-width list is its own page now
- * (the rail's second icon), so the panel only ever trades room with the map.
- */
-function panelMaxWidth() {
-  const stage = document.getElementById("shell-stage");
-  const room = (stage?.clientWidth ?? window.innerWidth) - 12 - 344;
-  return Math.max(MAP_PANEL_W, Math.min(MAX_PANEL_W, room));
-}
-
 type Props = {
   initialEvents: EventListItem[];
   messages: Messages;
   locale: string;
 };
 
-
-/**
- * Keep the object a race already had when the fetch brought back the same race.
- *
- * Most of what a viewport query returns is what it returned last time, but
- * every row came back as a brand-new object, so every card was a new prop and
- * every memo was defeated: a background refetch — the one the map fires after
- * it finds you — re-rendered the whole list, and did it while the sheet was
- * moving.
- *
- * `last_seen_at` moves whenever the watcher touches a race, so it is the
- * cheapest honest test for "this row has not changed".
- */
-function reuseUnchanged(prev: EventListItem[], next: EventListItem[]): EventListItem[] {
-  if (prev.length === 0) return next;
-  const before = new Map(prev.map((e) => [e.id, e]));
-  let changed = prev.length !== next.length;
-  const out = next.map((e, i) => {
-    const old = before.get(e.id);
-    const same =
-      old &&
-      old.lastSeenAt === e.lastSeenAt &&
-      old.startDate === e.startDate &&
-      old.name === e.name &&
-      old.status === e.status;
-    if (!same) changed = true;
-    else if (prev[i]?.id !== e.id) changed = true;
-    return same ? old : e;
-  });
-  return changed ? out : prev;
-}
 
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [events, setEvents] = useState(initialEvents);
@@ -766,10 +711,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
   // Desktop: side panels. Mobile: bottom sheet over a usable map.
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  // The panel's width, and the live width while its edge is being dragged.
-  const [mapWidth, setMapWidth] = useState(MAP_PANEL_W);
-  const [dragW, setDragW] = useState<number | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panel = usePanelResize();
   const viewportH = useViewportHeight(800);
   const mobileSheetReady = useIsClient();
 
@@ -878,7 +820,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         className="absolute inset-y-0 right-0 left-0 md:left-[var(--map-panel-width)]"
         style={
           {
-            "--map-panel-width": `${dragW ?? mapWidth}px`,
+            "--map-panel-width": `${panel.width}px`,
             "--map-sheet-inset": `${mapPadding.bottom}px`,
           } as CSSProperties
         }
@@ -980,16 +922,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
       <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
         <div
-          ref={panelRef}
+          ref={panel.panelRef}
           className={cn(
             "absolute inset-y-0 left-0 min-w-0",
-            dragW == null &&
+            !panel.dragging &&
               "transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
           )}
-          style={{
-            width:
-              dragW ?? mapWidth,
-          }}
+          style={{ width: panel.width }}
         >
         <div className="pointer-events-auto flex h-full w-full min-w-0 flex-col overflow-hidden border-r bg-card">
           <Header locale={locale} />
@@ -1008,86 +947,23 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           />
           <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
             <div ref={listRef} className="@container min-h-0">
-            {listView === "empty" ? (
-              <Empty className="border-0 p-6 md:p-8">
-                <EmptyHeader>
-                  <EmptyTitle>{messages.noResults}</EmptyTitle>
-                  <EmptyDescription>{messages.weekendNearYou}</EmptyDescription>
-                </EmptyHeader>
-                <EmptyContent>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => resetExploreFilters({ clearSearch: true })}
-                    >
-                      {messages.clearFilters}
-                    </Button>
-                    <Button type="button" variant="secondary" size="sm" onClick={() => setSubmitOpen(true)}>
-                      {messages.missingRace}
-                    </Button>
-                  </div>
-                </EmptyContent>
-              </Empty>
-            ) : (
-              <ItemGroup>
-                {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
-                {listView === "rows"
-                  ? sortedEvents.map((event) => (
-                  <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
-                  <EventCard
-                    event={event}
-                    locale={locale}
-                    distanceKm={eventDistanceKm(event, distanceOrigin)}
-                    active={event.id === selectedId}
-                    onSelect={selectFromList}
-                    onHover={setHoveredId}
-                  />
-                  </div>
-                    ))
-                  : null}
-              </ItemGroup>
-            )}
+            <ExploreRaceRows
+              variant="panel"
+              view={listView}
+              locale={locale}
+              events={sortedEvents}
+              selectedId={selectedId}
+              distanceOrigin={distanceOrigin}
+              messages={messages}
+              onSelect={selectFromList}
+              onHover={setHoveredId}
+              onClearFilters={() => resetExploreFilters({ clearSearch: true })}
+              onMissingRace={() => setSubmitOpen(true)}
+            />
             </div>
           </main>
         </div>
-        <div
-          role="separator"
-          aria-orientation="vertical"
-          aria-label={messages.resizePanel}
-          aria-controls="race-list"
-          aria-valuemin={MIN_PANEL_W}
-          aria-valuemax={MAX_PANEL_W}
-          aria-valuenow={Math.round(dragW ?? mapWidth)}
-          aria-valuetext={`${Math.round(dragW ?? mapWidth)} px`}
-          tabIndex={0}
-          className="pointer-events-auto absolute inset-y-0 -right-2 z-10 w-4 cursor-col-resize touch-none outline-none focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2"
-          onPointerDown={(e) => {
-            e.currentTarget.setPointerCapture(e.pointerId);
-            setDragW(panelRef.current?.getBoundingClientRect().width ?? mapWidth);
-          }}
-          onPointerMove={(e) => {
-            if (dragW == null) return;
-            const left = document.getElementById("shell-stage")?.getBoundingClientRect().left ?? 0;
-            setDragW(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, e.clientX - left)));
-          }}
-          onPointerUp={() => {
-            if (dragW == null) return;
-            setMapWidth(Math.round(dragW));
-            setDragW(null);
-          }}
-          onPointerCancel={() => setDragW(null)}
-          onKeyDown={(e) => {
-            if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
-            e.preventDefault();
-            const next = e.key === "Home" ? MIN_PANEL_W
-              : e.key === "End" ? panelMaxWidth()
-              : mapWidth + (e.key === "ArrowRight" ? 24 : -24);
-            setMapWidth(Math.min(panelMaxWidth(), Math.max(MIN_PANEL_W, next)));
-          }}
-        >
-        </div>
+        <PanelResizeHandle resize={panel} label={messages.resizePanel} />
         </div>
 
         {/*
@@ -1102,7 +978,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             locale={locale}
             onClose={closeDetail}
             onSelectSeries={applySeries}
-                        leftX={mapWidth + 12}
+            leftX={panel.chosen + 12}
           />
           </Suspense>
         )}
@@ -1189,47 +1065,21 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
                   onSort={setListSort}
                 />
               </div>
-              {listView === "empty" ? (
-                <Empty className="border-0 p-6">
-                  <EmptyHeader>
-                    <EmptyTitle>{messages.noResults}</EmptyTitle>
-                    <EmptyDescription>{messages.weekendNearYou}</EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => resetExploreFilters({ clearSearch: true })}
-                    >
-                      {messages.clearFilters}
-                    </Button>
-                  </EmptyContent>
-                </Empty>
-              ) : (
-                // Room under the last race for the "Map" pill the full sheet
-                // floats over it, so the end of the list can be read.
-                <ItemGroup className={cn(listSnap === FULL && "pb-16")}>
-                  {listView === "skeleton" ? <ListSkeleton rows={8} /> : null}
-                  {listView === "rows" &&
-                    sortedEvents.map((event) => (
-                      <div
-                        role="listitem"
-                        key={event.id}
-                        className="border-b border-border/50 last:border-b-0"
-                      >
-                        <EventCard
-                          event={event}
-                          locale={locale}
-                          distanceKm={eventDistanceKm(event, distanceOrigin)}
-                          active={event.id === selectedId}
-                          onSelect={selectFromSheet}
-                          onHover={setHoveredId}
-                        />
-                      </div>
-                    ))}
-                </ItemGroup>
-              )}
+              {/* Room under the last race for the "Map" pill the full sheet
+                  floats over it, so the end of the list can be read. */}
+              <ExploreRaceRows
+                variant="sheet"
+                view={listView}
+                locale={locale}
+                events={sortedEvents}
+                selectedId={selectedId}
+                distanceOrigin={distanceOrigin}
+                messages={messages}
+                groupClassName={cn(listSnap === FULL && "pb-16")}
+                onSelect={selectFromSheet}
+                onHover={setHoveredId}
+                onClearFilters={() => resetExploreFilters({ clearSearch: true })}
+              />
             </div>
           </MobileListSheet>
 
@@ -1312,74 +1162,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         />
       ) : null}
       <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
-    </div>
-  );
-}
-
-function ListToolbar({
-  count,
-  pending,
-  sort,
-  distanceEnabled,
-  messages,
-  locale,
-  onSort,
-}: {
-  count: number | null;
-  pending: boolean;
-  sort: EventSort;
-  distanceEnabled: boolean;
-  messages: Messages;
-  locale: string;
-  onSort: (sort: EventSort) => void;
-}) {
-  const sortItemClass =
-    "transition-[transform,background-color,color,box-shadow] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-foreground data-[state=on]:[@media(hover:hover)_and_(pointer:fine)]:hover:text-background";
-
-  const distanceItem = (
-    <ToggleGroupItem
-      value="distance"
-      disabled={!distanceEnabled}
-      className={cn(sortItemClass, !distanceEnabled && "disabled:pointer-events-auto")}
-      aria-label={
-        distanceEnabled
-          ? messages.sortDistance
-          : `${messages.sortDistance}. ${messages.sortNeedsLocation}`
-      }
-    >
-      {messages.sortDistance}
-    </ToggleGroupItem>
-  );
-
-  return (
-    // A bottom border inside its 44px, like the list page's row, so the races
-    // start on the same line in both.
-    <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4">
-      <RaceCount count={count} locale={locale} loading={pending} />
-      <div className="flex items-center gap-2">
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="xs"
-          value={sort}
-          onValueChange={(value) => {
-            if (value === "date" || value === "distance") onSort(value);
-          }}
-          aria-label={messages.sortBy}
-        >
-          <ToggleGroupItem value="date" className={sortItemClass}>
-            {messages.date}
-          </ToggleGroupItem>
-          {distanceEnabled ? (
-            distanceItem
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>{distanceItem}</TooltipTrigger>
-              <TooltipContent>{messages.sortNeedsLocation}</TooltipContent>
-            </Tooltip>
-          )}
-        </ToggleGroup>
-      </div>
     </div>
   );
 }
