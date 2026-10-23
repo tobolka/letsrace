@@ -37,7 +37,7 @@ try {
   const memberships = await readFile("supabase/migrations/20260917082837_event_series_membership.sql", "utf8");
   await db.exec(memberships.slice(0, memberships.indexOf("-- Merges must carry")));
   await db.exec(await readFile("supabase/migrations/20260930210327_merge_keeps_best_facts.sql", "utf8"));
-  await db.exec(await readFile("supabase/migrations/20261023184216_audited_event_merges.sql", "utf8"));
+  await db.exec(await readFile("supabase/migrations/20261023191651_audited_event_merges.sql", "utf8"));
   await db.exec("grant usage on schema public to service_role; grant select,insert,update,delete on all tables in schema public to service_role;");
   await db.exec(`
     insert into series values ('10000000-0000-0000-0000-000000000001'),('10000000-0000-0000-0000-000000000002');

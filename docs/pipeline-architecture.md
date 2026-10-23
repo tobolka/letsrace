@@ -121,7 +121,7 @@ prove novelty: weak names, missing places and hidden records require review.
 
 ## Transactional merge recovery
 
-`20261023184216_audited_event_merges.sql` adds the cache and run metrics, and wraps
+`20261023191651_audited_event_merges.sql` adds the cache and run metrics, and wraps
 the existing merge implementation. Both event records, redirects, sources,
 categories, favorites, attendance, series, facts and lock state are captured
 before and after a merge. History and cache have RLS and service-role-only grants.
