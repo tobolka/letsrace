@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -88,30 +89,32 @@ export function SubmissionsInbox({
   const [items, setItems] = useState(feedback);
   const [view, setView] = useState<"open" | "done">("open");
 
-  async function setStatus(id: string, status: string) {
-    await fetch("/api/admin/submissions", {
-      method: "POST",
+  /** Save a change; the list only moves once the server has it. */
+  async function save(url: string, body: Record<string, unknown>): Promise<boolean> {
+    const res = await fetch(url, {
+      method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
+      body: JSON.stringify(body),
+    }).catch(() => null);
+    if (!res?.ok) {
+      toast.error("Could not save — try again");
+      return false;
+    }
+    return true;
+  }
+
+  async function setStatus(id: string, status: string) {
+    if (!(await save("/api/admin/submissions", { id, status }))) return;
     setSubs((prev) => prev.map((s) => (s.id === id ? { ...s, status } : s)));
   }
 
   async function setFeedbackStatus(id: string, status: string) {
-    await fetch("/api/admin/feedback", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
+    if (!(await save("/api/admin/feedback", { id, status }))) return;
     setItems((prev) => prev.map((f) => (f.id === id ? { ...f, status } : f)));
   }
 
   async function markRead(id: string) {
-    await fetch("/api/admin/notifications", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id, read: true }),
-    });
+    if (!(await save("/api/admin/notifications", { id, read: true }))) return;
     setNotes((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)),
     );
