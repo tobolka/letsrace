@@ -34,6 +34,27 @@ export async function readSourceEvidence(s: SupabaseClient, eventId: string): Pr
   return out;
 }
 
+/** True when a source other than an aggregator last reported this start date for the race. */
+export async function startDateConfirmedOutsideAggregators(s: SupabaseClient, eventId: string, startDate: string): Promise<boolean> {
+  const seen = new Set<string>();
+  for (let offset = 0; ; offset += 500) {
+    const { data, error } = await s.from("event_facts").select("value").eq("event_id", eventId)
+      .eq("method", "watcher_source_evidence").eq("field", "source_evidence").eq("status", "active")
+      .order("created_at", { ascending: false }).order("id").range(offset, offset + 499);
+    if (error) throw new Error(error.message);
+    for (const row of data ?? []) {
+      const v = row.value as { watchedUrlId?: string; kind?: string; event?: ParsedEvent } | null;
+      if (!v?.event?.externalId) continue;
+      const key = `${v.watchedUrlId}:${v.event.externalId}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (v.kind !== "aggregator" && v.event.startDate === startDate) return true;
+    }
+    if (!data || data.length < 500) break;
+  }
+  return false;
+}
+
 /** Each source gets its own document budget; shared URLs are fetched once. */
 export async function gatherEventDossier(s: SupabaseClient, eventId: string, race: Parameters<typeof gatherDossier>[0], extra: ParsedEvent[] = []): Promise<DossierDoc[]> {
   const evidence = [...await readSourceEvidence(s, eventId), ...extra];

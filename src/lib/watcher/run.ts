@@ -2179,6 +2179,20 @@ async function upsertParsedEvent(
     }
   }
 
+  // A listing that merely repeats other calendars does not move a date the
+  // organiser's own pages or a series calendar still give. Without this the
+  // race flipped between the two dates on every pass of the stale list.
+  if (
+    existingId && existingRow?.start_date && watchedKind === "aggregator" &&
+    existingRow.start_date !== ev.startDate
+  ) {
+    const { startDateConfirmedOutsideAggregators } = await import("@/lib/catalog/source-evidence");
+    if (await startDateConfirmedOutsideAggregators(supabase, existingId, existingRow.start_date)) {
+      mergedStart = existingRow.start_date;
+      mergedEnd = existingRow.end_date ?? existingRow.start_date;
+    }
+  }
+
   // Combine positive category evidence across sources. A stated list replaces
   // old defaults, while later guesses cannot widen already stated classes.
   const statedAges =
