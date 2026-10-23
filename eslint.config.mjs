@@ -29,10 +29,11 @@ const eslintConfig = defineConfig([
     plugins: {
       "react-hooks": reactHooks,
     },
-    // React Compiler rules flag legitimate map/geo patterns; keep as warnings until refactored.
+    // React Compiler rules: state follows props and stores, not effects, and refs
+    // are written when a render commits, not while it computes.
     rules: {
-      "react-hooks/set-state-in-effect": "warn",
-      "react-hooks/refs": "warn",
+      "react-hooks/set-state-in-effect": "error",
+      "react-hooks/refs": "error",
       // `_html`, `_url`: a parser that keeps its sibling parsers' signature.
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
