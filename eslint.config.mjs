@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     "public/prototypes/**",
     ".claude/worktrees/**",
     "scripts/.tmp/**",
+    // Untracked scratch space for one-off investigations.
+    "tmp/**",
   ]),
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx}"],
