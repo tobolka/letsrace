@@ -1609,7 +1609,7 @@ async function upsertParsedEvent(
     lat: ev.lat,
     lng: ev.lng,
   });
-  const { pickBestDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
+  const { pickBestDuplicate, isLikelyDuplicate, preferEventName, mergeDateSpan, preferLevel, normalizeUrlForDedup } =
     await import("@/lib/dedup");
   const { publicRaceUrl, preferDeeperOfficialUrl } = await import("@/lib/watcher/public-url");
   const classified = inferClassification({
@@ -1716,8 +1716,13 @@ async function upsertParsedEvent(
   // Source identity is stronger than a display name. After a reviewed merge,
   // the source belongs to the keeper and must never create its old race again.
   const { sourceEditionId, calendarRowCandidates } = await import("@/lib/watcher/source-identity");
-  const pickIncomingDuplicate: typeof pickBestDuplicate = (incoming, candidates) =>
-    pickBestDuplicate(incoming, calendarRowCandidates(ev.startDate, sharedAiCalendar, candidates));
+  let ambiguousIdentity = false;
+  const pickIncomingDuplicate: typeof pickBestDuplicate = (incoming, candidates) => {
+    const eligible = calendarRowCandidates(ev.startDate, sharedAiCalendar, candidates);
+    const best = pickBestDuplicate(incoming, eligible);
+    if (!best && eligible.some(c => isLikelyDuplicate(incoming, c.event))) ambiguousIdentity = true;
+    return best;
+  };
   const { data: knownSource, error: sourceError } = await supabase
     .from("event_sources")
     .select("event:events(id,name,start_date,end_date,merged_into_id,website_url,registration_url,location:locations(lat,lng,name,municipality,country_code))")
@@ -1892,6 +1897,8 @@ async function upsertParsedEvent(
     const { differentInstalment } = await import("@/lib/catalog/merge-duplicates");
     if (matched?.name && differentInstalment(matched.name, ev.name)) existingId = undefined;
   }
+
+  if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
 
   const { data: existingFull } = existingId
     ? await supabase
