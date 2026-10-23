@@ -119,9 +119,12 @@ const squash = (s: string) => s.replace(/[^a-z0-9]/g, "");
  * the catalog from a calendar that describes it properly.
  */
 export function isSiteIdentityName(name: string, url?: string): boolean {
+  // A teaser or a season-index heading is not the identity of a race.
+  if (/(?:…|\.\.\.)$/.test(name.trim())) return true;
   const t = fold(name).replace(/[^a-z0-9]+/g, " ").trim();
   if (!t) return true;
   if (NAV_LABEL.test(t)) return true;
+  if (/^(?:termine|renntermine|terminkalender|calendar|calendrier|calendario|kalendarz|kalendar|zavody|events|veranstaltungen|race calendar)(?:\s+20\d{2}(?:\s+20\d{2})?)?$/.test(t)) return true;
   if (!url) return false;
 
   let host = "";

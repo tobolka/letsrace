@@ -64,7 +64,11 @@ export type ParsedEvent = {
   lat?: number;
   lng?: number;
   confidence: number;
+  /** Only when a source explicitly states cancellation for this race. */
+  status?: "cancelled";
   childUrls?: string[];
+  /** Verified extraction evidence, retained in the source snapshot. */
+  evidence?: { quote: string; sourceUrl: string; method: string; version: string; model?: string };
 };
 
 /** Words that vary between sources for the same race and carry no identity. */

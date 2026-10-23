@@ -105,7 +105,7 @@ function isPdf(type: string, bytes: Uint8Array, url: string): boolean {
   );
 }
 
-async function pdfText(bytes: Uint8Array): Promise<string> {
+export async function pdfText(bytes: Uint8Array): Promise<string> {
   const { extractText, getDocumentProxy } = await import("unpdf");
   // Broken embedded fonts make pdf.js print one "Warning:" line per glyph.
   // The text still extracts; only real failures should reach the log.

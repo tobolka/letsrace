@@ -1,0 +1,106 @@
+{
+  "mode": "baseline",
+  "source": "tmp/pipeline-baseline-dedup.ts",
+  "cases": 8,
+  "correct": 4,
+  "falseMerges": 4,
+  "missedMatches": 0,
+  "results": [
+    {
+      "label": "Same detail URL reused next year",
+      "expected": false,
+      "predicted": true,
+      "correct": false,
+      "score": 95,
+      "reasons": [
+        "same_url",
+        "same_place",
+        "same_canonical_name"
+      ]
+    },
+    {
+      "label": "Different Allwyn rounds share a URL",
+      "expected": false,
+      "predicted": true,
+      "correct": false,
+      "score": 115,
+      "reasons": [
+        "same_url",
+        "dates_ok",
+        "same_place",
+        "series_alias",
+        "name_sim_high"
+      ]
+    },
+    {
+      "label": "nogps fingerprint omits country",
+      "expected": false,
+      "predicted": true,
+      "correct": false,
+      "score": 100,
+      "reasons": [
+        "fingerprint"
+      ]
+    },
+    {
+      "label": "Distinct formats share a detail URL",
+      "expected": false,
+      "predicted": true,
+      "correct": false,
+      "score": 115,
+      "reasons": [
+        "same_url",
+        "dates_ok",
+        "same_place",
+        "same_canonical_name"
+      ]
+    },
+    {
+      "label": "TBC reassigned detail page: Tabor to Vimperk",
+      "expected": false,
+      "predicted": false,
+      "correct": true,
+      "score": 0,
+      "reasons": [
+        "same_url_other_race"
+      ]
+    },
+    {
+      "label": "Legitimate reschedule at the same venue",
+      "expected": true,
+      "predicted": true,
+      "correct": true,
+      "score": 95,
+      "reasons": [
+        "same_url",
+        "same_place",
+        "same_canonical_name"
+      ]
+    },
+    {
+      "label": "Identical listing from two sources",
+      "expected": true,
+      "predicted": true,
+      "correct": true,
+      "score": 68,
+      "reasons": [
+        "same_day",
+        "same_place",
+        "same_canonical_name"
+      ]
+    },
+    {
+      "label": "One multi-day event crosses New Year",
+      "expected": true,
+      "predicted": true,
+      "correct": true,
+      "score": 115,
+      "reasons": [
+        "same_url",
+        "dates_ok",
+        "same_place",
+        "same_canonical_name"
+      ]
+    }
+  ]
+}

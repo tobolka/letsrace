@@ -8,6 +8,8 @@ import {
 } from "@/lib/domain";
 import {
   extractEvents,
+  canReconcileMissingEvents,
+  WATCH_READER_VERSION,
   fetchPage,
   nextPollAt,
   errorPollAt,
@@ -23,8 +25,10 @@ import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
+import { protectOfficialFields } from "@/lib/watcher/update-policy";
 import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 import type { Insert, Update } from "@/lib/supabase/tables";
+import type { Json } from "@/lib/supabase/database.types";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -34,6 +38,13 @@ export type WatchOutcome = {
   eventsUpserted: number;
   /** Rows the extractor read, before the per-run write caps. */
   eventsExtracted?: number;
+  eventsCreated?: number;
+  eventsUpdated?: number;
+  eventsRejected?: number;
+  eventsFailed?: number;
+  extractionComplete?: boolean;
+  issues?: string[];
+  usage?: import("@/lib/llm/anthropic").LlmUsage;
   linksDiscovered: number;
   droppedHidden?: number;
   strategy?: string;
@@ -143,7 +154,7 @@ export async function runDueWatches(
         error: "time budget exceeded",
       } satisfies WatchOutcome;
     }
-    return watchOne(row);
+    return watchOne(row, { deadline });
   });
 
   return outcomes;
@@ -157,13 +168,14 @@ export async function watchOne(row: {
   content_hash?: string | null;
   kind?: string;
   last_extract_status?: string | null;
-}): Promise<WatchOutcome> {
+}, opts?: { deadline?: number }): Promise<WatchOutcome> {
   const supabase = createServerSupabase();
   const runInsert = await supabase
     .from("ingest_runs")
     .insert({ watched_url_id: row.id })
     .select("id")
     .single();
+  if (runInsert.error) throw new Error(`Starting ingest run: ${runInsert.error.message}`);
 
   try {
     // Sources whose adapter reads other pages than the one we watch (a JSON
@@ -171,9 +183,11 @@ export async function watchOne(row: {
     // staying the same says nothing, and odjazd.pl's home page stayed the same
     // while its races changed every day. Always fetched whole, never skipped.
     const FANS_OUT = /odjazd\.pl|rideandrest\.net|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com/i.test(row.url);
+    const checkpointPrefix = `${WATCH_READER_VERSION}:`;
+    const currentReader = row.content_hash?.startsWith(checkpointPrefix);
     const fetched = await fetchPage(
       row.url,
-      FANS_OUT ? undefined : { etag: row.etag, lastModified: row.last_modified, contentHash: row.content_hash },
+      FANS_OUT || !currentReader || row.last_extract_status === "needs_review" || row.last_extract_status === "error" ? undefined : { etag: row.etag, lastModified: row.last_modified, contentHash: row.content_hash!.slice(checkpointPrefix.length) },
     );
 
     if (fetched.status === 404) {
@@ -265,7 +279,8 @@ export async function watchOne(row: {
       throw new Error(`HTTP ${fetched.status}`);
     }
 
-    const extracted = await extractEvents(row.url, fetched.html);
+    const deadline = opts?.deadline ?? Date.now() + DEFAULT_BUDGET_MS;
+    const extracted = await extractEvents(row.url, fetched.html, { deadline });
     // Paged: PostgREST caps a select at a thousand rows however many there are,
     // and the largest aggregator here has 1798. Unpaged, 798 races looked new
     // on every single run — they competed for the new-race budget for ever and
@@ -275,7 +290,7 @@ export async function watchOne(row: {
       event: { updated_at: string | null } | { updated_at: string | null }[] | null;
     }[] = [];
     for (let from = 0; ; from += 1000) {
-      const { data: page } = await supabase
+      const { data: page, error } = await supabase
         .from("event_sources")
         .select("external_id, event:events(updated_at)")
         .eq("watched_url_id", row.id)
@@ -283,6 +298,7 @@ export async function watchOne(row: {
         // Ordered, or the ranges overlap and miss rows between them.
         .order("id", { ascending: true })
         .range(from, from + 999);
+      if (error) throw new Error(`Reading known source identities: ${error.message}`);
       const rows = page ?? [];
       knownRows.push(...rows);
       if (rows.length < 1000) break;
@@ -355,10 +371,9 @@ export async function watchOne(row: {
       }
     }
 
-    const fresh = candidates
-      .filter((ev) => !ev.externalId || !known.has(ev.externalId))
-      .sort(forwardFirst)
-      .slice(0, maxNew);
+    const newCandidates = candidates.filter(ev => !ev.externalId || !known.has(ev.externalId));
+    const fresh = newCandidates.sort(forwardFirst).slice(0, maxNew);
+    const writeBacklog = newCandidates.length > fresh.length;
     /**
      * When the page changed, refresh a sample of known races so updates land.
      *
@@ -382,15 +397,22 @@ export async function watchOne(row: {
 
     let upserted = 0;
     // Bounded parallelism for DB upserts (same-host sources stay polite upstream)
-    const upsertResults = await mapPool(toUpsert, 4, async (ev) =>
-      upsertParsedEvent(ev, row.id, row.kind, row.url),
-    );
+    const writeFailures: { externalId: string; error: string }[] = [];
+    const upsertResults = await mapPool(toUpsert, 4, async ev => {
+      try {
+        if (Date.now() > deadline - 5000) throw new Error("write_time_budget_exhausted");
+        return await upsertParsedEvent(ev, row.id, row.kind, row.url);
+      }
+      catch (error) {
+        writeFailures.push({ externalId: ev.externalId, error: error instanceof Error ? error.message : String(error) });
+        return null;
+      }
+    });
     upserted = upsertResults.filter(Boolean).length;
 
     let linksDiscovered = 0;
     for (const child of extracted.childUrls) {
       try {
-        if (/\.pdf($|\?)/i.test(child)) continue;
         if (
           /mtbkalender\.dk|kidsmtbcup\.dk|dgi\.dk|kenniscentrum\.knwu\.nl|mijn\.knwu\.nl|velo\.ffc\.fr|competitions\.ffc\.fr|rfec\.com|orobiecup\.it|mtbsport\.it|jiskra\.potocky\.cz|potocky\.cz/i.test(
             child,
@@ -1154,11 +1176,13 @@ export async function watchOne(row: {
       raceSeasonOver ||
       seasonMismatch;
     const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
-    const needsReview =
-      !offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4);
+    const incomplete = extracted.complete === false || writeBacklog || writeFailures.length > 0;
+    const issues = [...(extracted.issues ?? []), ...(writeBacklog ? ["write_backlog"] : []), ...writeFailures.map(f => `write_failed:${f.externalId}:${f.error}`)];
+    const needsReview = incomplete ||
+      (!offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4));
 
     let droppedHidden = 0;
-    if (calendarKind && !needsReview && !offSeasonEmpty) {
+    if (calendarKind && !needsReview && !offSeasonEmpty && canReconcileMissingEvents(extracted)) {
       const { hideDroppedCalendarEvents } = await import("@/lib/catalog/freshness");
       const extractedIds = new Set(
         candidates
@@ -1178,25 +1202,25 @@ export async function watchOne(row: {
     await supabase
       .from("watched_urls")
       .update({
-        content_hash: fetched.hash,
-        etag: fetched.etag,
-        last_modified: fetched.lastModified,
+        content_hash: incomplete || extracted.strategy.startsWith("rendered:") ? null : `${WATCH_READER_VERSION}:${fetched.hash}`,
+        etag: incomplete || extracted.strategy.startsWith("rendered:") ? null : fetched.etag,
+        last_modified: incomplete || extracted.strategy.startsWith("rendered:") ? null : fetched.lastModified,
         http_status: fetched.status,
         last_fetched_at: new Date().toISOString(),
         last_changed_at: new Date().toISOString(),
-        last_error: emptyButLive
+        last_error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete_extraction" : emptyButLive
           ? "empty read of a source with upcoming races"
           : needsReview
             ? "low confidence or empty extract"
             : null,
-        last_extract_status: offSeasonEmpty
+        last_extract_status: incomplete ? "needs_review" : offSeasonEmpty
           ? "off_season"
           : needsReview
             ? "needs_review"
             : "ok",
         // Stay active — retry later instead of permanent pause
         status: "active",
-        next_poll_at: emptyButLive
+        next_poll_at: incomplete ? errorPollAt(1).toISOString() : emptyButLive
           ? // Soon, the way a fetch error is retried: the page is up, it
             // just did not render this time.
             errorPollAt(1).toISOString()
@@ -1217,8 +1241,17 @@ export async function watchOne(row: {
       );
     }
 
+    const metrics = { watchedUrlId: row.id,
+      extracted: extracted.events.length, attempted: toUpsert.length, upserted,
+      created: upsertResults.filter(r => r?.created).length,
+      updated: upsertResults.filter(r => r && !r.created).length,
+      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: writeFailures.length, complete: !incomplete,
+      issues, usage: extracted.usage ?? null, extraction: extracted.diagnostics ?? null };
+    console.info("watcher_run_metrics", JSON.stringify(metrics));
     await finishRun(runInsert.data?.id, {
-      ok: true,
+      metrics,
+      ok: !incomplete,
+      error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete extraction" : undefined,
       eventsUpserted: upserted,
       linksDiscovered,
       strategy: extracted.strategy,
@@ -1228,9 +1261,17 @@ export async function watchOne(row: {
     return {
       watchedUrlId: row.id,
       url: row.url,
-      ok: true,
+      ok: !incomplete,
+      error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete extraction" : undefined,
       eventsUpserted: upserted,
       eventsExtracted: extracted.events.length,
+      eventsCreated: upsertResults.filter(r => r?.created).length,
+      eventsUpdated: upsertResults.filter(r => r && !r.created).length,
+      eventsRejected: upsertResults.filter(r => !r).length - writeFailures.length,
+      eventsFailed: writeFailures.length,
+      extractionComplete: !incomplete,
+      issues,
+      usage: extracted.usage,
       linksDiscovered,
       droppedHidden,
       strategy: extracted.strategy,
@@ -1312,13 +1353,12 @@ async function finishRun(
     linksDiscovered?: number;
     strategy?: string;
     httpStatus?: number;
+    metrics?: Json;
   },
 ) {
   if (!id) return;
   const supabase = createServerSupabase();
-  await supabase
-    .from("ingest_runs")
-    .update({
+  const runPayload = {
       finished_at: new Date().toISOString(),
       ok: opts.ok,
       error: opts.error ?? null,
@@ -1326,8 +1366,13 @@ async function finishRun(
       links_discovered: opts.linksDiscovered ?? 0,
       strategy: opts.strategy ?? null,
       http_status: opts.httpStatus ?? null,
-    })
+      metrics: opts.metrics ?? {},
+  };
+  const { error } = await supabase
+    .from("ingest_runs")
+    .update(runPayload)
     .eq("id", id);
+  if (error) throw new Error(`Finishing ingest run: ${error.message}`);
 }
 
 function slugifySeries(name: string): string {
@@ -1613,6 +1658,7 @@ async function upsertParsedEvent(
     countryCode: (ev.countryHint || "").trim().toUpperCase() || null,
     seriesName: ev.seriesName,
     fingerprint: fp,
+    disciplines,
     urls: incomingUrls,
   };
 
@@ -1629,6 +1675,7 @@ async function upsertParsedEvent(
     start_date: string;
     end_date?: string | null;
     fingerprint?: string | null;
+    disciplines?: string[] | null;
     website_url?: string | null;
     registration_url?: string | null;
     location?: LocRow;
@@ -1650,6 +1697,7 @@ async function upsertParsedEvent(
         countryCode: loc?.country_code ?? null,
         seriesName: series?.name,
         fingerprint: row.fingerprint ?? undefined,
+        disciplines: row.disciplines,
         urls: [
           row.website_url,
           row.registration_url,
@@ -1667,30 +1715,31 @@ async function upsertParsedEvent(
   const { sourceEditionId } = await import("@/lib/watcher/source-identity");
   const { data: knownSource, error: sourceError } = await supabase
     .from("event_sources")
-    .select("event:events(id,start_date,merged_into_id)")
+    .select("event:events(id,name,start_date,end_date,merged_into_id,website_url,registration_url,location:locations(lat,lng,name,municipality,country_code))")
     .eq("watched_url_id", watchedUrlId)
     .eq("external_id", ev.externalId)
     .maybeSingle();
   if (sourceError) throw sourceError;
-  const sourceEvent = knownSource?.event;
+  const sourceEvent = (Array.isArray(knownSource?.event) ? knownSource.event[0] : knownSource?.event) as unknown as (CandidateRow & { merged_into_id?: string | null }) | null;
   let existingId = sourceEditionId(
     ev.startDate,
-    (Array.isArray(sourceEvent) ? sourceEvent[0] : sourceEvent) as
-      { id: string; start_date: string; merged_into_id?: string | null } | null,
+    sourceEvent,
+    sourceEvent ? { incoming: incomingDedup, stored: asCandidate(sourceEvent, [ev.sourceUrl]).event } : undefined,
   );
   // Matched by this very source's own record of the race, not by resemblance.
   const matchedBySource = existingId != null;
   const fpCols =
-    "id, name, start_date, end_date, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
-  const { data: fpRows } = await supabase
+    "id, name, start_date, end_date, disciplines, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
+  const { data: fpRows, error: fingerprintError } = await supabase
     .from("events")
     .select(fpCols)
     .in("fingerprint", fingerprintVariants(ev))
     .limit(20);
+  if (fingerprintError) throw new Error(`Reading fingerprint candidates: ${fingerprintError.message}`);
   const fpCandidates = (fpRows ?? []) as unknown as (CandidateRow & { status?: string })[];
   // The exact fingerprint still wins outright, cancelled rows included — that is
   // how a cancelled race gets updated rather than resurrected as a new row.
-  let byFp = fpCandidates.find((r) => r.fingerprint === fp) ?? null;
+  let byFp = pickBestDuplicate(incomingDedup, fpCandidates.filter(r => r.fingerprint === fp).map(r => asCandidate(r)))?.row ?? null;
   if (!byFp) {
     const best = pickBestDuplicate(
       incomingDedup,
@@ -1703,24 +1752,26 @@ async function upsertParsedEvent(
   // 1b) same specific website / race-detail URL (strong signal)
   if (!existingId) {
     const urlCols =
-      "id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code)";
+      "id, name, start_date, end_date, disciplines, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code)";
     const exactUrls = [incomingWebsite, incomingRegistration].filter(
       (u): u is string => Boolean(u && normalizeUrlForDedup(u)),
     );
     const urlCandidates: CandidateRow[] = [];
     for (const url of exactUrls) {
-      const { data: bySite } = await supabase
+      const { data: bySite, error: siteCandidateError } = await supabase
         .from("events")
         .select(urlCols)
         .eq("website_url", url)
         .is("merged_into_id", null)
         .limit(8);
-      const { data: byReg } = await supabase
+      if (siteCandidateError) throw new Error(`Reading identity candidates: ${siteCandidateError.message}`);
+      const { data: byReg, error: registrationCandidateError } = await supabase
         .from("events")
         .select(urlCols)
         .eq("registration_url", url)
         .is("merged_into_id", null)
         .limit(8);
+      if (registrationCandidateError) throw new Error(`Reading identity candidates: ${registrationCandidateError.message}`);
       urlCandidates.push(...((bySite ?? []) as unknown as CandidateRow[]));
       urlCandidates.push(...((byReg ?? []) as unknown as CandidateRow[]));
     }
@@ -1731,13 +1782,14 @@ async function upsertParsedEvent(
     existingId = bestByUrl?.row.id;
 
     if (!existingId && ev.sourceUrl && normalizeUrlForDedup(ev.sourceUrl)) {
-      const { data: bySrc } = await supabase
+      const { data: bySrc, error: sourceCandidateError } = await supabase
         .from("event_sources")
         .select(
-          "event_id, source_url, event:events(id, name, start_date, end_date, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code))",
+          "event_id, source_url, event:events(id, name, start_date, end_date, disciplines, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code))",
         )
         .eq("source_url", ev.sourceUrl)
         .limit(5);
+      if (sourceCandidateError) throw new Error(`Reading identity candidates: ${sourceCandidateError.message}`);
       const srcCandidates: { row: CandidateRow; event: ReturnType<typeof asCandidate>["event"] }[] =
         [];
       for (const row of bySrc ?? []) {
@@ -1762,9 +1814,9 @@ async function upsertParsedEvent(
     const spanEnd = (ev.endDate ?? ev.startDate).slice(0, 10);
 
     const eventCols =
-      "id, name, start_date, end_date, fingerprint, status, website_url, registration_url, series:series!events_series_id_fkey(name), location:locations(lat, lng, name, municipality, country_code), sources:event_sources(source_url)";
+      "id, name, start_date, end_date, disciplines, fingerprint, status, website_url, registration_url, series:series!events_series_id_fkey(name), location:locations(lat, lng, name, municipality, country_code), sources:event_sources(source_url)";
 
-    const { data: nearbyDays } = await supabase
+    const { data: nearbyDays, error: dayCandidateError } = await supabase
       .from("events")
       .select(eventCols)
       .gte("start_date", from)
@@ -1772,6 +1824,7 @@ async function upsertParsedEvent(
       .neq("status", "cancelled")
       .is("merged_into_id", null)
       .limit(400);
+      if (dayCandidateError) throw new Error(`Reading identity candidates: ${dayCandidateError.message}`);
 
     const byId = new Map<string, CandidateRow>(
       ((nearbyDays ?? []) as unknown as CandidateRow[]).map((r) => [r.id, r]),
@@ -1779,7 +1832,7 @@ async function upsertParsedEvent(
 
     // Multi-day races (stage races, Fri–Sun cups) start before our window but
     // still cover this day — a single-day mirror must find them.
-    const { data: spanning } = await supabase
+    const { data: spanning, error: spanCandidateError } = await supabase
       .from("events")
       .select(eventCols)
       .lt("start_date", from)
@@ -1788,10 +1841,11 @@ async function upsertParsedEvent(
       .neq("status", "cancelled")
       .is("merged_into_id", null)
       .limit(120);
+      if (spanCandidateError) throw new Error(`Reading identity candidates: ${spanCandidateError.message}`);
     for (const row of (spanning ?? []) as unknown as CandidateRow[]) byId.set(row.id, row);
 
     if (ev.lat != null && ev.lng != null) {
-      const { data: nearLocs } = await supabase
+      const { data: nearLocs, error: nearLocationError } = await supabase
         .from("locations")
         .select("id")
         .gte("lat", ev.lat - 0.35)
@@ -1799,9 +1853,10 @@ async function upsertParsedEvent(
         .gte("lng", ev.lng - 0.5)
         .lte("lng", ev.lng + 0.5)
         .limit(80);
+      if (nearLocationError) throw new Error(`Reading identity candidates: ${nearLocationError.message}`);
       const locIds = (nearLocs ?? []).map((l) => l.id as string);
       if (locIds.length) {
-        const { data: nearbyGeo } = await supabase
+        const { data: nearbyGeo, error: geoCandidateError } = await supabase
           .from("events")
           .select(eventCols)
           .gte("start_date", from)
@@ -1810,6 +1865,7 @@ async function upsertParsedEvent(
           .is("merged_into_id", null)
           .in("location_id", locIds)
           .limit(80);
+      if (geoCandidateError) throw new Error(`Reading identity candidates: ${geoCandidateError.message}`);
         for (const row of (nearbyGeo ?? []) as unknown as CandidateRow[]) byId.set(row.id, row);
       }
     }
@@ -1835,11 +1891,12 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "id, name, start_date, end_date, level, uci_class, class_label, audience, age_categories, age_confidence, status, visibility, event_type, disciplines, website_url, registration_opens_at, registration_closes_at, overrides:event_overrides(locked_fields)",
+          "*, sources:event_sources(kind), overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
     : { data: byFp };
+  if (existingId && !existingFull) throw new Error(`Matched race could not be read: ${existingId}`);
 
   const locked =
     (existingFull as { overrides?: { locked_fields?: string[] } | { locked_fields?: string[] }[] } | null)
@@ -2126,6 +2183,7 @@ async function upsertParsedEvent(
     : audience;
 
   const payload: Omit<Insert<"events">, "slug"> = {
+    ...(ev.status === "cancelled" ? { status: "cancelled" } : {}),
     name: mergedName,
     name_normalized: normalizeName(mergedName),
     start_date: mergedStart,
@@ -2283,14 +2341,22 @@ async function upsertParsedEvent(
     }
   }
 
+  const protectedFields = protectOfficialFields(watchedKind, existingFull as unknown as Record<string, unknown> | null, payload as unknown as Record<string, unknown>);
+  if (protectedFields.length) console.info("watcher_source_conflict", JSON.stringify({ eventId: existingId, source: watchedUrl, protectedFields }));
+
   // The locked names come from the database as text, not as column names.
   for (const key of lockedFields) {
     delete (payload as Record<string, unknown>)[key];
   }
+  if (lockedFields.some(key => ["name", "start_date", "location_id"].includes(key))) Reflect.deleteProperty(payload, "fingerprint");
+  if (lockedFields.includes("name")) Reflect.deleteProperty(payload, "name_normalized");
+  if (lockedFields.includes("start_date")) Reflect.deleteProperty(payload, "season");
 
   let eventId = existingId;
+  let created = false;
   if (eventId) {
-    await supabase.from("events").update(payload).eq("id", eventId);
+    const { error } = await supabase.from("events").update(payload).eq("id", eventId);
+    if (error) throw new Error(`Updating race: ${error.message}`);
   } else {
     const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
     const { data, error } = await supabase
@@ -2307,10 +2373,13 @@ async function upsertParsedEvent(
        */
       const { data: raced } = await supabase
         .from("events")
-        .select("id")
-        .eq("fingerprint", fp)
+        .select(fpCols)
+        .eq("fingerprint", payload.fingerprint!)
         .maybeSingle();
       if (raced?.id) {
+        if (!pickBestDuplicate(incomingDedup, [asCandidate(raced as unknown as CandidateRow)])) {
+          throw new Error(`Identity conflict on fingerprint: ${raced.id}`);
+        }
         eventId = raced.id;
         await supabase
           .from("events")
@@ -2324,25 +2393,37 @@ async function upsertParsedEvent(
           .select("id")
           .single();
         eventId = d2?.id;
+        created = Boolean(eventId);
       }
     } else {
       eventId = data.id;
+      created = true;
     }
   }
 
-  if (!eventId) return null;
+  if (!eventId) throw new Error("Race write returned no id");
 
+  if (!created && existingFull) {
+    const previous = existingFull as unknown as Record<string, unknown>;
+    const { recordFacts } = await import("@/lib/catalog/facts");
+    const changes = Object.entries(payload).filter(([field, value]) =>
+      !["last_seen_at", "updated_at", "fingerprint", "name_normalized"].includes(field) &&
+      Object.hasOwn(previous, field) && JSON.stringify(previous[field] ?? null) !== JSON.stringify(value ?? null));
+    await recordFacts(supabase, eventId, changes.map(([field, value]) => ({ field, value, previous: previous[field],
+      sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote ?? null })),
+      { method: "watcher_update_v2", version: "pipeline-v2", model: ev.evidence?.model });
+  }
   await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
 
   if (beforeSnap) {
     try {
       const { recordEventPlanChanges } = await import("@/lib/plan-changes-db");
       await recordEventPlanChanges(supabase, eventId, beforeSnap, {
-        name: mergedName,
-        startDate: mergedStart,
-        endDate: mergedEnd,
+        name: payload.name ?? beforeSnap.name,
+        startDate: payload.start_date ?? beforeSnap.startDate,
+        endDate: payload.end_date ?? beforeSnap.endDate,
         status: typeof payload.status === "string" ? payload.status : beforeSnap.status,
-        disciplines: classified.disciplines.length ? classified.disciplines : beforeSnap.disciplines,
+        disciplines: payload.disciplines ?? beforeSnap.disciplines,
         registrationUrl:
           typeof payload.registration_url === "string"
             ? payload.registration_url
@@ -2417,7 +2498,7 @@ async function upsertParsedEvent(
     }
   }
 
-  return eventId;
+  return { id: eventId, created };
 }
 
 export async function previewUrl(url: string) {

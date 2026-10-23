@@ -1,0 +1,1332 @@
+{
+  "baseCommit": "588ff0664bdaf25fb7b16a191c35f6db8235f42b",
+  "mode": "read_only",
+  "catalogueWrites": 0,
+  "productionMigrationApplied": false,
+  "deploymentPerformed": false,
+  "sources": [
+    {
+      "url": "https://www.rsc-kattenberg.de/",
+      "fetchedAt": "2026-10-23T16:25:09.178Z",
+      "baselineCount": 0,
+      "combinedCount": 1,
+      "additionalCandidates": 1,
+      "removedWeakGenericCandidates": 0,
+      "ai": {
+        "proposed": 1,
+        "rejected": 0,
+        "chunksTotal": 1,
+        "chunksRead": 1,
+        "cacheHits": 1,
+        "truncated": false,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        }
+      },
+      "representation": [
+        {
+          "name": "Cross im Park",
+          "date": "2026-10-25",
+          "sourceUrl": "https://www.rsc-kattenberg.de/cross-im-park-25-10-2026/",
+          "result": "unrepresented_candidate_needs_review",
+          "match": null
+        }
+      ],
+      "events": [
+        {
+          "name": "Cross im Park",
+          "date": "2026-10-25",
+          "sourceUrl": "https://www.rsc-kattenberg.de/cross-im-park-25-10-2026/",
+          "evidence": {
+            "quote": "[Cross im Park am 25.10.2026](https://www.rsc-kattenberg.de/cross-im-park-25-10-2026/)",
+            "sourceUrl": "https://www.rsc-kattenberg.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        }
+      ]
+    },
+    {
+      "url": "https://www.igaswendland.de/",
+      "fetchedAt": "2026-10-23T16:25:12.281Z",
+      "baselineCount": 1,
+      "combinedCount": 1,
+      "additionalCandidates": 1,
+      "removedWeakGenericCandidates": 1,
+      "ai": {
+        "proposed": 30,
+        "rejected": 29,
+        "chunksTotal": 3,
+        "chunksRead": 3,
+        "cacheHits": 3,
+        "truncated": false,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        }
+      },
+      "representation": [
+        {
+          "name": "Stevens Cyclo-Cross-Cup",
+          "date": "2026-11-01",
+          "sourceUrl": "https://www.igaswendland.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "c1a65190-8da2-406f-a8d5-9e017bdc1ef7",
+            "name": "Stevens-Cyclo-Cross-Cup",
+            "score": 76,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "same_discipline",
+              "name_substring"
+            ]
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "Stevens Cyclo-Cross-Cup",
+          "date": "2026-11-01",
+          "sourceUrl": "https://www.igaswendland.de/",
+          "evidence": {
+            "quote": "01.11.2026 [Stevens Cyclo-Cross-Cup](https://my.raceresult.com/391335/registration) 10 Min. bis 60 Min. Bösel\n01.11.2026 [Stevens Cyclo-Cross-Cup](https://my.raceresult.com/391335/registration) 10 Min. bis 60 Min. Bösel",
+            "sourceUrl": "https://www.igaswendland.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        }
+      ]
+    },
+    {
+      "url": "https://www.rv-trave.de/",
+      "fetchedAt": "2026-10-23T16:25:37.054Z",
+      "baselineCount": 0,
+      "combinedCount": 0,
+      "additionalCandidates": 0,
+      "removedWeakGenericCandidates": 0,
+      "ai": {
+        "proposed": 0,
+        "rejected": 0,
+        "chunksTotal": 1,
+        "chunksRead": 1,
+        "cacheHits": 1,
+        "truncated": false,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        }
+      },
+      "representation": [],
+      "events": []
+    },
+    {
+      "url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+      "fetchedAt": "2026-10-23T16:24:43.791Z",
+      "baselineCount": 0,
+      "combinedCount": 6,
+      "additionalCandidates": 6,
+      "removedWeakGenericCandidates": 0,
+      "ai": {
+        "proposed": 12,
+        "rejected": 6,
+        "chunksTotal": 1,
+        "chunksRead": 1,
+        "cacheHits": 1,
+        "truncated": false,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        }
+      },
+      "representation": [
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Krnov – Cvilín",
+          "date": "2026-10-28",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "46cf884c-7e89-4454-b75c-c11d97e82fda",
+            "name": "Oderský pohár — Krnov – Cvilín",
+            "score": 111,
+            "reasons": [
+              "same_url",
+              "dates_ok",
+              "same_place",
+              "name_sim_mid",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Zlaté Hory I. (ACS DRAK VRBNO)",
+          "date": "2026-10-31",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "c01de991-fb22-4896-8d6f-63b5548b23f7",
+            "name": "Oderský pohár — Zlaté Hory I.",
+            "score": 111,
+            "reasons": [
+              "same_url",
+              "dates_ok",
+              "same_place",
+              "name_sim_mid",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Zlaté Hory II.",
+          "date": "2026-11-01",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "result": "unrepresented_candidate_needs_review",
+          "match": null
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — ACK Stará Ves n. O. I.",
+          "date": "2026-11-07",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "ed72dd49-74ac-4c25-a9ac-885b81f47756",
+            "name": "Oderský pohár — ACK Stará Ves n. O. II.",
+            "score": 101,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_url",
+              "dates_ok",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — ACK Stará Ves n. O. II.",
+          "date": "2026-11-08",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "ed72dd49-74ac-4c25-a9ac-885b81f47756",
+            "name": "Oderský pohár — ACK Stará Ves n. O. II.",
+            "score": 111,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_url",
+              "dates_ok",
+              "same_place",
+              "name_sim_mid",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Zábřeh na Moravě – VELKÉ FINÁLE",
+          "date": "2026-11-28",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "result": "unrepresented_candidate_needs_review",
+          "match": null
+        }
+      ],
+      "events": [
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Krnov – Cvilín",
+          "date": "2026-10-28",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "evidence": {
+            "quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026\n28. 10. 2026 – Krnov – Cvilín (kont: p. Kopeček, 776 463 261)\n28. 10. 2026 – Krnov – Cvilín (kont: p. Kopeček, 776 463 261)",
+            "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Zlaté Hory I. (ACS DRAK VRBNO)",
+          "date": "2026-10-31",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "evidence": {
+            "quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026\n31. 10. 2026 – Zlaté Hory I. (ACS DRAK VRBNO) (kont: p. Mlynář, 770 123 191)\n31. 10. 2026 – Zlaté Hory I. (ACS DRAK VRBNO) (kont: p. Mlynář, 770 123 191)",
+            "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Zlaté Hory II.",
+          "date": "2026-11-01",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "evidence": {
+            "quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026\n01. 11. 2026 – Zlaté Hory II. (kont: p. Machala, 730 551 651)\n01. 11. 2026 – Zlaté Hory II. (kont: p. Machala, 730 551 651)",
+            "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — ACK Stará Ves n. O. I.",
+          "date": "2026-11-07",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "evidence": {
+            "quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026\n07. 11. 2026 – ACK Stará Ves n. O. I. (kont: p. Nepraš, 602 576 603)",
+            "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — ACK Stará Ves n. O. II.",
+          "date": "2026-11-08",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "evidence": {
+            "quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026\n08. 11. 2026 – ACK Stará Ves n. O. II. (kont: p. Nepraš, 602 576 603)",
+            "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026 — Zábřeh na Moravě – VELKÉ FINÁLE",
+          "date": "2026-11-28",
+          "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+          "evidence": {
+            "quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026\n28. 11. 2026 – Zábřeh na Moravě – VELKÉ FINÁLE (kont: p. Hrubý, 734 570 944)\n28. 11. 2026 – Zábřeh na Moravě – VELKÉ FINÁLE (kont: p. Hrubý, 734 570 944)",
+            "sourceUrl": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        }
+      ]
+    },
+    {
+      "url": "https://www.stevenscup.de/rennen",
+      "fetchedAt": "2026-10-23T16:24:31.162Z",
+      "baselineCount": 16,
+      "combinedCount": 16,
+      "additionalCandidates": 0,
+      "removedWeakGenericCandidates": 0,
+      "ai": {
+        "proposed": 16,
+        "rejected": 5,
+        "chunksTotal": 1,
+        "chunksRead": 1,
+        "cacheHits": 1,
+        "truncated": false,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        }
+      },
+      "representation": [
+        {
+          "name": "#06 - Schwerin",
+          "date": "2026-10-24",
+          "sourceUrl": "rennen/06-schwerin",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#07 - Kaltenkirchen",
+          "date": "2026-10-25",
+          "sourceUrl": "rennen/07-kaltenkirchen",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#08 - Bösel/Wendland",
+          "date": "2026-11-01",
+          "sourceUrl": "rennen/08-boesel-wendland",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#09 - Bad Oldesloe",
+          "date": "2026-11-08",
+          "sourceUrl": "rennen/09-bad-oldesloe-2",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#10 - Bad Doberan",
+          "date": "2026-11-14",
+          "sourceUrl": "rennen/10-bad-doberan",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#11 - Rostock",
+          "date": "2026-11-15",
+          "sourceUrl": "rennen/11-rostock",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#12 - Kiel",
+          "date": "2026-11-22",
+          "sourceUrl": "rennen/12-kiel",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#13 - Elmshorn",
+          "date": "2026-11-28",
+          "sourceUrl": "rennen/13-elmshorn",
+          "result": "represented",
+          "match": {
+            "id": "69a27d65-b585-414e-8388-8c8180ebbe57",
+            "name": "#13 - Elmshorn",
+            "score": 90,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "same_round",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "#14 - Wedel",
+          "date": "2026-11-29",
+          "sourceUrl": "rennen/14-wedel",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#15 - Harburg",
+          "date": "2026-12-13",
+          "sourceUrl": "rennen/15-harburg",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#16 - Buchholz (Finale)",
+          "date": "2027-01-17",
+          "sourceUrl": "rennen/16-buchholz-finale",
+          "result": "represented",
+          "match": {
+            "id": "1ca9df0f-e5e0-4d19-9af0-dfd70af93600",
+            "name": "#16 - Buchholz (Finale)",
+            "score": 90,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "same_round",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "#01 - Duvenstedt",
+          "date": "2026-09-27",
+          "sourceUrl": "rennen/01-duvenstedt-2",
+          "result": "represented",
+          "match": {
+            "id": "f3a0baee-c6a6-48a2-8d50-ca149df5fee5",
+            "name": "#01 - Duvenstedt",
+            "score": 90,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "same_round",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "#02 - Hannover",
+          "date": "2026-10-03",
+          "sourceUrl": "rennen/02-hannover-3",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#03 - Bad Harzburg",
+          "date": "2026-10-04",
+          "sourceUrl": "rennen/03-bad-harzburg-2",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#04 - Mölln",
+          "date": "2026-10-17",
+          "sourceUrl": "rennen/04-moelln-2",
+          "result": "represented",
+          "match": null
+        },
+        {
+          "name": "#05 - Norderstedt",
+          "date": "2026-10-18",
+          "sourceUrl": "rennen/05-norderstedt-2",
+          "result": "represented",
+          "match": null
+        }
+      ],
+      "events": [
+        {
+          "name": "#06 - Schwerin",
+          "date": "2026-10-24",
+          "sourceUrl": "rennen/06-schwerin",
+          "evidence": {
+            "quote": "#06 - Schwerin „Cross the Pfaff“ Samstag, 24. Oktober 2026",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#07 - Kaltenkirchen",
+          "date": "2026-10-25",
+          "sourceUrl": "rennen/07-kaltenkirchen",
+          "evidence": {
+            "quote": "#07 - Kaltenkirchen „19. Cross im Park des RSC Kattenberg“ Sonntag, 25. Oktober 2026\nAdresse: Freizeitpark | Im Grunde 2, 24568 Kaltenkirchen",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#08 - Bösel/Wendland",
+          "date": "2026-11-01",
+          "sourceUrl": "rennen/08-boesel-wendland",
+          "evidence": {
+            "quote": "#08 - Bösel/Wendland „2. CycloCross-Rennen der IGAS Wendland“ Sonntag, 1. November 2026",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#09 - Bad Oldesloe",
+          "date": "2026-11-08",
+          "sourceUrl": "rennen/09-bad-oldesloe-2",
+          "evidence": {
+            "quote": "#09 - Bad Oldesloe Sonntag, 8. November 2026\nAdresse: ADAC Übungsplatz | 23843 Bad Oldesloe, Sehmsdorfer Straße 82",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#10 - Bad Doberan",
+          "date": "2026-11-14",
+          "sourceUrl": "rennen/10-bad-doberan",
+          "evidence": {
+            "quote": "#10 - Bad Doberan Samstag, 14. November 2026\nAdresse: Bollhäger Weg, Bad Doberan",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#11 - Rostock",
+          "date": "2026-11-15",
+          "sourceUrl": "rennen/11-rostock",
+          "evidence": {
+            "quote": "#11 - Rostock Sonntag, 15. November 2026\nAdresse: Sportplatz am Waldessaum | 18057 Rostock",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#12 - Kiel",
+          "date": "2026-11-22",
+          "sourceUrl": "rennen/12-kiel",
+          "evidence": {
+            "quote": "#12 - Kiel „Norder Cross Kiel“ Sonntag, 22. November 2026\nAdresse: Eckernförder Str. 180, 24118 Kiel",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#13 - Elmshorn",
+          "date": "2026-11-28",
+          "sourceUrl": "rennen/13-elmshorn",
+          "evidence": {
+            "quote": "#13 - Elmshorn Samstag, 28. November 2026\nAdresse: Am Butterberg, 25336 Elmshorn",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#14 - Wedel",
+          "date": "2026-11-29",
+          "sourceUrl": "rennen/14-wedel",
+          "evidence": {
+            "quote": "#14 - Wedel „5. Ulli Langbehn Radcross der RG Wedel“ Sonntag, 29. November 2026\nAdresse: Schulauer Str. 56, 22880 Wedel",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#15 - Harburg",
+          "date": "2026-12-13",
+          "sourceUrl": "rennen/15-harburg",
+          "evidence": {
+            "quote": "#15 - Harburg „47. Harburger Weihnachtscross“ Sonntag, 13. Dezember 2026",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#16 - Buchholz (Finale)",
+          "date": "2027-01-17",
+          "sourceUrl": "rennen/16-buchholz-finale",
+          "evidence": {
+            "quote": "#16 - Buchholz (Finale) Sonntag, 17. Januar 2027",
+            "sourceUrl": "https://www.stevenscup.de/rennen",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "#01 - Duvenstedt",
+          "date": "2026-09-27",
+          "sourceUrl": "rennen/01-duvenstedt-2",
+          "evidence": null
+        },
+        {
+          "name": "#02 - Hannover",
+          "date": "2026-10-03",
+          "sourceUrl": "rennen/02-hannover-3",
+          "evidence": null
+        },
+        {
+          "name": "#03 - Bad Harzburg",
+          "date": "2026-10-04",
+          "sourceUrl": "rennen/03-bad-harzburg-2",
+          "evidence": null
+        },
+        {
+          "name": "#04 - Mölln",
+          "date": "2026-10-17",
+          "sourceUrl": "rennen/04-moelln-2",
+          "evidence": null
+        },
+        {
+          "name": "#05 - Norderstedt",
+          "date": "2026-10-18",
+          "sourceUrl": "rennen/05-norderstedt-2",
+          "evidence": null
+        }
+      ]
+    },
+    {
+      "url": "https://www.dsergebnis.de/",
+      "fetchedAt": "2026-10-23T16:24:53.928Z",
+      "baselineCount": 1,
+      "combinedCount": 22,
+      "additionalCandidates": 22,
+      "removedWeakGenericCandidates": 1,
+      "ai": {
+        "proposed": 29,
+        "rejected": 7,
+        "chunksTotal": 1,
+        "chunksRead": 1,
+        "cacheHits": 1,
+        "truncated": false,
+        "issues": [],
+        "usage": {
+          "tokensIn": 0,
+          "tokensOut": 0,
+          "costUsd": 0
+        }
+      },
+      "representation": [
+        {
+          "name": "Termine 2026 — 9. Cloppenburger City Cross",
+          "date": "2026-10-24",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "55440150-6b5e-4625-be9a-1626ae58830c",
+            "name": "Cloppenburger City Cross",
+            "score": 64,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2026 — Die Mauer von Kendenich",
+          "date": "2026-11-07",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "a55944aa-c6ac-4428-bfcd-eba0a897582d",
+            "name": "NRW Cross Cup Die Mauer von Kendenich — Kendenich",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2026 — BL Cyclo Cross Stahnsdorf",
+          "date": "2026-11-14",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "af445dda-c4b0-436a-b382-402c17498b39",
+            "name": "BL Cyclo Cross Stahnsdorf — Stahnsdorf",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid",
+              "same_discipline"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2026 — Donkey Creek Cross",
+          "date": "2026-11-21",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "38b83324-c9e0-4603-8fa5-a42b50de7a87",
+            "name": "NRW Cross Cup — Donkey Creek Cross",
+            "score": 54,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2026 — Frank Oxenfart Campus Cross LVM NRW",
+          "date": "2026-12-05",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "93a4f5d5-7043-41e4-b834-069df9fd1105",
+            "name": "NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW — Campus",
+            "score": 54,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2026 — Neheimer Cross Cup - NRW Cross Cup",
+          "date": "2026-12-12",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "fb3a3c42-4bf6-4768-bf41-1ab37999ff1d",
+            "name": "Neheimer Cross Cup - NRW Cross Cup — Neheim",
+            "score": 66,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Finale BL Rund um das Vechtaer Reiterwaldstadion",
+          "date": "2027-01-03",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "463ebd8a-6eed-401b-995b-d26f90f6e2eb",
+            "name": "Finale BL Rund um das Vechtaer Reiterwaldstadion — Vechta",
+            "score": 66,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Herforder Frühjahrspreis",
+          "date": "2027-03-14",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "3fd52625-d43d-416e-8c31-816b5ba0137d",
+            "name": "Herforder Frühjahrspreis — Herford",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Gr. Preis der Südlichen Weinstrasse",
+          "date": "2027-04-10",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "58b23752-6a93-4fad-86c7-54533f2cb9db",
+            "name": "Großer Preis der Südlichen Weinstrasse",
+            "score": 66,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_high"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — 43. Überherrner Straßenrennen auf dem Wallerfanger Saargau",
+          "date": "2027-04-25",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "f1faca79-2023-4d97-95c6-dd5c9ca4913f",
+            "name": "43. Überherrner Straßenrennen auf dem Wallerfanger Saargau — Überherrn",
+            "score": 66,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "same_discipline"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Großer Preis der Sparkasse Neuss",
+          "date": "2027-05-01",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "0b21206b-5bb9-4c68-92fb-b2d836e36be4",
+            "name": "Großer Preis der Sparkasse Neuss — Neuss",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — 35. GP von Buchholz",
+          "date": "2027-05-06",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "d80c5f42-8727-424d-ac63-e697f09987f0",
+            "name": "35. GP von Buchholz — Buchholz",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — 47. Erzgebirgs-Rundfahrt 2027 - Radsportklassiker",
+          "date": "2027-05-23",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "57314920-9c36-48de-8499-3a5c63c88224",
+            "name": "47. Erzgebirgs-Rundfahrt 2027 - Radsportklassiker",
+            "score": 76,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — 38. Main-Spessart Rundfahrt",
+          "date": "2027-05-30",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "1d4a1f19-8660-4521-82d3-68fbbba079e2",
+            "name": "38. Main-Spessart Rundfahrt — Main-Spessart",
+            "score": 54,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — 7. GP von Trier",
+          "date": "2027-06-06",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "ce306049-004c-4e75-9c82-cd3aee5866ac",
+            "name": "7. GP von Trier — Trier",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — DM EZF U17 und EZF unterm Bremer Stern",
+          "date": "2027-06-12",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "3f8a0665-4f25-49a2-b9be-022f4d9b0585",
+            "name": "DM EZF U17 und EZF unterm Bremer Stern — Bremen",
+            "score": 54,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Bremer Stern mit Sichtung U17",
+          "date": "2027-06-13",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "429d7535-2953-4223-b01d-9e73211f269d",
+            "name": "Bremer Stern mit Sichtung U17 — Bremen",
+            "score": 54,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Nievenheimer Ortsschildsprint",
+          "date": "2027-06-20",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "16e92f07-b4c8-40ae-ade1-9953ed6a68a9",
+            "name": "Nievenheimer Ortsschildsprint",
+            "score": 76,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_high",
+              "name_substring"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Gr. Preis der Stadt Troisdorf",
+          "date": "2027-07-10",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "73257f28-6683-463c-98ea-01733c590eaa",
+            "name": "Gr. Preis der Stadt Troisdorf — Troisdorf",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Kometen Schmitter Nacht",
+          "date": "2027-07-30",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "22a43516-1475-4d18-943a-4d79789a9d89",
+            "name": "Kometen Schmitter Nacht — Huerth",
+            "score": 54,
+            "reasons": [
+              "place_unknown_same_weekend",
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — Radrennen in Offenbach",
+          "date": "2027-07-31",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "cbf906db-f807-4136-82de-3590e2f9579c",
+            "name": "Radrennen in Offenbach — Offenbach",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid",
+              "same_discipline"
+            ]
+          }
+        },
+        {
+          "name": "Termine 2027 — 36. Spee-Cup in Genthin",
+          "date": "2027-08-29",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "result": "likely_existing_cross_source",
+          "match": {
+            "id": "d4172053-ee4c-43a1-b60a-3865da61e0b0",
+            "name": "36. Spee-Cup in Genthin — Genthin",
+            "score": 54,
+            "reasons": [
+              "same_day",
+              "same_place",
+              "name_sim_mid"
+            ]
+          }
+        }
+      ],
+      "events": [
+        {
+          "name": "Termine 2026 — 9. Cloppenburger City Cross",
+          "date": "2026-10-24",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2026\n24.10.2026 9. Cloppenburger City Cross\n24.10.2026 9. Cloppenburger City Cross",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2026 — Die Mauer von Kendenich",
+          "date": "2026-11-07",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2026\n07.11.2026 NRW Cross Cup Die Mauer von Kendenich\n07.11.2026 NRW Cross Cup Die Mauer von Kendenich",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2026 — BL Cyclo Cross Stahnsdorf",
+          "date": "2026-11-14",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2026\n14.11.2026 BL Cyclo Cross Stahnsdorf\n14.11.2026 BL Cyclo Cross Stahnsdorf",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2026 — Donkey Creek Cross",
+          "date": "2026-11-21",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2026\n21.11.2026 NRW Cross Cup Donkey Creek Cross",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2026 — Frank Oxenfart Campus Cross LVM NRW",
+          "date": "2026-12-05",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2026\n05.12.2026 NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2026 — Neheimer Cross Cup - NRW Cross Cup",
+          "date": "2026-12-12",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2026\n12.12.2026 Neheimer Cross Cup - NRW Cross Cup\n12.12.2026 Neheimer Cross Cup - NRW Cross Cup",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Finale BL Rund um das Vechtaer Reiterwaldstadion",
+          "date": "2027-01-03",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n03.01.2027 Finale BL Rund um das Vechtaer Reiterwaldstadion\n03.01.2027 Finale BL Rund um das Vechtaer Reiterwaldstadion",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Herforder Frühjahrspreis",
+          "date": "2027-03-14",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n14.03.2027 Herforder Frühjahrspreis\n14.03.2027 Herforder Frühjahrspreis",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Gr. Preis der Südlichen Weinstrasse",
+          "date": "2027-04-10",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n10.04.2027 Gr. Preis der Südlichen Weinstrasse",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — 43. Überherrner Straßenrennen auf dem Wallerfanger Saargau",
+          "date": "2027-04-25",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n25.04.2027  43. Überherrner Straßenrennen auf dem Wallerfanger Saargau\n25.04.2027  43. Überherrner Straßenrennen auf dem Wallerfanger Saargau",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Großer Preis der Sparkasse Neuss",
+          "date": "2027-05-01",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n01.05.2027 Großer Preis der Sparkasse Neuss\n01.05.2027 Großer Preis der Sparkasse Neuss",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — 35. GP von Buchholz",
+          "date": "2027-05-06",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n06.05.2027 35. GP von Buchholz\n06.05.2027 35. GP von Buchholz",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — 47. Erzgebirgs-Rundfahrt 2027 - Radsportklassiker",
+          "date": "2027-05-23",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n23.05.2027 47. Erzgebirgs-Rundfahrt 2027 - Radsportklassiker",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — 38. Main-Spessart Rundfahrt",
+          "date": "2027-05-30",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n30.05.2027 38. Main-Spessart Rundfahrt",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — 7. GP von Trier",
+          "date": "2027-06-06",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n06.06.2027 7. GP von Trier\n06.06.2027 7. GP von Trier",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — DM EZF U17 und EZF unterm Bremer Stern",
+          "date": "2027-06-12",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n12.06.2027 DM EZF U17 und EZF unterm Bremer Stern",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Bremer Stern mit Sichtung U17",
+          "date": "2027-06-13",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n13.06.2027 Bremer Stern mit Sichtung U17",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Nievenheimer Ortsschildsprint",
+          "date": "2027-06-20",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n20.06.2027 Nievenheimer Ortsschildsprint\n20.06.2027 Nievenheimer Ortsschildsprint",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Gr. Preis der Stadt Troisdorf",
+          "date": "2027-07-10",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n10.07.2027 Gr. Preis der Stadt Troisdorf\n10.07.2027 Gr. Preis der Stadt Troisdorf",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Kometen Schmitter Nacht",
+          "date": "2027-07-30",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n30.07.2027 Kometen Schmitter Nacht",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — Radrennen in Offenbach",
+          "date": "2027-07-31",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n31.07.2027 Radrennen in Offenbach\n31.07.2027 Radrennen in Offenbach",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        },
+        {
+          "name": "Termine 2027 — 36. Spee-Cup in Genthin",
+          "date": "2027-08-29",
+          "sourceUrl": "https://www.dsergebnis.de/",
+          "evidence": {
+            "quote": "Termine 2027\n29.08.2027 36. Spee-Cup in Genthin\n29.08.2027 36. Spee-Cup in Genthin",
+            "sourceUrl": "https://www.dsergebnis.de/",
+            "method": "llm_calendar",
+            "version": "calendar-v2",
+            "model": "claude-haiku-5-5"
+          }
+        }
+      ]
+    }
+  ],
+  "costs": {
+    "initialProbeUsd": 0.0009903,
+    "calendarProbeV1Usd": 0.016963300000000004,
+    "calendarProbeV2Usd": 0.018810300000000002,
+    "replayUsd": 0
+  },
+  "manualReview": [
+    {
+      "date": "2026-10-25",
+      "candidate": "Cross im Park",
+      "finding": "Already public under CycloCross im STEVENS-Cup 2026/2027 Kaltenkirchen RSC Kattenberg Cross im Park. Not a new race."
+    },
+    {
+      "date": "2026-11-28",
+      "candidate": "Odersky pohar final, Zabreh",
+      "finding": "Existing hidden edition found by read-only query. Do not automatically unhide or duplicate it."
+    }
+  ],
+  "limits": [
+    "Candidate comparisons are a small source sample, not catalogue-wide recall or precision.",
+    "Identity benchmark uses reconstructed regression fixtures, not independently labeled live pairs.",
+    "Model cost is estimated by existing token accounting, not an invoice."
+  ]
+}

@@ -3,6 +3,7 @@ import {
   DEDUP_THRESHOLD,
   distanceKm,
   scoreDuplicate,
+  hasIdentityConflict,
   spanDays,
   canonicalizeForDedup,
   isGarbagePlace,
@@ -40,7 +41,7 @@ function lockedCount(r: MergeDuplicateRow): number {
   return o?.locked_fields?.length ?? 0;
 }
 
-function asDedup(row: MergeDuplicateRow): DedupEvent {
+export function asDedup(row: MergeDuplicateRow): DedupEvent {
   const loc = row.location;
   return {
     startDate: row.start_date,
@@ -438,7 +439,7 @@ export async function mergePublicDuplicates(opts?: {
   const maxMerges = opts?.maxMerges ?? Number.POSITIVE_INFINITY;
 
   const rows: MergeDuplicateRow[] = [];
-  for (let from = 0; from < 12000; from += 1000) {
+  for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("events")
       .select(
@@ -474,6 +475,14 @@ export async function mergePublicDuplicates(opts?: {
   }
 
   const parent = new Map<string, string>();
+  const separate = new Set<string>();
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabase.from("duplicate_reviews").select("left_id,right_id").order("id").range(offset, offset + 999);
+    if (error) throw new Error(`Reading duplicate reviews: ${error.message}`);
+    for (const pair of data ?? []) separate.add(`${pair.left_id}|${pair.right_id}`);
+    if (!data || data.length < 1000) break;
+  }
+  const reviewedSeparate = (a: MergeDuplicateRow, b: MergeDuplicateRow) => separate.has(a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`);
   const find = (id: string): string => {
     const p = parent.get(id);
     if (!p || p === id) return id;
@@ -500,9 +509,10 @@ export async function mergePublicDuplicates(opts?: {
   }
 
   const considerPair = (a: MergeDuplicateRow, b: MergeDuplicateRow) => {
-    if (a.id === b.id) return;
+    if (a.id === b.id || reviewedSeparate(a, b)) return;
     const left = a.id < b.id ? a : b;
     const right = a.id < b.id ? b : a;
+    if (hasIdentityConflict(scoreDuplicate(asDedup(left), asDedup(right)).reasons)) return;
     if (strongSameRace(left, right)) {
       if (!isJunkPair(left, right)) unite(left.id, right.id);
       return;
@@ -624,7 +634,7 @@ export async function mergePublicDuplicates(opts?: {
       for (const drop of pool) {
         if (drop.id === keep.id) continue;
         const { score, reasons } = scoreDuplicate(asDedup(keep), asDedup(drop));
-        if (score < DEDUP_THRESHOLD || isJunkPair(keep, drop)) {
+        if (score < DEDUP_THRESHOLD || isJunkPair(keep, drop) || reviewedSeparate(keep, drop)) {
           rest.push(drop);
           continue;
         }
@@ -650,6 +660,7 @@ export async function mergePublicDuplicates(opts?: {
       for (let j = i + 1; j < sorted.length; j++) {
         const a = sorted[i]!;
         const b = sorted[j]!;
+        if (reviewedSeparate(a, b)) continue;
         if (already.has(a.id) && already.has(b.id)) continue;
         const days = Math.abs(
           (Date.parse(a.start_date) - Date.parse(b.start_date)) / (24 * 60 * 60 * 1000),
@@ -660,7 +671,8 @@ export async function mergePublicDuplicates(opts?: {
         // Benešov" are two villages one round apart. Only identical titles may
         // span days here.
         if (days > 0 && a.name.trim().toLowerCase() !== b.name.trim().toLowerCase()) continue;
-        const { reasons } = scoreDuplicate(asDedup(a), asDedup(b));
+        const { score, reasons } = scoreDuplicate(asDedup(a), asDedup(b));
+        if (score < DEDUP_THRESHOLD) continue;
         const nameClose =
           reasons.includes("same_canonical_name") ||
           reasons.includes("name_sim_high");
@@ -770,7 +782,7 @@ export async function collapseFingerprintCollisions(opts?: {
   const supabase = createServerSupabase();
   const dry = opts?.dry ?? false;
 
-  type FpRow = MergeSide & {
+  type FpRow = MergeDuplicateRow & {
     fingerprint: string | null;
     start_date: string;
     visibility: string | null;
@@ -779,12 +791,12 @@ export async function collapseFingerprintCollisions(opts?: {
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, fingerprint, visibility, website_url, registration_url, series_id")
+      .select("id,name,start_date,end_date,fingerprint,visibility,website_url,registration_url,series_id,disciplines,location:locations(name,municipality,lat,lng,country_code),series:series!events_series_id_fkey(name)")
       .order("start_date")
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw error;
-    rows.push(...(data ?? []));
+    rows.push(...((data ?? []) as unknown as FpRow[]));
     if (!data || data.length < 1000) break;
   }
 
@@ -811,9 +823,15 @@ export async function collapseFingerprintCollisions(opts?: {
     const keep = group.reduce((a, b) => (rank(a) >= rank(b) ? a : b));
     for (const drop of group) {
       if (drop.id === keep.id) continue;
+      const identity = scoreDuplicate(asDedup(keep), asDedup(drop));
+      if (identity.score < DEDUP_THRESHOLD) {
+        preview.push(`REVIEW ${fp}: ${keep.id} / ${drop.id}: ${identity.reasons.join(",")}`);
+        continue;
+      }
       preview.push(`${fp.slice(0, 56)} — keep "${keep.name.slice(0, 40)}" drop ${drop.id.slice(0, 8)}`);
       if (dry) continue;
-      await applyMerge(supabase, keep, drop);
+      const error = await applyMerge(supabase, keep, drop);
+      if (error) throw new Error(`Fingerprint merge failed: ${error}`);
       merged += 1;
     }
   }

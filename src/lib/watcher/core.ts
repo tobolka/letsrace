@@ -4,17 +4,60 @@ import { extractJsonLdEvents } from "@/lib/watcher/extractors/jsonld";
 import { extractWithAdapter } from "@/lib/watcher/extractors/adapters";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { attachRegulationsUrl } from "@/lib/watcher/regulations-url";
+import { scoreDuplicate, datesCompatible, DEDUP_THRESHOLD } from "@/lib/dedup";
+import type { LlmUsage } from "@/lib/llm/anthropic";
+import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
+export const WATCH_READER_VERSION = "pipeline-v2";
 
 export type ExtractResult = {
   events: ParsedEvent[];
   strategy: string;
   childUrls: string[];
   confidence: number;
+  /** False means a retry is required; missing rows must never be hidden. */
+  complete?: boolean;
+  issues?: string[];
+  usage?: LlmUsage;
+  diagnostics?: { chunksTotal: number; chunksRead: number; cacheHits: number; proposed: number; rejected: number };
 };
 
-export async function extractEvents(url: string, html: string): Promise<ExtractResult> {
+/** A model's failure to mention a race is not evidence that it was removed. */
+export function canReconcileMissingEvents(result: ExtractResult): boolean {
+  return result.complete !== false && !result.strategy.includes("llm") &&
+    (result.strategy.includes("adapter:") || result.strategy.includes("jsonld"));
+}
+
+/** AI adds discoveries; a partial or less productive read cannot discard parser results. */
+export function combineExtractedEvents(parsed: ParsedEvent[], ai: ParsedEvent[]): ParsedEvent[] {
+  const out = [...parsed];
+  for (const event of ai) {
+    const matches = out.map((held, index) => ({ held, index })).filter(({ held }) => datesCompatible(held, event, 0) && (held.externalId === event.externalId ||
+      (held.startDate === event.startDate && event.evidence?.method === "llm_calendar" && skeleton(held.name).length >= 6 && skeleton(event.evidence.quote).includes(skeleton(held.name))) || scoreDuplicate(
+      { ...held, urls: [held.sourceUrl], countryCode: held.countryHint },
+      { ...event, urls: [event.sourceUrl], countryCode: event.countryHint },
+    ).score >= DEDUP_THRESHOLD));
+    if (matches.length !== 1) { out.push(event); continue; }
+    const { held, index } = matches[0]!;
+    // Both assertions came from this same downloaded document. Supplement
+    // missing fields, while leaving conflicting parser assertions intact.
+    out[index] = { ...held,
+      placeText: held.placeText || event.placeText,
+      countryHint: held.countryHint || event.countryHint,
+      websiteUrl: held.websiteUrl || event.websiteUrl,
+      registrationUrl: held.registrationUrl || event.registrationUrl,
+      regulationsUrl: held.regulationsUrl || event.regulationsUrl,
+      discipline: held.discipline?.length ? held.discipline : event.discipline,
+      ageCategories: held.ageCategories?.length ? held.ageCategories : event.ageCategories,
+      status: held.status ?? event.status,
+      evidence: held.evidence ?? event.evidence,
+    };
+  }
+  return out;
+}
+
+export async function extractEvents(url: string, html: string, opts?: { ai?: boolean; today?: string; maxChunks?: number; render?: boolean; deadline?: number }): Promise<ExtractResult> {
   const host = new URL(url).hostname.replace(/^www\./, "");
 
   const adapted = await extractWithAdapter(host, url, html);
@@ -40,21 +83,38 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
   }
 
   const generic = attachRegulationsUrl(url, html, extractGeneric(url, html));
-  // No parser knows this page and the pattern reader found little: let the
-  // model read it. The watcher only gets here when the page changed.
-  if (generic.length < 2) {
-    const { llmAvailable } = await import("@/lib/llm/anthropic");
-    const { extractWithLlm, calendarBudgetLeft } = await import("@/lib/watcher/extractors/llm-calendar");
-    // Off until agreed (docs/llm-data-plan.md): LLM_CALENDARS=1 turns it on.
-    if (process.env.LLM_CALENDARS === "1" && llmAvailable() && calendarBudgetLeft()) {
+  const thin = !generic.length && stripHtmlToText(html).length < 250 && /<script/i.test(html);
+  if (thin) {
+    if (opts?.render !== false && !process.env.VERCEL) {
       try {
-        const read = await extractWithLlm(url, html);
-        if (read.events.length >= generic.length && read.events.length) {
-          const events = attachRegulationsUrl(url, html, read.events);
-          return { events, strategy: "llm", childUrls: [], confidence: 0.7 };
+        const { renderPagesHtml } = await import("@/lib/watcher/extractors/csc-render");
+        const rendered = (await renderPagesHtml([url], { budgetMs: 30_000 })).get(url);
+        if (rendered && rendered !== html) {
+          const result = await extractEvents(url, rendered, { ...opts, render: false });
+          return { ...result, strategy: `rendered:${result.strategy}` };
         }
-      } catch {
-        // Out of credit or unreachable: the pattern reader's answer stands.
+      } catch { /* Report an unsupported read below; never call a script shell complete. */ }
+    }
+    return { events: [], strategy: "dynamic_unread", childUrls: [], confidence: 0, complete: false, issues: ["dynamic_render_unavailable"] };
+  }
+  // Unknown pages can contain many more races than the generic parser sees.
+  // A result of two rows is not evidence that a calendar has been read fully.
+  if (opts?.ai !== false) {
+    const { llmAvailable } = await import("@/lib/llm/anthropic");
+    const { extractWithLlm } = await import("@/lib/watcher/extractors/llm-calendar");
+    // Enabled when credentials exist; 0 is an explicit operational opt-out.
+    if (process.env.LLM_CALENDARS !== "0" && llmAvailable()) {
+      try {
+        const read = await extractWithLlm(url, html, opts);
+        const events = attachRegulationsUrl(url, html, combineExtractedEvents(generic, read.events));
+        return { events, strategy: "generic+llm", childUrls: read.childUrls,
+          confidence: events.length ? Math.min(...events.map(e => e.confidence)) : 0,
+          complete: !read.truncated, issues: read.issues, usage: read.usage,
+          diagnostics: { chunksTotal: read.chunksTotal, chunksRead: read.chunksRead, cacheHits: read.cacheHits, proposed: read.proposed, rejected: read.rejected } };
+      } catch (error) {
+        return { events: generic, strategy: "generic", childUrls: [],
+          confidence: generic.length ? Math.min(...generic.map(e => e.confidence)) : 0,
+          complete: false, issues: [error instanceof Error ? error.message : "llm_failed"] };
       }
     }
   }
@@ -63,6 +123,8 @@ export async function extractEvents(url: string, html: string): Promise<ExtractR
     strategy: "generic",
     childUrls: [],
     confidence: generic.length ? Math.min(...generic.map((e) => e.confidence)) : 0,
+    complete: generic.length > 0,
+    issues: generic.length ? [] : ["unsupported_or_empty_source"],
   };
 }
 

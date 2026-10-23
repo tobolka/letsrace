@@ -1,0 +1,97 @@
+{
+  "mode": "current",
+  "source": "src/lib/dedup.ts",
+  "cases": 8,
+  "correct": 8,
+  "falseMerges": 0,
+  "missedMatches": 0,
+  "results": [
+    {
+      "label": "Same detail URL reused next year",
+      "expected": false,
+      "predicted": false,
+      "correct": true,
+      "score": 0,
+      "reasons": [
+        "edition_conflict"
+      ]
+    },
+    {
+      "label": "Different Allwyn rounds share a URL",
+      "expected": false,
+      "predicted": false,
+      "correct": true,
+      "score": 0,
+      "reasons": [
+        "round_conflict"
+      ]
+    },
+    {
+      "label": "nogps fingerprint omits country",
+      "expected": false,
+      "predicted": false,
+      "correct": true,
+      "score": 0,
+      "reasons": [
+        "country_conflict"
+      ]
+    },
+    {
+      "label": "Distinct formats share a detail URL",
+      "expected": false,
+      "predicted": false,
+      "correct": true,
+      "score": 0,
+      "reasons": [
+        "format_conflict"
+      ]
+    },
+    {
+      "label": "TBC reassigned detail page: Tabor to Vimperk",
+      "expected": false,
+      "predicted": false,
+      "correct": true,
+      "score": 0,
+      "reasons": [
+        "same_url_other_race"
+      ]
+    },
+    {
+      "label": "Legitimate reschedule at the same venue",
+      "expected": true,
+      "predicted": true,
+      "correct": true,
+      "score": 95,
+      "reasons": [
+        "same_url",
+        "same_place",
+        "same_canonical_name"
+      ]
+    },
+    {
+      "label": "Identical listing from two sources",
+      "expected": true,
+      "predicted": true,
+      "correct": true,
+      "score": 68,
+      "reasons": [
+        "same_day",
+        "same_place",
+        "same_canonical_name"
+      ]
+    },
+    {
+      "label": "One multi-day event crosses New Year",
+      "expected": true,
+      "predicted": true,
+      "correct": true,
+      "score": 115,
+      "reasons": [
+        "same_url",
+        "dates_ok",
+        "same_place",
+        "same_canonical_name"
+      ]
+    }
+  ]
+}

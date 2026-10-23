@@ -420,26 +420,35 @@ async function searchCrt(suffix: string): Promise<string[]> {
   return [...hosts].slice(0, 40).map((h) => `https://${h}`);
 }
 
-async function knownHosts(supabase: ReturnType<typeof createServerSupabase>): Promise<Set<string>> {
-  const hosts = new Set<string>();
-  const [{ data: watched }, { data: discovered }] = await Promise.all([
-    supabase.from("watched_urls").select("url").range(0, 1999),
-    supabase.from("discovered_links").select("url").range(0, 1999),
-  ]);
-  for (const row of watched ?? []) hosts.add(hostnameOf(row.url));
-  for (const row of discovered ?? []) hosts.add(hostnameOf(row.url));
-  return hosts;
+/** Remember exact sources, including rejected/paused ones, without blacklisting
+ * every future event published on a domain we have encountered once. */
+async function knownSourceUrls(supabase: ReturnType<typeof createServerSupabase>): Promise<Set<string>> {
+  const known = new Set<string>();
+  const pages = await Promise.all(["watched_urls", "discovered_links"].map(async table => {
+    const urls: string[] = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabase.from(table as "watched_urls" | "discovered_links").select("url").order("id").range(offset, offset + 999);
+      if (error) throw new Error(`Reading known discovery sources: ${error.message}`);
+      urls.push(...(data ?? []).map(row => row.url));
+      if (!data || data.length < 1000) break;
+    }
+    return urls;
+  }));
+  for (const raw of pages.flat()) {
+    const url = canonicalExploreUrl(raw);
+    if (url) known.add(url);
+  }
+  return known;
 }
 
-async function hostAlreadyInCatalog(host: string): Promise<boolean> {
-  if (!/^[a-z0-9.-]+$/i.test(host)) return true;
-  const supabase = createServerSupabase();
-  const like = `%${host}%`;
-  const [{ data: site }, { data: reg }] = await Promise.all([
-    supabase.from("events").select("id").ilike("website_url", like).limit(1),
-    supabase.from("events").select("id").ilike("registration_url", like).limit(1),
-  ]);
-  return Boolean(site?.length || reg?.length);
+export function selectDiscoveryCandidates(found: string[], known: Set<string>): string[] {
+  const unique = new Set<string>();
+  for (const raw of found) {
+    const url = canonicalExploreUrl(raw);
+    if (!url || known.has(url) || !looksLikeIndependentRaceUrl(url)) continue;
+    unique.add(url);
+  }
+  return [...unique];
 }
 
 function titleFromHtml(html: string): string | undefined {
@@ -482,29 +491,9 @@ export async function runExplore(opts?: {
     found.push(...crt);
   }
 
-  const known = await knownHosts(supabase);
-  const unique: string[] = [];
-  const seen = new Set<string>();
-  for (const raw of found) {
-    const url = canonicalExploreUrl(raw);
-    if (!url || seen.has(url)) continue;
-    if (!looksLikeIndependentRaceUrl(url)) continue;
-    const host = hostnameOf(url);
-    if (known.has(host)) continue;
-    seen.add(url);
-    unique.push(url);
-  }
-
-  const toFetch: string[] = [];
-  for (const url of unique) {
-    if (toFetch.length >= maxFetch) break;
-    const host = hostnameOf(url);
-    if (await hostAlreadyInCatalog(host)) {
-      known.add(host);
-      continue;
-    }
-    toFetch.push(url);
-  }
+  const known = await knownSourceUrls(supabase);
+  const unique = selectDiscoveryCandidates(found, known);
+  const toFetch = unique.slice(0, maxFetch);
   let fetched = 0;
   let queued = 0;
   let autoWatched = 0;
@@ -531,7 +520,7 @@ export async function runExplore(opts?: {
     const ok = await queueDiscoveredLink(hit.url, { hintKind: "explore" });
     if (!ok) continue;
     queued += 1;
-    known.add(hostnameOf(hit.url));
+    known.add(hit.url);
     if (shouldAutoWatch(hit)) {
       const { error } = await supabase.from("watched_urls").upsert(
         {

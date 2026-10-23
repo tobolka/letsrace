@@ -620,16 +620,23 @@ export type DedupScore = {
  */
 export const DEDUP_THRESHOLD = 50;
 
+export function hasIdentityConflict(reasons: string[]): boolean {
+  return reasons.some(reason => ["edition_conflict", "country_conflict", "round_conflict", "format_conflict", "gender_conflict", "same_url_other_race"].includes(reason));
+}
+
 export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   const reasons: string[] = [];
   let score = 0;
 
-  if (a.fingerprint && b.fingerprint && a.fingerprint === b.fingerprint) {
-    return { score: 100, reasons: ["fingerprint"] };
-  }
-
   const sameUrl = urlsOverlap(a.urls, b.urls);
   const datesOk = datesCompatible(a, b, 1);
+  // URLs and fingerprints are lookup keys, not permission to ignore identity.
+  // A club can reuse one detail URL every season; nogps fingerprints can also
+  // collide across countries and formats because they omit those dimensions.
+  if (a.startDate.slice(0, 4) !== b.startDate.slice(0, 4) && !datesOk) {
+    return { score: 0, reasons: ["edition_conflict"] };
+  }
+  if (countriesConflict(a, b)) return { score: 0, reasons: ["country_conflict"] };
   const sameDay = a.startDate.slice(0, 10) === b.startDate.slice(0, 10);
   let near = placesNearby(a, b);
   const ca = coreCanonical(a, b);
@@ -650,25 +657,29 @@ export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   const weakB = isWeakRaceName(b.name);
 
   // Distinct formats at the same venue/weekend (XCO vs biatlon, DH vs XCM, …)
-  if (!sameUrl && formatConflict(a.name, b.name)) {
+  if (formatConflict(a.name, b.name)) {
     return { score: 0, reasons: ["format_conflict"] };
   }
 
   // Round 9 and round 10 of one cup are two races, however alike they read.
   const roundA = roundNumber(a.name);
   const roundB = roundNumber(b.name);
-  if (!sameUrl && roundA !== null && roundB !== null && roundA !== roundB) {
+  if (roundA !== null && roundB !== null && roundA !== roundB) {
     return { score: 0, reasons: ["round_conflict"] };
   }
 
   // Women's race vs open/men's race the same day (UMAG/Poreč Classic)
-  if (!sameUrl && genderConflict(a.name, b.name)) {
+  if (genderConflict(a.name, b.name)) {
     return { score: 0, reasons: ["gender_conflict"] };
   }
 
   // Distinct named series at the same venue (Kids Cup vs iXS DHC, AYC vs MLA, …)
   if (aliasesA.length && aliasesB.length && !sharedAlias) {
     return { score: 0, reasons: ["series_conflict"] };
+  }
+
+  if (a.fingerprint && b.fingerprint && a.fingerprint === b.fingerprint && datesOk) {
+    return { score: 100, reasons: ["fingerprint"] };
   }
 
   // A race listed only as "United Kingdom" or "Steiermark" says nothing about
@@ -901,6 +912,12 @@ export function isLikelyDuplicate(a: DedupEvent, b: DedupEvent): boolean {
   return scoreDuplicate(a, b).score >= DEDUP_THRESHOLD;
 }
 
+export function assessDuplicate(a: DedupEvent, b: DedupEvent): DedupScore & { decision: "match" | "review" | "distinct" } {
+  const result = scoreDuplicate(a, b);
+  return { ...result, decision: hasIdentityConflict(result.reasons) || result.score === 0
+    ? "distinct" : result.score >= DEDUP_THRESHOLD ? "match" : "review" };
+}
+
 /**
  * Highest-scoring duplicate among candidates, or null.
  *
@@ -913,12 +930,21 @@ export function pickBestDuplicate<T>(
   incoming: DedupEvent,
   candidates: { row: T; event: DedupEvent }[],
 ): { row: T; score: number; reasons: string[] } | null {
-  let best: { row: T; score: number; reasons: string[] } | null = null;
+  const matches = new Map<unknown, { row: T; score: number; reasons: string[] }>();
   for (const c of candidates) {
-    const { score, reasons } = scoreDuplicate(incoming, c.event);
-    if (score < DEDUP_THRESHOLD) continue;
-    if (!best || score > best.score) best = { row: c.row, score, reasons };
+    const { score, reasons, decision } = assessDuplicate(incoming, c.event);
+    if (decision !== "match") continue;
+    const key = c.row && typeof c.row === "object" && "id" in c.row ? c.row.id : c.row;
+    const held = matches.get(key);
+    if (!held || score > held.score) matches.set(key, { row: c.row, score, reasons });
   }
+  const ranked = [...matches.values()].sort((a, b) => b.score - a.score);
+  const best = ranked[0];
+  if (!best) return null;
+  const next = ranked[1];
+  // Do not attach a new source arbitrarily when two different rows are tied.
+  // An exact, conflict-checked fingerprint may outrank a fuzzy match outright.
+  if (next && best.score === next.score && !(best.reasons.includes("fingerprint") && !next.reasons.includes("fingerprint"))) return null;
   return best;
 }
 

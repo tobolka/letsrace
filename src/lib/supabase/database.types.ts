@@ -830,6 +830,7 @@ export type Database = {
       }
       ingest_runs: {
         Row: {
+          metrics: Json
           error: string | null
           events_upserted: number
           finished_at: string | null
@@ -842,6 +843,7 @@ export type Database = {
           watched_url_id: string | null
         }
         Insert: {
+          metrics?: Json
           error?: string | null
           events_upserted?: number
           finished_at?: string | null
@@ -854,6 +856,7 @@ export type Database = {
           watched_url_id?: string | null
         }
         Update: {
+          metrics?: Json
           error?: string | null
           events_upserted?: number
           finished_at?: string | null

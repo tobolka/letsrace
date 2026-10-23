@@ -1,0 +1,22 @@
+{
+  "tests": {
+    "command": "npm test -- --reporter=dot",
+    "files": 160,
+    "passed": 1103,
+    "failed": 0
+  },
+  "finalCalendarReaderCheck": {
+    "passed": 8,
+    "failed": 0
+  },
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "changedFileLint": "passed",
+  "diffWhitespaceCheck": "passed",
+  "isolatedPostgresMigrationAndRecovery": "passed",
+  "liveCatalogueWrites": 0,
+  "productionMigrationApplied": false,
+  "committed": false,
+  "pushed": false,
+  "deployed": false
+}

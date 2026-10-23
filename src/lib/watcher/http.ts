@@ -12,6 +12,7 @@ export type FetchResult = {
   lastModified?: string | null;
   hash: string;
   unchanged: boolean;
+  contentType?: string | null;
 };
 
 type FetchOpts = {
@@ -58,7 +59,16 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
     };
   }
 
-  const html = decodeBody(new Uint8Array(await res.arrayBuffer()), res.headers.get("content-type"));
+  const bytes = await boundedBody(res);
+  const contentType = res.headers.get("content-type");
+  const pdf = /pdf/i.test(contentType ?? "") || Buffer.from(bytes.subarray(0, 4)).toString() === "%PDF";
+  let html: string;
+  if (pdf && res.ok) {
+    const { pdfText } = await import("@/lib/catalog/regulation-ages");
+    const text = await pdfText(bytes);
+    if (!text.trim()) throw new Error("pdf_has_no_text: OCR or manual review required");
+    html = `<html><body><pre>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre></body></html>`;
+  } else html = decodeBody(bytes, contentType);
   const hash = createHash("sha256").update(html).digest("hex");
   return {
     html,
@@ -67,7 +77,33 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
     lastModified: res.headers.get("last-modified"),
     hash,
     unchanged: Boolean(opts.contentHash && opts.contentHash === hash),
+    contentType,
   };
+}
+
+/** Bound streamed bodies too: Content-Length is optional and not trustworthy. */
+export async function boundedBody(res: Response, limit = 8 * 1024 * 1024): Promise<Uint8Array> {
+  if (Number(res.headers.get("content-length")) > limit) {
+    await res.body?.cancel();
+    throw new Error("source_document_too_large");
+  }
+  if (!res.body) return new Uint8Array();
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > limit) { await reader.cancel(); throw new Error("source_document_too_large"); }
+      chunks.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
+  return bytes;
 }
 
 /**

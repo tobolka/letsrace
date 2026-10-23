@@ -1,0 +1,50 @@
+[
+  {
+    "label": "Same detail URL reused next year",
+    "duplicate": false,
+    "a": { "name": "Perlcross", "startDate": "2026-10-11", "placeText": "Perl", "urls": ["https://perlcross.de/race"] },
+    "b": { "name": "Perlcross", "startDate": "2027-10-11", "placeText": "Perl", "urls": ["https://perlcross.de/race"] }
+  },
+  {
+    "label": "Different Allwyn rounds share a URL",
+    "duplicate": false,
+    "a": { "name": "Allwyn BMX Czech Cup - Round 9", "startDate": "2026-05-10", "placeText": "Praha", "urls": ["https://bmx.test/race"] },
+    "b": { "name": "Allwyn BMX Czech Cup - Round 10", "startDate": "2026-05-10", "placeText": "Praha", "urls": ["https://bmx.test/race"] }
+  },
+  {
+    "label": "nogps fingerprint omits country",
+    "duplicate": false,
+    "a": { "name": "Perlcross", "startDate": "2026-10-11", "placeText": "Perl", "countryCode": "DE", "fingerprint": "2026-10-11:nogps:perlcross" },
+    "b": { "name": "Perlcross", "startDate": "2026-10-11", "placeText": "Perl", "countryCode": "CZ", "fingerprint": "2026-10-11:nogps:perlcross" }
+  },
+  {
+    "label": "Distinct formats share a detail URL",
+    "duplicate": false,
+    "a": { "name": "Perlcross XCO", "startDate": "2026-10-11", "placeText": "Perl", "urls": ["https://perlcross.de/race"] },
+    "b": { "name": "Perlcross XCM", "startDate": "2026-10-11", "placeText": "Perl", "urls": ["https://perlcross.de/race"] }
+  },
+  {
+    "label": "TBC reassigned detail page: Tabor to Vimperk",
+    "duplicate": false,
+    "a": { "name": "TBC — TÁBOR", "startDate": "2026-10-25", "placeText": "Tábor", "urls": ["https://tbcserie.cz/kalendar-2026/zavod-211/"] },
+    "b": { "name": "TBC — VIMPERK", "startDate": "2026-11-14", "placeText": "Vimperk", "urls": ["https://tbcserie.cz/kalendar-2026/zavod-211/"] }
+  },
+  {
+    "label": "Legitimate reschedule at the same venue",
+    "duplicate": true,
+    "a": { "name": "TBC — TÁBOR", "startDate": "2026-10-25", "placeText": "Tábor", "urls": ["https://tbcserie.cz/kalendar-2026/zavod-211/"] },
+    "b": { "name": "TBC — TÁBOR", "startDate": "2026-11-01", "placeText": "Tábor", "urls": ["https://tbcserie.cz/kalendar-2026/zavod-211/"] }
+  },
+  {
+    "label": "Identical listing from two sources",
+    "duplicate": true,
+    "a": { "name": "Perlcross", "startDate": "2026-10-11", "placeText": "Perl" },
+    "b": { "name": "Perlcross", "startDate": "2026-10-11", "placeText": "Perl" }
+  },
+  {
+    "label": "One multi-day event crosses New Year",
+    "duplicate": true,
+    "a": { "name": "Perlcross", "startDate": "2026-12-31", "endDate": "2027-01-02", "placeText": "Perl", "urls": ["https://perlcross.de/race"] },
+    "b": { "name": "Perlcross", "startDate": "2027-01-01", "placeText": "Perl", "urls": ["https://perlcross.de/race"] }
+  }
+]

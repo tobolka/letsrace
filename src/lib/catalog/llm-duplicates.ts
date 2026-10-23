@@ -1,9 +1,10 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { distanceKm, isGarbagePlace } from "@/lib/dedup";
-import { mergeEventPair, mergeKeeper, type MergeDuplicateRow } from "@/lib/catalog/merge-duplicates";
+import { distanceKm, isGarbagePlace, scoreDuplicate, hasIdentityConflict } from "@/lib/dedup";
+import { mergeEventPair, mergeKeeper, asDedup, type MergeDuplicateRow } from "@/lib/catalog/merge-duplicates";
 import { canonicalizeDisciplines, disciplineFamily } from "@/lib/taxonomy";
-import { askJson, LlmUnavailable, addUsage, NO_USAGE, SONNET, type LlmUsage } from "@/lib/llm/anthropic";
+import { askJson, LlmUnavailable, LlmResponseError, addUsage, NO_USAGE, SONNET, type LlmUsage } from "@/lib/llm/anthropic";
+import { cachedExtraction } from "@/lib/llm/extraction-cache";
 import { readDocument } from "@/lib/catalog/regulation-ages";
 
 const PAGE = 1000;
@@ -44,6 +45,7 @@ export function candidatePairs(rows: Row[], known: Set<string>): [Row, Row][] {
       if (be < as - 86_400_000) continue;
       const key = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`;
       if (known.has(key)) continue;
+      if (hasIdentityConflict(scoreDuplicate(asDedup(a), asDedup(b)).reasons)) continue;
       const la = a.location, lb = b.location;
       const near =
         la?.lat != null && la?.lng != null && lb?.lat != null && lb?.lng != null
@@ -142,11 +144,10 @@ export async function modelEvidence(a: Row, b: Row, docs: Map<string, string>, s
       .join("\n");
   const ta = pageText(a), tb = pageText(b);
   if (!ta && !tb) return { ev: null, usage: NO_USAGE };
-  const { json, usage } = await askJson<{ verdict?: string; quote?: string; from?: string }>({
-    system: EVIDENCE_SYSTEM,
-    user: `A: ${describe(a)}\n${ta || "(no page text)"}\n\nB: ${describe(b)}\n${tb || "(no page text)"}`,
-    model: SONNET,
-    maxTokens: 700,
+  const request = { system: EVIDENCE_SYSTEM, user: `A: ${describe(a)}\n${ta || "(no page text)"}\n\nB: ${describe(b)}\n${tb || "(no page text)"}`, model: SONNET, maxTokens: 700 };
+  const { value: json, usage } = await cachedExtraction(request, async () => {
+    const { json, usage } = await askJson<{ verdict?: string; quote?: string; from?: string }>(request);
+    return { value: json, usage };
   });
   const quote = (json?.quote ?? "").trim();
   if (process.env.LLM_DEBUG) console.log("  evidence model:", JSON.stringify(json));
@@ -208,7 +209,8 @@ export async function judgeDuplicates(opts?: {
   }
   const known = new Set<string>();
   for (let from = 0; ; from += PAGE) {
-    const { data } = await supabase.from("duplicate_reviews").select("left_id, right_id").range(from, from + PAGE - 1);
+    const { data, error } = await supabase.from("duplicate_reviews").select("left_id, right_id").order("id").range(from, from + PAGE - 1);
+    if (error) throw new Error(`Reading duplicate reviews: ${error.message}`);
     for (const r of data ?? []) known.add(`${r.left_id}|${r.right_id}`);
     if (!data || data.length < PAGE) break;
   }
@@ -229,10 +231,15 @@ export async function judgeDuplicates(opts?: {
     const user = batch.map(([a, b], k) => `${k + 1}.\nA: ${describe(a)}\nB: ${describe(b)}`).join("\n\n");
     let verdicts: { n?: number; verdict?: string; confidence?: number; reason?: string }[] = [];
     try {
-      const { json, usage } = await askJson<{ pairs?: typeof verdicts }>({ system: SYSTEM, user, maxTokens: 3000, model: SONNET });
+      const request = { system: SYSTEM, user, maxTokens: 3000, model: SONNET };
+      const { value: json, usage } = await cachedExtraction(request, async () => {
+        const { json, usage } = await askJson<{ pairs?: typeof verdicts }>(request);
+        return { value: json, usage };
+      });
       result.usage = addUsage(result.usage, usage);
       verdicts = json?.pairs ?? [];
     } catch (e) {
+      if (e instanceof LlmResponseError) result.usage = addUsage(result.usage, e.usage);
       if (e instanceof LlmUnavailable) {
         result.stopped = true;
         result.deferred = pairs.length - i;
@@ -259,16 +266,15 @@ export async function judgeDuplicates(opts?: {
         // Names and places only make a pair worth checking; the pages decide —
         // unless the two titles are the same words (one race typed twice).
         if (gone.has(a.id) || gone.has(b.id)) continue;
-        const twins = v.verdict === "same" && conf >= SURE && a.start_date === b.start_date && (a.end_date ?? a.start_date) === (b.end_date ?? b.start_date) && sameTitle(a.name, b.name);
         const docs = new Map<string, string>();
-        for (const url of twins ? [] : [...pagesOf(a, shared), ...pagesOf(b, shared)]) {
+        for (const url of [...pagesOf(a, shared), ...pagesOf(b, shared)]) {
           if (docs.has(url)) continue;
           const doc = await readDocument(url).catch(() => null);
           if (doc?.text) docs.set(url, doc.text);
         }
-        let ev: Evidence | null = twins ? { how: "same title", url: "", text: `${a.name} = ${b.name}` } : null;
+        let ev: Evidence | null = null;
         if (!ev) {
-          const m = await modelEvidence(a, b, docs, shared).catch(() => ({ ev: null, usage: NO_USAGE }));
+          const m = await modelEvidence(a, b, docs, shared).catch(error => ({ ev: null, usage: error instanceof LlmResponseError ? error.usage : NO_USAGE }));
           result.usage = addUsage(result.usage, m.usage);
           ev = m.ev;
         }
@@ -292,10 +298,8 @@ export async function judgeDuplicates(opts?: {
         }
       } else if (v.verdict === "different" && conf >= SURE) {
         result.different += 1;
-        if (opts?.dryRun) continue;
-        await supabase
-          .from("duplicate_reviews")
-          .upsert({ left_id: a.id, right_id: b.id, verdict: "separate", note: `model: ${(v.reason ?? "").slice(0, 200)}` }, { onConflict: "left_id,right_id" });
+        // Model confidence is not a permanent negative identity review.
+        // Later source corrections must be able to bring this pair back.
       }
     }
   }

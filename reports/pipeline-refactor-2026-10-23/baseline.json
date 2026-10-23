@@ -1,0 +1,138 @@
+{
+  "facts": 8389,
+  "catalogue": {
+    "total": 8853,
+    "public_unmerged": 5966,
+    "upcoming_public": 1141,
+    "upcoming_with_website": 1046,
+    "upcoming_with_registration": 526
+  },
+  "captured_at": "2026-10-23T16:10:24.485471+00:00",
+  "last_7_days": {
+    "runs": 1068,
+    "links": 903,
+    "failed": 5,
+    "success": 1063,
+    "upserts": 19459,
+    "unfinished": 0
+  },
+  "source_health": [
+    {
+      "status": "paused",
+      "sources": 775,
+      "last_extract_status": null
+    },
+    {
+      "status": "active",
+      "sources": 215,
+      "last_extract_status": "ok"
+    },
+    {
+      "status": "active",
+      "sources": 138,
+      "last_extract_status": "off_season"
+    },
+    {
+      "status": "active",
+      "sources": 106,
+      "last_extract_status": "unchanged"
+    },
+    {
+      "status": "paused",
+      "sources": 73,
+      "last_extract_status": "off_season"
+    },
+    {
+      "status": "paused",
+      "sources": 42,
+      "last_extract_status": "ok"
+    },
+    {
+      "status": "paused",
+      "sources": 29,
+      "last_extract_status": "unchanged"
+    },
+    {
+      "status": "paused",
+      "sources": 15,
+      "last_extract_status": "needs_review"
+    },
+    {
+      "status": "active",
+      "sources": 8,
+      "last_extract_status": "needs_review"
+    },
+    {
+      "status": "dead",
+      "sources": 5,
+      "last_extract_status": "dead"
+    },
+    {
+      "status": "paused",
+      "sources": 2,
+      "last_extract_status": "error"
+    }
+  ],
+  "recent_failed_sources": [
+    {
+      "url": "https://www.dsergebnis.de/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.sayfy.cz/propozice",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://podkrkonosskymaraton.cz",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "http://okolohor.cz",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.arkadygaragerace.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.svatobortour.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.chronometrtour.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.spindlerovka-cup.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.sayfy.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://members.federciclismo.it/race/icald/182288",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.321vabank.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    },
+    {
+      "url": "https://www.porubajk.cz/",
+      "last_error": "low confidence or empty extract",
+      "last_extract_status": "needs_review"
+    }
+  ]
+}
