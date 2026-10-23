@@ -106,7 +106,11 @@ export async function extractEvents(url: string, html: string, opts?: { ai?: boo
     if (process.env.LLM_CALENDARS !== "0" && llmAvailable()) {
       try {
         const read = await extractWithLlm(url, html, opts);
-        const events = attachRegulationsUrl(url, html, combineExtractedEvents(generic, read.events));
+        const combined = combineExtractedEvents(generic, read.events);
+        // A general regulations directory is not the rules of every race.
+        const oneSeries = combined.length > 0 && Boolean(combined[0].seriesName)
+          && combined.every(e => e.seriesName === combined[0].seriesName);
+        const events = combined.length <= 1 || oneSeries ? attachRegulationsUrl(url, html, combined) : combined;
         return { events, strategy: "generic+llm", childUrls: read.childUrls,
           confidence: events.length ? Math.min(...events.map(e => e.confidence)) : 0,
           complete: !read.truncated, issues: read.issues, usage: read.usage,

@@ -13,3 +13,8 @@ export function sourceEditionId(
   if (identity && hasIdentityConflict(scoreDuplicate(identity.incoming, identity.stored).reasons)) return undefined;
   return source.merged_into_id ?? source.id;
 }
+
+/** A dated AI calendar row is not evidence that another round moved dates. */
+export function calendarRowCandidates<T extends { event: { startDate: string } }>(incomingDate: string, sharedCalendar: boolean, candidates: T[]): T[] {
+  return sharedCalendar ? candidates.filter(c => c.event.startDate === incomingDate) : candidates;
+}

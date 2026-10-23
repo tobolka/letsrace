@@ -1646,7 +1646,10 @@ async function upsertParsedEvent(
       : null) ||
     (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
   const incomingResults = publicRaceUrl(ev.resultsUrl) || ev.resultsUrl?.trim() || null;
-  const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(Boolean);
+  const sharedAiCalendar = ev.evidence?.method === "llm_calendar" && ev.sourceUrl === ev.evidence.sourceUrl;
+  const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(
+    u => Boolean(u) && !(sharedAiCalendar && u === ev.sourceUrl),
+  );
 
   const incomingDedup = {
     startDate: ev.startDate,
@@ -1712,7 +1715,9 @@ async function upsertParsedEvent(
   // "nogps" variant, which only count once the scorer confirms them.
   // Source identity is stronger than a display name. After a reviewed merge,
   // the source belongs to the keeper and must never create its old race again.
-  const { sourceEditionId } = await import("@/lib/watcher/source-identity");
+  const { sourceEditionId, calendarRowCandidates } = await import("@/lib/watcher/source-identity");
+  const pickIncomingDuplicate: typeof pickBestDuplicate = (incoming, candidates) =>
+    pickBestDuplicate(incoming, calendarRowCandidates(ev.startDate, sharedAiCalendar, candidates));
   const { data: knownSource, error: sourceError } = await supabase
     .from("event_sources")
     .select("event:events(id,name,start_date,end_date,merged_into_id,website_url,registration_url,location:locations(lat,lng,name,municipality,country_code))")
@@ -1727,6 +1732,7 @@ async function upsertParsedEvent(
     sourceEvent ? { incoming: incomingDedup, stored: asCandidate(sourceEvent, [ev.sourceUrl]).event } : undefined,
   );
   // Matched by this very source's own record of the race, not by resemblance.
+  if (sharedAiCalendar && sourceEvent?.start_date !== ev.startDate) existingId = undefined;
   const matchedBySource = existingId != null;
   const fpCols =
     "id, name, start_date, end_date, disciplines, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
@@ -1739,9 +1745,9 @@ async function upsertParsedEvent(
   const fpCandidates = (fpRows ?? []) as unknown as (CandidateRow & { status?: string })[];
   // The exact fingerprint still wins outright, cancelled rows included — that is
   // how a cancelled race gets updated rather than resurrected as a new row.
-  let byFp = pickBestDuplicate(incomingDedup, fpCandidates.filter(r => r.fingerprint === fp).map(r => asCandidate(r)))?.row ?? null;
+  let byFp = pickIncomingDuplicate(incomingDedup, fpCandidates.filter(r => r.fingerprint === fp).map(r => asCandidate(r)))?.row ?? null;
   if (!byFp) {
-    const best = pickBestDuplicate(
+    const best = pickIncomingDuplicate(
       incomingDedup,
       fpCandidates.filter((r) => r.status !== "cancelled").map((r) => asCandidate(r)),
     );
@@ -1775,7 +1781,7 @@ async function upsertParsedEvent(
       urlCandidates.push(...((bySite ?? []) as unknown as CandidateRow[]));
       urlCandidates.push(...((byReg ?? []) as unknown as CandidateRow[]));
     }
-    const bestByUrl = pickBestDuplicate(
+    const bestByUrl = pickIncomingDuplicate(
       incomingDedup,
       urlCandidates.map((r) => asCandidate(r)),
     );
@@ -1798,7 +1804,7 @@ async function upsertParsedEvent(
         if (!evRow?.id) continue;
         srcCandidates.push(asCandidate(evRow, [row.source_url]));
       }
-      existingId = pickBestDuplicate(incomingDedup, srcCandidates)?.row.id;
+      existingId = pickIncomingDuplicate(incomingDedup, srcCandidates)?.row.id;
     }
   }
 
@@ -1870,7 +1876,7 @@ async function upsertParsedEvent(
       }
     }
 
-    const best = pickBestDuplicate(
+    const best = pickIncomingDuplicate(
       incomingDedup,
       [...byId.values()].map((r) => asCandidate(r)),
     );
@@ -2377,7 +2383,7 @@ async function upsertParsedEvent(
         .eq("fingerprint", payload.fingerprint!)
         .maybeSingle();
       if (raced?.id) {
-        if (!pickBestDuplicate(incomingDedup, [asCandidate(raced as unknown as CandidateRow)])) {
+        if (!pickIncomingDuplicate(incomingDedup, [asCandidate(raced as unknown as CandidateRow)])) {
           throw new Error(`Identity conflict on fingerprint: ${raced.id}`);
         }
         eventId = raced.id;

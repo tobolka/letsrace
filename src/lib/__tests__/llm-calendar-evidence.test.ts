@@ -25,3 +25,10 @@ describe("calendar evidence belongs to one row", () => {
     expect(verify([{ name: "Perlcross", start_date: "2026-10-11", quote: "11.10. Perlcross" }], "Season 2026\n11.10. Perlcross")).toHaveLength(1);
   });
 });
+
+it("does not treat a generic season heading as a race series", () => {
+  const quote = "14.11.2026 BL Cyclo Cross Stahnsdorf";
+  const [race] = verify([{name:"BL Cyclo Cross Stahnsdorf", start_date:"2026-11-14", quote, series_name:"Termine 2026",series_quote:"Termine 2026"}], `Termine 2026\n${quote}`);
+  expect(race?.seriesName).toBeUndefined();
+  expect(race?.name).toBe("BL Cyclo Cross Stahnsdorf");
+});

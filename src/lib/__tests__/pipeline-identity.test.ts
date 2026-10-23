@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { scoreDuplicate, DEDUP_THRESHOLD, type DedupEvent } from "@/lib/dedup";
-import { sourceEditionId } from "@/lib/watcher/source-identity";
+import { sourceEditionId, calendarRowCandidates } from "@/lib/watcher/source-identity";
 import { combineExtractedEvents } from "@/lib/watcher/core";
 import type { ParsedEvent } from "@/lib/domain";
 import { extractGeneric, isSiteIdentityName } from "@/lib/watcher/extractors/generic";
@@ -59,4 +59,11 @@ it("discovers a new race page on a known domain without reopening an already rev
     "https://example-cup.cz/zavody/2027",
     "https://example-cup.cz/zavody/2027?utm_source=search",
   ], known)).toEqual(["https://example-cup.cz/zavody/2027"]);
+});
+
+it("does not move a different calendar round when the incoming venue is unstated", () => {
+  const earlier = { event: { startDate: "2026-11-01" } };
+  const sameDay = { event: { startDate: "2026-11-08" } };
+  expect(calendarRowCandidates("2026-11-08", true, [earlier, sameDay])).toEqual([sameDay]);
+  expect(calendarRowCandidates("2026-11-08", false, [earlier, sameDay])).toEqual([earlier, sameDay]);
 });

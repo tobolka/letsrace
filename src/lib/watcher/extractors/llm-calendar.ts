@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { isSiteIdentityName } from "@/lib/watcher/extractors/generic";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
 import { DISCIPLINE_WORDS } from "@/lib/catalog/llm-enrich";
 import { DISCIPLINES, type Discipline } from "@/lib/taxonomy";
@@ -164,8 +165,9 @@ export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, so
     const categories = Array.isArray(r.categories) ? r.categories.filter((c): c is string => typeof c === "string" && skeleton(c).length >= 2 && quote.includes(skeleton(c))) : [];
     const ages = categories.length >= 2 ? ageCategoriesFromList(categories.map((c) => ({ name: c })), { refYear: Number(start.slice(0, 4)) }) : [];
     const seriesQuote = typeof r.series_quote === "string" ? skeleton(r.series_quote) : "";
-    const seriesName = typeof r.series_name === "string" && seriesQuote.length >= 6 && hay.includes(seriesQuote) && seriesQuote.includes(skeleton(r.series_name)) ? r.series_name.trim() : undefined;
-    const name = seriesName && !skeleton(rowName).includes(skeleton(seriesName)) ? `${seriesName} — ${rowName}` : rowName;
+    const seriesName = typeof r.series_name === "string" && !isSiteIdentityName(r.series_name) && seriesQuote.length >= 6 && hay.includes(seriesQuote) && seriesQuote.includes(skeleton(r.series_name)) ? r.series_name.trim() : undefined;
+    const displaySeries = seriesName?.replace(/^\d+\.\s*(?:ročník|rocnik|edition)\s*/i, "").trim();
+    const name = displaySeries && !skeleton(rowName).includes(skeleton(displaySeries)) ? `${displaySeries} — ${rowName}` : rowName;
     const place = typeof r.place === "string" && (quote.includes(skeleton(r.place)) || (typeof r.place_quote === "string" && skeleton(r.place_quote).includes(skeleton(r.place)) && hay.includes(skeleton(r.place_quote)) && skeleton(r.place_quote).includes(skeleton(rowName)))) ? r.place.trim() : "";
     const country = typeof r.country === "string" && /^[A-Z]{2}$/.test(r.country) && new RegExp(`\\b${r.country}\\b`).test(r.quote) ? r.country : undefined;
     out.push({
