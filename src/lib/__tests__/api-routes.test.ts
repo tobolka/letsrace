@@ -3,11 +3,13 @@ import { NextRequest } from "next/server";
 
 const listEvents = vi.fn();
 const updateEventFields = vi.fn();
+const setEventsVisibility = vi.fn();
 const upsertManualEvent = vi.fn();
 vi.mock("@/lib/events", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/events")>()),
   listEvents: (...args: unknown[]) => listEvents(...args),
   updateEventFields: (...args: unknown[]) => updateEventFields(...args),
+  setEventsVisibility: (...args: unknown[]) => setEventsVisibility(...args),
   upsertManualEvent: (...args: unknown[]) => upsertManualEvent(...args),
 }));
 vi.mock("next/cache", () => ({ unstable_cache: (fn: unknown) => fn, revalidateTag: vi.fn() }));
@@ -175,8 +177,8 @@ describe("PATCH /api/admin/events", () => {
   it("changes several races' visibility at once", async () => {
     const res = await send({ ids: ["a", "b"], visibility: "hidden" });
     expect(await res.json()).toEqual({ changed: 2 });
-    expect(updateEventFields).toHaveBeenCalledTimes(2);
-    expect(updateEventFields).toHaveBeenCalledWith("a", { visibility: "hidden" }, true);
+    expect(setEventsVisibility).toHaveBeenCalledTimes(1);
+    expect(setEventsVisibility).toHaveBeenCalledWith(["a", "b"], "hidden");
   });
 
   it.each([
@@ -190,6 +192,7 @@ describe("PATCH /api/admin/events", () => {
   ])("answers 400 to %j instead of a 500 from the database", async (body) => {
     expect((await send(body)).status).toBe(400);
     expect(updateEventFields).not.toHaveBeenCalled();
+    expect(setEventsVisibility).not.toHaveBeenCalled();
     expect(upsertManualEvent).not.toHaveBeenCalled();
   });
 

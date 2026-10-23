@@ -5,7 +5,7 @@ import { apiError } from "@/lib/api/respond";
 import { first, httpUrl, isoDay, optional } from "@/lib/api/schemas";
 import { parseJson, parseQuery, validate } from "@/lib/api/validate";
 import type { Discipline } from "@/lib/domain";
-import { upsertManualEvent, updateEventFields, type ManualEventInput } from "@/lib/events";
+import { setEventsVisibility, upsertManualEvent, updateEventFields, type ManualEventInput } from "@/lib/events";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 const AUDIENCES = ["kids", "youth", "adults", "mixed"] as const;
@@ -125,9 +125,7 @@ export const PATCH = withAdmin(async (req: NextRequest) => {
     if (Array.isArray(raw.data.ids)) {
       const bulk = validate(bulkVisibilitySchema, raw.data);
       if (!bulk.ok) return bulk.response;
-      for (const id of bulk.data.ids) {
-        await updateEventFields(id, { visibility: bulk.data.visibility }, true);
-      }
+      await setEventsVisibility(bulk.data.ids, bulk.data.visibility);
       return NextResponse.json({ changed: bulk.data.ids.length });
     }
 
