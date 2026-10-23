@@ -14,6 +14,7 @@ import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
 import { askJson, llmSpent, HAIKU, SONNET, LlmUnavailable, type LlmUsage } from "@/lib/llm/anthropic";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
 import { alreadyRead, markRead, recordFacts, textHash, type Fact } from "@/lib/catalog/facts";
+import type { Update } from "@/lib/supabase/tables";
 
 /** Bump when the prompt or the checks change: pages are read again, facts carry it. */
 export const ENRICH_VERSION = "enrich-v4";
@@ -497,7 +498,7 @@ export async function enrichFromPages(opts?: {
         if (!opts?.dryRun) await recordProbe(supabase, t.id, "llm_v4", "silent");
         return;
       }
-      const patch: Record<string, unknown> = {};
+      const patch: Update<"events"> = {};
       const notes: string[] = [];
 
       if (t.ageConfidence !== "explicit") {

@@ -9,6 +9,7 @@ import { textHash, recordFacts } from "../src/lib/catalog/facts";
 import { llmSpent, LlmUnavailable } from "../src/lib/llm/anthropic";
 import { isAccountOrNewsletterUrl, isStartListUrl } from "../src/lib/watcher/registration-url";
 import { mapPool } from "../src/lib/watcher/pool";
+import type { Update } from "../src/lib/supabase/tables";
 config({ path: ".env.local", quiet: true });
 process.env.LLM_LEDGER_PATH ??= resolve("tmp/llm-budget.json");
 process.env.LLM_DAILY_BUDGET_USD ??= "2.50";
@@ -63,14 +64,14 @@ async function main() {
         }
         const { data: current, error: check } = await s.from("events").select("name,start_date,overrides:event_overrides(locked_fields)").eq("id", now.id).eq("visibility", "public").is("merged_into_id", null).single();
         if (check || !current || current.name !== now.name || current.start_date !== now.start_date || (current.overrides as unknown as Race["overrides"])?.locked_fields?.includes(p.field)) continue;
-        const { data: changed, error } = await s.from("events").update({ [p.field]: p.url, updated_at: new Date().toISOString() })
+        const { data: changed, error } = await s.from("events").update({ [p.field]: p.url, updated_at: new Date().toISOString() } as Update<"events">)
           .eq("id", now.id).is(p.field, null).select("id," + p.field);
         if (error) throw error;
         if (!changed?.length) continue;
         try {
           await recordFacts(s, now.id, [{ field: p.field, value: p.url, previous: null, sourceUrl: p.sourceUrl, quote: [p.nameQuote, p.dateQuote, p.linkQuote].join("\n") }], { method: "entry_link_evidence", model: "claude-haiku-5-5 + claude-sonnet-5-5", version });
         } catch (error) {
-          const { error: cleanup } = await s.from("events").update({ [p.field]: null }).eq("id", now.id).eq(p.field, p.url);
+          const { error: cleanup } = await s.from("events").update({ [p.field]: null } as Update<"events">).eq("id", now.id).eq(p.field, p.url);
           if (cleanup) throw cleanup;
           throw error;
         }

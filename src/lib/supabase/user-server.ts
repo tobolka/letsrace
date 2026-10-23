@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { User } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
 
 /** Cookie-bound Supabase client (anon key + user session). Honors RLS. */
 export async function createUserServerSupabase() {
@@ -11,7 +12,7 @@ export async function createUserServerSupabase() {
   }
 
   const jar = await cookies();
-  return createServerClient(url, anonKey, {
+  return createServerClient<Database>(url, anonKey, {
     cookies: {
       getAll() {
         return jar.getAll();

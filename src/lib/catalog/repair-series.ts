@@ -11,6 +11,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { mergeEventPair } from "@/lib/catalog/merge-duplicates";
 import { watchOne } from "@/lib/watcher/run";
 import { normalizeName } from "@/lib/domain";
+import type { Json, Update } from "@/lib/supabase/tables";
 
 export type Round = {
   start: string;
@@ -139,7 +140,7 @@ export async function repairSeriesPlans(
       const target = rule.seriesSlug ? await seriesIdBySlug(rule.seriesSlug) : null;
       log(`  foreign: ${e.start_date} ${e.name} → ${rule.seriesSlug ?? "no series"}${rule.hide ? ", hidden" : ""}`);
       if (DRY) continue;
-      const patch: Record<string, unknown> = { series_id: target, updated_at: now() };
+      const patch: Update<"events"> = { series_id: target, updated_at: now() };
       if (rule.hide || plan.junk?.(e)) patch.status = "hidden";
       const { error } = await supabase.from("events").update(patch).eq("id", e.id);
       if (error) throw new Error(error.message);
@@ -280,7 +281,7 @@ export async function repairSeriesPlans(
         .upsert(
           {
             event_id: keeper.id,
-            fields: merged,
+            fields: merged as Json,
             locked_fields: locked,
             updated_by: curated.has(keeper.id) ? "admin" : UPDATED_BY,
           },
@@ -295,7 +296,7 @@ export async function repairSeriesPlans(
       const junk = plan.junk?.(e) ?? false;
       log(`  detach: ${e.start_date} ${e.status} ${e.name}${junk ? " (junk, hidden)" : ""}`);
       if (DRY) continue;
-      const patch: Record<string, unknown> = { series_id: null, updated_at: now() };
+      const patch: Update<"events"> = { series_id: null, updated_at: now() };
       if (junk) patch.status = "hidden";
       const { error } = await supabase.from("events").update(patch).eq("id", e.id);
       if (error) throw new Error(error.message);

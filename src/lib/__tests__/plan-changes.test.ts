@@ -64,3 +64,19 @@ describe("detectPlanChanges", () => {
     expect(detectPlanChanges(snap(), snap({ disciplines: ["xco", "xcm"] }))).toEqual([]);
   });
 });
+
+describe("what a stored change is trusted to say", () => {
+  it("knows the kinds it can mail about, and no others", async () => {
+    const { isPlanChangeKind } = await import("@/lib/plan-changes");
+    expect(["date", "cancelled", "registration", "discipline"].every(isPlanChangeKind)).toBe(true);
+    expect(isPlanChangeKind("exploded")).toBe(false);
+  });
+
+  it("keeps only the text of a payload", async () => {
+    const { stringPayload } = await import("@/lib/plan-changes");
+    expect(stringPayload({ from: "2026-10-04", to: "2026-10-11", n: 3, nested: { a: 1 } })).toEqual({ from: "2026-10-04", to: "2026-10-11" });
+    expect(stringPayload(null)).toEqual({});
+    expect(stringPayload(["x"])).toEqual({});
+    expect(stringPayload("text")).toEqual({});
+  });
+});

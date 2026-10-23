@@ -50,7 +50,7 @@ async function main() {
         "id, name, start_date, age_categories, age_confidence, disciplines, level, class_label, series:series!events_series_id_fkey(name, slug, age_categories)",
       )
       .not("age_categories", "is", null)
-      .neq("age_categories", "{}")
+      .filter("age_categories", "neq", "{}")
       .order("id", { ascending: true })
       .range(from, to),
   );

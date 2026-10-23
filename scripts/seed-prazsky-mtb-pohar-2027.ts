@@ -17,6 +17,7 @@ import { createServerSupabase } from "../src/lib/supabase/server";
 import { fingerprint, normalizeName, slugifyEvent } from "../src/lib/domain";
 import { attachEventSeries } from "../src/lib/catalog/event-series";
 import { listEvents } from "../src/lib/events";
+import type { Json } from "../src/lib/supabase/tables";
 
 function loadEnv() {
   const raw = readFileSync(resolve(process.cwd(), ".env.local"), "utf8");
@@ -193,7 +194,7 @@ async function lockFields(supabase: Supabase, eventId: string, fields: Record<st
   const { error } = await supabase
     .from("event_overrides")
     .upsert(
-      { event_id: eventId, fields: merged, locked_fields: locked, updated_by: UPDATED_BY },
+      { event_id: eventId, fields: merged as Json, locked_fields: locked, updated_by: UPDATED_BY },
       { onConflict: "event_id" },
     );
   if (error) throw new Error(error.message);

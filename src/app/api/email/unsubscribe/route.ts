@@ -21,8 +21,8 @@ async function apply(target: UnsubscribeTarget): Promise<boolean> {
     const { error } = await supabase.from("race_alerts").update({ enabled: false }).eq("id", target.id);
     return !error;
   }
-  const column = target.kind === "plan" ? "plan_mail" : "digest_mail";
-  const { error } = await supabase.from("profiles").update({ [column]: false }).eq("id", target.id);
+  const off = target.kind === "plan" ? { plan_mail: false } : { digest_mail: false };
+  const { error } = await supabase.from("profiles").update(off).eq("id", target.id);
   return !error;
 }
 

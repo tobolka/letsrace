@@ -23,7 +23,7 @@ import { mergeEventPlans, type EventPlan, type PlannerAttendance, type PlannerEv
 import { matchAlert, type AlertCandidate, type RaceAlert } from "@/lib/race-alerts";
 import { getSiteUrl } from "@/lib/seo";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
-import type { PlanChangeKind } from "@/lib/plan-changes";
+import { isPlanChangeKind, stringPayload, type PlanChangeKind } from "@/lib/plan-changes";
 import { UPCOMING_EVENT_STATUSES } from "@/lib/event-visibility";
 import { localePath } from "@/lib/localized-paths";
 
@@ -251,17 +251,11 @@ export async function runPlanChangeMails(now = new Date()) {
     .gte("created_at", since.toISOString())
     .limit(500);
 
-  type ChangeRow = {
-    id: string;
-    event_id: string;
-    kind: PlanChangeKind;
-    payload: Record<string, string> | null;
-    event:
-      | { id: string; name: string; slug: string; start_date: string; end_date: string | null }
-      | { id: string; name: string; slug: string; start_date: string; end_date: string | null }[]
-      | null;
-  };
-  const changes = ((changeRows ?? []) as unknown as ChangeRow[]).filter((row) => unwrap(row.event));
+  const changes = (changeRows ?? []).flatMap((row) =>
+    isPlanChangeKind(row.kind) && unwrap(row.event)
+      ? [{ ...row, kind: row.kind, payload: stringPayload(row.payload) }]
+      : [],
+  );
   if (changes.length === 0) return { changes: 0, emailed: 0 };
 
   const eventIds = [...new Set(changes.map((c) => c.event_id))];
@@ -312,7 +306,7 @@ export async function runPlanChangeMails(now = new Date()) {
             endDate: ev.end_date,
           },
           kind: row.kind,
-          payload: row.payload ?? {},
+          payload: row.payload,
           changeId: row.id,
         },
       });
@@ -451,18 +445,7 @@ export async function runWeeklyDigest(now = new Date()) {
     .gte("created_at", since.toISOString())
     .limit(800);
 
-  const candidates = ((recentEvents ?? []) as unknown as EventRow[]).map(toCandidate);
-
-  type FavRow = { user_id: string; event_id: string; event: EventRow | EventRow[] | null };
-  type AttRow = {
-    user_id: string;
-    event_id: string;
-    member_id: string;
-    status: string;
-    registered: boolean;
-    paid: boolean;
-    event: EventRow | EventRow[] | null;
-  };
+  const candidates = (recentEvents ?? []).map(toCandidate);
 
   const eventsByUser = new Map<string, Record<string, PlannerEvent>>();
   const favsByUser = new Map<string, string[]>();
@@ -476,11 +459,11 @@ export async function runWeeklyDigest(now = new Date()) {
     eventsByUser.set(userId, bag);
   }
 
-  for (const row of (favs ?? []) as unknown as FavRow[]) {
+  for (const row of (favs ?? [])) {
     addEvent(row.user_id, row.event);
     favsByUser.set(row.user_id, [...(favsByUser.get(row.user_id) ?? []), row.event_id]);
   }
-  for (const row of (atts ?? []) as unknown as AttRow[]) {
+  for (const row of (atts ?? [])) {
     addEvent(row.user_id, row.event);
     attByUser.set(row.user_id, [
       ...(attByUser.get(row.user_id) ?? []),

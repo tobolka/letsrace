@@ -23,6 +23,7 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import type { Json } from "../src/lib/supabase/tables";
 
 for (const line of readFileSync(resolve(process.cwd(), ".env.local"), "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
@@ -86,7 +87,7 @@ async function main() {
     const locked = [...new Set([...((existing?.locked_fields as string[]) ?? []), ...Object.keys(fields)])];
     const { error } = await supabase
       .from("event_overrides")
-      .upsert({ event_id: eventId, fields: merged, locked_fields: locked, updated_by: BY }, { onConflict: "event_id" });
+      .upsert({ event_id: eventId, fields: merged as Json, locked_fields: locked, updated_by: BY }, { onConflict: "event_id" });
     if (error) throw new Error(error.message);
   }
 

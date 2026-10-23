@@ -7,6 +7,7 @@ import {
   parseFciCategories,
 } from "@/lib/watcher/extractors/fci-categories";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
+import type { Update } from "@/lib/supabase/tables";
 
 const PAGE = 1000;
 
@@ -107,7 +108,7 @@ export async function fillFciAgeCategories(opts?: {
         continue;
       }
       const html = await res.text();
-      const patch: Record<string, unknown> = {};
+      const patch: Update<"events"> = {};
 
       if (target.needsAges) {
         // The categories line and the class, read together: the line is blank

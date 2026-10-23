@@ -7,6 +7,7 @@ import {
   resolveCoveragePlace,
 } from "@/lib/coverage";
 import { EUROPE_COUNTRY_CODES, isInEuropeMap, isOmittedMapCountry } from "@/lib/geo/europe";
+import type { Update } from "@/lib/supabase/tables";
 
 export type GeocodeResult = {
   lat: number;
@@ -1889,7 +1890,7 @@ export async function geocodePendingFromGazetteer(): Promise<GeocodeBatchResult>
     geo: GeocodeResult,
     rename?: string,
   ) {
-    const payload: Record<string, unknown> = {
+    const payload: Update<"locations"> = {
       lat: geo.lat,
       lng: geo.lng,
       country_code: geo.countryCode || "CZ",

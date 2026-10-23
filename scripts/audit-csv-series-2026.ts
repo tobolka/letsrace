@@ -141,8 +141,8 @@ async function main() {
   // watched urls
   const { data: watched } = await supabase
     .from("watched_urls")
-    .select("id, url, active, kind")
-    .eq("active", true);
+    .select("id, url, status, kind")
+    .eq("status", "active");
 
   const watchedHosts = new Set(
     (watched || []).map((w) => hostOf(w.url)).filter(Boolean),

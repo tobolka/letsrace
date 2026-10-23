@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { PUBLIC_EVENT_STATUSES, isPublicMapWorthy, shouldHideFromMap } from "../src/lib/event-visibility";
 import { isListedCountry } from "../src/lib/geo/europe";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 try {
   const raw = readFileSync(resolve(process.cwd(), ".env.local"), "utf8");
@@ -20,7 +21,8 @@ const today = now.toISOString().slice(0, 10);
 async function all<T>(table: string, columns: string, orderColumns = ["id"]): Promise<T[]> {
   const out: T[] = [];
   for (let from = 0; ; from += 1000) {
-    let query = sb.from(table).select(columns);
+    // The table is named at run time, so the typed client cannot check it.
+    let query = (sb as unknown as SupabaseClient).from(table).select(columns);
     for (const column of orderColumns) query = query.order(column);
     const { data, error } = await query.range(from, from + 999);
     if (error) throw new Error(`${table}: ${error.message}`);

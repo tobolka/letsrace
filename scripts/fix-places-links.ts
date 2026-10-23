@@ -7,6 +7,7 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import type { Update } from "../src/lib/supabase/tables";
 for (const line of readFileSync(resolve(".env.local"), "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
   if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, "");
@@ -50,7 +51,7 @@ async function main() {
     if (!Object.keys(patch).length) continue;
     doubled += 1;
     console.log(`${apply ? "SET" : "DRY"}  place  ${l.municipality}  →  ${patch.municipality ?? l.municipality}`);
-    if (apply) await s.from("locations").update(patch).eq("id", l.id);
+    if (apply) await s.from("locations").update(patch as Update<"locations">).eq("id", l.id);
   }
 
   let links = 0;
@@ -62,7 +63,7 @@ async function main() {
         if (clean === e[col]) continue;
         links += 1;
         console.log(`${apply ? "SET" : "DRY"}  ${col}  ${e[col]!.slice(0, 80)}  →  ${clean.slice(0, 80)}`);
-        if (apply) await s.from("events").update({ [col]: clean }).eq("id", e.id);
+        if (apply) await s.from("events").update({ [col]: clean } as Update<"events">).eq("id", e.id);
       }
       if (!data || data.length < 1000) break;
     }

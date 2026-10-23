@@ -24,6 +24,7 @@ import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
 import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
+import type { Insert, Update } from "@/lib/supabase/tables";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -1406,7 +1407,7 @@ async function resolveSeriesId(
       existing.competition_type && existing.competition_type !== "other"
         ? String(existing.competition_type)
         : classified.competitionType;
-    const patch: Record<string, unknown> = {
+    const patch: Update<"series"> = {
       last_seen_at: now,
       updated_at: now,
       name_normalized: existing.name_normalized || normalizeName(name),
@@ -2124,7 +2125,7 @@ async function upsertParsedEvent(
       )
     : audience;
 
-  const payload: Record<string, unknown> = {
+  const payload: Omit<Insert<"events">, "slug"> = {
     name: mergedName,
     name_normalized: normalizeName(mergedName),
     start_date: mergedStart,
@@ -2282,8 +2283,9 @@ async function upsertParsedEvent(
     }
   }
 
+  // The locked names come from the database as text, not as column names.
   for (const key of lockedFields) {
-    delete payload[key];
+    delete (payload as Record<string, unknown>)[key];
   }
 
   let eventId = existingId;

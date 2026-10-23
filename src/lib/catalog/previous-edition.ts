@@ -1,6 +1,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
+import type { Update } from "@/lib/supabase/tables";
 
 const PAGE = 1000;
 const MAX_KM = 15;
@@ -144,14 +145,14 @@ export async function carryForwardFromPreviousEditions(opts?: {
       (a, b) => Math.abs(Date.parse(`${a.start_date}T00:00:00Z`) - target) - Math.abs(Date.parse(`${b.start_date}T00:00:00Z`) - target),
     )[0]!;
 
-    const patch: Record<string, unknown> = {};
+    const patch: Update<"events"> = {};
     const hasAges = (ev.age_categories ?? []).length > 0;
     if ((prev.age_categories ?? []).length && prev.age_confidence === "explicit" && (!hasAges || ev.age_confidence === "default")) {
-      patch.age_categories = prev.age_categories;
+      patch.age_categories = prev.age_categories ?? [];
       patch.age_confidence = "previous";
       patch.audience = audienceFromAgeCategories(prev.age_categories as AgeCategory[]);
     }
-    if (!(ev.disciplines ?? []).length && (prev.disciplines ?? []).length) patch.disciplines = prev.disciplines;
+    if (!(ev.disciplines ?? []).length && (prev.disciplines ?? []).length) patch.disciplines = prev.disciplines ?? [];
     if (!ev.class_label && prev.class_label) patch.class_label = prev.class_label;
     if (!ev.uci_class && prev.uci_class) patch.uci_class = prev.uci_class;
     const prevYear = prev.start_date.slice(0, 4);

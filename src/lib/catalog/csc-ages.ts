@@ -4,6 +4,7 @@ import { ageCategoriesFromList } from "@/lib/age-bands";
 import { audienceFromAgeCategories } from "@/lib/taxonomy";
 import { renderCscRaceDetails } from "@/lib/watcher/extractors/csc-render";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
+import type { Update } from "@/lib/supabase/tables";
 
 const PAGE = 1000;
 
@@ -114,7 +115,7 @@ export async function fillCscAgeCategories(opts?: {
         const ages = isPortalDefaultClassList(detail.categories)
           ? []
           : ageCategoriesFromList(detail.categories.map((name) => ({ name })));
-        const patch: Record<string, unknown> = {};
+        const patch: Update<"events"> = {};
         // The organiser's own site, which the portal lists and we never kept:
         // a third of Czech races had no link at all.
         const web = (detail.web ?? "").trim().replace(/[.,;]+$/, "");

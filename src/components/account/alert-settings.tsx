@@ -48,7 +48,7 @@ type AlertRow = {
   lat: number;
   lng: number;
   radius_km: number;
-  disciplines: string[] | null;
+  disciplines: string[];
 };
 
 export function AlertSettings({

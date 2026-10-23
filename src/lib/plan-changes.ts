@@ -3,6 +3,16 @@ import { expandDisciplineFilter } from "@/lib/taxonomy";
 export const PLAN_CHANGE_KINDS = ["date", "cancelled", "registration", "discipline"] as const;
 export type PlanChangeKind = (typeof PLAN_CHANGE_KINDS)[number];
 
+export function isPlanChangeKind(value: string): value is PlanChangeKind {
+  return (PLAN_CHANGE_KINDS as readonly string[]).includes(value);
+}
+
+/** The text values of a stored change payload; anything else in it is not ours to show. */
+export function stringPayload(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).filter((e): e is [string, string] => typeof e[1] === "string"));
+}
+
 export type EventSnapshot = {
   name: string;
   startDate: string;

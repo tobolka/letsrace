@@ -5,6 +5,7 @@ import { ageCategoriesFromList } from "@/lib/age-bands";
 import { audienceFromAgeCategories } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { geocodePlace } from "@/lib/geocode";
+import type { Insert, Update } from "@/lib/supabase/tables";
 
 const PAGE = 1000;
 const CA_EVENT = /cyclingaustria\.at\/index\.php\?[^#]*view=event[^#]*id=([A-F0-9]+)/i;
@@ -152,7 +153,7 @@ export async function fillCyclingAustriaDetails(opts?: {
         continue;
       }
       const detail = parseCyclingAustriaDetail(await res.text());
-      const patch: Record<string, unknown> = {};
+      const patch: Update<"events"> = {};
       const notes: string[] = [];
 
       if (detail.classes.length && t.ageConfidence !== "explicit") {
@@ -171,7 +172,7 @@ export async function fillCyclingAustriaDetails(opts?: {
         patch.website_url = detail.website;
         notes.push(`web ${detail.website}`);
       }
-      let newLocation: Record<string, unknown> | null = null;
+      let newLocation: Insert<"locations"> | null = null;
       if (detail.town && (!t.municipality || REGION_ONLY.test(t.municipality.trim()))) {
         let geo: Awaited<ReturnType<typeof geocodePlace>> = null;
         try {
@@ -211,7 +212,7 @@ export async function fillCyclingAustriaDetails(opts?: {
             await supabase.rpc("set_location_geog", {
               loc_id: loc.id,
               lat: newLocation.lat,
-              lng: newLocation.lng,
+              lng: Number(newLocation.lng),
             });
           }
         }

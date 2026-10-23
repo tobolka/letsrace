@@ -76,7 +76,7 @@ export default async function EventsAdminPage({
    */
   if (missing === "website") query = query.is("website_url", null);
   if (missing === "registration") query = query.is("registration_url", null);
-  if (missing === "disciplines") query = query.eq("disciplines", "{}");
+  if (missing === "disciplines") query = query.filter("disciplines", "eq", "{}");
   if (missing === "coords") query = query.is("location_id", null);
 
   // Past races read newest-first: the one you want is the one that just ran.

@@ -11,10 +11,22 @@ import {
   type Discipline,
 } from "@/lib/domain";
 import { publicRaceUrl, resolveEventOutboundUrls } from "@/lib/watcher/public-url";
-import { canonicalEventDisciplines } from "@/lib/taxonomy";
+import {
+  ageCategoryMatch,
+  ageMatchRank,
+  canonicalEventDisciplines,
+  expandAgeCategoryFilter,
+  expandDisciplineFilter,
+  matchesAgeCategoryFilter,
+  matchesDisciplineFilter,
+} from "@/lib/taxonomy";
+import { eventIdsForSeries } from "@/lib/catalog/event-series";
 import { formatPlaceName, joinPlace, splitPlace } from "@/lib/places";
 import { repairText } from "@/lib/text";
-import { freeEventSlug } from "@/lib/event-slug";
+import { freeEventSlug, parseRaceSlug, rankRacesForSlug } from "@/lib/event-slug";
+import { PUBLIC_COUNTRY_CODES, isListedCountry } from "@/lib/geo/europe";
+import { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy, shouldHideFromMap } from "@/lib/event-visibility";
+import type { Insert, Json, Update } from "@/lib/supabase/tables";
 
 export type EventListItem = {
   id: string;
@@ -102,8 +114,6 @@ export function isIsoDay(value: string | null | undefined): value is string {
 
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
   const supabase = createServerSupabase();
-  const { expandDisciplineFilter, matchesDisciplineFilter } = await import("@/lib/taxonomy");
-  const { PUBLIC_COUNTRY_CODES, isListedCountry } = await import("@/lib/geo/europe");
 
   const hasBbox =
     filters.west != null &&
@@ -173,7 +183,6 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     query = query.in("level", filters.levels);
   }
   if (filters.ageCategories?.length) {
-    const { expandAgeCategoryFilter } = await import("@/lib/taxonomy");
     const expanded = expandAgeCategoryFilter(filters.ageCategories);
     // A coarse cut only: a race with no categories of its own may borrow its
     // series' set, and one we know nothing about is not ours to hide — both
@@ -199,7 +208,6 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
       .eq("slug", filters.seriesSlug)
       .maybeSingle();
     if (series?.id && series.visibility !== "hidden") {
-      const { eventIdsForSeries } = await import("@/lib/catalog/event-series");
       const memberIds = await eventIdsForSeries(supabase, series.id as string);
       if (!memberIds.length) return [];
       // Cap OR-list size; a series calendar is never thousands of rows.
@@ -231,7 +239,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     const { data: hits, error } = await supabase.rpc("search_event_ids", {
       q: filters.q,
       date_from: dateFrom ?? floor,
-      date_to: dateTo ?? null,
+      ...(dateTo ? { date_to: dateTo } : {}),
       max_results: 500,
     });
     if (error) throw new Error(error.message);
@@ -241,12 +249,6 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   }
 
   // Public explore: races only (hide camps, cancelled, manually hidden)
-  const {
-    PUBLIC_EVENT_STATUSES,
-    PUBLIC_VISIBILITY,
-    shouldHideFromMap,
-    isPublicMapWorthy,
-  } = await import("@/lib/event-visibility");
   query = query.in("status", [...PUBLIC_EVENT_STATUSES]).eq("visibility", PUBLIC_VISIBILITY);
 
   // PostgREST returns at most 1,000 rows per request. The old 800/1,000-row
@@ -270,7 +272,6 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     });
 
   if (filters.ageCategories?.length) {
-    const { ageCategoryMatch, ageMatchRank } = await import("@/lib/taxonomy");
     rows = rows.flatMap((e) => {
       const m = ageCategoryMatch(e, filters.ageCategories!);
       if (m === "no") return [];
@@ -360,10 +361,6 @@ const SERIES_PUBLIC_COLUMNS =
 
 export async function listSeries(filters: EventFilters = {}): Promise<SeriesListItem[]> {
   const supabase = createServerSupabase();
-  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY } = await import("@/lib/event-visibility");
-  const { expandDisciplineFilter, expandAgeCategoryFilter, matchesAgeCategoryFilter, matchesDisciplineFilter } =
-    await import("@/lib/taxonomy");
-  const { isListedCountry } = await import("@/lib/geo/europe");
 
   const { data: series, error } = await supabase
     .from("series")
@@ -461,7 +458,6 @@ export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySl
   slug: string,
 ): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
   const supabase = createServerSupabase();
-  const { PUBLIC_COUNTRY_CODES } = await import("@/lib/geo/europe");
   const row = await getPublicSeriesRow(slug);
   if (!row) return null;
 
@@ -520,9 +516,6 @@ export const getPublicEventBySlug = cache(unstable_cache(async function getPubli
   slug: string,
 ): Promise<EventListItem | null> {
   const supabase = createServerSupabase();
-  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, shouldHideFromMap } = await import(
-    "@/lib/event-visibility"
-  );
   const { data, error } = await supabase
     .from("events")
     .select(
@@ -557,7 +550,6 @@ export const getPublicEventBySlug = cache(unstable_cache(async function getPubli
   }
   const event = mapEventRow(data as Record<string, unknown>);
   if (shouldHideFromMap(event.name, event.status, event.visibility)) return null;
-  const { isListedCountry } = await import("@/lib/geo/europe");
   const cc = event.location?.countryCode;
   if (cc && !isListedCountry(cc)) return null;
   return event;
@@ -572,14 +564,9 @@ export const getPublicEventBySlug = cache(unstable_cache(async function getPubli
 export async function findRacesForMissingSlug(
   slug: string,
 ): Promise<{ match: EventListItem | null; near: EventListItem[] }> {
-  const { parseRaceSlug, rankRacesForSlug } = await import("@/lib/event-slug");
   const { words, date, year } = parseRaceSlug(slug);
   const searchable = words.filter((w) => w.length >= 3 && /^[a-z0-9]+$/.test(w)).slice(0, 6);
   if (!searchable.length) return { match: null, near: [] };
-  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, shouldHideFromMap } = await import(
-    "@/lib/event-visibility"
-  );
-  const { isListedCountry } = await import("@/lib/geo/europe");
   const supabase = createServerSupabase();
   // Slugs and days only: a common word ("cup") matches hundreds of races, and
   // all of them are scored before any is loaded whole.
@@ -666,9 +653,6 @@ export async function listSitemapEvents(limit = 4000): Promise<
   { slug: string; startDate: string; updatedAt: string | null }[]
 > {
   const supabase = createServerSupabase();
-  const { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy } =
-    await import("@/lib/event-visibility");
-  const { isListedCountry } = await import("@/lib/geo/europe");
   // A race just ridden is still searched for, for its results and next year's
   // date: its page stays offered for a month after.
   const today = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
@@ -845,7 +829,7 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
 
   let locationId: string | null = null;
   if (input.placeName) {
-    const locPayload: Record<string, unknown> = {
+    const locPayload: Insert<"locations"> = {
       name: input.placeName,
       municipality: input.municipality ?? input.placeName,
       country_code: input.countryCode,
@@ -902,7 +886,8 @@ export async function upsertManualEvent(input: ManualEventInput, eventId?: strin
   } else {
     const { data, error } = await supabase
       .from("events")
-      .insert({ ...eventPayload, slug })
+      // `slug` is only unset when updating an existing race, which is the branch above.
+      .insert({ ...eventPayload, slug: slug! })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
@@ -984,7 +969,7 @@ export async function updateEventFields(
   lock = true,
 ) {
   const supabase = createServerSupabase();
-  const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  const payload: Update<"events"> = { updated_at: new Date().toISOString() };
   if (fields.name != null) {
     payload.name = fields.name;
     payload.name_normalized = normalizeName(fields.name);
@@ -1029,7 +1014,7 @@ export async function updateEventFields(
     await supabase.from("event_overrides").upsert(
       {
         event_id: eventId,
-        fields: { ...prevFields, ...payload },
+        fields: { ...prevFields, ...payload } as Json,
         locked_fields: locked,
         updated_by: "admin",
         updated_at: new Date().toISOString(),
@@ -1037,6 +1022,47 @@ export async function updateEventFields(
       { onConflict: "event_id" },
     );
   }
+
+  refreshPublicCatalogue();
+}
+
+/**
+ * Show or hide many races at once, as an admin does from the list.
+ *
+ * What `updateEventFields(id, { visibility }, true)` does for one race, in
+ * three queries for all of them instead of three each: set the column, then
+ * lock it so the watcher leaves the choice alone, and drop the public
+ * catalogue's cache once.
+ */
+export async function setEventsVisibility(ids: string[], visibility: "public" | "hidden") {
+  if (ids.length === 0) return;
+  const supabase = createServerSupabase();
+  const now = new Date().toISOString();
+
+  const { error } = await supabase.from("events").update({ visibility, updated_at: now }).in("id", ids);
+  if (error) throw new Error(error.message);
+
+  const { data: existing, error: readError } = await supabase
+    .from("event_overrides")
+    .select("event_id, locked_fields, fields")
+    .in("event_id", ids);
+  if (readError) throw new Error(readError.message);
+  const byEvent = new Map((existing ?? []).map((row) => [row.event_id, row]));
+
+  const rows = ids.map((id) => {
+    const prev = byEvent.get(id);
+    const prevFields =
+      prev?.fields && typeof prev.fields === "object" && !Array.isArray(prev.fields) ? prev.fields : {};
+    return {
+      event_id: id,
+      fields: { ...prevFields, visibility, updated_at: now } as Json,
+      locked_fields: [...new Set([...(prev?.locked_fields ?? []), "visibility"])],
+      updated_by: "admin",
+      updated_at: now,
+    };
+  });
+  const { error: lockError } = await supabase.from("event_overrides").upsert(rows, { onConflict: "event_id" });
+  if (lockError) throw new Error(lockError.message);
 
   refreshPublicCatalogue();
 }

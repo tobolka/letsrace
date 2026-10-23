@@ -12,6 +12,7 @@ import { mayInheritSeriesAges } from "@/lib/catalog/series-ages";
 import { recordFacts } from "@/lib/catalog/facts";
 import { corroborateRaceResultDate, nearbyEditionDate } from "@/lib/catalog/raceresult-date";
 import { preferDeeperOfficialUrl } from "@/lib/watcher/public-url";
+import type { Update } from "@/lib/supabase/tables";
 
 const PAGE = 1000;
 
@@ -94,7 +95,7 @@ export async function fillRaceResultAgeCategories(opts?: {
         if (proof) {
           opts?.log?.(`${opts.dryRun ? "DRY" : "DATE"} ${target.name}: ${target.startDate} → ${programme.startDate} ← ${proof.sourceUrl}`);
           if (!opts?.dryRun) {
-            const patch: Record<string, unknown> = { start_date: programme.startDate, end_date: programme.endDate, updated_at: new Date().toISOString() };
+            const patch: Update<"events"> = { start_date: programme.startDate, end_date: programme.endDate, updated_at: new Date().toISOString() };
             if (!target.locked.includes("website_url") && proof.websiteUrl) patch.website_url = preferDeeperOfficialUrl(proof.websiteUrl, target.website);
             if (!target.locked.includes("regulations_url") && !target.regulations) patch.regulations_url = proof.sourceUrl;
             const { data, error } = await supabase.from("events").update(patch).eq("id", target.id).eq("start_date", target.startDate).select("id");

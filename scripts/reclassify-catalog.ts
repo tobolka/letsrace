@@ -16,6 +16,7 @@ import { resolve } from "node:path";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { inferClassification, audienceFromAgeCategories, type AgeCategory } from "../src/lib/taxonomy";
 import { isNonCyclingEventName } from "../src/lib/sport-gate";
+import type { Update } from "@/lib/supabase/tables";
 
 function loadEnv() {
   try {
@@ -107,7 +108,7 @@ async function main() {
       countryHint: loc?.country_code,
     });
 
-    const patch: Record<string, unknown> = {};
+    const patch: Update<"events"> = {};
 
     if (FCI_PREFIX.test(row.name) && !locked.has("name")) {
       const cleaned = row.name.replace(FCI_PREFIX, "").trim();

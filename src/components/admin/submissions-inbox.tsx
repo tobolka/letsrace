@@ -15,7 +15,7 @@ type Notification = {
   id: string;
   kind: string;
   title: string;
-  body: string;
+  body: string | null;
   read_at: string | null;
   created_at: string;
 };
@@ -23,7 +23,7 @@ type Notification = {
 type Submission = {
   id: string;
   url: string;
-  kind?: "race" | "series";
+  kind?: string;
   note: string | null;
   status: string;
   created_at: string;

@@ -164,16 +164,16 @@ export async function runRaceAlerts(now = new Date()) {
       .limit(800),
   ]);
 
-  const alerts = ((alertRows ?? []) as unknown as AlertRow[]).map(toAlert);
+  const alerts = (alertRows ?? []).map(toAlert);
   const emails = new Map<string, string>();
   const busyByUser = new Map<string, number[]>();
-  for (const row of (alertRows ?? []) as unknown as AlertRow[]) {
+  for (const row of (alertRows ?? [])) {
     const profile = unwrap(row.profile);
     const email = profile?.email;
     if (email) emails.set(row.user_id, email);
     busyByUser.set(row.user_id, parseWeekdays(profile?.busy_weekdays));
   }
-  const candidates = ((eventRows ?? []) as unknown as Parameters<typeof toCandidate>[0][]).map(toCandidate);
+  const candidates = (eventRows ?? []).map(toCandidate);
 
   if (alerts.length === 0 || candidates.length === 0) {
     return { alerts: alerts.length, candidates: candidates.length, matched: 0, emailed: 0 };
