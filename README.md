@@ -6,7 +6,7 @@ Map-first cycling race finder for kids and adults across Central Europe (CZ, DE,
 
 - Next.js (App Router) + TypeScript
 - Supabase (Postgres + PostGIS)
-- MapLibre GL + OpenFreeMap
+- Leaflet raster map (Carto Voyager tiles, a small custom runtime in `public/maps/light-v1`)
 - Watcher with layered extraction (JSON-LD → host adapters → generic)
 - Admin for sources, discovery queue, **manual event create/edit with field locks**
 

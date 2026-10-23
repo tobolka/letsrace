@@ -3,9 +3,9 @@
 import { preload, preconnect } from "react-dom";
 import { lightTileUrl } from "./light-tile-url";
 import { LightRaceMap } from "./light-race-map";
-import type { RaceMapProps } from "./race-map";
+import type { RaceMapProps } from "./types";
 
-export type { MapBounds, BoundsChangeReason } from "./race-map";
+export type { MapBounds, BoundsChangeReason } from "./types";
 
 /** The map is the first screen, so its tiny renderer belongs in the initial
  * bundle. Preload its runtime during SSR instead of discovering it after

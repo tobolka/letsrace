@@ -7,8 +7,8 @@ import {
 export { disciplineFamily, eventDisciplineFamily };
 
 /**
- * The few colours the map draws itself — on a canvas, in a MapLibre paint
- * property, in a Leaflet style — where a CSS variable cannot reach.
+ * The few colours the map draws itself — on a canvas or in a Leaflet
+ * style — where a CSS variable cannot reach.
  */
 export const MAP_COLORS = {
   paper: "#ffffff",
@@ -44,17 +44,6 @@ export const DISCIPLINE_FAMILY_COLORS: Record<string, string> = {
   other: "#757b83",
 };
 
-/** The same wheel eight points of lightness down, worn by the selected pin. */
-export const DISCIPLINE_FAMILY_COLORS_DARK: Record<string, string> = {
-  mtb: "#007b2f",
-  road: "#1d60bc",
-  gravel: "#a04600",
-  cx: "#a92e52",
-  track: "#007a8e",
-  bmx: "#7f42a6",
-  other: "#5e646c",
-};
-
 /**
  * One glyph per discipline family, drawn inside the map pin.
  *
@@ -79,11 +68,6 @@ export function disciplineIcon(disciplines: string[] | null | undefined): string
 export function disciplineColor(disciplines: string[] | null | undefined): string {
   const fam = eventDisciplineFamily(disciplines);
   return DISCIPLINE_FAMILY_COLORS[fam] ?? DISCIPLINE_FAMILY_COLORS.other;
-}
-
-export function disciplineColorDark(disciplines: string[] | null | undefined): string {
-  const fam = eventDisciplineFamily(disciplines);
-  return DISCIPLINE_FAMILY_COLORS_DARK[fam] ?? DISCIPLINE_FAMILY_COLORS_DARK.other;
 }
 
 export function familyColor(id: string | null | undefined): string {

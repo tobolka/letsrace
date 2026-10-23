@@ -7,9 +7,7 @@
   },
   "scripts": {
     "dev": "node scripts/with-node.cjs next dev",
-    "prebuild": "node scripts/copy-maplibre-worker.cjs",
     "build": "node scripts/with-node.cjs next build",
-    "postinstall": "node scripts/copy-maplibre-worker.cjs",
     "start": "node scripts/with-node.cjs next start",
     "lint": "node scripts/with-node.cjs eslint",
     "typecheck": "node scripts/with-node.cjs tsc --noEmit",
@@ -33,7 +31,6 @@
     "date-fns": "^4.4.0",
     "geist": "^1.7.2",
     "lucide-react": "^1.55.0",
-    "maplibre-gl": "^6.13.0",
     "next": "16.4.2",
     "next-intl": "^4.14.9",
     "ngeohash": "^0.6.4",

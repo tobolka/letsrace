@@ -39,10 +39,6 @@ if (!cmd) {
   process.exit(1);
 }
 
-// Only the Next runtime needs the browser worker. Audit and test commands
-// can run concurrently without deleting each other's copied MapLibre files.
-if (cmd === "next") require("./copy-maplibre-worker.cjs");
-
 /** Resolve `next`, a local node_modules bin, or a plain path to a runnable file. */
 function resolveCommand(name) {
   if (name === "next") return require.resolve("next/dist/bin/next");

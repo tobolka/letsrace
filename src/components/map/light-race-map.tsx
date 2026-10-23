@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { LocateFixed, Minus, Plus, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
-import type { MapBounds, BoundsChangeReason, RaceMapProps } from "./race-map";
+import type { MapBounds, BoundsChangeReason, RaceMapProps } from "./types";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_ICONS } from "@/lib/map-visuals";
 import { messagesFor } from "@/lib/i18n/messages";

@@ -1,4 +1,4 @@
-import type { MapBounds } from "./race-map";
+import type { MapBounds } from "./types";
 import type { LatLng } from "./leaflet-runtime";
 
 export function clusterAction(points: LatLng[], zoom: number, maxZoom = 18):
