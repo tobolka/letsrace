@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { withAdmin } from "@/lib/api/guards";
+import { serverError } from "@/lib/api/respond";
+import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { isAdminAuthenticated } from "@/lib/auth/admin";
 
-export async function PATCH(req: NextRequest) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-  const body = await req.json();
+const bodySchema = z.object({
+  id: z.string().min(1).max(64),
+  read: z.boolean(),
+});
+
+export const PATCH = withAdmin(async (req: NextRequest) => {
+  const parsed = await parseJson(req, bodySchema);
+  if (!parsed.ok) return parsed.response;
+
   const supabase = createServerSupabase();
-  await supabase
+  const { error } = await supabase
     .from("admin_notifications")
-    .update({ read_at: body.read ? new Date().toISOString() : null })
-    .eq("id", body.id);
+    .update({ read_at: parsed.data.read ? new Date().toISOString() : null })
+    .eq("id", parsed.data.id);
+  if (error) return serverError("updating notification failed", error);
   return NextResponse.json({ ok: true });
-}
+});

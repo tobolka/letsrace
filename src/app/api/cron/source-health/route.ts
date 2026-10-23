@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireCronSecret } from "@/lib/cron-auth";
+import { z } from "zod";
+import { first } from "@/lib/api/schemas";
+import { parseQuery } from "@/lib/api/validate";
+import { withCron } from "@/lib/api/guards";
 import { getSourceHealth, verifyStalledSources, losingRaces } from "@/lib/admin/source-health";
 import { sendOpsAlert } from "@/lib/ops/alerts";
 
@@ -14,14 +17,17 @@ import { sendOpsAlert } from "@/lib/ops/alerts";
  */
 export const maxDuration = 300;
 
-export async function GET(req: NextRequest) {
-  if (!requireCronSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const limit = Number(req.nextUrl.searchParams.get("limit") || 60);
+const querySchema = z.object({
+  limit: first.transform((v) => Math.min(Math.max(Number(v || 60) || 60, 1), 80)),
+});
+
+export const GET = withCron(async (req: NextRequest) => {
+  const parsed = parseQuery(req.nextUrl.searchParams, querySchema);
+  if (!parsed.ok) return parsed.response;
+  const { limit } = parsed.data;
 
   const report = await getSourceHealth();
-  const verified = await verifyStalledSources(report.stalled, { limit: Math.min(limit, 80) });
+  const verified = await verifyStalledSources(report.stalled, { limit });
   const losing = losingRaces(verified);
 
   if (losing.length) {
@@ -51,8 +57,6 @@ export async function GET(req: NextRequest) {
       daysSinceFetch: s.daysSinceFetch,
     })),
   });
-}
+});
 
-export async function POST(req: NextRequest) {
-  return GET(req);
-}
+export const POST = GET;

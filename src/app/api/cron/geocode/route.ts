@@ -1,19 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireCronSecret } from "@/lib/cron-auth";
+import { z } from "zod";
+import { first } from "@/lib/api/schemas";
+import { parseQuery } from "@/lib/api/validate";
+import { withCron } from "@/lib/api/guards";
 import { geocodePendingLocations } from "@/lib/geocode";
 
 export const maxDuration = 120;
 
-export async function GET(req: NextRequest) {
-  if (!requireCronSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const limit = Number(req.nextUrl.searchParams.get("limit") || 80);
-  const gazetteerOnly = req.nextUrl.searchParams.get("mode") === "gazetteer";
-  const result = await geocodePendingLocations(Math.min(limit, 120), { gazetteerOnly });
-  return NextResponse.json({ ok: true, ...result });
-}
+const querySchema = z.object({
+  limit: first.transform((v) => Math.min(Math.max(Number(v || 80) || 80, 1), 120)),
+  mode: first,
+});
 
-export async function POST(req: NextRequest) {
-  return GET(req);
-}
+export const GET = withCron(async (req: NextRequest) => {
+  const parsed = parseQuery(req.nextUrl.searchParams, querySchema);
+  if (!parsed.ok) return parsed.response;
+  const { limit, mode } = parsed.data;
+  const result = await geocodePendingLocations(limit, { gazetteerOnly: mode === "gazetteer" });
+  return NextResponse.json({ ok: true, ...result });
+});
+
+export const POST = GET;

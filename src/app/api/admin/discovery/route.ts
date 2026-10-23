@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/admin";
+import { z } from "zod";
+import { withAdmin } from "@/lib/api/guards";
+import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export async function POST(req: NextRequest) {
-  try {
-    await requireAdmin();
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { id, status } = await req.json();
+const bodySchema = z.object({
+  id: z.string().min(1).max(64),
+  status: z.enum(["accepted", "rejected"]),
+});
+
+export const POST = withAdmin(async (req: NextRequest) => {
+  const parsed = await parseJson(req, bodySchema);
+  if (!parsed.ok) return parsed.response;
+  const { id, status } = parsed.data;
+
   const supabase = createServerSupabase();
   const { error } = await supabase.rpc("app_set_discovered_status", {
     p_id: id,
@@ -35,4 +40,4 @@ export async function POST(req: NextRequest) {
     }
   }
   return NextResponse.json({ ok: true });
-}
+});

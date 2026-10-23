@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthenticated } from "@/lib/auth/admin";
+import { z } from "zod";
+import { withAdmin } from "@/lib/api/guards";
+import { validate } from "@/lib/api/validate";
 import { geocodePendingLocations } from "@/lib/geocode";
 
-export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+const bodySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(150).catch(80),
+});
+
+export const POST = withAdmin(async (req: NextRequest) => {
   const contentType = req.headers.get("content-type") || "";
   let limit = 80;
   if (contentType.includes("application/json")) {
     const body = await req.json().catch(() => ({}));
-    limit = Math.min(Number(body.limit || 80), 150);
+    const parsed = validate(bodySchema, body);
+    if (parsed.ok) limit = parsed.data.limit;
   }
   const result = await geocodePendingLocations(limit);
   // HTML form posts from admin dashboard — send user back
@@ -18,4 +22,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
   return NextResponse.json({ ok: true, ...result });
-}
+});

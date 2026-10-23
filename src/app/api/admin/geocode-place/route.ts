@@ -1,22 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/admin";
+import { z } from "zod";
+import { withAdmin } from "@/lib/api/guards";
+import { apiError } from "@/lib/api/respond";
+import { parseJson } from "@/lib/api/validate";
 import { geocodePlace } from "@/lib/geocode";
 
-export async function POST(req: NextRequest) {
-  try {
-    await requireAdmin();
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  try {
-    const body = (await req.json()) as { query?: string; countryCode?: string };
-    const query = body.query?.trim();
-    if (!query) return NextResponse.json({ error: "query required" }, { status: 400 });
+const bodySchema = z.object({
+  query: z.string().trim().min(1, { error: "query required" }).max(200),
+  countryCode: z.string().trim().max(2).optional(),
+});
 
-    const geo = await geocodePlace(query, body.countryCode || "CZ");
-    if (!geo) {
-      return NextResponse.json({ error: "No match for this place" }, { status: 404 });
-    }
+export const POST = withAdmin(async (req: NextRequest) => {
+  const parsed = await parseJson(req, bodySchema);
+  if (!parsed.ok) return parsed.response;
+
+  try {
+    const geo = await geocodePlace(parsed.data.query, parsed.data.countryCode || "CZ");
+    if (!geo) return apiError(404, "No match for this place");
     return NextResponse.json({
       lat: geo.lat,
       lng: geo.lng,
@@ -24,9 +24,6 @@ export async function POST(req: NextRequest) {
       displayName: geo.displayName,
     });
   } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Failed" },
-      { status: 500 },
-    );
+    return apiError(500, e instanceof Error ? e.message : "Failed");
   }
-}
+});

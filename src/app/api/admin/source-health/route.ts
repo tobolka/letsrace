@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/admin";
+import { z } from "zod";
+import { withAdmin } from "@/lib/api/guards";
+import { apiError } from "@/lib/api/respond";
+import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getSourceHealth, verifyStalledSources, losingRaces } from "@/lib/admin/source-health";
 
 export const maxDuration = 300;
 
 /** Ask each suspect source what it actually returns right now. */
-export async function GET() {
-  try {
-    await requireAdmin();
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export const GET = withAdmin(async () => {
   const report = await getSourceHealth();
   const verified = await verifyStalledSources(report.stalled, { limit: 60 });
   return NextResponse.json({
@@ -27,7 +25,7 @@ export async function GET() {
     })),
     losing: losingRaces(verified).length,
   });
-}
+});
 
 /**
  * Re-read one source now.
@@ -35,14 +33,12 @@ export async function GET() {
  * Clears the stored content hash first: a stalled source often still serves
  * byte-identical HTML, and the unchanged-check would skip it for another week.
  */
-export async function POST(req: NextRequest) {
-  try {
-    await requireAdmin();
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const { id } = (await req.json()) as { id?: string };
-  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+const rereadSchema = z.object({ id: z.string().min(1, { error: "id required" }).max(64) });
+
+export const POST = withAdmin(async (req: NextRequest) => {
+  const parsed = await parseJson(req, rereadSchema);
+  if (!parsed.ok) return parsed.response;
+  const { id } = parsed.data;
 
   const supabase = createServerSupabase();
   const { data: row } = await supabase
@@ -50,7 +46,7 @@ export async function POST(req: NextRequest) {
     .select("id,url,kind")
     .eq("id", id)
     .maybeSingle();
-  if (!row) return NextResponse.json({ error: "not found" }, { status: 404 });
+  if (!row) return apiError(404, "not found");
 
   await supabase
     .from("watched_urls")
@@ -73,4 +69,4 @@ export async function POST(req: NextRequest) {
     strategy: outcome.strategy ?? null,
     error: outcome.error ?? null,
   });
-}
+});

@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { withAdmin } from "@/lib/api/guards";
+import { serverError } from "@/lib/api/respond";
+import { parseJson } from "@/lib/api/validate";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { isAdminAuthenticated } from "@/lib/auth/admin";
 
-export async function PATCH(req: NextRequest) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-  const body = await req.json();
-  const id = body.id as string;
-  const status = body.status as string;
-  if (!id || !status) return NextResponse.json({ error: "bad request" }, { status: 400 });
+const bodySchema = z.object({
+  id: z.string().min(1).max(64),
+  status: z.enum(["pending", "approved", "rejected"]),
+});
+
+export const PATCH = withAdmin(async (req: NextRequest) => {
+  const parsed = await parseJson(req, bodySchema);
+  if (!parsed.ok) return parsed.response;
+  const { id, status } = parsed.data;
 
   const supabase = createServerSupabase();
   const { data: sub, error } = await supabase
@@ -18,7 +22,7 @@ export async function PATCH(req: NextRequest) {
     .eq("id", id)
     .select("*")
     .single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return serverError("updating submission failed", error);
 
   if (status === "approved" && sub?.url) {
     await supabase.from("watched_urls").upsert(
@@ -35,4 +39,4 @@ export async function PATCH(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true });
-}
+});

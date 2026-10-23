@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireCronSecret } from "@/lib/cron-auth";
+import { NextResponse } from "next/server";
+import { withCron } from "@/lib/api/guards";
 import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { runDueWatches } from "@/lib/watcher/run";
 import { geocodePendingLocations } from "@/lib/geocode";
@@ -7,10 +7,7 @@ import { sendOpsAlert } from "@/lib/ops/alerts";
 
 export const maxDuration = 300;
 
-export async function GET(req: NextRequest) {
-  if (!requireCronSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export const GET = withCron(async () => {
   /*
    * A run gets through what it gets through, and it was not much.
    *
@@ -53,8 +50,6 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true, count: outcomes.length, outcomes, geocode });
-}
+});
 
-export async function POST(req: NextRequest) {
-  return GET(req);
-}
+export const POST = GET;

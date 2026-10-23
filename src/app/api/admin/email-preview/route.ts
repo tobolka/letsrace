@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminAuthenticated } from "@/lib/auth/admin";
+import { withAdmin } from "@/lib/api/guards";
 import { alertEmail } from "@/lib/race-alerts-run";
 import { digestEmail, planChangeEmail } from "@/lib/plan-mail-run";
 import { asLocale } from "@/lib/i18n/messages";
@@ -38,10 +38,7 @@ function plan(name: string, slug: string, startDate: string, place: string, disc
   };
 }
 
-export async function GET(req: NextRequest) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+export const GET = withAdmin(async (req: NextRequest) => {
   const kind = req.nextUrl.searchParams.get("kind") ?? "alert";
   const locale = asLocale(req.nextUrl.searchParams.get("l") ?? "cs");
   const asText = req.nextUrl.searchParams.get("format") === "text";
@@ -93,4 +90,4 @@ export async function GET(req: NextRequest) {
 
   if (asText) return new NextResponse(mail.text, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   return new NextResponse(mail.html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
-}
+});

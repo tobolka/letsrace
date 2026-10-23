@@ -1,17 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireCronSecret } from "@/lib/cron-auth";
+import { NextResponse } from "next/server";
+import { withCron } from "@/lib/api/guards";
 import { runWeeklyDigest } from "@/lib/plan-mail-run";
 
 export const maxDuration = 60;
 
-export async function GET(req: NextRequest) {
-  if (!requireCronSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export const GET = withCron(async () => {
   const result = await runWeeklyDigest();
   return NextResponse.json({ ok: true, ...result });
-}
+});
 
-export async function POST(req: NextRequest) {
-  return GET(req);
-}
+export const POST = GET;
