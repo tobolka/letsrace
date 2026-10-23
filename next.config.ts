@@ -71,6 +71,8 @@ const nextConfig: NextConfig = {
     // A shared immutable stylesheet is downloaded once. Inlining repeated
     // ~145 KB of CSS in every HTML response and again in its RSC payload.
     inlineCss: false,
+    // `next upgrade --agent` follows published security advisories only.
+    agentUpgrade: "security",
   },
   async redirects() {
     return [
