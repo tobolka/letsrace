@@ -1,6 +1,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { recordFacts } from "@/lib/catalog/facts";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
@@ -20,7 +21,7 @@ export function sportsoftLinksFromPage(html: string): { registration?: string; r
 
 async function exists(url: string): Promise<boolean> {
   try {
-    const res = await fetch(url, { method: "GET", headers: { "user-agent": UA, range: "bytes=0-1023" }, signal: AbortSignal.timeout(15_000) });
+    const res = await fetchBot(url, { headers: { "user-agent": UA, range: "bytes=0-1023" }, timeoutMs: 15_000 });
     return res.ok || res.status === 206;
   } catch {
     return false;
@@ -59,7 +60,7 @@ export async function fillSportsoftLinks(opts?: {
       result.attempted += 1;
       let html: string;
       try {
-        const res = await fetch(page, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(20_000) });
+        const res = await fetchBot(page, { headers: { "user-agent": UA } });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         html = await res.text();
       } catch (e) {

@@ -4,9 +4,9 @@ import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ageCategoriesFromList } from "@/lib/age-bands";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { catalogUserAgent } from "@/lib/watcher/http";
 import { findRegulationsUrl, isRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { linkLabel } from "@/lib/watcher/link-label";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -74,11 +74,7 @@ function specificBands(ages: AgeCategory[]): number {
 
 async function fetchBytes(url: string, requestedMaxBytes = MAX_BYTES): Promise<{ type: string; bytes: Uint8Array } | null> {
   const maxBytes = Number.isFinite(requestedMaxBytes) ? Math.min(16 * 1024 * 1024, Math.max(1, requestedMaxBytes)) : MAX_BYTES;
-  const res = await fetch(url, {
-    headers: { "user-agent": catalogUserAgent(url), accept: "text/html,application/pdf,*/*" },
-    redirect: "follow",
-    signal: AbortSignal.timeout(20_000),
-  });
+  const res = await fetchBot(url, { headers: { accept: "text/html,application/pdf,*/*" } });
   if (!res.ok) return null;
   const len = Number(res.headers.get("content-length") ?? 0);
   if (len > maxBytes) { await res.body?.cancel(); return null; }

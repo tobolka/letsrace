@@ -1,19 +1,9 @@
 import { createHash } from "crypto";
 import { assertPublicHttpUrl, fetchPublic, UnsafeUrlError } from "@/lib/http/safe-url";
+import { BOT_UA, catalogUserAgent, needsBrowserUa } from "@/lib/http/user-agent";
 import { hostnameOf, hostIntervalMs, sleep, withHostGate } from "@/lib/watcher/pool";
 
-export const BOT_UA =
-  "LetsRaceBot/0.2 (+https://letsrace.cz; race calendar aggregator; polite)";
-
-/** Hosts whose WAF rejects the bot UA. */
-const BROWSER_UA_HOSTS = new Set(["detskatour.sk", "jesenickysnek.cz", "woodbikerallyseries.cz"]);
-const BROWSER_UA =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
-
-/** Use the same known-host compatibility for HTML pages and document downloads. */
-export function catalogUserAgent(url: string): string {
-  return BROWSER_UA_HOSTS.has(hostnameOf(url)) ? BROWSER_UA : BOT_UA;
-}
+export { BOT_UA, catalogUserAgent };
 
 export type FetchResult = {
   html: string;
@@ -40,8 +30,7 @@ type FetchOpts = {
 };
 
 async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
-  const host = hostnameOf(url);
-  const browser = BROWSER_UA_HOSTS.has(host);
+  const browser = needsBrowserUa(url);
   const headers: Record<string, string> = {
     "User-Agent": catalogUserAgent(url),
     Accept: opts.accept ?? "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",

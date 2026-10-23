@@ -8,6 +8,7 @@ import {
 } from "@/lib/watcher/extractors/fci-categories";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import type { Update } from "@/lib/supabase/tables";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 
@@ -99,9 +100,7 @@ export async function fillFciAgeCategories(opts?: {
   };
   for (const target of targets) {
     try {
-      const res = await fetch(target.url, {
-        headers: { "user-agent": "letsrace-catalog/1.0 (+https://letsrace.cz)" },
-      });
+      const res = await fetchBot(target.url);
       if (!res.ok) {
         result.failed += 1;
         await recordProbe(supabase, target.id, "fci_ages", "failed");

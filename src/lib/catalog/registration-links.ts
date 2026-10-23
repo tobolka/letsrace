@@ -3,12 +3,12 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { recordFacts } from "@/lib/catalog/facts";
-import { BOT_UA } from "@/lib/watcher/http";
 import {
   isAccountOrNewsletterUrl,
   isRegistrationPlatformUrl,
   isStartListUrl,
 } from "@/lib/watcher/registration-url";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 const ENTER_TEXT =
@@ -171,11 +171,7 @@ export async function fillRegistrationLinks(opts?: {
       let quote: string | null = null;
       let link: string | null = isRegistrationPlatformUrl(t.website) ? t.website : null;
       if (!link) {
-        const res = await fetch(t.website, {
-          headers: { "user-agent": BOT_UA },
-          redirect: "follow",
-          signal: AbortSignal.timeout(15_000),
-        });
+        const res = await fetchBot(t.website, { timeoutMs: 15_000 });
         if (!res.ok) {
           result.failed += 1;
           if (!opts?.dryRun) await recordProbe(supabase, t.id, "reg_links", "failed");

@@ -6,6 +6,7 @@ import { audienceFromAgeCategories } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { geocodePlace } from "@/lib/geocode";
 import type { Insert, Update } from "@/lib/supabase/tables";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 const CA_EVENT = /cyclingaustria\.at\/index\.php\?[^#]*view=event[^#]*id=([A-F0-9]+)/i;
@@ -143,10 +144,7 @@ export async function fillCyclingAustriaDetails(opts?: {
   const result = { attempted: targets.length, places: 0, ages: 0, websites: 0, silent: 0, failed: 0 };
   for (const t of targets) {
     try {
-      const res = await fetch(t.url, {
-        headers: { "user-agent": "letsrace-catalog/1.0 (+https://letsrace.cz)" },
-        signal: AbortSignal.timeout(20_000),
-      });
+      const res = await fetchBot(t.url);
       if (!res.ok) {
         result.failed += 1;
         if (!opts?.dryRun) await recordProbe(supabase, t.id, "ca_details", "failed");

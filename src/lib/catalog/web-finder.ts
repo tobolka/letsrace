@@ -2,9 +2,9 @@ import { askJson, llmAvailable, LlmUnavailable, LlmResponseError, SONNET } from 
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { BOT_UA } from "@/lib/watcher/http";
 import { htmlText } from "@/lib/catalog/regulation-ages";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 
@@ -292,7 +292,7 @@ export async function findWebsites(opts?: {
         if (!platform && looksLikeArticleOrListing(hit.url)) continue;
         if (!platform && namesAnotherEdition(hit.url, t.name, t.startDate)) continue;
         try {
-          const page = await fetch(hit.url, { headers: { "user-agent": BOT_UA }, redirect: "follow", signal: AbortSignal.timeout(12_000) });
+          const page = await fetchBot(hit.url, { timeoutMs: 12_000 });
           if (!page.ok || !/html/i.test(page.headers.get("content-type") ?? "")) continue;
           const text = `${hit.title} ${htmlText(await page.text())}`;
           // The page must be about this race (its text) and be the race's own

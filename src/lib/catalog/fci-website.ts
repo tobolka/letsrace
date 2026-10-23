@@ -2,6 +2,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
+import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
 const FREE_MAIL =
@@ -56,12 +57,7 @@ export function fciWebsiteFromPage(html: string, raceName = ""): string | null {
 
 async function reachable(url: string): Promise<boolean> {
   try {
-    const res = await fetch(url, {
-      method: "GET",
-      redirect: "follow",
-      headers: { "user-agent": "letsrace-catalog/1.0 (+https://letsrace.cz)" },
-      signal: AbortSignal.timeout(10_000),
-    });
+    const res = await fetchBot(url, { timeoutMs: 10_000 });
     return res.ok;
   } catch {
     return false;
@@ -112,10 +108,7 @@ export async function fillFciWebsites(opts?: {
   const result = { attempted: targets.length, filled: 0, silent: 0, failed: 0 };
   for (const target of targets) {
     try {
-      const res = await fetch(target.url, {
-        headers: { "user-agent": "letsrace-catalog/1.0 (+https://letsrace.cz)" },
-        signal: AbortSignal.timeout(20_000),
-      });
+      const res = await fetchBot(target.url);
       if (!res.ok) {
         result.failed += 1;
         if (!opts?.dryRun) await recordProbe(supabase, target.id, "fci_website", "failed");
