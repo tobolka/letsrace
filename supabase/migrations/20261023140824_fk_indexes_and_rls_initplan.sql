@@ -1,7 +1,5 @@
--- PROPOSED - written from the Supabase advisors on 2026-10-23, NOT applied.
--- Review, then apply with `supabase db push` (see the version drift note in
--- docs/refactoring-plan.md first: production's migration versions differ from
--- this folder's for the same names).
+-- Applied to production on 2026-10-23 (version 20261023140824, the one the
+-- database recorded). Written from the Supabase advisors of the same day.
 --
 -- 1. Cover the thirteen foreign keys the performance advisor lists. Without an
 --    index a delete or a join on the parent scans the child table. Plain
