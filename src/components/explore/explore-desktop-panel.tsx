@@ -57,11 +57,11 @@ export function ExploreDesktopPanel({
           </div>
           <Separator />
           <ListToolbar {...toolbar} distanceEnabled messages={messages} locale={locale} />
-          <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
+          <div id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
             <div ref={listRef} className="@container min-h-0">
             <ExploreRaceRows variant="panel" locale={locale} messages={messages} {...rows} />
             </div>
-          </main>
+          </div>
         </div>
         <PanelResizeHandle resize={panel} label={messages.resizePanel} />
         </div>
