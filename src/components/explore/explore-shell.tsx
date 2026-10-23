@@ -48,6 +48,9 @@ import { catalogueCovers, filterCatalogue } from "@/lib/filter-catalogue";
 import { loadCatalogue } from "@/lib/load-catalogue";
 import { exploreSearchParams, RADIUS_PARAM } from "@/lib/explore-params";
 import { DistanceFilter } from "@/components/shell/distance-filter";
+import { useIsClient } from "@/hooks/use-is-client";
+import { useLoadEffect } from "@/hooks/use-load-effect";
+import { useMediaQuery, useViewportHeight } from "@/hooks/use-viewport";
 import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
 import { eventsWithinRadius } from "@/lib/geo/radius";
 import { loadSeriesList } from "@/lib/series-list";
@@ -229,7 +232,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const areaTimerRef = useRef(0);
   const searchViewportRef = useRef<(b: MapBounds) => void>(() => {});
   const [filterBarReset, setFilterBarReset] = useState(0);
-  const [mobileSheetReady, setMobileSheetReady] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [customDate, setCustomDate] = useState(false);
   // Loaded on first use, then kept, so closing can finish its animation.
@@ -320,11 +322,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     selectEventRef.current(id);
   }, []);
 
-  useEffect(() => {
-    if (!filters.e) return;
-    const hit = events.find((ev) => ev.slug === filters.e);
-    if (hit && hit.id !== selectedId) setSelectedId(hit.id);
-  }, [filters.e, events, selectedId]);
+  // The address names the race; the card follows it.
+  const named = filters.e ? events.find((ev) => ev.slug === filters.e) : undefined;
+  if (named && named.id !== selectedId) setSelectedId(named.id);
 
   // Back took `e` away: the card goes with it, and the list is as it was.
   const lastE = useRef(filters.e);
@@ -703,30 +703,17 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radiusArea]);
 
-  useEffect(() => {
+  // Restored once on mount.
+  useLoadEffect(async () => {
     if (prefsReady) return;
-    if (urlHasExploreFilterParams(window.location.search)) {
-      setPrefsReady(true);
-      return;
-    }
-    const stored = readExploreFilterPrefs();
-    if (!stored) {
-      setPrefsReady(true);
-      return;
-    }
-    const patch = storedExploreFiltersToPatch(stored);
-    let cancelled = false;
-    void setFilters(patch).then(() => {
-      if (cancelled) return;
+    const stored = urlHasExploreFilterParams(window.location.search) ? null : readExploreFilterPrefs();
+    if (stored) {
+      const patch = storedExploreFiltersToPatch(stored);
+      await setFilters(patch);
       void refetch(patch);
       if (patch.sort === "distance") setLocateSeq((n) => n + 1);
-      setPrefsReady(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-    // Restore once on mount; refetch/setFilters are stable enough for this pass.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }
+    setPrefsReady(true);
   }, [prefsReady]);
 
   useEffect(() => {
@@ -885,27 +872,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   }, []);
 
   // Desktop: side panels. Mobile: bottom sheet over a usable map.
-  const [isDesktop, setIsDesktop] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   // The panel's width, and the live width while its edge is being dragged.
   const [mapWidth, setMapWidth] = useState(MAP_PANEL_W);
   const [dragW, setDragW] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [viewportH, setViewportH] = useState(800);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const apply = () => {
-      setIsDesktop(mq.matches);
-      setViewportH(window.innerHeight);
-    };
-    apply();
-    setMobileSheetReady(true);
-    mq.addEventListener("change", apply);
-    window.addEventListener("resize", apply);
-    return () => {
-      mq.removeEventListener("change", apply);
-      window.removeEventListener("resize", apply);
-    };
-  }, []);
+  const viewportH = useViewportHeight(800);
+  const mobileSheetReady = useIsClient();
 
   /*
    * The sheet's height while it is moving is not the map's business.
