@@ -82,6 +82,8 @@ html[data-welcome-seen="1"] #letsrace-welcome {
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
+  /* What slides up from the bottom of a phone: the race card, the list, the filters. */
+  --shadow-sheet: 0 -4px 28px rgb(28 25 23 / 0.16);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   /* System mono — Geist Mono was ~70 KB on every explore visit for one label. */
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;

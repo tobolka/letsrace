@@ -5,6 +5,7 @@ import { loadLeaflet, type LeafletMap, type Circle, type LayerGroup, type Leafle
 import { addLightBasemap, drawCityLabels, loadCities, type City } from "@/components/map/light-basemap";
 import { cn } from "@/lib/utils";
 import "@/components/map/light-race-map.css";
+import { MAP_COLORS } from "@/lib/map-visuals";
 
 export type RadiusPoint = { id: string; lat: number; lng: number; color: string };
 type Props = { lat: number; lng: number; radiusKm: number; races: RadiusPoint[]; muted?: boolean; className?: string; label?: string };
@@ -41,13 +42,13 @@ export function RadiusMap(props: Props) {
       };
       sync.current = () => {
         const { lat, lng, radiusKm, races, muted } = latest.current;
-        const color = muted ? "#a8a29e" : "#c81d25";
+        const color = muted ? MAP_COLORS.brandMuted : MAP_COLORS.brand;
         const point: [number, number] = [lat, lng];
         if (!area) area = L.circle(point, { radius: radiusKm * 1000, interactive: false }).addTo(m);
         area.setLatLng(point).setRadius(radiusKm * 1000).setStyle({ color, weight: 1.5, dashArray: "5 5", fillColor: color, fillOpacity: 0.07 });
         dots.clearLayers();
-        for (const race of races) L.circleMarker([race.lat, race.lng], { pane: "radius-points", radius: 4, color: "#fff", weight: 1.5, fillColor: race.color, fillOpacity: 1, interactive: false }).addTo(dots);
-        L.circleMarker(point, { pane: "radius-points", radius: 5, color: "#fff", weight: 2, fillColor: "#1c1917", fillOpacity: 1, interactive: false }).addTo(dots);
+        for (const race of races) L.circleMarker([race.lat, race.lng], { pane: "radius-points", radius: 4, color: MAP_COLORS.paper, weight: 1.5, fillColor: race.color, fillOpacity: 1, interactive: false }).addTo(dots);
+        L.circleMarker(point, { pane: "radius-points", radius: 5, color: MAP_COLORS.paper, weight: 2, fillColor: MAP_COLORS.ink, fillOpacity: 1, interactive: false }).addTo(dots);
         const key = `${lat}:${lng}:${radiusKm}`;
         if (key !== lastArea) {
           const bounds = area.getBounds();

@@ -7,6 +7,19 @@ import {
 export { disciplineFamily, eventDisciplineFamily };
 
 /**
+ * The few colours the map draws itself — on a canvas, in a MapLibre paint
+ * property, in a Leaflet style — where a CSS variable cannot reach.
+ */
+export const MAP_COLORS = {
+  paper: "#ffffff",
+  /** The ink of the page (`--foreground`), for strokes and the "you are here" dot. */
+  ink: "#1c1917",
+  /** The brand red (`--brand`) and its faded form for a radius that is switched off. */
+  brand: "#c81d25",
+  brandMuted: "#a8a29e",
+} as const;
+
+/**
  * One hue per discipline family — map pins, list rules, detail header.
  *
  * Built in OKLCH rather than picked by eye: every family sits at the same

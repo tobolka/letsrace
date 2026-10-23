@@ -75,7 +75,7 @@ const FRAME_STYLE = { height: "100dvh", maxHeight: "100dvh" } as const;
 
 const CARD = cn(
   "relative flex min-h-0 flex-col overflow-hidden rounded-t-2xl bg-card",
-  "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
+  "shadow-sheet",
 );
 
 /**
@@ -86,7 +86,7 @@ const CARD = cn(
 export const MODAL_SURFACE = cn(
   "border-0 bg-card md:hidden",
   "pb-[max(0.5rem,env(safe-area-inset-bottom))]",
-  "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
+  "shadow-sheet",
   "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0",
   "data-[vaul-drawer-direction=bottom]:rounded-t-2xl",
   // The drawer's own cap is 80vh, and on a phone vh is the height with the
@@ -350,7 +350,7 @@ export function MobileRaceModal({
           // As tall as the race needs, up to all but a strip of the page: a
           // short card at full height was half a screen of white under it.
           "data-[vaul-drawer-direction=bottom]:max-h-[94dvh]",
-          "shadow-[0_-4px_28px_rgba(28,25,23,.16)]",
+          "shadow-sheet",
         )}
       >
         <DrawerTitle className="sr-only">{title}</DrawerTitle>

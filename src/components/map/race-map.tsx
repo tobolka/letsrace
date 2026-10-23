@@ -22,6 +22,7 @@ import {
   disciplineColor,
   disciplineColorDark,
   disciplineIcon,
+  MAP_COLORS,
 } from "@/lib/map-visuals";
 import { DISCIPLINE_LABELS, type Discipline } from "@/lib/taxonomy";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -237,7 +238,7 @@ function loadFamilyIcons(): Promise<void> {
 
       const mid = PIN_RASTER / 2;
       const scale = PIN_RASTER / PIN_BOX_PX;
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = MAP_COLORS.paper;
       ctx.beginPath();
       ctx.arc(mid, mid, (PIN_DISC_PX / 2) * scale, 0, Math.PI * 2);
       ctx.fill();
@@ -271,15 +272,15 @@ async function bakeCountBadges(): Promise<void> {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const mid = BADGE_RASTER / 2;
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = MAP_COLORS.paper;
     ctx.beginPath();
     ctx.arc(mid, mid, mid, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#1c1917";
+    ctx.fillStyle = MAP_COLORS.ink;
     ctx.beginPath();
     ctx.arc(mid, mid, mid - 3, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = MAP_COLORS.paper;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const label = id === "more" ? "9+" : id;
@@ -321,7 +322,7 @@ async function loadGlyph(href: string | undefined): Promise<HTMLCanvasElement | 
   const dy = (size - box.h * scale) / 2 - box.y * scale;
   ctx.drawImage(img, dx, dy, size * scale, size * scale);
   ctx.globalCompositeOperation = "source-in";
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = MAP_COLORS.paper;
   ctx.fillRect(0, 0, size, size);
   return canvas;
 }
@@ -1238,7 +1239,7 @@ export function RaceMap({
           "circle-radius": pinBoxPx() === MOBILE_PIN_BOX_PX ? 14 : 11,
           "circle-color": ["get", "color"],
           "circle-stroke-width": 2,
-          "circle-stroke-color": "#ffffff",
+          "circle-stroke-color": MAP_COLORS.paper,
         },
       });
     }
