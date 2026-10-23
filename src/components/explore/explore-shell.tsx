@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, type CSSProperties, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Suspense, type CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useQueryStates } from "nuqs";
@@ -8,35 +8,30 @@ import { RaceMapLazy as RaceMap } from "@/components/map/race-map-lazy";
 import { MapFilterBar } from "@/components/explore/map-filter-bar";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
-import {
-  FULL,
-  COMPACT,
-  DETAIL_FULL,
-  LIST_PEEK,
-  MobileDetailSheet,
-  MobileListSheet,
-} from "@/components/explore/mobile-sheets";
-import { Separator } from "@/components/ui/separator";
+import { COMPACT } from "@/components/explore/mobile-sheets";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
 import { coldStartCenter } from "@/lib/coverage";
 import {
-  sortEvents,
   distanceKm,
   type EventSort,
 } from "@/lib/geo/distance";
 import Link from "next/link";
-import { datePresetRanges, thisWeekendRange } from "@/lib/date-presets";
+import { datePresetRanges } from "@/lib/date-presets";
 import { exploreSearchParams } from "@/lib/explore-params";
 import { useMapCamera } from "@/components/explore/use-map-camera";
+import { useMapFilterActions } from "@/components/explore/use-map-filter-actions";
 import { useMapFeed } from "@/components/explore/use-map-feed";
 import { useMapViewport } from "@/components/explore/use-map-viewport";
-import { ExploreRaceRows } from "@/components/explore/explore-race-rows";
-import { ListToolbar } from "@/components/explore/list-toolbar";
-import { PanelResizeHandle, usePanelResize } from "@/components/explore/panel-resize";
+import { loadEventDetailPanel } from "@/components/explore/event-detail-lazy";
+import { ExploreDesktopPanel } from "@/components/explore/explore-desktop-panel";
+import { ExplorePhoneSheets } from "@/components/explore/explore-phone-sheets";
+import { usePanelResize } from "@/components/explore/panel-resize";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { useRaceParam } from "@/components/shell/use-race-param";
+import { useMapList } from "@/components/explore/use-map-list";
+import { useMapPadding } from "@/components/explore/use-map-padding";
 import { useExploreFilterPrefs } from "@/components/shell/use-explore-filter-prefs";
 import { useRadiusParam } from "@/components/shell/use-radius-param";
 import { useSeriesList } from "@/components/shell/use-series-list";
@@ -44,24 +39,15 @@ import { useIsClient } from "@/hooks/use-is-client";
 import { useMediaQuery, useViewportHeight } from "@/hooks/use-viewport";
 import { useUserOrigin } from "@/hooks/use-user-origin";
 import { eventsWithinRadius } from "@/lib/geo/radius";
-import { countryChange, toggleIn } from "@/lib/explore-filters";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { BrandMark } from "@/components/brand-mark";
-import { BrandBar } from "@/components/shell/section-header";
 import { SITE_NAME } from "@/lib/seo";
 import { listViewState } from "@/lib/list-view-state";
-import { cn } from "@/lib/utils";
-import { MobileTopBar } from "@/components/explore/mobile-top-bar";
 import { dateFilterLabel } from "@/components/explore/date-range";
-import { ActiveFilterChips, ListMetaRow, activeFilterGroups } from "@/components/shell/active-filters";
+import { activeFilterGroups } from "@/components/shell/active-filters";
 import { datePresetLabels } from "@/components/shell/explore-filter-bar";
 import { localePath } from "@/lib/localized-paths";
 
-const loadEventDetailPanel = () =>
-  import("@/components/explore/event-detail-panel").then((m) => ({
-    default: m.EventDetailPanel,
-  }));
-const EventDetailPanel = dynamic(loadEventDetailPanel);
 const SubmitRaceModal = dynamic(
   () =>
     import("@/components/explore/submit-race-modal").then((m) => ({
@@ -240,45 +226,18 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   );
 
   const distanceEnabled = distanceOrigin != null;
-  // Date is the default and distance is opt-in. Sorting by distance the moment
-  // a location arrived reshuffled the list under whoever was reading it, and it
-  // only ever made sense to someone who asked for it.
-  const listSort: EventSort =
-    filters.sort === "distance" && distanceEnabled ? "distance" : "date";
-
-  /**
-   * What is on screen, not what is in memory.
-   *
-   * The map asks for a box padded on every side so races are already loaded
-   * when they scroll into frame. That padding is a buffer, not a promise —
-   * leaving it in the list meant zooming in or panning changed the view and not
-   * the count, and the list kept naming races you could no longer see. Clipping
-   * costs no round trip, so the count answers the camera at once.
-   *
-   * A name search, a series or a country is a find rather than a window, and
-   * those are meant to reach outside the frame.
-   */
-  const visibleEvents = useMemo(() => {
-    const box = camera.cameraBounds;
-    if (radiusArea || !box || filters.series || filters.country.length) return radiusEvents;
-    if (filters.q.trim() && !placed.query) return radiusEvents;
-    return radiusEvents.filter((e) => {
-      // The race you opened stays in the list even when the map has carried it
-      // off the edge — losing the row you are reading is worse than a row you
-      // cannot see.
-      if (e.id === selectedId) return true;
-      const lat = Number(e.location?.lat);
-      const lng = Number(e.location?.lng);
-      // A race we could not place is never hidden by a box it has no point in.
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return true;
-      return lat >= box.south && lat <= box.north && lng >= box.west && lng <= box.east;
-    });
-  }, [radiusEvents, radiusArea, camera.cameraBounds, placed.query, selectedId, filters.series, filters.country, filters.q]);
-
-  const sortedEvents = useMemo(
-    () => sortEvents(visibleEvents, listSort, distanceOrigin),
-    [visibleEvents, listSort, distanceOrigin],
-  );
+  const { listSort, visibleEvents, sortedEvents } = useMapList({
+    radiusEvents,
+    radiusArea,
+    cameraBounds: camera.cameraBounds,
+    placedQuery: placed.query,
+    selectedId,
+    filters,
+    distanceOrigin,
+    listSettled,
+    listRef,
+    mobileListRef,
+  });
 
   function handleUserLocation(pos: { lat: number; lng: number }) {
     place.acceptOrigin(pos);
@@ -311,136 +270,28 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     return { lng, lat };
   }, [filters.e, events]);
 
-  /**
-   * Keep the selected race in view in the list.
-   *
-   * On a phone the list is unmounted while a race card is open, so there is
-   * nothing to scroll at the moment the race is picked off the map. This runs
-   * again when the list comes back, on the frame after it mounts — otherwise
-   * closing the card dropped you at the top of the list with no sign of the
-   * race you had just been reading about.
-   */
-  useEffect(() => {
-    if (!selectedId) return;
-    const selector = `[data-event-id="${CSS.escape(selectedId)}"]`;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const raf = requestAnimationFrame(() => {
-      for (const root of [listRef.current, mobileListRef.current]) {
-        if (!root || root.offsetHeight === 0) continue;
-        const el = root.querySelector<HTMLElement>(selector);
-        if (!el) continue;
-        el.scrollIntoView({
-          block: "nearest",
-          inline: "nearest",
-          behavior: reduce ? "auto" : "smooth",
-        });
-        break;
-      }
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [selectedId, listSettled]);
-
-  function toggleCategory(value: string) {
-    const next = toggleIn(filters.categories, value);
-    void setFilters({ categories: next });
-    refetch({ categories: next });
-  }
-
-  function toggleDiscipline(value: string) {
-    const next = toggleIn(filters.disciplines, value);
-    void setFilters({ disciplines: next });
-    refetch({ disciplines: next });
-  }
-
-  function toggleLevel(value: string) {
-    const next = toggleIn(filters.levels, value);
-    void setFilters({ levels: next });
-    refetch({ levels: next });
-  }
-
-  function clearDisciplines() {
-    void setFilters({ disciplines: [] });
-    refetch({ disciplines: [] });
-  }
-
-  function clearLevels() {
-    void setFilters({ levels: [] });
-    refetch({ levels: [] });
-  }
-
-
-  function clearCategories() {
-    void setFilters({ categories: [] });
-    refetch({ categories: [] });
-  }
-
-  function resetExploreFilters(opts?: { clearSearch?: boolean }) {
-    setRadius(null);
-    const w = thisWeekendRange();
-    const clearSearch = opts?.clearSearch ?? false;
-    setFilterBarReset((n) => n + 1);
-    void setFilters({
-      ...(clearSearch ? { q: null, e: null } : {}),
-      categories: [],
-      disciplines: [],
-      levels: [],
-      series: null,
-      country: [],
-      dateFrom: w.from,
-      dateTo: w.to,
-    });
-    refetch({
-      ...(clearSearch ? { q: "" } : {}),
-      categories: [],
-      disciplines: [],
-      levels: [],
-      series: "",
-      country: [],
-      dateFrom: w.from,
-      dateTo: w.to,
-      skipBounds: clearSearch,
-      fitMap: clearSearch,
-    });
-  }
-
-  function setSeries(slug: string) {
-    const next = filters.series === slug ? "" : slug;
-    void setFilters({ series: next });
-    refetch({ series: next, skipBounds: Boolean(next) || filters.country.length > 0, fitMap: Boolean(next) });
-  }
-
-  function applySeries(slug: string) {
-    void setFilters({ series: slug });
-    refetch({
-      series: slug,
-      skipBounds: true,
-      fitMap: true,
-    });
-  }
-
-  function applyCountries(next: string[]) {
-    const { dropSeries } = countryChange(filters, next, seriesList);
-    void setFilters({ country: next, ...(dropSeries ? { series: "" } : {}) });
-    refetch({
-      country: next,
-      ...(dropSeries ? { series: "" } : {}),
-      skipBounds: next.length > 0 || Boolean(filters.series && !dropSeries),
-      fitMap: next.length > 0,
-    });
-  }
-
-  function toggleCountry(code: string) {
-    applyCountries(toggleIn(filters.country, code));
-  }
-
-  function clearCountries() {
-    applyCountries([]);
-  }
-
-  function setDateRange(dateFrom: string, dateTo: string) {
-    void setFilters({ dateFrom, dateTo });
-    refetch({ dateFrom, dateTo });
-  }
+  const filterActions = useMapFilterActions({
+    filters,
+    setFilters,
+    refetch,
+    seriesList,
+    resetBar: () => setFilterBarReset((n) => n + 1),
+    clearRadius: () => setRadius(null),
+  });
+  const {
+    toggleCategory,
+    toggleDiscipline,
+    toggleLevel,
+    clearDisciplines,
+    clearLevels,
+    clearCategories,
+    resetExploreFilters,
+    setSeries,
+    applySeries,
+    toggleCountry,
+    clearCountries,
+    setDateRange,
+  } = filterActions;
 
   // Saved filters come back with a refetch for them; nothing here waits on `ready`.
   useExploreFilterPrefs(filters, setFilters, (patch) => {
@@ -454,46 +305,13 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const viewportH = useViewportHeight(800);
   const mobileSheetReady = useIsClient();
 
-  /*
-   * The sheet's height while it is moving is not the map's business.
-   *
-   * Dragging the sheet set `listSnap`, which recomputed the map's padding,
-   * which handed `RaceMap` a new object, which re-rendered the map and the
-   * whole list — every frame, while the browser was animating a full-height
-   * translate. Deferring it lets React finish the sheet at the frame rate and
-   * catch the map up when it settles.
-   */
-  const deferredListSnap = useDeferredValue(listSnap);
-  const deferredDetailSnap = useDeferredValue(detailSnap);
-
-  const mapPadding = useMemo(() => {
-    if (!isDesktop) {
-      const snap = selected ? deferredDetailSnap : deferredListSnap;
-      const snapPx =
-        typeof snap === "number" ? viewportH * snap : Number.parseFloat(snap) || viewportH * 0.5;
-      /*
-       * Never hand the map less than 45% of the screen. The sheet at full
-       * height left a fifty-pixel strip, and easing a race into a strip that
-       * size zooms the map out to the whole of Europe to make it fit.
-       */
-      const open = Math.round(Math.min(snapPx, viewportH * 0.55, 640));
-      return {
-        top: 16,
-        right: 12,
-        bottom: open + 12,
-        left: 12,
-      };
-    }
-    // The panel sits beside the map now, not on it, so only the race card
-    // floats over the camera's left edge.
-    const detailW = selected ? 320 + 12 : 0;
-    return {
-      top: 16,
-      right: 56,
-      bottom: 56,
-      left: detailW + 48,
-    };
-  }, [selected, isDesktop, viewportH, deferredListSnap, deferredDetailSnap]);
+  const mapPadding = useMapPadding({
+    isDesktop,
+    hasCard: Boolean(selected),
+    listSnap,
+    detailSnap,
+    viewportH,
+  });
 
   function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean; wide?: boolean }) {
     return (
@@ -623,199 +441,107 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             the foot of the sidebar on a desktop — not in a corner of the map. */}
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
-        <div
-          className={cn(
-            "absolute inset-y-0 left-0 min-w-0",
-            !panel.dragging &&
-              "transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
-          )}
-          style={{ width: panel.width }}
-        >
-        <div className="pointer-events-auto flex h-full w-full min-w-0 flex-col overflow-hidden border-r bg-card">
-          <Header locale={locale} />
-          <div className="relative z-30 flex min-h-12 shrink-0 items-center px-4 py-2">
-            {renderFilterBar()}
-          </div>
-          <Separator />
-          <ListToolbar
-            count={listSettled ? visibleEvents.length : null}
-            pending={listLoading}
-            sort={listSort}
-            distanceEnabled
-            messages={messages}
-            locale={locale}
-            onSort={setListSort}
-          />
-          <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
-            <div ref={listRef} className="@container min-h-0">
-            <ExploreRaceRows
-              variant="panel"
-              view={listView}
-              locale={locale}
-              events={sortedEvents}
-              selectedId={selectedId}
-              distanceOrigin={distanceOrigin}
-              messages={messages}
-              onSelect={selectFromList}
-              onHover={setHoveredId}
-              onClearFilters={() => resetExploreFilters({ clearSearch: true })}
-              onMissingRace={() => setSubmitOpen(true)}
-            />
-            </div>
-          </main>
-        </div>
-        <PanelResizeHandle resize={panel} label={messages.resizePanel} />
-        </div>
-
-        {/*
-          Its own boundary: the card's code arrives on the first click, and
-          without one the wait reached the page's loading screen — the whole
-          map went blank for a moment before the card appeared.
-        */}
-        {selected && (
-          <Suspense fallback={null}>
-          <EventDetailPanel
-            event={selected}
-            locale={locale}
-            onClose={closeDetail}
-            onSelectSeries={applySeries}
-            leftX={panel.chosen + 12}
-          />
-          </Suspense>
-        )}
-      </div>
+      <ExploreDesktopPanel
+        panel={panel}
+        locale={locale}
+        messages={messages}
+        filterBar={renderFilterBar()}
+        listRef={listRef}
+        toolbar={{
+          count: listSettled ? visibleEvents.length : null,
+          pending: listLoading,
+          sort: listSort,
+          onSort: setListSort,
+        }}
+        rows={{
+          view: listView,
+          events: sortedEvents,
+          selectedId,
+          distanceOrigin,
+          onSelect: selectFromList,
+          onHover: setHoveredId,
+          onClearFilters: () => resetExploreFilters({ clearSearch: true }),
+          onMissingRace: () => setSubmitOpen(true),
+        }}
+        selected={selected}
+        onCloseDetail={closeDetail}
+        onSelectSeries={applySeries}
+      />
 
       {/* Phone only. Mounted on a desktop, the hidden card still opened a
           dialog layer with every race, and that layer locks the page. */}
       {mobileSheetReady && !isDesktop ? (
-        <>
-          <MobileListSheet
-            snap={listSnap}
-            onSnap={setListSnap}
-            viewportH={viewportH}
-            title={messages.racesCount}
-            handleLabel={listSnap === LIST_PEEK ? messages.sheetExpand : messages.sheetCollapse}
-            mapLabel={messages.navMap}
-          >
-            <MobileTopBar
-              className="-mt-1"
-              dateLabel={dateLabel}
-              dateCustom={!datePresets.some((p) => p.active)}
-              dateChoices={datePresets.map((p) => ({
-                id: p.id,
-                label: presetLabels[p.id],
-                active: p.active,
-                apply: () => setDateRange(p.from, p.to),
-              }))}
-              customDateLabel={messages.customDate}
-              onCustomDate={() => {
-                setCustomDate(true);
-                setFiltersOpen(true);
-              }}
-              filtersLabel={messages.filtersButton}
-              filterCount={filterCount}
-              onFilters={() => {
-                setCustomDate(false);
-                setFiltersOpen(true);
-              }}
-              searchLabel={messages.search}
-              searchPlaceholder={messages.searchPlaceholder}
-              doneLabel={messages.filtersDone}
-              clearLabel={messages.clearFilter}
-              q={filters.q}
-              onQ={handleSearchChange}
-              onSearchSubmit={handleSearchSubmit}
-              searchOpen={searchOpen}
-              onSearchOpenChange={(open) => {
-                setSearchOpen(open);
-                // The field is at the foot of the screen at the lower stops,
-                // which is where the keyboard comes up. Raised, the sheet puts
-                // it at the top and the answers right under it.
-                if (open) setListSnap(FULL);
-              }}
-            />
-
-            <div
-              id="race-list-mobile"
-              ref={mobileListRef}
-              className="min-h-0 flex-1 overflow-y-auto overscroll-contain md:hidden"
-            >
-              <div className="border-b border-border/50">
-                <ActiveFilterChips
-                  locale={locale}
-                  filters={{ ...filters, radius: radiusArea ? radius : null }}
-                  seriesList={seriesList}
-                  onOpenFilters={() => {
-                    setCustomDate(false);
-                    setFiltersOpen(true);
-                  }}
-                  className="pb-0"
-                  onClearDisciplines={clearDisciplines}
-                  onClearCategories={clearCategories}
-                  onClearLevels={clearLevels}
-                  onClearCountries={clearCountries}
-                  onClearSeries={() => setSeries(filters.series)}
-                  onClearRadius={() => setRadius(null)}
-                  onClearQ={() => handleSearchChange("")}
-                />
-                <ListMetaRow
-                  locale={locale}
-                  count={listSettled ? visibleEvents.length : null}
-                  loading={listLoading}
-                  sort={listSort}
-                  onSort={setListSort}
-                />
-              </div>
-              {/* Room under the last race for the "Map" pill the full sheet
-                  floats over it, so the end of the list can be read. */}
-              <ExploreRaceRows
-                variant="sheet"
-                view={listView}
-                locale={locale}
-                events={sortedEvents}
-                selectedId={selectedId}
-                distanceOrigin={distanceOrigin}
-                messages={messages}
-                groupClassName={cn(listSnap === FULL && "pb-16")}
-                onSelect={selectFromSheet}
-                onHover={setHoveredId}
-                onClearFilters={() => resetExploreFilters({ clearSearch: true })}
-              />
-            </div>
-          </MobileListSheet>
-
-          <MobileDetailSheet
-            open={Boolean(selected)}
-            snap={detailSnap}
-            onSnap={setDetailSnap}
-            viewportH={viewportH}
-            onClose={closeDetail}
-            title={selected?.name ?? ""}
-            handleLabel={detailSnap === DETAIL_FULL ? messages.sheetCollapse : messages.raceExpand}
-          >
-            {selected ? (
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <Suspense fallback={null}>
-                <EventDetailPanel
-                  event={selected}
-                  locale={locale}
-                  embedded
-                  // The preview says what a race is; one tap shows the rest,
-                  // without hunting for the grab bar.
-                  onExpand={detailSnap === COMPACT ? () => setDetailSnap(DETAIL_FULL) : undefined}
-                  onClose={closeDetail}
-                  onSelectSeries={(slug) => {
-                    applySeries(slug);
-                    selectEvent(null);
-                    setListSnap(COMPACT);
-                  }}
-                />
-                </Suspense>
-              </div>
-            ) : null}
-          </MobileDetailSheet>
-        </>
+        <ExplorePhoneSheets
+          locale={locale}
+          messages={messages}
+          listSnap={listSnap}
+          onListSnap={setListSnap}
+          detailSnap={detailSnap}
+          onDetailSnap={setDetailSnap}
+          viewportH={viewportH}
+          topBar={{
+            dateLabel,
+            dateCustom: !datePresets.some((p) => p.active),
+            dateChoices: datePresets.map((p) => ({
+              id: p.id,
+              label: presetLabels[p.id],
+              active: p.active,
+              apply: () => setDateRange(p.from, p.to),
+            })),
+            onCustomDate: () => {
+              setCustomDate(true);
+              setFiltersOpen(true);
+            },
+            filterCount,
+            onFilters: () => {
+              setCustomDate(false);
+              setFiltersOpen(true);
+            },
+            q: filters.q,
+            onQ: handleSearchChange,
+            onSearchSubmit: handleSearchSubmit,
+            searchOpen,
+            onSearchOpenChange: setSearchOpen,
+          }}
+          chips={{
+            filters: { ...filters, radius: radiusArea ? radius : null },
+            seriesList,
+            onOpenFilters: () => {
+              setCustomDate(false);
+              setFiltersOpen(true);
+            },
+            onClearDisciplines: clearDisciplines,
+            onClearCategories: clearCategories,
+            onClearLevels: clearLevels,
+            onClearCountries: clearCountries,
+            onClearSeries: () => setSeries(filters.series),
+            onClearRadius: () => setRadius(null),
+            onClearQ: () => handleSearchChange(""),
+          }}
+          meta={{
+            count: listSettled ? visibleEvents.length : null,
+            loading: listLoading,
+            sort: listSort,
+            onSort: setListSort,
+          }}
+          listRef={mobileListRef}
+          rows={{
+            view: listView,
+            events: sortedEvents,
+            selectedId,
+            distanceOrigin,
+            onSelect: selectFromSheet,
+            onHover: setHoveredId,
+            onClearFilters: () => resetExploreFilters({ clearSearch: true }),
+          }}
+          selected={selected}
+          onCloseDetail={closeDetail}
+          onSelectSeries={(slug) => {
+            applySeries(slug);
+            selectEvent(null);
+            setListSnap(COMPACT);
+          }}
+        />
       ) : null}
 
       {filtersMounted ? (
@@ -866,9 +592,4 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       <WelcomeCard messages={messages} onSignIn={() => setAuthOpen(true)} />
     </div>
   );
-}
-
-/** The panel's title bar: the logo bar every race view shares. */
-function Header({ locale }: { locale: string }) {
-  return <BrandBar href={`/${locale}`} />;
 }

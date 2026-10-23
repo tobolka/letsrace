@@ -13,20 +13,7 @@ import type { ListViewState } from "@/lib/list-view-state";
  * empty answer. The side panel and the phone's sheet draw the same thing; the
  * panel has room to also offer "a race is missing".
  */
-export function ExploreRaceRows({
-  variant,
-  view,
-  locale,
-  events,
-  selectedId,
-  distanceOrigin,
-  messages,
-  groupClassName,
-  onSelect,
-  onHover,
-  onClearFilters,
-  onMissingRace,
-}: {
+export type ExploreRaceRowsProps = {
   variant: "panel" | "sheet";
   view: ListViewState;
   locale: string;
@@ -40,7 +27,22 @@ export function ExploreRaceRows({
   onClearFilters: () => void;
   /** Panel only: tells us about a race the catalogue does not have. */
   onMissingRace?: () => void;
-}) {
+};
+
+export function ExploreRaceRows({
+  variant,
+  view,
+  locale,
+  events,
+  selectedId,
+  distanceOrigin,
+  messages,
+  groupClassName,
+  onSelect,
+  onHover,
+  onClearFilters,
+  onMissingRace,
+}: ExploreRaceRowsProps) {
   if (view === "empty") {
     const clear = (
       <Button type="button" variant="outline" size="sm" onClick={onClearFilters}>
