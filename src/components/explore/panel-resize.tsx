@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type RefObject } from "react";
+import { useState } from "react";
 
 const DEFAULT_PANEL_W = 400;
 const MIN_PANEL_W = 340;
@@ -17,8 +17,6 @@ function panelMaxWidth() {
 }
 
 export type PanelResize = {
-  /** Put on the panel, so a drag starts from the width it really has. */
-  panelRef: RefObject<HTMLDivElement | null>;
   /** The width in force: the live one while the edge is dragged, else the chosen one. */
   width: number;
   dragging: boolean;
@@ -34,9 +32,7 @@ export type PanelResize = {
 export function usePanelResize(): PanelResize {
   const [chosen, setChosen] = useState(DEFAULT_PANEL_W);
   const [dragWidth, setDragging] = useState<number | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   return {
-    panelRef,
     width: dragWidth ?? chosen,
     dragging: dragWidth != null,
     chosen,
@@ -48,7 +44,7 @@ export function usePanelResize(): PanelResize {
 
 /** The grab strip on the panel's edge: drag it, or use the arrow keys, Home and End. */
 export function PanelResizeHandle({ resize, label }: { resize: PanelResize; label: string }) {
-  const { panelRef, width, chosen, setChosen, dragWidth, setDragging } = resize;
+  const { width, chosen, setChosen, dragWidth, setDragging } = resize;
   return (
     <div
       role="separator"
@@ -63,7 +59,8 @@ export function PanelResizeHandle({ resize, label }: { resize: PanelResize; labe
       className="pointer-events-auto absolute inset-y-0 -right-2 z-10 w-4 cursor-col-resize touch-none outline-none focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2"
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
-        setDragging(panelRef.current?.getBoundingClientRect().width ?? chosen);
+        // The panel is this strip's parent, so a drag starts from the width it really has.
+        setDragging(e.currentTarget.parentElement?.getBoundingClientRect().width ?? chosen);
       }}
       onPointerMove={(e) => {
         if (dragWidth == null) return;

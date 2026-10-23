@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, type CSSProperties, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, type CSSProperties, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useQueryStates } from "nuqs";
-import { RaceMapLazy as RaceMap, type MapBounds } from "@/components/map/race-map-lazy";
+import { RaceMapLazy as RaceMap } from "@/components/map/race-map-lazy";
 import { MapFilterBar } from "@/components/explore/map-filter-bar";
 import { WelcomeCard } from "@/components/explore/welcome-card";
 import { Button } from "@/components/ui/button";
@@ -20,20 +20,18 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EventListItem } from "@/lib/events";
 import type { Messages } from "@/lib/i18n/messages";
-import { coldStartCenter, foldPlaceQuery } from "@/lib/coverage";
+import { coldStartCenter } from "@/lib/coverage";
 import {
   sortEvents,
   distanceKm,
   type EventSort,
 } from "@/lib/geo/distance";
-import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 import Link from "next/link";
-import { datePresetRanges, thisWeekendRange, todayIso } from "@/lib/date-presets";
-import { buildEventsQuery } from "@/lib/events-query";
-import { reuseUnchanged } from "@/lib/reuse-unchanged";
-import { filterCatalogue } from "@/lib/filter-catalogue";
-import { loadCatalogue } from "@/lib/load-catalogue";
+import { datePresetRanges, thisWeekendRange } from "@/lib/date-presets";
 import { exploreSearchParams } from "@/lib/explore-params";
+import { useMapCamera } from "@/components/explore/use-map-camera";
+import { useMapFeed } from "@/components/explore/use-map-feed";
+import { useMapViewport } from "@/components/explore/use-map-viewport";
 import { ExploreRaceRows } from "@/components/explore/explore-race-rows";
 import { ListToolbar } from "@/components/explore/list-toolbar";
 import { PanelResizeHandle, usePanelResize } from "@/components/explore/panel-resize";
@@ -44,7 +42,7 @@ import { useRadiusParam } from "@/components/shell/use-radius-param";
 import { useSeriesList } from "@/components/shell/use-series-list";
 import { useIsClient } from "@/hooks/use-is-client";
 import { useMediaQuery, useViewportHeight } from "@/hooks/use-viewport";
-import { boxAround, useUserOrigin } from "@/hooks/use-user-origin";
+import { useUserOrigin } from "@/hooks/use-user-origin";
 import { eventsWithinRadius } from "@/lib/geo/radius";
 import { countryChange, toggleIn } from "@/lib/explore-filters";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -97,8 +95,8 @@ type Props = {
 
 
 export function ExploreShell({ initialEvents, messages, locale }: Props) {
-  const [events, setEvents] = useState(initialEvents);
-  const initialBoundsFetchDone = useRef(false);
+  const [filters, setFilters] = useQueryStates(exploreSearchParams);
+  const camera = useMapCamera();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { radius, setRadius: storeRadius } = useRadiusParam();
@@ -107,35 +105,31 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const seriesList = useSeriesList();
-  const [listLoading, setListLoading] = useState(false);
-  /**
-   * The rows are placeholders until the map settles on its bounds and the list
-   * is fetched for them. Nothing is rendered before that: the server used to
-   * send a guess, and swapping it for the real set lifted the rows by five
-   * cards' worth — the whole of this page's layout shift.
-   */
-  const [listSettled, setListSettled] = useState(false);
-  const fetchStartedRef = useRef(false);
-  const [bounds, setBounds] = useState<MapBounds | null>(null);
-  /**
-   * What the camera actually shows, insets and all.
-   *
-   * `bounds` is the box the panel leaves free, and it is the right one to
-   * decide when more races have to be fetched. It is the wrong one to decide
-   * what the list names: it is inset on every side, so a pin plainly visible
-   * near the bottom of the map fell out of the list beside it.
-   */
-  const [cameraBounds, setCameraBounds] = useState<MapBounds | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const mobileListRef = useRef<HTMLDivElement>(null);
-  const [fitSeq, setFitSeq] = useState(0);
-  const [destination, setDestination] = useState<MapBounds | null>(null);
-  const [destinationSeq, setDestinationSeq] = useState(0);
   const [userOrigin, setUserOrigin] = useState<{ lat: number; lng: number } | null>(null);
   const distanceOrigin = userOrigin ?? place.origin;
   const radiusArea = useMemo(() => radius != null && radius > 0 && distanceOrigin
     ? { lat: distanceOrigin.lat, lng: distanceOrigin.lng, km: radius } : null,
     [radius, distanceOrigin]);
+  const { events, listLoading, listSettled, fitSeq, refetch, area, placed } = useMapFeed({
+    initialEvents,
+    filters,
+    radiusArea,
+    bounds: camera.bounds,
+    flyTo: camera.flyTo,
+  });
+  const { handleBoundsChange, handleSearchChange, handleSearchSubmit } = useMapViewport({
+    filters,
+    setFilters,
+    radiusArea,
+    refetch,
+    area,
+    placed,
+    setBounds: camera.setBounds,
+    setCameraBounds: camera.setCameraBounds,
+    flyTo: camera.flyTo,
+  });
   const radiusEvents = useMemo(() => eventsWithinRadius(events, radiusArea), [events, radiusArea]);
   const { status: originStatus, locate: locateOrigin } = place;
   useEffect(() => {
@@ -149,15 +143,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     }
   }
 
-  const lastPlacedQ = useRef("");
-  const destFlyingRef = useRef(false);
-  const placeAbortRef = useRef<AbortController | null>(null);
-  const searchTimerRef = useRef(0);
-  const searchGen = useRef(0);
-  const eventsFetchGen = useRef(0);
-  const lastAreaRef = useRef<MapBounds | null>(null);
-  const areaTimerRef = useRef(0);
-  const searchViewportRef = useRef<(b: MapBounds) => void>(() => {});
   const [filterBarReset, setFilterBarReset] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [customDate, setCustomDate] = useState(false);
@@ -175,7 +160,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     return [c.lng, c.lat] as [number, number];
   }, [locale]);
 
-  const [filters, setFilters] = useQueryStates(exploreSearchParams);
   const router = useRouter();
 
   // The expanded list used to be a mode of this page. It is a page of its own
@@ -226,7 +210,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    * them stay stable while still seeing the latest `events`.
    */
   const selectEventRef = useRef(selectEvent);
-  selectEventRef.current = selectEvent;
+  useLayoutEffect(() => {
+    selectEventRef.current = selectEvent;
+  });
   const selectFromList = useCallback((id: string) => {
     selectEventRef.current(id);
   }, []);
@@ -235,7 +221,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const selectFromSheet = useCallback((id: string) => {
     setDetailSnap(COMPACT);
     selectEventRef.current(id);
-  }, []);
+  }, [setDetailSnap]);
 
   // The address names the race; the card follows it.
   const named = filters.e ? events.find((ev) => ev.slug === filters.e) : undefined;
@@ -273,9 +259,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
    * those are meant to reach outside the frame.
    */
   const visibleEvents = useMemo(() => {
-    const box = cameraBounds;
+    const box = camera.cameraBounds;
     if (radiusArea || !box || filters.series || filters.country.length) return radiusEvents;
-    if (filters.q.trim() && !lastPlacedQ.current) return radiusEvents;
+    if (filters.q.trim() && !placed.query) return radiusEvents;
     return radiusEvents.filter((e) => {
       // The race you opened stays in the list even when the map has carried it
       // off the edge — losing the row you are reading is worse than a row you
@@ -287,28 +273,12 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return true;
       return lat >= box.south && lat <= box.north && lng >= box.west && lng <= box.east;
     });
-  }, [radiusEvents, radiusArea, cameraBounds, selectedId, filters.series, filters.country, filters.q]);
+  }, [radiusEvents, radiusArea, camera.cameraBounds, placed.query, selectedId, filters.series, filters.country, filters.q]);
 
   const sortedEvents = useMemo(
     () => sortEvents(visibleEvents, listSort, distanceOrigin),
     [visibleEvents, listSort, distanceOrigin],
   );
-
-  useEffect(() => {
-    if (listSettled) return;
-    // The map is what asks for the list, so if it never reports bounds — no
-    // WebGL, a blocked tile host, a thrown error — nothing would ever be
-    // requested and the list would stay empty for good. Ask without bounds
-    // instead, which is the whole date range: the same set the server used to
-    // render. A timeout that fired while a request was already in flight would
-    // show one list and then replace it, which is the shift this exists to
-    // prevent, so it only acts when nothing has been asked for at all.
-    const t = window.setTimeout(() => {
-      if (!fetchStartedRef.current) void refetch({ skipBounds: true });
-    }, 2500);
-    return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listSettled]);
 
   function handleUserLocation(pos: { lat: number; lng: number }) {
     place.acceptOrigin(pos);
@@ -472,242 +442,11 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     refetch({ dateFrom, dateTo });
   }
 
-  /**
-   * Returns what was fetched, so a caller that needs to know whether the
-   * search found anything can wait for it. Superseded fetches resolve to null.
-   */
-  function refetch(overrides: Record<string, unknown> = {}): Promise<EventListItem[] | null> {
-    const gen = ++eventsFetchGen.current;
-    fetchStartedRef.current = true;
-    setListLoading(true);
-    return (async () => {
-      const qRaw = (overrides.q as string) ?? filters.q;
-      const placed = lastPlacedQ.current;
-      const q =
-        placed && foldPlaceQuery(qRaw) === foldPlaceQuery(placed) ? "" : qRaw;
-      const categories = (overrides.categories as string[]) ?? filters.categories;
-      const disciplines = (overrides.disciplines as string[]) ?? filters.disciplines;
-      const levels = (overrides.levels as string[]) ?? filters.levels;
-      const series = (overrides.series as string) ?? filters.series;
-      const country = (overrides.country as string[]) ?? filters.country;
-      const dateFrom = (overrides.dateFrom as string) ?? filters.dateFrom;
-      const dateTo = (overrides.dateTo as string) ?? filters.dateTo;
-      const skipBounds =
-        overrides.skipBounds === true ||
-        (Boolean(series || country.length) && overrides.forceBounds !== true);
-      /*
-       * Fetch the padded box, and remember that we did.
-       *
-       * A viewport fetch asks for a box grown on every side, so races load just
-       * before they enter the frame, and records that box as what it holds. A
-       * filter change used to ask for the bare camera box instead while leaving
-       * the record alone — so after changing the date we held races for what
-       * was on screen but still claimed the padded ring around it. Zoom out a
-       * little and nothing refetched, because we believed we already had that
-       * ground; the ring came up empty.
-       */
-      const explicit = overrides.bounds as typeof bounds | undefined;
-      const near = overrides.clearRadius ? null : radiusArea;
-      const b = near ? boxAround(near, near.km) : skipBounds ? null : (explicit ?? (bounds ? expandViewport(bounds) : null));
-      if (b) lastAreaRef.current = b;
-      const { shared, params } = buildEventsQuery(
-        { q, series, dateFrom, dateTo, categories, disciplines, levels, country },
-        b,
-      );
-      try {
-        const data = shared
-          ? filterCatalogue(await loadCatalogue(), {
-              categories,
-              disciplines,
-              levels,
-              country,
-              dateFrom,
-              dateTo,
-              west: b?.west,
-              south: b?.south,
-              east: b?.east,
-              north: b?.north,
-            })
-          : ((await (await fetch(`/api/events?${params.toString()}`)).json()) as EventListItem[]);
-        if (gen !== eventsFetchGen.current) return null;
-        const focusSlug = filters.e;
-        setEvents((prev) => {
-          const next = reuseUnchanged(prev, data);
-          // A series or country is a find, and a race outside it has no place
-          // in the answer — a German kids' cup was sitting under Dětský MTB Cup
-          // because it had been open when the filter was picked.
-          if (!focusSlug || series || country.length) return next;
-          const kept =
-            next.find((e) => e.slug === focusSlug) ?? prev.find((e) => e.slug === focusSlug);
-          if (!kept || next.some((e) => e.id === kept.id)) return next;
-          return [kept, ...next];
-        });
-        if (overrides.fitMap) setFitSeq((n) => n + 1);
-        return data;
-      } catch {
-        return null;
-      } finally {
-        if (gen === eventsFetchGen.current) {
-          setListLoading(false);
-          setListSettled(true);
-        }
-      }
-    })();
-  }
-
-  const lastRadiusQuery = useRef("");
-  useEffect(() => {
-    if (!radiusArea) {
-      if (lastRadiusQuery.current) {
-        lastRadiusQuery.current = "";
-        void refetch({ clearRadius: true });
-      }
-      return;
-    }
-    const key = `${radiusArea.lat}:${radiusArea.lng}:${radiusArea.km}`;
-    if (key === lastRadiusQuery.current) return;
-    lastRadiusQuery.current = key;
-    const area = boxAround(radiusArea, radiusArea.km);
-    void refetch({ bounds: area, forceBounds: true });
-    setDestination(area); setDestinationSeq((n) => n + 1);
-    // Radius/center define this query; camera movement does not change it.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [radiusArea]);
-
   // Saved filters come back with a refetch for them; nothing here waits on `ready`.
   useExploreFilterPrefs(filters, setFilters, (patch) => {
     void refetch(patch);
     if (patch.sort === "distance") setLocateSeq((n) => n + 1);
   });
-
-  async function flyToPlace(q: string, gen: number): Promise<boolean> {
-    placeAbortRef.current?.abort();
-    const ac = new AbortController();
-    placeAbortRef.current = ac;
-    try {
-      const res = await fetch(`/api/places?q=${encodeURIComponent(q)}`, { signal: ac.signal });
-      if (!res.ok) return false;
-      const data = (await res.json()) as { bounds: MapBounds };
-      if (!data.bounds || gen !== searchGen.current) return false;
-      lastPlacedQ.current = q;
-      destFlyingRef.current = true;
-      window.clearTimeout(areaTimerRef.current);
-      lastAreaRef.current = data.bounds;
-      setBounds(data.bounds);
-      setDestination(data.bounds);
-      setDestinationSeq((n) => n + 1);
-      void setFilters({
-        west: String(data.bounds.west),
-        south: String(data.bounds.south),
-        east: String(data.bounds.east),
-        north: String(data.bounds.north),
-        country: [],
-      });
-      refetch({
-        q: "",
-        country: [],
-        bounds: data.bounds,
-        forceBounds: true,
-      });
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  async function runSearch(q: string) {
-    const gen = ++searchGen.current;
-    const trimmed = q.trim();
-    if (!trimmed) {
-      lastPlacedQ.current = "";
-      void refetch({ q: "" });
-      return;
-    }
-
-    // Typed text is a race name first. Half the race names in this catalogue
-    // are also places — Sudety, Vysočina, Beskydy — and geocoding those threw
-    // away the query, flew the map somewhere, and reported nothing found for a
-    // race that is in the catalogue. Only when no race matches is the text
-    // treated as a place to go to.
-    lastPlacedQ.current = "";
-    // A search is a find, not a filter: the date window widens to upcoming, so
-    // a race in October is not missing just because the bar still said "this
-    // weekend". Any date stays one click away for looking back.
-    const upcoming = todayIso();
-    void setFilters({ dateFrom: upcoming, dateTo: "" });
-    const hits = await refetch({
-      q: trimmed,
-      dateFrom: upcoming,
-      dateTo: "",
-      skipBounds: true,
-      fitMap: true,
-    });
-    if (gen !== searchGen.current) return;
-    if (hits === null || hits.length > 0) return;
-
-    if (trimmed.length >= 3) {
-      const ok = await flyToPlace(trimmed, gen);
-      if (gen !== searchGen.current) return;
-      if (ok) return;
-    }
-  }
-
-  function handleSearchChange(q: string) {
-    void setFilters({ q });
-    window.clearTimeout(searchTimerRef.current);
-    const trimmed = q.trim();
-    if (trimmed.length < 2) {
-      lastPlacedQ.current = "";
-      searchGen.current += 1;
-      placeAbortRef.current?.abort();
-      void refetch({ q: trimmed });
-      return;
-    }
-    searchTimerRef.current = window.setTimeout(() => {
-      void runSearch(q);
-    }, 400);
-  }
-
-  function handleSearchSubmit() {
-    window.clearTimeout(searchTimerRef.current);
-    void runSearch(filters.q);
-  }
-
-  searchViewportRef.current = (b) => {
-    if (filters.series || filters.country.length) return;
-    // A name search is a find, not a filter on the current window: let the map
-    // move without quietly dropping matches that sit outside it.
-    if (filters.q.trim() && !lastPlacedQ.current) return;
-    if (lastAreaRef.current && !viewportNeedsFetch(lastAreaRef.current, b)) return;
-    const query = expandViewport(b);
-    lastAreaRef.current = query;
-    void setFilters({
-      west: String(query.west),
-      south: String(query.south),
-      east: String(query.east),
-      north: String(query.north),
-    });
-    refetch({ bounds: query, forceBounds: true });
-  };
-
-  function scheduleSearchViewport(b: MapBounds, immediate = false) {
-    window.clearTimeout(areaTimerRef.current);
-    if (immediate) {
-      searchViewportRef.current(b);
-      return;
-    }
-    areaTimerRef.current = window.setTimeout(() => {
-      searchViewportRef.current(b);
-    }, 160);
-  }
-
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(searchTimerRef.current);
-      window.clearTimeout(areaTimerRef.current);
-      placeAbortRef.current?.abort();
-    };
-  }, []);
 
   // Desktop: side panels. Mobile: bottom sheet over a usable map.
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -843,8 +582,8 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             radiusArea={radiusArea}
             padding={mapPadding}
             fitSeq={fitSeq}
-            destination={destination}
-            destinationSeq={destinationSeq}
+            destination={camera.destination}
+            destinationSeq={camera.destinationSeq}
             fallbackCenter={fallbackCenter}
             initialFocus={initialFocus}
             skipInitialLocate={Boolean(filters.e || filters.q.trim().length >= 3)}
@@ -857,43 +596,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
               // yanked the list down — the list is the handle's to resize.
               if (!isDesktop && selectedId) closeDetail();
             }}
-            onBoundsChange={(b, reason, camera) => {
-              setBounds(b);
-              // The padded box decides when to fetch; the camera box decides
-              // what the list shows. If a pin is on the map it belongs in the
-              // list beside it.
-              setCameraBounds(camera);
-              if (radiusArea) { initialBoundsFetchDone.current = true; return; }
-              // First camera settle → load races for this viewport (padded query box)
-              if (!initialBoundsFetchDone.current) {
-                initialBoundsFetchDone.current = true;
-                if (filters.q.trim().length >= 3) {
-                  void runSearch(filters.q);
-                  return;
-                }
-                if (filters.series || filters.country.length) {
-                  lastAreaRef.current = expandViewport(b);
-                  refetch({ skipBounds: true, fitMap: true });
-                } else {
-                  const query = expandViewport(b);
-                  lastAreaRef.current = query;
-                  refetch({ bounds: query, forceBounds: true });
-                }
-                return;
-              }
-              if (destFlyingRef.current) {
-                destFlyingRef.current = false;
-                lastAreaRef.current = expandViewport(b);
-                return;
-              }
-              if (reason === "user" || reason === "sync") {
-                scheduleSearchViewport(b);
-                return;
-              }
-              if (reason === "gps" || reason === "locate") {
-                scheduleSearchViewport(b, true);
-              }
-            }}
+            onBoundsChange={handleBoundsChange}
             locale={locale}
             myLocationLabel={messages.myLocation}
             locationDeniedLabel={messages.locationDenied}
@@ -922,7 +625,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
 
       <div className="pointer-events-none absolute inset-0 z-20 hidden md:block">
         <div
-          ref={panel.panelRef}
           className={cn(
             "absolute inset-y-0 left-0 min-w-0",
             !panel.dragging &&
