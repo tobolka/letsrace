@@ -1,3 +1,9 @@
+-- NOT APPLIED. Checked 2026-10-23: spatial_ref_sys still has RLS off and anon/authenticated
+-- still hold every privilege on it. The `postgres` role is not the table's owner
+-- (supabase_admin is), so ENABLE ROW LEVEL SECURITY and REVOKE are refused.
+-- The function REVOKEs below are covered by 20260826185216_lock_down_rls.sql.
+-- Needs the owner (Supabase support) or PostGIS moved out of `public`.
+
 -- PostGIS installs spatial_ref_sys in public without RLS, which exposes it
 -- through the Data API. Enable RLS (no policies) and revoke client roles.
 -- Postgres/PostGIS internals and the service_role keep working.
