@@ -1,3 +1,4 @@
+import { useId } from "react";
 import Link from "next/link";
 import { SITE_NAME } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,8 @@ export function BrandMark({
   mark?: "full" | "lr";
   className?: string;
 }) {
+  const gradientId = useId();
+  const graded = tone === "brand";
   const word = mark === "full" ? (
     // Inline, not an <img>: each page draws its own header, and an image is
     // blank for a frame every time it is created — the logo blinked on every
@@ -28,7 +31,20 @@ export function BrandMark({
       height={size === "xs" ? 18 : size === "sm" ? 22 : 24}
       className={cn("shrink-0", tone === "inverse" ? "text-white" : "text-brand", className)}
     >
-      <path d={LOGO_PATH} fill="currentColor" />
+      {/* A breath of light across the red: warmer where the word starts,
+          a shade deeper where it ends. Mixed from the brand colour itself, so
+          the dark theme's brighter red gets the same lift. The white mark on
+          red stays flat. */}
+      {graded ? (
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" style={{ stopColor: "color-mix(in oklab, currentColor 82%, #ff8a3d)" }} />
+            <stop offset="0.55" style={{ stopColor: "currentColor" }} />
+            <stop offset="1" style={{ stopColor: "color-mix(in oklab, currentColor 86%, #4a0610)" }} />
+          </linearGradient>
+        </defs>
+      ) : null}
+      <path d={LOGO_PATH} fill={graded ? `url(#${gradientId})` : "currentColor"} />
     </svg>
   ) : (
     <span

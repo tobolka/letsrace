@@ -1127,7 +1127,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         >
         <div className="pointer-events-auto flex h-full w-full min-w-0 flex-col overflow-hidden border-r bg-card">
           <Header locale={locale} />
-          <div className="relative z-30 flex min-h-12 shrink-0 items-center px-3 py-2">
+          <div className="relative z-30 flex min-h-12 shrink-0 items-center px-4 py-2">
             {renderFilterBar()}
           </div>
           <Separator />
@@ -1139,7 +1139,6 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
             messages={messages}
             onSort={setListSort}
           />
-          <Separator />
           <main id="race-list" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto outline-none">
             <div ref={listRef} className="@container min-h-0">
             {listView === "empty" ? (
@@ -1494,7 +1493,9 @@ function ListToolbar({
   );
 
   return (
-    <div className="flex items-center justify-between gap-2 px-4 py-2">
+    // A bottom border inside its 44px, like the list page's row, so the races
+    // start on the same line in both.
+    <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4">
       <span
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
         aria-live="polite"

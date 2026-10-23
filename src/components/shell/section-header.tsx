@@ -47,7 +47,9 @@ export function SectionHeader({
           <BrandBar href={brandHref} />
         </div>
         <h1 className="sr-only">{title}</h1>
-        {children ? <div className="md:px-6 md:py-3">{children}</div> : null}
+        {/* The map panel's filter row to the pixel — 48 high, 16 in — so
+            switching views moves nothing. */}
+        {children ? <div className="md:flex md:min-h-12 md:items-center md:px-4 md:py-2">{children}</div> : null}
       </header>
     );
   }

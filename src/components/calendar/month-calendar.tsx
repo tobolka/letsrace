@@ -472,12 +472,12 @@ export function MonthToolbar({
   }, [selected]);
 
   return (
-    <div className="flex shrink-0 items-center gap-2 border-b py-2">
+    <div className="flex h-11 shrink-0 items-center gap-2 border-b">
       <div
         ref={rowRef}
         role="tablist"
         aria-label={t.navSchedule}
-        className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto overscroll-x-contain px-4 [-ms-overflow-style:none] [scrollbar-width:none] md:px-6 [&::-webkit-scrollbar]:hidden"
+        className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto overscroll-x-contain px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         // Both edges fade, so a pill under the edge reads as "more this way",
         // not as a row cut off.
         style={{

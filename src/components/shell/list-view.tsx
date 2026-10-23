@@ -107,7 +107,7 @@ export function ListView({ locale }: { locale: string }) {
           />
         </SectionHeader>
 
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b px-4 py-2 max-md:hidden md:px-6">
+        <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4 max-md:hidden">
           <span
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums"
             aria-live="polite"

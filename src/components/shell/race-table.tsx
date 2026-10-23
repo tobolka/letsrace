@@ -145,8 +145,8 @@ export function RaceTable({
               className={cn(
                 "h-9 text-xs font-medium text-muted-foreground",
                 WIDTH[col],
-                i === 0 && "pl-6",
-                i === columns.length - 1 && "pr-6",
+                i === 0 && "pl-4",
+                i === columns.length - 1 && "pr-4",
               )}
             >
               <button
@@ -217,8 +217,8 @@ const Row = memo(function Row({
             className={cn(
               "relative h-10 truncate py-0",
               WIDTH[col],
-              i === 0 && "pl-6",
-              i === columns.length - 1 && "pr-6",
+              i === 0 && "pl-4",
+              i === columns.length - 1 && "pr-4",
               col === "name" ? "font-medium" : "text-muted-foreground",
               (col === "date" || col === "distance") && "tabular-nums",
               col === "date" && "text-foreground",
@@ -227,7 +227,7 @@ const Row = memo(function Row({
             {i === 0 ? (
               <span
                 aria-hidden
-                className="absolute inset-y-2 left-2.5 w-[3px] rounded-full"
+                className="absolute inset-y-2 left-1.5 w-[3px] rounded-full"
                 style={{ background: disciplineColor(event.disciplines) }}
               />
             ) : null}
