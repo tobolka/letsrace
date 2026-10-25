@@ -82,6 +82,7 @@ export function MobileTopBar({
   useEffect(() => {
     if (searchOpen) inputRef.current?.focus();
   }, [searchOpen]);
+  useKeepPageInPlace(searchOpen);
 
   if (searchOpen) {
     return (
@@ -198,4 +199,38 @@ export function MobileTopBar({
       </Button>
     </div>
   );
+}
+
+/**
+ * Hold the page where it is while the keyboard is up.
+ *
+ * The shell never scrolls the document — the views scroll inside it — but a
+ * phone does, to bring a focused field above its keyboard. On the map the
+ * field is focused at the foot of the screen in the same tap that raises the
+ * sheet, so the browser scrolled the page up for a field that a moment later
+ * sat at the top: the search ended above the screen, and the page stayed
+ * shifted after the keyboard went. Any document scroll here is that one, so
+ * it is undone — on focus, as the keyboard resizes the viewport, once the
+ * sheet has settled, and on the way out.
+ */
+function useKeepPageInPlace(active: boolean) {
+  useEffect(() => {
+    const reset = () => {
+      if (window.scrollY !== 0 || window.scrollX !== 0) window.scrollTo(0, 0);
+    };
+    if (!active) {
+      reset();
+      return;
+    }
+    const viewport = window.visualViewport;
+    const timers = [100, 350, 650].map((ms) => window.setTimeout(reset, ms));
+    window.addEventListener("scroll", reset, { passive: true });
+    viewport?.addEventListener("resize", reset);
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id));
+      window.removeEventListener("scroll", reset);
+      viewport?.removeEventListener("resize", reset);
+      reset();
+    };
+  }, [active]);
 }
