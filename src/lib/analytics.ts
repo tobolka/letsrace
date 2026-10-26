@@ -69,8 +69,9 @@ export function createAnalyticsBeforeSend(origin: string) {
     const clean = analyticsBeforeSend(type, payload, origin);
     if (!clean) return false;
     if (!clean.name) {
-      if (clean.url === lastPage) return false;
-      lastPage = String(clean.url);
+      const path = String(clean.url).split("?")[0];
+      if (path === lastPage) return false;
+      lastPage = String(clean.url).split("?")[0];
     }
     return clean;
   };

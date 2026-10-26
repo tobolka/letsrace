@@ -24,7 +24,8 @@ describe("analytics privacy boundary", () => {
   });
   it("collapses filter/map URL updates, but tracks client navigation and back", () => {
     const send = createAnalyticsBeforeSend("https://letsrace.cz");
-    expect(send("event", { url: "/cs" })).toBeTruthy();
+    expect(send("event", { url: "/cs?utm_source=newsletter" })).toBeTruthy();
+    expect(send("event", { url: "/cs" })).toBe(false);
     expect(send("event", { url: "/cs?q=search&west=1&e=race" })).toBe(false);
     expect(send("event", { url: "/cs/e/race-2027" })).toBeTruthy();
     expect(send("event", { url: "/cs/e/race-2027", name: "race_registration_start", data: { kind: "register" } })).toMatchObject({ name: "race_registration_start" });
