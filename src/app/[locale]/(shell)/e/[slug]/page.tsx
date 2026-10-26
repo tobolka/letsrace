@@ -264,8 +264,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             <OutboundTrackLink
               key={link.href}
               href={link.href}
-              eventName="outbound_enter"
-              eventProps={{ slug: event.slug, kind: link.kind }}
+              eventName={link.kind === "register" ? "race_registration_start" : "outbound_click"}
+              eventProps={{ slug: event.slug, kind: link.kind, location: "race_page" }}
               variant={index === 0 ? "default" : "outline"}
               size="default"
             >

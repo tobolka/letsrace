@@ -3,7 +3,7 @@
 import { format, parseISO } from "date-fns";
 import { Calendar, ChartNoAxesColumnIncreasing, Check, ExternalLink, MapPin, Maximize2, Navigation, Share, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
@@ -137,7 +137,7 @@ export function EmbeddedBody({
         <Link
           href={eventPagePath(locale, event.slug)}
           aria-label={t.openRaceDetail}
-          onClick={() => track("open_race_page", { slug: event.slug })}
+          onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
           className={tile}
         >
           <Maximize2 aria-hidden />

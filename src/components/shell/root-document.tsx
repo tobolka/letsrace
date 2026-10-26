@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Umami } from "@/components/analytics/umami";
 import { DeferredVitals } from "@/components/perf/deferred-vitals";
 import { WebMcpTools } from "@/components/agent/webmcp-tools";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME, socialCard } from "@/lib/seo";
@@ -125,6 +126,7 @@ export function RootDocument({ lang, children }: { lang: string; children: React
         </TooltipProvider>
         <WebMcpTools />
         <Toaster />
+        <Umami />
         <DeferredVitals />
       </body>
     </html>

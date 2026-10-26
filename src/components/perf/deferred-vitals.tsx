@@ -4,14 +4,10 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 /**
- * Analytics and Speed Insights are real work on the critical path for nothing
- * the visitor asked for. Hold them until the page has painted its LCP (or a
- * short ceiling), so they cannot sit on the main thread in front of it.
+ * Speed Insights is real work on the critical path for nothing
+ * the visitor asked for. Hold it until the page has painted its LCP (or a
+ * short ceiling), so it cannot sit on the main thread in front of it.
  */
-const Analytics = dynamic(
-  () => import("@vercel/analytics/next").then((m) => m.Analytics),
-  { ssr: false },
-);
 const SpeedInsights = dynamic(
   () => import("@vercel/speed-insights/next").then((m) => m.SpeedInsights),
   { ssr: false },
@@ -63,10 +59,5 @@ function useAfterLcp(ceilingMs = 4000): boolean {
 export function DeferredVitals() {
   const ready = useAfterLcp();
   if (!ready) return null;
-  return (
-    <>
-      <Analytics />
-      <SpeedInsights />
-    </>
-  );
+  return <SpeedInsights />;
 }

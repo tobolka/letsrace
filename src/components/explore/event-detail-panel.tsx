@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { ChevronUp, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -13,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { buildDetailModel } from "@/components/explore/event-detail-model";
 import { EventDetailBody } from "@/components/explore/event-detail-body";
@@ -68,8 +69,12 @@ export function EventDetailPanel({
   });
   const m = buildDetailModel(event, locale, t);
 
+  useEffect(() => {
+    track("race_view", { slug: event.slug, location: "race_panel" });
+  }, [event.slug]);
+
   function trackEnter(kind: string) {
-    track("outbound_enter", { slug: event.slug, kind });
+    track(kind === "register" ? "race_registration_start" : "outbound_click", { slug: event.slug, kind, location: "race_panel" });
   }
 
   return (

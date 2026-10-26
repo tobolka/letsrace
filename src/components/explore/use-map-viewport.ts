@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import type { MapBounds, BoundsChangeReason } from "@/components/map/types";
 import type { ExploreFilters, RadiusArea } from "@/components/explore/use-map-feed";
 import type { EventListItem } from "@/lib/events";
+import { track } from "@/lib/analytics";
 import { todayIso } from "@/lib/date-presets";
 import { expandViewport, viewportNeedsFetch } from "@/lib/geo/viewport";
 
@@ -136,6 +137,7 @@ export function useMapViewport({
   }
 
   function handleSearchSubmit() {
+    if (filters.q.trim().length >= 2) track("search_submit", { location: "explore" });
     window.clearTimeout(searchTimerRef.current);
     void runSearch(filters.q);
   }

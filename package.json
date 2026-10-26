@@ -22,7 +22,6 @@
     "@supabase/supabase-js": "^2.117.3",
     "@turf/boolean-point-in-polygon": "^7.4.0",
     "@turf/helpers": "^7.4.0",
-    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",

@@ -2,7 +2,7 @@
 
 import { Maximize2, Share } from "lucide-react";
 import Link from "next/link";
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
@@ -66,7 +66,7 @@ export function EventTrustRow({
           <Link
             href={eventPagePath(locale, event.slug)}
             aria-label={t.openRaceDetail}
-            onClick={() => track("open_race_page", { slug: event.slug })}
+            onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
           >
             <Maximize2 />
           </Link>

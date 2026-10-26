@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 /** Next's dev overlay/HMR evaluates code; production bundles never need eval. */
 const scriptSrc =
   process.env.NODE_ENV === "development"
-    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com"
-    : "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://stats.letsrace.cz"
+    : "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://stats.letsrace.cz";
 
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
@@ -22,7 +22,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel-insights.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel-insights.com https://stats.letsrace.cz",
       "worker-src 'self' blob:",
       "child-src 'self' blob:",
       "frame-ancestors 'none'",

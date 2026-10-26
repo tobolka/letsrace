@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { track } from "@vercel/analytics";
+import { track } from "@/lib/analytics";
 import type { EventListItem } from "@/lib/events";
 import { eventMapPath } from "@/lib/event-url";
 
