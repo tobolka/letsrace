@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { track } from "@/lib/analytics";
+import { useMediaQuery } from "@/hooks/use-viewport";
 import { cn } from "@/lib/utils";
 import { buildDetailModel } from "@/components/explore/event-detail-model";
 import { EventDetailBody } from "@/components/explore/event-detail-body";
@@ -69,12 +70,13 @@ export function EventDetailPanel({
   });
   const m = buildDetailModel(event, locale, t);
 
+  const panelVisible = useMediaQuery(embedded ? "(max-width: 767px)" : "(min-width: 768px)");
   const seen = useRef<string | null>(null);
   useEffect(() => {
-    if (seen.current === event.id) return;
+    if (!panelVisible || !cardRef.current?.getClientRects().length || seen.current === event.id) return;
     seen.current = event.id;
     track("race_view", { race_id: event.id, slug: event.slug, location: "race_panel", presentation: embedded ? "sheet" : "panel", has_registration: Boolean(event.registrationUrl), has_primary_outbound: Boolean(event.registrationUrl || event.websiteUrl || event.listingUrl || event.regulationsUrl), is_past: event.startDate < new Date().toISOString().slice(0, 10) });
-  }, [event.id, event.slug, event.registrationUrl, event.websiteUrl, event.listingUrl, event.regulationsUrl, event.startDate, embedded]);
+  }, [event.id, event.slug, event.registrationUrl, event.websiteUrl, event.listingUrl, event.regulationsUrl, event.startDate, embedded, panelVisible, cardRef]);
 
   function trackEnter(kind: string) {
     track(kind === "register" ? "race_registration_start" : "outbound_click", { race_id: event.id, slug: event.slug, kind, location: "race_panel", presentation: embedded ? "sheet" : "panel" });
