@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { MapBounds, BoundsChangeReason } from "@/components/map/types";
 import type { ExploreFilters, RadiusArea } from "@/components/explore/use-map-feed";
 import type { EventListItem } from "@/lib/events";
@@ -41,6 +41,8 @@ export function useMapViewport({
   setCameraBounds: (b: MapBounds) => void;
   flyTo: (box: MapBounds) => void;
 }) {
+  const [searchPending, setSearchPending] = useState(false);
+  const [searchError, setSearchError] = useState(false);
   const initialBoundsFetchDone = useRef(false);
   const destFlyingRef = useRef(false);
   const placeAbortRef = useRef<AbortController | null>(null);
@@ -55,7 +57,7 @@ export function useMapViewport({
     placeAbortRef.current = ac;
     try {
       const res = await fetch(`/api/places?q=${encodeURIComponent(q)}`, { signal: ac.signal });
-      if (!res.ok) return false;
+      if (!res.ok) { if (res.status !== 404 && gen === searchGen.current) setSearchError(true); return false; }
       const data = (await res.json()) as { bounds: MapBounds };
       if (!data.bounds || gen !== searchGen.current) return false;
       placed.set(q);
@@ -71,14 +73,16 @@ export function useMapViewport({
         north: String(data.bounds.north),
         country: [],
       });
-      refetch({
+      const races = await refetch({
         q: "",
         country: [],
         bounds: data.bounds,
         forceBounds: true,
       });
+      if (gen === searchGen.current && races === null) setSearchError(true);
       return true;
     } catch {
+      if (!ac.signal.aborted && gen === searchGen.current) setSearchError(true);
       return false;
     }
   }
@@ -86,48 +90,56 @@ export function useMapViewport({
   async function runSearch(q: string) {
     const gen = ++searchGen.current;
     const trimmed = q.trim();
-    if (!trimmed) {
+    setSearchPending(true);
+    setSearchError(false);
+    try {
+      if (!trimmed) {
+        placed.set("");
+        void refetch({ q: "" });
+        return;
+      }
+
+      // Typed text is a race name first. Half the race names in this catalogue
+      // are also places — Sudety, Vysočina, Beskydy — and geocoding those threw
+      // away the query, flew the map somewhere, and reported nothing found for a
+      // race that is in the catalogue. Only when no race matches is the text
+      // treated as a place to go to.
       placed.set("");
-      void refetch({ q: "" });
-      return;
-    }
-
-    // Typed text is a race name first. Half the race names in this catalogue
-    // are also places — Sudety, Vysočina, Beskydy — and geocoding those threw
-    // away the query, flew the map somewhere, and reported nothing found for a
-    // race that is in the catalogue. Only when no race matches is the text
-    // treated as a place to go to.
-    placed.set("");
-    // A search is a find, not a filter: the date window widens to upcoming, so
-    // a race in October is not missing just because the bar still said "this
-    // weekend". Any date stays one click away for looking back.
-    const upcoming = todayIso();
-    void setFilters({ dateFrom: upcoming, dateTo: "" });
-    const hits = await refetch({
-      q: trimmed,
-      dateFrom: upcoming,
-      dateTo: "",
-      skipBounds: true,
-      fitMap: true,
-    });
-    if (gen !== searchGen.current) return;
-    if (hits === null || hits.length > 0) return;
-
-    if (trimmed.length >= 3) {
-      const ok = await flyToPlace(trimmed, gen);
+      // A search is a find, not a filter: the date window widens to upcoming, so
+      // a race in October is not missing just because the bar still said "this
+      // weekend". Any date stays one click away for looking back.
+      const upcoming = todayIso();
+      void setFilters({ dateFrom: upcoming, dateTo: "" });
+      const hits = await refetch({
+        q: trimmed,
+        dateFrom: upcoming,
+        dateTo: "",
+        skipBounds: true,
+        fitMap: true,
+      });
       if (gen !== searchGen.current) return;
-      if (ok) return;
-    }
+      if (hits === null) { setSearchError(true); return; }
+      if (hits.length > 0) return;
+
+      if (trimmed.length >= 3) {
+        const ok = await flyToPlace(trimmed, gen);
+        if (gen !== searchGen.current) return;
+        if (ok) return;
+      }
+
+    } finally { if (gen === searchGen.current) setSearchPending(false); }
   }
 
   function handleSearchChange(q: string) {
     void setFilters({ q });
     window.clearTimeout(searchTimerRef.current);
+    searchGen.current += 1;
+    placeAbortRef.current?.abort();
     const trimmed = q.trim();
+    setSearchPending(trimmed.length >= 2);
+    setSearchError(false);
     if (trimmed.length < 2) {
       placed.set("");
-      searchGen.current += 1;
-      placeAbortRef.current?.abort();
       void refetch({ q: trimmed });
       return;
     }
@@ -221,5 +233,5 @@ export function useMapViewport({
     }
   }
 
-  return { handleBoundsChange, handleSearchChange, handleSearchSubmit };
+  return { handleBoundsChange, handleSearchChange, handleSearchSubmit, searchPending, searchError };
 }

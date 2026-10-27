@@ -64,7 +64,7 @@ export function EventDetailBody({
               // there. Google Maps starts from where you are standing and
               // plans the route itself, so this is one tap to the answer.
               <Button asChild variant="outline" size="xs" className="-my-0.5 shrink-0 font-normal">
-                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp}>
+                <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} onClick={() => trackEnter("directions")}>
                   <Navigation data-icon="inline-start" />
                   {t.directions}
                 </a>

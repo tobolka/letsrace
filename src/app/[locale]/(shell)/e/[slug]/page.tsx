@@ -22,6 +22,7 @@ import { disciplineLeaves as disciplineLeavesOf, isHubDiscipline, listQualifying
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
+import { RacePageView } from "@/components/analytics/race-page-view";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
@@ -159,6 +160,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
 
   return (
     <main className="relative min-h-full bg-background">
+      <RacePageView raceId={event.id} slug={event.slug} hasRegistration={Boolean(event.registrationUrl)} hasPrimaryOutbound={Boolean(event.registrationUrl || event.websiteUrl || event.listingUrl || event.regulationsUrl)} isPast={isPast} />
       <EventJsonLd
         event={event}
         locale={locale}
@@ -265,7 +267,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               key={link.href}
               href={link.href}
               eventName={link.kind === "register" ? "race_registration_start" : "outbound_click"}
-              eventProps={{ slug: event.slug, kind: link.kind, location: "race_page" }}
+              eventProps={{ race_id: event.id, slug: event.slug, kind: link.kind, location: "race_page", presentation: "page" }}
               variant={index === 0 ? "default" : "outline"}
               size="default"
             >

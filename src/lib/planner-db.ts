@@ -32,12 +32,14 @@ export async function ensureFavorite(
   userId: string,
   eventId: string,
   favorited: boolean,
+  onCreated?: () => void,
 ): Promise<boolean> {
   try {
     if (favorited) return true;
     const { error } = await supabase
       .from("event_favorites")
       .insert({ user_id: userId, event_id: eventId });
+    if (!error) onCreated?.();
     return !error || error.code === "23505";
   } catch {
     return false;

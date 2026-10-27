@@ -43,6 +43,15 @@ describe("confirmed plan writes", () => {
     expect(await removeFromPlan({ supabase: client, userId: "user", eventId: "race" })).toBe(false);
   });
 
+  it("counts only genuinely new confirmed inserts", async () => {
+    const created = vi.fn();
+    expect(await ensureFavorite(database(null).client, "user", "race", false, created)).toBe(true);
+    expect(created).toHaveBeenCalledTimes(1);
+    expect(await ensureFavorite(database({ message: "duplicate", code: "23505" }).client, "user", "race", false, created)).toBe(true);
+    expect(await ensureFavorite(database({ message: "denied" }).client, "user", "race", false, created)).toBe(false);
+    expect(created).toHaveBeenCalledTimes(1);
+  });
+
   it("accepts a favorite already saved by another request", async () => {
     const { client } = database({ message: "duplicate", code: "23505" });
     expect(await ensureFavorite(client, "user", "race", false)).toBe(true);

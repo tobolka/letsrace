@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ChevronUp, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -69,12 +69,15 @@ export function EventDetailPanel({
   });
   const m = buildDetailModel(event, locale, t);
 
+  const seen = useRef<string | null>(null);
   useEffect(() => {
-    track("race_view", { slug: event.slug, location: "race_panel" });
-  }, [event.slug]);
+    if (seen.current === event.id) return;
+    seen.current = event.id;
+    track("race_view", { race_id: event.id, slug: event.slug, location: "race_panel", presentation: embedded ? "sheet" : "panel", has_registration: Boolean(event.registrationUrl), has_primary_outbound: Boolean(event.registrationUrl || event.websiteUrl || event.listingUrl || event.regulationsUrl), is_past: event.startDate < new Date().toISOString().slice(0, 10) });
+  }, [event.id, event.slug, event.registrationUrl, event.websiteUrl, event.listingUrl, event.regulationsUrl, event.startDate, embedded]);
 
   function trackEnter(kind: string) {
-    track(kind === "register" ? "race_registration_start" : "outbound_click", { slug: event.slug, kind, location: "race_panel" });
+    track(kind === "register" ? "race_registration_start" : "outbound_click", { race_id: event.id, slug: event.slug, kind, location: "race_panel", presentation: embedded ? "sheet" : "panel" });
   }
 
   return (

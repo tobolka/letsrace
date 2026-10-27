@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { track } from "@/lib/analytics";
+import { analyticsSection } from "@/lib/analytics-product";
 import { toast } from "sonner";
 import { ensureFavorite } from "@/lib/planner-db";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -24,7 +26,7 @@ const PENDING_KEY = "letsrace:pending-plan-add";
  */
 const PENDING_TTL_MS = 86_400_000;
 
-type Pending = { eventId: string; name: string; locale: string; at: number };
+type Pending = { eventId: string; name: string; locale: string; at: number; source?: string };
 
 const SERVER_STATE: SavedRacesState = { authed: null, ids: new Set() };
 let state: SavedRacesState = SERVER_STATE;
@@ -83,12 +85,22 @@ function announce(name: string, locale: string) {
   });
 }
 
-async function add(eventId: string): Promise<boolean> {
+const adding = new Map<string, Promise<boolean>>();
+async function add(eventId: string, source = "unknown", authRequired = false): Promise<boolean> {
   if (!client || !userId) return false;
   if (state.ids.has(eventId)) return true;
-  const ok = await ensureFavorite(client, userId, eventId, false);
-  if (ok) set({ authed: true, ids: new Set(state.ids).add(eventId) });
-  return ok;
+  const existing = adding.get(eventId);
+  if (existing) return existing;
+  const operation = (async () => {
+    const ok = await ensureFavorite(client!, userId!, eventId, false, () => {
+      track("plan_save_completed", { race_id: eventId, source, auth_required: authRequired });
+    });
+    if (ok) set({ authed: true, ids: new Set(state.ids).add(eventId) });
+    else track("action_failed", { action: "plan_save", error_class: "request" });
+    return ok;
+  })();
+  adding.set(eventId, operation);
+  try { return await operation; } finally { adding.delete(eventId); }
 }
 
 async function flushPending() {
@@ -96,7 +108,7 @@ async function flushPending() {
   if (!p || !userId) return;
   memoryPending = null;
   writePending(null);
-  if (await add(p.eventId)) announce(p.name, p.locale);
+  if (await add(p.eventId, p.source, true)) announce(p.name, p.locale);
   else toast.error(messagesFor(p.locale).saveFailed);
 }
 
@@ -144,12 +156,15 @@ export const getServerSavedRaces = () => SERVER_STATE;
  */
 export async function saveRace(race: { eventId: string; name: string; locale: string }): Promise<"saved" | "failed" | "auth"> {
   await startSavedRaces();
+  if (state.ids.has(race.eventId)) return "saved";
+  const source = typeof window !== "undefined" ? analyticsSection(window.location.pathname)?.section ?? "unknown" : "unknown";
+  if (!adding.has(race.eventId)) track("plan_save_requested", { race_id: race.eventId, source, auth_required: !userId });
   if (!userId) {
-    memoryPending = { ...race, at: Date.now() };
+    memoryPending = { ...race, source, at: Date.now() };
     writePending(memoryPending);
     return "auth";
   }
-  if (await add(race.eventId)) {
+  if (await add(race.eventId, source)) {
     announce(race.name, race.locale);
     return "saved";
   }

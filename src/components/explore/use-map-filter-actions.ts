@@ -1,5 +1,6 @@
 "use client";
 
+import { filterSnapshot } from "@/lib/analytics-product";
 import { track } from "@/lib/analytics";
 import type { ExploreFilters } from "@/components/explore/use-map-feed";
 import { thisWeekendRange } from "@/lib/date-presets";
@@ -34,43 +35,47 @@ export function useMapFilterActions({
   clearRadius: () => void;
 }) {
   function toggleCategory(value: string) {
-    track("filter_apply", { filter_type: "category", location: "explore" });
     const next = toggleIn(filters.categories, value);
+    track("filter_apply", { filter_type: "category", location: "explore", ...filterSnapshot({ ...filters, categories: next }) });
     void setFilters({ categories: next });
     refetch({ categories: next });
   }
 
   function toggleDiscipline(value: string) {
-    track("filter_apply", { filter_type: "discipline", location: "explore" });
     const next = toggleIn(filters.disciplines, value);
+    track("filter_apply", { filter_type: "discipline", location: "explore", ...filterSnapshot({ ...filters, disciplines: next }) });
     void setFilters({ disciplines: next });
     refetch({ disciplines: next });
   }
 
   function toggleLevel(value: string) {
-    track("filter_apply", { filter_type: "level", location: "explore" });
     const next = toggleIn(filters.levels, value);
+    track("filter_apply", { filter_type: "level", location: "explore", ...filterSnapshot({ ...filters, levels: next }) });
     void setFilters({ levels: next });
     refetch({ levels: next });
   }
 
   function clearDisciplines() {
+    track("filter_apply", { filter_type: "discipline", ...filterSnapshot({ ...filters, disciplines: [] }) });
     void setFilters({ disciplines: [] });
     refetch({ disciplines: [] });
   }
 
   function clearLevels() {
+    track("filter_apply", { filter_type: "level", ...filterSnapshot({ ...filters, levels: [] }) });
     void setFilters({ levels: [] });
     refetch({ levels: [] });
   }
 
 
   function clearCategories() {
+    track("filter_apply", { filter_type: "category", ...filterSnapshot({ ...filters, categories: [] }) });
     void setFilters({ categories: [] });
     refetch({ categories: [] });
   }
 
   function resetExploreFilters(opts?: { clearSearch?: boolean }) {
+    track("filter_apply", { filter_type: "reset" });
     clearRadius();
     const w = thisWeekendRange();
     const clearSearch = opts?.clearSearch ?? false;
@@ -100,14 +105,14 @@ export function useMapFilterActions({
   }
 
   function setSeries(slug: string) {
-    track("filter_apply", { filter_type: "series", location: "explore" });
     const next = filters.series === slug ? "" : slug;
+    track("filter_apply", { filter_type: "series", location: "explore", ...filterSnapshot({ ...filters, series: next }) });
     void setFilters({ series: next });
     refetch({ series: next, skipBounds: Boolean(next) || filters.country.length > 0, fitMap: Boolean(next) });
   }
 
   function applySeries(slug: string) {
-    track("filter_apply", { filter_type: "series", location: "explore" });
+    track("filter_apply", { filter_type: "series", location: "explore", ...filterSnapshot({ ...filters, series: slug }) });
     void setFilters({ series: slug });
     refetch({
       series: slug,
@@ -117,7 +122,7 @@ export function useMapFilterActions({
   }
 
   function applyCountries(next: string[]) {
-    track("filter_apply", { filter_type: "country", location: "explore" });
+    track("filter_apply", { filter_type: "country", location: "explore", ...filterSnapshot({ ...filters, country: next }) });
     const { dropSeries } = countryChange(filters, next, seriesList);
     void setFilters({ country: next, ...(dropSeries ? { series: "" } : {}) });
     refetch({
@@ -137,7 +142,7 @@ export function useMapFilterActions({
   }
 
   function setDateRange(dateFrom: string, dateTo: string) {
-    track("filter_apply", { filter_type: "date", location: "explore" });
+    track("filter_apply", { filter_type: "date", location: "explore", ...filterSnapshot({ ...filters, dateFrom, dateTo }) });
     void setFilters({ dateFrom, dateTo });
     refetch({ dateFrom, dateTo });
   }

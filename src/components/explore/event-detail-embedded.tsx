@@ -111,7 +111,7 @@ export function EmbeddedBody({
 
       <div className="grid grid-cols-4 gap-2">
         {directionsUrl ? (
-          <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile}>
+          <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile} onClick={() => trackEnter("directions")}>
             <Navigation aria-hidden />
             <span>{t.directions}</span>
           </a>

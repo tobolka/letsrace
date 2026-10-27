@@ -62,6 +62,7 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | nul
           });
       void loaded
         .then((data) => {
+          if (ac.signal.aborted) return;
           const filtered = shared
             ? filterCatalogue(data, {
                 categories: query.categories,
@@ -85,6 +86,7 @@ export function useRaceFeed(query: FeedQuery, enabled: boolean, near: Near | nul
           setAnsweredKey(requestKey);
         })
         .catch((err: unknown) => {
+          if (ac.signal.aborted) return;
           if ((err as { name?: string })?.name === "AbortError") return;
           setFailed(true);
           setSettled(true);

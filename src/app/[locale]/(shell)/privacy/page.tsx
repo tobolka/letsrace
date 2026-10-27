@@ -48,7 +48,7 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Cookies a úložiště prohlížeče",
         p: [
-          "Používáme jen nezbytné cookies pro přihlášení. V úložišti prohlížeče si pamatujeme nastavení, jako jsou filtry a sloupce tabulky. Návštěvnost a vybrané interakce měříme vlastní instalací Umami na Vercelu s databází Neon v EU, bez analytických cookies a bez propojování návštěv mezi weby. Odesíláme veřejné cesty stránek, zdroj návštěvy, označení kampaně a základní informace o zařízení. Neodesíláme obsah vyhledávání, údaje účtu ani formulářů. Respektujeme signály Do Not Track a Global Privacy Control.",
+          "Používáme jen nezbytné cookies pro přihlášení. V úložišti prohlížeče si pamatujeme nastavení, jako jsou filtry a sloupce tabulky. Návštěvnost a vybrané interakce měříme vlastní instalací Umami na Vercelu s databází Neon v EU, bez analytických cookies a bez propojování návštěv mezi weby. Odesíláme veřejné cesty stránek, zdroj návštěvy, označení kampaně a základní informace o zařízení. Měříme také obecné názvy navštívených sekcí, počty výsledků, použité katalogové filtry a potvrzené uložení závodu. Neodesíláme soukromé adresy stránek, obsah vyhledávání, údaje účtu ani formulářů. Respektujeme signály Do Not Track a Global Privacy Control.",
         ],
       },
       {
@@ -100,7 +100,7 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Cookies and browser storage",
         p: [
-          "We use only the cookies needed to keep you signed in. Browser storage remembers settings such as filters and table columns. Visits and selected interactions are measured with our own Umami installation on Vercel and a Neon database in the EU, without analytics cookies or linking visitors across websites. We send public page paths, referral sources, campaign labels and basic device information. Search text, account details and form contents are excluded. We respect Do Not Track and Global Privacy Control.",
+          "We use only the cookies needed to keep you signed in. Browser storage remembers settings such as filters and table columns. Visits and selected interactions are measured with our own Umami installation on Vercel and a Neon database in the EU, without analytics cookies or linking visitors across websites. We send public page paths, referral sources, campaign labels and basic device information. We also measure generic section names, result counts, catalogue filters and confirmed race saves. Private page paths, search text, account details and form contents are excluded. We respect Do Not Track and Global Privacy Control.",
         ],
       },
       {
@@ -152,7 +152,7 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Cookies i pamięć przeglądarki",
         p: [
-          "Używamy tylko niezbędnych cookies do logowania. Pamięć przeglądarki zapamiętuje ustawienia, np. filtry i kolumny tabeli. Ruch i wybrane interakcje mierzymy we własnej instalacji Umami na Vercel, z bazą Neon w UE, bez analitycznych cookies i łączenia odwiedzin między witrynami. Przesyłamy publiczne ścieżki stron, źródła wizyt, oznaczenia kampanii i podstawowe informacje o urządzeniu. Wykluczamy treść wyszukiwania, dane konta i formularzy. Respektujemy Do Not Track i Global Privacy Control.",
+          "Używamy tylko niezbędnych cookies do logowania. Pamięć przeglądarki zapamiętuje ustawienia, np. filtry i kolumny tabeli. Ruch i wybrane interakcje mierzymy we własnej instalacji Umami na Vercel, z bazą Neon w UE, bez analitycznych cookies i łączenia odwiedzin między witrynami. Przesyłamy publiczne ścieżki stron, źródła wizyt, oznaczenia kampanii i podstawowe informacje o urządzeniu. Mierzymy też ogólne nazwy odwiedzanych sekcji, liczbę wyników, filtry katalogu i potwierdzone zapisanie wyścigu. Wykluczamy prywatne ścieżki stron, treść wyszukiwania, dane konta i formularzy. Respektujemy Do Not Track i Global Privacy Control.",
         ],
       },
       {
@@ -204,7 +204,7 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Cookies a úložisko prehliadača",
         p: [
-          "Používame len nevyhnutné cookies na prihlásenie. V úložisku prehliadača si pamätáme nastavenia, napríklad filtre a stĺpce tabuľky. Návštevnosť a vybrané interakcie meriame vlastnou inštaláciou Umami na Verceli s databázou Neon v EÚ, bez analytických cookies a prepájania návštev medzi webmi. Posielame verejné cesty stránok, zdroj návštevy, označenia kampaní a základné informácie o zariadení. Neposielame obsah vyhľadávania, údaje účtu ani formulárov. Rešpektujeme Do Not Track a Global Privacy Control.",
+          "Používame len nevyhnutné cookies na prihlásenie. V úložisku prehliadača si pamätáme nastavenia, napríklad filtre a stĺpce tabuľky. Návštevnosť a vybrané interakcie meriame vlastnou inštaláciou Umami na Verceli s databázou Neon v EÚ, bez analytických cookies a prepájania návštev medzi webmi. Posielame verejné cesty stránok, zdroj návštevy, označenia kampaní a základné informácie o zariadení. Meriame aj všeobecné názvy navštívených sekcií, počty výsledkov, katalógové filtre a potvrdené uloženie pretekov. Neposielame súkromné adresy stránok, obsah vyhľadávania, údaje účtu ani formulárov. Rešpektujeme Do Not Track a Global Privacy Control.",
         ],
       },
       {
@@ -256,7 +256,7 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Cookies und Browserspeicher",
         p: [
-          "Wir nutzen nur die Cookies, die nötig sind, damit du angemeldet bleibst. Der Browserspeicher merkt sich Einstellungen wie Filter und Tabellenspalten. Besuche und ausgewählte Interaktionen messen wir mit einer eigenen Umami-Installation auf Vercel und einer Neon-Datenbank in der EU, ohne Analyse-Cookies oder websiteübergreifende Verknüpfung. Erfasst werden öffentliche Seitenpfade, Verweisquellen, Kampagnenkennzeichnungen und grundlegende Geräteinformationen. Suchtexte, Kontodaten und Formularinhalte sind ausgeschlossen. Do Not Track und Global Privacy Control werden respektiert.",
+          "Wir nutzen nur die Cookies, die nötig sind, damit du angemeldet bleibst. Der Browserspeicher merkt sich Einstellungen wie Filter und Tabellenspalten. Besuche und ausgewählte Interaktionen messen wir mit einer eigenen Umami-Installation auf Vercel und einer Neon-Datenbank in der EU, ohne Analyse-Cookies oder websiteübergreifende Verknüpfung. Erfasst werden öffentliche Seitenpfade, Verweisquellen, Kampagnenkennzeichnungen und grundlegende Geräteinformationen. Wir messen auch allgemeine Bereichsnamen, Ergebniszahlen, Katalogfilter und bestätigte gespeicherte Rennen. Private Seitenpfade, Suchtexte, Kontodaten und Formularinhalte sind ausgeschlossen. Do Not Track und Global Privacy Control werden respektiert.",
         ],
       },
       {

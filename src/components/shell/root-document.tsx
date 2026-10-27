@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -126,7 +127,7 @@ export function RootDocument({ lang, children }: { lang: string; children: React
         </TooltipProvider>
         <WebMcpTools />
         <Toaster />
-        <Umami />
+        <Suspense fallback={null}><Umami /></Suspense>
         <DeferredVitals />
       </body>
     </html>

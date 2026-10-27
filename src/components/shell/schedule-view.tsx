@@ -13,6 +13,7 @@ import { SectionHeader } from "@/components/shell/section-header";
 import { SubscribeFeed } from "@/components/calendar/subscribe-feed";
 import { useExploreFilters } from "@/components/shell/use-explore-filters";
 import { useLinkedRace, useRaceParam } from "@/components/shell/use-race-param";
+import { useResultsAnalytics } from "@/components/analytics/use-results-analytics";
 import { useRaceFeed } from "@/components/shell/use-race-feed";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -83,6 +84,8 @@ export function ScheduleView({ locale }: { locale: string }) {
   const byId = useMemo(() => new Map(feed.events.map((e) => [e.id, e])), [feed.events]);
   const selected = useLinkedRace(race.slug, feed.events);
   const inMonth = feed.events.filter((e) => e.startDate.slice(0, 7) === month.slice(0, 7)).length;
+
+  useResultsAnalytics({ query: { ...filters, dateFrom: first, dateTo: last }, count: feed.events.length, ready: ready && feed.settled && !feed.loading, failed: feed.failed, scope: near ? "radius" : "global", radius: state.radius });
 
   function goMonth(next: string) {
     void setMonthRaw(next === monthStart(todayIso()) ? null : next.slice(0, 7));

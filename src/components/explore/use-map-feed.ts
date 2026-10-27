@@ -45,6 +45,8 @@ export function useMapFeed({
   flyTo: (box: MapBounds) => void;
 }) {
   const [events, setEvents] = useState(initialEvents);
+  const [matchingIds, setMatchingIds] = useState<ReadonlySet<string>>(new Set());
+  const [listFailed, setListFailed] = useState(false);
   const [listLoading, setListLoading] = useState(false);
   /**
    * The rows are placeholders until the map settles on its bounds and the list
@@ -130,8 +132,15 @@ export function useMapFeed({
               east: b?.east,
               north: b?.north,
             })
-          : ((await (await fetch(`/api/events?${params.toString()}`)).json()) as EventListItem[]);
+          : await fetch(`/api/events?${params.toString()}`).then(async response => {
+              if (!response.ok) throw new Error("events request failed");
+              const rows: unknown = await response.json();
+              if (!Array.isArray(rows)) throw new Error("invalid events response");
+              return rows as EventListItem[];
+            });
         if (gen !== eventsFetchGen.current) return null;
+        setListFailed(false);
+        setMatchingIds(new Set(data.map(event => event.id)));
         const focusSlug = filters.e;
         setEvents((prev) => {
           const next = reuseUnchanged(prev, data);
@@ -147,6 +156,7 @@ export function useMapFeed({
         if (overrides.fitMap) setFitSeq((n) => n + 1);
         return data;
       } catch {
+        if (gen === eventsFetchGen.current) setListFailed(true);
         return null;
       } finally {
         if (gen === eventsFetchGen.current) {
@@ -199,6 +209,8 @@ export function useMapFeed({
     events,
     listLoading,
     listSettled,
+    listFailed,
+    matchingIds,
     fitSeq,
     refetch,
     area: { get: getLastArea, set: setLastArea },

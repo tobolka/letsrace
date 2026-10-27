@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const analytics = vi.hoisted(() => ({ track: vi.fn() }));
+vi.mock("@/lib/analytics", () => analytics);
+
 const inserted: string[] = [];
 let authListener: ((event: string, session: { user: { id: string } } | null) => void) | null = null;
 let currentUser: { id: string } | null = null;
@@ -34,6 +37,7 @@ vi.stubGlobal("localStorage", {
 describe("saving a race before signing in", () => {
   beforeEach(() => {
     vi.resetModules();
+    analytics.track.mockClear();
     inserted.length = 0;
     store.clear();
     currentUser = null;
@@ -50,6 +54,7 @@ describe("saving a race before signing in", () => {
     await vi.waitFor(() => expect(inserted).toEqual(["race-1"]));
     expect(m.getSavedRaces().ids.has("race-1")).toBe(true);
     expect(m.hasPendingSave()).toBe(false);
+    expect(analytics.track).toHaveBeenCalledWith("plan_save_completed", expect.objectContaining({ auth_required: true }));
   });
 
   it("finishes the add on a fresh page after a redirect sign-in", async () => {
@@ -74,5 +79,9 @@ describe("saving a race before signing in", () => {
     const m = await import("@/lib/saved-races");
     expect(await m.saveRace({ eventId: "race-3", name: "R", locale: "en" })).toBe("saved");
     expect(inserted).toEqual(["race-3"]);
+    expect(analytics.track).toHaveBeenCalledWith("plan_save_completed", expect.objectContaining({ race_id: "race-3", auth_required: false }));
+    analytics.track.mockClear();
+    await m.saveRace({ eventId: "race-3", name: "R", locale: "en" });
+    expect(analytics.track).not.toHaveBeenCalled();
   });
 });

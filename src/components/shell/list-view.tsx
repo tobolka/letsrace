@@ -11,6 +11,7 @@ import { useLinkedRace, useRaceParam } from "@/components/shell/use-race-param";
 import { RacePreview } from "@/components/shell/race-preview";
 import { SectionHeader } from "@/components/shell/section-header";
 import { useExploreFilters } from "@/components/shell/use-explore-filters";
+import { useResultsAnalytics } from "@/components/analytics/use-results-analytics";
 import { useRaceFeed } from "@/components/shell/use-race-feed";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
@@ -44,6 +45,7 @@ export function ListView({ locale }: { locale: string }) {
   const state = useExploreFilters();
   const { filters, setFilters, ready, reset, near, place } = state;
   const feed = useRaceFeed(filters, ready, near);
+  useResultsAnalytics({ query: filters, count: feed.events.length, ready: ready && feed.settled && !feed.loading, failed: feed.failed, scope: near ? "radius" : "global", radius: state.radius });
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const race = useRaceParam();

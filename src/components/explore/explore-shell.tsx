@@ -30,6 +30,9 @@ import { ExplorePhoneSheets } from "@/components/explore/explore-phone-sheets";
 import { usePanelResize } from "@/components/explore/panel-resize";
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import { useRaceParam } from "@/components/shell/use-race-param";
+import { track } from "@/lib/analytics";
+import { useResultsAnalytics } from "@/components/analytics/use-results-analytics";
+import { visibleRaces } from "@/components/explore/use-map-list";
 import { useMapList } from "@/components/explore/use-map-list";
 import { useMapPadding } from "@/components/explore/use-map-padding";
 import { useExploreFilterPrefs } from "@/components/shell/use-explore-filter-prefs";
@@ -98,14 +101,14 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const radiusArea = useMemo(() => radius != null && radius > 0 && distanceOrigin
     ? { lat: distanceOrigin.lat, lng: distanceOrigin.lng, km: radius } : null,
     [radius, distanceOrigin]);
-  const { events, listLoading, listSettled, fitSeq, refetch, area, placed } = useMapFeed({
+  const { events, listLoading, listSettled, listFailed, matchingIds, fitSeq, refetch, area, placed } = useMapFeed({
     initialEvents,
     filters,
     radiusArea,
     bounds: camera.bounds,
     flyTo: camera.flyTo,
   });
-  const { handleBoundsChange, handleSearchChange, handleSearchSubmit } = useMapViewport({
+  const { handleBoundsChange, handleSearchChange, handleSearchSubmit, searchPending, searchError } = useMapViewport({
     filters,
     setFilters,
     radiusArea,
@@ -122,6 +125,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     if (radius != null && !distanceOrigin && originStatus === "idle") locateOrigin();
   }, [radius, distanceOrigin, originStatus, locateOrigin]);
   function setRadius(km: number | null) {
+    track("filter_apply", { filter_type: "radius", ...(km ? { radius_km: km } : {}) });
     storeRadius(km);
     if (km != null) {
       selectEvent(null);
@@ -237,6 +241,15 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     listSettled,
     listRef,
     mobileListRef,
+  });
+
+  useResultsAnalytics({
+    query: filters,
+    count: visibleRaces({ events: radiusEvents.filter(event => matchingIds.has(event.id)), box: camera.cameraBounds, withinRadius: Boolean(radiusArea), series: filters.series, countries: filters.country, q: filters.q, placedQuery: placed.query, selectedId: null }).length,
+    ready: listSettled && !listLoading, failed: listFailed,
+    scope: radiusArea ? "radius" : filters.series || filters.country.length || (filters.q && !placed.query) ? "global" : "viewport",
+    scopeKey: JSON.stringify(camera.cameraBounds), radius, searchPending, searchError,
+    searchMode: placed.query ? "place" : "race",
   });
 
   function handleUserLocation(pos: { lat: number; lng: number }) {

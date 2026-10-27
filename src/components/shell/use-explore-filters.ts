@@ -1,5 +1,7 @@
 "use client";
 
+import { track } from "@/lib/analytics";
+import { filterSnapshot } from "@/lib/analytics-product";
 import { useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
 import { thisWeekendRange, todayIso } from "@/lib/date-presets";
@@ -35,6 +37,7 @@ export function useExploreFilters() {
   }, [radius, placeStatus, locate]);
 
   function setRadius(km: number | null) {
+    track("filter_apply", { filter_type: "radius", ...(km ? { radius_km: km } : {}) });
     storeRadius(km);
     if (km != null && place.status !== "ready") place.locate();
   }
@@ -42,33 +45,38 @@ export function useExploreFilters() {
   /** The distance in force: a radius only means something once we know where from. */
   const near = radius != null && place.origin ? { origin: place.origin, km: radius } : null;
 
+  function apply(patch: Partial<typeof filters>, filterType: string) {
+    track("filter_apply", { filter_type: filterType, ...filterSnapshot({ ...filters, ...patch }, radius) });
+    return setFilters(patch);
+  }
   const actions = {
-    onCategory: (value: string) => void setFilters({ categories: toggleIn(filters.categories, value) }),
-    onDiscipline: (value: string) => void setFilters({ disciplines: toggleIn(filters.disciplines, value) }),
-    onLevel: (value: string) => void setFilters({ levels: toggleIn(filters.levels, value) }),
-    onClearDisciplines: () => void setFilters({ disciplines: [] }),
-    onClearLevels: () => void setFilters({ levels: [] }),
-    onClearCategories: () => void setFilters({ categories: [] }),
-    onSeries: (slug: string) => void setFilters({ series: filters.series === slug ? "" : slug }),
+    onCategory: (value: string) => void apply({ categories: toggleIn(filters.categories, value) }, "category"),
+    onDiscipline: (value: string) => void apply({ disciplines: toggleIn(filters.disciplines, value) }, "discipline"),
+    onLevel: (value: string) => void apply({ levels: toggleIn(filters.levels, value) }, "level"),
+    onClearDisciplines: () => void apply({ disciplines: [] }, "discipline"),
+    onClearLevels: () => void apply({ levels: [] }, "level"),
+    onClearCategories: () => void apply({ categories: [] }, "category"),
+    onSeries: (slug: string) => void apply({ series: filters.series === slug ? "" : slug }, "series"),
     onCountry: (code: string) => {
       const { country, dropSeries } = countryChange(filters, toggleIn(filters.country, code), seriesList);
-      void setFilters({ country, ...(dropSeries ? { series: "" } : {}) });
+      void apply({ country, ...(dropSeries ? { series: "" } : {}) }, "country");
     },
-    onClearCountries: () => void setFilters({ country: [] }),
-    onPreset: (dateFrom: string, dateTo: string) => void setFilters({ dateFrom, dateTo }),
+    onClearCountries: () => void apply({ country: [] }, "country"),
+    onPreset: (dateFrom: string, dateTo: string) => void apply({ dateFrom, dateTo }, "date"),
     onQ: (q: string) => {
       // A search is a find, not a filter: the date window widens to upcoming so a
       // race in October is not missing because the bar still said "this weekend".
       const widen = q.trim().length >= 2 && filters.q.trim().length < 2;
       void setFilters({ q, ...(widen ? { dateFrom: todayIso(), dateTo: "" } : {}) });
     },
-    onSearchSubmit: () => undefined,
+    onSearchSubmit: () => { if (filters.q.trim().length >= 2) track("search_submit", { location: "catalogue" }); },
   };
 
   function reset() {
+    track("filter_apply", { filter_type: "reset" });
     const w = thisWeekendRange();
     setResetKey((n) => n + 1);
-    setRadius(null);
+    storeRadius(null);
     void setFilters({
       q: null,
       categories: [],
