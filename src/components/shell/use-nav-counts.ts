@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { todayIso } from "@/lib/date-presets";
+import { isDiscoverPath, markDiscoverSeen, readDiscoverSeen, subscribeDiscoverSeen, unseenDiscoverCount, type DiscoverHit } from "@/lib/discover-seen";
 
 export type NavCounts = { action: number; alerts: number };
 
@@ -19,23 +20,31 @@ const NONE: NavCounts = { action: 0, alerts: 0 };
  * must not linger on the icons of somebody who is no longer signed in.
  */
 export function useNavCounts(refreshKey: string | null, authed: boolean | null): NavCounts {
-  const [counts, setCounts] = useState<NavCounts>(NONE);
+  const [snapshot, setSnapshot] = useState<{ userId: string | null; action: number; hits: DiscoverHit[] }>({ userId: null, action: 0, hits: [] });
+  const seenAt = useSyncExternalStore(
+    subscribeDiscoverSeen,
+    () => readDiscoverSeen(snapshot.userId),
+    () => null,
+  );
+  const visitingDiscover = isDiscoverPath(refreshKey);
 
   useEffect(() => {
     let alive = true;
+    if (authed !== true) return;
     void (async () => {
+      const visitStartedAt = new Date().toISOString();
       const supabase = createBrowserSupabase();
       const { data: auth } = await supabase.auth.getUser();
       if (!alive) return;
       if (!auth.user) {
-        setCounts(NONE);
+        setSnapshot({ userId: null, action: 0, hits: [] });
         return;
       }
       const today = todayIso();
       const since = new Date();
       since.setDate(since.getDate() - 14);
 
-      const [{ data: atts }, { data: alertRows }] = await Promise.all([
+      const [{ data: atts }, { data: alertRows, error: alertError }] = await Promise.all([
         supabase
           .from("event_attendance")
           .select("event_id, status, registered, paid, event:events(start_date)")
@@ -52,26 +61,34 @@ export function useNavCounts(refreshKey: string | null, authed: boolean | null):
 
       // The same set the inbox shows: one per race, and only races still ahead.
       // Counting raw deliveries said "11" over a list of six.
-      let alerts = 0;
+      const fresh: DiscoverHit[] = [];
+      let alertsLoaded = !alertError;
       if (alertRows && alertRows.length > 0) {
-        const { data: hits } = await supabase
+        const { data: hits, error: hitsError } = await supabase
           .from("race_alert_deliveries")
-          .select("event_id, event:events(start_date, end_date)")
+          .select("event_id, created_at, event:events(start_date, end_date)")
           .in("alert_id", alertRows.map((a) => a.id))
           .gte("created_at", since.toISOString());
-        const fresh = new Set<string>();
+        alertsLoaded = !hitsError;
         for (const hit of hits ?? []) {
           const ev = Array.isArray(hit.event) ? hit.event[0] : hit.event;
-          if (ev && (ev.end_date ?? ev.start_date) >= today) fresh.add(hit.event_id);
+          if (ev && (ev.end_date ?? ev.start_date) >= today) fresh.push({ eventId: hit.event_id, createdAt: hit.created_at });
         }
-        alerts = fresh.size;
       }
-      if (alive) setCounts({ action: unsettled.size, alerts });
+      if (alive) {
+        // A completed visit acknowledges what was available when it started.
+        // A delivery arriving during loading remains new on the next visit.
+        if (visitingDiscover && alertsLoaded) markDiscoverSeen(auth.user.id, visitStartedAt);
+        setSnapshot({ userId: auth.user.id, action: unsettled.size, hits: fresh });
+      }
     })();
     return () => {
       alive = false;
     };
-  }, [refreshKey, authed]);
+  }, [refreshKey, authed, visitingDiscover]);
 
-  return authed === true ? counts : NONE;
+  return authed === true ? {
+    action: snapshot.action,
+    alerts: visitingDiscover ? 0 : unseenDiscoverCount(snapshot.hits, seenAt),
+  } : NONE;
 }

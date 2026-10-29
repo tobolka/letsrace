@@ -26,8 +26,8 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { HubSkeleton } from "../hub-skeleton";
 
-/** Page query selects the rows; catalogue data is cached for an hour. */
-export const dynamic = "force-dynamic";
+/** Paginated variants share one weekly ISR window; rows come from the tagged hub cache. */
+export const revalidate = 604800;
 
 type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Promise<{ locale: string; code: string; discipline: string }> };
 
@@ -47,7 +47,7 @@ async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   return { locale, code, discipline: discipline as HubDiscipline, events };
 }
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: rawLocale, code: rawCode, discipline: rawDiscipline } = await params;
   const data = await load(rawLocale, rawCode, rawDiscipline);
   // notFound() here, not just in the page: crawlers get the head before
@@ -59,8 +59,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const copy = disciplineCopy(locale, discipline);
   const heading = `${fillCopy(copy.title, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const description = fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) });
-  const rawPage = String(paginateRaces(events, (await searchParams).page).page);
-  const path = raceListPagePath(hubPath(locale, code, discipline), rawPage);
+  // Canonical stays on page 1 — reading searchParams here would force dynamic.
+  const path = hubPath(locale, code, discipline);
   const url = absoluteUrl(`/${locale}/${path}`);
   const ogTitle = `${heading} · ${SITE_NAME}`;
 
@@ -68,7 +68,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     title: brandedTitle(heading),
     description,
     // Per language, not this language's path: `/en/zavody/cz/road` is not a page.
-    alternates: { canonical: url, languages: localeAlternates((l) => raceListPagePath(hubPath(l, code, discipline), rawPage)) },
+    alternates: { canonical: url, languages: localeAlternates((l) => hubPath(l, code, discipline)) },
     ...socialCard({
       title: heading,
       ogTitle,
@@ -91,17 +91,32 @@ export default async function DisciplineHubPage({ params, searchParams }: Props)
   if (!isListedCountry(rawCode.toUpperCase()) || !isHubDiscipline(rawDiscipline.toLowerCase())) notFound();
   return (
     <Suspense fallback={<HubSkeleton />}>
-      <DisciplineHub rawLocale={rawLocale} rawCode={rawCode} rawDiscipline={rawDiscipline} rawPage={(await searchParams).page} />
+      <DisciplineHub
+        rawLocale={rawLocale}
+        rawCode={rawCode}
+        rawDiscipline={rawDiscipline}
+        searchParams={searchParams}
+      />
     </Suspense>
   );
 }
 
-async function DisciplineHub({ rawLocale, rawCode, rawDiscipline, rawPage }: { rawLocale: string; rawCode: string; rawDiscipline: string; rawPage?: string | string[] }) {
+async function DisciplineHub({
+  rawLocale,
+  rawCode,
+  rawDiscipline,
+  searchParams,
+}: {
+  rawLocale: string;
+  rawCode: string;
+  rawDiscipline: string;
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
   const data = await load(rawLocale, rawCode, rawDiscipline);
   if (!data) return null;
 
   const { locale, code, discipline, events } = data;
-  const paginated = paginateRaces(events, rawPage);
+  const paginated = paginateRaces(events, (await searchParams).page);
   const t = messages[locale];
   const rc = raceCopy[locale];
   const name = countryDisplayName(code, locale);

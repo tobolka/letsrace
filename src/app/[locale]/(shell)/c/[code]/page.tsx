@@ -33,17 +33,18 @@ import {
 
 type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Promise<{ locale: string; code: string }> };
 
-/** Page query selects the rows; catalogue data is cached for an hour. */
-export const dynamic = "force-dynamic";
+/** Paginated variants share one weekly ISR window; rows come from the tagged hub cache. */
+export const revalidate = 604800;
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw, code: rawCode } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const code = rawCode.toUpperCase();
   // notFound() here, not just in the page: crawlers get the head before
   // `loading.tsx` streams, so this is where a real 404 status is still possible.
   if (!isListedCountry(code)) notFound();
-  const rawPage = (await searchParams).page;
+  // Canonical stays on page 1 so metadata never reads searchParams (that would
+  // force the whole hub dynamic and burn Hobby Origin Transfer).
   const where = inCountry(code, countryDisplayName(code, locale), locale);
   const copy = hubCopy[locale];
   // The visible title carries the query someone actually types — the country
@@ -51,13 +52,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const heading = `${fillCopy(copy.countryTitle, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const title = `${heading} · ${SITE_NAME}`;
   const description = fillCopy(copy.country, { in: where });
-  const url = absoluteUrl(raceListPagePath(`/${locale}/${hubPath(locale, code)}`, rawPage));
+  const url = absoluteUrl(`/${locale}/${hubPath(locale, code)}`);
   return {
     title: brandedTitle(heading),
     description,
     alternates: {
       canonical: url,
-      languages: localeAlternates((l) => raceListPagePath(hubPath(l, code), rawPage)),
+      languages: localeAlternates((l) => hubPath(l, code)),
     },
     ...socialCard({
       title: heading,
@@ -76,15 +77,24 @@ export default async function CountryHubPage({ params, searchParams }: Props) {
   if (!locales.includes(raw as Locale)) notFound();
   const code = rawCode.toUpperCase();
   if (!isListedCountry(code)) notFound();
-  // Checked before the skeleton streams, so an unknown country is a real 404.
+  // searchParams stay inside Suspense so the route can still ISR on the CDN.
   return (
     <Suspense fallback={<HubSkeleton />}>
-      <CountryHub locale={raw as Locale} code={code} rawPage={(await searchParams).page} />
+      <CountryHub locale={raw as Locale} code={code} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function CountryHub({ locale, code, rawPage }: { locale: Locale; code: string; rawPage?: string | string[] }) {
+async function CountryHub({
+  locale,
+  code,
+  searchParams,
+}: {
+  locale: Locale;
+  code: string;
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
+  const rawPage = (await searchParams).page;
   const t = messages[locale];
   const name = countryDisplayName(code, locale);
   const weekend = thisWeekendRange();

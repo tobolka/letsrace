@@ -11,6 +11,7 @@ import { profileNav } from "@/components/shell/nav-items";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerHandle, DrawerTitle } from "@/components/ui/drawer";
 import { locales, messagesFor, type Locale } from "@/lib/i18n/messages";
+import { rememberLocale } from "@/lib/i18n/locale-preference";
 import { localePath, translatePathname } from "@/lib/localized-paths";
 import { cn } from "@/lib/utils";
 
@@ -153,6 +154,7 @@ export function MoreSheet({
                     className="h-10 min-w-12 rounded-full"
                     aria-current={l === locale ? "true" : undefined}
                     onClick={() => {
+                      rememberLocale(l);
                       onOpenChange(false);
                       if (l === locale) return;
                       // The same page in the other language, query and all.

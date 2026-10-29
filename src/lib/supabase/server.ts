@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
+import { boundedDatabaseFetch, databaseDeadline } from "./request-budget";
 
 export type { Database };
 
@@ -13,6 +14,10 @@ export function createServerSupabase(): SupabaseClient<Database> {
   }
   return createClient<Database>(url, serviceKey || anonKey!, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: boundedDatabaseFetch },
+    // A collector resumes at the source level. Retrying writes here can duplicate
+    // inserts after an ambiguous network failure and outlive the source budget.
+    ...(databaseDeadline() == null ? {} : { db: { retry: false } }),
   });
 }
 

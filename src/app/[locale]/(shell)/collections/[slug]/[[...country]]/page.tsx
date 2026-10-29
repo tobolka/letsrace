@@ -18,7 +18,9 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 
-export const dynamic = "force-dynamic";
+/** Collection pages are public and slow-moving — hold on the CDN. */
+export const revalidate = 604800;
+
 type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Promise<{ locale: string; slug: string; country?: string[] }> };
 
 function resolve({ locale: raw, slug, country }: Awaited<Props["params"]>) {
@@ -31,18 +33,19 @@ function resolve({ locale: raw, slug, country }: Awaited<Props["params"]>) {
   return { locale, slug, countryCode, path: collectionPath(locale, slug, countryCode), title: fillCopy(text.title, { in: where }), description: fillCopy(text.description, { in: where }) };
 }
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = resolve(await params);
   if (!data) return { title: raceCopy[defaultLocale].browse, robots: { index: false, follow: false } };
   const { locale, slug, countryCode, path, title, description } = data;
   const { events } = await getRaceCollection(slug, countryCode);
-  const rawPage = String(paginateRaces(events, (await searchParams).page).page);
+  // Canonical stays on page 1 — reading searchParams here would force dynamic.
+  const url = absoluteUrl(`/${locale}/${path}`);
   return {
     title: brandedTitle(title),
     description,
-    alternates: { canonical: absoluteUrl(raceListPagePath(`/${locale}/${path}`, rawPage)), languages: localeAlternates((l) => raceListPagePath(collectionPath(l, slug, countryCode), rawPage)) },
+    alternates: { canonical: url, languages: localeAlternates((l) => collectionPath(l, slug, countryCode)) },
     robots: { index: events.length >= MIN_COLLECTION_RACES, follow: true },
-    ...socialCard({ title, description, url: absoluteUrl(raceListPagePath(`/${locale}/${path}`, rawPage)), localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
+    ...socialCard({ title, description, url, localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
   };
 }
 
@@ -60,6 +63,18 @@ function mapHref(locale: Locale, slug: CollectionSlug, window: CollectionWindow,
 export default async function CollectionPage({ params, searchParams }: Props) {
   const data = resolve(await params);
   if (!data) notFound();
+  return (
+    <CollectionBody data={data} searchParams={searchParams} />
+  );
+}
+
+async function CollectionBody({
+  data,
+  searchParams,
+}: {
+  data: NonNullable<ReturnType<typeof resolve>>;
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
   const { locale, slug, countryCode, path, title, description } = data;
   const [{ events, window }, summaries] = await Promise.all([getRaceCollection(slug, countryCode), listCollectionSummaries()]);
   const paginated = paginateRaces(events, (await searchParams).page);

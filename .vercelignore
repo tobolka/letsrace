@@ -1,7 +1,13 @@
-.env
-.env.*
-.codex
-.codex/**
-.git
-.next
-node_modules
+# Local collection data and credentials must never enter deployment uploads.
+tmp/
+reports/
+node_modules/
+.next/
+.git/
+.env*
+.agents/
+.claude/
+.codex/
+coverage/
+*.log
+.DS_Store

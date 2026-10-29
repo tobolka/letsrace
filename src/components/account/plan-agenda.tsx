@@ -25,8 +25,8 @@ import { localePath } from "@/lib/localized-paths";
 /** How much further "show more days" reaches each time it is pressed. */
 const WEEKS_AT_A_TIME = 8;
 
-/** Sticks under the app bar; the row it sits in cannot stick for it. */
-const HEAD = "sticky top-0 z-10 border-b bg-muted py-2 text-xs font-medium md:top-14";
+/** The plan already scrolls below its app bar: no second header offset. */
+const HEAD = "sticky top-0 z-10 border-b bg-muted py-2 text-xs font-medium";
 
 const CELL = "border-b px-2 py-1.5";
 
@@ -132,9 +132,9 @@ export function PlanAgenda({
       {/*
         `overflow-x: auto` makes this a scroll container in both axes, and a
         sticky heading inside one sticks to the container — which never scrolls
-        — so it sat 56px down the table, on top of the second row. Wide enough
+        — so offsets here displaced the headings over the body rows. Wide enough
         to need sideways scrolling only on a phone; above that the page is the
-        scrollport and the heading sticks under the bar as intended.
+        scrollport and the heading sticks to the top of that scrollport.
       */}
       <div className="overflow-x-auto md:overflow-x-visible">
         {/* `border-separate` because a sticky heading does not stick inside a

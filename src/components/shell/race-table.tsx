@@ -1,6 +1,8 @@
 "use client";
 
 import { memo } from "react";
+import { useSavedRaceIds } from "@/hooks/use-saved-races";
+import { PlannedRaceMarker, PLANNED_RACE_SURFACE } from "@/components/race/planned-race-marker";
 import { format, parseISO } from "date-fns";
 import { levelFromClassLabel, UnconfirmedAges } from "@/components/explore/event-rows";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -130,6 +132,7 @@ export function RaceTable({
   sort: ListSort;
   onSort: (column: ListColumn) => void;
 }) {
+  const plannedIds = useSavedRaceIds();
   return (
     // A fixed layout ignores a column's min-width, so the free column — the
     // race's name — shrank to nothing on a narrow window and its heading
@@ -170,6 +173,7 @@ export function RaceTable({
             locale={locale}
             origin={origin}
             active={event.id === selectedId}
+            planned={plannedIds.has(event.id)}
             onSelect={onSelect}
           />
         ))}
@@ -184,6 +188,7 @@ const Row = memo(function Row({
   locale,
   origin,
   active,
+  planned,
   onSelect,
 }: {
   event: EventListItem;
@@ -191,11 +196,13 @@ const Row = memo(function Row({
   locale: string;
   origin: { lat: number; lng: number } | null;
   active: boolean;
+  planned: boolean;
   onSelect: (id: string) => void;
 }) {
   return (
     <TableRow
       data-event-id={event.id}
+      data-planned={planned || undefined}
       data-state={active ? "selected" : undefined}
       tabIndex={0}
       aria-selected={active}
@@ -206,7 +213,11 @@ const Row = memo(function Row({
           onSelect(event.id);
         }
       }}
-      className="cursor-pointer border-border/60 outline-none focus-visible:bg-muted"
+      className={cn(
+        "cursor-pointer border-border/60 outline-none focus-visible:bg-muted",
+        planned && PLANNED_RACE_SURFACE,
+        planned && "focus-visible:bg-blue-100 data-[state=selected]:bg-blue-100 dark:focus-visible:bg-blue-950/60 dark:data-[state=selected]:bg-blue-950/60",
+      )}
     >
       {columns.map((col, i) => {
         const text = cellText(col, event, locale, origin);
@@ -231,6 +242,7 @@ const Row = memo(function Row({
                 style={{ background: disciplineColor(event.disciplines) }}
               />
             ) : null}
+            {col === "name" && planned ? <span className="mr-1.5"><PlannedRaceMarker locale={locale} /></span> : null}
             {text}
             {col === "name" && event.ageMatch === "possible" ? (
               <UnconfirmedAges locale={locale} className="ml-2 align-middle" />

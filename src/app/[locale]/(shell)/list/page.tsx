@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ListView } from "@/components/shell/list-view";
-import { locales, messagesFor, type Locale } from "@/lib/i18n/messages";
-import { SITE_NAME } from "@/lib/seo";
+import { CataloguePreview } from "@/components/seo/catalogue-preview";
+import { locales, type Locale } from "@/lib/i18n/messages";
+import { absoluteUrl, localeAlternates, SITE_NAME } from "@/lib/seo";
+import { localePath } from "@/lib/localized-paths";
+import { catalogueViewSeo } from "@/lib/catalogue-view-seo";
 
 /**
- * Rendered per request, as it always was: the view reads its filters from the
- * address (nuqs), which a prerendered page cannot have. Every page used to be
- * dynamic because the root layout read a header; this one still needs to be.
+ * Static shell: filters live in the address (nuqs) and the list is fetched in
+ * the browser from the shared catalogue feed. Holding the shell on the CDN
+ * keeps crawlers off Fluid CPU / Origin Transfer.
  */
-export const dynamic = "force-dynamic";
+export const revalidate = 86400;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -22,11 +26,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   // The locale layout sets a plain title, which drops the root template.
-  return { title: { absolute: `${messagesFor(locale).navList} · ${SITE_NAME}` } };
+  const l = locales.includes(locale as Locale) ? locale as Locale : "en";
+  return {
+    title: { absolute: `${catalogueViewSeo[l].list.title} · ${SITE_NAME}` },
+    description: catalogueViewSeo[l].list.description,
+    alternates: { canonical: absoluteUrl(localePath(l, "list")), languages: localeAlternates("list") },
+  };
 }
 
 export default async function ListPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!locales.includes(locale as Locale)) notFound();
-  return <ListView locale={locale} />;
+  return (
+    <Suspense fallback={<CataloguePreview locale={locale as Locale} view="list" />}>
+      <ListView locale={locale} />
+    </Suspense>
+  );
 }

@@ -14,6 +14,17 @@ export type Database = {
   }
   public: {
     Tables: {
+      pipeline_jobs: {
+        Row: {key:string;run_id:string;started_at:string;finished_at:string|null;status:string;summary:Json};
+        Insert: {key:string;run_id:string;started_at?:string;finished_at?:string|null;status?:string;summary?:Json};
+        Update: {key?:string;run_id?:string;started_at?:string;finished_at?:string|null;status?:string;summary?:Json}; Relationships: [];
+      };
+      pipeline_candidates: {
+        Row: { id: string; candidate_key: string; evidence_hash: string; source_url: string; watched_url_id: string | null; country: string | null; season: number; payload: Json; evidence: Json; reason: string; status: string; decision: Json | null; event_id: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; candidate_key: string; evidence_hash: string; source_url: string; watched_url_id?: string | null; country?: string | null; season: number; payload: Json; evidence: Json; reason: string; status?: string; decision?: Json | null; event_id?: string | null; created_at?: string; updated_at?: string }
+        Update: { status?: string; decision?: Json | null; event_id?: string | null; updated_at?: string; watched_url_id?: string | null }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           body: string | null
@@ -1425,6 +1436,9 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_health: {Args:Record<string,never>;Returns:Json};
+      pipeline_begin: {Args:{p_key:string;p_run:string};Returns:boolean};
+      app_carry_previous_edition: { Args: { target_id: string; previous_id: string; expected: Json; patch: Json }; Returns: boolean }
       _postgis_deprecate: {
         Args: { newname: string; oldname: string; version: string }
         Returns: undefined

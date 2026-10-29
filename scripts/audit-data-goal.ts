@@ -1,3 +1,4 @@
+import { catalogueWindow } from "../src/lib/catalog/overview-quality";
 /** Read-only: completeness, missing fields and shared series documents. */
 import { readFileSync, writeFileSync } from "node:fs";
 for (const line of readFileSync(".env.local", "utf8").split("\n")) {
@@ -16,7 +17,7 @@ async function main() {
     const { data, error } = await s.from("events")
       .select("id,name,start_date,age_categories,age_confidence,disciplines,website_url,regulations_url,series_id,location:locations(lat,lng,country_code),series:series!events_series_id_fkey(name,age_categories_confirmed_at)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", [...ACTIVE_EVENT_STATUSES])
-      .gte("start_date", today).lte("start_date", new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10))
+      .gte("start_date", today).lte("start_date", catalogueWindow(today).until)
       .order("id").range(from, from + 999);
     if (error) throw new Error(error.message);
     events.push(...((data ?? []) as unknown as E[]));

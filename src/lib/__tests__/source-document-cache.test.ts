@@ -1,0 +1,36 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import { mkdtemp, rm, readFile, writeFile, readdir } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const network = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/http/safe-url', () => ({ fetchPublic: network, assertPublicHttpUrl: vi.fn(), UnsafeUrlError: class extends Error {} }));
+import { fetchPage } from '@/lib/watcher/http';
+const directories: string[] = [];
+afterEach(async () => { vi.unstubAllEnvs(); network.mockReset(); await Promise.all(directories.splice(0).map(d => rm(d, { recursive: true, force: true }))); });
+it('reuses only intact successful documents and bypasses cache for reviewed publication', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'race-document-')); directories.push(dir);
+  vi.stubEnv('SOURCE_DOCUMENT_CACHE_DIR', dir);
+  network.mockImplementation(async () => new Response('<p>Race 2027</p>', { headers: { 'content-type': 'text/html' } }));
+  const url = 'https://race.test/calendar';
+  await fetchPage(url, { skipGate: true }); await fetchPage(url, { skipGate: true });
+  expect(network).toHaveBeenCalledTimes(1);
+  await fetchPage(url, { skipGate: true, fresh: true });
+  expect(network).toHaveBeenCalledTimes(2);
+  const path = join(dir, (await readdir(dir))[0]!);
+  const saved = JSON.parse(await readFile(path, 'utf8')); saved.result.html = 'tampered';
+  await writeFile(path, JSON.stringify(saved));
+  expect((await fetchPage(url, { skipGate: true })).html).toBe('<p>Race 2027</p>');
+  expect(network).toHaveBeenCalledTimes(3);
+});
+it('does not cache failures or conditional responses', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'race-document-')); directories.push(dir);
+  vi.stubEnv('SOURCE_DOCUMENT_CACHE_DIR', dir);
+  network.mockImplementation(async () => new Response('Blocked', { status: 403 }));
+  await fetchPage('https://race.test/blocked', { skipGate: true });
+  await fetchPage('https://race.test/blocked', { skipGate: true });
+  expect(network).toHaveBeenCalledTimes(2);
+  expect(await readdir(dir)).toEqual([]);
+  network.mockImplementation(async () => new Response(null, { status: 304 }));
+  expect((await fetchPage('https://race.test/conditional', { skipGate: true, etag: 'one', contentHash: 'old' })).unchanged).toBe(true);
+  expect(await readdir(dir)).toEqual([]);
+});

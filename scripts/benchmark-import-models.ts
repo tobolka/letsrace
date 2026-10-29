@@ -8,8 +8,8 @@ import { verifySeriesDocument, roundWithinSeriesSeason } from "../src/lib/catalo
 config({ path: ".env.local", quiet: true });
 process.env.LLM_BUDGET_USD ??= "0.30";
 process.env.LLM_LEDGER_PATH ??= resolve("tmp/llm-budget.json");
-process.env.LLM_DAILY_BUDGET_USD ??= "2.50";
-process.env.LLM_MONTHLY_BUDGET_USD ??= "25";
+process.env.LLM_DAILY_BUDGET_USD ??= "0.50";
+process.env.LLM_MONTHLY_BUDGET_USD ??= "5.00";
 const cases = [
   { file: "99a62a69-0605-4a05-8495-652490fda9ff", name: "JANEV Cup", url: "rozpis-janev", date: "2026-10-31" },
   { file: "03fc8da7-c963-4df2-9dc3-3a10bc2252bb", name: "ProTour Cyclocross Cup", url: "protour-cyclocross-cup-2026-regulamin", date: "2026-11-08" },

@@ -9,12 +9,14 @@ import { listEvents } from "@/lib/events";
  * The map, list and calendar share this. One URL, held on the CDN, instead of
  * a new function response for every pan and chip. The window is "from today":
  * a date in the past is a different query and is not served from here.
- * Dropped by `refreshPublicCatalogue` when a watch or an admin write lands.
+ * Dropped by `refreshPublicCatalogue` when an admin write lands.
  */
 const upcomingCatalogue = unstable_cache(
   () => listEvents({}),
   ["public-catalogue-feed-v1"],
-  { revalidate: 60 * 60 * 12, tags: [PUBLIC_CATALOGUE_TAG] },
+  // 24h data cache + CDN below: Free-tier Supabase egress/log ingestion cannot
+  // afford a full catalogue pull on every short TTL miss.
+  { revalidate: 60 * 60 * 24, tags: [PUBLIC_CATALOGUE_TAG] },
 );
 
 export async function GET(req: NextRequest) {
@@ -24,7 +26,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(events, {
       headers: {
         "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
-        "Vercel-CDN-Cache-Control": "public, s-maxage=43200, stale-while-revalidate=86400",
+        "CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
+        "Vercel-CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
       },
     });
   }
@@ -54,7 +57,9 @@ export async function GET(req: NextRequest) {
   });
   return NextResponse.json(events, {
     headers: {
-      "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+      "Cache-Control": "public, max-age=60, stale-while-revalidate=600",
+      "CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
+      "Vercel-CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
     },
   });
 }

@@ -1444,6 +1444,11 @@ function gazetteerIn(query: string, countryCode?: string | null): GeocodeResult 
 }
 
 function gazetteerLookup(query: string): GeocodeResult | null {
+  // Diacritics distinguish this Polish town from Czech Sobotka. Do not fold
+  // that distinction away before choosing the country (OSM lookup, 2026-10-29).
+  if (query.normalize("NFC").toLocaleLowerCase().trim() === "sobótka") {
+    return { lat: 50.8992535, lng: 16.7444655, countryCode: "PL", displayName: query };
+  }
   const key = fold(query);
   if (GAZETTEER[key]) {
     const g = GAZETTEER[key];
@@ -1658,8 +1663,8 @@ export function geocodeFromGazetteer(
   // Prefer cleaned query, then fall back to scanning the raw place string
   if (!query) return null;
   const hit =
-    (query ? gazetteerLookup(query) : null) ||
-    gazetteerLookup(raw.replace(/,\s*[A-Z]{2}\s*$/i, "").trim());
+    (query ? gazetteerIn(query, countryCode) : null) ||
+    gazetteerIn(raw.replace(/,\s*[A-Z]{2}\s*$/i, "").trim(), countryCode);
   if (!hit) return null;
   return { ...hit, countryCode: hit.countryCode || countryCode };
 }
@@ -1675,8 +1680,8 @@ export async function geocodePlace(
   if (!query) return null;
 
   const local =
-    gazetteerLookup(query) ||
-    gazetteerLookup(raw.replace(/,\s*[A-Z]{2}\s*$/i, "").trim());
+    gazetteerIn(query, countryCode) ||
+    gazetteerIn(raw.replace(/,\s*[A-Z]{2}\s*$/i, "").trim(), countryCode);
   if (local) return { ...local, countryCode: local.countryCode || countryCode };
 
   return nominatimSearch(query, countryCode);

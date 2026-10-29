@@ -18,8 +18,8 @@ import { todayIso } from "@/lib/date-presets";
 import { Button } from "@/components/ui/button";
 import { SeriesSkeleton } from "./series-skeleton";
 
-/** Same as race details: on demand, not held — a watch must show up at once. */
-export const revalidate = 0;
+/** Same as race details: CDN for a week; admin edits refresh the tag. */
+export const revalidate = 604800;
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 

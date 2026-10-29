@@ -1,3 +1,4 @@
+import { overviewIssues, isCountryOnlyPlace } from "@/lib/catalog/overview-quality";
 import { isWholeCalendarHost } from "@/lib/watcher/extractors/adapters";
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
@@ -25,8 +26,10 @@ import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
-import { protectOfficialFields } from "@/lib/watcher/update-policy";
+import { protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
+import { withDatabaseDeadline } from "@/lib/supabase/request-budget";
+import { countryFromVenue } from "@/lib/geo/country-label";
 import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 import type { Insert, Update } from "@/lib/supabase/tables";
@@ -44,6 +47,7 @@ export type WatchOutcome = {
   eventsUpdated?: number;
   eventsRejected?: number;
   eventsFailed?: number;
+  eventsDeferred?: number;
   extractionComplete?: boolean;
   issues?: string[];
   usage?: import("@/lib/llm/anthropic").LlmUsage;
@@ -403,10 +407,17 @@ export async function watchOne(row: {
     const upsertResults = await mapPool(toUpsert, 4, async ev => {
       try {
         if (Date.now() > deadline - 5000) throw new Error("write_time_budget_exhausted");
-        return await upsertParsedEvent(ev, row.id, row.kind, row.url);
+        return await withDatabaseDeadline(deadline - 5000, () => upsertParsedEvent(ev, row.id, row.kind, row.url));
       }
       catch (error) {
-        writeFailures.push({ externalId: ev.externalId, error: error instanceof Error ? error.message : String(error) });
+        let message = error instanceof Error ? error.message : String(error);
+        if (process.env.PIPELINE_REVIEW_QUEUE === "1" && /identity_review_required|pipeline_data_review_required/.test(message)) {
+          try {
+            const { saveCandidate } = await import("@/lib/discovery/review");
+            await saveCandidate(supabase, ev, { sourceUrl: row.url, documentHash: fetched.hash, watchedUrlId: row.id, reason: message });
+          } catch (queueError) { message += `; review_queue_failed:${queueError instanceof Error ? queueError.message : String(queueError)}`; }
+        }
+        writeFailures.push({ externalId: ev.externalId, error: message });
         return null;
       }
     });
@@ -1181,9 +1192,11 @@ export async function watchOne(row: {
     const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
     const incomplete = extracted.complete === false || writeBacklog || writeFailures.length > 0;
     const issues = [...(extracted.issues ?? []), ...(writeBacklog ? ["write_backlog"] : []), ...writeFailures.map(f => `write_failed:${f.externalId}:${f.error}`)];
-    const budgetDeferred = incomplete && !writeFailures.length && issues.some(isBudgetDeferral);
-    const identityReview = writeFailures.some(f => f.error.includes("identity_review_required"));
-    const unsupportedDocument = issues.some(i => /dynamic_render_unavailable|source_document_too_large/.test(i));
+    const deferredWrites = writeFailures.filter(f => isBudgetDeferral(f.error));
+    const failedWrites = writeFailures.filter(f => !isBudgetDeferral(f.error));
+    const budgetDeferred = incomplete && !failedWrites.length && issues.some(isBudgetDeferral);
+    const identityReview = writeFailures.some(f => /identity_review_required|pipeline_data_review_required/.test(f.error));
+    const unsupportedDocument = issues.some(i => /dynamic_render_unavailable|source_document_too_large|unsupported_or_empty_source/.test(i));
     const needsReview = incomplete ||
       (!offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4));
 
@@ -1252,8 +1265,8 @@ export async function watchOne(row: {
     const metrics = { watchedUrlId: row.id,
       extracted: extracted.events.length, attempted: toUpsert.length, upserted,
       created: upsertResults.filter(r => r?.created).length,
-      updated: upsertResults.filter(r => r && !r.created).length,
-      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: writeFailures.length, complete: !incomplete, deferred: budgetDeferred,
+      updated: upsertResults.filter(r => r && !r.created && r.changed).length,
+      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: failedWrites.length, deferredWrites: deferredWrites.length, complete: !incomplete, deferred: budgetDeferred,
       issues, usage: extracted.usage ?? null, extraction: extracted.diagnostics ?? null };
     console.info("watcher_run_metrics", JSON.stringify(metrics));
     await finishRun(runInsert.data?.id, {
@@ -1274,9 +1287,10 @@ export async function watchOne(row: {
       eventsUpserted: upserted,
       eventsExtracted: extracted.events.length,
       eventsCreated: upsertResults.filter(r => r?.created).length,
-      eventsUpdated: upsertResults.filter(r => r && !r.created).length,
+      eventsUpdated: upsertResults.filter(r => r && !r.created && r.changed).length,
       eventsRejected: upsertResults.filter(r => !r).length - writeFailures.length,
-      eventsFailed: writeFailures.length,
+      eventsFailed: failedWrites.length,
+      eventsDeferred: deferredWrites.length,
       extractionComplete: !incomplete,
       issues,
       usage: extracted.usage,
@@ -1295,7 +1309,7 @@ export async function watchOne(row: {
         last_error: message,
         last_extract_status: "error",
         last_fetched_at: new Date().toISOString(),
-        next_poll_at: errorPollAt(priorFail).toISOString(),
+        next_poll_at: /source_document_too_large|pdf_has_no_text/.test(message) ? reviewPollAt().toISOString() : errorPollAt(priorFail).toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", row.id);
@@ -1588,18 +1602,21 @@ async function upsertParsedEvent(
   watchedUrlId: string,
   watchedKind?: string,
   watchedUrl?: string,
+  review?: { expectedEventId: string | null },
 ) {
   const { isIngestibleDate, inferClassification, audienceFromAgeCategories } = await import(
     "@/lib/taxonomy"
   );
   if (!isIngestibleDate(ev.startDate)) return null;
+  const basicIssues = overviewIssues({ name: ev.name, start_date: ev.startDate, end_date: ev.endDate, status: ev.status }, new Date().toISOString().slice(0, 10));
+  if (basicIssues.length) throw new Error(`pipeline_data_review_required:${basicIssues.join(",")}`);
 
   // A bracketed IOC code in the title names the *venue's* country; a calendar's
   // own hint often names the organiser's. Prefer the title — that mismatch is
   // how a Czech downhill round ended up pinned in Thuringia. Do this before the
   // classifier runs, so the country also disambiguates SP / národný vs světový.
   const { countryCodeFromName } = await import("@/lib/geo/europe");
-  const titleCountry = countryCodeFromName(ev.name);
+  const titleCountry = countryCodeFromName(ev.placeText) ?? countryFromVenue(ev.placeText) ?? countryCodeFromName(ev.name);
   if (titleCountry && titleCountry !== ev.countryHint) {
     ev = { ...ev, countryHint: titleCountry };
   }
@@ -1641,7 +1658,8 @@ async function upsertParsedEvent(
   const disciplines = classified.disciplines.length
     ? classified.disciplines
     : ev.discipline ?? [];
-  const audience = classified.ageCategories.length
+  const overviewOnly = Boolean(review) || process.env.CATALOG_OVERVIEW_ONLY === "1";
+  const audience = !overviewOnly && classified.ageCategories.length
     ? classified.audience
     : ev.audience ?? "mixed";
 
@@ -1656,9 +1674,10 @@ async function upsertParsedEvent(
       : null) ||
     (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
   const incomingResults = publicRaceUrl(ev.resultsUrl) || ev.resultsUrl?.trim() || null;
-  const sharedAiCalendar = ev.evidence?.method === "llm_calendar" && ev.sourceUrl === ev.evidence.sourceUrl;
+  const { isSharedCalendarEvidence } = await import("@/lib/watcher/source-identity");
+  const sharedCalendar = isSharedCalendarEvidence(ev);
   const incomingUrls = [incomingWebsite, incomingRegistration, ev.sourceUrl].filter(
-    u => Boolean(u) && !(sharedAiCalendar && u === ev.sourceUrl),
+    u => Boolean(u) && !(sharedCalendar && u === ev.sourceUrl),
   );
 
   const incomingDedup = {
@@ -1728,7 +1747,7 @@ async function upsertParsedEvent(
   const { sourceEditionId, calendarRowCandidates } = await import("@/lib/watcher/source-identity");
   let ambiguousIdentity = false;
   const pickIncomingDuplicate: typeof pickBestDuplicate = (incoming, candidates) => {
-    const eligible = calendarRowCandidates(ev.startDate, sharedAiCalendar, candidates);
+    const eligible = calendarRowCandidates(ev.startDate, sharedCalendar, candidates);
     const best = pickBestDuplicate(incoming, eligible);
     if (!best && eligible.some(c => isLikelyDuplicate(incoming, c.event))) ambiguousIdentity = true;
     return best;
@@ -1747,7 +1766,7 @@ async function upsertParsedEvent(
     sourceEvent ? { incoming: incomingDedup, stored: asCandidate(sourceEvent, [ev.sourceUrl]).event } : undefined,
   );
   // Matched by this very source's own record of the race, not by resemblance.
-  if (sharedAiCalendar && sourceEvent?.start_date !== ev.startDate) existingId = undefined;
+  if (sharedCalendar && sourceEvent?.start_date !== ev.startDate) existingId = undefined;
   const matchedBySource = existingId != null;
   const fpCols =
     "id, name, start_date, end_date, disciplines, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";
@@ -1921,6 +1940,11 @@ async function upsertParsedEvent(
     : { data: byFp };
   if (existingId && !existingFull) throw new Error(`Matched race could not be read: ${existingId}`);
 
+  const reviewedStored = existingFull as { visibility?: string; merged_into_id?: string | null } | null;
+  if (review && ((existingId ?? null) !== review.expectedEventId || existingId && (reviewedStored?.visibility !== "public" || reviewedStored?.merged_into_id))) {
+    throw new Error("identity_review_required: catalogue changed since the reviewed identity");
+  }
+
   const locked =
     (existingFull as { overrides?: { locked_fields?: string[] } | { locked_fields?: string[] }[] } | null)
       ?.overrides;
@@ -2013,7 +2037,7 @@ async function upsertParsedEvent(
 
     if (reused?.id) {
       locationId = reused.id;
-      if (reused.lat != null && reused.lng != null) {
+      if (reused.lat != null && reused.lng != null && !isCountryOnlyPlace(ev.placeText)) {
         lat = reused.lat;
         lng = reused.lng;
       }
@@ -2038,7 +2062,7 @@ async function upsertParsedEvent(
         .from("locations")
         .insert({
           name: ev.placeText,
-          municipality: geocodeQuery,
+          municipality: isCountryOnlyPlace(ev.placeText) ? null : geocodeQuery,
           country_code: country,
           lat,
           lng,
@@ -2145,6 +2169,9 @@ async function upsertParsedEvent(
     mergedName = preferEventName(existingRow.name || mergedName, mergedName, ev.placeText)
       .replace(/\s+/g, " ")
       .trim();
+    // Length is not authority: a legacy scraped teaser naming the 2025 edition
+    // must not beat the current source's clean 2026 name for this same identity.
+    if (overviewIssues({ name: mergedName, start_date: mergedStart, end_date: mergedEnd }, new Date().toISOString().slice(0, 10)).includes("name_year_conflict")) mergedName = ev.name.replace(/\s+/g, " ").trim();
     mergedLevel = preferLevel(
       {
         level: existingRow.level,
@@ -2207,7 +2234,7 @@ async function upsertParsedEvent(
   // stated "U11" does not grow "amateur, masters" because it is gravel.
   const existingExplicit =
     existingRow?.age_confidence === "explicit" && (existingRow.age_categories ?? []).length > 0;
-  const mergedAgeCategories = mergeStatedAges(existingRow?.age_categories, existingRow?.age_confidence, statedAges, classified.ageCategories);
+  const mergedAgeCategories = mergeStatedAges(existingRow?.age_categories, existingRow?.age_confidence, statedAges, overviewOnly ? [] : classified.ageCategories);
   const ageConfidence = statedAges?.length || existingExplicit
     ? "explicit"
     : mergedAgeCategories.length
@@ -2238,7 +2265,7 @@ async function upsertParsedEvent(
     event_type:
       ev.eventType ??
       ((existingRow as { event_type?: string | null } | null)?.event_type === "ride" ? "ride" : classified.eventType),
-    competition_type: classified.competitionType,
+    competition_type: overviewOnly && classified.competitionType === "community" ? "other" : classified.competitionType,
     season: classified.season || mergedStart.slice(0, 4),
     timezone: timezoneForCountry(ev.countryHint),
     fingerprint: fingerprint({
@@ -2253,7 +2280,7 @@ async function upsertParsedEvent(
     ),
     source_kind: "scraped",
     level: mergedLevel.level,
-    class_label: mergedLevel.classLabel ?? null,
+    class_label: overviewOnly && mergedLevel.classLabel === "Local" ? null : mergedLevel.classLabel ?? null,
     uci_class: mergedLevel.uciClass ?? null,
     last_seen_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -2326,14 +2353,14 @@ async function upsertParsedEvent(
     // the race page's start town was fetched again an hour later, again and
     // again, with a new location row each time.
     let keepCurrentPlace = false;
-    if (existingId && isGarbagePlace(ev.placeText)) {
+    if (existingId && (isGarbagePlace(ev.placeText) || isCountryOnlyPlace(ev.placeText))) {
       const { data: cur } = await supabase
         .from("events")
         .select("location:locations(municipality, lat)")
         .eq("id", existingId)
         .maybeSingle();
       const loc = (cur as { location?: { municipality?: string | null; lat?: number | null } | null } | null)?.location;
-      keepCurrentPlace = Boolean(loc && loc.lat != null && !isGarbagePlace(loc.municipality));
+      keepCurrentPlace = Boolean(loc?.municipality && !isGarbagePlace(loc.municipality) && !isCountryOnlyPlace(loc.municipality));
     }
     if (!keepCurrentPlace) payload.location_id = locationId;
   }
@@ -2369,7 +2396,10 @@ async function upsertParsedEvent(
     }
   }
 
-  const protectedFields = protectOfficialFields(watchedKind, existingFull as unknown as Record<string, unknown> | null, payload as unknown as Record<string, unknown>);
+  const protectedFields = [
+    ...protectSpecificFacts(existingFull as unknown as Record<string, unknown> | null, payload as unknown as Record<string, unknown>),
+    ...protectOfficialFields(watchedKind, existingFull as unknown as Record<string, unknown> | null, payload as unknown as Record<string, unknown>),
+  ];
   if (protectedFields.length) console.info("watcher_source_conflict", JSON.stringify({ eventId: existingId, source: watchedUrl, protectedFields }));
 
   // The locked names come from the database as text, not as column names.
@@ -2380,8 +2410,23 @@ async function upsertParsedEvent(
   if (lockedFields.includes("name")) Reflect.deleteProperty(payload, "name_normalized");
   if (lockedFields.includes("start_date")) Reflect.deleteProperty(payload, "season");
 
+  // Validate the merged, protected state too: valid incoming fields used to
+  // preserve an old "completed" flag while moving the race into next season.
+  const effective = { name: payload.name ?? existingRow?.name ?? ev.name,
+    start_date: payload.start_date ?? existingRow?.start_date ?? ev.startDate,
+    end_date: payload.end_date ?? existingRow?.end_date,
+    status: payload.status ?? existingRow?.status };
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Prague" });
+  if (effective.status === "completed" && effective.start_date > today && !lockedFields.includes("status")) {
+    payload.status = "scheduled";
+    effective.status = "scheduled";
+  }
+  const mergedIssues = overviewIssues(effective, today);
+  if (mergedIssues.length) throw new Error(`pipeline_data_review_required:${mergedIssues.join(",")}`);
+
   let eventId = existingId;
   let created = false;
+  let changed = false;
   if (eventId) {
     const { updateEventPreservingKey } = await import("@/lib/watcher/write-event");
     const { retainedKey } = await updateEventPreservingKey(supabase, eventId, payload);
@@ -2442,6 +2487,7 @@ async function upsertParsedEvent(
     const changes = Object.entries(payload).filter(([field, value]) =>
       !["last_seen_at", "updated_at", "fingerprint", "name_normalized"].includes(field) &&
       Object.hasOwn(previous, field) && JSON.stringify(previous[field] ?? null) !== JSON.stringify(value ?? null));
+    changed = changes.length > 0;
     await recordFacts(supabase, eventId, changes.map(([field, value]) => ({ field, value, previous: previous[field],
       sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote ?? null })),
       { method: "watcher_update_v2", version: "pipeline-v2", model: ev.evidence?.model });
@@ -2531,7 +2577,37 @@ async function upsertParsedEvent(
     }
   }
 
-  return { id: eventId, created };
+  return { id: eventId, created, changed };
+}
+
+/** Explicitly reviewed assertion; uses all normal identity, lock and evidence protections. */
+export async function ingestReviewedCandidate(event: ParsedEvent, review: {
+  sourceUrl: string; authority: "official" | "national_federation" | "series";
+  expectedEventId: string | null; watchedUrlId: string | null;
+}) {
+  const db = createServerSupabase();
+  const { canonicalExploreUrl } = await import("./explore");
+  let source: { id: string; url: string; status: string; added_by: string | null } | undefined;
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db.from("watched_urls").select("id,url,status,added_by").order("id").range(from, from + 999);
+    if (error) throw error;
+    const matches = data.filter(r => r.id === review.watchedUrlId || canonicalExploreUrl(r.url) === canonicalExploreUrl(review.sourceUrl));
+    if (matches.some(r => r.status !== "active" && r.added_by !== "pipeline_review")) throw new Error("Source is paused/dead; explicit source review required");
+    source ??= matches[0];
+    if (data.length < 1000) break;
+  }
+  if (!source) {
+    const { error } = await db.from("watched_urls").upsert({ url: review.sourceUrl, kind: review.authority === "national_federation" ? "federation" : review.authority === "series" ? "series" : "race",
+      status: "paused", added_by: "pipeline_review", notes: "Evidence-only source. Only individually reviewed assertions may be published; monitoring is not activated." }, { onConflict: "url", ignoreDuplicates: true });
+    if (error) throw error;
+    const { data, error: readError } = await db.from("watched_urls").select("id,url,status,added_by").eq("url", review.sourceUrl).single();
+    if (readError) throw readError;
+    if (data.status !== "active" && data.added_by !== "pipeline_review") throw new Error("Source changed concurrently");
+    source = data;
+  }
+  const result = await upsertParsedEvent(event, source.id, review.authority === "national_federation" ? "federation" : review.authority === "series" ? "series" : "race", source.url, review);
+  if (!result) throw new Error("Reviewed assertion was rejected by ingestion policy");
+  return result;
 }
 
 export async function previewUrl(url: string) {

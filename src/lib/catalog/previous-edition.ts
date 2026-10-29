@@ -1,5 +1,6 @@
+import { lockedFieldsOf, type OverridesEmbed } from "./overrides";
+import { differentInstalment } from "./merge-duplicates";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import type { Update } from "@/lib/supabase/tables";
 
@@ -40,6 +41,8 @@ type Row = {
   id: string;
   name: string;
   start_date: string;
+  updated_at: string;
+  overrides: OverridesEmbed;
   series_id: string | null;
   age_categories: string[] | null;
   age_confidence: string | null;
@@ -47,11 +50,11 @@ type Row = {
   class_label: string | null;
   uci_class: string | null;
   website_url: string | null;
-  location: { lat: number | null; lng: number | null } | null;
+  location: { lat: number | null; lng: number | null; country_code: string | null; municipality: string | null } | null;
 };
 
 const COLUMNS =
-  "id, name, start_date, series_id, age_categories, age_confidence, disciplines, class_label, uci_class, website_url, location:locations(lat, lng)";
+  "id, name, start_date, updated_at, overrides:event_overrides(locked_fields), series_id, age_categories, age_confidence, disciplines, class_label, uci_class, website_url, location:locations(lat, lng, country_code, municipality)";
 
 async function readRange(from: string, to: string): Promise<Row[]> {
   const supabase = createServerSupabase();
@@ -126,7 +129,10 @@ export async function carryForwardFromPreviousEditions(opts?: {
     const near = (p: Row) => {
       if (p.id === ev.id || p.start_date < lo || p.start_date > hi) return false;
       const there = p.location?.lat != null && p.location?.lng != null ? { lat: p.location.lat, lng: p.location.lng } : null;
-      return here && there ? km(here, there) <= MAX_KM : true;
+      if (p.location?.country_code !== ev.location?.country_code || !ev.location?.country_code) return false;
+      if (differentInstalment(p.name, ev.name)) return false;
+      if (p.disciplines?.length && ev.disciplines?.length && !p.disciplines.some(d => ev.disciplines!.includes(d))) return false;
+      return here && there ? km(here, there) <= MAX_KM : Boolean(ev.location?.municipality && p.location?.municipality && editionKey(ev.location.municipality) === editionKey(p.location.municipality));
     };
     // The same name without its year, near. A series alone is not enough: a
     // cup runs several rounds at one venue (Motol XCC and XCO), so a series
@@ -138,12 +144,9 @@ export async function carryForwardFromPreviousEditions(opts?: {
       );
       if (rounds.length === 1) candidates = rounds;
     }
-    if (!candidates.length) continue;
-    // The closest in date to a year earlier.
-    const target = Date.parse(`${addDays(ev.start_date, -364)}T00:00:00Z`);
-    const prev = candidates.sort(
-      (a, b) => Math.abs(Date.parse(`${a.start_date}T00:00:00Z`) - target) - Math.abs(Date.parse(`${b.start_date}T00:00:00Z`) - target),
-    )[0]!;
+    // Ambiguity is never resolved by guessing the nearest anniversary.
+    if (candidates.length !== 1) continue;
+    const prev = candidates[0]!;
 
     const patch: Update<"events"> = {};
     const hasAges = (ev.age_categories ?? []).length > 0;
@@ -159,7 +162,20 @@ export async function carryForwardFromPreviousEditions(opts?: {
     if (!ev.website_url && prev.website_url && !prev.website_url.includes(prevYear) && !/-\d{2}\/?$/.test(prev.website_url)) {
       patch.website_url = prev.website_url;
     }
+    const locks = lockedFieldsOf(ev.overrides);
+    if (["categories", "age_categories", "age_confidence", "audience"].some(f => locks.includes(f))) {
+      delete patch.age_categories; delete patch.age_confidence; delete patch.audience;
+    }
+    for (const field of locks) Reflect.deleteProperty(patch, field);
     if (!Object.keys(patch).length) continue;
+    if (!opts?.dryRun) {
+      const { data: applied, error } = await supabase.rpc("app_carry_previous_edition", {
+        target_id: ev.id, previous_id: prev.id,
+        expected: { updated_at: ev.updated_at, start_date: ev.start_date }, patch,
+      });
+      if (error) throw new Error(`Applying inherited facts: ${error.message}`);
+      if (!applied) { opts?.log?.(`DEFER changed or locked: ${ev.id}`); continue; }
+    }
 
     result.matched += 1;
     if (patch.age_categories) result.ages += 1;
@@ -168,9 +184,7 @@ export async function carryForwardFromPreviousEditions(opts?: {
     opts?.log?.(
       `${opts?.dryRun ? "DRY" : "SET"}  ${ev.start_date}  ${ev.name}\n      ← ${prev.start_date}  ${prev.name}  [${Object.keys(patch).filter((k) => k !== "audience").join(", ")}]${patch.age_categories ? `  ${(patch.age_categories as string[]).join(", ")}` : ""}`,
     );
-    if (opts?.dryRun) continue;
-    patch.updated_at = new Date().toISOString();
-    await supabase.from("events").update(patch).eq("id", ev.id).in("status", [...ACTIVE_EVENT_STATUSES]);
+
   }
   return result;
 }

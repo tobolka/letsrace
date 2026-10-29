@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { inferClassification, inferDisciplines, inferEventType } from "@/lib/taxonomy";
 import { resolveLevel } from "@/lib/classify-level";
 import { fold, hasToken, hasTokenFollowedBy } from "@/lib/text-match";
@@ -162,11 +162,15 @@ describe("generic extractor guard", () => {
   });
 
   it("ignores impossible dates instead of failing a watched source", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-26T12:00:00Z"));
+    try {
     const url = "https://www.mazurymtb.pl/";
     const page = (body: string) => `<html><head><title>Łaciate Mazury MTB</title></head><body>${body}</body></html>`;
     expect(extractGeneric(url, page("2026-27-09"))).toEqual([]);
     expect(extractGeneric(url, page("2026-27-09; 27.09.2026"))[0]?.startDate)
       .toBe("2026-09-27");
+    } finally { vi.useRealTimers(); }
   });
 
   it("does not turn a RoadCup season index into a single race", () => {

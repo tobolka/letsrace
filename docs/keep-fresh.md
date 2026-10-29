@@ -1,58 +1,57 @@
-# Local deep refresh
+# LetsRace: kde co běží a co ovládat
 
-From the LetsRace folder, run:
+Aktuální provoz: **29. 10. 2026**. AI zůstává na Macu; její přesun na server byl na žádost zastaven.
 
-```sh
-bash scripts/keep-fresh.sh --deep --hours=6
-```
+| Co | Kde | Kdy se spustí samo | Kde to vidíš |
+| --- | --- | --- | --- |
+| Server zdarma | Vercel | Denně podle `vercel.json`, i při vypnutém Macu | Panel „Server zdarma“, poslední skutečný běh |
+| Běžný sběr zdarma | Tento Mac | Po přihlášení; další kontrola 2 hodiny po dokončení | Ikona kola → „Mac zdarma“ |
+| Sken federace ČSC | Tento Mac, Chrome | Pondělí při prvním cyklu od 09:00; také tlačítkem | „Federace ČSC“ → **Spustit sken federace** |
+| AI kontrola | Tento Mac | Úterý a pátek, nejvýše jeden automatický pokus za den | „AI kontrola · na Macu“ |
 
-This extends the existing refresh loop. It imports calendars, enriches the
-catalogue using its existing per-race readers, and collects documents from all
-sources of every upcoming public race. The deep collection includes all
-countries in the catalogue; the regular refresh keeps the existing
-`CATALOG_COUNTRIES` priorities (CZ, SK, AT, DE, PL, CH by default).
+Běžný sběr čte splatné zdroje přes HTML/API/PDF a podporované dynamické weby přes Chrome. Podporované země jsou **CZ, SK, DE, AT, CH, IT, PL**. Sken ČSC je konkrétní česká federace; neznamená sken federací všech sedmi zemí.
 
-The Mac stays awake. Progress is printed and saved in `tmp/refresh-*.log`.
-The time limit stops new steps and new document requests; an in-progress step
-finishes before exit. Stop with Ctrl+C and use the same command to resume.
+## Co dělat
 
-Results:
+**Běžně nic.** Po přihlášení se sběrač i panel spouštějí automaticky. V liště je jen ikona kola. Kliknutím uvidíš aktuální činnost, poslední sken federace a skutečný přínos posledního dokončeného běhu.
 
-- `tmp/source-dossiers/<event-id>.json`: full source snapshots, document text,
-  rules and entry URLs, and edition-validated positive category evidence.
-- `tmp/source-dossiers/documents/`: shared persistent document cache.
-- `tmp/source-dossiers/summary.json`: completed, cached, pending and failed work.
-- `tmp/source-dossiers/progress.json`: the most recent completed race.
-- `tmp/data-goal-audit-latest.json`: catalogue completeness after the refresh.
+- Chceš znovu načíst federaci: **Spustit sken federace**. Pokud běží jiná práce, sken počká; druhý souběžný běh nevznikne.
+- Chceš spustit běžný sběr: **Podrobnosti → Spustit sběr teď**.
+- Chceš vidět průběh: **Podrobnosti → Otevřít živý log**.
+- Chceš pauzu: **Pozastavit**. Běžící práce se dokončí. Tlačítko se změní na **Obnovit**.
+- Zavření panelu sběr nezastaví. Panel znovu otevřeš z `~/Applications/LetsRace Monitor.app`.
 
-Successful downloads and completed race batches are reused for 24 hours.
-Failed and unfinished races remain retryable; old race files are kept.
-Each source/explicit URL receives its own budget of up to 16 documents. Shared
-URLs are read once and requests are paced per host. PDFs and office documents
-are read; script-only pages can use the existing local Chrome renderer.
-A completed collection batch does not mean the race data is exhaustive.
+Zelená znamená běh nebo úspěšné čekání. Oranžová znamená neúspěšné zdroje, podklady k ověření nebo neověřený stav serveru. Není to automaticky zaseknutý program. Červená znamená, že opravdu chybí čerstvé hlášení místního sběrače. Hlášení se obnovuje každých 10 sekund.
 
-The collector itself only reads the database and writes local files. The
-existing refresh steps still update production data from validated evidence.
-The category reader reuses local dossiers, revisits already known classes,
-and adds confirmed classes without removing existing confirmed evidence.
-Conflicting or incomplete source material remains available for later reading;
-deterministic category clues are not treated as a complete admission list.
+Při vypnutém Macu pokračuje server zdarma. Mac po zapnutí a přihlášení naváže. Serverová AI nyní **není zapnutá**.
 
-Existing model ceilings remain $2.50/day and $25/month across all steps. Deep
-document collection does not call a model and continues when that budget is
-exhausted. `.env.local` needs the same Supabase credentials as keep-fresh;
-paid readers additionally require the existing model key.
+## Výsledky a peníze
 
-For a short, read-only check without the production refresh:
+„Nové“ znamená nově založené závody. „Změněné“ znamená změněné uložené údaje, nikoli pouhé znovunačtení nebo posunutí času kontroly. Počet načtených řádků kalendáře ani počet zápisů do databáze není počet nových závodů.
 
-```sh
-node scripts/with-node.cjs tsx scripts/collect-source-dossiers.ts --country=CZ --max=3 --hours=0.1
-```
+Panel zachovává souhrn místních běhů a problémů za posledních 24 hodin. Prázdný úspěšný běh proto nesmaže předchozí chyby ani přínos. Historické neúspěšné kontroly nejsou počet právě rozbitých zdrojů: jejich aktuální počet a počet podkladů k ověření jsou z databáze uvedeny zvlášť. Po selhání ČSC zůstává vidět poslední skutečné načtení. Běžný sken, který ČSC načte, aktualizuje stejný stav jako ruční sken.
 
-Collector options: `--ids=id,id`, `--country=CZ,SK`, `--country=all`, `--docs=16`,
-`--concurrency=3`, `--out=tmp/source-dossiers`, `--render`, `--again` (rebuild
-race dossiers while retaining fresh shared document reads).
+Zápis chrání přesnější disciplíny (například XCO před obecným MTB), neprázdné formáty a zařazení před prázdnou či obecnou hodnotou. Název země se nepočítá jako město a jeho souřadnice se nepoužívají jako poloha závodu. Země výslovně uvedená u místa má přednost před sídlem federace; polská Sobótka a česká Sobotka jsou odlišná místa. Kontroluje se i výsledná kombinace starých a nových údajů, včetně nemožného označení budoucího závodu jako dokončeného.
 
-Without `--hours`, keep-fresh retains its ongoing loop. A positional number
-remains the interval between runs, e.g. `bash scripts/keep-fresh.sh 2 --deep`.
+Jednotlivé databázové požadavky mají omezené čekání a zápisy sdílejí časový rozpočet zdroje. Odložené zápisy kvůli limitu se vykazují odděleně. ČSC opakuje připojení i změnu velikosti stránky po připojení Blazoru a odmítá neúplnou stránku místo vydávání deseti řádků za celý kalendář. Stejná kandidátní data s novým otiskem dokumentu automaticky nahradí starší čekající snímek; starý důkaz zůstane dohledatelný a nic se tím nepublikuje.
+
+Záznam provedených oprav a živých ověření: `reports/tracker-audit-2026-10-29/REPORT.md`. Opravy údajů mají historii v `event_facts`; ověřené sloučení uchovává úplný snímek v `pipeline_merge_history`. Nejasné termíny se nehádají.
+
+AI má společný limit **0,50 USD za den a 5 USD za měsíc**, placené hledání je vypnuté. Ledger se při restartu nemaže. Říjnová zaznamenaná útrata 7,68 USD vznikla před novým limitem; říjnová AI je proto blokovaná. Bezplatný sběr pokračuje.
+
+Splatnost se respektuje: 1 564 aktivních zdrojů neznamená 1 564 nových závodů při každém cyklu. Pokud se zdroj nezměnil nebo ještě nezveřejnil rok 2027, další kontrola nemusí nic přidat. Nepodporovaná stránka se nezkouší stále dokola po dvou hodinách; čeká na další kontrolu za několik dní. Návrhy neznámých zdrojů a sporné závody zůstávají k ověření.
+
+Reálné skeny ČSC během úpravy přečetly 419 záznamů a provedly 248 zápisů; nešlo o 248 nových závodů. Dva záznamy zůstaly k ověření: chybný konec před začátkem a rozpor identity. Chybné datum ani sloučení se nehádají.
+
+## Jediné místní spuštění
+
+Aktivní LaunchAgenty:
+
+- `cz.letsrace.runner`: jediný správce místního sběru, automaticky se obnoví po pádu.
+- `cz.letsrace.monitor`: panel v liště. Jeho zavření nezastaví správce sběru.
+
+Původní `cz.letsrace.ingest-csc` je vypnutý a uložený jako `.plist.disabled`. Starou ruční smyčku nahradil správce. `keep-fresh.sh` při běžícím správci druhou smyčku odmítne spustit. Pomocné `fill-*`, discovery a archivní skripty jsou nástroje, nikoli další stále běžící sběrače.
+
+Soukromý běhový adresář je `~/Library/Application Support/LetsRace/runtime`, stav a logy jsou v `~/Library/Application Support/LetsRace/data`. Přihlašovací údaje se v panelu nezobrazují. Zdrojový projekt zůstává v `Documents/GitHub/letsrace`; přemístění pracovního adresáře tak nezastaví naplánované úlohy.
+
+Pro technickou kontrolu: `npm run pipeline:status` nebo `npm run pipeline:status -- --json`. Aktualizaci soukromé kopie po změně kódu provádí `scripts/install-local-runner.cjs`; při aktualizaci zachová data i rozpočet. Běžné používání žádný příkaz nevyžaduje.

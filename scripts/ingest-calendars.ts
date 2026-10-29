@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { watchOne } from "../src/lib/watcher/run";
+import { reportFederation } from "../src/lib/watcher/run-summary";
 
 function loadEnv() {
   try {
@@ -69,12 +70,14 @@ async function main() {
   // gets refreshed by hand.
   const fragment = process.argv[2]?.trim();
   if (fragment) {
-    const { data: rows } = await supabase
+    const { data: rows, error: rowsError } = await supabase
       .from("watched_urls")
       .select("*")
       .ilike("url", `%${fragment}%`)
       .order("url");
-    for (const row of rows ?? []) {
+    if (rowsError) throw rowsError;
+    if (!rows?.length) throw new Error(`No watched calendar matches ${fragment}`);
+    for (const row of rows) {
       console.log("watching", row.url, "…");
       const started = Date.now();
       const out = await watchOne({
@@ -98,7 +101,8 @@ async function main() {
         error: out.error,
         ms: Date.now() - started,
       });
-      if (!out.ok) process.exitCode = 1;
+      reportFederation(out);
+      if (!out.ok) process.exitCode = /identity_review_required|pipeline_data_review_required/.test(out.error ?? "") ? 2 : 1;
     }
     return;
   }

@@ -5,6 +5,8 @@ import { format, parseISO } from "date-fns";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useSavedRaceIds } from "@/hooks/use-saved-races";
+import { PlannedRaceMarker, PLANNED_RACE_SURFACE, PLANNED_RACE_SELECTED } from "@/components/race/planned-race-marker";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -94,6 +96,7 @@ export function MonthCalendar({
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
   const isMobile = useIsMobile();
+  const plannedIds = useSavedRaceIds();
   const [open, setOpen] = useState<Open>(null);
   const weeks = useMemo(() => monthGrid(month), [month]);
   const days = weeks.flat();
@@ -155,6 +158,7 @@ export function MonthCalendar({
         {days.map((day, i) => {
           const list = byDay.get(day.iso) ?? [];
           const info = dayInfo?.(day.iso);
+          const hasPlannedRace = list.some((item) => plannedIds.has(item.id));
           const dayOpen = open?.kind === "day" && open.iso === day.iso;
           const shown = isMobile ? [] : list.slice(0, PER_CELL);
           const extra = list.length - shown.length;
@@ -183,7 +187,9 @@ export function MonthCalendar({
                   !day.inMonth && "bg-muted/40",
                   day.isWeekend && day.inMonth && "bg-muted/25",
                   info?.muted && "bg-muted/60",
+                  hasPlannedRace && "bg-blue-50/80 dark:bg-blue-950/30",
                   (picked || day.iso === selectedDay) && "bg-accent",
+                  (picked || day.iso === selectedDay) && hasPlannedRace && PLANNED_RACE_SELECTED,
                 )}
               >
                 <span
@@ -197,7 +203,10 @@ export function MonthCalendar({
                   {day.day}
                 </span>
                 {list.length > 0 ? (
-                  <span className="text-[10px] leading-none font-medium tabular-nums text-muted-foreground">{list.length}</span>
+                  <span className="flex items-center gap-1 text-[10px] leading-none font-medium tabular-nums text-muted-foreground">
+                    {list.length}
+                    {hasPlannedRace ? <PlannedRaceMarker locale={locale} /> : null}
+                  </span>
                 ) : null}
               </button>
             );
@@ -267,10 +276,13 @@ export function MonthCalendar({
                             className={cn(
                               "flex min-w-0 items-center gap-1.5 rounded-md px-1 py-0.5 text-left text-xs leading-tight transition-colors hover:bg-accent",
                               itemOpen && "bg-accent",
+                              plannedIds.has(item.id) && PLANNED_RACE_SURFACE,
+                              itemOpen && plannedIds.has(item.id) && PLANNED_RACE_SELECTED,
                             )}
                           >
                             <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ background: item.color }} />
                             <span className="truncate">{item.name}</span>
+                            {plannedIds.has(item.id) ? <PlannedRaceMarker locale={locale} /> : null}
                           </button>
                         </PopoverTrigger>
                         <PopoverContent
@@ -330,6 +342,7 @@ export function MonthCalendar({
                     iso={day.iso}
                     locale={locale}
                     items={list}
+                    plannedIds={plannedIds}
                     onPick={(id) => setOpen({ kind: "day", iso: day.iso, detailId: id })}
                   />
                 )}
@@ -371,14 +384,15 @@ export function MonthCalendar({
                       <button
                         type="button"
                         onClick={() => (onOpenItem ? onOpenItem(item.id) : setPhoneDetail(item.id))}
-                        className="relative flex min-h-12 w-full min-w-0 items-center px-4 py-1.5 text-left transition-colors active:bg-accent"
+                        className={cn("relative flex min-h-12 w-full min-w-0 items-center gap-2 px-4 py-1.5 text-left transition-colors active:bg-accent", plannedIds.has(item.id) && PLANNED_RACE_SURFACE)}
                       >
                         {/* The list's own rule, so a race reads the same here and there. */}
                         <span aria-hidden className="absolute inset-y-2 left-1.5 w-[3px] rounded-full" style={{ background: item.color }} />
-                        <span className="min-w-0">
+                        <span className="min-w-0 flex-1">
                           <span className="line-clamp-2 block text-sm leading-snug font-medium break-words">{item.name}</span>
                           {item.meta ? <span className="block truncate text-xs text-muted-foreground">{item.meta}</span> : null}
                         </span>
+                        {plannedIds.has(item.id) ? <PlannedRaceMarker locale={locale} /> : null}
                       </button>
                     </li>
                   ))}
@@ -397,11 +411,13 @@ function DayList({
   iso,
   locale,
   items,
+  plannedIds,
   onPick,
 }: {
   iso: string;
   locale: string;
   items: CalendarItem[];
+  plannedIds: ReadonlySet<string>;
   onPick: (id: string) => void;
 }) {
   const df = dateFnsLocale(locale);
@@ -420,13 +436,14 @@ function DayList({
             <button
               type="button"
               onClick={() => onPick(item.id)}
-              className="flex w-full min-w-0 items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent"
+              className={cn("flex w-full min-w-0 items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent", plannedIds.has(item.id) && PLANNED_RACE_SURFACE)}
             >
               <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: item.color }} />
-              <span className="min-w-0">
+              <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium">{item.name}</span>
                 {item.meta ? <span className="block truncate text-xs text-muted-foreground">{item.meta}</span> : null}
               </span>
+              {plannedIds.has(item.id) ? <PlannedRaceMarker locale={locale} /> : null}
             </button>
           </li>
         ))}

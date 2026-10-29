@@ -18,3 +18,8 @@ export function sourceEditionId(
 export function calendarRowCandidates<T extends { event: { startDate: string } }>(incomingDate: string, sharedCalendar: boolean, candidates: T[]): T[] {
   return sharedCalendar ? candidates.filter(c => c.event.startDate === incomingDate) : candidates;
 }
+
+/** One calendar URL is evidence, never the identity shared by all its rows. */
+export function isSharedCalendarEvidence(event: { sourceUrl: string; evidence?: { method: string; sourceUrl: string } }): boolean {
+  return ["llm_calendar", "structured_calendar"].includes(event.evidence?.method ?? "") && event.sourceUrl === event.evidence?.sourceUrl;
+}

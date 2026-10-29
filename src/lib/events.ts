@@ -125,13 +125,16 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     ? "location:locations(id, name, municipality, country_code, lat, lng)"
     : "location:locations!inner(id, name, municipality, country_code, lat, lng)";
 
+  // No `event_sources` embed here: every list call used to pull ~1.4 source
+  // URLs per race across the whole catalogue, and that nested JSON was a large
+  // share of Supabase egress + API log ingestion on Free. Detail pages still
+  // load sources; the list uses website/registration columns for outbound links.
   let query = supabase
     .from("events")
     .select(
       `${EVENT_LIST_COLUMNS},
        ${locationSelect},
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
-       sources:event_sources(source_url)`,
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
     )
     .order("start_date", { ascending: true })
     .order("id", { ascending: true });
@@ -466,8 +469,7 @@ export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySl
     .select(
       `${EVENT_LIST_COLUMNS},
        location:locations!inner(id, name, municipality, country_code, lat, lng),
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
-       sources:event_sources(source_url)`,
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
     )
     .eq("series_id", row.id)
     .eq("visibility", "public")
@@ -624,15 +626,18 @@ export async function listSitemapSeries(
     id: string;
     slug: string;
     updated_at: string | null;
+    events: { name: string; status: string; visibility: string }[];
   }>(
     (from, to) =>
       supabase
         .from("series")
         // Two foreign keys join events and series: name the one a race belongs by,
         // or the join is ambiguous and the database answers with an error.
-        .select("id, slug, updated_at, events!events_series_id_fkey!inner(id, visibility, start_date)")
+        .select("id, slug, updated_at, events!events_series_id_fkey!inner(id, name, status, visibility, start_date, location:locations!inner(country_code))")
         .eq("visibility", "public")
         .eq("events.visibility", "public")
+        .in("events.status", [...PUBLIC_EVENT_STATUSES])
+        .in("events.location.country_code", [...PUBLIC_COUNTRY_CODES])
         .gte("events.start_date", today)
         .order("id", { ascending: true })
         .range(from, to),
@@ -641,6 +646,7 @@ export async function listSitemapSeries(
   const seen = new Set<string>();
   const out: { slug: string; updatedAt: string | null }[] = [];
   for (const row of data) {
+    if (!row.events?.some((event) => !shouldHideFromMap(event.name, event.status, event.visibility))) continue;
     const slug = row.slug as string;
     if (!slug || seen.has(slug)) continue;
     seen.add(slug);

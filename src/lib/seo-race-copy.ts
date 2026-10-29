@@ -1,4 +1,4 @@
-import { splitPlace } from "@/lib/places";
+import { racePlace } from "@/lib/race-place";
 import { format, parseISO } from "date-fns";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
@@ -340,7 +340,7 @@ export function unshout(name: string): string {
  * "Kirchzarten, Germany" is Kirchzarten (see `splitPlace`).
  */
 function placeOf(event: EventListItem): string | null {
-  return splitPlace(event.location?.municipality).town || splitPlace(event.location?.name).town;
+  return racePlace(event);
 }
 
 /** A place a title should not repeat: every word of it is in the race's name already. */

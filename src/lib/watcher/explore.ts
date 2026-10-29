@@ -179,12 +179,13 @@ export function canonicalExploreUrl(raw: string): string | null {
   if (!host || host === "unknown") return null;
   u.hostname = host;
   const path = (u.pathname.replace(/\/+$/, "") || "/").toLowerCase();
-  if (
+  // A content query identifies a WordPress/Joomla article even at the root
+  // or index.php. Only collapse true homepages after stripping tracking keys.
+  if (!u.search && (
     path === "/" ||
     /^\/(wordpress|wp|cs|sk|en|pl|de|fr|it|index\.php|home|uvod)$/i.test(path)
-  ) {
+  )) {
     u.pathname = "/";
-    u.search = "";
   }
   const out = u.toString().replace(/\/$/, "");
   return out || `${u.protocol}//${host}`;
@@ -468,6 +469,8 @@ function titleFromHtml(html: string): string | undefined {
 export async function runExplore(opts?: {
   budgetMs?: number;
   maxFetch?: number;
+  /** Local discovery hands source leads to review without activating monitors. */
+  autoWatch?: boolean;
 }): Promise<ExploreResult> {
   const budgetMs = opts?.budgetMs ?? 50_000;
   const maxFetch = opts?.maxFetch ?? 12;
@@ -495,9 +498,16 @@ export async function runExplore(opts?: {
 
   const known = await knownSourceUrls(supabase);
   const unique = selectDiscoveryCandidates(found, known);
+  // Persist overflow before the bounded reader starts. A deadline or a
+  // failed fetch must not discard leads returned by the search engine.
+  for (const url of unique) {
+    if (!await queueDiscoveredLink(url, { hintKind: "explore_unread" })) {
+      throw new Error(`Could not persist discovery lead: ${url}`);
+    }
+  }
   const toFetch = unique.slice(0, maxFetch);
   let fetched = 0;
-  let queued = 0;
+  const queued = unique.length;
   let autoWatched = 0;
   const samples: ExploreResult["samples"] = [];
 
@@ -521,9 +531,8 @@ export async function runExplore(opts?: {
     if (hit.score < QUEUE_MIN) continue;
     const ok = await queueDiscoveredLink(hit.url, { hintKind: "explore" });
     if (!ok) continue;
-    queued += 1;
     known.add(hit.url);
-    if (shouldAutoWatch(hit)) {
+    if (opts?.autoWatch !== false && shouldAutoWatch(hit)) {
       const { error } = await supabase.from("watched_urls").upsert(
         {
           url: hit.url,

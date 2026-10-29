@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { protectOfficialFields } from "@/lib/watcher/update-policy";
+import { protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
 import { pickBestDuplicate } from "@/lib/dedup";
 
 it("keeps official identity/date fields while permitting an aggregator to fill missing facts", () => {
@@ -21,4 +21,20 @@ it("defers an ambiguous match and treats repeated sightings of the same row as o
   const event = { name: "Perlcross", startDate: "2026-10-11", placeText: "Perl" };
   expect(pickBestDuplicate(event, [{ row: { id: "a" }, event }, { row: { id: "b" }, event }])).toBeNull();
   expect(pickBestDuplicate(event, [{ row: { id: "a" }, event }, { row: { id: "a" }, event }])?.row.id).toBe("a");
+});
+it("retains an XCO format and detailed classification when a federation only says MTB", () => {
+  const stored = { disciplines: ["xco"], formats: ["xco"], class_label: "UCI C1", uci_class: "C1", competition_type: "uci" };
+  const proposed = { disciplines: ["mtb"], formats: [], class_label: null, uci_class: null, competition_type: "other" };
+  protectSpecificFacts(stored, proposed);
+  expect(proposed).toEqual(stored);
+});
+it("permits specific corrected disciplines and new positive formats", () => {
+  const proposed = { disciplines: ["xcm"], formats: ["xcm"], competition_type: "national" };
+  protectSpecificFacts({ disciplines: ["mtb"], formats: [], competition_type: "other" }, proposed);
+  expect(proposed).toEqual({ disciplines: ["xcm"], formats: ["xcm"], competition_type: "national" });
+});
+it("protects an organiser series against an aggregator", () => {
+  const proposed = { start_date: "2027-06-02" };
+  protectOfficialFields("aggregator", { start_date: "2027-06-01", sources: [{ kind: "series" }] }, proposed);
+  expect(proposed.start_date).toBe("2027-06-01");
 });

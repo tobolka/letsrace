@@ -8,7 +8,7 @@ export function protectOfficialFields(
 ): string[] {
   if (!stored || incomingKind !== "aggregator") return [];
   const sources = stored.sources as { kind?: string | null }[] | undefined;
-  if (!sources?.some(s => s.kind === "official" || s.kind === "national_federation")) return [];
+  if (!sources?.some(s => ["official", "national_federation", "series"].includes(s.kind ?? ""))) return [];
   const protectedFields: string[] = [];
   for (const field of ["name", "start_date", "end_date", "location_id", "disciplines", "event_type", "status", "level", "uci_class", "class_label"]) {
     const held = stored[field];
@@ -24,4 +24,22 @@ export function protectOfficialFields(
     if (stored.season) proposed.season = stored.season;
   }
   return protectedFields;
+}
+
+/** Missing/general assertions cannot erase specific facts, even in a federation list. */
+export function protectSpecificFacts(stored: Record<string, unknown> | null, proposed: Record<string, unknown>): string[] {
+  if (!stored) return [];
+  const kept: string[] = [];
+  const keep = (field: string) => { proposed[field] = stored[field]; kept.push(field); };
+  for (const field of ["class_label", "uci_class", "formats", "competition_type"]) {
+    const old = stored[field], next = proposed[field];
+    if (!(field in proposed) || old == null || old === "" || old === "other" || old === "Local" || old === "community" || Array.isArray(old) && !old.length) continue;
+    if (next == null || next === "" || next === "other" || Array.isArray(next) && !next.length) keep(field);
+  }
+  const old = stored.disciplines, next = proposed.disciplines;
+  if (Array.isArray(old) && old.length && Array.isArray(next)) {
+    const families: Record<string, string[]> = { mtb: ["xco", "xcc", "xcm", "dh", "enduro", "four_cross"], road: ["tt", "criterium", "hill_climb", "stage_race"] };
+    if (!next.length || next.every(d => old.includes(d) || families[d]?.some(specific => old.includes(specific)))) keep("disciplines");
+  }
+  return kept;
 }

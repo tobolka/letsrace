@@ -1,4 +1,4 @@
-import { summarizeWatches } from "../src/lib/watcher/run-summary";
+import { summarizeWatches, reportWatchBatch } from "../src/lib/watcher/run-summary";
 import type { WatchOutcome } from "../src/lib/watcher/run";
 /**
  * Poll every watched URL that is due, round after round, until none is left.
@@ -19,6 +19,7 @@ async function main() {
   let upserted = 0;
   for (let round = 1; round <= maxRounds; round++) {
     const outcomes = await runDueWatches(60, { concurrency: 4, budgetMs: 170_000 });
+    reportWatchBatch(outcomes);
     for (const outcome of outcomes) latest.set(outcome.watchedUrlId, outcome);
     if (!outcomes.length) break;
     const up = outcomes.reduce((s, o) => s + (o?.eventsUpserted || 0), 0);

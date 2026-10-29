@@ -1,4 +1,4 @@
-import { summarizeWatches } from "../src/lib/watcher/run-summary";
+import { summarizeWatches, reportWatchBatch } from "../src/lib/watcher/run-summary";
 import type { WatchOutcome } from "../src/lib/watcher/run";
 /**
  * Force-poll official calendars and print watch outcomes.
@@ -25,6 +25,8 @@ async function main() {
   const supabase = createServerSupabase();
   const now = new Date().toISOString();
 
+  // Force is an explicit maintenance action; normal cycles preserve retry schedules.
+  if (process.argv.includes("--force")) {
   const { error: dueErr } = await supabase
     .from("watched_urls")
     .update({ next_poll_at: now, updated_at: now })
@@ -35,6 +37,7 @@ async function main() {
     .not("url", "ilike", "%ffc.fr%")
     .not("url", "ilike", "%ffvelo.fr%");
   if (dueErr) throw new Error(dueErr.message);
+  }
 
   const latest = new Map<string, WatchOutcome>();
   let watched = 0;
@@ -44,6 +47,7 @@ async function main() {
 
   for (let round = 1; round <= 5; round++) {
     const outcomes = await runDueWatches(60, { concurrency: 4, budgetMs: 170_000 });
+    reportWatchBatch(outcomes);
     for (const outcome of outcomes) latest.set(outcome.watchedUrlId, outcome);
     if (!outcomes.length) {
       console.log({ round, stopped: "nothing due" });
@@ -68,7 +72,7 @@ async function main() {
     if (summarizeWatches(outcomes).deferred > 0) { console.log("AI work deferred; stopping this process instead of repeatedly rereading sources."); break; }
   }
 
-  console.log({ summary: { watched, upserted, failed, failSamples: fails.slice(0, 12) } });
+  console.log(JSON.stringify({ summary: { watched, upserted, failed, failSamples: fails.slice(0, 12) } },null,2));
   const remaining = summarizeWatches([...latest.values()]);
   console.log({ remaining });
   process.exitCode = remaining.failed ? 1 : remaining.deferred ? 2 : 0;

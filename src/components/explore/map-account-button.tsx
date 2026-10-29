@@ -13,6 +13,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { locales, type Locale, type Messages } from "@/lib/i18n/messages";
+import { rememberLocale } from "@/lib/i18n/locale-preference";
 import { translatePathname, localePath } from "@/lib/localized-paths";
 
 export async function signOutAndRefresh(router: ReturnType<typeof useRouter>) {
@@ -117,7 +118,7 @@ export function AccountMenuItems({
             <DropdownMenuSubContent>
               {locales.map((l) => (
                 <DropdownMenuItem key={l} asChild>
-                  <Link href={localeHref(l)} aria-current={l === locale ? "page" : undefined}>
+                  <Link href={localeHref(l)} onClick={() => rememberLocale(l)} aria-current={l === locale ? "page" : undefined}>
                     <Check aria-hidden className={l === locale ? undefined : "opacity-0"} />
                     {l.toUpperCase()}
                   </Link>

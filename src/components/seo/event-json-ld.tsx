@@ -1,6 +1,7 @@
 import type { EventListItem } from "@/lib/events";
 import { absoluteUrl, raceOgImagePath } from "@/lib/seo";
 import { localePath } from "@/lib/localized-paths";
+import { racePlace } from "@/lib/race-place";
 
 /**
  * Race names come from scraped third-party pages, so a name containing
@@ -47,8 +48,8 @@ export function EventJsonLd({
   breadcrumb?: { name: string; path: string }[];
 }) {
   // The town alone, and the venue-and-town string for the Place's name.
-  const town = event.location?.municipality || undefined;
-  const placeLabel = event.location?.name || town;
+  const town = racePlace(event) || undefined;
+  const placeLabel = town;
   const pageUrl = absoluteUrl(localePath(locale, `e/${event.slug}`));
   // Pages about this race. The entry form is not one — it goes in `offers`.
   const sameAs = [

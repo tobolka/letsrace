@@ -13,8 +13,10 @@
     "typecheck": "node scripts/with-node.cjs tsc --noEmit",
     "test": "node scripts/with-node.cjs vitest run",
     "test:watch": "node scripts/with-node.cjs vitest",
+    "discovery": "node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/discover-races.ts",
     "dedup": "tsx scripts/merge-duplicates.ts",
-    "dedup:dry": "tsx scripts/merge-duplicates.ts --dry"
+    "dedup:dry": "tsx scripts/merge-duplicates.ts --dry",
+    "pipeline:status": "node scripts/with-node.cjs tsx scripts/pipeline-status.ts"
   },
   "dependencies": {
     "@sparticuz/chromium": "^153.0.0",

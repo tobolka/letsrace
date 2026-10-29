@@ -30,11 +30,17 @@ export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
   if (!chrome) return "";
   // One retry: the portal is a shared Blazor server and a slow minute is
   // common. Two short reads in a row are worth reporting; one is not.
-  let html = await renderOnce(url, chrome);
-  if (countRows(html) < MIN_PLAUSIBLE_ROWS) {
-    const again = await renderOnce(url, chrome);
-    if (countRows(again) > countRows(html)) html = again;
+  let html = "", lastError: unknown;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const rendered = await renderOnce(url, chrome);
+      if (countRows(rendered) > countRows(html)) html = rendered;
+      if (countRows(html) >= MIN_PLAUSIBLE_ROWS) return html;
+    } catch (error) { lastError = error; }
   }
+  // A partial grid is not an authoritative calendar. Never reconcile removals
+  // against a single page after a broken pager or disconnected Blazor circuit.
+  if (countRows(html) < MIN_PLAUSIBLE_ROWS) throw new Error(`ČSC incomplete calendar (${countRows(html)} rows)${lastError ? `: ${String(lastError)}` : ""}`);
   return html;
 }
 
@@ -85,7 +91,8 @@ async function renderOnce(
       // late or not at all. The rows are what we are waiting for; the load
       // event is a hint. Twenty seconds on it alone was how a render that
       // finishes at twenty-two seconds counted as "did not render".
-      await cdp.wait("Page.loadEventFired", 20_000).catch(() => undefined);
+      // Waiting for an already-fired load event wasted 20 s; Blazor's rows,
+      // rather than the document load event, are the readiness condition.
       /*
        * Blazor streams the grid in: the first row lands, then the rest, then
        * the pager and the page-size control. Moving on at the first row read
@@ -95,9 +102,15 @@ async function renderOnce(
        */
       await waitForSettledRows(cdp, deadline);
       await waitUntil(cdp, `[...document.querySelectorAll("select")].some((s) => [...s.options].some((o) => o.value === "500"))`, Math.min(deadline, Date.now() + 10_000));
-      await bumpPageSize(cdp);
-      await sleep(1_000);
-      await waitForSettledRows(cdp, deadline);
+      // Prerendered rows can precede Blazor's live circuit. A single change
+      // event in that window is ignored. Confirm the resulting row count and
+      // retry the control after the circuit has had time to attach.
+      for (let attempt = 0; attempt < 4 && Date.now() < deadline - 3000; attempt++) {
+        await bumpPageSize(cdp);
+        await sleep(1000);
+        await waitForSettledRows(cdp, Math.min(deadline, Date.now() + 5000));
+        if (await rowCount(cdp) >= MIN_PLAUSIBLE_ROWS) break;
+      }
       const n = await rowCount(cdp);
       if (typeof n === "number" && n >= 80) {
         const html = await cdp.evaluate("document.documentElement.outerHTML");
@@ -436,9 +449,10 @@ async function scrapeByPaging(cdp: Cdp, deadline: number): Promise<string> {
     if (rows.size === before) stuck += 1;
     else stuck = 0;
     if (stuck >= 2) break;
+    const firstBefore = await cdp.evaluate(`(document.querySelector("tr.table-row-selectable a[href*='/RaceDetail/Race/']") || {}).getAttribute?.("href") || ""`);
     const moved = await cdp.evaluate(`(() => {
-      const next = [...document.querySelectorAll("a, button, li, span")]
-        .find((el) => /^\\s*Další\\s*$/.test(el.textContent || ""));
+      const next = [...document.querySelectorAll(".pagination a, .pagination button")]
+        .find((el) => /^\\s*(Další|Next)\\s*$/.test(el.textContent || ""));
       if (!next) return false;
       if (next instanceof HTMLElement && next.closest("[disabled], .disabled")) return false;
       next.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
@@ -448,7 +462,6 @@ async function scrapeByPaging(cdp: Cdp, deadline: number): Promise<string> {
     // A page turn is a round trip over Blazor's socket; 700 ms fixed was not
     // always enough, and two short polls in a row read as "stuck". Wait for
     // the first row to actually change, then for the page to settle.
-    const firstBefore = await cdp.evaluate(`(document.querySelector("tr.table-row-selectable a[href*='/RaceDetail/Race/']") || {}).getAttribute?.("href") || ""`);
     await waitUntil(
       cdp,
       `((document.querySelector("tr.table-row-selectable a[href*='/RaceDetail/Race/']") || {}).getAttribute?.("href") || "") !== ${JSON.stringify(firstBefore)}`,

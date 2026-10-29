@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict');
+const {health}=require('./local-runner.cjs');
+const now=Date.now();
+assert.equal(health({active:false,paused:false,now,lastExitCode:0}),'waiting');
+assert.equal(health({active:true,paused:true,now,lastOutputAt:now}),'running');
+assert.equal(health({active:false,paused:true,now,lastExitCode:1}),'paused');
+assert.equal(health({active:true,paused:false,now,lastOutputAt:now-21*60_000}),'quiet');
+assert.equal(health({active:false,paused:false,now,lastExitCode:2}),'attention');
+console.log('PASS: waiting, live work, pause after completion, quiet work and failed runs stay distinct');
+const {rememberResult,recentResults}=require('./local-runner.cjs');
+const state={};
+rememberResult(state,{at:now,reads:4,created:2,updated:1,failed:1,problems:[{url:'https://race.test',error:'timeout'}]});
+rememberResult(state,{at:now+1,reads:0,created:0,updated:0,failed:0,problems:[]});
+assert.equal(state.lastResult.reads,0);assert.equal(state.lastActivityResult.created,2);
+assert.equal(recentResults(state.history,now+2).failed,1);
+assert.equal(recentResults(state.history,now+2).problems.length,1);
+assert.equal(recentResults(state.history,now+25*60*60_000).reads,0);
+console.log('PASS: empty runs preserve earlier activity and 24-hour problems without inventing new writes');

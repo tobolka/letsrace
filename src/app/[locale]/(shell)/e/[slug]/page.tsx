@@ -30,14 +30,14 @@ import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
+import { racePlace } from "@/lib/race-place";
 
 /**
- * Rendered on demand and not held on the CDN. A week-long document would keep
- * a cancelled race or a new registration link invisible after a watch. The
- * hobby transfer budget is saved on the map shell and the shared events feed
- * instead — those pages do not need to be this fresh.
+ * Held on the CDN for a week. A cancelled race or new entry link still lands
+ * after an admin edit (`refreshPublicCatalogue`); watch polls alone must not
+ * rewrite every detail page or Hobby Origin Transfer / ISR writes blow up.
  */
-export const revalidate = 0;
+export const revalidate = 604800;
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -106,7 +106,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   const today = new Date().toISOString().slice(0, 10);
   const isPast = (event.endDate ?? event.startDate) < today;
   const place =
-    [event.location?.municipality || event.location?.name, event.location?.countryCode]
+    [racePlace(event), event.location?.countryCode]
       .filter(Boolean)
       .join(" · ") || "—";
   // In the reader's language: "sobota 26. září 2026", not "Saturday 26 September".

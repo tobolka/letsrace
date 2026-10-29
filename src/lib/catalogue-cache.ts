@@ -3,10 +3,10 @@
  * 10 GB Fast Origin Transfer, 200,000 ISR write units (8 KB each), 4 h of
  * Fluid CPU.
  *
- * Shell pages (map home, list, schedule, browse hubs) are the same for every
- * visitor and change slowly — hold those on the CDN. Race and series detail
- * pages are not held: a watch or an editor change must show up on the next
- * request, and those pages do not need to be the fast path.
+ * Public catalogue pages (map, list, schedule, hubs, race + series detail)
+ * are the same for every visitor and change slowly — hold them on the CDN.
+ * Admin edits still call `refreshPublicCatalogue`; watch/catalog crons do
+ * not, so a daily poll cannot rewrite thousands of ISR/data-cache entries.
  */
 export const CATALOGUE_CDN_SECONDS = 60 * 60 * 24 * 7;
 

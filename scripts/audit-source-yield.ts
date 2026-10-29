@@ -36,7 +36,7 @@ loadEnv();
 const limitArg = process.argv.indexOf("--limit");
 const LIMIT = limitArg > -1 ? Number(process.argv[limitArg + 1]) : 90;
 const KINDS = (process.argv.find(a => a.startsWith("--kinds="))?.slice(8) ?? "series,federation,aggregator,calendar").split(",");
-const COUNTRIES = new Set((process.env.CATALOG_COUNTRIES ?? "CZ,SK,AT,DE,PL,CH").split(","));
+const COUNTRIES = new Set((process.env.CATALOG_COUNTRIES ?? "CZ,SK,AT,DE,PL,CH,IT").split(","));
 const OUT = process.argv.find(a => a.startsWith("--out="))?.slice(6);
 
 async function main() {

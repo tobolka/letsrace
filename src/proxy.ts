@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
+import { LOCALE_COOKIE, savedLocale } from "@/lib/i18n/locale-preference";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
 import { CATALOGUE_CDN_CACHE } from "@/lib/catalogue-cache";
 import { routePath, SECTION_SLUGS } from "@/lib/localized-paths";
@@ -54,32 +55,26 @@ function isAccountPath(pathname: string): boolean {
   return section === "account" || section === SECTION_SLUGS[locale as Locale].account;
 }
 
-/** Race and series detail pages — not held: an edit must show on the next visit. */
-function isCatalogueDetail(pathname: string): boolean {
-  const [, locale, section] = pathname.split("/");
-  if (!locale || !locales.includes(locale as Locale) || !section) return false;
-  const s = SECTION_SLUGS[locale as Locale];
-  return section === s.e || section === s.series || section === "e" || section === "series";
-}
-
 /**
- * Shell pages (home, list, schedule, hubs) are the same for every visitor.
- * Hold those on the CDN so crawlers do not pull a fresh copy from compute on
- * every pass. Race and series details, accounts and map deep links stay off
- * the CDN — details follow the catalogue; accounts are private; deep links
- * redirect from the race they were opened on.
+ * Public pages are the same for every visitor. Hold them on the CDN so
+ * crawlers do not pull a fresh copy from compute on every pass. Accounts stay
+ * private; map deep links rewrite to a request-time redirect helper.
  */
 function holdOnCdn(response: NextResponse, request: NextRequest) {
   if (request.method !== "GET" && request.method !== "HEAD") return response;
   const { pathname } = request.nextUrl;
-  if (
-    isAccountPath(pathname) ||
-    isCatalogueDetail(pathname) ||
-    pathname.includes("/map-entry")
-  ) {
+  if (isAccountPath(pathname) || pathname.includes("/map-entry")) {
     return response;
   }
-  response.headers.set("Vercel-CDN-Cache-Control", CATALOGUE_CDN_CACHE);
+  const isEntry = isHomepage(pathname) || locales.some((locale) =>
+    pathname === `/${locale}/${SECTION_SLUGS[locale].list}` ||
+    pathname === `/${locale}/${SECTION_SLUGS[locale].schedule}`,
+  );
+  // Date-based HTML previews refresh daily, rather than remaining behind the
+  // general catalogue's week-long CDN lifetime after their ISR has refreshed.
+  const cache = isEntry ? "public, s-maxage=86400, stale-while-revalidate=3600" : CATALOGUE_CDN_CACHE;
+  response.headers.set("Vercel-CDN-Cache-Control", cache);
+  response.headers.set("CDN-Cache-Control", cache);
   return response;
 }
 
@@ -93,23 +88,20 @@ export function proxy(request: NextRequest) {
     return holdOnCdn(NextResponse.redirect(url, 308), request);
   }
 
-  // A Czech reader typing letsrace.cz gets the Czech site, not the English one.
+  // Explicit preference wins over browser language on the next visit.
   if (pathname === "/" && !wantsMarkdown(request)) {
-    const preferred = preferredLocale(request.headers.get("accept-language"));
-    if (preferred && preferred !== defaultLocale) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/${preferred}`;
-      const response = NextResponse.redirect(url, 307);
-      response.headers.set("Vary", "Accept-Language");
-      return response;
-    }
-    // Everyone else, crawlers included, to the default language — 308, not
-    // 307: a temporary redirect told Google to keep `/` as the canonical and
-    // file `/en` as its duplicate. (This was `app/page.tsx`, which needed a
-    // root layout above the language segment just to redirect.)
+    const preferred = savedLocale(request.cookies.get(LOCALE_COOKIE)?.value)
+      ?? preferredLocale(request.headers.get("accept-language"));
     const url = request.nextUrl.clone();
-    url.pathname = `/${defaultLocale}`;
-    return holdOnCdn(NextResponse.redirect(url, 308), request);
+    url.pathname = `/${preferred ?? defaultLocale}`;
+    // Preserve the permanent canonical redirect for crawlers without a language.
+    const response = NextResponse.redirect(url, preferred ? 307 : 308);
+    response.headers.set("Vary", "Cookie, Accept-Language, Accept");
+    // Neither browsers nor shared caches may retain a previous language choice.
+    response.headers.set("Cache-Control", "private, no-store");
+    response.headers.set("Vercel-CDN-Cache-Control", "no-store");
+    response.headers.set("CDN-Cache-Control", "no-store");
+    return response;
   }
 
   if (isHomepage(pathname) && wantsMarkdown(request)) {

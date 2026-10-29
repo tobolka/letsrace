@@ -10,7 +10,7 @@ import { collectionPath, hubPath, localePath } from "@/lib/localized-paths";
 
 // Built at most once an hour and served from the cache: a crawler never waits on the
 // database, which a cold start could make slow enough for it to give up.
-export const revalidate = 604800;
+export const revalidate = 86400;
 
 type Freq = NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
 
@@ -43,6 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Generation time is not modification time. A moving timestamp rewrites
   // this large sitemap even when the catalogue and its URLs are unchanged.
   add("", undefined, "daily", 1);
+  add("list", undefined, "daily", 0.8);
+  add("schedule", undefined, "daily", 0.8);
 
   add((l) => hubPath(l), undefined, "daily", 0.9);
   add("about", new Date("2026-10-10"), "monthly", 0.5);

@@ -51,6 +51,9 @@ describe("parsePzkolDateRange", () => {
 
 describe("parsePzkolCalendar", () => {
   const url = "https://pzkol.pl/kalendarz?v=l&season=2026";
+  it("does not geocode Polish Sobótka into Czech Sobotka", () => {
+    expect(parsePzkolCalendar(url, table(row("05.07.2026", 'Puchar Polski MTB XCO "Puchar Burmistrza Sobótki"', "Sobótka", "2771")))[0]?.countryHint).toBe("PL");
+  });
 
   it("reads a race off the season table", () => {
     const [ev] = parsePzkolCalendar(

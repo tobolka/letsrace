@@ -12,8 +12,8 @@ import { mapPool } from "../src/lib/watcher/pool";
 import type { Update } from "../src/lib/supabase/tables";
 config({ path: ".env.local", quiet: true });
 process.env.LLM_LEDGER_PATH ??= resolve("tmp/llm-budget.json");
-process.env.LLM_DAILY_BUDGET_USD ??= "2.50";
-process.env.LLM_MONTHLY_BUDGET_USD ??= "25";
+process.env.LLM_DAILY_BUDGET_USD ??= "0.50";
+process.env.LLM_MONTHLY_BUDGET_USD ??= "5.00";
 process.env.LLM_BUDGET_USD ??= "0.40";
 const arg = (name: string, fallback: string) => process.argv.find(a => a.startsWith("--" + name + "="))?.slice(name.length + 3) ?? fallback;
 const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
@@ -31,7 +31,7 @@ async function baseline() {
   for (let from = 0; ; from += 1000) {
     const { data, error } = await s.from("events").select("id,name,start_date,registration_url,regulations_url,website_url,location:locations!inner(country_code,municipality),sources:event_sources(source_url),overrides:event_overrides(locked_fields)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", ["scheduled", "confirmed", "tbc"]).gte("start_date", today).lte("start_date", end)
-      .in("location.country_code", (process.env.CATALOG_COUNTRIES ?? "CZ,SK,AT,DE,PL,CH").split(",")).order("start_date").order("id").range(from, from + 999);
+      .in("location.country_code", (process.env.CATALOG_COUNTRIES ?? "CZ,SK,AT,DE,PL,CH,IT").split(",")).order("start_date").order("id").range(from, from + 999);
     if (error) throw error;
     rows.push(...data as unknown as Race[]);
     if (data.length < 1000) return rows;

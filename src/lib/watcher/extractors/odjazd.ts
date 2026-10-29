@@ -60,7 +60,9 @@ export async function parseOdjazd(): Promise<ParsedEvent[]> {
   // The old weekly listing, in case it comes back — it is the only one that
   // names races far ahead.
   const stubs = new Map<string, ParsedEvent>();
-  for (const week of upcomingWeeks(WEEKS_AHEAD)) {
+  // These weekly URLs currently redirect to the home page. They are a fallback
+  // only, otherwise twelve redundant pages consume the budget before any write.
+  for (const week of ids.size ? [] : upcomingWeeks(WEEKS_AHEAD)) {
     const page = await fetchText(`${ORIGIN}/tydzien/${week}`, { timeoutMs: 20_000 });
     if (!page.ok || !page.text) continue;
     for (const item of listItems(page.text)) {

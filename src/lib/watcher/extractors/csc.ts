@@ -3,6 +3,7 @@ import type { AnyNode } from "domhandler";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { inferDisciplines } from "@/lib/taxonomy";
+import { countryFromVenue } from "@/lib/geo/country-label";
 
 const PORTAL_ORIGIN = "https://portal.czechcyclingfederation.com";
 
@@ -112,7 +113,7 @@ export function parseCscPublicGrid(url: string, html: string): ParsedEvent[] {
       startDate,
       endDate: endDate && endDate !== startDate ? endDate : undefined,
       placeText: place || "Czechia",
-      countryHint: "CZ",
+      countryHint: countryFromVenue(place) ?? "CZ",
       discipline: mapped,
       audience: /žák|junior|kadet|děti|mládež|u1[123]|mlž|stž/i.test(`${name} ${klass}`)
         ? "kids"

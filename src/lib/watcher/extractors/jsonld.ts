@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { countryFromLabel } from "@/lib/geo/country-label";
 
 export function extractJsonLdEvents(sourceUrl: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
@@ -21,12 +22,14 @@ export function extractJsonLdEvents(sourceUrl: string, html: string): ParsedEven
             ? item.location
             : item.location?.name || item.location?.address?.addressLocality || "";
         const geo = item.location?.geo;
+        const country = item.location?.address?.addressCountry;
         out.push({
           externalId: item["@id"] || `${normalizeName(item.name)}-${String(start).slice(0, 10)}`,
           name: String(item.name),
           startDate: String(start).slice(0, 10),
           endDate: item.endDate ? String(item.endDate).slice(0, 10) : undefined,
           placeText: String(place || "Unknown"),
+          countryHint: countryFromLabel(typeof country === "string" ? country : country?.name) ?? countryFromLabel(place),
           sourceUrl: item.url || sourceUrl,
           registrationUrl: item.url,
           lat: geo?.latitude ? Number(geo.latitude) : undefined,

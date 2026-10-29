@@ -65,7 +65,7 @@ const DOCS: Record<Locale, Doc> = {
   },
   en: {
     title: "About",
-    intro: `${SITE_NAME} puts the bike races of Central Europe in one place — on a map and in a calendar.`,
+    intro: `${SITE_NAME} puts the bike races of Central Europe in one place, on a map and in a calendar.`,
     updated: "Last updated",
     season: "2026 season · as of 17 October 2026",
     sites: "websites read",
@@ -82,13 +82,13 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "How it works",
         p: [
-          "The site reads thousands of pages — federation calendars and organisers' and series' own sites — and takes what matters from each race: the date, the place, the discipline, the categories and the entry link. Then it puts all of it on one map and in one calendar, across countries.",
+          "The site reads thousands of pages from federations, organisers and race series. It takes what matters from each race: the date, the place, the discipline, the categories and the entry link. Then it puts all of it on one map and in one calendar, across countries.",
         ],
       },
       {
         h: "Where the information comes from",
         p: [
-          "Every race links to its source — the organiser's site, the regulations or a federation calendar. The catalogue is refreshed every day, and each race shows when we last found it at its source.",
+          "Every race links to its source: the organiser's site, the regulations or a federation calendar. The catalogue is refreshed every day, and each race shows when we last found it at its source.",
         ],
       },
       {
@@ -101,7 +101,7 @@ const DOCS: Record<Locale, Doc> = {
   },
   pl: {
     title: "O projekcie",
-    intro: `${SITE_NAME} zbiera wyścigi rowerowe z Europy Środkowej w jednym miejscu — na mapie i w kalendarzu.`,
+    intro: `${SITE_NAME} zbiera wyścigi rowerowe z Europy Środkowej w jednym miejscu, na mapie i w kalendarzu.`,
     updated: "Ostatnia zmiana",
     season: "Sezon 2026 · stan na 17.10.2026",
     sites: "przeczytanych serwisów",
@@ -112,19 +112,19 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Skąd ten pomysł",
         p: [
-          `Nazywam się ${SITE_AUTHOR.name}. Stworzyłem ${SITE_NAME}, żeby łatwiej znajdować wyścigi na weekendy i wyjazdy z rodziną — także te tuż za granicą, o których wcześniej nie wiedzieliśmy.`,
+          `Nazywam się ${SITE_AUTHOR.name}. Stworzyłem ${SITE_NAME}, żeby łatwiej znajdować wyścigi na weekendy i wyjazdy z rodziną, także te tuż za granicą, o których wcześniej nie wiedzieliśmy.`,
         ],
       },
       {
         h: "Jak to działa",
         p: [
-          "Strona przegląda tysiące stron — kalendarze związków oraz strony organizatorów i cykli — i z każdego wyścigu wyciąga to, co ważne: termin, miejsce, dyscyplinę, kategorie i link do zapisów. Wszystko trafia na jedną mapę i do jednego kalendarza, ponad granicami.",
+          "Strona przegląda tysiące stron związków, organizatorów i cykli. Z każdego wyścigu wyciąga to, co ważne: termin, miejsce, dyscyplinę, kategorie i link do zapisów. Wszystko trafia na jedną mapę i do jednego kalendarza, ponad granicami.",
         ],
       },
       {
         h: "Skąd są dane",
         p: [
-          "Każdy wyścig ma link do swojego źródła — strony organizatora, regulaminu lub kalendarza związku. Katalog odświeżamy codziennie, a przy wyścigu widać, kiedy ostatnio znaleźliśmy go w źródle.",
+          "Każdy wyścig ma link do źródła: strony organizatora, regulaminu lub kalendarza związku. Katalog odświeżamy codziennie, a przy wyścigu widać, kiedy ostatnio znaleźliśmy go w źródle.",
         ],
       },
       {
@@ -137,7 +137,7 @@ const DOCS: Record<Locale, Doc> = {
   },
   sk: {
     title: "O projekte",
-    intro: `${SITE_NAME} dáva cyklistické preteky zo strednej Európy na jedno miesto – na mapu a do kalendára.`,
+    intro: `${SITE_NAME} dáva cyklistické preteky zo strednej Európy na jedno miesto, na mapu a do kalendára.`,
     updated: "Posledná zmena",
     season: "Sezóna 2026 · stav k 17. 10. 2026",
     sites: "prečítaných webov",
@@ -148,19 +148,19 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Prečo to vzniklo",
         p: [
-          `Volám sa ${SITE_AUTHOR.name}. ${SITE_NAME} som vytvoril, aby som ľahšie našiel preteky na víkendy a výlety s rodinou — aj tie kúsok za hranicami, o ktorých sme predtým nevedeli.`,
+          `Volám sa ${SITE_AUTHOR.name}. ${SITE_NAME} som vytvoril, aby som ľahšie našiel preteky na víkendy a výlety s rodinou, aj tie kúsok za hranicami, o ktorých sme predtým nevedeli.`,
         ],
       },
       {
         h: "Ako to funguje",
         p: [
-          "Web prechádza tisíce stránok – kalendáre zväzov a weby organizátorov a seriálov – a pri každých pretekoch vytiahne to podstatné: termín, miesto, disciplínu, kategórie a odkaz na prihlášky. Všetko je potom na jednej mape a v jednom kalendári, naprieč krajinami.",
+          "Web prechádza tisíce stránok zväzov, organizátorov a seriálov. Pri každých pretekoch vytiahne to podstatné: termín, miesto, disciplínu, kategórie a odkaz na prihlášky. Všetko je potom na jednej mape a v jednom kalendári, naprieč krajinami.",
         ],
       },
       {
         h: "Odkiaľ sú údaje",
         p: [
-          "Každé preteky odkazujú na svoj zdroj – web organizátora, propozície alebo kalendár zväzu. Katalóg sa obnovuje každý deň a pri pretekoch vidíš, kedy sme ich naposledy našli v zdroji.",
+          "Každé preteky odkazujú na svoj zdroj: web organizátora, propozície alebo kalendár zväzu. Katalóg sa obnovuje každý deň a pri pretekoch vidíš, kedy sme ich naposledy našli v zdroji.",
         ],
       },
       {
@@ -173,7 +173,7 @@ const DOCS: Record<Locale, Doc> = {
   },
   de: {
     title: "Über das Projekt",
-    intro: `${SITE_NAME} bringt die Radrennen Mitteleuropas an einen Ort – auf eine Karte und in einen Kalender.`,
+    intro: `${SITE_NAME} bringt die Radrennen Mitteleuropas an einen Ort, auf eine Karte und in einen Kalender.`,
     updated: "Zuletzt geändert",
     season: "Saison 2026 · Stand 17.10.2026",
     sites: "gelesene Websites",
@@ -184,19 +184,19 @@ const DOCS: Record<Locale, Doc> = {
       {
         h: "Warum es das gibt",
         p: [
-          `Ich bin ${SITE_AUTHOR.name}. Ich habe ${SITE_NAME} gebaut, um Rennen für Wochenenden und Ausflüge mit meiner Familie zu finden — auch direkt hinter der Grenze, wo wir früher oft nichts mitbekamen.`,
+          `Ich bin ${SITE_AUTHOR.name}. Ich habe ${SITE_NAME} gebaut, um Rennen für Wochenenden und Ausflüge mit meiner Familie zu finden, auch direkt hinter der Grenze, wo wir früher oft nichts mitbekamen.`,
         ],
       },
       {
         h: "Wie es funktioniert",
         p: [
-          "Die Seite liest Tausende Seiten – Verbandskalender und die Websites von Veranstaltern und Serien – und nimmt aus jedem Rennen das Wesentliche: Termin, Ort, Disziplin, Klassen und den Link zur Anmeldung. Alles landet auf einer Karte und in einem Kalender, über Ländergrenzen hinweg.",
+          "Die Seite liest Tausende Seiten von Verbänden, Veranstaltern und Rennserien. Sie nimmt aus jedem Rennen das Wesentliche: Termin, Ort, Disziplin, Klassen und den Link zur Anmeldung. Alles landet auf einer Karte und in einem Kalender, über Ländergrenzen hinweg.",
         ],
       },
       {
         h: "Woher die Angaben stammen",
         p: [
-          "Jedes Rennen verlinkt auf seine Quelle – die Website des Veranstalters, die Ausschreibung oder einen Verbandskalender. Der Katalog wird täglich aktualisiert, und bei jedem Rennen steht, wann wir es zuletzt in der Quelle gefunden haben.",
+          "Jedes Rennen verlinkt auf seine Quelle: die Website des Veranstalters, die Ausschreibung oder einen Verbandskalender. Der Katalog wird täglich aktualisiert, und bei jedem Rennen steht, wann wir es zuletzt in der Quelle gefunden haben.",
         ],
       },
       {

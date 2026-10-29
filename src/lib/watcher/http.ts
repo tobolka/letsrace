@@ -2,10 +2,13 @@ import { createHash } from "crypto";
 import { assertPublicHttpUrl, fetchPublic, UnsafeUrlError } from "@/lib/http/safe-url";
 import { BOT_UA, catalogUserAgent, needsBrowserUa } from "@/lib/http/user-agent";
 import { hostnameOf, hostIntervalMs, sleep, withHostGate } from "@/lib/watcher/pool";
+import { readJson, writeJsonAtomic } from "@/lib/catalog/local-source-cache";
+import { join } from "node:path";
 
 export { BOT_UA, catalogUserAgent };
 
 export type FetchResult = {
+  finalUrl?: string;
   html: string;
   status: number;
   etag?: string | null;
@@ -16,6 +19,8 @@ export type FetchResult = {
 };
 
 type FetchOpts = {
+  /** Reviewed writes must validate a fresh source, bypassing the short shared cache. */
+  fresh?: boolean;
   etag?: string | null;
   lastModified?: string | null;
   contentHash?: string | null;
@@ -72,6 +77,7 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
   const hash = createHash("sha256").update(html).digest("hex");
   return {
     html,
+    finalUrl: res.url,
     status: res.status,
     etag: res.headers.get("etag"),
     lastModified: res.headers.get("last-modified"),
@@ -190,7 +196,7 @@ function retryable(status: number): boolean {
 /**
  * Polite fetch with per-host gating, retries, and exponential backoff.
  */
-export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<FetchResult> {
+async function fetchPageUncached(url: string, opts: FetchOpts = {}): Promise<FetchResult> {
   const host = hostnameOf(url);
   const retries = opts.retries ?? 3;
   const interval = hostIntervalMs(host);
@@ -234,6 +240,25 @@ export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<Fetc
 
   if (opts.skipGate) return run();
   return withHostGate(host, interval, run);
+}
+
+const documentRequests = new Map<string, Promise<FetchResult>>();
+/** Share successful public GET documents across readers in a local refresh. */
+export async function fetchPage(url: string, opts: FetchOpts = {}): Promise<FetchResult> {
+  const directory = process.env.SOURCE_DOCUMENT_CACHE_DIR;
+  if (!directory || opts.fresh || opts.method === "POST" || opts.etag || opts.lastModified || opts.contentHash) return fetchPageUncached(url, opts);
+  const key = createHash("sha256").update(JSON.stringify([url, opts.accept ?? null])).digest("hex");
+  const path = join(directory, `${key}.json`);
+  const held = await readJson<{ at: number; result: FetchResult }>(path);
+  if (held && Date.now() - held.at < 5 * 60_000 && held.result.status === 200 && createHash("sha256").update(held.result.html).digest("hex") === held.result.hash) return held.result;
+  if (documentRequests.has(path)) return documentRequests.get(path)!;
+  const request = (async () => {
+    const result = await fetchPageUncached(url, opts);
+    if (result.status === 200 && !/^image\//i.test(result.contentType ?? "")) await writeJsonAtomic(path, { at: Date.now(), result });
+    return result;
+  })();
+  documentRequests.set(path, request);
+  try { return await request; } finally { documentRequests.delete(path); }
 }
 
 /** Convenience for JSON APIs used by extractors. */

@@ -1,13 +1,13 @@
+import { pipelineJob } from "@/lib/pipeline/operations";
 import { NextResponse } from "next/server";
 import { withCron } from "@/lib/api/guards";
-import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { runDueWatches } from "@/lib/watcher/run";
 import { geocodePendingLocations } from "@/lib/geocode";
 import { sendOpsAlert } from "@/lib/ops/alerts";
 
 export const maxDuration = 300;
 
-export const GET = withCron(async () => {
+export const GET = withCron(async (req) => NextResponse.json(await pipelineJob("server-free", async () => {
   /*
    * A run gets through what it gets through, and it was not much.
    *
@@ -21,22 +21,24 @@ export const GET = withCron(async () => {
    * the busiest hosts are already held to two sources a run. `maxDuration` is
    * 300s, which is what the budget leaves room under.
    */
-  const outcomes = await runDueWatches(120, { concurrency: 10, budgetMs: 260_000 });
+  // Cap below the old 120/80: each watch is many PostgREST round-trips, and
+  // Free-tier Supabase egress + log ingestion were already over quota from
+  // catalogue traffic alone. Prefer a slower poll cycle over blowing the plan.
+  const outcomes = await runDueWatches(60, { concurrency: 6, budgetMs: 200_000 });
   let geocode = null;
   try {
-    geocode = await geocodePendingLocations(80);
+    geocode = await geocodePendingLocations(40);
   } catch (e) {
     console.error("geocode after watch failed", e);
   }
 
-  // A row written into the catalogue — public pages must see it on the next visit.
-  if (outcomes.some((o) => o?.ok && (o.eventsUpserted ?? 0) > 0)) {
-    refreshPublicCatalogue();
-  }
+  // Rows land in the DB; public pages pick them up on their weekly ISR window.
+  // A full-tag revalidate here rewrote every race/hub cache entry and blew the
+  // Hobby ISR write + Origin Transfer budgets when crawlers rewarmed.
 
   const fails = outcomes.filter((o) => o && "ok" in o && o.ok === false);
   const failRate = outcomes.length ? fails.length / outcomes.length : 0;
-  if (fails.length >= 3 || failRate >= 0.35) {
+  if (req.headers.get("x-letsrace-monitor") !== "1" && (fails.length >= 3 || failRate >= 0.35)) {
     await sendOpsAlert({
       title: "Let's Race ingest: elevated failures",
       body: `${fails.length}/${outcomes.length} watches failed in this cron run.`,
@@ -49,7 +51,7 @@ export const GET = withCron(async () => {
     });
   }
 
-  return NextResponse.json({ ok: true, count: outcomes.length, outcomes, geocode });
-});
+  return { ok: fails.length === 0, count: outcomes.length, created: outcomes.reduce((s,r)=>s+(r.eventsCreated??0),0), updated: outcomes.reduce((s,r)=>s+(r.eventsUpdated??0),0), failed: fails.length, problems: fails.map(r=>({url:r.url,error:r.error??"unknown"})), unchanged: outcomes.filter(r=>r.unchanged).length, geocode };
+})));
 
 export const POST = GET;

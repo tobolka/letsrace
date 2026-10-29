@@ -1,3 +1,4 @@
+import { fairCatalogueBatch } from "./overview-quality";
 import * as cheerio from "cheerio";
 import { linkLabel } from "@/lib/watcher/link-label";
 import { writeFileSync } from "node:fs";
@@ -352,10 +353,11 @@ export async function enrichFromPages(opts?: {
   const spentBefore = llmSpent();
   const supabase = createServerSupabase();
   const max = opts?.max ?? 60;
+  const overviewOnly = process.env.CATALOG_OVERVIEW_ONLY === "1" && !opts?.past && !opts?.agesOnly;
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "llm_v4");
   type Target = {
-    id: string; name: string; startDate: string; place: string | null; web: string | null; regs: string | null;
+    id: string; name: string; startDate: string; country: string | null; place: string | null; web: string | null; regs: string | null;
     disciplines: string[]; existing: string[]; ageConfidence: string | null; registrationUrl: string | null; regulationsUrl: string | null; closesAt: string | null;
   };
   const targets: Target[] = [];
@@ -382,12 +384,12 @@ export async function enrichFromPages(opts?: {
       if (opts?.agesOnly && r.age_confidence === "explicit") continue;
       if (!r.website_url || AGGREGATOR.test(r.website_url)) continue;
       // Worth a look only if something is missing or only a guess.
-      const needs = opts?.past
+      const needs = overviewOnly ? !(r.disciplines ?? []).length : opts?.past
         ? r.age_confidence !== "explicit" || !(r.disciplines ?? []).length
         : r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url;
       if (!needs && !opts?.ids?.length) continue;
       targets.push({
-        id: r.id, name: r.name, startDate: r.start_date, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
+        id: r.id, name: r.name, startDate: r.start_date, country: r.location?.country_code ?? null, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
         disciplines: r.disciplines ?? [], existing: r.age_categories ?? [], ageConfidence: r.age_confidence,
         registrationUrl: r.registration_url, regulationsUrl: r.regulations_url, closesAt: r.registration_closes_at,
       });
@@ -402,7 +404,8 @@ export async function enrichFromPages(opts?: {
     return missing ? 100 - missing * 10 + (t.ageConfidence !== "explicit" && t.regs ? 3 : 0) : !t.regulationsUrl ? 1 : 0;
   };
   targets.sort((a, b) => priority(b) - priority(a) || a.startDate.localeCompare(b.startDate));
-  targets.splice(max);
+  const selected = fairCatalogueBatch(targets, max, t => `${t.country}:${t.startDate.slice(0, 4)}`);
+  targets.splice(0, targets.length, ...selected);
 
   const result: EnrichResult = { attempted: targets.length, notThisRace: 0, ages: 0, disciplinesSet: 0, registration: 0, regulations: 0, deadlines: 0, auditDropped: 0, auditUsd: 0, proposed: {}, passedRules: {}, silent: 0, failed: 0, tokensIn: 0, tokensOut: 0, costUsd: 0 };
   const review: string[] = ["kind\tdate\trace\tholds\tmodel says\tevidence"];

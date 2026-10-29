@@ -1,3 +1,4 @@
+import { parseRaceTime } from "@/lib/watcher/extractors/racetime";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { parseCscCalendar, parseCscCupListing } from "@/lib/watcher/extractors/csc";
@@ -222,6 +223,9 @@ export async function extractWithAdapter(
   url: string,
   html: string,
 ): Promise<AdapterResult | null> {
+  if (host === "racetime.sk" && new URL(url).pathname.replace(/\/$/, "") === "/terminovka") {
+    return { events: parseRaceTime(url, html), strategy: "adapter:racetime-calendar" };
+  }
   if (host === "ketterechts.eu" && /\/etn\//.test(new URL(url).pathname)) {
     const events = parseEventinKids(url, html);
     if (events.length) return { events, strategy: "adapter:eventin-kids" };

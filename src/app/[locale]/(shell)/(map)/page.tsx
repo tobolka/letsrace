@@ -3,7 +3,7 @@ import { locales, type Locale } from "@/lib/i18n/messages";
 import { notFound } from "next/navigation";
 
 /** Five shared entry pages; live map results are fetched in the browser. */
-export const revalidate = 604800;
+export const revalidate = 86400;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

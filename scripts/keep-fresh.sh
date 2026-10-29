@@ -14,6 +14,11 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p tmp
+MANAGED_PID_FILE="$HOME/Library/Application Support/LetsRace/data/runner.pid"
+if [ -r "$MANAGED_PID_FILE" ] && kill -0 "$(cat "$MANAGED_PID_FILE")" 2>/dev/null; then
+  echo 'LetsRace už spravuje automatický sběrač. Použij ikonu kola v liště; druhá smyčka se nespustila.'
+  exit 0
+fi
 HOURS=2
 RUN_HOURS=0
 for argument in "$@"; do
@@ -29,16 +34,10 @@ if ! [[ "$HOURS" =~ ^[0-9]+$ && "$RUN_HOURS" =~ ^[0-9]+$ ]] || [ "$HOURS" -lt 1 
   echo 'Hours must be whole numbers; interval must be at least 1.' >&2; exit 1
 fi
 if [ "$RUN_HOURS" -gt 0 ]; then export SOURCE_RUN_DEADLINE=$(( $(date +%s) + RUN_HOURS * 3600 )); fi
-# The model's daily work (a few cents a day, each step capped) and its reading
-# of calendars no parser knows. Set to 0 to run without the model.
-# Shared across every subprocess and refresh, including fallback calendar readers.
+# refresh-data.sh selects free/weekly-AI mode on every iteration. Existing
+# loops pick up that policy without a restart. All model readers share a ledger.
 export LLM_LEDGER_PATH="${LLM_LEDGER_PATH:-$PWD/tmp/llm-budget.json}"
-export LLM_DAILY_BUDGET_USD="${LLM_DAILY_BUDGET_USD:-2.50}"
-export LLM_MONTHLY_BUDGET_USD="${LLM_MONTHLY_BUDGET_USD:-25}"
-export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE,PL,CH}"
-export BRAVE_SEARCH_LIMIT="${BRAVE_SEARCH_LIMIT:-40}"
-export LLM_DAILY="${LLM_DAILY:-1}"
-export LLM_CALENDARS="${LLM_CALENDARS:-1}"
+export CATALOG_COUNTRIES="${CATALOG_COUNTRIES:-CZ,SK,AT,DE,PL,CH,IT}"
 while true; do
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then break; fi
   LOG="tmp/refresh-$(date +%F-%H%M).log"

@@ -1,3 +1,5 @@
+import { LlmUnavailable } from "./errors";
+import { withProviderAvailability } from "@/lib/llm/provider-health";
 import { reserveSharedBudget } from "@/lib/llm/budget-ledger";
 import { parseJsonReply } from "@/lib/llm/json-reply";
 
@@ -34,7 +36,7 @@ function outputLimit(model: string, requested: number, search = false): number {
 
 export type LlmUsage = { tokensIn: number; tokensOut: number; costUsd: number };
 
-export class LlmUnavailable extends Error { override name = "LlmUnavailable"; }
+export { LlmUnavailable } from "./errors";
 export class LlmResponseError extends Error {
   override name = "LlmResponseError";
   constructor(message: string, public readonly usage: LlmUsage) { super(message); }
@@ -55,13 +57,14 @@ let spent = 0;
 let reserved = 0;
 
 /** Reserve conservatively before sending, so parallel readers cannot overrun the cap. */
-async function withinBudget<T>(opts: { system: string; user: string; model?: string; maxTokens?: number; maxSearches?: number; outputSchema?: Record<string, unknown> }, run: () => Promise<T>): Promise<T> {
+export async function withinBudget<T>(opts: { system: string; user: string; model?: string; maxTokens?: number; maxSearches?: number; outputSchema?: Record<string, unknown>; reservationUsd?: number }, run: () => Promise<T>): Promise<T> {
   const budget = Number(process.env.LLM_BUDGET_USD ?? 0.25);
   if (!Number.isFinite(budget) || budget < 0) throw new LlmUnavailable("LLM_BUDGET_USD must be a finite non-negative number");
   // UTF-8 bytes bound token count conservatively; reserve protocol overhead too.
   const input = Buffer.byteLength(opts.system.toWellFormed() + opts.user.toWellFormed(), "utf8") + 1024;
   const model = opts.model ?? HAIKU;
-  const amount = tokenCost(model, input, outputLimit(model, opts.maxTokens ?? 1000, Boolean(opts.maxSearches))) + (opts.maxSearches ?? 0) * 0.01;
+  const amount = opts.reservationUsd ?? tokenCost(model, input, outputLimit(model, opts.maxTokens ?? 1000, Boolean(opts.maxSearches))) + (opts.maxSearches ?? 0) * 0.01;
+  if (!Number.isFinite(amount) || amount < 0) throw new LlmUnavailable("Model reservation must be finite and non-negative");
   if (spent + reserved + amount > budget) throw new LlmUnavailable(`LLM budget of $${budget}: not enough left for the next request`);
   reserved += amount;
   let settle: Awaited<ReturnType<typeof reserveSharedBudget>> = null;
@@ -71,10 +74,16 @@ async function withinBudget<T>(opts: { system: string; user: string; model?: str
     catch (error) { throw new LlmUnavailable(error instanceof Error ? error.message : String(error)); }
     const result = await run();
     actual = (result as { usage?: LlmUsage }).usage?.costUsd ?? 0;
+    // Other providers use this same process budget; Anthropic already counts
+    // its successful usage inside its request functions.
+    if (opts.reservationUsd !== undefined) spent += actual;
     return result;
   }
   catch (error) {
-    if (error instanceof LlmResponseError) actual = error.usage.costUsd;
+    if (error instanceof LlmResponseError) {
+      actual = error.usage.costUsd;
+      if (opts.reservationUsd !== undefined) spent += actual;
+    }
     // A timeout can still have been billed. Keep its reservation as a conservative charge.
     if (error instanceof Error && /timeout|abort|fetch failed/i.test(`${error.name} ${error.message}`)) { spent += amount; actual = amount; }
     throw error;
@@ -213,9 +222,9 @@ async function askWithSearchUnchecked<T>(opts: {
 }
 
 export async function askJson<T>(opts: Parameters<typeof askJsonUnchecked<T>>[0]): Promise<Awaited<ReturnType<typeof askJsonUnchecked<T>>>> {
-  return withinBudget(opts, () => askJsonUnchecked<T>(opts));
+  return withProviderAvailability("anthropic", () => withinBudget(opts, () => askJsonUnchecked<T>(opts)));
 }
 
 export async function askWithSearch<T>(opts: Parameters<typeof askWithSearchUnchecked<T>>[0]): Promise<Awaited<ReturnType<typeof askWithSearchUnchecked<T>>>> {
-  return withinBudget({ ...opts, maxTokens: opts.maxTokens ?? 800, maxSearches: opts.maxSearches ?? 3 }, () => askWithSearchUnchecked<T>(opts));
+  return withProviderAvailability("anthropic", () => withinBudget({ ...opts, maxTokens: opts.maxTokens ?? 800, maxSearches: opts.maxSearches ?? 3 }, () => askWithSearchUnchecked<T>(opts)));
 }

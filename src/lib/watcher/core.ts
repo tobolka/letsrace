@@ -9,7 +9,7 @@ import type { LlmUsage } from "@/lib/llm/anthropic";
 import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
-export const WATCH_READER_VERSION = "pipeline-v3";
+export const WATCH_READER_VERSION = "pipeline-v7";
 
 export type ExtractResult = {
   events: ParsedEvent[];
@@ -33,7 +33,9 @@ export function canReconcileMissingEvents(result: ExtractResult): boolean {
 export function combineExtractedEvents(parsed: ParsedEvent[], ai: ParsedEvent[]): ParsedEvent[] {
   const out = [...parsed];
   for (const event of ai) {
-    const matches = out.map((held, index) => ({ held, index })).filter(({ held }) => datesCompatible(held, event, 0) && (held.externalId === event.externalId ||
+    // Overlapping ranges can identify the same edition, but cannot transfer a
+    // proof of its opening day onto a parser's different (often closing) day.
+    const matches = out.map((held, index) => ({ held, index })).filter(({ held }) => held.startDate === event.startDate && datesCompatible(held, event, 0) && (held.externalId === event.externalId ||
       (held.startDate === event.startDate && event.evidence?.method === "llm_calendar" && skeleton(held.name).length >= 6 && skeleton(event.evidence.quote).includes(skeleton(held.name))) || scoreDuplicate(
       { ...held, urls: [held.sourceUrl], countryCode: held.countryHint },
       { ...event, urls: [event.sourceUrl], countryCode: event.countryHint },

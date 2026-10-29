@@ -1,5 +1,6 @@
+import { catalogueWindow } from "../src/lib/catalog/overview-quality";
 /**
- * Category coverage for the next 180 days, by country.
+ * Legacy category diagnostics through the end of next year, by country.
  *   node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/data-stats.ts
  */
 import { readFileSync } from "node:fs";
@@ -13,17 +14,18 @@ async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const supabase = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
-  const until = new Date(Date.now() + 180 * 86_400_000).toISOString().slice(0, 10);
+  const until = catalogueWindow(today).until;
   const rows: { age_categories: string[] | null; age_confidence: string | null; disciplines: string[] | null; website_url: string | null; location: { country_code: string | null } | null }[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .select("age_categories, age_confidence, disciplines, website_url, location:locations(country_code)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .gte("start_date", today)
       .lte("start_date", until)
-      .range(from, from + 999);
+      .order("id").range(from, from + 999);
+    if (error) throw error;
     rows.push(...((data ?? []) as unknown as typeof rows));
     if (!data || data.length < 1000) break;
   }

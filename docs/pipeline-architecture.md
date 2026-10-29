@@ -1,3 +1,5 @@
+> Historical architecture record. For the current running entry points, schedules, budgets and live verification see [keep-fresh.md](keep-fresh.md). Statements about not-yet-run deployment below refer to the original audit date.
+
 # Race data pipeline, October 2026
 
 Status: implemented locally on `codex/pipeline-evidence-refactor`. Production

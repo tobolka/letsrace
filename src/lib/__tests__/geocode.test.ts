@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { cleanGeocodeQuery, geocodeFromGazetteer, geocodePlace } from "@/lib/geocode";
 
+it("keeps Polish Sobótka separate from Czech Sobotka and respects a stated country", () => {
+  expect(geocodeFromGazetteer("Sobótka")?.countryCode).toBe("PL");
+  expect(geocodeFromGazetteer("Sobotka", "CZ")?.countryCode).toBe("CZ");
+  expect(geocodeFromGazetteer("Sobotka", "PL")).toBeNull();
+});
+
 describe("country-only race venues", () => {
   it.each(["CZ", "SK", "DE", "AT", "PL", "Austria", "Germany", "Slovakia"])(
     "does not geocode %s as a race start", async (place) => {

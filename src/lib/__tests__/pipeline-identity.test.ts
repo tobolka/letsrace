@@ -45,11 +45,21 @@ describe("additive extraction", () => {
     expect(combineExtractedEvents([primary], [enriched])).toHaveLength(1);
     expect(combineExtractedEvents([primary], [enriched])[0]?.externalId).toBe(primary.externalId);
   });
+  it("keeps an opening-day proof separate from a parser's overlapping closing-day assertion", () => {
+    const primary = { ...a, name: "Gracia Orlová", startDate: "2027-05-02" };
+    const verified = { ...primary, externalId: "ai-gracia", startDate: "2027-04-29", endDate: "2027-05-02",
+      evidence: { method: "llm_calendar", version: "calendar-v6", sourceUrl: a.sourceUrl, quote: "Gracia Orlová 2027 29. 4. – 2. 5. 2027" } };
+    const combined = combineExtractedEvents([primary], [verified]);
+    expect(combined).toHaveLength(2);
+    expect(combined[0]?.evidence).toBeUndefined();
+    expect(combined[1]?.startDate).toBe("2027-04-29");
+  });
 });
 
 it("rejects calendar headings and truncated news teasers as generic race names", () => {
   expect(extractGeneric("https://timing.test/", "<h1>Termine 2026</h1><p>24.10.2026 Perlcross</p>")).toEqual([]);
   expect(isSiteIdentityName("Mach mit: Viele…", "https://club.test/")).toBe(true);
+  expect(extractGeneric("https://gracia.test/o-zavodu/", "<h1>O závodu</h1><p>Gracia Orlová 2027 29. 4. – 2. 5. 2027</p>")).toEqual([]);
 });
 
 it("discovers a new race page on a known domain without reopening an already reviewed URL", () => {
@@ -66,4 +76,10 @@ it("does not move a different calendar round when the incoming venue is unstated
   const sameDay = { event: { startDate: "2026-11-08" } };
   expect(calendarRowCandidates("2026-11-08", true, [earlier, sameDay])).toEqual([sameDay]);
   expect(calendarRowCandidates("2026-11-08", false, [earlier, sameDay])).toEqual([earlier, sameDay]);
+});
+
+it('does not import race-office pages or marketing headings as race identities', () => {
+  expect(isSiteIdentityName('Kancelář závodu Grande Finale')).toBe(true);
+  expect(isSiteIdentityName('Silniční závody pro amatéry i profesionály 2027')).toBe(true);
+  expect(isSiteIdentityName('Road Stage Grande Finale')).toBe(false);
 });

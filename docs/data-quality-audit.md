@@ -1,3 +1,5 @@
+> Historický audit: tehdejší počty a intervaly nejsou aktuální provozní nastavení. Aktuální přehled je v [keep-fresh.md](keep-fresh.md).
+
 # Audit dat: co je neúplné nebo špatně
 
 *Stav k 1. 10. 2026, veřejné závody v příštích 12 měsících: 1 209.*

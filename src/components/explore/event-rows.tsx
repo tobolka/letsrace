@@ -1,6 +1,8 @@
 "use client";
 
 import { memo } from "react";
+import { useSavedRaceIds } from "@/hooks/use-saved-races";
+import { PlannedRaceMarker, PLANNED_RACE_SURFACE, PLANNED_RACE_SELECTED } from "@/components/race/planned-race-marker";
 import { EVENT_ROW_CLASS, EventRowBody } from "@/components/explore/event-row-body";
 import { Item } from "@/components/ui/item";
 import type { EventListItem } from "@/lib/events";
@@ -48,6 +50,7 @@ export const EventCard = memo(function EventCard({
   /** Let a long name take a second line (see `EventRowBody`). */
   wrapName?: boolean;
 }) {
+  const planned = useSavedRaceIds().has(event.id);
   return (
     <Item
       asChild
@@ -61,12 +64,16 @@ export const EventCard = memo(function EventCard({
         // `muted/50` over a near-white ground was a shade nobody could see. The
         // race you picked is the one thing on this list worth finding again
         // after you look away from it.
-        active && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+        planned && PLANNED_RACE_SURFACE,
+        planned && "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-blue-100/70 dark:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-blue-950/50",
+        active && !planned && "bg-muted dark:bg-muted [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted",
+        active && planned && PLANNED_RACE_SELECTED,
       )}
     >
       <button
         type="button"
         data-event-id={event.id}
+        data-planned={planned || undefined}
         aria-pressed={active}
         onClick={() => onSelect(event.id)}
         onMouseEnter={() => onHover?.(event.id)}
@@ -76,6 +83,7 @@ export const EventCard = memo(function EventCard({
         className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
         <EventRowBody event={event} locale={locale} distanceKm={km} wrapName={wrapName} />
+        {planned ? <PlannedRaceMarker locale={locale} /> : null}
       </button>
     </Item>
   );
