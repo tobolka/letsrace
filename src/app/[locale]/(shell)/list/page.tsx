@@ -37,8 +37,9 @@ export async function generateMetadata({
 export default async function ListPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!locales.includes(locale as Locale)) notFound();
+  // The preview is drawn only for crawlers and screen readers: the view itself is what people see.
   return (
-    <Suspense fallback={<CataloguePreview locale={locale as Locale} view="list" />}>
+    <Suspense fallback={<div className="sr-only"><CataloguePreview locale={locale as Locale} view="list" /></div>}>
       <ListView locale={locale} />
     </Suspense>
   );
