@@ -5,6 +5,8 @@ import Link from "next/link";
 import { addDays, format, parseISO } from "date-fns";
 import { Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PLAN_COLHEAD, PLAN_MONTH_BAND } from "@/components/account/plan-chrome";
+import { memberLabel } from "@/components/account/race-plan-controls";
 import { Input } from "@/components/ui/input";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -26,14 +28,9 @@ import { localePath } from "@/lib/localized-paths";
 const WEEKS_AT_A_TIME = 8;
 
 /** The plan already scrolls below its app bar: no second header offset. */
-const HEAD = "sticky top-0 z-10 border-b bg-muted py-2 text-xs font-medium";
+const HEAD = PLAN_COLHEAD;
 
 const CELL = "border-b px-2 py-1.5";
-
-/** A column heading has room for a name, not for a full name. */
-function firstName(name: string): string {
-  return name.trim().split(/\s+/)[0] || name;
-}
 
 function iso(d: Date): string {
   return format(d, "yyyy-MM-dd");
@@ -142,7 +139,7 @@ export function PlanAgenda({
         <table className="w-full min-w-[38rem] border-separate border-spacing-0 text-sm">
           <thead>
             <tr className="text-left">
-              <th scope="col" className={cn(HEAD, "w-24 px-3 text-right")}>
+              <th scope="col" className={cn(HEAD, "w-24 px-3 text-right md:pl-6")}>
                 {t.date}
               </th>
               <th scope="col" className={cn(HEAD, "w-24 px-2")}>
@@ -160,7 +157,7 @@ export function PlanAgenda({
                   // table does not jump about as names come and go.
                   style={{ width: `${68 / members.length}%` }}
                 >
-                  {firstName(m.name)}
+                  {memberLabel(m, t)}
                 </th>
               ))}
               <th scope="col" className={cn(HEAD, "w-10 px-2")}>
@@ -195,7 +192,7 @@ export function PlanAgenda({
                     <tr>
                       <td
                         colSpan={4 + members.length}
-                        className="border-b bg-muted/40 px-3 py-1 text-xs font-semibold tracking-wide first-letter:uppercase"
+                        className={PLAN_MONTH_BAND}
                       >
                         {format(d, "LLLL yyyy", { locale: df })}
                       </td>
@@ -205,8 +202,8 @@ export function PlanAgenda({
                     onClick={() => onSelectDay(day)}
                     className={cn(
                       "group/row cursor-default align-middle",
-                      weekend && "bg-muted",
-                      (note || busy) && "bg-muted/60",
+                      weekend && "bg-muted/40",
+                      (note || busy) && "bg-muted/70",
                       past && "opacity-55",
                       selected === day && "bg-brand/8 inset-ring inset-ring-brand/40",
                       "hover:bg-accent/60",

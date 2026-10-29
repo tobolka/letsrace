@@ -5,6 +5,7 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { CalendarPlus, Compass, History, MapPinned } from "lucide-react";
 import { PlanRow, planColumns } from "@/components/account/plan-row";
+import { PLAN_COLHEAD, PLAN_MONTH_BAND } from "@/components/account/plan-chrome";
 import { memberLabel } from "@/components/account/race-plan-controls";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
@@ -96,7 +97,7 @@ export function PlanRaces({
       {/* The columns, named once: the race, then each rider. Phones have no
           columns — each row carries the rider's name itself. */}
       <div
-        className="hidden border-b bg-card py-2 pl-6 pr-4 text-xs font-medium text-muted-foreground md:grid md:gap-x-3 md:[grid-template-columns:var(--plan-cols)]"
+        className={`${PLAN_COLHEAD} hidden items-center pl-6 pr-4 md:grid md:gap-x-3 md:[grid-template-columns:var(--plan-cols)]`}
         role="row"
       >
         <span>{t.planRaceColumn}</span>
@@ -113,7 +114,7 @@ export function PlanRaces({
         return (
           <Fragment key={plan.event.id}>
             {newMonth ? (
-              <h3 className="border-b bg-muted/40 px-4 py-2 text-xs font-semibold tracking-wide first-letter:uppercase md:px-6 [&:not(:first-child)]:border-t">
+              <h3 className={`${PLAN_MONTH_BAND} [&:not(:first-child)]:border-t`}>
                 {format(parseISO(plan.event.startDate), "LLLL yyyy", { locale: df })}
               </h3>
             ) : (
