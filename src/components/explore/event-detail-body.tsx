@@ -1,7 +1,7 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { Bike, Calendar, ChartNoAxesColumnIncreasing, ExternalLink, MapPin, Navigation, Trophy, UserRound } from "lucide-react";
+import { ArrowUpRight, Bike, Calendar, ChartNoAxesColumnIncreasing, ExternalLink, MapPin, Navigation, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
@@ -12,6 +12,7 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import type { EventListItem } from "@/lib/events";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
+import { localePath } from "@/lib/localized-paths";
 
 /** The card on the map: date and place, who it is for, what kind of racing, and the way in. */
 export function EventDetailBody({
@@ -114,33 +115,45 @@ export function EventDetailBody({
           </MetaRow>
           {event.series ? (
             <MetaRow icon={<Trophy />} label={t.seriesFilter}>
-              {onSelectSeries ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="xs"
-                  title={event.series.name}
-                  className="max-w-full min-w-0 shrink justify-start overflow-hidden"
-                  onClick={() => onSelectSeries(event.series!.slug)}
-                >
-                  <span className="truncate">{event.series.name}</span>
-                </Button>
-              ) : (
-                <Button
-                  asChild
-                  variant="outline"
-                  size="xs"
-                  className="max-w-full min-w-0 shrink justify-start overflow-hidden"
-                >
-                  <Link
-                    href={`/${locale}?series=${event.series.slug}`}
+              {/* The tag narrows to the series; the arrow opens its page. */}
+              <div className="flex max-w-full min-w-0 items-center gap-1">
+                {onSelectSeries ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
                     title={event.series.name}
-                    className="min-w-0"
+                    className="max-w-full min-w-0 shrink justify-start overflow-hidden"
+                    onClick={() => onSelectSeries(event.series!.slug)}
                   >
                     <span className="truncate">{event.series.name}</span>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="xs"
+                    className="max-w-full min-w-0 shrink justify-start overflow-hidden"
+                  >
+                    <Link
+                      href={`/${locale}?series=${event.series.slug}`}
+                      title={event.series.name}
+                      className="min-w-0"
+                    >
+                      <span className="truncate">{event.series.name}</span>
+                    </Link>
+                  </Button>
+                )}
+                <Button asChild variant="outline" size="icon-xs" className="shrink-0">
+                  <Link
+                    href={localePath(locale, `series/${event.series.slug}`)}
+                    aria-label={`${t.seriesFilter}: ${event.series.name}`}
+                    title={event.series.name}
+                  >
+                    <ArrowUpRight />
                   </Link>
                 </Button>
-              )}
+              </div>
             </MetaRow>
           ) : null}
         </div>

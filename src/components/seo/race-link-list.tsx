@@ -6,6 +6,7 @@ import { monthHeading } from "@/lib/seo-race-copy";
 import { EVENT_ROW_CLASS, EventRowBody } from "@/components/explore/event-row-body";
 import { Item, ItemGroup } from "@/components/ui/item";
 import { cn } from "@/lib/utils";
+import { PlannedRaceRow } from "@/components/race/planned-race-row";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 
 /**
@@ -43,7 +44,7 @@ export function RaceLinkList({
           ) : null}
           <ItemGroup className="overflow-hidden rounded-xl border">
             {list.map((event) => (
-              <div role="listitem" key={event.id} className="relative border-b border-border/50 last:border-b-0">
+              <PlannedRaceRow eventId={event.id} key={event.id} className="relative border-b border-border/50 last:border-b-0">
                 <Item asChild size="sm" className={cn(EVENT_ROW_CLASS, "pr-12 max-md:py-2.5")}>
                   <Link href={eventPagePath(locale, event.slug)} className="relative">
                     <EventRowBody event={event} locale={locale} />
@@ -51,7 +52,7 @@ export function RaceLinkList({
                 </Item>
                 {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}
                 <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} className="absolute right-2 top-1/2 -translate-y-1/2" />
-              </div>
+              </PlannedRaceRow>
             ))}
           </ItemGroup>
         </section>
