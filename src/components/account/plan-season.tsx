@@ -4,8 +4,6 @@ import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { CalendarDays, CalendarOff, History, List, Sheet, Undo2 } from "lucide-react";
-import { PlanFilters } from "@/components/account/plan-filters";
-import { filterPlans, type PlanStatusFilter } from "@/lib/plan-filters";
 import { PlanAgenda } from "@/components/account/plan-agenda";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { PlanFeedSubscribe } from "@/components/account/plan-feed-subscribe";
@@ -75,38 +73,19 @@ export function PlanSeason({
   /** For the calendar subscription; without it the button is left out. */
   userId?: string | null;
 }) {
-  const t = messagesFor(locale);
-  const [riderId, setRiderId] = useState("");
-  const [status, setStatus] = useState<PlanStatusFilter>("all");
-  const filteredPlans = filterPlans(plans, members, riderId, status);
-  const filteredPast = filterPlans(past, members, riderId, status);
-  const visibleMembers = riderId ? members.filter((member) => member.id === riderId) : members;
-  const hasFilters = Boolean(riderId) || status !== "all";
   const today = todayIso();
   const [view] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("upcoming"));
-  const upcoming = filteredPlans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
+  const upcoming = plans.filter((p) => (p.event.endDate ?? p.event.startDate) >= today);
   const [month, setMonth] = useState(() => monthStart(selected ?? today));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <PlanFilters
-        locale={locale}
-        members={members}
-        riderId={riderId}
-        status={status}
-        onRider={setRiderId}
-        onStatus={setStatus}
-        onClear={() => { setRiderId(""); setStatus("all"); }}
-      />
-      {hasFilters && (view === "past" ? filteredPast : view === "upcoming" ? upcoming : filteredPlans).length === 0 ? (
-        <p role="status" className="border-b px-4 py-3 text-sm text-muted-foreground">{t.planFilterEmpty}</p>
-      ) : null}
       {view === "list" ? (
         <>
           <PlanAgenda
             locale={locale}
-            plans={filteredPlans}
-            members={visibleMembers}
+            plans={plans}
+            members={members}
             blocked={blocked}
             busyWeekdays={busyWeekdays}
             selected={selected}
@@ -130,8 +109,8 @@ export function PlanSeason({
           <PlanMonthView
             locale={locale}
             month={month}
-            plans={filteredPlans}
-            members={visibleMembers}
+            plans={plans}
+            members={members}
             busyWeekdays={busyWeekdays}
             blocked={blocked}
             selectedDay={selected}
@@ -147,16 +126,16 @@ export function PlanSeason({
             />
           ) : null}
         </>
-      ) : hasFilters && (view === "past" ? filteredPast : upcoming).length === 0 ? null : (
+      ) : (
         <PlanRaces
           locale={locale}
           // Newest first in the history: the race you just rode is the one you
           // come to mark in.
-          upcoming={view === "past" ? [...filteredPast].reverse() : upcoming}
+          upcoming={view === "past" ? [...past].reverse() : upcoming}
           past={view === "past"}
           hasPast={past.length > 0}
           notes={view === "past" ? undefined : notes}
-          members={visibleMembers}
+          members={members}
           busyId={busyId}
           onStatusChange={onStatusChange}
           onDiscard={onDiscard}
