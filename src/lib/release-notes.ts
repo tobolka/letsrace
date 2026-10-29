@@ -27,6 +27,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Races you have in your plan are tinted the same way everywhere: in lists, in the calendar and on the cup pages.",
         "On a race's card, the cup it belongs to has a small arrow that opens the cup's own page.",
         "History in the plan sits apart, at the end of the switcher. The filters that never worked well are gone.",
+        "When you drag past the end of a page, the side bar and the page no longer bounce together.",
       ],
       cs: [
         "Náš plán vypadá ve všech pohledech stejně: stejné hlavičky, stejné měsíční pásy a stejná jména jezdců.",
@@ -34,6 +35,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Závody, které máš v plánu, jsou všude podbarvené stejně: v seznamech, v kalendáři i na stránkách pohárů.",
         "Na kartě závodu je u poháru malá šipka, která otevře stránku celého poháru.",
         "Historie je v plánu odděleně, úplně na konci přepínače. Filtry, které nefungovaly dobře, jsou pryč.",
+        "Když na konci stránky přetáhneš, boční lišta a stránka už se nehoupou společně.",
       ],
     },
   },

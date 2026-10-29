@@ -37,7 +37,7 @@ export default async function ShellLayout({
           "relative z-20 min-h-0 overflow-hidden bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-(--shell-sheet-shadow)"
         }
       >
-        <div id="shell-stage" className="relative min-h-0 flex-1 overflow-auto">
+        <div id="shell-stage" className="relative min-h-0 flex-1 overflow-auto overscroll-contain">
           {children}
         </div>
       </SidebarInset>
