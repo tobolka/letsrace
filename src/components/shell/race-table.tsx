@@ -242,7 +242,7 @@ const Row = memo(function Row({
                 style={{ background: disciplineColor(event.disciplines) }}
               />
             ) : null}
-            {col === "name" && planned ? <span className="mr-1.5"><PlannedRaceMarker locale={locale} /></span> : null}
+            {col === "name" && planned ? <PlannedRaceMarker locale={locale} /> : null}
             {text}
             {col === "name" && event.ageMatch === "possible" ? (
               <UnconfirmedAges locale={locale} className="ml-2 align-middle" />
