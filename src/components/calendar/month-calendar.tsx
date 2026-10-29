@@ -14,6 +14,17 @@ import { addMonths, monthGrid, monthStart } from "@/lib/plan-month";
 import { formatIsoDate, parseIsoDate } from "@/lib/planner";
 import { cn } from "@/lib/utils";
 
+/**
+ * Clicking another race while a card is open should open that race, not just
+ * put the first card away: the click counts as "outside" the card, so say it
+ * does not when it lands on one of the grid's races.
+ */
+function keepOpenForOtherRaces(e: Event) {
+  const original = (e as CustomEvent<{ originalEvent?: Event }>).detail?.originalEvent;
+  const target = (original?.target ?? e.target) as HTMLElement | null;
+  if (target?.closest?.("[data-calendar-race]")) e.preventDefault();
+}
+
 export type CalendarItem = {
   id: string;
   name: string;
@@ -272,6 +283,7 @@ export function MonthCalendar({
                           <button
                             type="button"
                             title={item.name}
+                            data-calendar-race
                             onClick={(e) => e.stopPropagation()}
                             className={cn(
                               "flex min-w-0 items-center gap-1.5 rounded-md px-1 py-0.5 text-left text-xs leading-tight transition-colors hover:bg-accent",
@@ -290,6 +302,7 @@ export function MonthCalendar({
                           align="start"
                           collisionPadding={12}
                           className="w-auto overflow-hidden p-0"
+                          onInteractOutside={keepOpenForOtherRaces}
                         >
                           {renderDetail(item.id, close)}
                         </PopoverContent>
@@ -322,6 +335,7 @@ export function MonthCalendar({
                 collisionPadding={12}
                 className="w-auto overflow-hidden p-0"
                 onClick={(e) => e.stopPropagation()}
+                onInteractOutside={keepOpenForOtherRaces}
               >
                 {dayOpen && open.detailId && byId.has(open.detailId) ? (
                   <div className="flex flex-col">
