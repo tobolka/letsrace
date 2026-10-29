@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DOC_WIDTH } from "@/components/account/panel";
 import { asLocale, locales, type Locale } from "@/lib/i18n/messages";
+import { RELEASE_NOTES, releaseNoteHeadings, releaseNoteItems, type ReleaseNote } from "@/lib/release-notes";
 import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
 
 const CONTACT = "info@letsrace.cz";
-const UPDATED = "2026-10-17";
+const UPDATED = RELEASE_NOTES[0]!.date;
 // Snapshot of distinct fetched watched_urls hosts and public, unmerged 2026 events.
 const SEASON_SNAPSHOT = { sites: 214, races: 4563, nextRaces: 660 } as const;
 
@@ -211,6 +212,27 @@ const DOCS: Record<Locale, Doc> = {
 
 type Props = { params: Promise<{ locale: string }> };
 
+/** How many of the newest days are open; the rest wait behind “earlier”. */
+const OPEN_NOTES = 5;
+
+function NoteGroup({ note, locale }: { note: ReleaseNote; locale: Locale }) {
+  const date = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
+    new Date(`${note.date}T00:00:00Z`),
+  );
+  return (
+    <div className="grid gap-x-8 gap-y-2 md:grid-cols-[10rem_1fr]">
+      <h3 className="text-sm font-semibold tabular-nums text-muted-foreground md:pt-0.5">
+        <time dateTime={note.date}>{date}</time>
+      </h3>
+      <ul className="flex list-disc flex-col gap-1.5 pl-5 text-sm leading-relaxed text-pretty marker:text-muted-foreground/60">
+        {releaseNoteItems(note, locale).map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
@@ -230,6 +252,7 @@ export default async function AboutPage({ params }: Props) {
   if (!locales.includes(raw as Locale)) notFound();
   const locale = raw as Locale;
   const doc = DOCS[locale];
+  const notesHeading = releaseNoteHeadings(locale);
   const site = getSiteUrl();
   const jsonLd = {
     "@context": "https://schema.org",
@@ -290,6 +313,24 @@ export default async function AboutPage({ params }: Props) {
             </section>
           ))}
         </div>
+        <section id="whats-new" aria-labelledby="whats-new-h" className="flex flex-col gap-6 border-t pt-7 md:pt-9">
+          <h2 id="whats-new-h" className="text-2xl font-semibold tracking-tight">{notesHeading.title}</h2>
+          <div className="flex flex-col gap-6">
+            {RELEASE_NOTES.slice(0, OPEN_NOTES).map((note) => (
+              <NoteGroup key={note.date} note={note} locale={locale} />
+            ))}
+          </div>
+          <details className="group">
+            <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+              {notesHeading.earlier}
+            </summary>
+            <div className="mt-6 flex flex-col gap-6">
+              {RELEASE_NOTES.slice(OPEN_NOTES).map((note) => (
+                <NoteGroup key={note.date} note={note} locale={locale} />
+              ))}
+            </div>
+          </details>
+        </section>
         <p className="border-t pt-5 text-xs text-muted-foreground">
           {doc.updated}: {UPDATED} · <a href={`mailto:${CONTACT}`} className="underline underline-offset-2">{CONTACT}</a> ·{" "}
           <a href={SITE_AUTHOR.url} className="underline underline-offset-2">{SITE_AUTHOR.url.replace(/^https?:\/\//, "")}</a>
