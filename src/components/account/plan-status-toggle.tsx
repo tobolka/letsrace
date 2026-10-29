@@ -62,11 +62,8 @@ export function PlanStatusToggle({
         size="sm"
         aria-label={`${memberName} · ${eventName}`}
         className={cn(
-          "w-full min-w-0 gap-1.5 font-normal",
+          "w-full min-w-0 gap-1.5 bg-background font-normal",
           current === 0 && "text-muted-foreground",
-          current === 1 && "border-foreground/30 bg-muted text-foreground",
-          current === 2 && "border-foreground/60 bg-foreground/10 text-foreground",
-          current === 3 && "border-primary bg-primary text-primary-foreground [&_svg]:!text-primary-foreground",
           className,
         )}
       >
