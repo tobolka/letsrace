@@ -545,6 +545,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
           selected={pickedDay}
           busyId={busyId}
           notes={notes}
+          userId={userId}
           onSelectDay={(day) => setPickedDay(day === pickedDay ? null : day)}
           onSetNote={(day, note) => onSetNote(day, note)}
           onStatusChange={(eventId, memberId, status) => void onStatusChange(eventId, memberId, status)}

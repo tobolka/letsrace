@@ -8,6 +8,7 @@ import { PlanFilters } from "@/components/account/plan-filters";
 import { filterPlans, type PlanStatusFilter } from "@/lib/plan-filters";
 import { PlanAgenda } from "@/components/account/plan-agenda";
 import { PlanMonthView } from "@/components/account/plan-month-view";
+import { PlanFeedSubscribe } from "@/components/account/plan-feed-subscribe";
 import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ export function PlanSeason({
   onStatusChange,
   onDiscard,
   notes,
+  userId,
 }: {
   locale: string;
   /** Every race in the plan, past and future — both views show both. */
@@ -70,6 +72,8 @@ export function PlanSeason({
   onDiscard: (eventId: string) => void;
   /** What each upcoming race is waiting for, by event id. */
   notes?: Record<string, string>;
+  /** For the calendar subscription; without it the button is left out. */
+  userId?: string | null;
 }) {
   const t = messagesFor(locale);
   const [riderId, setRiderId] = useState("");
@@ -120,7 +124,9 @@ export function PlanSeason({
         </>
       ) : view === "calendar" ? (
         <>
-          <MonthToolbar locale={locale} month={month} onMonth={setMonth} />
+          <MonthToolbar locale={locale} month={month} onMonth={setMonth}>
+            {userId ? <PlanFeedSubscribe locale={locale} userId={userId} /> : null}
+          </MonthToolbar>
           <PlanMonthView
             locale={locale}
             month={month}
@@ -244,31 +250,44 @@ export function PlanViewToggle({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("upcoming"));
   return (
-    <ToggleGroup
-      type="single"
-      value={view}
-      onValueChange={(v) => {
-        if (v) void setView(v as (typeof VIEWS)[number]);
-      }}
-      variant="outline"
-      size="sm"
-    >
-      <ToggleGroupItem value="upcoming" aria-label={t.planViewUpcoming}>
-        <List data-icon="inline-start" />
-        <span className="max-sm:sr-only">{t.planViewUpcoming}</span>
-      </ToggleGroupItem>
-      <ToggleGroupItem value="past" aria-label={t.planViewPast}>
-        <History data-icon="inline-start" />
-        <span className="max-sm:sr-only">{t.planViewPast}</span>
-      </ToggleGroupItem>
-      <ToggleGroupItem value="list" aria-label={t.planViewList}>
-        <Sheet data-icon="inline-start" />
-        <span className="max-sm:sr-only">{t.planViewList}</span>
-      </ToggleGroupItem>
-      <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
-        <CalendarDays data-icon="inline-start" />
-        <span className="max-sm:sr-only">{t.planViewCalendar}</span>
-      </ToggleGroupItem>
-    </ToggleGroup>
+    <div className="flex items-center gap-2">
+      <ToggleGroup
+        type="single"
+        value={view}
+        onValueChange={(v) => {
+          if (v) void setView(v as (typeof VIEWS)[number]);
+        }}
+        variant="outline"
+        size="sm"
+      >
+        <ToggleGroupItem value="upcoming" aria-label={t.planViewUpcoming}>
+          <List data-icon="inline-start" />
+          <span className="max-sm:sr-only">{t.planViewUpcoming}</span>
+        </ToggleGroupItem>
+        <ToggleGroupItem value="list" aria-label={t.planViewList}>
+          <Sheet data-icon="inline-start" />
+          <span className="max-sm:sr-only">{t.planViewList}</span>
+        </ToggleGroupItem>
+        <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
+          <CalendarDays data-icon="inline-start" />
+          <span className="max-sm:sr-only">{t.planViewCalendar}</span>
+        </ToggleGroupItem>
+      </ToggleGroup>
+      {/* History is the record, not a way of looking at the season: its own group. */}
+      <ToggleGroup
+        type="single"
+        value={view}
+        onValueChange={(v) => {
+          if (v) void setView(v as (typeof VIEWS)[number]);
+        }}
+        variant="outline"
+        size="sm"
+      >
+        <ToggleGroupItem value="past" aria-label={t.planViewPast}>
+          <History data-icon="inline-start" />
+          <span className="max-sm:sr-only">{t.planViewPast}</span>
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </div>
   );
 }
