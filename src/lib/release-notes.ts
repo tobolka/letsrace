@@ -38,47 +38,23 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     },
   },
   {
-    date: "2026-10-26",
-    items: {
-      en: ["We now count visits in a way that respects your privacy."],
-      cs: ["Návštěvnost teď počítáme způsobem, který respektuje tvoje soukromí."],
-    },
-  },
-  {
     date: "2026-10-23",
     items: {
       en: [
-        "On a phone, more races fit on the screen: the filters are one row, and you can remove a filter with one tap.",
-        "The phone has a new “More” tab, and the buttons on a race are roomier for thumbs.",
-        "A race that appears on several websites is shown once, and a date the organiser gives is no longer overwritten by a calendar that has it wrong.",
-        "Races with several rounds or stages stay separate instead of being merged into one.",
+        "More races fit on a phone screen, with the filters in one row.",
+        "A race listed on several websites is shown once.",
       ],
       cs: [
-        "Na telefonu se na obrazovku vejde víc závodů: filtry jsou v jednom řádku a filtr zrušíš jedním klepnutím.",
-        "Telefon má novou záložku „Více“ a tlačítka u závodu jsou větší pro prsty.",
-        "Závod, který je na více webech, vidíš jednou, a datum od pořadatele už nepřepíše kalendář, který ho má špatně.",
-        "Závody s více koly nebo etapami zůstávají oddělené, nesloučí se do jednoho.",
-      ],
-    },
-  },
-  {
-    date: "2026-10-22",
-    items: {
-      en: [
-        "Every button that is only an icon now says what it does when you hover over it.",
-        "The plan's dropdown for “going / entered / paid” opens in the right place again.",
-      ],
-      cs: [
-        "Každé tlačítko, které je jen ikona, teď po najetí řekne, co dělá.",
-        "Nabídka „jede / přihlášen / zaplaceno“ v plánu se zase otevírá na správném místě.",
+        "Na telefonu se vejde víc závodů a filtry jsou v jednom řádku.",
+        "Závod, který je na více webech, vidíš jen jednou.",
       ],
     },
   },
   {
     date: "2026-10-21",
     items: {
-      en: ["Races from Sumator are now placed where the organiser puts the start, not in the middle of the nearest town."],
-      cs: ["Závody ze Sumatoru jsou teď na mapě tam, kde pořadatel označil start, ne uprostřed nejbližšího města."],
+      en: ["Races from Sumator are placed where the start really is."],
+      cs: ["Závody ze Sumatoru jsou na mapě tam, kde je opravdu start."],
     },
   },
   {
@@ -86,43 +62,33 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       en: [
         "Let's Race was announced to the public.",
-        "You can pick several countries and several disciplines at once.",
-        "You can subscribe to the calendar, with the filters you have chosen, in your own calendar app.",
-        "People outside Europe get a map of Europe, not an empty ocean.",
-        "Race collections (for example kids' races) show their own map.",
+        "You can pick several countries and disciplines at once.",
+        "You can subscribe to the calendar, with your filters, in your own calendar app.",
       ],
       cs: [
         "Let's Race byl poprvé oznámen veřejnosti.",
-        "Můžeš vybrat víc zemí a víc disciplín najednou.",
-        "Kalendář i s nastavenými filtry si můžeš přihlásit k odběru ve vlastní kalendářové aplikaci.",
-        "Kdo se dívá mimo Evropu, uvidí mapu Evropy, ne prázdný oceán.",
-        "Sbírky závodů (třeba dětské závody) mají vlastní mapu.",
+        "Můžeš vybrat víc zemí a disciplín najednou.",
+        "Kalendář i s filtry si můžeš přihlásit k odběru ve své kalendářové aplikaci.",
       ],
     },
   },
   {
     date: "2026-10-19",
     items: {
-      en: [
-        "A race's page and a cup's page show a small map of where it is.",
-        "From a race or a cup you can open the big map on exactly those dates.",
-      ],
-      cs: [
-        "Stránka závodu i poháru ukazuje malou mapu, kde se jede.",
-        "Ze závodu nebo poháru otevřeš velkou mapu rovnou na správných datech.",
-      ],
+      en: ["A race's page and a cup's page show a small map of where it is."],
+      cs: ["Stránka závodu i poháru ukazuje malou mapu, kde se jede."],
     },
   },
   {
     date: "2026-10-15",
     items: {
       en: [
-        "The map loads faster, zooms smoothly with the mouse wheel and opens a group of races when you click it.",
-        "You can set a distance around you and the list highlights what is in reach.",
+        "The map loads faster and zooms smoothly.",
+        "You can set a distance around you, and the list shows what is in reach.",
       ],
       cs: [
-        "Mapa se načítá rychleji, plynule se přibližuje kolečkem myši a po kliknutí rozbalí skupinu závodů.",
-        "Můžeš nastavit vzdálenost od sebe a seznam zvýrazní, co máš na dosah.",
+        "Mapa se načítá rychleji a plynule se přibližuje.",
+        "Můžeš nastavit vzdálenost od sebe a seznam ukáže, co máš na dosah.",
       ],
     },
   },
@@ -132,14 +98,10 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       en: [
         "A new About page says who makes Let's Race and where the races come from.",
         "The race table sorts when you click a column.",
-        "Old race links find their race, and a page that does not exist helps you on.",
-        "Places show the town, not “Germany” or “TBC”.",
       ],
       cs: [
         "Nová stránka O projektu říká, kdo Let's Race dělá a odkud jsou závody.",
         "Tabulka závodů se řadí kliknutím na sloupec.",
-        "Staré odkazy na závody najdou svůj závod a stránka, která neexistuje, poradí, kam dál.",
-        "U míst je město, ne „Německo“ nebo „TBC“.",
       ],
     },
   },
@@ -147,14 +109,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-06",
     items: {
       en: [
-        "New collections: kids, kids this weekend, youth, amateurs and this weekend.",
-        "Addresses are in your language, and race links are readable (for example /cs/zavod/…).",
-        "“Add to plan” works on race pages, the map and the lists.",
+        "New collections: kids, youth, amateurs and this weekend.",
+        "Addresses are in your language.",
       ],
       cs: [
-        "Nové sbírky: děti, děti tento víkend, mládež, amatéři a tento víkend.",
-        "Adresy jsou v tvém jazyce a odkazy na závody se dají přečíst.",
-        "„Přidat do plánu“ funguje na stránce závodu, na mapě i v seznamech.",
+        "Nové sbírky: děti, mládež, amatéři a tento víkend.",
+        "Adresy jsou v tvém jazyce.",
       ],
     },
   },
@@ -162,12 +122,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-04",
     items: {
       en: [
-        "German is the fifth language of Let's Race.",
-        "The front page also lists countries, disciplines, cups and the races of the coming week, so you can browse without the map.",
+        "German is the fifth language.",
+        "The front page also lists countries, disciplines and cups, so you can browse without the map.",
       ],
       cs: [
-        "Němčina je pátým jazykem Let's Race.",
-        "Úvodní stránka teď nabízí i země, disciplíny, poháry a závody příštího týdne, takže se dá procházet i bez mapy.",
+        "Němčina je pátým jazykem.",
+        "Úvodní stránka nabízí i země, disciplíny a poháry, takže se dá procházet i bez mapy.",
       ],
     },
   },
@@ -175,14 +135,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-02",
     items: {
       en: [
-        "Many more races have their entry link, their regulations and their age classes, found on the organisers' own pages.",
-        "Rides and courses that are not races stay out of the race lists.",
-        "On a phone the calendar is a compact month with the day's races underneath.",
+        "Many more races have their entry link, regulations and age classes.",
+        "Rides and courses that are not races stay out of the lists.",
       ],
       cs: [
-        "U mnohem víc závodů je odkaz na přihlášku, propozice a věkové kategorie, nalezené na stránkách pořadatelů.",
-        "Vyjížďky a kurzy, které nejsou závody, se v seznamech závodů nezobrazují.",
-        "Na telefonu je kalendář kompaktní měsíc a pod ním závody vybraného dne.",
+        "U mnohem víc závodů je odkaz na přihlášku, propozice a věkové kategorie.",
+        "Vyjížďky a kurzy, které nejsou závody, se v seznamech nezobrazují.",
       ],
     },
   },
@@ -190,16 +148,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-01",
     items: {
       en: [
-        "You can filter by a single age class such as U13, and U13 counts as youth, not kids.",
-        "A race page has a Directions button that opens Google Maps from where you are.",
-        "Virtual rides are hidden, and the same race listed under two names is shown once.",
-        "Austrian races have their real place, classes and website.",
+        "You can filter by a single age class such as U13.",
+        "A race page has a Directions button that opens Google Maps.",
       ],
       cs: [
-        "Můžeš filtrovat podle jedné věkové kategorie, třeba U13, a U13 se počítá jako mládež, ne jako děti.",
-        "Na stránce závodu je tlačítko Navigovat, které otevře Google Maps odkud právě jsi.",
-        "Virtuální jízdy jsou schované a stejný závod pod dvěma názvy vidíš jednou.",
-        "Rakouské závody mají skutečné místo, kategorie i web.",
+        "Můžeš filtrovat podle jedné věkové kategorie, třeba U13.",
+        "Na stránce závodu je tlačítko Navigovat, které otevře Google Maps.",
       ],
     },
   },
@@ -207,74 +161,48 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-09-30",
     items: {
       en: [
-        "A new layout: a bar on the left switches between the map, the list and the calendar, and all three share the same filters.",
-        "On a phone there is an icon bar at the bottom on every screen, and all the filters fit in one sheet.",
-        "In the plan every rider has a column, and one dropdown shows how far along they are.",
-        "The race categories now come from the federations and organisers' regulations, so filtering by age finds races instead of dropping them.",
+        "A new layout: a bar on the left switches between the map, the list and the calendar, with the same filters in all three.",
+        "On a phone there is an icon bar at the bottom and all the filters fit in one window.",
+        "In the plan every rider has a column that shows how far along they are.",
       ],
       cs: [
-        "Nové rozložení: lišta vlevo přepíná mapu, seznam a kalendář a všechny tři mají stejné filtry.",
-        "Na telefonu je na každé obrazovce dole lišta s ikonami a všechny filtry se vejdou do jednoho okna.",
-        "V plánu má každý jezdec svůj sloupec a jedna nabídka ukáže, jak daleko je.",
-        "Kategorie závodů se berou ze svazů a z propozic pořadatelů, takže filtr podle věku závody najde, místo aby je vyřadil.",
+        "Nové rozložení: lišta vlevo přepíná mapu, seznam a kalendář a všechny mají stejné filtry.",
+        "Na telefonu je dole lišta s ikonami a všechny filtry se vejdou do jednoho okna.",
+        "V plánu má každý jezdec svůj sloupec, který ukazuje, jak daleko je.",
       ],
     },
   },
   {
     date: "2026-09-28",
     items: {
-      en: [
-        "Search forgives typos when you look for a race by name.",
-        "The Pražský MTB pohár 2027 is in.",
-      ],
-      cs: [
-        "Hledání závodu podle názvu odpustí překlepy.",
-        "Pražský MTB pohár 2027 je v katalogu.",
-      ],
+      en: ["Search forgives typos when you look for a race by name."],
+      cs: ["Hledání závodu podle názvu odpustí překlepy."],
     },
   },
   {
     date: "2026-09-17",
     items: {
-      en: [
-        "The map remembers your filters and your sorting on this device.",
-        "A race can belong to more than one cup.",
-        "The main Czech cups now match their own official calendars.",
-      ],
-      cs: [
-        "Mapa si pamatuje tvoje filtry i řazení na tomhle zařízení.",
-        "Závod může patřit do víc pohárů.",
-        "Hlavní české poháry teď odpovídají svým oficiálním kalendářům.",
-      ],
+      en: ["The map remembers your filters and sorting on this device."],
+      cs: ["Mapa si pamatuje tvoje filtry a řazení na tomhle zařízení."],
     },
   },
   {
     date: "2026-09-08",
     items: {
-      en: [
-        "The plan is a calendar with every day on it, and you pick a day, not a weekend.",
-        "Races that are already over say so.",
-        "Similar names such as “Park Bike” and “PARKBIKE” are recognised as one race.",
-      ],
-      cs: [
-        "Plán je kalendář se všemi dny a vybíráš den, ne víkend.",
-        "U závodů, které už proběhly, to je napsané.",
-        "Podobné názvy jako „Park Bike“ a „PARKBIKE“ se poznají jako jeden závod.",
-      ],
+      en: ["The plan is a calendar with every day on it, and you pick a day, not a weekend."],
+      cs: ["Plán je kalendář se všemi dny a vybíráš den, ne víkend."],
     },
   },
   {
     date: "2026-09-07",
     items: {
       en: [
-        "Each pin on the map has a small bike of its own discipline inside, and several races at one place show how many there are.",
-        "On a phone you open a race and the map keeps half of the screen.",
-        "Changing the language changes the language, not the page you are on.",
+        "Pins on the map show the bike of their discipline.",
+        "On a phone you can open a race and still see half the map.",
       ],
       cs: [
-        "Každý špendlík na mapě má uvnitř malé kolo své disciplíny a několik závodů na jednom místě ukáže, kolik jich je.",
-        "Na telefonu otevřeš závod a mapa si nechá půl obrazovky.",
-        "Změna jazyka změní jazyk, ne stránku, na které jsi.",
+        "Špendlíky na mapě ukazují kolo své disciplíny.",
+        "Na telefonu otevřeš závod a pořád vidíš půlku mapy.",
       ],
     },
   },
@@ -282,14 +210,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-09-02",
     items: {
       en: [
-        "The plan shows the season as weekends, and you can mark a weekend as taken, for a wedding for example.",
+        "The plan shows the season as weekends, and you can mark one as taken.",
         "You can take your plan into your phone's calendar.",
-        "You can search for a race by its name instead of a mountain range.",
       ],
       cs: [
-        "Plán ukazuje sezónu po víkendech a víkend můžeš označit jako obsazený, třeba kvůli svatbě.",
+        "Plán ukazuje sezónu po víkendech a víkend můžeš označit jako obsazený.",
         "Plán si můžeš dostat do kalendáře v telefonu.",
-        "Závod můžeš hledat podle jména, ne podle pohoří.",
       ],
     },
   },
@@ -298,13 +224,11 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       en: [
         "One tap marks a race as paid.",
-        "The site suggests something for a weekend that has nothing on it.",
-        "The first screen loads noticeably faster, and the list does not jump around while it loads.",
+        "The first screen loads noticeably faster.",
       ],
       cs: [
         "Jedním klepnutím označíš závod jako zaplacený.",
-        "Když na víkend nic nemáš, web ti něco nabídne.",
-        "První obrazovka se načte znatelně rychleji a seznam při načítání neskáče.",
+        "První obrazovka se načte znatelně rychleji.",
       ],
     },
   },
@@ -312,14 +236,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-08-31",
     items: {
       en: [
-        "Czech races that were missing, because the federation's website had stalled on our side, are in.",
-        "Pages for each country and for each discipline in a country, so “mountain bike races in Slovakia” has a page of its own.",
-        "Polish calendars were added.",
+        "Czech races that were missing are in.",
+        "Every country, and every discipline in a country, has its own page.",
       ],
       cs: [
-        "České závody, které chyběly, protože se nám zasekl portál svazu, jsou v katalogu.",
-        "Každá země a každá disciplína v zemi má vlastní stránku, takže „závody horských kol na Slovensku“ mají svoji stránku.",
-        "Přibyly polské kalendáře.",
+        "České závody, které chyběly, jsou v katalogu.",
+        "Každá země a každá disciplína v zemi má vlastní stránku.",
       ],
     },
   },
@@ -333,7 +255,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     date: "2026-08-25",
     items: {
-      en: ["The map on a phone was rebuilt: the map first, a sheet with the list on top of it."],
+      en: ["The map on a phone was rebuilt: the map first, with the list in a sheet over it."],
       cs: ["Mapa na telefonu je postavená znovu: napřed mapa a nad ní okno se seznamem."],
     },
   },
@@ -341,41 +263,27 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-08-18",
     items: {
       en: [
-        "The plan, the alerts and Google sign-in arrived: you see who is going, and hear when a race changes.",
-        "A flood of official calendars from Austria, Germany, Slovakia, Poland and the Czech Republic, including kids' cups.",
-        "A new filter bar and a fresh look.",
+        "The plan, the alerts and Google sign-in arrived: you see who is going and hear when a race changes.",
+        "Many official calendars from Austria, Germany, Slovakia, Poland and the Czech Republic.",
       ],
       cs: [
         "Přišel plán, upozornění a přihlášení přes Google: vidíš, kdo jede, a dozvíš se, když se závod změní.",
-        "Spousta oficiálních kalendářů z Rakouska, Německa, Slovenska, Polska i Česka, včetně dětských pohárů.",
-        "Nový panel filtrů a nový vzhled.",
+        "Spousta oficiálních kalendářů z Rakouska, Německa, Slovenska, Polska i Česka.",
       ],
     },
   },
   {
     date: "2026-08-17",
     items: {
-      en: [
-        "The list can be sorted by distance from you.",
-        "You can search for a place on the map, and races link to their regulations.",
-      ],
-      cs: [
-        "Seznam jde seřadit podle vzdálenosti od tebe.",
-        "Na mapě můžeš hledat místo a závody odkazují na své propozice.",
-      ],
+      en: ["The list can be sorted by distance from you."],
+      cs: ["Seznam jde seřadit podle vzdálenosti od tebe."],
     },
   },
   {
     date: "2026-08-14",
     items: {
-      en: [
-        "Age filters that only say what is known, a colour for each discipline and a calendar to pick the date.",
-        "More of Europe on the map.",
-      ],
-      cs: [
-        "Věkové filtry, které říkají jen to, co je jisté, barva pro každou disciplínu a kalendář pro výběr data.",
-        "Na mapě je víc Evropy.",
-      ],
+      en: ["Age filters, a colour for each discipline and a calendar to pick the date."],
+      cs: ["Věkové filtry, barva pro každou disciplínu a kalendář pro výběr data."],
     },
   },
   {
