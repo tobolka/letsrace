@@ -223,8 +223,11 @@ export function AuthForm({
             {t.continueWithGoogle}
           </Button>
           <FieldSeparator>{t.orEmail}</FieldSeparator>
+          {/* Sign in has the forgotten-password row where Create account has the
+              name field; both take the same height so the dialog does not
+              change size when the tabs are switched. */}
           {mode === "register" ? (
-            <Field>
+            <Field className="min-h-[4.25rem]">
               <FieldLabel htmlFor="name">{t.fieldName}</FieldLabel>
               <Input
                 id="name"
@@ -268,9 +271,11 @@ export function AuthForm({
             />
           </Field> : null}
           {mode === "login" ? (
-            <Button type="button" variant="link" className="min-h-11 self-start px-0" disabled={busy !== null} onClick={() => { setMode("recover"); setError(""); setInfo(""); }}>
-              {t.forgotPassword}
-            </Button>
+            <div className="flex min-h-[4.25rem] items-center">
+              <Button type="button" variant="link" className="min-h-11 px-0" disabled={busy !== null} onClick={() => { setMode("recover"); setError(""); setInfo(""); }}>
+                {t.forgotPassword}
+              </Button>
+            </div>
           ) : null}
           {error ? <FieldError>{error}</FieldError> : null}
           {info ? <p role="status" className="text-sm text-muted-foreground">{info}</p> : null}
