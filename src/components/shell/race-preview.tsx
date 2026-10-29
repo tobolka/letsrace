@@ -1,15 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import dynamic from "next/dynamic";
+import { Suspense, useEffect, useState } from "react";
+import { EventDetailPanel, loadEventDetailPanel } from "@/components/explore/event-detail-lazy";
 import { MobileRaceModal } from "@/components/explore/mobile-sheets";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
 
-const EventDetailPanel = dynamic(() =>
-  import("@/components/explore/event-detail-panel").then((m) => ({ default: m.EventDetailPanel })),
-);
 
 /**
  * The race you picked: the same floating card the map and the calendar use on
@@ -27,6 +24,11 @@ export function RacePreview({
   onSelectSeries?: (slug: string) => void;
 }) {
   const isMobile = useIsMobile();
+  // The card's code is fetched while the view is idle, so the first click
+  // finds it already here; and if it is not, only the card waits.
+  useEffect(() => {
+    void loadEventDetailPanel();
+  }, []);
   // The race stays in the sheet while it slides away, rather than the sheet
   // emptying the moment it is told to close.
   const [shown, setShown] = useState<EventListItem | null>(event);
@@ -41,13 +43,15 @@ export function RacePreview({
         title={shown.name}
         handleLabel={messagesFor(locale).close}
       >
-        <EventDetailPanel
-          event={shown}
-          locale={locale}
-          embedded
-          onClose={onClose}
-          onSelectSeries={onSelectSeries}
-        />
+        <Suspense fallback={null}>
+          <EventDetailPanel
+            event={shown}
+            locale={locale}
+            embedded
+            onClose={onClose}
+            onSelectSeries={onSelectSeries}
+          />
+        </Suspense>
       </MobileRaceModal>
     );
   }
@@ -56,15 +60,17 @@ export function RacePreview({
   // The map's own card, floating and draggable, starting against the right
   // edge so it covers the columns you read least rather than the names.
   return (
-    <EventDetailPanel
-      event={event}
-      locale={locale}
-      dockRight
-      // Below the header, the filters and the sort row, so none of the
-      // list's own controls end up under it.
-      dockTop={168}
-      onClose={onClose}
-      onSelectSeries={onSelectSeries}
-    />
+    <Suspense fallback={null}>
+      <EventDetailPanel
+        event={event}
+        locale={locale}
+        dockRight
+        // Below the header, the filters and the sort row, so none of the
+        // list's own controls end up under it.
+        dockTop={168}
+        onClose={onClose}
+        onSelectSeries={onSelectSeries}
+      />
+    </Suspense>
   );
 }

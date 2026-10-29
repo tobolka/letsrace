@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import dynamic from "next/dynamic";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
+import { EventDetailPanel, loadEventDetailPanel } from "@/components/explore/event-detail-lazy";
 import { MonthCalendar, MonthToolbar, type CalendarItem } from "@/components/calendar/month-calendar";
 import { ExploreActiveChips, ExploreFilterBar } from "@/components/shell/explore-filter-bar";
 import { RaceCount } from "@/components/shell/race-count";
@@ -25,10 +25,6 @@ import { disciplineColor } from "@/lib/map-visuals";
 import { addMonths, monthGrid, monthStart } from "@/lib/plan-month";
 import { todayIso } from "@/lib/date-presets";
 import { cn } from "@/lib/utils";
-
-const EventDetailPanel = dynamic(() =>
-  import("@/components/explore/event-detail-panel").then((m) => ({ default: m.EventDetailPanel })),
-);
 
 /** `2026-09` → `2026-09-01`, or this month for anything else. */
 function parseMonth(raw: string): string {
@@ -51,6 +47,11 @@ export function ScheduleView({ locale }: { locale: string }) {
   const state = useExploreFilters();
   const { filters, setFilters, ready, near } = state;
   const isMobile = useIsMobile();
+  // The race card's code is fetched while the view is idle, so the first
+  // click finds it already here.
+  useEffect(() => {
+    void loadEventDetailPanel();
+  }, []);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [monthRaw, setMonthRaw] = useQueryState("month", parseAsString.withDefault(""));
   const [dayRaw, setDayRaw] = useQueryState("day", parseAsString.withDefault(""));
@@ -184,16 +185,18 @@ export function ScheduleView({ locale }: { locale: string }) {
             const event = byId.get(id);
             if (!event) return null;
             return (
-              <EventDetailPanel
-                event={event}
-                locale={locale}
-                anchored
-                onClose={close}
-                onSelectSeries={(slug) => {
-                  close();
-                  void setFilters({ series: slug });
-                }}
-              />
+              <Suspense fallback={null}>
+                <EventDetailPanel
+                  event={event}
+                  locale={locale}
+                  anchored
+                  onClose={close}
+                  onSelectSeries={(slug) => {
+                    close();
+                    void setFilters({ series: slug });
+                  }}
+                />
+              </Suspense>
             );
           }}
         />
