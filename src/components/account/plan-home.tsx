@@ -117,15 +117,19 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
     setReady(false);
     try {
       const supabase = createBrowserSupabase();
-      const { data: auth, error: authError } = await supabase.auth.getUser();
+      // The session is read from this browser, not asked of the auth server:
+      // that was a round trip before anything else could start, and the data
+      // below is guarded by row-level rules whatever this says.
+      const { data: auth, error: authError } = await supabase.auth.getSession();
       if (authError && authError.name !== "AuthSessionMissingError") throw authError;
-      if (!auth.user) {
+      const user = auth.session?.user;
+      if (!user) {
         setAuthed(false);
         setReady(true);
         return;
       }
       setAuthed(true);
-      setUserId(auth.user.id);
+      setUserId(user.id);
 
       // One round trip for everything the page needs, not four in a row: the
       // blocked days and the ranker's inputs do not depend on the plan, so
@@ -141,25 +145,25 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
         supabase
           .from("family_members")
           .select("id, name, relationship, is_self")
-          .eq("user_id", auth.user.id)
+          .eq("user_id", user.id)
           .order("created_at").throwOnError(),
         supabase
           .from("event_attendance")
           .select(`member_id, status, registered, paid, event:events(${EVENT_EMBED})`)
-          .eq("user_id", auth.user.id).throwOnError(),
+          .eq("user_id", user.id).throwOnError(),
         supabase
           .from("event_favorites")
           .select(`event:events(${EVENT_EMBED})`)
-          .eq("user_id", auth.user.id).throwOnError(),
-        supabase.from("profiles").select("busy_weekdays").eq("id", auth.user.id).maybeSingle().throwOnError(),
+          .eq("user_id", user.id).throwOnError(),
+        supabase.from("profiles").select("busy_weekdays").eq("id", user.id).maybeSingle().throwOnError(),
         supabase
           .from("blocked_days")
           .select("day, note")
-          .eq("user_id", auth.user.id).throwOnError(),
+          .eq("user_id", user.id).throwOnError(),
         supabase
           .from("race_alerts")
           .select("id, lat, lng, radius_km")
-          .eq("user_id", auth.user.id)
+          .eq("user_id", user.id)
           .eq("enabled", true).throwOnError(),
       ]);
 
@@ -224,7 +228,8 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
         plannedEventIds: new Set(Object.keys(nextEvents)),
       });
 
-      await loadSeries(nextEvents);
+      // The plan is on screen without waiting for the series' other rounds.
+      void loadSeries(nextEvents);
     } catch {
       setLoadFailed(true);
     } finally {
