@@ -28,6 +28,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "On a race's card, the cup it belongs to has a small arrow that opens the cup's own page.",
         "History in the plan sits apart, at the end of the switcher. The filters that never worked well are gone.",
         "When you drag past the end of a page, the side bar and the page no longer bounce together.",
+        "The sign-in window is friendlier: it says what an account gives you, and Sign in and Create account sit side by side.",
       ],
       cs: [
         "Náš plán vypadá ve všech pohledech stejně: stejné hlavičky, stejné měsíční pásy a stejná jména jezdců.",
@@ -36,6 +37,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Na kartě závodu je u poháru malá šipka, která otevře stránku celého poháru.",
         "Historie je v plánu odděleně, úplně na konci přepínače. Filtry, které nefungovaly dobře, jsou pryč.",
         "Když na konci stránky přetáhneš, boční lišta a stránka už se nehoupou společně.",
+        "Přihlašovací okno je přívětivější: říká, co ti účet dá, a Přihlásit se a Vytvořit účet jsou vedle sebe.",
       ],
     },
   },

@@ -189,6 +189,7 @@ export function AuthForm({
         type="single"
         variant="outline"
         size="sm"
+        className="w-full"
         disabled={busy !== null}
         value={mode}
         onValueChange={(v) => {
@@ -199,8 +200,8 @@ export function AuthForm({
           }
         }}
       >
-        <ToggleGroupItem value="register">{t.createAccount}</ToggleGroupItem>
-        <ToggleGroupItem value="login">{t.signIn}</ToggleGroupItem>
+        <ToggleGroupItem value="login" className="flex-1">{t.signIn}</ToggleGroupItem>
+        <ToggleGroupItem value="register" className="flex-1">{t.createAccount}</ToggleGroupItem>
       </ToggleGroup>
       <form
         method="post"
@@ -212,6 +213,7 @@ export function AuthForm({
           <Button
             type="button"
             variant="outline"
+            size="lg"
             className="w-full"
             disabled={busy !== null}
             aria-busy={busy === "google"}
@@ -272,7 +274,7 @@ export function AuthForm({
           ) : null}
           {error ? <FieldError>{error}</FieldError> : null}
           {info ? <p role="status" className="text-sm text-muted-foreground">{info}</p> : null}
-          <Button type="submit" className="w-full" disabled={busy !== null} aria-busy={busy === "email"}>
+          <Button type="submit" size="lg" className="w-full" disabled={busy !== null} aria-busy={busy === "email"}>
             {busy === "email" ? <Spinner data-icon="inline-start" /> : null}
             {mode === "recover" ? t.sendRecovery : mode === "register" ? t.createAccount : t.signIn}
           </Button>
