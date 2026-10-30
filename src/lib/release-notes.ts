@@ -19,6 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-10-30",
+    items: {
+      en: ["The 2027 Mountain Bike World Cup rounds in Czechia, Austria, Italy and Switzerland are in the calendar."],
+      cs: ["V kalendáři jsou závody Světového poháru horských kol 2027 v Česku, Rakousku, Itálii a Švýcarsku."],
+    },
+  },
+  {
     date: "2026-10-29",
     items: {
       en: [

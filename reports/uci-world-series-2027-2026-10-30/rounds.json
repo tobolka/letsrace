@@ -1,0 +1,183 @@
+[
+  {
+    "round": 1,
+    "place": "Nové Město na Moravě",
+    "start": "2027-05-21",
+    "end": "2027-05-23",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "cc": "CZ",
+    "timezone": "Europe/Prague",
+    "locationId": null,
+    "lat": 49.577263,
+    "lng": 16.053323,
+    "venue": "Vysočina Arena",
+    "region": "Kraj Vysočina",
+    "previousEventId": "d0a58197-037c-4493-9d77-49b992879cff"
+  },
+  {
+    "round": 2,
+    "place": "Loudenvielle – Peyragudes",
+    "start": "2027-05-29",
+    "end": "2027-05-30",
+    "disciplines": [
+      "dh"
+    ],
+    "cc": "FR",
+    "timezone": "Europe/Paris",
+    "locationId": "982addff-b204-490d-83af-aa9dbc4aec07",
+    "lat": 42.796,
+    "lng": 0.412,
+    "venue": "Loudenvielle",
+    "region": "",
+    "previousEventId": "ac201fc2-6d27-4b7d-b620-b358b658017d"
+  },
+  {
+    "round": 3,
+    "place": "Saalfelden Leogang – Salzburgerland",
+    "start": "2027-06-11",
+    "end": "2027-06-13",
+    "disciplines": [
+      "xco",
+      "xcc",
+      "dh"
+    ],
+    "cc": "AT",
+    "timezone": "Europe/Vienna",
+    "locationId": null,
+    "lat": 47.4392674,
+    "lng": 12.718724,
+    "venue": "Bikepark Leogang",
+    "region": "Salzburg",
+    "previousEventId": "1dfade8c-83e1-4893-a888-dfaa4f20d6bb"
+  },
+  {
+    "round": 4,
+    "place": "Les Gets – Haute-Savoie",
+    "start": "2027-06-18",
+    "end": "2027-06-20",
+    "disciplines": [
+      "xco",
+      "xcc",
+      "dh"
+    ],
+    "cc": "FR",
+    "timezone": "Europe/Paris",
+    "locationId": null,
+    "lat": 46.1550977,
+    "lng": 6.6633354,
+    "venue": "Les Gets",
+    "region": "Haute-Savoie",
+    "previousEventId": "9f8d97ca-0d91-4f28-8c19-8496097868a1"
+  },
+  {
+    "round": 5,
+    "place": "La Thuile – Valle d’Aosta",
+    "start": "2027-07-02",
+    "end": "2027-07-04",
+    "disciplines": [
+      "xco",
+      "xcc",
+      "dh"
+    ],
+    "cc": "IT",
+    "timezone": "Europe/Rome",
+    "locationId": "6ee00312-92c4-4c13-bd2d-855f26fa0e1c",
+    "lat": 45.714,
+    "lng": 6.913,
+    "venue": "La Thuile",
+    "region": "Valle d’Aosta",
+    "previousEventId": "7f9c765b-013d-4251-9fd0-b5b039783f56"
+  },
+  {
+    "round": 6,
+    "place": "Pal Arinsal",
+    "start": "2027-07-09",
+    "end": "2027-07-11",
+    "disciplines": [
+      "xco",
+      "xcc",
+      "dh"
+    ],
+    "cc": "AD",
+    "timezone": "Europe/Andorra",
+    "locationId": null,
+    "lat": 42.552408,
+    "lng": 1.4495827,
+    "venue": "Pal-Arinsal",
+    "region": "La Massana",
+    "previousEventId": "118d8391-155b-4c32-89a0-5c6d00d92c19"
+  },
+  {
+    "round": 7,
+    "place": "Bike Kingdom Lenzerheide",
+    "start": "2027-08-20",
+    "end": "2027-08-22",
+    "disciplines": [
+      "xco",
+      "xcc",
+      "dh"
+    ],
+    "cc": "CH",
+    "timezone": "Europe/Zurich",
+    "locationId": "0282fb7b-4a22-475f-9f89-3b38df99f221",
+    "lat": 46.728,
+    "lng": 9.558,
+    "venue": "Lenzerheide",
+    "region": "Graubünden",
+    "previousEventId": "b92802fa-240e-4694-857f-66f08ee109d2"
+  },
+  {
+    "round": 8,
+    "place": "Val di Sole – Trentino",
+    "start": "2027-09-10",
+    "end": "2027-09-12",
+    "disciplines": [
+      "xco",
+      "xcc",
+      "dh"
+    ],
+    "cc": "IT",
+    "timezone": "Europe/Rome",
+    "locationId": "d6b84589-8f9c-40fb-ae6a-c2e7874c400a",
+    "lat": 46.3196181,
+    "lng": 10.836164,
+    "venue": "Daolasa, Commezzadura",
+    "region": "Trentino"
+  },
+  {
+    "round": 9,
+    "place": "Soldier Hollow – Midway, Utah",
+    "start": "2027-09-25",
+    "end": "2027-09-26",
+    "disciplines": [
+      "xco",
+      "xcc"
+    ],
+    "cc": "US",
+    "timezone": "America/Denver",
+    "locationId": "83831738-7f44-47e1-9eeb-0c09965b3053",
+    "lat": 40.483,
+    "lng": -111.495,
+    "venue": "Soldier Hollow",
+    "region": "Utah"
+  },
+  {
+    "round": 10,
+    "place": "Whistler Mountain Bike Park",
+    "start": "2027-10-02",
+    "end": "2027-10-03",
+    "disciplines": [
+      "dh"
+    ],
+    "cc": "CA",
+    "timezone": "America/Vancouver",
+    "locationId": "3fef3453-6bf4-4964-9d60-9380eb4b716f",
+    "lat": 50.1163,
+    "lng": -122.9574,
+    "venue": "Whistler Mountain Bike Park",
+    "region": "British Columbia"
+  }
+]
