@@ -185,7 +185,7 @@ export function ListView({ locale }: { locale: string }) {
                 </ItemGroup>
               ) : null}
               {view === "rows" && isMobile ? (
-                <ItemGroup className="pb-[env(safe-area-inset-bottom)]">
+                <ItemGroup data-keyboard-list className="pb-[env(safe-area-inset-bottom)]">
                   {rows.map((event) => (
                     <div role="listitem" key={event.id} className="border-b border-border/50 last:border-b-0">
                       <EventCard

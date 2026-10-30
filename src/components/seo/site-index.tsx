@@ -28,7 +28,7 @@ export async function SiteIndex({ locale }: { locale: Locale }) {
   const countries = CORE.filter((c) => isListedCountry(c));
 
   return (
-    <nav aria-label={rc.allRaces} className="sr-only">
+    <nav aria-label={rc.allRaces} className="sr-only keyboard-index">
       <h2>{collectionCopy[locale].heading}</h2>
       <ul>
         {COLLECTION_SLUGS.map((slug) => (

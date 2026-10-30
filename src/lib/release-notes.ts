@@ -21,8 +21,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     date: "2026-10-30",
     items: {
-      en: ["The 2027 Mountain Bike World Cup rounds in Czechia, Austria, Italy and Switzerland are in the calendar."],
-      cs: ["V kalendáři jsou závody Světového poháru horských kol 2027 v Česku, Rakousku, Itálii a Švýcarsku."],
+      en: [
+        "You can switch races with the arrow keys on the map and in the list, move between calendar days with the keyboard, and close race details with Escape.",
+        "The 2027 Mountain Bike World Cup rounds in Czechia, Austria, Italy and Switzerland are in the calendar."],
+      cs: [
+        "Na mapě a v seznamu přepínáš závody šipkami, mezi dny v kalendáři se pohybuješ klávesnicí a detail závodu zavřeš klávesou Escape.",
+        "V kalendáři jsou závody Světového poháru horských kol 2027 v Česku, Rakousku, Itálii a Švýcarsku."],
     },
   },
   {

@@ -159,7 +159,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   const hub = hubs.find((h) => event.disciplines.some((d) => isHubDiscipline(h.discipline) && disciplineMatches(h.discipline, d)));
 
   return (
-    <main className="relative min-h-full bg-background">
+    <article className="relative min-h-full bg-background">
       <RacePageView raceId={event.id} slug={event.slug} hasRegistration={Boolean(event.registrationUrl)} hasPrimaryOutbound={Boolean(event.registrationUrl || event.websiteUrl || event.listingUrl || event.regulationsUrl)} isPast={isPast} />
       <EventJsonLd
         event={event}
@@ -322,7 +322,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
 
       </div>
 
-    </main>
+    </article>
   );
 }
 

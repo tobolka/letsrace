@@ -34,7 +34,7 @@ export function ExplorePage({ locale, initialEvents }: { locale: Locale; initial
                 race list is for crawlers and screen readers, and is there in
                 the HTML without ever being drawn. */}
             <MapLoading />
-            <div className="sr-only">
+            <div className="sr-only keyboard-index">
               <CataloguePreview locale={locale} view="map" />
             </div>
           </>

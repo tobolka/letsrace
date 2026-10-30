@@ -58,7 +58,7 @@ async function Browse({ locale }: { locale: Locale }) {
   const tallies = await listCountryTallies([...PUBLIC_COUNTRY_CODES]).catch(() => []);
 
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <BrowseHeader locale={locale} crumbs={[{ label: rc.browse }]} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <BrowseIntro title={rc.browse} description={collectionCopy[locale].browseIntro} />
@@ -75,6 +75,6 @@ async function Browse({ locale }: { locale: Locale }) {
           ))}
         </TileGrid>
       </div>
-    </main>
+    </article>
   );
 }

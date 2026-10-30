@@ -194,6 +194,7 @@ export function MobileListSheet({
   return (
     <Drawer
       open
+      autoFocus={false}
       dismissible={false}
       modal={false}
       shouldScaleBackground={false}

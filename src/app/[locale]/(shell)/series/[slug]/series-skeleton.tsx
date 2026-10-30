@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 /** A series: its name, what it is, then its rounds by month. */
 export function SeriesSkeleton() {
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <BrowseHeaderSkeleton depth={4} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <PageIntroSkeleton branded />
@@ -12,6 +12,6 @@ export function SeriesSkeleton() {
         <RaceListSkeleton rows={4} />
         <RaceListSkeleton rows={4} className="mt-6" />
       </div>
-    </main>
+    </article>
   );
 }

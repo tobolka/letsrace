@@ -17,9 +17,9 @@ export default async function RaceNotFound() {
   const locale = asLocale((await rootLocale()) ?? "");
   const c = notFoundCopy[locale];
   return (
-    <main className="relative min-h-full bg-background">
+    <article className="relative min-h-full bg-background">
       <BrowseHeader locale={locale} crumbs={[...browseCrumbs(locale, { country: null, family: null }), { label: c.raceTitle }]} />
       <MissingRaceHelp locale={locale} />
-    </main>
+    </article>
   );
 }

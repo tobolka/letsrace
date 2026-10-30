@@ -73,6 +73,8 @@ export const EventCard = memo(function EventCard({
       <button
         type="button"
         data-event-id={event.id}
+        data-keyboard-item
+        aria-describedby="race-keyboard-help"
         data-planned={planned || undefined}
         aria-pressed={active}
         onClick={() => onSelect(event.id)}

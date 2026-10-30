@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 /** One race: the bar and trail, the name and date, its facts, then the account of it. */
 export function RaceSkeleton() {
   return (
-    <main className="relative min-h-full bg-background">
+    <article className="relative min-h-full bg-background">
       <BrowseHeaderSkeleton depth={4} />
       <div className="relative mx-auto max-w-3xl px-4 pb-16 pt-4 sm:px-6">
         <Skeleton className="h-10 w-full max-w-md" />
@@ -32,6 +32,6 @@ export function RaceSkeleton() {
         <Skeleton className="mt-2 h-4 w-5/6" />
         <Skeleton className="mt-2 h-4 w-2/3" />
       </div>
-    </main>
+    </article>
   );
 }

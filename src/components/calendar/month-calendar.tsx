@@ -149,6 +149,30 @@ export function MonthCalendar({
   const firstInMonth = days.find((d) => d.inMonth)?.iso ?? null;
   const activeDay = phoneDay && days.some((d) => d.iso === phoneDay) ? phoneDay : (today ?? firstWithRaces ?? firstInMonth);
 
+  const calendarRef = useRef<HTMLDivElement>(null);
+  function moveDay(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.defaultPrevented) return;
+    const target = e.target as HTMLElement;
+    const cell = target.closest<HTMLElement>("[data-calendar-day], [data-calendar-date]");
+    if (!cell) return;
+    const index = days.findIndex((day) => day.iso === (cell.dataset.calendarDay ?? cell.dataset.calendarDate));
+    let next: number;
+    switch (e.key) {
+      case "ArrowLeft": next = index - 1; break;
+      case "ArrowRight": next = index + 1; break;
+      case "ArrowUp": next = index - 7; break;
+      case "ArrowDown": next = index + 7; break;
+      case "Home": next = index - index % 7; break;
+      case "End": next = index - index % 7 + 6; break;
+      default: return;
+    }
+    e.preventDefault();
+    const iso = days[Math.max(0, Math.min(days.length - 1, next))]?.iso;
+    const button = calendarRef.current?.querySelector<HTMLButtonElement>(`button[data-calendar-day="${iso}"]`);
+    button?.focus();
+    button?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
+  }
+
   return (
     <div className={cn("flex min-h-0 min-w-0 flex-col", fill && "flex-1", className)}>
       <div className="grid shrink-0 grid-cols-7 border-b">
@@ -165,7 +189,7 @@ export function MonthCalendar({
         ))}
       </div>
 
-      <div className={cn("grid min-w-0 shrink-0 grid-cols-7", fill && !isMobile && "flex-1 auto-rows-[minmax(7rem,1fr)]")}>
+      <div ref={calendarRef} onKeyDown={moveDay} className={cn("grid min-w-0 shrink-0 grid-cols-7", fill && !isMobile && "flex-1 auto-rows-[minmax(7rem,1fr)]")}>
         {days.map((day, i) => {
           const list = byDay.get(day.iso) ?? [];
           const info = dayInfo?.(day.iso);
@@ -181,8 +205,9 @@ export function MonthCalendar({
               <button
                 key={day.iso}
                 type="button"
-                role="gridcell"
-                aria-selected={picked}
+                data-calendar-day={day.iso}
+                aria-describedby="calendar-keyboard-help"
+                aria-pressed={picked}
                 aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
                 onClick={() => {
                   onPickDay?.(day.iso);
@@ -227,7 +252,7 @@ export function MonthCalendar({
             <Popover key={day.iso} open={dayOpen} onOpenChange={(next) => !next && close()}>
               <PopoverAnchor asChild>
                 <div
-                  role="gridcell"
+                  data-calendar-date={day.iso}
                   onClick={() => {
                     onPickDay?.(day.iso);
                     if (isMobile && list.length > 0) openDay();
@@ -246,6 +271,8 @@ export function MonthCalendar({
                 >
                   <button
                     type="button"
+                    data-calendar-day={day.iso}
+                    aria-describedby="calendar-keyboard-help"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (list.length > 0) openDay();
@@ -298,6 +325,7 @@ export function MonthCalendar({
                           </button>
                         </PopoverTrigger>
                         <PopoverContent
+                          aria-label={item.name}
                           side="right"
                           align="start"
                           collisionPadding={12}
@@ -330,12 +358,17 @@ export function MonthCalendar({
               </PopoverAnchor>
 
               <PopoverContent
+                aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
                 align="start"
                 side={isMobile ? "bottom" : "right"}
                 collisionPadding={12}
                 className="w-auto overflow-hidden p-0"
                 onClick={(e) => e.stopPropagation()}
                 onInteractOutside={keepOpenForOtherRaces}
+                onCloseAutoFocus={(e) => {
+                  const trigger = calendarRef.current?.querySelector<HTMLButtonElement>(`button[data-calendar-day="${day.iso}"]`);
+                  if (trigger) { e.preventDefault(); trigger.focus(); }
+                }}
               >
                 {dayOpen && open.detailId && byId.has(open.detailId) ? (
                   <div className="flex flex-col">
@@ -392,11 +425,12 @@ export function MonthCalendar({
               {(byDay.get(activeDay) ?? []).length === 0 ? (
                 <p className="px-4 py-4 text-sm text-muted-foreground">{t.scheduleEmptyDay}</p>
               ) : (
-                <ul className="flex flex-col pb-[max(1rem,env(safe-area-inset-bottom))]">
+                <ul data-keyboard-list className="flex flex-col pb-[max(1rem,env(safe-area-inset-bottom))]">
                   {(byDay.get(activeDay) ?? []).map((item) => (
                     <li key={item.id} className="border-b border-border/50 last:border-b-0">
                       <button
                         type="button"
+                        data-keyboard-item
                         onClick={() => (onOpenItem ? onOpenItem(item.id) : setPhoneDetail(item.id))}
                         className={cn("relative flex min-h-12 w-full min-w-0 items-center gap-2 px-4 py-1.5 text-left transition-colors active:bg-accent", plannedIds.has(item.id) && PLANNED_RACE_SURFACE)}
                       >
@@ -444,11 +478,12 @@ function DayList({
         </span>
         <span className="text-2xl font-semibold tabular-nums">{format(date, "d", { locale: df })}</span>
       </div>
-      <ul className="max-h-[min(60dvh,24rem)] overflow-y-auto p-1">
+      <ul data-keyboard-list data-keyboard-focus-only className="max-h-[min(60dvh,24rem)] overflow-y-auto p-1">
         {items.map((item) => (
           <li key={item.id}>
             <button
               type="button"
+              data-keyboard-item
               onClick={() => onPick(item.id)}
               className={cn("flex w-full min-w-0 items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent", plannedIds.has(item.id) && PLANNED_RACE_SURFACE)}
             >

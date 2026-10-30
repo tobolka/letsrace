@@ -89,7 +89,7 @@ export function AppShell({
 
       {/* The plan is a working view like the list and the calendar, so it takes
           the whole sheet; the other profile pages are documents with margins. */}
-      <main
+      <article
         className={cn(
           "flex flex-1 flex-col",
           authed !== false && pathname === localePath(locale, `account`) ? "p-0" : "p-4 md:p-8",
@@ -105,7 +105,7 @@ export function AppShell({
         ) : (
           <AccountTeaser locale={locale} kind={teaserForPath(pathname)} />
         )}
-      </main>
+      </article>
 
       <AccountCommand locale={locale} open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>

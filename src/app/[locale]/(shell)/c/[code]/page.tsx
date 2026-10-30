@@ -116,7 +116,7 @@ async function CountryHub({
     .sort((a, b) => disciplineOrder.indexOf(a[0]) - disciplineOrder.indexOf(b[0]));
 
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -178,6 +178,6 @@ async function CountryHub({
           </section>
         ) : null}
       </div>
-    </main>
+    </article>
   );
 }

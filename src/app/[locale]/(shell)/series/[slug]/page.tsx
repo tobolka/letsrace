@@ -102,7 +102,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
   const heading = words.title;
 
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -158,6 +158,6 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
           </nav>
         )}
       </div>
-    </main>
+    </article>
   );
 }

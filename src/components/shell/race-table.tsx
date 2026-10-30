@@ -164,7 +164,7 @@ export function RaceTable({
           ))}
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody data-keyboard-list>
         {events.map((event) => (
           <Row
             key={event.id}
@@ -204,15 +204,7 @@ const Row = memo(function Row({
       data-event-id={event.id}
       data-planned={planned || undefined}
       data-state={active ? "selected" : undefined}
-      tabIndex={0}
-      aria-selected={active}
       onClick={() => onSelect(event.id)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onSelect(event.id);
-        }
-      }}
       className={cn(
         "cursor-pointer border-border/60 outline-none focus-visible:bg-muted",
         planned && PLANNED_RACE_SURFACE,
@@ -243,7 +235,20 @@ const Row = memo(function Row({
               />
             ) : null}
             {col === "name" && planned ? <PlannedRaceMarker locale={locale} /> : null}
-            {text}
+            {col === "name" || (!columns.includes("name") && i === 0) ? (
+              <button
+                type="button"
+                data-event-id={event.id}
+                data-keyboard-item
+                aria-pressed={active}
+                aria-label={col === "name" ? undefined : event.name}
+                aria-describedby="race-keyboard-help"
+                className="max-w-full truncate rounded-sm text-left align-middle after:absolute after:inset-0"
+                onClick={(e) => { e.stopPropagation(); onSelect(event.id); }}
+              >
+                {text}
+              </button>
+            ) : text}
             {col === "name" && event.ageMatch === "possible" ? (
               <UnconfirmedAges locale={locale} className="ml-2 align-middle" />
             ) : null}

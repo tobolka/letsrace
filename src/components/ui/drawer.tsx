@@ -2,13 +2,44 @@
 
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
+import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { focusKeyboardItem, visibleKeyboardItems } from "@/lib/keyboard-navigation"
+
+const DrawerModalContext = React.createContext(true)
 
 function Drawer({
+  autoFocus = true,
+  modal = true,
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  dismissible = true,
+  children,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+  const [ownOpen, setOwnOpen] = React.useState(defaultOpen)
+  const isOpen = open ?? ownOpen
+  function changeOpen(next: boolean) {
+    if (!next && !dismissible) return
+    setOwnOpen(next)
+    onOpenChange?.(next)
+  }
+  return (
+    <DrawerModalContext.Provider value={modal}>
+    <DrawerPrimitive.Root data-slot="drawer" autoFocus={autoFocus} modal={modal} open={isOpen} onOpenChange={changeOpen} dismissible={dismissible} {...props}>
+      {modal ? children : (
+        // Vaul 1.1.2 does not forward `modal` to its Radix Root. Supply the
+        // non-modal context to its content so the permanent map list neither
+        // traps keyboard focus nor hides the map/navigation from readers.
+        <DialogPrimitive.Root open={isOpen} onOpenChange={changeOpen} modal={false}>
+          {children}
+        </DialogPrimitive.Root>
+      )}
+    </DrawerPrimitive.Root>
+    </DrawerModalContext.Provider>
+  )
 }
 
 function DrawerTrigger({
@@ -91,15 +122,61 @@ function DrawerContent({
   className,
   children,
   showOverlay = true,
+  onOpenAutoFocus,
+  onCloseAutoFocus,
+  onKeyDownCapture,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Content> & {
   showOverlay?: boolean
 }) {
+  const opener = React.useRef<HTMLElement | null>(null)
+  const modal = React.useContext(DrawerModalContext)
   return (
     <DrawerPortal data-slot="drawer-portal">
       {showOverlay ? <DrawerOverlay /> : null}
       <DrawerPrimitive.Content
         data-slot="drawer-content"
+        role={modal ? "dialog" : "region"}
+        aria-modal={modal || undefined}
+        onKeyDownCapture={(event) => {
+          onKeyDownCapture?.(event)
+          if (modal || event.defaultPrevented || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) return
+          // Radix loops Tab even in a non-modal dialog. At the edges of the
+          // map's persistent panel, continue into the rest of the page.
+          const all = Array.from(document.querySelectorAll<HTMLElement>("a[href], button, input, select, textarea, [tabindex]"))
+            .filter((el) => el.tabIndex >= 0 && !el.matches(":disabled") && el.getClientRects().length > 0 && !el.closest("[inert], [aria-hidden=true]"))
+          const inside = all.filter((el) => event.currentTarget.contains(el))
+          const edge = event.shiftKey ? inside[0] : inside.at(-1)
+          if (event.target !== edge) return
+          const index = all.indexOf(edge)
+          const next = all[(index + (event.shiftKey ? -1 : 1) + all.length) % all.length]
+          if (next && !event.currentTarget.contains(next)) {
+            event.preventDefault()
+            event.stopPropagation()
+            next.focus()
+          }
+        }}
+        onOpenAutoFocus={(event) => {
+          opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+          onOpenAutoFocus?.(event)
+        }}
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event)
+          if (!event.defaultPrevented && opener.current?.isConnected && opener.current !== document.body) {
+            event.preventDefault()
+            opener.current.focus()
+          } else if (!event.defaultPrevented) {
+            const content = event.target instanceof HTMLElement ? event.target : null
+            const id = opener.current?.dataset.eventId ?? content?.querySelector<HTMLElement>("[data-event-id]")?.dataset.eventId
+            if (id) {
+              event.preventDefault()
+              requestAnimationFrame(() => {
+                const row = visibleKeyboardItems(document).find((el) => el.dataset.eventId === id)
+                if (row) focusKeyboardItem(row)
+              })
+            }
+          }
+        }}
         className={cn(
           "group/drawer-content fixed z-50 flex h-auto flex-col bg-background",
           "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",

@@ -107,6 +107,7 @@ export function PlanRow({
         <div className="min-w-0 flex-1">
           <Link
             href={href}
+            data-keyboard-item
             className="block truncate text-sm font-medium leading-snug hover:underline"
           >
             {plan.event.name}

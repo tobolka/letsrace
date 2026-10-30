@@ -272,7 +272,7 @@ export default async function AboutPage({ params }: Props) {
     },
   };
   return (
-    <main className="p-4 md:p-8">
+    <article className="p-4 md:p-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
@@ -336,6 +336,6 @@ export default async function AboutPage({ params }: Props) {
           <a href={SITE_AUTHOR.url} className="underline underline-offset-2">{SITE_AUTHOR.url.replace(/^https?:\/\//, "")}</a>
         </p>
       </article>
-    </main>
+    </article>
   );
 }

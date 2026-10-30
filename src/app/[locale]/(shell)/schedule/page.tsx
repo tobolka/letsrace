@@ -38,7 +38,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ local
   if (!locales.includes(locale as Locale)) notFound();
   // The preview is drawn only for crawlers and screen readers: the view itself is what people see.
   return (
-    <Suspense fallback={<div className="sr-only"><CataloguePreview locale={locale as Locale} view="schedule" /></div>}>
+    <Suspense fallback={<div className="sr-only keyboard-index"><CataloguePreview locale={locale as Locale} view="schedule" /></div>}>
       <ScheduleView locale={locale} />
     </Suspense>
   );

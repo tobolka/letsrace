@@ -130,7 +130,7 @@ async function DisciplineHub({
   const nextOf = (slug: string) => events.find((e) => e.series?.slug === slug)?.startDate;
 
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <HubJsonLd
         locale={locale}
         title={heading}
@@ -197,6 +197,6 @@ async function DisciplineHub({
         )}
 
       </div>
-    </main>
+    </article>
   );
 }

@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <BrowseHeaderSkeleton depth={3} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         <PageIntroSkeleton button={false} />
@@ -11,6 +11,6 @@ export default function Loading() {
         <div className="mt-6 flex gap-2">{[1, 2, 3].map((key) => <Skeleton key={key} className="h-8 w-24 rounded-md" />)}</div>
         <RaceListSkeleton className="mt-8" />
       </div>
-    </main>
+    </article>
   );
 }

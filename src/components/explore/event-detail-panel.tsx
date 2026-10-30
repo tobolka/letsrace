@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { ChevronUp, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -23,6 +23,7 @@ import { EmbeddedBody } from "@/components/explore/event-detail-embedded";
 import { EventTrustRow } from "@/components/explore/event-trust-row";
 import { useShareLink } from "@/components/explore/use-share-link";
 import { DEFAULT_CARD_X, useDraggableCard } from "@/components/explore/use-draggable-card";
+import { focusKeyboardItem, visibleKeyboardItems } from "@/lib/keyboard-navigation";
 
 
 export function EventDetailPanel({
@@ -70,6 +71,45 @@ export function EventDetailPanel({
   });
   const m = buildDetailModel(event, locale, t);
 
+  // A day's list is replaced by its race card. Its focused button disappears,
+  // so hand focus to the newly loaded card, including when it arrives lazily.
+  useEffect(() => {
+    if (anchored) cardRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+  }, [anchored, event.id, cardRef]);
+
+  useLayoutEffect(() => {
+    if (embedded || anchored) return;
+    const card = cardRef.current;
+    return () => {
+      // Browser Back also dismisses the card, without going through its cross.
+      if (!card?.contains(document.activeElement)) return;
+      const row = visibleKeyboardItems(document).find((el) => el.dataset.eventId === card.dataset.eventId);
+      if (row) focusKeyboardItem(row);
+    };
+  }, [embedded, anchored, cardRef]);
+
+  function closePanel() {
+    const card = cardRef.current;
+    if (!embedded && !anchored && (card?.contains(document.activeElement) || document.activeElement === document.body)) {
+      const row = visibleKeyboardItems(document).find((el) => el.dataset.eventId === event.id);
+      if (row) focusKeyboardItem(row);
+    }
+    onClose();
+  }
+
+  useEffect(() => {
+    if (embedded || anchored) return; // The containing dialog/popover owns Escape.
+    function escape(e: KeyboardEvent) {
+      if (e.key !== "Escape" || e.defaultPrevented || e.isComposing) return;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      if (target?.closest("[role=dialog], [data-slot=popover-content], [role=menu], [role=listbox]")) return;
+      e.preventDefault();
+      closePanel();
+    }
+    window.addEventListener("keydown", escape);
+    return () => window.removeEventListener("keydown", escape);
+  });
+
   const panelVisible = useMediaQuery(embedded ? "(max-width: 767px)" : "(min-width: 768px)");
   const seen = useRef<string | null>(null);
   useEffect(() => {
@@ -85,6 +125,9 @@ export function EventDetailPanel({
   return (
     <Card
       ref={cardRef}
+      role="region"
+      data-race-detail={!embedded && !anchored ? "floating" : undefined}
+      data-event-id={event.id}
       aria-labelledby="race-detail-title"
       className={cn(
         // overflow-x-hidden: long series chips / nowrap buttons used to force a
@@ -166,7 +209,7 @@ export function EventDetailPanel({
             variant="ghost"
             size="icon"
             className={embedded ? "size-11" : undefined}
-            onClick={onClose}
+            onClick={closePanel}
             aria-label={t.close}
           >
             <X />

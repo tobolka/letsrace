@@ -93,7 +93,7 @@ export function PlanRaces({
   }
 
   return (
-    <div style={{ ["--plan-cols" as string]: planColumns(members.length) }}>
+    <div data-keyboard-list style={{ ["--plan-cols" as string]: planColumns(members.length) }}>
       {/* The columns, named once: the race, then each rider. Phones have no
           columns — each row carries the rider's name itself. */}
       <div

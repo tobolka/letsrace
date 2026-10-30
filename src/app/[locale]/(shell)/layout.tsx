@@ -1,6 +1,7 @@
 import { AppSidebar, MobileTabBar } from "@/components/shell/app-rail";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SavedRacesBoot } from "@/components/race/saved-races-boot";
+import { KeyboardNavigation } from "@/components/shell/keyboard-navigation";
 
 /**
  * One frame for everything inside the app: the map, the list, the calendar and
@@ -26,8 +27,11 @@ export default async function ShellLayout({
       style={{ "--sidebar-width-icon": "2.5rem" } as React.CSSProperties}
       className="h-dvh min-h-0 overflow-hidden max-md:flex-col"
     >
+      <KeyboardNavigation locale={locale} />
       <AppSidebar locale={locale} />
       <SidebarInset
+        id="main-content"
+        tabIndex={-1}
         className={
           // The page is a white sheet laid on the rail's grey: 8px off the window
           // on three sides, flush with the rail on the fourth, lifted by a

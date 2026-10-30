@@ -71,7 +71,7 @@ export function ExploreRaceRows({
     );
   }
   return (
-    <ItemGroup className={groupClassName}>
+    <ItemGroup data-keyboard-list className={groupClassName}>
       {view === "skeleton" ? <ListSkeleton rows={8} /> : null}
       {view === "rows"
         ? events.map((event) => (

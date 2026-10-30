@@ -88,7 +88,7 @@ async function CollectionBody({
   ];
 
   return (
-    <main className="min-h-full bg-background">
+    <article className="min-h-full bg-background">
       <HubJsonLd locale={locale} title={title} description={description} path={raceListPagePath(path, String(paginated.page))} breadcrumb={[{ name: rc.browse, path: hubPath(locale) }, ...(countryCode ? [{ name: copy.collections[slug].label, path: collectionPath(locale, slug) }] : [])]} events={paginated.events.map((e) => ({ name: e.name, slug: e.slug, startDate: e.startDate, place: e.location?.municipality ?? e.location?.name }))} />
       <BrowseHeader locale={locale} crumbs={crumbs} />
       <div className="mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
@@ -120,6 +120,6 @@ async function CollectionBody({
         )}
         <CollectionGrid locale={locale} countryCode={countryCode} />
       </div>
-    </main>
+    </article>
   );
 }

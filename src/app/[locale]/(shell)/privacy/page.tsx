@@ -303,7 +303,7 @@ export default async function PrivacyPage({
   const { locale } = await params;
   const doc = DOCS[asLocale(locale)];
   return (
-    <main className="p-4 md:p-8">
+    <article className="p-4 md:p-8">
       <article className={DOC_WIDTH}>
         <PageHeader title={doc.title} description={doc.intro} />
         {doc.sections.map((s) => (
@@ -320,6 +320,6 @@ export default async function PrivacyPage({
           {doc.updated}: {UPDATED} · {CONTACT}
         </p>
       </article>
-    </main>
+    </article>
   );
 }
