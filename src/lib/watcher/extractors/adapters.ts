@@ -1,4 +1,5 @@
 import { parseRaceTime } from "@/lib/watcher/extractors/racetime";
+import { isNakoleUrl, parseNakole } from "@/lib/watcher/extractors/nakole";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
 import { parseCscCalendar, parseCscCupListing } from "@/lib/watcher/extractors/csc";
@@ -223,6 +224,9 @@ export async function extractWithAdapter(
   url: string,
   html: string,
 ): Promise<AdapterResult | null> {
+  // Even an empty/rejected page is authoritative: generic/AI extraction must
+  // never reintroduce a ride, exhibition or a related event from this site.
+  if (isNakoleUrl(url)) return { events: await parseNakole(url, html), strategy: "adapter:nakole" };
   if (host === "racetime.sk" && new URL(url).pathname.replace(/\/$/, "") === "/terminovka") {
     return { events: parseRaceTime(url, html), strategy: "adapter:racetime-calendar" };
   }

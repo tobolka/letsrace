@@ -2610,6 +2610,18 @@ export async function ingestReviewedCandidate(event: ParsedEvent, review: {
   return result;
 }
 
+/** Explicit, source-verified 2026 backfill through the normal protected writer. */
+export async function ingestNakoleArchiveEvent(ev: ParsedEvent, watchedUrlId: string) {
+  const { isNakoleUrl, NAKOLE_VERSION } = await import("./extractors/nakole");
+  const today = new Date().toISOString().slice(0, 10);
+  if (!isNakoleUrl(ev.sourceUrl) || ev.evidence?.method !== "nakole_detail" ||
+    ev.evidence.version !== NAKOLE_VERSION || ev.evidence.sourceUrl !== ev.sourceUrl ||
+    ev.eventType !== "race" || !ev.startDate.startsWith("2026-") || (ev.endDate ?? ev.startDate) >= today) {
+    throw new Error("Not a verified historical 2026 NaKole race");
+  }
+  return upsertParsedEvent(ev, watchedUrlId, "aggregator", "https://www.nakole.cz/akce/archiv/");
+}
+
 export async function previewUrl(url: string) {
   const fetched = await fetchPage(url);
   if (fetched.status >= 400) {

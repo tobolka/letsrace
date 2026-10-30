@@ -25,7 +25,7 @@ export type ExtractResult = {
 
 /** A model's failure to mention a race is not evidence that it was removed. */
 export function canReconcileMissingEvents(result: ExtractResult): boolean {
-  return result.complete !== false && !result.strategy.includes("llm") &&
+  return result.strategy !== "adapter:nakole" && result.complete !== false && !result.strategy.includes("llm") &&
     (result.strategy.includes("adapter:") || result.strategy.includes("jsonld"));
 }
 

@@ -22,9 +22,11 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-30",
     items: {
       en: [
+        "The 2026 archive includes three more cycling races from NaKole.cz, with rides and other non-racing events filtered out.",
         "You can switch races with the arrow keys on the map and in the list, move between calendar days with the keyboard, and close race details with Escape.",
         "The 2027 Mountain Bike World Cup rounds in Czechia, Austria, Italy and Switzerland are in the calendar."],
       cs: [
+        "V archivu roku 2026 jsou další tři cyklistické závody z NaKole.cz, bez vyjížděk a dalších nezávodních akcí.",
         "Na mapě a v seznamu přepínáš závody šipkami, mezi dny v kalendáři se pohybuješ klávesnicí a detail závodu zavřeš klávesou Escape.",
         "V kalendáři jsou závody Světového poháru horských kol 2027 v Česku, Rakousku, Itálii a Švýcarsku."],
     },
