@@ -22,11 +22,13 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-31",
     items: {
       en: [
+        "The calendar includes more races from Winspace, including Bike Maraton Vysočina, Bystrický anjel and Dolomiten Radrundfahrt.",
         "The 2027 calendar includes Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou and ten more UltraBikers Cup events.",
         "You can filter mountain bike orienteering races by MTBO.",
         "Lesák CUP appears once, and more 2027 races have verified venues, route options and clearer registration information.",
       ],
       cs: [
+        "V kalendáři najdeš další závody z Winspace, včetně Bike Maratonu Vysočina, Bystrického anjela a Dolomiten Radrundfahrt.",
         "V kalendáři 2027 najdeš Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou a dalších deset závodů UltraBikers Cupu.",
         "Orientační závody na horských kolech si vyfiltruješ jako MTBO.",
         "Lesák CUP se zobrazuje jednou a další závody 2027 mají ověřená místa, varianty tras a srozumitelnější informace o přihláškách.",
