@@ -1,0 +1,14 @@
+[
+  {
+    "id": "97f72e9d-8a6e-498b-a0bc-5cb23a823d13",
+    "candidate_key": "073153d1aadf302b7cd16549d984aca2452fd8c03271aeca938c8e915067f43e",
+    "status": "waiting",
+    "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling."
+  },
+  {
+    "id": "0f86b993-da47-468b-a9a6-073bbc84bcb7",
+    "candidate_key": "13933c8a82c73c6083d84b87ab3f20d32b021678e3fd45719f2e112235c107b1",
+    "status": "waiting",
+    "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate."
+  }
+]

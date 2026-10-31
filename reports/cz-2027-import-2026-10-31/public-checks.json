@@ -1,0 +1,382 @@
+[
+  {
+    "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+    "name": "Mistrovství Evropy MTBO — Hradec Králové",
+    "url": "https://letsrace.cz/cs/zavod/mistrovstvi-evropy-mtbo-hradec-kralove-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/mistrovstvi-evropy-mtbo-hradec-kralove-2027"
+  },
+  {
+    "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+    "name": "Český pohár MTBO — Tři Dvory",
+    "url": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-tri-dvory-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-tri-dvory-2027"
+  },
+  {
+    "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+    "name": "Český pohár MTBO — Mariánské Lázně",
+    "url": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-marianske-lazne-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-marianske-lazne-2027"
+  },
+  {
+    "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+    "name": "Český pohár MTBO — Plzeň",
+    "url": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-plzen-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-plzen-2027"
+  },
+  {
+    "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+    "name": "Český pohár MTBO — Jedovnice",
+    "url": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-jedovnice-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-jedovnice-2027"
+  },
+  {
+    "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+    "name": "Český pohár MTBO — Nejdek",
+    "url": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-nejdek-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-nejdek-2027"
+  },
+  {
+    "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+    "name": "Český pohár MTBO — Vrchlabí",
+    "url": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-vrchlabi-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cesky-pohar-mtbo-vrchlabi-2027"
+  },
+  {
+    "id": "a137c3e0-db7b-4e68-a28d-163c45aabdde",
+    "name": "Tour de Feminin",
+    "url": "https://letsrace.cz/cs/zavod/tour-de-feminin-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/tour-de-feminin-2027"
+  },
+  {
+    "id": "df72ac6c-d903-4b0f-b671-602f3966f74a",
+    "name": "Brdský Meandr",
+    "url": "https://letsrace.cz/cs/zavod/brdsky-meandr-2027",
+    "status": 200,
+    "inCalendar": false,
+    "expectedInCalendar": false,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/brdsky-meandr-2027"
+  },
+  {
+    "id": "79674606-133c-4712-a77d-3eb23534183a",
+    "name": "Tour de Kozovazy",
+    "url": "https://letsrace.cz/cs/zavod/tour-de-kozovazy-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/tour-de-kozovazy-2027"
+  },
+  {
+    "id": "a0825091-004c-438e-a539-4176640ad411",
+    "name": "Race Across Czechia",
+    "url": "https://letsrace.cz/cs/zavod/race-across-czechia-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/race-across-czechia-2027"
+  },
+  {
+    "id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+    "name": "V4 2027",
+    "url": "https://letsrace.cz/cs/zavod/v4-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/v4-2027"
+  },
+  {
+    "id": "cd82d70a-89fb-4646-ac28-7217198e560a",
+    "name": "UB30 / UB20: Seven Wineyards Challenge",
+    "url": "https://letsrace.cz/cs/zavod/ub30-ub20-seven-wineyards-challenge-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/ub30-ub20-seven-wineyards-challenge-2027"
+  },
+  {
+    "id": "38af09e7-a920-47b5-8b75-e2d17f64d02a",
+    "name": "UCI MTB World Cup – Nové Město na Moravě 2027",
+    "url": "https://letsrace.cz/cs/zavod/uci-mtb-world-cup-nove-mesto-na-morave-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/uci-mtb-world-cup-nove-mesto-na-morave-2027"
+  },
+  {
+    "id": "062802f7-278a-4c36-86ec-03787bf79c3d",
+    "name": "Strunk Connect Lesák CUP",
+    "url": "https://letsrace.cz/cs/zavod/lesak-cup-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/lesak-cup-2027"
+  },
+  {
+    "id": "312cc064-57d5-49cd-ac34-f8be58715d98",
+    "name": "Oremon Krušky Open",
+    "url": "https://letsrace.cz/cs/zavod/oremon-krusky-open-2027",
+    "status": 200,
+    "inCalendar": false,
+    "expectedInCalendar": false,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/oremon-krusky-open-2027"
+  },
+  {
+    "id": "3044fcbe-3b85-42a5-aa66-b9dee3fff9b4",
+    "name": "Moravia Divide",
+    "url": "https://letsrace.cz/cs/zavod/moravia-divide-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/moravia-divide-2027"
+  },
+  {
+    "id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+    "name": "Lost Ride",
+    "url": "https://letsrace.cz/cs/zavod/lost-ride-2027",
+    "status": 404,
+    "inCalendar": false,
+    "expectedInCalendar": false,
+    "titlePresent": false,
+    "finalUrl": "https://letsrace.cz/cs/zavod/lost-ride-2027"
+  },
+  {
+    "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "name": "Decathlon Cyklomaraton Hradec Králové",
+    "url": "https://letsrace.cz/cs/zavod/cyklomaraton-hradec-kralove-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/cyklomaraton-hradec-kralove-2027"
+  },
+  {
+    "id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+    "name": "CASIA Krakonošův cyklomaraton",
+    "url": "https://letsrace.cz/cs/zavod/casia-krakonosuv-cyklomaraton-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/casia-krakonosuv-cyklomaraton-2027"
+  },
+  {
+    "id": "4276378e-40f6-44af-bc95-8f017f666ff1",
+    "name": "May Divide",
+    "url": "https://letsrace.cz/cs/zavod/may-divide-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/may-divide-2027"
+  },
+  {
+    "id": "9444658e-16f4-4498-ae02-3f34725a749c",
+    "name": "TROJMEZÍ",
+    "url": "https://letsrace.cz/cs/zavod/trojmezi-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/trojmezi-2027"
+  },
+  {
+    "id": "e8ded1c2-70c2-4614-ac7c-ba126971592e",
+    "name": "Půl Paradise",
+    "url": "https://letsrace.cz/cs/zavod/pul-paradise-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/pul-paradise-2027"
+  },
+  {
+    "id": "475f4e03-d0c9-4961-94f1-85a01476fead",
+    "name": "Bike Paradise",
+    "url": "https://letsrace.cz/cs/zavod/bike-paradise-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/bike-paradise-2027"
+  },
+  {
+    "id": "627394f7-e4a4-412e-9ad0-b4710b729817",
+    "name": "FILIPA Podkrkonošský maraton",
+    "url": "https://letsrace.cz/cs/zavod/filipa-podkrkonossky-maraton-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/filipa-podkrkonossky-maraton-2027"
+  },
+  {
+    "id": "3289ec19-69f0-4058-9248-a79a95ae0cee",
+    "name": "SPOKE Maraton",
+    "url": "https://letsrace.cz/cs/zavod/spoke-maraton-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/spoke-maraton-2027"
+  },
+  {
+    "id": "de5b8b33-a126-4e0d-a7c0-13d1b4f50383",
+    "name": "Klecanský prolog",
+    "url": "https://letsrace.cz/cs/zavod/klecansky-prolog-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/klecansky-prolog-2027"
+  },
+  {
+    "id": "ec3ef6e0-7c23-4062-bf5e-9120d485b40c",
+    "name": "Sto mil kolem Jihlavy",
+    "url": "https://letsrace.cz/cs/zavod/sto-mil-kolem-jihlavy-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/sto-mil-kolem-jihlavy-2027"
+  },
+  {
+    "id": "30dbc4ff-fd9d-49cf-bdcf-dfca9a487996",
+    "name": "Hanácké Roubaix",
+    "url": "https://letsrace.cz/cs/zavod/hanacke-roubaix-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/hanacke-roubaix-2027"
+  },
+  {
+    "id": "26655273-41a7-4b8e-89cf-98449d3c521d",
+    "name": "Vinařské stezky",
+    "url": "https://letsrace.cz/cs/zavod/vinarske-stezky-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/vinarske-stezky-2027"
+  },
+  {
+    "id": "9696e44f-9c2a-461c-8148-96b162feab05",
+    "name": "JES300",
+    "url": "https://letsrace.cz/cs/zavod/jes300-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/jes300-2027"
+  },
+  {
+    "id": "864846f0-ceeb-4d90-8ff8-a2701f83041a",
+    "name": "Moravia Gravel",
+    "url": "https://letsrace.cz/cs/zavod/moravia-gravel-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/moravia-gravel-2027"
+  },
+  {
+    "id": "593b38ca-cabe-4f53-b1fd-0a6f5efa3024",
+    "name": "Stříbrné šotolinky",
+    "url": "https://letsrace.cz/cs/zavod/stribrne-sotolinky-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/stribrne-sotolinky-2027"
+  },
+  {
+    "id": "074f7f5e-7f84-4a1b-b8ad-f5cc75f0ea2e",
+    "name": "Chřibský švih",
+    "url": "https://letsrace.cz/cs/zavod/chribsky-svih-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/chribsky-svih-2027"
+  },
+  {
+    "id": "e25a0e83-54dc-4e35-9a8e-5bdd34991c22",
+    "name": "Poslední míle UltraBikers",
+    "url": "https://letsrace.cz/cs/zavod/posledni-mile-ultrabikers-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/posledni-mile-ultrabikers-2027"
+  },
+  {
+    "id": "fc380aab-44e7-4426-8ee1-d42f2bf30d4a",
+    "name": "Toulání Šumavou / Touláníčko",
+    "url": "https://letsrace.cz/cs/zavod/toulani-sumavou-toulanicko-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/toulani-sumavou-toulanicko-2027"
+  },
+  {
+    "id": "f0b030dc-77fb-4a38-bbb7-77989cc6eea5",
+    "name": "Okolo Hradce",
+    "url": "https://letsrace.cz/cs/zavod/okolo-hradce-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/okolo-hradce-2027"
+  },
+  {
+    "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+    "name": "DoKola!",
+    "url": "https://letsrace.cz/cs/zavod/dokola-2027",
+    "status": 200,
+    "inCalendar": true,
+    "expectedInCalendar": true,
+    "titlePresent": true,
+    "finalUrl": "https://letsrace.cz/cs/zavod/dokola-2027"
+  }
+]

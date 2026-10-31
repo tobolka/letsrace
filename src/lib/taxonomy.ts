@@ -16,6 +16,7 @@ export const DISCIPLINES = [
   "xcc",
   "xce",
   "xcm",
+  "mtbo",
   "dh",
   "enduro",
   "gravel",
@@ -39,6 +40,7 @@ export const DISCIPLINE_LABELS: Record<Discipline, string> = {
   xcc: "XCC",
   xce: "XCE",
   xcm: "XCM",
+  mtbo: "MTBO",
   dh: "Downhill",
   enduro: "Enduro",
   gravel: "Gravel",
@@ -75,6 +77,7 @@ export const DISCIPLINE_TREE: {
       { id: "xcc", label: "XCC" },
       { id: "xce", label: "XCE" },
       { id: "xcm", label: "XCM" },
+      { id: "mtbo", label: "MTBO" },
       { id: "dh", label: "Downhill" },
       { id: "enduro", label: "Enduro" },
     ],
@@ -96,7 +99,7 @@ export const DISCIPLINE_TREE: {
   { id: "bmx", label: "BMX" },
 ];
 
-const MTB_LEAVES: Discipline[] = ["xco", "xcc", "xce", "xcm", "dh", "enduro", "mtb"];
+const MTB_LEAVES: Discipline[] = ["xco", "xcc", "xce", "xcm", "mtbo", "dh", "enduro", "mtb"];
 const ROAD_LEAVES: Discipline[] = [
   "road",
   "road_race",
@@ -112,6 +115,7 @@ export const FORMAT_IDS = [
   "xcc",
   "xce",
   "xcm",
+  "mtbo",
   "dh",
   "enduro",
   "road_race",
@@ -138,7 +142,7 @@ export function expandDisciplineFilter(ids: string[]): string[] {
   return [...out];
 }
 
-const MTB_RACE = new Set<string>(["mtb", "xco", "xcc", "xce", "dh", "enduro"]);
+const MTB_RACE = new Set<string>(["mtb", "xco", "xcc", "xce", "mtbo", "dh", "enduro"]);
 const FAMILY_FILTERS = new Set<string>(["mtb", "road", "gravel", "cx", "track", "bmx"]);
 
 export function disciplineFamily(id: string | null | undefined): Discipline {
@@ -245,7 +249,7 @@ const LEGACY_DISC: Record<string, Discipline> = {
   para: "road",
   "para-cycling": "road",
   other: "other",
-  mtbo: "other",
+  mtbo: "mtbo",
   biathlon: "other",
   kids: "other",
 };
@@ -287,6 +291,7 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   if (/\bxcm\b/.test(tf)) found.add("xcm");
   else if (/marath?on/.test(tf) && isMtbMarathon(tf)) found.add("xcm");
   if (/\bxco\b/.test(t)) found.add("xco");
+  if (/\bmtbo\b|mtb\s+orient/.test(tf)) found.add("mtbo");
   if (/\bdh\b|downhill|sjezd/.test(t)) found.add("dh");
   if (/\benduro\b/.test(t)) found.add("enduro");
   if (/\bgravel\b|gravelow/.test(t)) found.add("gravel");

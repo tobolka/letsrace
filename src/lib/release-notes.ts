@@ -19,6 +19,22 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-10-31",
+    items: {
+      en: [
+        "The 2027 calendar includes Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou and ten more UltraBikers Cup events.",
+        "You can filter mountain bike orienteering races by MTBO.",
+        "Lesák CUP appears once, and more 2027 races have verified venues, route options and clearer registration information.",
+      ],
+      cs: [
+        "V kalendáři 2027 najdeš Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou a dalších deset závodů UltraBikers Cupu.",
+        "Orientační závody na horských kolech si vyfiltruješ jako MTBO.",
+        "Lesák CUP se zobrazuje jednou a další závody 2027 mají ověřená místa, varianty tras a srozumitelnější informace o přihláškách.",
+      ],
+    },
+  },
+
+  {
     date: "2026-10-30",
     items: {
       en: [

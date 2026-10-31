@@ -1,0 +1,33 @@
+[
+  {
+    "name": "Bohemian Border Bash Race",
+    "source": "https://www.borderbash.cc/",
+    "tentative_date": "2027-09-11",
+    "location": "Srbská Kamenice",
+    "discipline": "gravel",
+    "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.",
+    "sources_checked": [
+      "https://www.borderbash.cc/",
+      "https://www.borderbash.cc/bbbr26-info",
+      "https://ultracyclinghub.com/explore/in/czechia/"
+    ],
+    "candidate_key": "13933c8a82c73c6083d84b87ab3f20d32b021678e3fd45719f2e112235c107b1",
+    "evidence_hash": "a5e249fa46848f443ed249a1e0120eca3261f172c05c5bcb50ce0754f46e3bef"
+  },
+  {
+    "name": "Jesenický Ultrasurovec",
+    "source": "https://www.jesenickysurovec.cz/ultrasurovec/",
+    "tentative_date": "2027-10-15",
+    "location": "Jesenice u Rakovníka",
+    "discipline": "mtb",
+    "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.",
+    "sources_checked": [
+      "https://www.jesenickysurovec.cz/ultrasurovec/",
+      "https://jesenickysurovec.cz/ultrasurovec/",
+      "https://www.nazavody.cz/zavod/896-jesenicky-surovec-2027/",
+      "https://bezpodpory.cz/bikepacking-a-ultra-cyklisticke-zavody-v-cesku-a-na-slovensku-2027/"
+    ],
+    "candidate_key": "073153d1aadf302b7cd16549d984aca2452fd8c03271aeca938c8e915067f43e",
+    "evidence_hash": "7bc9ec85cec44a40c5839db9ffd744938ca02e979045fed3b2ecdb4ba7ddd425"
+  }
+]

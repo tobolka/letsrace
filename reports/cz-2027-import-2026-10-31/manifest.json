@@ -1,0 +1,1218 @@
+[
+  {
+    "id": "39a6fc31-96e9-431d-90c9-2811c7412fd5",
+    "name": "Český pohár MTBO — Tři Dvory",
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ]
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "2cea23e1-d7ce-4606-84c3-7533bebd087c",
+    "name": "Mistrovství Evropy MTBO — Hradec Králové",
+    "source": "https://emtboc2027.cz/en/programme/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ],
+      "event_type": "championship",
+      "description": "ME v MTBO pro dospělé, juniory a dorost. Program 2027: 5. 5. sprint, 6. 5. middle, 7. 5. smíšené štafety dospělých a štafety juniorů a dorostu, 8. 5. long. Centrum: Kemp Stříbrný rybník, Hradec Králové."
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "97aec3a7-aac3-4ef6-8798-21d90ca1ddd0",
+    "name": "Český pohár MTBO — Nejdek",
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ]
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "36878ddd-54c4-482d-a99f-0bbfa0314d19",
+    "name": "Český pohár MTBO — Mariánské Lázně",
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ]
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "547e9dd0-a712-42d4-a4df-46ba695739ac",
+    "name": "Český pohár MTBO — Plzeň",
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ]
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+    "name": "Český pohár MTBO — Jedovnice",
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ]
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "6683713d-8659-4db5-84b4-d1136c19df78",
+    "name": "Český pohár MTBO — Vrchlabí",
+    "source": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+    "patch": {
+      "formats": [
+        "mtbo"
+      ]
+    },
+    "note": "Seven announced weekends retained; MTBO formats survive public taxonomy. Championship competitions stay within each weekend. No XC reclassification."
+  },
+  {
+    "id": "a137c3e0-db7b-4e68-a28d-163c45aabdde",
+    "name": "Tour de Feminin",
+    "source": "https://www.tourdefeminin.com/cz/",
+    "patch": {
+      "formats": [
+        "road_race"
+      ],
+      "event_type": "tour",
+      "description": "Ženský etapový silniční závod 20.–23. 5. 2027 s centrem v Krásné Lípě. Podrobný rozpis etap a přihlašování týmů pro rok 2027 pořadatel doplní."
+    },
+    "note": "One multi-day stage race; individual stage venues not invented."
+  },
+  {
+    "id": "3044fcbe-3b85-42a5-aa66-b9dee3fff9b4",
+    "name": "Moravia Divide",
+    "source": "https://moraviadivide.eu/md27/",
+    "patch": {
+      "registration_url": null,
+      "description": "MTB bikepackingový závod z Javorníku do Břeclavi, start 28. 5. 2027 v 8:15; uvítání v cíli do 3. 6. Hlavní trasa přibližně 850 km. Délku krátké trasy pořadatel na české a anglické stránce uvádí různě (620–660 km); bude upřesněna. Registrace pro 2027 je oznámena od 29. 11. 2026 ve 20:00, současný formulář se ještě vztahuje k roku 2026."
+    },
+    "note": "2026 typo resolved by explicitly year-labelled official 2027 calendar: Friday May 28; English schedule May 27 presentation + May 28 start + June 3 finish. Route conflicts retained in evidence; no single uncertain short distance published.",
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/md27"
+    ],
+    "categories": [
+      {
+        "name": "Hlavní trasa — přibližně 850 km",
+        "distance_km": 850,
+        "elevation_m": null
+      },
+      {
+        "name": "Krátká trasa — délka bude upřesněna",
+        "distance_km": null,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "79674606-133c-4712-a77d-3eb23534183a",
+    "name": "Tour de Kozovazy",
+    "source": "https://www.tourdekozovazy.cz/",
+    "patch": {
+      "description": "Časovka jednotlivců a společný závod do vrchu, 5. 6. 2027. Trať z Kozovaz u domu č. p. 15 do Vyšehořovic měří 910 m s převýšením 43 m. Nejmladší děti jedou zkrácenou trať; kategorie 0 a 1 se účastní pouze společného závodu."
+    },
+    "note": "Verified 2027 competitions and existing four category rows retained; one event, two formats."
+  },
+  {
+    "id": "df72ac6c-d903-4b0f-b671-602f3966f74a",
+    "name": "Brdský Meandr",
+    "source": "https://www.bike-meandr.cz/brdsky-meandr/",
+    "patch": {
+      "description": "Nesoutěžní MTB a bikepackingová výzva 5.–6. 6. 2027, Sklad_13 Dřevák v Řevnicích. Rezervace pro minulé účastníky od 11. 11. 2026, pro ostatní od 1. 1. 2027. Podrobnosti starého ročníku nejsou potvrzené pro 2027.",
+      "registration_opens_at": "2026-12-31T23:00:00Z"
+    },
+    "note": "Existing ride record preserved; race-only public calendar excludes rides by current policy. Registration midnight corrected from UTC to Prague.",
+    "outcome": "excluded_ride"
+  },
+  {
+    "id": "a0825091-004c-438e-a539-4176640ad411",
+    "name": "Race Across Czechia",
+    "source": "https://raceacross.cz/racz27/",
+    "patch": {
+      "website_url": "https://raceacross.cz/racz27/",
+      "description": "Gravelový ultrazávod od pivovaru Chodovar v Chodové Plané, start 15. 7. 2027 v 8:00; hlavní trasa přibližně 1100 km, krátká přibližně 800 km. Limit pro uvítání v cíli je 20. 7. v 18:00. Registrace je oznámena od 29. 11. 2026 ve 20:15; přednostní přihlašování má na webu nejednotné údaje."
+    },
+    "note": "Repaired 404 /racz27-info/ to organiser menu /racz27/. Both current Czech and English detailed pages agree on general registration Nov 29 20:15; priority opening unresolved. Route elevation varies even on one page; retain no precise elevation.",
+    "extra_sources": [
+      "https://ultrabikers.eu/racz27",
+      "https://raceacross.cz/registration/"
+    ]
+  },
+  {
+    "id": "a73eb9a5-46de-4bbe-b9d7-1e141a026314",
+    "name": "V4 2027",
+    "source": "https://bike-paradise.cz/",
+    "patch": {
+      "registration_url": null,
+      "description": "Gravelový ultrazávod se startem 1. 8. 2027 na náměstí T. G. M. v Dolním Bousově. Trasa přes Česko, Slovensko, Maďarsko a Polsko měří přibližně 1684 km s převýšením 17 400 m. Kategorie muži a ženy bez věkového rozdělení."
+    },
+    "note": "Czech start retained for cross-border route. Registration URL not verified (security challenge); main official website retained.",
+    "categories": [
+      {
+        "name": "V4 — přibližně 1684 km",
+        "distance_km": 1684,
+        "elevation_m": 17400
+      }
+    ]
+  },
+  {
+    "id": "cd82d70a-89fb-4646-ac28-7217198e560a",
+    "name": "UB30 / UB20: Seven Wineyards Challenge",
+    "source": "https://raceacross.cz/ub30-seven-wineyards/",
+    "patch": {
+      "registration_url": null,
+      "description": "Gravelový ultrazávod se startem 19. 8. 2027 v 8:30 v klubu Cyklosféra v Břeclavi; uvítání v cíli do 23. 8. ve 22:00. Doporučené trasy: UB30 přibližně 1200 km / 9000 m a UB20 přibližně 900 km / 7000 m. Délka závisí i na vlastní volbě trasy mezi povinnými body. Registrace je podle stránky závodu plánována od 29. 11. 2026 ve 20:30; samostatná registrační stránka ještě obsahuje chybný rok."
+    },
+    "note": "Main official event-specific page overrides aggregator 800km/8000m and 1200km/11000m as well as generic calendar distances. Existing variants correct; obsolete registration link removed.",
+    "extra_sources": [
+      "https://raceacross.cz/ub30-registration/"
+    ]
+  },
+  {
+    "id": "38af09e7-a920-47b5-8b75-e2d17f64d02a",
+    "name": "UCI MTB World Cup – Nové Město na Moravě 2027",
+    "source": "https://www.mtbnmnm.com/post/whoop-uci-mountain-bike-world-series-confirms-2027-calendar",
+    "patch": {},
+    "note": "Already correct: race days May 21–23, festival May 20–23 in description; Junior XCO UCI 80464 included in same weekend and not mislabelled Junior XCO World Cup.",
+    "outcome": "already_correct"
+  },
+  {
+    "id": "062802f7-278a-4c36-86ec-03787bf79c3d",
+    "name": "Strunk Connect Lesák CUP",
+    "source": "https://www.lesak-cup.cz/",
+    "patch": {
+      "name": "Strunk Connect Lesák CUP",
+      "name_normalized": "strunk connect lesak",
+      "end_date": "2027-08-28",
+      "event_type": "race",
+      "registration_url": null,
+      "regulations_url": null,
+      "age_confidence": "previous",
+      "description": "MTB maraton 28. 8. 2027 v centru Červeného Kostelce. Pořadatel pro nový ročník oznamuje přesun z Bohdašína do centra města. Věkové kategorie jsou orientačně podle minulého ročníku; podrobný program a tratě z roku 2026 zatím nejsou potvrzené pro 2027. Přihlášky pořadatel otevře v průběhu roku."
+    },
+    "note": "Merged exact duplicate 3f3564dc-e017-4348-b15c-d72c6f8c2585 using app_merge_events, retaining earlier mapped canonical record and relationships. New venue centre takes precedence; historical categories marked previous.",
+    "merge_drop": "3f3564dc-e017-4348-b15c-d72c6f8c2585",
+    "location_patch": {
+      "region": "Královéhradecký kraj",
+      "venue": "Centrum města",
+      "municipality": "Červený Kostelec"
+    }
+  },
+  {
+    "id": "312cc064-57d5-49cd-ac34-f8be58715d98",
+    "name": "Oremon Krušky Open",
+    "source": "https://oremon.cz/en/home_en/",
+    "patch": {
+      "description": "Nesoutěžní bikepackingová vyjížďka 21.–23. 5. 2027 se startem a cílem v Českém Jiřetíně. Pořadatel aktuálně uvádí přibližně 310 km a 5100 m převýšení; doporučuje gravel nebo MTB hardtail."
+    },
+    "note": "Current English homepage now agrees with Czech 310km/5100m; older English 322km/6068m superseded. Official expressly calls social ride, not race; preserved separately outside race-only calendar.",
+    "outcome": "excluded_ride"
+  },
+  {
+    "id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+    "name": "Lost Ride",
+    "source": "https://lost-ride.cz/",
+    "patch": {
+      "disciplines": [
+        "mtb"
+      ],
+      "description": "Rozpracovaný ročník 2027. Pořadatel předběžně plánuje start 1. 6. 2027 ve 22:00, ale připouští posun o 1–2 dny. Start a cíl budou v Česku; přesná místa zatím nejsou zveřejněna. Trasa přes 800 km, převážně v terénu, bez podpory. Záznam čeká na potvrzení data a místa; není zveřejněný v kalendáři."
+    },
+    "note": "Existing hidden tbc draft retained, no invented coordinates; gravel corrected to MTB based on official unpaved terrain. Registration advertised for 2027; finish limit June 8 noted in evidence, not presented as final.",
+    "outcome": "pending",
+    "extra_sources": [
+      "https://lost-ride.cz/news"
+    ]
+  },
+  {
+    "id": "58a25cf9-06dd-47a1-91f8-a29b91c6ffed",
+    "name": "CASIA Krakonošův cyklomaraton",
+    "source": "https://krakonosuvcyklomaraton.cz/propozice/",
+    "patch": {},
+    "note": "Already correct official date; June 12 Krakonoš / May 30 Hradec. Existing ID, categories and relationships retained.",
+    "outcome": "already_correct"
+  },
+  {
+    "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "name": "Decathlon Cyklomaraton Hradec Králové",
+    "source": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+    "patch": {
+      "audience": "mixed",
+      "age_categories": [
+        "kids",
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "explicit",
+      "registration_url": null,
+      "description": "MTB maraton 30. 5. 2027 se startem a cílem v Malšovické aréně v Hradci Králové. Dětské závody od 10:00, hlavní závod na 30 a 60 km od 12:00. Přihlášky pro rok 2027 na konkrétním registračním formuláři zatím nejsou ověřené."
+    },
+    "note": "Correct May 30 date retained; supplemented organiser-confirmed 30/60km routes, children and venue. Generic Eventreg link not an edition-specific registration and removed.",
+    "categories": [
+      {
+        "name": "MTB 30 km",
+        "distance_km": 30,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB 60 km",
+        "distance_km": 60,
+        "elevation_m": null
+      },
+      {
+        "name": "Dětské závody — od 10:00",
+        "distance_km": null,
+        "elevation_m": null
+      }
+    ],
+    "location_patch": {
+      "region": "Královéhradecký kraj"
+    }
+  },
+  {
+    "id": "4276378e-40f6-44af-bc95-8f017f666ff1",
+    "name": "May Divide",
+    "source": "https://bike-paradise.cz/",
+    "patch": {
+      "description": "MTB ultrazávod 1. 5. 2027, start Buškovský mlýn u Ošťovic (Dolní Bousov). Délka, cíl a harmonogram minulého ročníku nejsou potvrzené pro 2027."
+    },
+    "note": "2027 date and venue from information panel; historical 2026 855km route not carried forward.",
+    "location_patch": {
+      "region": "Středočeský kraj",
+      "municipality": "Dolní Bousov",
+      "venue": "Buškovský mlýn"
+    }
+  },
+  {
+    "id": "9444658e-16f4-4498-ae02-3f34725a749c",
+    "name": "TROJMEZÍ",
+    "source": "https://bike-paradise.cz/",
+    "patch": {
+      "registration_url": null,
+      "description": "MTB/gravelový ultrazávod 7. 7. 2027 v 8:00, start a cíl ve sportovním areálu v Dolním Bousově. Trasa přes Česko, Polsko a Německo měří přibližně 430 km s převýšením 6100 m. Časový limit 92 hodin."
+    },
+    "note": "Official first edition confirmed; route belongs to Czech start. Registration URL not independently verified.",
+    "categories": [
+      {
+        "name": "Trojmezí — přibližně 430 km",
+        "distance_km": 430,
+        "elevation_m": 6100
+      }
+    ]
+  },
+  {
+    "id": "475f4e03-d0c9-4961-94f1-85a01476fead",
+    "name": "Bike Paradise",
+    "source": "https://bike-paradise.cz/",
+    "patch": {
+      "registration_url": null,
+      "description": "MTB ultrazávod Bike Paradise 21. 8. 2027 se startem a cílem u Máchalova (Střehomského) mlýna ve Střehomi, části Dolního Bousova. Délka trasy a podrobný harmonogram pro rok 2027 budou upřesněny."
+    },
+    "note": "Existing separate records for independently named and priced routes retained (no duplicate creation). Exact shared venue identified; 2026 300km distance not carried forward.",
+    "location_patch": {
+      "municipality": "Dolní Bousov",
+      "venue": "Máchalův (Střehomský) mlýn",
+      "region": "Středočeský kraj",
+      "lat": 50.4745,
+      "lng": 15.1320833333,
+      "geocode_status": "ok",
+      "geocode_query": "Střehomský, Opočenský mlýn, Střehom, Dolní Bousov"
+    },
+    "location_source": "https://databazevodnichmlynu.vodnimlyny.cz/mlyny/objekty/detail/83-strehomsky-opocensky-mlyn"
+  },
+  {
+    "id": "e8ded1c2-70c2-4614-ac7c-ba126971592e",
+    "name": "Půl Paradise",
+    "source": "https://bike-paradise.cz/",
+    "patch": {
+      "registration_url": null,
+      "description": "Kratší varianta Půl Paradise 21. 8. 2027 se startem a cílem u Máchalova (Střehomského) mlýna ve Střehomi, části Dolního Bousova. Délka trasy a podrobný harmonogram pro rok 2027 budou upřesněny."
+    },
+    "note": "Existing separate records for independently named and priced routes retained (no duplicate creation). Exact shared venue identified; 2026 300km distance not carried forward.",
+    "location_patch": {
+      "municipality": "Dolní Bousov",
+      "venue": "Máchalův (Střehomský) mlýn",
+      "region": "Středočeský kraj",
+      "lat": 50.4745,
+      "lng": 15.1320833333,
+      "geocode_status": "ok",
+      "geocode_query": "Střehomský, Opočenský mlýn, Střehom, Dolní Bousov"
+    },
+    "location_source": "https://databazevodnichmlynu.vodnimlyny.cz/mlyny/objekty/detail/83-strehomsky-opocensky-mlyn"
+  },
+  {
+    "id": "627394f7-e4a4-412e-9ad0-b4710b729817",
+    "name": "FILIPA Podkrkonošský maraton",
+    "source": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+    "patch": {
+      "name": "FILIPA Podkrkonošský maraton",
+      "start_date": "2027-07-31",
+      "end_date": null,
+      "website_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "location_id": "4f8c52d6-9b5f-48bc-a153-3d60f06a14e8",
+      "disciplines": [
+        "mtb",
+        "xcm",
+        "gravel"
+      ],
+      "formats": [
+        "xcm"
+      ],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "mixed",
+      "age_categories": [
+        "kids",
+        "youth",
+        "junior",
+        "amateur",
+        "masters",
+        "elite"
+      ],
+      "age_confidence": "explicit",
+      "level": "local",
+      "description": "MTB maraton a gravel 31. 7. 2027 v Lázních Bělohrad. MTB 30, 53 a 90 km, gravel 53 km, rodinná jízda a dětské závody. Propozice pro 2027 jsou zveřejněné. Registrační stránka chybně tvrdí, že akce již proběhla; otevření přihlášek proto není potvrzené.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "regulations_url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice"
+    },
+    "note": "2027 provider regulations authoritative despite closed-event registration message. Conflicting family birth-year copy not converted into exact ages; route categories preserved.",
+    "previous_id": "316f2a6e-9dd1-49e2-a20c-529dfff683f4",
+    "extra_sources": [
+      "http://www.podkrkonosskymaraton.cz/"
+    ],
+    "location_patch": {
+      "region": "Královéhradecký kraj"
+    },
+    "categories": [
+      {
+        "name": "MTB 90 km",
+        "distance_km": 90,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB 53 km",
+        "distance_km": 53,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB 30 km",
+        "distance_km": 30,
+        "elevation_m": null
+      },
+      {
+        "name": "Gravel 53 km",
+        "distance_km": 53,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB Family 30 km",
+        "distance_km": 30,
+        "elevation_m": null
+      },
+      {
+        "name": "Dětské závody a odrážedla",
+        "distance_km": null,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "3289ec19-69f0-4058-9248-a79a95ae0cee",
+    "name": "SPOKE Maraton",
+    "source": "https://spokemaraton.cz/",
+    "patch": {
+      "name": "SPOKE Maraton",
+      "start_date": "2027-08-28",
+      "end_date": null,
+      "website_url": "https://spokemaraton.cz/",
+      "location_id": "1ddf669e-364a-40df-aa39-65ac1fb3bd9b",
+      "disciplines": [
+        "xcm"
+      ],
+      "formats": [
+        "xcm"
+      ],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "mixed",
+      "age_categories": [
+        "kids",
+        "youth",
+        "junior",
+        "amateur",
+        "masters"
+      ],
+      "age_confidence": "explicit",
+      "level": "local",
+      "description": "MTB maraton 28. 8. 2027 ve Sportkempu Kralovice. Trasy označené 20/40/70 km a dětské závody zdarma. Web pořadatele po načtení zobrazuje přesné datum i program 2027; odkaz na přihlášky stále ukazuje ročník 2026, registrace pro 2027 proto není ověřená.",
+      "registration_url": null,
+      "registration_opens_at": null
+    },
+    "note": "Browser visually verified exact official heading SOBOTA 28. SRPNA 2027 and programme 27/28 August 2027. Not an agent-derived weekday projection. Official site auto-rolls its date; provider form still 2026, omitted.",
+    "previous_id": "480a6a98-cb34-4305-ac45-75fde64678b9",
+    "location_patch": {
+      "region": "Plzeňský kraj",
+      "venue": "Sportkemp Kralovice"
+    },
+    "categories": [
+      {
+        "name": "A 70 km — skutečná délka 66,1 km",
+        "distance_km": 66.1,
+        "elevation_m": 1467
+      },
+      {
+        "name": "B 40 km — skutečná délka 39,4 km",
+        "distance_km": 39.4,
+        "elevation_m": 686
+      },
+      {
+        "name": "C 20 km — skutečná délka 19,3 km",
+        "distance_km": 19.3,
+        "elevation_m": 288
+      },
+      {
+        "name": "D1 — odrážedla",
+        "distance_km": 0.13,
+        "elevation_m": null,
+        "age_min": 0,
+        "age_max": 4
+      },
+      {
+        "name": "D2 — děti 5–6 let",
+        "distance_km": 0.2,
+        "elevation_m": null,
+        "age_min": 5,
+        "age_max": 6
+      },
+      {
+        "name": "D3 — děti 7–8 let",
+        "distance_km": 0.6,
+        "elevation_m": null,
+        "age_min": 7,
+        "age_max": 8
+      },
+      {
+        "name": "D4 — děti 9–10 let",
+        "distance_km": 1.5,
+        "elevation_m": null,
+        "age_min": 9,
+        "age_max": 10
+      },
+      {
+        "name": "D5 — děti 11–12 let",
+        "distance_km": 3,
+        "elevation_m": null,
+        "age_min": 11,
+        "age_max": 12
+      }
+    ]
+  },
+  {
+    "id": "de5b8b33-a126-4e0d-a7c0-13d1b4f50383",
+    "name": "Klecanský prolog",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Klecanský prolog",
+      "start_date": "2027-04-10",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "gravel",
+        "road"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Klecany",
+      "municipality": "Klecany",
+      "region": "Středočeský kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 50.1756713,
+      "lng": 14.4117052
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Gravel — přibližně 120 km",
+        "distance_km": 120,
+        "elevation_m": null
+      },
+      {
+        "name": "Silnice — přibližně 110 km",
+        "distance_km": 110,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "30dbc4ff-fd9d-49cf-bdcf-dfca9a487996",
+    "name": "Hanácké Roubaix",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Hanácké Roubaix",
+      "start_date": "2027-04-17",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "gravel"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Olomouc",
+      "municipality": "Olomouc",
+      "region": "Olomoucký kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 49.5938,
+      "lng": 17.2509
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Gravel — přibližně 170 km",
+        "distance_km": 170,
+        "elevation_m": null
+      },
+      {
+        "name": "Gravel — přibližně 130 km",
+        "distance_km": 130,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "26655273-41a7-4b8e-89cf-98449d3c521d",
+    "name": "Vinařské stezky",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Vinařské stezky",
+      "start_date": "2027-05-01",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "gravel",
+        "road"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Břeclav",
+      "municipality": "Břeclav",
+      "region": "Jihomoravský kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 48.759,
+      "lng": 16.882
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Gravel — přibližně 150 km",
+        "distance_km": 150,
+        "elevation_m": null
+      },
+      {
+        "name": "Gravel — přibližně 120 km",
+        "distance_km": 120,
+        "elevation_m": null
+      },
+      {
+        "name": "Silnice — přibližně 150 km",
+        "distance_km": 150,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "ec3ef6e0-7c23-4062-bf5e-9120d485b40c",
+    "name": "Sto mil kolem Jihlavy",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Sto mil kolem Jihlavy",
+      "start_date": "2027-05-15",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "mtb",
+        "gravel",
+        "road"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Luka nad Jihlavou",
+      "municipality": "Luka nad Jihlavou",
+      "region": "Kraj Vysočina",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 49.3786743,
+      "lng": 15.7073293
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Gravel — přibližně 160 km",
+        "distance_km": 160,
+        "elevation_m": null
+      },
+      {
+        "name": "Silnice — přibližně 160 km",
+        "distance_km": 160,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB — přibližně 120 km",
+        "distance_km": 120,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "9696e44f-9c2a-461c-8148-96b162feab05",
+    "name": "JES300",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "JES300",
+      "start_date": "2027-08-07",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "mtb"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location. Official start Velké Losiny overrides aggregator Šumperk.",
+    "previous_id": null,
+    "location": {
+      "name": "Velké Losiny",
+      "municipality": "Velké Losiny",
+      "region": "Olomoucký kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 50.0315957,
+      "lng": 17.039832
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "MTB — přibližně 330 km",
+        "distance_km": 330,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB — přibližně 250 km",
+        "distance_km": 250,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "864846f0-ceeb-4d90-8ff8-a2701f83041a",
+    "name": "Moravia Gravel",
+    "source": "https://ultrabikers.eu/mg27",
+    "patch": {
+      "name": "Moravia Gravel",
+      "start_date": "2027-09-11",
+      "end_date": "2027-09-12",
+      "website_url": "https://ultrabikers.eu/mg27",
+      "disciplines": [
+        "gravel"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": "2026-11-29T19:30:00Z",
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b",
+      "regulations_url": "https://ultrabikers.eu/mg27"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location. Detailed 2027 programme takes precedence, family routes supplementary, exact distances omitted pending finalisation.",
+    "previous_id": null,
+    "location": {
+      "name": "Dolní Bušínov",
+      "municipality": "Dolní Bušínov",
+      "region": "Olomoucký kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 49.8327944,
+      "lng": 16.8283445
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Sobota — hlavní trasa",
+        "distance_km": null,
+        "elevation_m": null
+      },
+      {
+        "name": "Sobota — krátká trasa",
+        "distance_km": null,
+        "elevation_m": null
+      },
+      {
+        "name": "Neděle — hlavní trasa",
+        "distance_km": null,
+        "elevation_m": null
+      },
+      {
+        "name": "Neděle — krátká trasa",
+        "distance_km": null,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "593b38ca-cabe-4f53-b1fd-0a6f5efa3024",
+    "name": "Stříbrné šotolinky",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Stříbrné šotolinky",
+      "start_date": "2027-09-25",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "mtb",
+        "gravel"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Benešovice, okres Tachov",
+      "municipality": "Benešovice, okres Tachov",
+      "region": "Plzeňský kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 49.728649,
+      "lng": 12.8997329
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Gravel — přibližně 140 km",
+        "distance_km": 140,
+        "elevation_m": null
+      },
+      {
+        "name": "Gravel — přibližně 110 km",
+        "distance_km": 110,
+        "elevation_m": null
+      },
+      {
+        "name": "MTB — přibližně 120 km",
+        "distance_km": 120,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "074f7f5e-7f84-4a1b-b8ad-f5cc75f0ea2e",
+    "name": "Chřibský švih",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Chřibský švih",
+      "start_date": "2027-10-02",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "mtb",
+        "road"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Střílky",
+      "municipality": "Střílky",
+      "region": "Zlínský kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 49.1438406,
+      "lng": 17.2086205
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Silnice — přibližně 160 km",
+        "distance_km": 160,
+        "elevation_m": null
+      },
+      {
+        "name": "Terén — přibližně 130 km",
+        "distance_km": 130,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "f0b030dc-77fb-4a38-bbb7-77989cc6eea5",
+    "name": "Okolo Hradce",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Okolo Hradce",
+      "start_date": "2027-10-09",
+      "end_date": null,
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "gravel",
+        "road"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location.",
+    "previous_id": null,
+    "location": {
+      "name": "Chlum, Všestary",
+      "municipality": "Chlum, Všestary",
+      "region": "Královéhradecký kraj",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 50.2774267,
+      "lng": 15.7476958
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Silnice — přibližně 130 km",
+        "distance_km": 130,
+        "elevation_m": null
+      },
+      {
+        "name": "Gravel — přibližně 150 km",
+        "distance_km": 150,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "e25a0e83-54dc-4e35-9a8e-5bdd34991c22",
+    "name": "Poslední míle UltraBikers",
+    "source": "https://ultrabikers.eu/calendar-2027/",
+    "patch": {
+      "name": "Poslední míle UltraBikers",
+      "start_date": "2027-10-22",
+      "end_date": "2027-10-24",
+      "website_url": "https://ultrabikers.eu/calendar-2027/",
+      "disciplines": [
+        "gravel",
+        "road"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Závod bez podpory v rámci UltraBikers Cupu. Termín a místo potvrzuje oficiální kalendář pořadatele pro rok 2027. Podrobný harmonogram a přesné místo startu v obci pořadatel doplní.",
+      "registration_url": null,
+      "registration_opens_at": null,
+      "series_id": "62252e98-3d48-49ab-b5ff-a75c47d8e93b"
+    },
+    "note": "Official 2027 cup calendar confirms date, named locality and variants; rules establish competitive timed classification. Municipality pin, not an invented start-line location. Official calendar announces full weekend 22–24 October; other race pages mention 16/23 October prize invitations. Specific race-day timetable pending.",
+    "previous_id": null,
+    "location": {
+      "name": "Milovy, Sněžné",
+      "municipality": "Milovy, Sněžné",
+      "region": "Kraj Vysočina",
+      "country_code": "CZ",
+      "timezone": "Europe/Prague",
+      "geocode_status": "ok",
+      "lat": 49.6666512,
+      "lng": 16.0943361
+    },
+    "extra_sources": [
+      "https://ultrabikers.eu/calendar-2027/",
+      "https://ultrabikers.eu/pravidla/"
+    ],
+    "categories": [
+      {
+        "name": "Gravel — přibližně 110 km",
+        "distance_km": 110,
+        "elevation_m": null
+      },
+      {
+        "name": "Silnice — přibližně 130 km",
+        "distance_km": 130,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "fc380aab-44e7-4426-8ee1-d42f2bf30d4a",
+    "name": "Toulání Šumavou / Touláníčko",
+    "source": "https://www.toulanisumavou.cz/propozice/",
+    "patch": {
+      "name": "Toulání Šumavou / Touláníčko",
+      "start_date": "2027-06-15",
+      "end_date": null,
+      "website_url": "https://www.toulanisumavou.cz/propozice/",
+      "disciplines": [
+        "mtb"
+      ],
+      "formats": [],
+      "status": "scheduled",
+      "visibility": "public",
+      "season": "2027",
+      "source_kind": "official",
+      "event_type": "race",
+      "competition_type": "community",
+      "audience": "adults",
+      "age_categories": [],
+      "age_confidence": null,
+      "level": "local",
+      "description": "Nonstop MTB závod bez podpory se startem 15. 6. 2027 v 16:00. Start a cíl: Kemp UHUGAGA, Zahorčice u Strážova. Trasy přibližně 800 a 550 km; trasu lze zvolit i během závodu. Registrace od 1. 12. 2026 v 10:00.",
+      "registration_url": "https://www.toulanisumavou.cz/registrace/",
+      "registration_opens_at": "2026-12-01T09:00:00Z",
+      "regulations_url": "https://www.toulanisumavou.cz/propozice/"
+    },
+    "note": "Official 2027 regulations (published Oct 27) confirm June 15 and 800/550km. Organiser embedded map identifies venue; rejected misleading gazetteer match to Zahorčice in Strakonice.",
+    "previous_id": null,
+    "location": {
+      "name": "Kemp UHUGAGA, Zahorčice",
+      "venue": "Kemp UHUGAGA",
+      "municipality": "Strážov",
+      "region": "Plzeňský kraj",
+      "country_code": "CZ",
+      "lat": 49.2971853,
+      "lng": 13.2268953,
+      "geocode_status": "ok",
+      "timezone": "Europe/Prague"
+    },
+    "location_source": "https://mapy.com/s/kacenurusa",
+    "categories": [
+      {
+        "name": "Toulání — přibližně 800 km",
+        "distance_km": 800,
+        "elevation_m": null
+      },
+      {
+        "name": "Touláníčko — přibližně 550 km",
+        "distance_km": 550,
+        "elevation_m": null
+      }
+    ]
+  },
+  {
+    "id": "532e5fd5-a1eb-4dc8-a4a4-2a4c66908641",
+    "name": "DoKola!",
+    "source": "https://www.dokolamtb.cz/",
+    "patch": {
+      "website_url": "https://www.dokolamtb.cz/",
+      "description": "Bikepackingový závod bez podpory 11.–13. 6. 2027 v Sedlejově u Telče. Pořadatel oznamuje tři trasy přibližně 400, 200 a 100 km, se startem v pátek i v sobotu. Přesný rozpis startů pro jednotlivé trasy bude upřesněn."
+    },
+    "note": "Official homepage confirms 2027 weekend and 3 route variants; replaces aggregator website. No duplicate for DoKolečka.",
+    "categories": [
+      {
+        "name": "DoKola — přibližně 400 km",
+        "distance_km": 400,
+        "elevation_m": null
+      },
+      {
+        "name": "DoKolečka — přibližně 200 km",
+        "distance_km": 200,
+        "elevation_m": null
+      },
+      {
+        "name": "Krátká trasa — přibližně 100 km",
+        "distance_km": 100,
+        "elevation_m": null
+      }
+    ]
+  }
+]
