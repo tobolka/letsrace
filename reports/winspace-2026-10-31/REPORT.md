@@ -10,7 +10,7 @@ Scope: all 95 upcoming entries visible in the supplied calendar (31 October 2026
 - Twelve previously hidden records published, including the Trnava–Rysy ride (retained as ride). Together with the new edition: 12 more races plus one ride.
 - Existing Prague track cup dates and Šamorín race title repaired.
 - 15 events outside the seven current public countries have corrected countries, places, dates and source links, and remain hidden pending a country-coverage decision.
-- 30 events reviewed/written in total; 91 of the 95 source entries map to 89 existing or newly created events because Sudety Tour has three source entries for one weekend.
+- 31 canonical events reviewed/written in total, plus one duplicate merged; 91 of the 95 source entries map to 89 existing or newly created events because Sudety Tour has three source entries for one weekend.
 
 ## Exclusions and unresolved evidence
 
@@ -23,6 +23,8 @@ Scope: all 95 upcoming entries visible in the supplied calendar (31 October 2026
 
 
 The Bike Attack row already exists hidden; it was not promoted as a cycling race. SauwaldGiro 2027 has not been created from an uncorroborated aggregator date. The organiser page still gives 30 August 2026: https://www.sauwaldgiro.at/.
+
+Mamut Tour: organiser confirms 22 May 2027 in Prosenice and timed 132/80 km routes; erroneous 23 May record repaired and duplicate 80 km record merged. https://miko-cycles.cz/mamut/mamut-tour/propozice/
 
 ## Outside current public coverage
 
@@ -47,8 +49,8 @@ The Bike Attack row already exists hidden; it was not promoted as a cycling race
 
 ## Verification
 
-All 30 writes were read back and compared with the reviewed manifest. All 74 race source entries expected in the seven-country public calendar were found in the live public feed (72 unique events, since Sudety Tour has three entries and Trnava–Rysy remains a ride). Public map/list/catalogue refresh requested through an authenticated existing admin action. No application taxonomy or country expansion shipped.
+The initial 30 writes and the additional Mamut Tour repair were read back and compared with the reviewed manifest. All 75 race source entries expected in the seven-country public calendar were found in the live public feed (73 unique events, since Sudety Tour has three entries and Trnava–Rysy remains a ride). Public map/list/catalogue refresh requested through an authenticated existing admin action. No application taxonomy or country expansion shipped.
 
-The complete mapping is in coverage.csv; source snapshots, before/after backups and field evidence remain in this directory. Database writes are recorded in apply.sql and refinements.sql; import provenance is saved in event_facts with version winspace-review-2026-10-31-v1.
+The complete mapping is in coverage.csv; source snapshots, before/after backups and field evidence remain in this directory. Database writes are recorded in apply.sql, refinements.sql and mamut.sql; import provenance is saved in event_facts with version winspace-review-2026-10-31-v1.
 
 Release note: Czech and English note added for 31 October 2026. Deployment verification is recorded separately.

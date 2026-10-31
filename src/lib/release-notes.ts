@@ -22,12 +22,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-31",
     items: {
       en: [
+        "Mamut Tour is on 22 May 2027 in Prosenice, with both routes together under one event.",
         "The calendar includes more races from Winspace, including Bike Maraton Vysočina, Bystrický anjel and Dolomiten Radrundfahrt.",
         "The 2027 calendar includes Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou and ten more UltraBikers Cup events.",
         "You can filter mountain bike orienteering races by MTBO.",
         "Lesák CUP appears once, and more 2027 races have verified venues, route options and clearer registration information.",
       ],
       cs: [
+        "Mamut Tour najdeš 22. května 2027 v Prosenicích a obě trasy jsou pod jednou akcí.",
         "V kalendáři najdeš další závody z Winspace, včetně Bike Maratonu Vysočina, Bystrického anjela a Dolomiten Radrundfahrt.",
         "V kalendáři 2027 najdeš Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou a dalších deset závodů UltraBikers Cupu.",
         "Orientační závody na horských kolech si vyfiltruješ jako MTBO.",
