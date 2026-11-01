@@ -47,7 +47,7 @@ async function load(rawLocale: string, rawCode: string, rawDiscipline: string) {
   return { locale, code, discipline: discipline as HubDiscipline, events };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale: rawLocale, code: rawCode, discipline: rawDiscipline } = await params;
   const data = await load(rawLocale, rawCode, rawDiscipline);
   // notFound() here, not just in the page: crawlers get the head before
@@ -59,8 +59,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = disciplineCopy(locale, discipline);
   const heading = `${fillCopy(copy.title, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const description = fillCopy(copy.description, { in: where, races: counted(events.length, "race", locale) });
-  // Canonical stays on page 1 — reading searchParams here would force dynamic.
-  const path = hubPath(locale, code, discipline);
+  const { page } = paginateRaces(events, (await searchParams).page);
+  const pagePath = (l: Locale) => raceListPagePath(hubPath(l, code, discipline), String(page));
+  const path = pagePath(locale);
   const url = absoluteUrl(`/${locale}/${path}`);
   const ogTitle = `${heading} · ${SITE_NAME}`;
 
@@ -68,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: brandedTitle(heading),
     description,
     // Per language, not this language's path: `/en/zavody/cz/road` is not a page.
-    alternates: { canonical: url, languages: localeAlternates((l) => hubPath(l, code, discipline)) },
+    alternates: { canonical: url, languages: localeAlternates(pagePath) },
     ...socialCard({
       title: heading,
       ogTitle,

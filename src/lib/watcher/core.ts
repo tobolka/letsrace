@@ -177,8 +177,8 @@ export function isPendingSeasonUrl(url: string, now = new Date()): boolean {
 /**
  * Did a next-season guess actually land on next season's calendar?
  *
- * {@link nextSeasonUrl} bumps the year in the path, which works when the year
- * *is* the route and fails silently when it is decoration. `mtbs.cz/clanek/
+ * Older collectors guessed next-season URLs by changing the year in the path.
+ * This works when the year is the route and fails silently when it is decoration. `mtbs.cz/clanek/
  * jarni-bahno-2028-3-75016/...` still resolves by the id `75016`, and the site
  * answers with its current index — 150 races, every one of them from 2026. The
  * watcher then re-ingested that same list through eighteen such URLs, which is
@@ -196,24 +196,6 @@ export function seasonGuessLanded(
   if (target == null || target <= now.getFullYear()) return true;
   if (!events.length) return true; // nothing yet published — keep waiting
   return events.some((e) => e.startDate.startsWith(String(target)));
-}
-
-/** `/zavody-2026/` → `/zavody-2027/` so we start watching next season before it exists. */
-export function nextSeasonUrl(url: string): string | null {
-  const yr = yearInPath(url);
-  if (yr == null) return null;
-  const y = new Date().getFullYear();
-  if (yr > y + 1) return null;
-  try {
-    const u = new URL(url);
-    // A path that also carries an opaque record id resolves by that id, so
-    // bumping the year changes the address without changing the page.
-    if (/\/\d{4,}(\/|$)|-\d{5,}(\/|-|$)/.test(u.pathname)) return null;
-    u.pathname = u.pathname.replace(String(yr), String(yr + 1));
-    return u.toString() === url ? null : u.toString();
-  } catch {
-    return null;
-  }
 }
 
 /**

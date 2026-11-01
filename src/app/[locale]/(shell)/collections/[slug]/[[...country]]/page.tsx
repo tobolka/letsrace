@@ -33,17 +33,18 @@ function resolve({ locale: raw, slug, country }: Awaited<Props["params"]>) {
   return { locale, slug, countryCode, path: collectionPath(locale, slug, countryCode), title: fillCopy(text.title, { in: where }), description: fillCopy(text.description, { in: where }) };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const data = resolve(await params);
   if (!data) return { title: raceCopy[defaultLocale].browse, robots: { index: false, follow: false } };
-  const { locale, slug, countryCode, path, title, description } = data;
+  const { locale, slug, countryCode, title, description } = data;
   const { events } = await getRaceCollection(slug, countryCode);
-  // Canonical stays on page 1 — reading searchParams here would force dynamic.
-  const url = absoluteUrl(`/${locale}/${path}`);
+  const { page } = paginateRaces(events, (await searchParams).page);
+  const pagePath = (l: Locale) => raceListPagePath(collectionPath(l, slug, countryCode), String(page));
+  const url = absoluteUrl(`/${locale}/${pagePath(locale)}`);
   return {
     title: brandedTitle(title),
     description,
-    alternates: { canonical: url, languages: localeAlternates((l) => collectionPath(l, slug, countryCode)) },
+    alternates: { canonical: url, languages: localeAlternates(pagePath) },
     robots: { index: events.length >= MIN_COLLECTION_RACES, follow: true },
     ...socialCard({ title, description, url, localeKey: locale, imagePath: localeOgImagePath(locale), imageAlt: title }),
   };

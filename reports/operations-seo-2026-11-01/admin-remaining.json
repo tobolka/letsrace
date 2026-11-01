@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-01T22:24:13.948Z",
+  "work": {
+    "discovery": 33,
+    "inbox": 0,
+    "stalled": 1,
+    "unlinked": 103,
+    "checkedAt": "2026-11-01T22:24:13.771Z"
+  },
+  "reasons": {
+    "erroring": 1
+  },
+  "sources": [
+    {
+      "id": "dab453d8-639d-4f6e-baba-b48130b7f852",
+      "url": "https://eventivsport.com/map",
+      "kind": "aggregator",
+      "recordedState": "error",
+      "lastError": "eventiv_api_http_401: cycling calendar unavailable",
+      "lastFetchedAt": "2026-11-01T22:14:53.321+00:00",
+      "daysSinceFetch": 0,
+      "reason": "erroring"
+    }
+  ]
+}

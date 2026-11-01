@@ -61,3 +61,5 @@ Pro technickou kontrolu: `npm run pipeline:status` nebo `npm run pipeline:status
 „Discovery queue“ ukazuje zvlášť návrhy nových webů a podklady ke konkrétním závodům, které čekají na ověření termínu či identity. Počet práce zahrnuje obě skupiny. Navržený termín ve frontě není potvrzený den závodu. Přehled zdrojů neoznačuje čerstvé nepodporované čtení za poruchu; skutečné chyby spojení a zápisu zůstávají viditelné.
 
 Eventiv nyní u veřejného kalendářového rozhraní vrací HTTP 401. Čtečka tuto skutečnost hlásí místo úspěšného prázdného výsledku. Uložené závody kvůli tomu nemaže; přístupové omezení neobchází. AI kontrola se řídí rozpočtem a není zárukou přečtení každé čekající stránky.
+
+Další ročníky se hledají přes skutečné odkazy a oznámení pořadatelů. Sběrač již automaticky nezakládá ani neoživuje sledované adresy pouhou změnou roku v URL; tato cesta vytvářela neověřené články a archivní adresy. Dříve načtené užitečné zdroje zůstávají sledované.

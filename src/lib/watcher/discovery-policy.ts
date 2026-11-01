@@ -22,7 +22,9 @@ export function isArchiveDiscoveryUrl(raw: string, year = new Date().getUTCFullY
     if (/\/(?:tag|category|ergebnisse|results|meldelisten)(?:[\/_-]|\.|$)|presseinformation|ergebnisse-.*online/.test(path)) return true;
     // Legacy calendars encode the season as ?2002|0, not in the pathname.
     const queryYears = [...decodeURIComponent(url.search).matchAll(/(?:^|[?&=|])(20\d{2})(?=[|&]|$)/g)].map(m => Number(m[1]));
-    const years = [...path.matchAll(/\b20\d{2}\b/g)].map(m => Number(m[0])).concat(queryYears);
+    // Older organiser archives use a directory such as /r2003/.
+    const archiveYears = [...path.matchAll(/(?:^|\/)r(20\d{2})(?=[\/._-]|$)/g)].map(m => Number(m[1]));
+    const years = [...path.matchAll(/\b20\d{2}\b/g)].map(m => Number(m[0])).concat(queryYears, archiveYears);
     return years.length > 0 && Math.max(...years) < year;
   } catch { return true; }
 }

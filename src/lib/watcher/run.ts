@@ -16,7 +16,6 @@ import {
   errorPollAt,
   reviewPollAt,
   sourcePollAt,
-  nextSeasonUrl,
   isPendingSeasonUrl,
   seasonGuessLanded,
 } from "@/lib/watcher/core";
@@ -1121,44 +1120,9 @@ export async function watchOne(row: {
       }
     }
 
-    const successor = nextSeasonUrl(row.url);
-    if (
-      successor &&
-      (row.kind === "series" ||
-        row.kind === "federation" ||
-        row.kind === "aggregator" ||
-        row.kind === "calendar")
-    ) {
-      const { data: existingSeason } = await supabase
-        .from("watched_urls")
-        .select("id, status")
-        .eq("url", successor)
-        .maybeSingle();
-      if (!existingSeason) {
-        const { error } = await supabase.from("watched_urls").insert({
-          url: successor,
-          kind: row.kind,
-          parent_id: row.id,
-          status: "active",
-          added_by: "season-successor",
-          notes: "Next season URL derived from year-stamped calendar",
-          next_poll_at: sourcePollAt([]).toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-        if (!error) linksDiscovered += 1;
-      } else if (existingSeason.status === "dead") {
-        await supabase
-          .from("watched_urls")
-          .update({
-            status: "active",
-            last_extract_status: "off_season",
-            last_error: null,
-            next_poll_at: sourcePollAt([]).toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", existingSeason.id);
-      }
-    }
+    // New-season sources must come from actual links/announcements above.
+    // Changing a year in an address neither proves the page exists nor
+    // identifies a new edition, and must never reactivate a dead source.
 
     const calendarKind =
       row.kind === "series" ||

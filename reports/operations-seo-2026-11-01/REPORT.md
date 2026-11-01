@@ -39,7 +39,7 @@ Deduplikace nyní rozpoznává záložky info/participants/results téhož RaceH
 
 - Živé HTML zkontrolované pro homepage, seznam, kalendář, české huby, MTB hub a jeho druhou stranu, detail závodu, přesměrování i neexistující závod. Canonical a všech pět jazyků + x-default jsou přítomné. Neexistující detail vrací 404/noindex. Homepage, seznam i kalendář obsahují odkazy na závody už v HTML.
 - Sitemap před opravou: HTTP 200, 9 590 URL, cca 8,37 MB, jazykové alternativy. robots.txt povoluje veřejné stránky, chrání admin/API a správně odkazuje sitemap.
-- Filtry na seznamu sdílejí canonical bez parametrů. Druhá strana MTB hubu má vlastní stránkovanou canonical a odlišné odkazy na závody. Nevytvářely se nové tenké regionální stránky ani kopie filtrů.
+- Filtry na seznamu sdílejí canonical bez parametrů. Druhá strana MTB hubu původně ukazovala na první stranu. Navazující oprava nastavuje vlastní canonical, sdílecí adresu a jazykové alternativy každé skutečně zobrazené strany u zemí, disciplín i kolekcí. Nevytvářely se nové tenké regionální stránky ani kopie filtrů.
 - SportsEvent obsahuje skutečný den, místo, disciplínu, odkazy a navázaný seriál. Opravené tvrzení: existence registračního odkazu neznamená volnou kapacitu; odstraněno automatické `InStock`. U uzavřených, proběhlých, zrušených či odložených závodů se nabídka přihlášky nevytváří.
 - Nová veřejná informace o odstraněných duplicitách má ručně psanou českou i anglickou poznámku k vydání.
 - PageSpeed Insights vrací HTTP 429 (vyčerpaná kvóta služby). Core Web Vitals a aktuální indexace/pořadí v Search Console nebyly změřené; nejsou označené za splněné. Důkaz: pagespeed.json.
@@ -49,3 +49,14 @@ Deduplikace nyní rozpoznává záložky info/participants/results téhož RaceH
 1 269 testů ve 186 souborech prochází, včetně nových regresí pro chyby Eventivu, rozlišení nepodporovaného čtení, TLS diagnostiku, počítání práce v administraci, RaceHub identitu a údaje přihlášek. TypeScript, kontrola zdrojů a produkční build procházejí. Samostatné testy správce sběru a jeho restartu procházejí; Swift panel se sestavil a jeho zobrazení je vizuálně zkontrolované.
 
 TypeScript nově vynechává archivní reporty stejně jako tmp: staré neúplné kopie zdrojových souborů v reportech předtím rozbíjely kontrolu aktuální aplikace. Ostatní původní rozpracované reporty a úpravy AGENTS.md nebyly přidány do tohoto commitu. Ostatní návrhy nezávislého auditu se nerealizovaly.
+
+Webové nasazení abd6dde2 je READY a ověřené na letsrace.cz: nový seznam čekajících podkladů funguje, počítadlo zahrnuje 19 podkladů a 14 webů, údaje přihlášek neobsahují vymyšlené InStock a adresa sloučeného Kendenich se přesměrovává HTTP 308. Lokální panel a databázové opravy jsou rovněž ověřené.
+
+
+## Navazující dokončení ve stejném chatu
+
+- Opravené stránkování používá stejný výběr stránky jako viditelný seznam. Příliš vysoké číslo odkazuje na skutečně zobrazenou poslední stranu; chybné, opakované a přetečené parametry na první stranu. Jazykové alternativy i sdílecí URL zachovávají příslušnou stránku. Datové zdroje nadále používají společnou týdenní cache; už před opravou byly tyto tři cesty dynamické podle sestavení Next.js. Doporučení: https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading#use-urls-correctly.
+- Dočištění přehledu zdrojů odhalilo 16 nikdy nečtených adres s `added_by=season-successor`, které vznikly změnou roku v URL. Sedm směřovalo do archivu `/r2003/`, ostatní na odhadnuté články a výsledky. Neměly žádnou vazbu na závody. Jsou vratně pozastavené; snímek před změnou a výsledek jsou v `unread-sources-before.json` a `unread-sources-paused.json`. Žádný závod nebyl změněn ani odstraněn.
+- Automatické vytváření a oživování těchto adres bylo odstraněno. Nové zdroje se dál hledají mezi skutečnými odkazy a oznámeními. Doplněno rozpoznávání archivních adres `/r2003/`. Dříve načtené zdroje se plošně nevypínaly, aby se neztratilo užitečné sledování.
+- Přehled problémových kalendářů klesl ze 17 na 1: zůstává nepřístupné rozhraní Eventivu. Další samostatný závodní web TJ Sokol Chotěbuz má stále chybu certifikátu a je vidět v panelu. Administrace dále eviduje 19 podkladů a 14 navržených webů, žádnou nevyřízenou zprávu od uživatelů a 103 veřejných budoucích záznamů bez webu/přihlášky. Poslední údaj není celkový počet chyb závodů; tyto záznamy nebyly bez podkladu doplňované. Detaily: `admin-remaining.json`.
+- Celková konečná kontrola: 1 279 testů ve 187 souborech, TypeScript, kontrola zdrojů a produkční sestavení. Přibyly skutečné regresní případy pro metadata všech tří typů stránek a zákaz vytváření odhadnutých zdrojů. Pro čistě technické změny se nepřidává další veřejná poznámka k vydání podle AGENTS.md.

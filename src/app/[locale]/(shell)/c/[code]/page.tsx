@@ -36,15 +36,13 @@ type Props = { searchParams: Promise<{ page?: string | string[] }>; params: Prom
 /** Paginated variants share one weekly ISR window; rows come from the tagged hub cache. */
 export const revalidate = 604800;
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale: raw, code: rawCode } = await params;
   const locale = (locales.includes(raw as Locale) ? raw : defaultLocale) as Locale;
   const code = rawCode.toUpperCase();
   // notFound() here, not just in the page: crawlers get the head before
   // `loading.tsx` streams, so this is where a real 404 status is still possible.
   if (!isListedCountry(code)) notFound();
-  // Canonical stays on page 1 so metadata never reads searchParams (that would
-  // force the whole hub dynamic and burn Hobby Origin Transfer).
   const where = inCountry(code, countryDisplayName(code, locale), locale);
   const copy = hubCopy[locale];
   // The visible title carries the query someone actually types — the country
@@ -52,13 +50,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const heading = `${fillCopy(copy.countryTitle, { in: where })} ${seasonLabel()} – ${raceCopy[locale].calendar}`;
   const title = `${heading} · ${SITE_NAME}`;
   const description = fillCopy(copy.country, { in: where });
-  const url = absoluteUrl(`/${locale}/${hubPath(locale, code)}`);
+  // Match the rendered slice, including malformed and out-of-range requests.
+  // The route already reads searchParams; catalogue rows retain their shared cache.
+  const today = new Date().toISOString().slice(0, 10);
+  const events = await listHubEvents({ countryCodes: [code], dateFrom: today, dateTo: addDaysIso(today, 365) });
+  const { page } = paginateRaces(events, (await searchParams).page);
+  const pagePath = (l: Locale) => raceListPagePath(hubPath(l, code), String(page));
+  const url = absoluteUrl(`/${locale}/${pagePath(locale)}`);
   return {
     title: brandedTitle(heading),
     description,
     alternates: {
       canonical: url,
-      languages: localeAlternates((l) => hubPath(l, code)),
+      languages: localeAlternates(pagePath),
     },
     ...socialCard({
       title: heading,

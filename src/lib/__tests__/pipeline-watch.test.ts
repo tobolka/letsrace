@@ -1,11 +1,12 @@
 import { afterEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn() }));
+const state = vi.hoisted(() => ({ sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ from: (table: string) => {
   let inserted = false;
   const chain: unknown = new Proxy({}, { get: (_target, key) => {
+    if (key === "maybeSingle") return async () => ({ data: null, error: null });
     if (key === "then") return (resolve: (value: unknown) => void) => resolve({ data: inserted && table === "ingest_runs" ? { id: "run" } : [], error: null, count: 0 });
     return (...args: unknown[]) => {
-      if (key === "insert") inserted = true;
+      if (key === "insert") { inserted = true; if (table === "watched_urls") state.sourceInserts.push(args[0]); }
       if (key === "update") state.writes.push({ table, value: args[0] as Record<string, unknown> });
       return chain;
     };
@@ -16,7 +17,7 @@ vi.mock("@/lib/watcher/core", async original => ({ ...await original<typeof impo
 vi.mock("@/lib/catalog/freshness", () => ({ hideDroppedCalendarEvents: state.hide, touchLastSeenForWatchedUrl: vi.fn() }));
 import { watchOne } from "@/lib/watcher/run";
 import { WATCH_READER_VERSION, canReconcileMissingEvents } from "@/lib/watcher/core";
-afterEach(() => { state.writes.length = 0; vi.clearAllMocks(); });
+afterEach(() => { state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
 
 it("does not checkpoint or hide missing races after an incomplete read and retries without old HTTP validators", async () => {
   state.fetch.mockResolvedValue({ status: 200, html: "<p>calendar</p>", hash: "new", etag: "new-etag", unchanged: false });
@@ -53,4 +54,11 @@ it("preserves certificate failure diagnostics without accepting an unsafe connec
   expect(result.error).toContain("TLS certificate verification failed (UNABLE_TO_GET_ISSUER_CERT_LOCALLY)");
   expect(state.extract).not.toHaveBeenCalled();
   expect(state.hide).not.toHaveBeenCalled();
+});
+
+it("does not invent next-season sources by changing the year of a calendar address", async () => {
+  state.fetch.mockResolvedValue({ status: 200, html: "<p>calendar</p>", hash: "new", unchanged: false });
+  state.extract.mockResolvedValue({ events: [], childUrls: [], confidence: 0, strategy: "adapter:test", complete: true });
+  await watchOne({ id: "source", url: `https://club.test/calendar-${new Date().getFullYear()}/`, kind: "calendar" });
+  expect(state.sourceInserts).toEqual([]);
 });

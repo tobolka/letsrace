@@ -51,6 +51,8 @@ it("keeps a road ride separate from the gravel ride at the same venue", () => {
 
 it("does not rediscover tag listings, old seasons or results as fresh races", () => {
   expect(isArchiveDiscoveryUrl("https://club.test/rennen-2017/", 2026)).toBe(true);
+  expect(isArchiveDiscoveryUrl("https://club.test/cykloman-archiv/r2003/babi.html", 2026)).toBe(true);
+  expect(isArchiveDiscoveryUrl("https://club.test/r2027/race.html", 2026)).toBe(false);
   expect(isArchiveDiscoveryUrl("https://club.test/tag/rennen/", 2026)).toBe(true);
   expect(isArchiveDiscoveryUrl("https://club.test/ergebnisse_2026.html", 2026)).toBe(true);
   expect(isArchiveDiscoveryUrl("https://club.test/cyclocross-2026-2027/", 2026)).toBe(false);
