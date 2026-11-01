@@ -164,7 +164,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
       <EventJsonLd
         event={event}
         locale={locale}
-        description={raceSummary(event, locale).join(" ")}
+        description={event.description?.trim() || raceSummary(event, locale).join(" ")}
         breadcrumb={[
           { name: SITE_NAME, path: "" },
           ...(hubCountry && countryName ? [{ name: countryName, path: hubPath(locale, hubCountry) }] : []),
@@ -300,7 +300,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           <h2 className="mb-3 text-lg font-semibold">{rc.about}</h2>
           {/* One paragraph: the sentences are one account of the race, not a list. */}
           <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
-            {raceSummary(event, locale).join(" ")}
+            {event.description?.trim() || raceSummary(event, locale).join(" ")}
           </p>
         </section>
 

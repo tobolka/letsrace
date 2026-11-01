@@ -1,0 +1,648 @@
+[
+  {
+    "label": "calendar",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&",
+    "count": 114,
+    "affected": [
+      {
+        "description": null,
+        "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+        "slug": "dekom-system-sudety-tour-2027",
+        "name": "Dekom System Sudety Tour 2027",
+        "startDate": "2027-05-08",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo",
+          "tt"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://www.sudetytour.cz/#trasy",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-01T03:09:59.55+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      },
+      {
+        "description": null,
+        "id": "a18b06a4-03b7-4b7c-a0f4-ece6a475441f",
+        "slug": "dekom-sudety-tour-medio-fondo-2027",
+        "name": "DEKOM Sudety Tour MEDIO FONDO",
+        "startDate": "2027-05-09",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://nasecasomira.cz/register/6a0743188f03b406ed5194f7/",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-10-24T13:10:20.754+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      },
+      {
+        "description": null,
+        "id": "c04842aa-824c-4879-af74-3013d5c47681",
+        "slug": "l-etape-czech-republic-hilly-stage-2027",
+        "name": "L'Etape Czech Republic - Hilly Stage 2027",
+        "startDate": "2027-06-19",
+        "endDate": "2027-06-19",
+        "disciplines": [
+          "road"
+        ],
+        "formats": [],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur",
+          "masters"
+        ],
+        "ageConfidence": "default",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.letapeczech.cz/",
+        "registrationUrl": "https://www.letapeczech.cz/registrace/krok1/",
+        "regulationsUrl": "https://www.letapeczech.cz/",
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-09-30T19:13:04.47+00:00",
+        "location": {
+          "id": "c37eea33-213c-4c5b-a049-5ea661aae412",
+          "name": "Prague",
+          "municipality": "Prague",
+          "countryCode": "CZ",
+          "lat": 50.0874654,
+          "lng": 14.4212535
+        },
+        "series": {
+          "id": "3182a034-6a18-4394-a366-f058599bcb96",
+          "name": "L'Etape Czech Republic",
+          "slug": "l-etape-czech-republic"
+        },
+        "categories": []
+      }
+    ]
+  },
+  {
+    "label": "road",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&disciplines=road",
+    "count": 29,
+    "affected": [
+      {
+        "description": null,
+        "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+        "slug": "dekom-system-sudety-tour-2027",
+        "name": "Dekom System Sudety Tour 2027",
+        "startDate": "2027-05-08",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo",
+          "tt"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://www.sudetytour.cz/#trasy",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-01T03:09:59.55+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      },
+      {
+        "description": null,
+        "id": "a18b06a4-03b7-4b7c-a0f4-ece6a475441f",
+        "slug": "dekom-sudety-tour-medio-fondo-2027",
+        "name": "DEKOM Sudety Tour MEDIO FONDO",
+        "startDate": "2027-05-09",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://nasecasomira.cz/register/6a0743188f03b406ed5194f7/",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-10-24T13:10:20.754+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      },
+      {
+        "description": null,
+        "id": "c04842aa-824c-4879-af74-3013d5c47681",
+        "slug": "l-etape-czech-republic-hilly-stage-2027",
+        "name": "L'Etape Czech Republic - Hilly Stage 2027",
+        "startDate": "2027-06-19",
+        "endDate": "2027-06-19",
+        "disciplines": [
+          "road"
+        ],
+        "formats": [],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur",
+          "masters"
+        ],
+        "ageConfidence": "default",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.letapeczech.cz/",
+        "registrationUrl": "https://www.letapeczech.cz/registrace/krok1/",
+        "regulationsUrl": "https://www.letapeczech.cz/",
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-09-30T19:13:04.47+00:00",
+        "location": {
+          "id": "c37eea33-213c-4c5b-a049-5ea661aae412",
+          "name": "Prague",
+          "municipality": "Prague",
+          "countryCode": "CZ",
+          "lat": 50.0874654,
+          "lng": 14.4212535
+        },
+        "series": {
+          "id": "3182a034-6a18-4394-a366-f058599bcb96",
+          "name": "L'Etape Czech Republic",
+          "slug": "l-etape-czech-republic"
+        },
+        "categories": []
+      }
+    ]
+  },
+  {
+    "label": "time trial",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&disciplines=tt",
+    "count": 4,
+    "affected": [
+      {
+        "description": null,
+        "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+        "slug": "dekom-system-sudety-tour-2027",
+        "name": "Dekom System Sudety Tour 2027",
+        "startDate": "2027-05-08",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo",
+          "tt"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://www.sudetytour.cz/#trasy",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-01T03:09:59.55+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      }
+    ]
+  },
+  {
+    "label": "gran fondo",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&disciplines=gran_fondo",
+    "count": 3,
+    "affected": [
+      {
+        "description": null,
+        "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+        "slug": "dekom-system-sudety-tour-2027",
+        "name": "Dekom System Sudety Tour 2027",
+        "startDate": "2027-05-08",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo",
+          "tt"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://www.sudetytour.cz/#trasy",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-01T03:09:59.55+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      },
+      {
+        "description": null,
+        "id": "a18b06a4-03b7-4b7c-a0f4-ece6a475441f",
+        "slug": "dekom-sudety-tour-medio-fondo-2027",
+        "name": "DEKOM Sudety Tour MEDIO FONDO",
+        "startDate": "2027-05-09",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://nasecasomira.cz/register/6a0743188f03b406ed5194f7/",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-10-24T13:10:20.754+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      }
+    ]
+  },
+  {
+    "label": "Sudety search",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&q=Sudety",
+    "count": 2,
+    "affected": [
+      {
+        "description": null,
+        "id": "258bb5a5-8cc3-4cfb-8726-4211db0fc7a5",
+        "slug": "dekom-system-sudety-tour-2027",
+        "name": "Dekom System Sudety Tour 2027",
+        "startDate": "2027-05-08",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo",
+          "tt"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://www.sudetytour.cz/#trasy",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-01T03:09:59.55+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      },
+      {
+        "description": null,
+        "id": "a18b06a4-03b7-4b7c-a0f4-ece6a475441f",
+        "slug": "dekom-sudety-tour-medio-fondo-2027",
+        "name": "DEKOM Sudety Tour MEDIO FONDO",
+        "startDate": "2027-05-09",
+        "endDate": "2027-05-09",
+        "disciplines": [
+          "road",
+          "gran_fondo"
+        ],
+        "formats": [
+          "gran_fondo"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.sudetytour.cz/",
+        "registrationUrl": "https://nasecasomira.cz/register/6a0743188f03b406ed5194f7/",
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-10-24T13:10:20.754+00:00",
+        "location": {
+          "id": "e7271be7-b9ed-411a-b0ee-37baf109bbd5",
+          "name": "Broumov",
+          "municipality": "Broumov",
+          "countryCode": "CZ",
+          "lat": 50.5854557,
+          "lng": 16.3322957
+        },
+        "series": null,
+        "categories": []
+      }
+    ]
+  },
+  {
+    "label": "Letape search",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&q=Etape",
+    "count": 1,
+    "affected": [
+      {
+        "description": null,
+        "id": "c04842aa-824c-4879-af74-3013d5c47681",
+        "slug": "l-etape-czech-republic-hilly-stage-2027",
+        "name": "L'Etape Czech Republic - Hilly Stage 2027",
+        "startDate": "2027-06-19",
+        "endDate": "2027-06-19",
+        "disciplines": [
+          "road"
+        ],
+        "formats": [],
+        "audience": "adults",
+        "ageCategories": [
+          "amateur",
+          "masters"
+        ],
+        "ageConfidence": "default",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "tour",
+        "competitionType": "community",
+        "season": "2027",
+        "websiteUrl": "https://www.letapeczech.cz/",
+        "registrationUrl": "https://www.letapeczech.cz/registrace/krok1/",
+        "regulationsUrl": "https://www.letapeczech.cz/",
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": "Local",
+        "uciClass": null,
+        "lastSeenAt": "2026-09-30T19:13:04.47+00:00",
+        "location": {
+          "id": "c37eea33-213c-4c5b-a049-5ea661aae412",
+          "name": "Prague",
+          "municipality": "Prague",
+          "countryCode": "CZ",
+          "lat": 50.0874654,
+          "lng": 14.4212535
+        },
+        "series": {
+          "id": "3182a034-6a18-4394-a366-f058599bcb96",
+          "name": "L'Etape Czech Republic",
+          "slug": "l-etape-czech-republic"
+        },
+        "categories": []
+      }
+    ]
+  },
+  {
+    "label": "Grizzly search",
+    "url": "https://letsrace.cz/api/events?country=CZ&dateFrom=2027-01-01&dateTo=2027-12-31&q=Grizzly",
+    "count": 0,
+    "affected": []
+  },
+  {
+    "label": "detail/redirect",
+    "url": "https://letsrace.cz/cs/zavod/dekom-system-sudety-tour-2027",
+    "finalUrl": "https://letsrace.cz/cs/zavod/dekom-system-sudety-tour-2027",
+    "status": 200,
+    "startDate": "2027-05-08"
+  },
+  {
+    "label": "detail/redirect",
+    "url": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-2027",
+    "finalUrl": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-2027",
+    "status": 200,
+    "startDate": "2027-05-09"
+  },
+  {
+    "label": "detail/redirect",
+    "url": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+    "finalUrl": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+    "status": 200,
+    "startDate": "2027-06-19"
+  },
+  {
+    "label": "detail/redirect",
+    "url": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-rr-85-km-2027",
+    "finalUrl": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-2027",
+    "status": 200,
+    "startDate": "2027-05-09"
+  },
+  {
+    "label": "detail/redirect",
+    "url": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-by-tour-de-france-2027",
+    "finalUrl": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+    "status": 200,
+    "startDate": "2027-06-19"
+  }
+]

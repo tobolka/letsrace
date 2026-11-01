@@ -1608,6 +1608,10 @@ async function upsertParsedEvent(
     "@/lib/taxonomy"
   );
   if (!isIngestibleDate(ev.startDate)) return null;
+  const { reviewed2027Identity } = await import("@/lib/watcher/reviewed-2027-identities");
+  const reviewedIdentity = reviewed2027Identity(ev);
+  if (reviewedIdentity?.reject) return null;
+  if (reviewedIdentity) ev = { ...ev, startDate: reviewedIdentity.startDate, endDate: reviewedIdentity.endDate };
   const basicIssues = overviewIssues({ name: ev.name, start_date: ev.startDate, end_date: ev.endDate, status: ev.status }, new Date().toISOString().slice(0, 10));
   if (basicIssues.length) throw new Error(`pipeline_data_review_required:${basicIssues.join(",")}`);
 
@@ -1926,6 +1930,9 @@ async function upsertParsedEvent(
     const { differentInstalment } = await import("@/lib/catalog/merge-duplicates");
     if (matched?.name && differentInstalment(matched.name, ev.name)) existingId = undefined;
   }
+
+  // A reviewed identity also covers new external ids and stale calendar dates.
+  if (reviewedIdentity && !reviewedIdentity.reject) existingId = reviewedIdentity.canonicalId;
 
   if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
 

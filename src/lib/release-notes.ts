@@ -19,6 +19,20 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-01",
+    items: {
+      en: [
+        "Sudety Tour Mediofondo is on 9 May 2027, with the time trial on 8 May and both Sunday routes clearly described.",
+        "L’Etape Czech Republic’s Hilly Stage appears once on 19 June 2027, with its route options and registration link together.",
+      ],
+      cs: [
+        "Mediofondo Sudety Tour má termín 9. května 2027, časovka 8. května a obě nedělní trasy mají přehledný popis.",
+        "Kopcovitá etapa L’Etape Czech Republic se zobrazuje jednou 19. června 2027 a má pohromadě varianty tras i odkaz na přihlášky.",
+      ],
+    },
+  },
+
+  {
     date: "2026-10-31",
     items: {
       en: [

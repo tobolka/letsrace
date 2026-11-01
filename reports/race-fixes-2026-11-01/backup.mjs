@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import {createClient} from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+dotenv.config({path:'.env.local',quiet:true});
+const s=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false}});
+const {data,error}=await s.from('events').select('*,locations(*),event_sources(*),event_categories(*),event_series(*),event_overrides(*),event_facts(*)').or('name.ilike.%sudety%tour%,name.ilike.%etape%czech%,name.ilike.%grizzly%').gte('start_date','2027-01-01');
+if(error)throw error;
+const out='reports/race-fixes-2026-11-01/'+(process.argv.includes('--after')?'after.json':'before.json');
+if(!process.argv.includes('--after')&&fs.existsSync(out))throw Error('Backup already exists');
+fs.writeFileSync(out,JSON.stringify(data,null,2));console.log({records:data.length,path:out});

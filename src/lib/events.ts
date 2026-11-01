@@ -29,6 +29,7 @@ import { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy, shouldHide
 import type { Insert, Json, Update } from "@/lib/supabase/tables";
 
 export type EventListItem = {
+  description?: string | null;
   id: string;
   slug: string;
   name: string;
@@ -521,7 +522,7 @@ export const getPublicEventBySlug = cache(unstable_cache(async function getPubli
   const { data, error } = await supabase
     .from("events")
     .select(
-      `${EVENT_LIST_COLUMNS},
+      `${EVENT_LIST_COLUMNS}, description,
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -724,6 +725,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     sourceUrls: sourceUrlsFromRow(row),
   });
   return {
+    description: (row.description as string | null) ?? null,
     id: String(row.id),
     slug: String(row.slug),
     // Names arrive from a hundred calendars, some of them mis-decoded on the
