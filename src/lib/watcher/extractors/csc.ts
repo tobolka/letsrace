@@ -111,7 +111,10 @@ export function parseCscPublicGrid(url: string, html: string): ParsedEvent[] {
       externalId: raceId ? `csc-${raceId}` : `csc-${normalizeName(name)}-${startDate}`,
       name: name.slice(0, 160),
       startDate,
-      endDate: endDate && endDate !== startDate ? endDate : undefined,
+      // The portal has listed an end a year before the start (csc-1695: a one-day
+      // race starting 2026-04-26 ending 2025-04-26). Such an end is a typo, not a
+      // schedule, and would keep the whole race out of the catalogue.
+      endDate: endDate && endDate > startDate ? endDate : undefined,
       placeText: place || "Czechia",
       countryHint: countryFromVenue(place) ?? "CZ",
       discipline: mapped,

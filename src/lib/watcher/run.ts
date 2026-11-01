@@ -30,7 +30,7 @@ import { protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/updat
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline } from "@/lib/supabase/request-budget";
 import { countryFromVenue } from "@/lib/geo/country-label";
-import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
+import { isArchiveDiscoveryUrl, isAuxiliaryDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 import type { Insert, Update } from "@/lib/supabase/tables";
 import type { Json } from "@/lib/supabase/database.types";
@@ -414,7 +414,10 @@ export async function watchOne(row: {
         if (process.env.PIPELINE_REVIEW_QUEUE === "1" && /identity_review_required|pipeline_data_review_required/.test(message)) {
           try {
             const { saveCandidate } = await import("@/lib/discovery/review");
-            await saveCandidate(supabase, ev, { sourceUrl: row.url, documentHash: fetched.hash, watchedUrlId: row.id, reason: message });
+            const saved = await saveCandidate(supabase, ev, { sourceUrl: row.url, documentHash: fetched.hash, watchedUrlId: row.id, reason: message });
+            // Already ruled out by a reviewer: not a fault of this source, so it
+            // must not keep the whole source flagged on every poll.
+            if (saved.rejected) return null;
           } catch (queueError) { message += `; review_queue_failed:${queueError instanceof Error ? queueError.message : String(queueError)}`; }
         }
         writeFailures.push({ externalId: ev.externalId, error: message });
@@ -426,7 +429,7 @@ export async function watchOne(row: {
     let linksDiscovered = 0;
     for (const child of extracted.childUrls) {
       try {
-        if (isArchiveDiscoveryUrl(child)) continue;
+        if (isArchiveDiscoveryUrl(child) || isAuxiliaryDiscoveryUrl(child)) continue;
         if (
           /mtbkalender\.dk|kidsmtbcup\.dk|dgi\.dk|kenniscentrum\.knwu\.nl|mijn\.knwu\.nl|velo\.ffc\.fr|competitions\.ffc\.fr|rfec\.com|orobiecup\.it|mtbsport\.it|jiskra\.potocky\.cz|potocky\.cz/i.test(
             child,

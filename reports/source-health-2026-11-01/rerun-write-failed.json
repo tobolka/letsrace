@@ -1,0 +1,20 @@
+[
+ {
+  "url": "https://sumator.cz",
+  "ok": true,
+  "created": 0,
+  "updated": 10,
+  "failed": 0,
+  "deferred": 0,
+  "issues": []
+ },
+ {
+  "url": "https://hynekmusil.cz",
+  "ok": true,
+  "created": 0,
+  "updated": 31,
+  "failed": 0,
+  "deferred": 0,
+  "issues": []
+ }
+]

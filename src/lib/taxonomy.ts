@@ -287,7 +287,7 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   const found = new Set<Discipline>(fromExisting);
 
   if (/\bxce\b|eliminat/.test(t)) found.add("xce");
-  if (/\bxcc\b/.test(t)) found.add("xcc");
+  if (/\bxcc\b|\bshort[\s-]*track\b/.test(t)) found.add("xcc");
   if (/\bxcm\b/.test(tf)) found.add("xcm");
   else if (/marath?on/.test(tf) && isMtbMarathon(tf)) found.add("xcm");
   if (/\bxco\b/.test(t)) found.add("xco");
@@ -317,7 +317,7 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
     // "tor kolarski" is the Polish for a velodrome, and it is how their track
     // championships name the venue rather than the discipline.
     /\btrack\b|dráha|draha|velodrom|\btorow|tor\s+kolarski/.test(t) &&
-    !/short\s*track/.test(t)
+    !/short[\s-]*track/.test(t)
   ) {
     found.add("track");
   }

@@ -3,14 +3,16 @@ import { withCron } from '@/lib/api/guards';
 import { createServerSupabase } from '@/lib/supabase/server';
 export const GET=withCron(async()=>{
   const db=createServerSupabase();
-  const [{data:jobs,error},{count:due,error:dueError},{data:health,error:healthError},{count:attentionSources,error:attentionError},{count:reviewCandidates,error:reviewError}]=await Promise.all([
+  const [{data:jobs,error},{count:due,error:dueError},{data:health,error:healthError},{count:attentionSources,error:attentionError},{count:reviewCandidates,error:reviewError},{count:unreadableSources,error:unreadableError}]=await Promise.all([
     db.from('pipeline_jobs').select('*'),
     // Counts describe all collector paths, not an invented server-only attribution.
     db.from('watched_urls').select('id',{count:'exact',head:true}).eq('status','active').lte('next_poll_at',new Date().toISOString()),
     db.rpc('pipeline_health',{}),
     db.from('watched_urls').select('id',{count:'exact',head:true}).eq('status','active').in('last_extract_status',['error','needs_review']),
     db.from('pipeline_candidates').select('id',{count:'exact',head:true}).in('status',['pending','waiting','conflict','publishing']),
+    // A page the free reader cannot parse is waiting for the AI reader, not broken.
+    db.from('watched_urls').select('id',{count:'exact',head:true}).eq('status','active').eq('last_extract_status','needs_review').or('last_error.eq.unsupported_or_empty_source,last_error.eq.low confidence or empty extract,last_error.eq.dynamic_render_unavailable'),
   ]);
-  if(error||dueError||healthError||attentionError||reviewError)throw new Error(error?.message??dueError?.message??healthError?.message??attentionError?.message??reviewError?.message);
-  return NextResponse.json({at:new Date().toISOString(),jobs,due,health,attentionSources,reviewCandidates,schedules:{free:'denně',ai:'na Macu'},countries:['CZ','SK','DE','AT','CH','IT','PL']},{headers:{'Cache-Control':'private, no-store'}});
+  if(error||dueError||healthError||attentionError||reviewError||unreadableError)throw new Error(error?.message??dueError?.message??healthError?.message??attentionError?.message??reviewError?.message??unreadableError?.message);
+  return NextResponse.json({at:new Date().toISOString(),jobs,due,health,attentionSources,unreadableSources,brokenSources:(attentionSources??0)-(unreadableSources??0),reviewCandidates,schedules:{free:'denně',ai:'na Macu'},countries:['CZ','SK','DE','AT','CH','IT','PL']},{headers:{'Cache-Control':'private, no-store'}});
 });

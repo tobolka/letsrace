@@ -10,6 +10,11 @@ import { isSeparateRace } from "@/lib/catalog/merge-duplicates";
 import { fingerprint, normalizeName } from "@/lib/domain";
 import { preferEventName } from "@/lib/dedup";
 
+it.each(["Short Track", "Short-Track", "Shorttrack"])("classifies MTB %s as XCC instead of velodrome racing", label => {
+  expect(inferDisciplines(`Ischgl Ironbike ${label}`)).toEqual(["xcc"]);
+  expect(inferDisciplines("Track cycling at the velodrome")).toEqual(["track"]);
+});
+
 /**
  * Every case below is a row that was actually wrong in the live catalog.
  * Keep them: they are the regression surface for the classifier, and each one

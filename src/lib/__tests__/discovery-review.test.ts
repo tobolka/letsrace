@@ -28,6 +28,16 @@ it('does not requeue an explicitly reviewed unchanged assertion and preserves ch
  await saveCandidate(db, { ...event, startDate: '2027-08-29' }, { sourceUrl: event.sourceUrl, documentHash: 'changed-date', reason: 'scan' });
  expect(upsert).toHaveBeenCalledOnce();
 });
+it('reports an unchanged assertion that a reviewer rejected as settled', async () => {
+ const upsert = vi.fn().mockResolvedValue({ error: null });
+ const not = vi.fn().mockResolvedValue({ data: [{ payload: event, status: 'rejected' }], error: null });
+ const chain: Record<string, unknown> = { upsert, not };
+ for (const method of ['select','eq','in']) chain[method] = () => chain;
+ const db = { from: () => chain } as unknown as Parameters<typeof saveCandidate>[0];
+ expect((await saveCandidate(db, event, { sourceUrl: event.sourceUrl, documentHash: 'same', reason: 'scan' })).rejected).toBe(true);
+ not.mockResolvedValue({ data: [{ payload: event, status: 'waiting' }], error: null });
+ expect((await saveCandidate(db, event, { sourceUrl: event.sourceUrl, documentHash: 'same', reason: 'scan' })).rejected).toBe(false);
+});
 it('does not discard evidence when the review lookup fails', async () => {
  const upsert = vi.fn();
  const chain: Record<string, unknown> = { upsert, not: () => ({ data: null, error: { message: 'database unavailable' } }) };

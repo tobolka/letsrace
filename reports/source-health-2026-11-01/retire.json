@@ -1,0 +1,817 @@
+[
+ {
+  "id": "002db87e-4297-4c9c-b80b-460a26b3bf86",
+  "url": "http://bikeri.cz/serial/talent-cup",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "00da3d0e-cb37-4d86-88cc-fe4641369bc6",
+  "url": "https://cfc-kladno.cz/posazavi24_4.php?#navigace_p24_4",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "04fa71a5-5b22-447e-a0a5-3cb26543539e",
+  "url": "https://radsport-thueringen.de/news/#post-2451",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "05301bcc-a979-458e-80cc-25eafcc91a02",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/superbike-terenni-casovka/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "0655696b-84db-4ca1-b86a-1e47c537d1a9",
+  "url": "https://www.juniorcup.net/assets/propozice/junior_cup_propozice.pdf",
+  "err": "low confidence or empty extract"
+ },
+ {
+  "id": "0b561de8-3ab1-45be-adc3-22910b0e388a",
+  "url": "https://pistovicky-cyklokapr.cz/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "0f21c252-5aa3-4bec-945d-b31c88833f29",
+  "url": "http://bikeri.cz/zavod/jachymovsky-aquatlon",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "10cf2ae3-94ee-4e51-83b8-78b16fbf64c0",
+  "url": "https://zelenak.cz/propozice/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "10d934ba-605b-40af-836c-a33f042c2b88",
+  "url": "https://www.vychodroadliga.sk/ochrana-osobnych-udajov",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "1191331c-233d-4cfb-9f4a-1e1dbfd2111a",
+  "url": "http://cfc-kladno.cz/klikace14.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "13a3a522-e9e5-4eec-884c-782e80fd21bb",
+  "url": "https://cfc-kladno.cz/posazavi25_3.php?#navigace_p25_3",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "162a3eaf-9027-4d1e-bc9d-ee12d7ce4eb2",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-casovka-jednotlivcu/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "179e6d73-603d-4005-8257-ccd81715a443",
+  "url": "https://www.cykloman.cz/zavodnici",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "18d2c4db-0fa5-4616-a4d2-2d7fc777c3b7",
+  "url": "https://www.dsergebnis.de/archiv/ergebnisse-2025/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "19cb96e1-34c5-4031-8bdf-1288900c298f",
+  "url": "https://www.cfc-kladno.cz/posazavi26_4.php?#navigace_p26_4",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "1a09e300-b697-4b96-954b-76da90060c99",
+  "url": "https://okolo-stejskala.webnode.cz/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "1b4fb3a9-facc-449a-9683-4025b757012c",
+  "url": "https://zavodnicasomira.cz/podnety?zavod=dobry-beh-2027",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "1c05d906-62bb-4a7a-8c8d-688ea8c49793",
+  "url": "https://www.edieteam.cz/images/aktuality/pdf/propozice-2026.pdf",
+  "err": "source_document_too_large"
+ },
+ {
+  "id": "1ed0aef0-96d6-4f3a-9054-11c38d662111",
+  "url": "https://miko-cycles.cz/mamut/mamut-tour/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "22219d31-b914-43a8-991e-d2df9c3c92cf",
+  "url": "https://cfc-kladno.cz/klikace24_1.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "224cbcea-502f-40fe-88c8-0e84ab7a3475",
+  "url": "https://dzkol.pl/download/20260607-liga-mtb-xc-aglomeracji-walbrzyskiej-swiebodzice-komunikat-organizacyjny/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "274d80f2-2b3a-4ac0-926c-05ebc05972ce",
+  "url": "https://cfc-kladno.cz/klikace21_2.php#navigace_k21_2",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "2823be96-edac-4108-bce6-b4f4dab12257",
+  "url": "https://www.cykloman.cz/prihlaseni",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "2915faae-4fec-4f08-8d62-ce97df8f6274",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2028-06-14_RTF_40km_300HM.gpx",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "292657f6-fdb1-4bec-8799-97e7fb1e1a46",
+  "url": "https://rsv-bad-hersfeld.de/images/content/gpx_data/RSV_Bad_Hersfeld_Permanente_2019_Streckenplaene.pdf",
+  "err": "source_document_too_large"
+ },
+ {
+  "id": "294eac99-0fa9-4c68-8d1f-0e4ffa00d7bc",
+  "url": "https://lausitzcup.de/index.php/lampertswalde/ausschreibung-lampertswalde",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "2c1bb48a-51da-4768-b29d-7a4f3a5a56cb",
+  "url": "https://cfc-kladno.cz/posazavi21_5.php?#navigace_p21_5",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "2d2e0348-85cc-42f8-88c5-a0ac40756823",
+  "url": "https://cfc-kladno.cz/posazavi25_5.php?#navigace_p25_5",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "2e60c017-be47-403e-a58c-31ac73847c89",
+  "url": "https://dzkol.pl/download/20260606-sztafety-mieszane-mtb-scinawa-regulamin/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "2e6cff46-01d7-4a1a-840a-c890cb504dc6",
+  "url": "https://www.cykloman.cz/cykloman-archiv/zavody/casovka/index.html",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "2e924567-367e-4839-b05c-cd222cd963e9",
+  "url": "https://www.edieteam.cz/sitemap",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "30a7dd13-1bfd-4f72-b3f8-df2b6a1dc3f3",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/hall-of-fame",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "30ba2002-97a2-4c16-af7b-45b8bf627dea",
+  "url": "https://www.cykloman.cz/zapomenute-heslo",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "31728b26-e82d-48dc-8e63-7084ddeb8221",
+  "url": "https://www.gravelseries.cz/registrace/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "32b16643-fb7a-4571-8265-0fc80182122b",
+  "url": "https://www.dsergebnis.de/archiv/4bikesfestival-ggew-grand-prix/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "33d3d8e0-3a4e-4545-9fe9-65c8e3ba72be",
+  "url": "https://bikeri.cz/clanek/chebsky-pohar-skoncil",
+  "err": "fetch failed"
+ },
+ {
+  "id": "36da1fa7-99b1-4245-a3f4-29eef56c2a13",
+  "url": "https://cfc-kladno.cz/uspechy.php?obr=u_cfc&text=cfc_uac",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "391b58f6-b160-4462-8566-fd49f48d2dc9",
+  "url": "http://cfc-kladno.cz/posazavi1.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "396646d3-6213-457c-89c5-e8b70e50c7a5",
+  "url": "https://www.cykloman.cz/cykloman-archiv/zavody/papirak/index.html",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "3989f894-aa56-4014-99f9-6df4b32ab142",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2027-06-14_RTF_100km_1200HM.gpx",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "3a077a93-80b7-49c9-9bb4-591cd59430a0",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-prolog/vysledky-novy/2842",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "3c99a88c-feab-4482-b7e9-f5421ed98738",
+  "url": "https://cfc-kladno.cz/kalendar.php?mesic=11&rok=2026",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "3d7d861e-c937-4bf6-b105-7c33a12e39a8",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-prolog/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "3e35957b-4626-4683-b51d-56ba7fe5cfa8",
+  "url": "https://www.roadstage.cz/fotogalerie",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "3f0837ea-b4e2-4e32-8309-293a768637d6",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/vysledky-novy/pdf",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "42de0e7e-a2b9-4c76-934f-34f6ca239311",
+  "url": "http://cfc-kladno.cz/klikace19_4.php?#navigace_k19_4",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "4385b1c9-d9b8-40fb-8682-34cb8238af0a",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=historie#menu",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "43b97f1a-a0eb-4188-a477-c92e5bf231e1",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "44521917-6e5d-4bec-a6ae-da00b42101a6",
+  "url": "https://dzkol.pl/download/tor-challenge-dzkol-12-10-2025/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "46656747-0c2a-43a5-8f7a-f2c52c5a2ad9",
+  "url": "http://cfc-kladno.cz/klikace18_1.php#obsah",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "4753cadf-3d6b-4d6f-92ba-a3325ef9af67",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/mestske-cross-country/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "48380425-b154-469e-8298-36f5badb8255",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/135",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "49313986-b362-403b-beb3-f73ce8bc13db",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/zavod-do-vrchu/vysledky-novy/3253",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "4b0612a4-812c-4780-9823-f30b05659a36",
+  "url": "http://cfc-kladno.cz/klikace19_2.php?#navigace_k19_2",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "4b4bc51f-540c-4b38-b305-7f192e27f5aa",
+  "url": "http://cfc-kladno.cz/klikace20_1.php#obsah",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "4ee6fb3f-90f7-4213-a49c-71af01bc8efb",
+  "url": "http://cfc-kladno.cz/klikace091.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "509964d8-4232-4af2-923b-d5b068f6c25b",
+  "url": "https://cfc-kladno.cz/posazavi24_3.php?#navigace_p24_3",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "52a7cbcc-1523-4634-8962-8cc56996304a",
+  "url": "https://bikeri.cz/zavod/casovka-na-andelskou-horu",
+  "err": "fetch failed"
+ },
+ {
+  "id": "5666ce1a-8e82-4896-8756-2a18f2a190ec",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2027-06-14_RTF_40km_300HM.gpx",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "5c68078a-62a6-4319-a6be-78f61c87a523",
+  "url": "https://cfc-kladno.cz/klikace26_3.php?#navigace_k26_3",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "5f014f63-95a1-48f0-b868-561b011e7e97",
+  "url": "https://lawi-tour.cz/index.php/propozice/propozice-classic",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "5fe34c13-1f6f-4d40-b78e-fd0444cde4f5",
+  "url": "https://cfc-kladno.cz/posazavi21_2.php#obsah",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "600857d3-4a7e-445a-ab10-c6d0d72cba3a",
+  "url": "https://vesani.cz/propozice-deti",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "68b758e9-b042-4c21-b9bd-69aa9d472707",
+  "url": "https://www.cykloman.cz/historie",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "6b502833-3db8-4f53-8b7a-ce0b193d045a",
+  "url": "http://bikeri.cz/serial/prazsky-mtb-pohar",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "6b942654-20ff-4b32-b356-5659db7885b3",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2028-06-14_RTF_70km_800HM.gpx",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "6c113e0e-1608-4ad9-9522-3c00ae7b0475",
+  "url": "https://zavodnicasomira.cz/podnety?zavod=chlumecky-triatlon-2027",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "6cf79e78-a550-497b-a81d-0ba2a05e78c5",
+  "url": "https://zlinska50.cz/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "6f1a8e32-b3bb-48b9-92fb-bde359168d43",
+  "url": "https://dzkol.pl/download/20250928-czasowka-gorzanowicka-pogwizdow-wyniki/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "70c3f335-632a-4991-96ff-4520419c6420",
+  "url": "https://dzkol.pl/download/2026-bike-maraton-regulamin/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "70e2c0c1-843c-4c7e-b958-23f1d415bc41",
+  "url": "https://cfc-kladno.cz/posazavi25_4.php?#navigace_p25_4",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "72a6d0de-26d8-4d0a-9b53-8796a57cdf4b",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=historie#menu",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "75a0c6a8-b87e-462a-9a89-a1a4cd984882",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "7afb92e7-e715-44a3-a9ea-f61e38a91fe4",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2017",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "7d4ea66f-a42c-4ce4-ba44-9f05e940d8b0",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2018",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "7eb4ffb1-d8b0-4452-b29e-61f46db2c9a9",
+  "url": "https://gpseries.de/ausschreibung",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "7ef3cf3f-a73d-4d3b-a6d8-4cdda0c07837",
+  "url": "https://www.cykloman.cz/cykloman-archiv/",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "7f7952b6-1f9d-4aa7-a680-2e4eadf63a2d",
+  "url": "https://cfc-kladno.cz/klikace23_2.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "7f8fe70f-957c-473e-a0df-0588bdd35d24",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2027-06-14_RTF_70km_800HM.gpx",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8033dadb-9a29-4d5a-9981-aa14a78c4c40",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2028-06-14_RTF_100km_1200HM.gpx",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8082cd3a-cc72-4300-9dd4-b066d4751a14",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/zavod-do-vrchu/vysledky-novy/pdf",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "88260afd-865e-4f68-88de-e1926ed29cab",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-prolog/vysledky-novy/2842",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8a61ec0c-e824-4b6c-bdc2-219932d53dae",
+  "url": "http://bikeri.cz/zavody/vysledky/triatlon",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8ac89b7d-dd7f-4906-9853-316af094bb5e",
+  "url": "https://redpointteam.cz/rallye-sudety/propozice-rallye-sudety",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8bd41bfb-d34e-449e-b16b-d962b1c13d6b",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/archiv?catid[0]=8",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8c545d94-89c6-4d98-bcc2-b4c1cf7946a5",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/kraslicky-sip-2024",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "8dfece41-5d3c-43b6-a472-df038bee60bd",
+  "url": "https://lausitzcup.de/index.php/ponickau/ausschreibung-ponickau",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "931c649b-482e-415f-a1d7-dca41b199e35",
+  "url": "https://cykloman.cz/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "93c6145a-ce07-4fb2-b4d0-876de4849642",
+  "url": "https://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2027",
+  "err": "HTTP 500"
+ },
+ {
+  "id": "946b024f-1c2f-4c18-b5d4-355b94bca57e",
+  "url": "https://www.cykloman.cz/zavodnici/2026/1691",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "9609dbba-fb59-4eb3-8b28-ef9ade9c2e06",
+  "url": "http://bikeri.cz/pohary/kv-triatlon",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "968e1b33-603f-4ab1-88d1-657384c82fbe",
+  "url": "http://bikeri.cz/serial/cesky-pohar-xco",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "96cf0d11-efc7-4f56-9537-7657d7d00227",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=historie#menu",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "986a260d-b986-45c2-8814-dbf25b3d08ef",
+  "url": "http://cfc-kladno.cz/posazavi11.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "9b66bbbd-7af7-447f-8e53-93b0a4a852ac",
+  "url": "http://bikeri.cz/serial/pal-cup",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "a14348cb-859c-4ed4-a89e-abbdd40c6c37",
+  "url": "https://www.cfc-kladno.cz/posazavi26_2.php?#navigace_p26_2",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "a22383bd-4fb1-4460-a4e5-266614730c12",
+  "url": "https://cfc-kladno.cz/posazavi25_2.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "a2e21132-c935-41fe-aef2-cd092a2ff131",
+  "url": "https://www.cfc-kladno.cz/uspechy.php?obr=u_cfc&text=cfc_uac",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "a2ff1c32-0906-4698-998e-95d70ff97ca4",
+  "url": "http://cfc-kladno.cz/klikace19_1.php#obsah",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "a48e3e25-422f-4e9d-90be-d23a05c380df",
+  "url": "https://ctauthorcup.cz/novinky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "a5478482-e31a-493f-887d-138716af6981",
+  "url": "http://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2027",
+  "err": "HTTP 500"
+ },
+ {
+  "id": "a6e5423d-d6c3-4947-a8d0-6467564950ef",
+  "url": "https://www.edieteam.cz/vysledky-vsechny",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "a8e8dc08-290d-4f19-956c-d17faac77990",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/kraslicka-casovka-do-vrchu-2024",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "aa3248e4-f2ef-4366-9bce-376715f4abba",
+  "url": "https://www.edieteam.cz/component/phocadownload/category/3-propozice?download=13:propozice-valassky-pohar-mtb-2026",
+  "err": "source_document_too_large"
+ },
+ {
+  "id": "ab07bba0-c81c-4e68-baf8-ed169e48cfbb",
+  "url": "https://cfc-kladno.cz/posazavi24_1.php?#navigace_p24_1",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ab2fd8b8-e2b2-4a13-8b4f-75797610e042",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/superbike-terenni-casovka/vysledky-novy/pdf",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ac7f62c6-5c6b-4c34-a5d8-8893a8cf6f97",
+  "url": "https://dzkol.pl/download/20260709-12-bike-adventure-szklarska-poreba-regulamin/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ae95d375-09f9-4809-9690-968e99d4ef5c",
+  "url": "http://cfc-kladno.cz/posazavi18_2.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "b11eb5c0-d5c8-49c6-8b5d-ab5fa6f82bc6",
+  "url": "https://www.amaterskaliga.cz/o-sal/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "b7919c35-15b2-43cb-bf03-5d50c2f02017",
+  "url": "https://cykloman.cz/historie",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "b99a9113-0dee-4253-87ce-947b214a9d25",
+  "url": "https://cfc-kladno.cz/klikace26_2.php?#navigace_k26_2",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ba068a94-07d0-4082-9d6b-dabd01f08e69",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt/vysledky-novy/1691",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ba9f9494-231e-435b-a9aa-41ce22ce403e",
+  "url": "https://www.dsergebnis.de/archiv/cyclo-cross-bundesliga-presented-by-bikebeat/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "bbdd2e2c-a55f-4020-8f2e-4af5469ada17",
+  "url": "https://bikeri.cz/zavod/kolem-sindelove",
+  "err": "fetch failed"
+ },
+ {
+  "id": "bc1b4cd3-1df0-44a1-b702-cd51267421ec",
+  "url": "https://cfc-kladno.cz/posazavi21_4.php?#navigace_p21_4",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "c5ad56ac-6937-4758-bfb7-c2c75ba90a69",
+  "url": "https://bikeri.cz/zavod/chodovska-casovka",
+  "err": "fetch failed"
+ },
+ {
+  "id": "c6e9ee77-5393-430c-bb69-1faf1864a333",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "cb059fb0-7ffb-4f99-8d76-af8776c59ece",
+  "url": "https://www.cykloman.cz/cykloman-archiv/zavody/celkem/index.html",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "cb2a485b-aafb-4527-b77e-fc4fe0bbd8cb",
+  "url": "https://cfc-kladno.cz/posazavi24_2.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "cbab65c2-64e2-49fe-8ed6-0dee547a0936",
+  "url": "https://ctauthorcup.cz/propozice-trasy",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d012a30d-f79e-4d1c-9aad-d02a89993766",
+  "url": "https://prazska50.cz/stranka/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d015088d-3458-4915-9655-07d6909b82e8",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/superbike-terenni-casovka/vysledky-novy/3490",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d11f9b9a-da32-4910-beee-cae6faf48f03",
+  "url": "http://bikeri.cz/pohary/jarni-bahno",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d1a205ae-ff56-4f53-9029-bdf343c98d91",
+  "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=historie#menu",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d21f1c56-362b-40d5-95f7-edef6f463ad0",
+  "url": "http://cfc-kladno.cz/posazavi22_2.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d22da675-a3f9-42fe-87a4-eb5ad378a684",
+  "url": "https://dzkol.pl/download/tor_challenge-2026-xlsx/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d2603424-c486-48e2-b3be-5a626ce373b4",
+  "url": "https://mtbkreiscup.lima-city.de/Ergebnisse_2026.html",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "d4d724e2-396c-4b3f-9353-95827d8e05fd",
+  "url": "http://cfc-kladno.cz/posazavi15_2.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d71609f2-7495-4362-8b38-ddc581ad5bd9",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina/vysledky-novy/3489",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "d9dcdae1-d81c-4180-accb-e7eb7731cac5",
+  "url": "https://www.dsergebnis.de/archiv/8-cloppenburger-city-cross/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "da7502c9-5c67-4563-936b-2420537cafcb",
+  "url": "https://cfc-kladno.cz/posazavi25_1.php?#navigace_p25_1",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "dd2df572-c300-44d1-b8f8-a0fe93afa2fa",
+  "url": "http://bikeri.cz/serial/extraliga-masters",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "df4bf1e2-e499-4b35-b097-21e5e72928df",
+  "url": "https://www.cfc-kladno.cz/posazavi26_3.php?#navigace_p26_3",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e0087edf-a65c-4f5b-b3d5-3e1573f2ccc4",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-prolog/vysledky",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e412d595-0d74-444a-84ae-954a689e8cc1",
+  "url": "https://bikeri.cz/zavod/kraslicky-sip",
+  "err": "fetch failed"
+ },
+ {
+  "id": "e571ad35-31f6-4fd9-ba58-935c44f1c72b",
+  "url": "https://www.kolarna.eu/vysledky-xc-hyncice-pod-susinou/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e5bb9681-0646-4996-9f4c-77c868c41ad2",
+  "url": "https://cfc-kladno.cz/posazavi21_1.php?#navigace_p21_1",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e658a693-cad2-4e21-9a65-a8300b9267c2",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2017",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e6864782-5bfb-4c9b-8aa6-b7619a562f40",
+  "url": "http://bikeri.cz/zavody/vysledky",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "e6c5b6a8-32b2-459a-9fba-c106d01ff3d8",
+  "url": "https://www.dsergebnis.de/archiv/31-gro%C3%9Fer-preis-von-buchholz/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e763dd6a-699a-4afe-b197-c3ef7205c70a",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=historie#menu",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e78b3585-6e82-41ee-a56a-f80228cad514",
+  "url": "https://dzkol.pl/download/20250927-gorskie-szosowe-mistrzostwa-polski-tandemow-sluzb-mundurowych-i-amatorow-leszczyna-wyniki/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e7dc69ca-2814-4952-9e44-19fc1a938a99",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/mestske-cross-country/vysledky-novy/3489",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e816efef-61d8-4305-bc87-f83affd279f1",
+  "url": "https://lausitzer-bluetenlauf.de/index.php/ausschreibung",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "e87d3f98-09c2-4996-b354-5c32a60a2f0d",
+  "url": "https://bikeri.cz/zavod/kraslicka-casovka",
+  "err": "fetch failed"
+ },
+ {
+  "id": "e995568e-8a6f-4326-a073-2947e145642e",
+  "url": "http://bikeri.cz/zavod/chebsky-aquatlon",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "eac1500c-7a9a-4ea9-8bda-6484f89d9c06",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-casovka-jednotlivcu/vysledky-novy/1691",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ebedb394-d91d-448c-bfa8-4c527d2a4e7b",
+  "url": "http://bikeri.cz/serial/pohar-kv-kraje-v-triatlonu",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ed1a71d4-27b7-4928-a6c7-e58bbe57a1cf",
+  "url": "http://bikeri.cz/serial/re-pump-cz-2023",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "ed51ed5e-86f9-4d97-b676-e693be1e523b",
+  "url": "http://bikeri.cz/serial/cube-cup",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "ee1ef446-6399-4bdf-8b06-f49e16fc0144",
+  "url": "http://cfc-kladno.cz/posazavi13.php",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ee4a8cc4-4a3f-4c6b-94c6-91f9e7a095f0",
+  "url": "https://www.dsergebnis.de/archiv/",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "ef4e1621-4046-4fc3-a518-6dc36cd0df5e",
+  "url": "https://rst-luebeck.de/wp-content/uploads/2026/09/Termine-Cyclo-Cross-Rennen-2026_27.pdf",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f01b2cab-7a69-4296-abe2-fb81227a71ef",
+  "url": "http://cfc-kladno.cz/klikace19_3.php?#navigace_k19_3",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f0e0486b-a86f-4332-9236-07394b9f10b2",
+  "url": "https://beskydtour.cz/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f14f8787-69a6-456f-9812-5d8d7314475f",
+  "url": "http://www.bikeri.cz/pohary/pohar-kvsc",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f1dae07c-270f-4784-ba8b-e83b88a44343",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2018",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f21643e8-5d06-4831-b36f-7befe9026cd2",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky-novy/3489",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f4a8d12c-f009-4d84-bec2-902f3d92ad07",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/lesna-2024",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "f4dfcd1a-a97c-4d8c-9fc6-dc009c71928c",
+  "url": "https://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-sorkwity-2027-poznaj-trase-wyscigu-przez-jary-lampasza",
+  "err": "HTTP 500"
+ },
+ {
+  "id": "fa0ccd72-488a-4cf9-ae44-19b03e7334ab",
+  "url": "https://www.cykloman.cz/propozice",
+  "err": "unsupported_or_empty_source"
+ },
+ {
+  "id": "fa6cd10c-4370-4148-a86f-9b7e8daff3d8",
+  "url": "https://dzkol.pl/document-tag/kalendarz-dzkol-na-2026/",
+  "err": "dynamic_render_unavailable"
+ },
+ {
+  "id": "fb7627e9-7222-4015-a74a-111e21627b22",
+  "url": "http://bikeri.cz/serial/xc-bahno",
+  "err": "unsupported_or_empty_source"
+ }
+]

@@ -278,6 +278,10 @@ describe("rounds of one cup", () => {
   });
 
   it("refuses to make two rounds one race", () => {
+    const tenCx = { ...at("CX Bundesliga 10 — Vaihingen", "2026-11-07"), disciplines: ["cx"] };
+    const elevenCx = { ...at("CX Bundesliga 11 — Magstadt", "2026-11-08"), disciplines: ["cx"] };
+    expect(scoreDuplicate(tenCx, elevenCx)).toEqual({ score: 0, reasons: ["round_conflict"] });
+    expect(roundNumber("CX Bundesliga 2026/2027 Stahnsdorf / Tag 1")).toBeNull();
     const nine = at("Allwyn BMX Czech Cup - Round 9", "2026-09-12");
     const ten = at("Allwyn BMX Czech Cup - Round 10", "2026-09-13");
     expect(scoreDuplicate(nine, ten)).toEqual({ score: 0, reasons: ["round_conflict"] });

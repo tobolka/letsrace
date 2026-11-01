@@ -35,14 +35,17 @@ export async function saveCandidate(db: SupabaseClient<Database>, event: ParsedE
   // A fresh document hash is not a fresh factual assertion. Keep explicit
   // reviews in force across changed navigation, counters and HTML decoration.
   const { data: reviewed, error: reviewError } = await db.from("pipeline_candidates")
-    .select("payload").eq("candidate_key", row.candidate_key)
+    .select("payload,status").eq("candidate_key", row.candidate_key)
     .in("status", ["published", "rejected", "waiting"])
     .not("decision->>reviewedAt", "is", null);
   if (reviewError) throw new Error(`Reading candidate decision: ${reviewError.message}`);
-  if (reviewed?.some(previous => sameCandidateFacts(previous.payload, row.payload))) return row;
+  const decided = reviewed?.filter(previous => sameCandidateFacts(previous.payload, row.payload)) ?? [];
+  // `rejected` means a reviewer already ruled this very assertion out (usually a
+  // duplicate of a race we hold), so the write that raised it is settled.
+  if (decided.length) return { ...row, rejected: decided.some(previous => previous.status === "rejected") };
   const { error } = await db.from("pipeline_candidates").upsert(row, { onConflict: "candidate_key,evidence_hash", ignoreDuplicates: true });
   if (error) throw new Error(`Saving candidate review: ${error.message}`);
-  return row;
+  return { ...row, rejected: false };
 }
 
 /** Evidence snapshots and confidence may change while the asserted facts do not. */

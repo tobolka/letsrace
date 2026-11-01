@@ -5,7 +5,7 @@ import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { fetchPage } from "@/lib/watcher/http";
 import { hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { isAggregatorUrl } from "@/lib/watcher/public-url";
-import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
+import { isArchiveDiscoveryUrl, isAuxiliaryDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 
 const SEARCH_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
@@ -192,7 +192,7 @@ export function canonicalExploreUrl(raw: string): string | null {
 }
 
 export function looksLikeIndependentRaceUrl(raw: string): boolean {
-  if (isArchiveDiscoveryUrl(raw)) return false;
+  if (isArchiveDiscoveryUrl(raw) || isAuxiliaryDiscoveryUrl(raw)) return false;
   const url = canonicalExploreUrl(raw);
   if (!url) return false;
   if (isAggregatorUrl(url)) return false;
@@ -284,6 +284,8 @@ export async function queueDiscoveredLink(
 ): Promise<boolean> {
   const canonical = canonicalExploreUrl(url);
   if (!canonical) return false;
+  // An aggregator may bypass the independent-host heuristic, never this guard.
+  if (isArchiveDiscoveryUrl(canonical) || isAuxiliaryDiscoveryUrl(canonical)) return false;
   if (isAggregatorUrl(canonical)) return false;
   const host = hostnameOf(canonical);
   if (SKIP_HOSTS.some((h) => host === h || host.endsWith(`.${h}`))) return false;

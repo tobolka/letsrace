@@ -31,7 +31,6 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       ],
     },
   },
-
   {
     date: "2026-10-31",
     items: {
@@ -41,6 +40,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "The 2027 calendar includes Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou and ten more UltraBikers Cup events.",
         "You can filter mountain bike orienteering races by MTBO.",
         "Lesák CUP appears once, and more 2027 races have verified venues, route options and clearer registration information.",
+        "More duplicate races appear once, while separate races held on the same day stay separate.",
+        "Road Stage Orlické hory and Ischgl Short-Track show their race day, and GLPK Gravel is placed near Górzno.",
       ],
       cs: [
         "Mamut Tour najdeš 22. května 2027 v Prosenicích a obě trasy jsou pod jednou akcí.",
@@ -48,21 +49,28 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "V kalendáři 2027 najdeš Podkrkonošský maraton, SPOKE Maraton, Toulání Šumavou a dalších deset závodů UltraBikers Cupu.",
         "Orientační závody na horských kolech si vyfiltruješ jako MTBO.",
         "Lesák CUP se zobrazuje jednou a další závody 2027 mají ověřená místa, varianty tras a srozumitelnější informace o přihláškách.",
+        "Další duplicitní závody se zobrazují jednou a samostatné závody ve stejný den zůstávají oddělené.",
+        "Road Stage Orlické hory a Ischgl Short-Track mají správný závodní den a GLPK Gravel je na mapě u Górzna.",
       ],
     },
   },
-
   {
     date: "2026-10-30",
     items: {
       en: [
         "The 2026 archive includes three more cycling races from NaKole.cz, with rides and other non-racing events filtered out.",
         "You can switch races with the arrow keys on the map and in the list, move between calendar days with the keyboard, and close race details with Escape.",
-        "The 2027 Mountain Bike World Cup rounds in Czechia, Austria, Italy and Switzerland are in the calendar."],
+        "The 2027 Mountain Bike World Cup rounds in Czechia, Austria, Italy and Switzerland are in the calendar.",
+        "Rožmitálský cyklokros has its announced date for 2027, with age categories marked as based on last year's edition.",
+        "Nine more cycling events have their announced dates for 2027 in the calendar, including Krkonošská 70 MTB, Lesák Cup and Praha–Doksy.",
+      ],
       cs: [
         "V archivu roku 2026 jsou další tři cyklistické závody z NaKole.cz, bez vyjížděk a dalších nezávodních akcí.",
         "Na mapě a v seznamu přepínáš závody šipkami, mezi dny v kalendáři se pohybuješ klávesnicí a detail závodu zavřeš klávesou Escape.",
-        "V kalendáři jsou závody Světového poháru horských kol 2027 v Česku, Rakousku, Itálii a Švýcarsku."],
+        "V kalendáři jsou závody Světového poháru horských kol 2027 v Česku, Rakousku, Itálii a Švýcarsku.",
+        "Rožmitálský cyklokros má oznámený termín na rok 2027 a věkové kategorie označené podle minulého ročníku.",
+        "V kalendáři jsou oznámené termíny dalších devíti cyklistických akcí pro rok 2027, včetně Krkonošské 70 MTB, Lesák Cupu a Praha–Doksy.",
+      ],
     },
   },
   {

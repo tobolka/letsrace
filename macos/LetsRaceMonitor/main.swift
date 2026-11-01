@@ -16,7 +16,7 @@ struct MonitorSnapshot: Decodable {
         }
         struct Budget: Decodable { let spentUsd: Double; let monthCapUsd: Double }
         struct Health: Decodable { let sources: Int; let due: Int; let reads24h: Int; let ok24h: Int; let failed24h: Int }
-        let health: Health?; let attentionSources: Int?; let reviewCandidates: Int?
+        let health: Health?; let attentionSources: Int?; let unreadableSources: Int?; let brokenSources: Int?; let reviewCandidates: Int?
         let at: String?; let checkedAt: String?; let error: String?; let jobs: [Job]?; let budget: Budget?; let due: Int?
     }
     struct Browser: Decodable { let status: String?; let issue: String?; let log: String?; let read: Int?; let written: Int?; let created: Int?; let updated: Int?; let at: String?; let lastReadAt: String?; let lastReadCount: Int? }
@@ -232,12 +232,12 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let r { localLines += "\n\(r.reads ?? 0) zdrojů · \(r.created ?? 0) nových · \(r.updated ?? 0) změněných · \(r.failed ?? 0) selhalo" }
         if (r?.deferred ?? 0) > 0 { localLines += " · \(r?.deferred ?? 0) odloženo" }
         if r?.reads == 0 { localLines += "\nŽádný zdroj nebyl splatný; tento běh nic nepřidal." }
-        if let recent = snapshot?.recent { localLines += "\nMac za 24 h: \(recent.created ?? 0) nových · \(recent.updated ?? 0) změn · \(recent.failed ?? 0) neúspěšných kontrol" }
+        if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) stránek se nepodařilo přečíst (to je běžné, viz Problémy a řešení)" }
         if localRunning { localLines += "\n\(translatedStage(snapshot?.stage)) · \(eta(snapshot?.activeTask ?? "refresh", started: snapshot?.startedAt))" }
         else if localBusy { localLines += "\nTeď běží federace; běžný sběr můžeš zařadit za ni." }
         if snapshot?.paused == true { localLines += localBusy ? "\nAutomatika je pozastavená; probíhající běh se dokončí." : "\nAutomatika je pozastavená." }
         if stale { localLines += "\nChybí čerstvé hlášení sběrače." }
-        card("Mac zdarma · běžný sběr", detail: localLines, color: stale || (r?.failed ?? 0) > 0 || (snapshot?.recent?.failed ?? 0) > 0 ? .systemOrange : .systemGreen, buttons: [smallButton(localRunning ? "Běží…" : localBusy ? "Zařadit sběr" : "Spustit sběr", #selector(runNow), enabled: !localRunning), smallButton("Problémy a řešení", #selector(showLocalProblems))], in: stack)
+        card("Mac zdarma · běžný sběr", detail: localLines, color: stale || (r?.failed ?? 0) > 0 ? .systemOrange : .systemGreen, buttons: [smallButton(localRunning ? "Běží…" : localBusy ? "Zařadit sběr" : "Spustit sběr", #selector(runNow), enabled: !localRunning), smallButton("Problémy a řešení", #selector(showLocalProblems))], in: stack)
         let browser = snapshot?.browser
         let federationRunning = snapshot?.activeTask == "federation"
         let federationQueued = snapshot?.pendingTasks?.contains("federation") == true
@@ -256,8 +256,11 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let heartbeat = "Hlášení před \(duration((snapshot?.at).flatMap(parsedDate).map { $0.timeIntervalSince1970 * 1000 }))"
         var health = heartbeat + " · server před \(duration(server?.checkedAt.flatMap(parsedDate).map { $0.timeIntervalSince1970 * 1000 }))"
         if let h = server?.health { health += "\nZa 24 h: \(h.ok24h)/\(h.reads24h) čtení OK · čeká \(h.due)/\(h.sources) zdrojů" }
-        if let attention = server?.attentionSources { health += "\n\(attention) zdrojů má problém · \(server?.reviewCandidates ?? 0) podkladů čeká na ověření" }
-        let healthLabel = label(health, size: 10, color: .secondaryLabelColor); healthLabel.maximumNumberOfLines = 3
+        if let broken = server?.brokenSources, let unread = server?.unreadableSources {
+            health += "\nK řešení: \(broken) zdrojů s chybou · čeká na pořadatele nebo rozhodnutí: \(server?.reviewCandidates ?? 0)"
+            health += "\nBez problému: \(unread) stránek zdarma nepřečteme, počkají na AI kontrolu"
+        } else if let attention = server?.attentionSources { health += "\n\(attention) zdrojů má problém · \(server?.reviewCandidates ?? 0) podkladů čeká na ověření" }
+        let healthLabel = label(health, size: 10, color: .secondaryLabelColor); healthLabel.maximumNumberOfLines = 4
         stack.addArrangedSubview(healthLabel)
         let footer = NSStackView(views: [smallButton(snapshot?.paused == true ? "Obnovit automatiku" : "Pozastavit automatiku", #selector(togglePause)), smallButton("Jak to funguje", #selector(showHelp)), smallButton("Další…", #selector(showDetails))]); footer.spacing = 8; stack.addArrangedSubview(footer)
         document.layoutSubtreeIfNeeded()

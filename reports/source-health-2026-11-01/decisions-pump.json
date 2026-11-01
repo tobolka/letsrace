@@ -1,0 +1,20 @@
+[
+ {
+  "id": "0354f550-e0ea-4d5d-9a10-6a421d2d74d2",
+  "evidenceHash": "a1d83c29d7fc8b8024c9fa8cfeb609829facabf2f61902cefbdc263b2f1081d8",
+  "action": "reject",
+  "reason": "Vyřešeno: ČSC u závodu csc-1695 uvádí konec o rok dřív než začátek (překlep). Čtečka teď takový konec ignoruje a závod je v katalogu jako jednodenní 26. 4. 2026 v Sobotce.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:20:00Z",
+  "category": "invalid_source_date_resolved"
+ },
+ {
+  "id": "3bbea97f-24d4-4d48-a56b-43d295690f6e",
+  "evidenceHash": "11707c7e8c7db32e83dc194e7ec095dbb75a86144d5f1ecefb3fe7641e1cb5b1",
+  "action": "reject",
+  "reason": "Vyřešeno: ČSC u závodu csc-1695 uvádí konec o rok dřív než začátek (překlep). Čtečka teď takový konec ignoruje a závod je v katalogu jako jednodenní 26. 4. 2026 v Sobotce.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:20:00Z",
+  "category": "invalid_source_date_resolved"
+ }
+]

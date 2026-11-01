@@ -988,6 +988,10 @@ const ROUND_PATTERNS = [
 
 export function roundNumber(name: string): number | null {
   const text = fold(name).replace(/\s+/g, " ");
+  // The official adapter labels rounds "CX Bundesliga 10 — Vaihingen".
+  // The bare number after this specific series is a round, not its edition.
+  const bundesliga = text.match(/\bcx bundesliga (\d{1,2})\s*(?:[—–-]|$)/);
+  if (bundesliga && Number(bundesliga[1]) >= 1 && Number(bundesliga[1]) <= 40) return Number(bundesliga[1]);
   for (const re of ROUND_PATTERNS) {
     const m = text.match(re);
     if (!m) continue;

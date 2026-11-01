@@ -1,0 +1,236 @@
+[
+ {
+  "id": "5631ef13-08d3-443b-8063-be831467cd9d",
+  "evidenceHash": "cd9cc95cc0c0603068a77986d51475e1e81e02acd86a4f0dbfeed14862c4e475",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „10° TROFEO TDA COMPRESSORI - PROVA CAMP. REG. JUNIORES-OPEN M/F“ (2026-11-15, id 61e36d08). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "b5ada903-4e97-44d5-85ed-dd259f48dfe6",
+  "evidenceHash": "2f6f7273a7f55b1d2e6276c03c26d0a3aa90a13919051a6eccc9bfbfe7f86848",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-07-04, id 59ce3e81). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "2c495ef2-816d-4035-8a58-663ffe67b7d8",
+  "evidenceHash": "ac596ea57bac8ebf14479a7b4f69e50fd800a646786a6bbbdfe7041fe69e35fb",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-06-13, id 0596d77f). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "e6cc77f6-287a-44be-b557-8246f72c74df",
+  "evidenceHash": "19927239bc88a3a7ceb4bccd400c7484ec567cfe3574f99ce93dbc354158d6f7",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-06-11, id 482255d4). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "1c885b6d-a25d-4cd5-a043-24f8efe789e3",
+  "evidenceHash": "9b366699deb0a67fbcaef623cb95f2dde9b7ee675b4e0bd8793e21e40a69b965",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-06-12, id d58c7a66). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "ec9c92d0-6f6e-47f7-8c98-a0b17e33b2f0",
+  "evidenceHash": "4a75c5d874041feec4cff0c99fcb11c600a5fe0cdadebe4aa4c603820dbbe290",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-09-11, id dedf26cc). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "6c55e3cc-60c8-43f7-bf3e-e6c4b588d3e1",
+  "evidenceHash": "cb0b188005788597c67f70c9c3fa6abe6e680f6dfb6340f53fbfb3e07f96978d",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-08-20, id 49314682). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "9456d940-ed0d-4cf4-8954-c365f67306d4",
+  "evidenceHash": "e19c9f9867aab31d2073a97a919731375112a82e9b1eae245636d3cf865ea41a",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-09-12, id a1532b5a). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "ebb872c1-10e2-4789-8883-3d4482bf7fa4",
+  "evidenceHash": "1ce73878ef1b3f0b7e1af05074e7230b47e50e9fe9ccee4c9c0652dcea8ab2f8",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-09-10, id 2cd3b1b5). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "a93564fb-a8bf-40da-b6a6-1e41734b9e55",
+  "evidenceHash": "fe8527310f74a2bcad14bf0f1e8aaf98b6117235ce7d482db3e45a08db99e952",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-07-04, id 59ce3e81). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "2a85c2bc-b03e-42a7-bd63-46723e4a5eb1",
+  "evidenceHash": "299ea425e12b811930f1c228b194209a3bcee129b969a93dc3a10111fdffad3e",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-07-03, id 6356a787). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "be92beaf-8bbf-44a3-999f-9a7e7a738816",
+  "evidenceHash": "0fc62ec24c5daeaaeb0ea4d76eb2cde17641a5ccf620072ca2800e9582f08c0f",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-07-02, id c3df516b). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "a863c920-d81e-4186-ba5f-10a357ff7045",
+  "evidenceHash": "caf97fa8cc3a703736fc0216397ef672622c9322e18485abf8282afcbc9a00c3",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-06-11, id 482255d4). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "f0a8e898-5646-4e74-bf6d-7e49000f9df0",
+  "evidenceHash": "72df3258e53264b143e7d2ff5dec6262b1d740fe509d1c9e37dac633b43d68f8",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-06-12, id d58c7a66). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "40caf38d-77f3-463c-a8c2-5d80575295e0",
+  "evidenceHash": "f676d273279aef0c7b33a678ffdefa49b891bc45400332e5ac380b855ca0666f",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-06-13, id 0596d77f). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "585e8b8c-b099-4803-bd0d-f9f942103cf6",
+  "evidenceHash": "29fea83bd6d376f18ab63173752fc4388b68ff7788e3bcfe3fabeb154b73de60",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-08-21, id 535a985c). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "78c22a0d-935d-4acc-a070-c4c817d8ed64",
+  "evidenceHash": "7b3b1d13f3c76f5f3556047492da4b96ed8b6053e48d590c33f6f4145c9e17ce",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP“ (2026-08-22, id 35ac2d74). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "b882e7bc-56e2-4677-8ae5-b93138219242",
+  "evidenceHash": "1e25508b0048cb1187b339bc4991f9632d442577b97e946a3b119e6a88fe4a70",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Šumavský pohár MTB — Waldkirchen“ (2026-04-26, id 4f3e8781). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "2f631f26-f598-4818-a493-01da0e47cd18",
+  "evidenceHash": "36d4365ac58d375c471d9a02de36fb42f77b1a7ab5175169e1e62971acd6d011",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Emmental Rundfahrt“ (2027-07-24, id abe37c07). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "41586b7d-fc53-442b-8e4e-2de957ff966b",
+  "evidenceHash": "74305787852e2dd526e3cd353442085375b76fc4afbaae662764cf83ad43851e",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Cycling Cup Thaur“ (2027-06-06, id 284f4c69). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "52b55b45-47fe-4cea-b510-0aaec7e4e360",
+  "evidenceHash": "5d24c0ef6da9a0aab5833e1059060af2e83856379ebaf3308bc05fbb92c5ebc7",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Cycling Cup Thaur“ (2027-06-06, id 284f4c69). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "5fdbd24f-eaf2-42e8-9c44-c7fbdfe36365",
+  "evidenceHash": "cf7a846b5abfec72d6f05cb2f1bfa9724af4848b04cb69ac4518bd24910a9fd9",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Cyklománek — Duatlon Powerman Kunčina“ (2026-08-22, id e1b284d4). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "23533355-95d5-4745-bbdb-586b0fabcef7",
+  "evidenceHash": "674f78d2d5e0523c586e40254d8c853ad7b998781f747e7751fcb3a393df78f6",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Cyklománek — Duatlon Powerman Kunčina“ (2026-08-22, id e1b284d4). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "96bbf990-9ef1-493c-bf39-41bf33f45eb5",
+  "evidenceHash": "29712c37803ab65a1feb1dae57c97fb479160509fab989ef070e10431a5e04a2",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „Cyklománek — Duatlon Powerman Kunčina“ (2026-08-22, id e1b284d4). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "cd14f690-9cdf-4da3-81b7-51012e50e557",
+  "evidenceHash": "1d46bab9511aff5d96920746c1649d89b1d999c3a7f1bdbfeece25311d9fd7f0",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP (Nové Město, 21.–23. 5.)“ (2026-05-21, id c790c099). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "8945c75c-986c-4b3f-bdb5-b3706742f603",
+  "evidenceHash": "172cd377cfcc1b5e10b4abfde549ac987ad8a5ef7995f50f06f20364b1fda16c",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu jako „UCI MTB World CUP (Nové Město, 21.–23. 5.)“ (2026-05-21, id c790c099). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T18:30:00Z",
+  "category": "duplicate_of_existing"
+ }
+]

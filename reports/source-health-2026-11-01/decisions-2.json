@@ -1,0 +1,83 @@
+[
+ {
+  "id": "69d63517-f2bd-4dfe-a254-363437533406",
+  "evidenceHash": "36f15dc5d987df1348b165a6c372574a1c825367acdec68e270aba88cd605d64",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id a1532b5a). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "074030b4-f497-4abb-a96c-f1c4c264cbf3",
+  "evidenceHash": "6485ce3067b8c2ada3a78b246c1de56d0f7df0b03e0d3f5dab1298c6b55f0a28",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id 2cd3b1b5). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "4e56c71b-95a9-4bc2-83ed-747ea8ba45be",
+  "evidenceHash": "581a4319be22b3bc3e67f48fd42ab9b5cdb7a1367c5fe18ae666f2f7c446d5e5",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id dedf26cc). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "b94e872c-44f9-434c-825f-e001f6f6ccbf",
+  "evidenceHash": "416f9e40a9bb674e89f92fb870f6b37526270b802ee4d35a2f259686afa01e4a",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id 35ac2d74). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "7878e5b0-39a8-4680-a7d3-4328b0072da2",
+  "evidenceHash": "e39629ea7fe6eb48a35ceebf3b929c4f251e1177a7acd8d5fb31dd0ef0b65f78",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id 535a985c). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "35c361ac-0622-4397-addd-7d159832ace7",
+  "evidenceHash": "d2a65b85ac61b6e70d412d1948b0ff3d0af8bca6512c36a9aca034716d6995e9",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id 49314682). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "8e15b7af-2fc0-47d4-94f9-a76bc305227e",
+  "evidenceHash": "c76c41b75e4e1adfdf3d17f51c18b7062d36b2b3c30c9b91a79061a05342b439",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id 6356a787). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "b441bbc6-132d-4d10-9955-1724086117c4",
+  "evidenceHash": "2ffe18387f8cd56bc892a6768b95e8b4e5d88a45711bcf908d4638b7512ae379",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id c3df516b). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ },
+ {
+  "id": "6abd0d2c-1610-47c9-b269-e43f63788856",
+  "evidenceHash": "87a578b3693334c74bb135ef9908796f5d1ad93ef27ba5c2d60b8f9cb60b4ce5",
+  "action": "reject",
+  "reason": "Duplicita: tento závod už je v katalogu pod stejným názvem a datem (id 4f3e8781). Nový záznam by vytvořil druhý stejný závod.",
+  "reviewer": "Claude",
+  "reviewedAt": "2026-11-01T19:00:00Z",
+  "category": "duplicate_of_existing"
+ }
+]

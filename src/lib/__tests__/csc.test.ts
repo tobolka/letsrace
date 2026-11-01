@@ -46,6 +46,12 @@ describe("ČSC portal grid", () => {
     const events = parseCscPublicGrid("https://portal.czechcyclingfederation.com/Races/Race/Pub", GRID.replace('>Ostrava</td>', '>Waldkirchen (DE)</td>'));
     expect(events[0]?.countryHint).toBe("DE");
   });
+  it("ignores an end date the portal lists before the start", () => {
+    const typo = GRID.replace('<td data-caption="End Date">1/10/2026</td>', '<td data-caption="End Date">1/10/2025</td>');
+    const [event] = parseCscPublicGrid("https://portal.czechcyclingfederation.com/Races/Race/Pub", typo);
+    expect(event?.startDate).toBe("2026-01-10");
+    expect(event?.endDate).toBeUndefined();
+  });
   it("parses US dates from the English Blazor UI", () => {
     expect(parseCscDate("1/10/2026")).toBe("2026-01-10");
     expect(parseCscDate("2/28/2026")).toBe("2026-02-28");

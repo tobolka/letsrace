@@ -1,0 +1,3569 @@
+[
+ {
+  "id": "5631ef13-08d3-443b-8063-be831467cd9d",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 61e36d08-3998-4e00-8843-7e9e9ec31cad",
+  "p": {
+   "name": "10° TROFEO TDA COMPRESSORI - PROVA CAMP. REG. JUNIORES-OPEN M/F",
+   "placeText": "ACQUI TERME (AL), Italia",
+   "sourceUrl": "https://rideandrest.net/manifestazione/10-trofeo-tda-compressori-prova-camp-reg-juniores-open-m-f/",
+   "startDate": "2026-11-15",
+   "confidence": 0.8,
+   "discipline": [
+    "cx"
+   ],
+   "externalId": "rideandrest-10-trofeo-tda-compressori-prova-camp-reg-juniores-open-m-f-2026-11-15",
+   "countryHint": "IT"
+  },
+  "owner": [
+   {
+    "id": "61e36d08-3998-4e00-8843-7e9e9ec31cad",
+    "name": "10° TROFEO TDA COMPRESSORI - PROVA CAMP. REG. JUNIORES-OPEN M/F",
+    "start_date": "2026-11-15",
+    "end_date": "2026-11-15",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "10-trofeo-tda-compressori-prova-camp-reg-juniores-open-m-f-2026",
+    "disciplines": [
+     "cx"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "36795125-bb45-4b89-8acf-937e3d68d583"
+   }
+  ]
+ },
+ {
+  "id": "5fdbd24f-eaf2-42e8-9c44-c7fbdfe36365",
+  "status": "pending",
+  "reason": "identity_review_required: multiple matching races; source row deferred",
+  "p": {
+   "name": "Duatlon Powerman Kunčina",
+   "placeText": "areál hřiště, Kunčina",
+   "sourceUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+   "startDate": "2026-08-22",
+   "confidence": 0.85,
+   "externalId": "duatlon powerman kuncina-2026-08-22",
+   "countryHint": "CZ",
+   "regulationsUrl": "https://cykloman.cz/propozice",
+   "registrationUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina"
+  },
+  "owner": [
+   {
+    "id": "f0aed96e-6499-4428-a2ab-916233ccdb73",
+    "name": "MTB liga Prešov — Brezovica",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "mtb-liga-presov-brezovica-2026",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "b5439f22-1a96-4e70-8577-cbc9b38be01e"
+   },
+   {
+    "id": "7ae33e10-ca10-44fa-b0f3-db51062e9556",
+    "name": "UCI Junior Track World Championships",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-junior-track-world-championships-2026-08-22",
+    "disciplines": [
+     "track"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "31985be6-4e5f-4758-bdfa-485ca0c76217"
+   },
+   {
+    "id": "b520645f-caab-4f2e-b03b-a014ce4d5069",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-2026-08-22",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "8f298061-f489-4258-8bb4-cee7f855520f"
+   },
+   {
+    "id": "26720f25-cf41-420c-af1f-44b637b1091b",
+    "name": "Lloyds National Gravel Championships",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "lloyds-national-gravel-championships-2026",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.britishcycling.org.uk/events/details/26715/Lloyds_National_Gravel_Championships",
+    "merged_into_id": null,
+    "location_id": "92b77dca-8344-4949-8948-512b15f2f7b2"
+   },
+   {
+    "id": "35ac2d74-8339-494b-8922-bb158a3abc5a",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-08-22-mvwz9hr9",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "2763f88d-3349-4c09-8665-65b72bf01d1b"
+   },
+   {
+    "id": "18d17fd6-27d6-4b52-bda5-0a3c5a592636",
+    "name": "Valašský pohár MTB-XC",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-29",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "valassky-pohar-mtb-xc-lokalita-v-jednani-2026",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "05c6991b-7b26-4d4d-8c57-b2639a4bd83a"
+   }
+  ]
+ },
+ {
+  "id": "23533355-95d5-4745-bbdb-586b0fabcef7",
+  "status": "pending",
+  "reason": "identity_review_required: multiple matching races; source row deferred",
+  "p": {
+   "name": "Duatlon Powerman Kunčina",
+   "placeText": "areál hřiště, Kunčina",
+   "sourceUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+   "startDate": "2026-08-22",
+   "confidence": 0.85,
+   "externalId": "duatlon powerman kuncina-2026-08-22",
+   "countryHint": "CZ",
+   "regulationsUrl": "https://www.cykloman.cz/propozice",
+   "registrationUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina"
+  },
+  "owner": [
+   {
+    "id": "f0aed96e-6499-4428-a2ab-916233ccdb73",
+    "name": "MTB liga Prešov — Brezovica",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "mtb-liga-presov-brezovica-2026",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "b5439f22-1a96-4e70-8577-cbc9b38be01e"
+   },
+   {
+    "id": "7ae33e10-ca10-44fa-b0f3-db51062e9556",
+    "name": "UCI Junior Track World Championships",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-junior-track-world-championships-2026-08-22",
+    "disciplines": [
+     "track"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "31985be6-4e5f-4758-bdfa-485ca0c76217"
+   },
+   {
+    "id": "b520645f-caab-4f2e-b03b-a014ce4d5069",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-2026-08-22",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "8f298061-f489-4258-8bb4-cee7f855520f"
+   },
+   {
+    "id": "26720f25-cf41-420c-af1f-44b637b1091b",
+    "name": "Lloyds National Gravel Championships",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "lloyds-national-gravel-championships-2026",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.britishcycling.org.uk/events/details/26715/Lloyds_National_Gravel_Championships",
+    "merged_into_id": null,
+    "location_id": "92b77dca-8344-4949-8948-512b15f2f7b2"
+   },
+   {
+    "id": "35ac2d74-8339-494b-8922-bb158a3abc5a",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-08-22-mvwz9hr9",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "2763f88d-3349-4c09-8665-65b72bf01d1b"
+   },
+   {
+    "id": "18d17fd6-27d6-4b52-bda5-0a3c5a592636",
+    "name": "Valašský pohár MTB-XC",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-29",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "valassky-pohar-mtb-xc-lokalita-v-jednani-2026",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "05c6991b-7b26-4d4d-8c57-b2639a4bd83a"
+   }
+  ]
+ },
+ {
+  "id": "96bbf990-9ef1-493c-bf39-41bf33f45eb5",
+  "status": "pending",
+  "reason": "identity_review_required: multiple matching races; source row deferred",
+  "p": {
+   "name": "Duatlon Powerman Kunčina",
+   "placeText": "areál hřiště, Kunčina",
+   "sourceUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+   "startDate": "2026-08-22",
+   "confidence": 0.85,
+   "externalId": "duatlon powerman kuncina-2026-08-22",
+   "countryHint": "CZ",
+   "regulationsUrl": "https://www.cykloman.cz/propozice",
+   "registrationUrl": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina"
+  },
+  "owner": [
+   {
+    "id": "f0aed96e-6499-4428-a2ab-916233ccdb73",
+    "name": "MTB liga Prešov — Brezovica",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "mtb-liga-presov-brezovica-2026",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "b5439f22-1a96-4e70-8577-cbc9b38be01e"
+   },
+   {
+    "id": "7ae33e10-ca10-44fa-b0f3-db51062e9556",
+    "name": "UCI Junior Track World Championships",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-junior-track-world-championships-2026-08-22",
+    "disciplines": [
+     "track"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "31985be6-4e5f-4758-bdfa-485ca0c76217"
+   },
+   {
+    "id": "b520645f-caab-4f2e-b03b-a014ce4d5069",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-2026-08-22",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "8f298061-f489-4258-8bb4-cee7f855520f"
+   },
+   {
+    "id": "26720f25-cf41-420c-af1f-44b637b1091b",
+    "name": "Lloyds National Gravel Championships",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "lloyds-national-gravel-championships-2026",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.britishcycling.org.uk/events/details/26715/Lloyds_National_Gravel_Championships",
+    "merged_into_id": null,
+    "location_id": "92b77dca-8344-4949-8948-512b15f2f7b2"
+   },
+   {
+    "id": "35ac2d74-8339-494b-8922-bb158a3abc5a",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-08-22-mvwz9hr9",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "2763f88d-3349-4c09-8665-65b72bf01d1b"
+   },
+   {
+    "id": "18d17fd6-27d6-4b52-bda5-0a3c5a592636",
+    "name": "Valašský pohár MTB-XC",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-29",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "valassky-pohar-mtb-xc-lokalita-v-jednani-2026",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "05c6991b-7b26-4d4d-8c57-b2639a4bd83a"
+   }
+  ]
+ },
+ {
+  "id": "b5ada903-4e97-44d5-85ed-dd259f48dfe6",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 59ce3e81-3e01-4396-a330-13a6abb53f0e",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "La Thuile, Valle d’Aosta, Italy",
+   "sourceUrl": "https://hynekmusil.cz",
+   "startDate": "2026-07-04",
+   "confidence": 0.82,
+   "discipline": [
+    "xcc"
+   ],
+   "externalId": "hynek-ws xcc dhi uci world-2026-07-04",
+   "seriesName": "MTB WS: XCO/XCC/DHI",
+   "seriesSlug": "mtb-ws-xco-xcc-dhi"
+  },
+  "owner": [
+   {
+    "id": "59ce3e81-3e01-4396-a330-13a6abb53f0e",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-04",
+    "end_date": "2026-07-04",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-la-thuile-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "6ee00312-92c4-4c13-bd2d-855f26fa0e1c"
+   }
+  ]
+ },
+ {
+  "id": "2c495ef2-816d-4035-8a58-663ffe67b7d8",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 0596d77f-f12b-4201-b234-1341e273b4e3",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Saalfelden-Leogang Salzburgerland, Austria",
+   "sourceUrl": "https://hynekmusil.cz",
+   "startDate": "2026-06-13",
+   "confidence": 0.82,
+   "discipline": [
+    "xcc"
+   ],
+   "externalId": "hynek-ws xcc dhi uci world-2026-06-13",
+   "seriesName": "MTB WS: XCO/XCC/DHI",
+   "seriesSlug": "mtb-ws-xco-xcc-dhi",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "0596d77f-f12b-4201-b234-1341e273b4e3",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-13",
+    "end_date": "2026-06-14",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-2026-06-13",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "f950e94a-a4ee-45f6-b3cd-0d1c9da23bed"
+   }
+  ]
+ },
+ {
+  "id": "e6cc77f6-287a-44be-b557-8246f72c74df",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 482255d4-d1f8-4878-91c7-6676d2d08088",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Saalfelden-Leogang Salzburgerland, Austria",
+   "sourceUrl": "https://hynekmusil.cz",
+   "startDate": "2026-06-11",
+   "confidence": 0.82,
+   "discipline": [
+    "xcc"
+   ],
+   "externalId": "hynek-ws xcc dhi uci world-2026-06-11",
+   "seriesName": "MTB WS: XCO/XCC/DHI",
+   "seriesSlug": "mtb-ws-xco-xcc-dhi",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "482255d4-d1f8-4878-91c7-6676d2d08088",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-11",
+    "end_date": "2026-06-13",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-saalfelden-leogang-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "f950e94a-a4ee-45f6-b3cd-0d1c9da23bed"
+   }
+  ]
+ },
+ {
+  "id": "1c885b6d-a25d-4cd5-a043-24f8efe789e3",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by d58c7a66-04bc-4cd2-9711-89078195eaa5",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Saalfelden-Leogang Salzburgerland, Austria",
+   "sourceUrl": "https://hynekmusil.cz",
+   "startDate": "2026-06-12",
+   "confidence": 0.82,
+   "discipline": [
+    "xcc"
+   ],
+   "externalId": "hynek-ws xcc dhi uci world-2026-06-12",
+   "seriesName": "MTB WS: XCO/XCC/DHI",
+   "seriesSlug": "mtb-ws-xco-xcc-dhi",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "d58c7a66-04bc-4cd2-9711-89078195eaa5",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-12",
+    "end_date": "2026-06-12",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-06-12",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "f950e94a-a4ee-45f6-b3cd-0d1c9da23bed"
+   }
+  ]
+ },
+ {
+  "id": "cd14f690-9cdf-4da3-81b7-51012e50e557",
+  "status": "pending",
+  "reason": "identity_review_required: multiple matching races; source row deferred",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Nové Město Na Moravě, Czechia",
+   "sourceUrl": "https://hynekmusil.cz",
+   "startDate": "2026-05-23",
+   "confidence": 0.82,
+   "discipline": [
+    "xcc"
+   ],
+   "externalId": "hynek-ws xcc uci world-2026-05-23",
+   "seriesName": "MTB WS: XCO/XCC",
+   "seriesSlug": "mtb-ws-xco-xcc",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "7a6421a0-4d70-4eb1-be0f-d2bc1da8f44e",
+    "name": "Nachwuchsbundesliga — Gedern",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-24",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "nachwuchsbundesliga-gedern-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://www.mtb-bundesliga.net/nachwuchs-bl/veranstaltungen.html",
+    "merged_into_id": null,
+    "location_id": "5851e9ac-4d33-4fb6-b9df-b33679b1ccaa"
+   },
+   {
+    "id": "40bf3fa4-9198-4f31-bc08-bac900fbf194",
+    "name": "Detská VRL — Svidník",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "detska-vrl-svidnik-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://vychodroadliga.eu/",
+    "merged_into_id": null,
+    "location_id": "37db3e04-933a-4994-a001-c3bf287016f1"
+   },
+   {
+    "id": "3d503919-1af6-41ed-bbfc-a5e3af10aeb6",
+    "name": "Vulkan Race Gedern",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "vulkan-race-gedern-2026-mvldlad0",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "5851e9ac-4d33-4fb6-b9df-b33679b1ccaa"
+   },
+   {
+    "id": "f1b1ad59-2f7f-4869-883d-56d87dd11b19",
+    "name": "Aimtec Open Race - Cyklomaraton Plzeň - Berounka Trails",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "aimtec-open-race-cyklomaraton-plzen-berounka-trails-2026",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://www.aimtecopenrace.cz",
+    "merged_into_id": null,
+    "location_id": "cb9e7abf-2098-48d5-bf1e-4698e2bced54"
+   },
+   {
+    "id": "4cd62e00-b5f5-43c5-8625-1d95ee5e8096",
+    "name": "Kellys Mamut Tour",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "hidden",
+    "visibility": "hidden",
+    "slug": "kellys-mamut-tour-sportovni-areal-letni-zahradka-2026",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "http://miko-cycles.cz",
+    "merged_into_id": null,
+    "location_id": "ef0e768b-4d64-48fc-9c61-4fd837bc9f3c"
+   },
+   {
+    "id": "35bba84c-dcdf-4990-9a06-7e7f0b264d44",
+    "name": "Puchar Polski MTB XCO #3 — Nędzerzew",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "puchar-polski-mtb-xco-3-nedzerzew-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://pzkol.pl/kalendarz/2773,puchar-polski-mtb-eliminacje-oom-mtb.html",
+    "merged_into_id": null,
+    "location_id": "f6830ab9-d021-4029-9107-b415cfd81a64"
+   }
+  ]
+ },
+ {
+  "id": "ec9c92d0-6f6e-47f7-8c98-a0b17e33b2f0",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by dedf26cc-8576-4909-8a88-67bd321ebb36",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Val di Sole, Trentino, Italy",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-09-11",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-09-11",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "dedf26cc-8576-4909-8a88-67bd321ebb36",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-09-11",
+    "end_date": "2026-09-11",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-09-11",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "c3fec3fd-3e74-4f9c-a58d-f02c003eb94d"
+   }
+  ]
+ },
+ {
+  "id": "6c55e3cc-60c8-43f7-bf3e-e6c4b588d3e1",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 49314682-6ce7-4a8a-826f-0b13786a0005",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Bike Kingdom, Lenzerheide, Switzerland",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-08-20",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-08-20",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "49314682-6ce7-4a8a-826f-0b13786a0005",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-20",
+    "end_date": "2026-08-20",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-bike-kingdom-lenzerheide-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "2763f88d-3349-4c09-8665-65b72bf01d1b"
+   }
+  ]
+ },
+ {
+  "id": "9456d940-ed0d-4cf4-8954-c365f67306d4",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by a1532b5a-108b-446d-8013-9d980eaa826b",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Val di Sole, Trentino, Italy",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-09-12",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-09-12",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "a1532b5a-108b-446d-8013-9d980eaa826b",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-09-12",
+    "end_date": "2026-09-12",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-val-di-sole-trentino-italy-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "c3fec3fd-3e74-4f9c-a58d-f02c003eb94d"
+   }
+  ]
+ },
+ {
+  "id": "ebb872c1-10e2-4789-8883-3d4482bf7fa4",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 2cd3b1b5-9954-4128-8c73-3233d23ae303",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Val di Sole, Trentino, Italy",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-09-10",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-09-10",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "2cd3b1b5-9954-4128-8c73-3233d23ae303",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-09-10",
+    "end_date": "2026-09-10",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-09-10",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "c3fec3fd-3e74-4f9c-a58d-f02c003eb94d"
+   }
+  ]
+ },
+ {
+  "id": "a93564fb-a8bf-40da-b6a6-1e41734b9e55",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 59ce3e81-3e01-4396-a330-13a6abb53f0e",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "La Thuile, Valle d’Aosta, Italy",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-07-04",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-07-04",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "59ce3e81-3e01-4396-a330-13a6abb53f0e",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-04",
+    "end_date": "2026-07-04",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-la-thuile-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "6ee00312-92c4-4c13-bd2d-855f26fa0e1c"
+   }
+  ]
+ },
+ {
+  "id": "2a85c2bc-b03e-42a7-bd63-46723e4a5eb1",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 6356a787-33dd-49c5-b8d2-b534d89e1468",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "La Thuile, Valle d’Aosta, Italy",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-07-03",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-07-03",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "6356a787-33dd-49c5-b8d2-b534d89e1468",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-03",
+    "end_date": "2026-07-03",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-la-thuile-valle-d-aosta-italy-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "6ee00312-92c4-4c13-bd2d-855f26fa0e1c"
+   }
+  ]
+ },
+ {
+  "id": "be92beaf-8bbf-44a3-999f-9a7e7a738816",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by c3df516b-b9da-46e6-b8ed-4f69edbd4e52",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "La Thuile, Valle d’Aosta, Italy",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-07-02",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-07-02",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "c3df516b-b9da-46e6-b8ed-4f69edbd4e52",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-07-02",
+    "end_date": "2026-07-02",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-07-02",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "6ee00312-92c4-4c13-bd2d-855f26fa0e1c"
+   }
+  ]
+ },
+ {
+  "id": "a863c920-d81e-4186-ba5f-10a357ff7045",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 482255d4-d1f8-4878-91c7-6676d2d08088",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Saalfelden-Leogang Salzburgerland, Austria",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-06-11",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-06-11",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "482255d4-d1f8-4878-91c7-6676d2d08088",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-11",
+    "end_date": "2026-06-13",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-saalfelden-leogang-2026",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "f950e94a-a4ee-45f6-b3cd-0d1c9da23bed"
+   }
+  ]
+ },
+ {
+  "id": "f0a8e898-5646-4e74-bf6d-7e49000f9df0",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by d58c7a66-04bc-4cd2-9711-89078195eaa5",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Saalfelden-Leogang Salzburgerland, Austria",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-06-12",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-06-12",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "d58c7a66-04bc-4cd2-9711-89078195eaa5",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-12",
+    "end_date": "2026-06-12",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-06-12",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "f950e94a-a4ee-45f6-b3cd-0d1c9da23bed"
+   }
+  ]
+ },
+ {
+  "id": "40caf38d-77f3-463c-a8c2-5d80575295e0",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 0596d77f-f12b-4201-b234-1341e273b4e3",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Saalfelden-Leogang Salzburgerland, Austria",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-06-13",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-06-13",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "0596d77f-f12b-4201-b234-1341e273b4e3",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-06-13",
+    "end_date": "2026-06-14",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "uci-mtb-world-cup-2026-06-13",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "f950e94a-a4ee-45f6-b3cd-0d1c9da23bed"
+   }
+  ]
+ },
+ {
+  "id": "8945c75c-986c-4b3f-bdb5-b3706742f603",
+  "status": "pending",
+  "reason": "identity_review_required: multiple matching races; source row deferred",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Nové Město Na Moravě, Czechia",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-05-23",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-05-23",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "7a6421a0-4d70-4eb1-be0f-d2bc1da8f44e",
+    "name": "Nachwuchsbundesliga — Gedern",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-24",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "nachwuchsbundesliga-gedern-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://www.mtb-bundesliga.net/nachwuchs-bl/veranstaltungen.html",
+    "merged_into_id": null,
+    "location_id": "5851e9ac-4d33-4fb6-b9df-b33679b1ccaa"
+   },
+   {
+    "id": "40bf3fa4-9198-4f31-bc08-bac900fbf194",
+    "name": "Detská VRL — Svidník",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "detska-vrl-svidnik-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://vychodroadliga.eu/",
+    "merged_into_id": null,
+    "location_id": "37db3e04-933a-4994-a001-c3bf287016f1"
+   },
+   {
+    "id": "3d503919-1af6-41ed-bbfc-a5e3af10aeb6",
+    "name": "Vulkan Race Gedern",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "vulkan-race-gedern-2026-mvldlad0",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "5851e9ac-4d33-4fb6-b9df-b33679b1ccaa"
+   },
+   {
+    "id": "f1b1ad59-2f7f-4869-883d-56d87dd11b19",
+    "name": "Aimtec Open Race - Cyklomaraton Plzeň - Berounka Trails",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "aimtec-open-race-cyklomaraton-plzen-berounka-trails-2026",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://www.aimtecopenrace.cz",
+    "merged_into_id": null,
+    "location_id": "cb9e7abf-2098-48d5-bf1e-4698e2bced54"
+   },
+   {
+    "id": "4cd62e00-b5f5-43c5-8625-1d95ee5e8096",
+    "name": "Kellys Mamut Tour",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "hidden",
+    "visibility": "hidden",
+    "slug": "kellys-mamut-tour-sportovni-areal-letni-zahradka-2026",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "http://miko-cycles.cz",
+    "merged_into_id": null,
+    "location_id": "ef0e768b-4d64-48fc-9c61-4fd837bc9f3c"
+   },
+   {
+    "id": "35bba84c-dcdf-4990-9a06-7e7f0b264d44",
+    "name": "Puchar Polski MTB XCO #3 — Nędzerzew",
+    "start_date": "2026-05-23",
+    "end_date": "2026-05-23",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "puchar-polski-mtb-xco-3-nedzerzew-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://pzkol.pl/kalendarz/2773,puchar-polski-mtb-eliminacje-oom-mtb.html",
+    "merged_into_id": null,
+    "location_id": "f6830ab9-d021-4029-9107-b415cfd81a64"
+   }
+  ]
+ },
+ {
+  "id": "585e8b8c-b099-4803-bd0d-f9f942103cf6",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 535a985c-45fe-44e7-b811-b99c9572f390",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Bike Kingdom, Lenzerheide, Switzerland",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-08-21",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-08-21",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "535a985c-45fe-44e7-b811-b99c9572f390",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-21",
+    "end_date": "2026-08-21",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-bike-kingdom-lenzerheide-2026-mvwz9hr5",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "2763f88d-3349-4c09-8665-65b72bf01d1b"
+   }
+  ]
+ },
+ {
+  "id": "78c22a0d-935d-4acc-a070-c4c817d8ed64",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 35ac2d74-8339-494b-8922-bb158a3abc5a",
+  "p": {
+   "name": "UCI MTB World CUP",
+   "audience": "mixed",
+   "placeText": "Bike Kingdom, Lenzerheide, Switzerland",
+   "sourceUrl": "https://hynekmusil.cz/?serialosss=uciXC",
+   "startDate": "2026-08-22",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "hynek-uci world uci world-2026-08-22",
+   "seriesName": "UCI MTB World Cup",
+   "seriesSlug": "uci-mtb-world-cup"
+  },
+  "owner": [
+   {
+    "id": "35ac2d74-8339-494b-8922-bb158a3abc5a",
+    "name": "UCI MTB World CUP",
+    "start_date": "2026-08-22",
+    "end_date": "2026-08-22",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "uci-mtb-world-cup-2026-08-22-mvwz9hr9",
+    "disciplines": [
+     "xcc",
+     "xco"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "2763f88d-3349-4c09-8665-65b72bf01d1b"
+   }
+  ]
+ },
+ {
+  "id": "b882e7bc-56e2-4677-8ae5-b93138219242",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+  "p": {
+   "lat": 48.732855,
+   "lng": 13.603226,
+   "name": "Šumavský pohár MTB Waldkirchen",
+   "audience": "mixed",
+   "childUrls": [
+    "http://rscwaldkirchen.de",
+    "https://sumator.cz/cup/sumavsky-pohar-mtb-2026"
+   ],
+   "placeText": "Waldkirchen",
+   "sourceUrl": "https://sumator.cz/race/sumavsky-pohar-mtb-waldkirchen-26-4-2026",
+   "startDate": "2026-04-26",
+   "confidence": 0.92,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "sumator-sumavsky pohar waldkirchen-2026-04-26",
+   "seriesName": "Šumavský pohár MTB",
+   "seriesSlug": "sumavsky-pohar-mtb",
+   "websiteUrl": "http://rscwaldkirchen.de/",
+   "countryHint": "CZ",
+   "seriesWebsite": "http://rscwaldkirchen.de"
+  },
+  "owner": [
+   {
+    "id": "4f3e8781-58b2-42aa-bac6-47cdc9ff15c6",
+    "name": "Šumavský pohár MTB — Waldkirchen",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "sumavsky-pohar-mtb-waldkirchen-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://jcp-mtb.cz/#race_waldkirchen",
+    "merged_into_id": null,
+    "location_id": "15567fa3-3afa-4767-b0d0-b2c109279104"
+   }
+  ]
+ },
+ {
+  "id": "2f631f26-f598-4818-a493-01da0e47cd18",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by abe37c07-1f8c-4f23-a92c-f30146fa12ce",
+  "p": {
+   "lat": 47.1334251,
+   "lng": 7.6050497,
+   "name": "Emmental Rundfahrt",
+   "endDate": "2027-07-25",
+   "audience": "mixed",
+   "eventType": "ride",
+   "placeText": "Saalbau, Kirchberg",
+   "sourceUrl": "https://radsport-events.de/events/27215",
+   "startDate": "2027-07-24",
+   "categories": [
+    {
+     "name": "16 km",
+     "distanceKm": 16,
+     "elevationM": 180
+    },
+    {
+     "name": "50 km",
+     "distanceKm": 50,
+     "elevationM": 900
+    },
+    {
+     "name": "60 km",
+     "distanceKm": 60,
+     "elevationM": 700
+    },
+    {
+     "name": "65 km",
+     "distanceKm": 65,
+     "elevationM": 1100
+    },
+    {
+     "name": "100 km",
+     "distanceKm": 100,
+     "elevationM": 1050
+    },
+    {
+     "name": "125 km",
+     "distanceKm": 125,
+     "elevationM": 1600
+    },
+    {
+     "name": "150 km",
+     "distanceKm": 150,
+     "elevationM": 2100
+    }
+   ],
+   "confidence": 0.9,
+   "discipline": [
+    "road"
+   ],
+   "externalId": "radsport-27215-2027-07-24",
+   "websiteUrl": "https://rversigen.ch/emmental-rundfahrt/",
+   "countryHint": "CH",
+   "ageCategories": [
+    "amateur"
+   ]
+  },
+  "owner": [
+   {
+    "id": "abe37c07-1f8c-4f23-a92c-f30146fa12ce",
+    "name": "Emmental Rundfahrt",
+    "start_date": "2027-07-24",
+    "end_date": "2027-07-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "emmental-rundfahrt-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "825b01be-924a-447a-b9d9-f69f060aada0"
+   }
+  ]
+ },
+ {
+  "id": "41586b7d-fc53-442b-8e4e-2de957ff966b",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 284f4c69-c54d-4ef4-ae7a-0190280104de",
+  "p": {
+   "name": "Cycling Cup Thaur MTB",
+   "audience": "mixed",
+   "placeText": "Tirol",
+   "sourceUrl": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=2B07205C486149CF85137D9901609854&filter=view=events&page=2",
+   "startDate": "2027-06-06",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "oerv-2B07205C486149CF85137D9901609854-2027-06-06",
+   "websiteUrl": "https://www.innsbrucker-schwalben.at/",
+   "countryHint": "AT",
+   "regulationsUrl": "https://www.cyclingaustria.at/components/com_events/src/functions/download_pdf.php?id=2B07205C486149CF85137D9901609854",
+   "registrationUrl": "https://www.cyclingaustria.at/#newsletter-anmeldung"
+  },
+  "owner": [
+   {
+    "id": "284f4c69-c54d-4ef4-ae7a-0190280104de",
+    "name": "Cycling Cup Thaur",
+    "start_date": "2027-06-06",
+    "end_date": "2027-06-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "cycling-cup-thaur-tirol-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.innsbrucker-schwalben.at/",
+    "merged_into_id": null,
+    "location_id": "0790ccfb-b9e5-46a7-96b1-e42ae9c1d996"
+   }
+  ]
+ },
+ {
+  "id": "52b55b45-47fe-4cea-b510-0aaec7e4e360",
+  "status": "pending",
+  "reason": "identity_review_required: conflicting fingerprint owned by 284f4c69-c54d-4ef4-ae7a-0190280104de",
+  "p": {
+   "name": "Cycling Cup Thaur MTB",
+   "audience": "mixed",
+   "placeText": "Tirol",
+   "sourceUrl": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=2B07205C486149CF85137D9901609854&filter=page=3",
+   "startDate": "2027-06-06",
+   "confidence": 0.82,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "oerv-2B07205C486149CF85137D9901609854-2027-06-06",
+   "websiteUrl": "https://www.innsbrucker-schwalben.at/",
+   "countryHint": "AT",
+   "regulationsUrl": "https://www.cyclingaustria.at/components/com_events/src/functions/download_pdf.php?id=2B07205C486149CF85137D9901609854",
+   "registrationUrl": "https://www.cyclingaustria.at/#newsletter-anmeldung"
+  },
+  "owner": [
+   {
+    "id": "284f4c69-c54d-4ef4-ae7a-0190280104de",
+    "name": "Cycling Cup Thaur",
+    "start_date": "2027-06-06",
+    "end_date": "2027-06-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "cycling-cup-thaur-tirol-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.innsbrucker-schwalben.at/",
+    "merged_into_id": null,
+    "location_id": "0790ccfb-b9e5-46a7-96b1-e42ae9c1d996"
+   }
+  ]
+ },
+ {
+  "id": "206f42f6-97a3-460c-8978-3e0a5939cbb1",
+  "status": "waiting",
+  "reason": "identity_review_required: conflicting fingerprint owned by 71d5b977-658f-4a1b-bedc-770356737272",
+  "p": {
+   "name": "Detská VRL — Šarišské Bohdanovce",
+   "audience": "kids",
+   "placeText": "Šarišské Bohdanovce",
+   "sourceUrl": "https://www.soof.sk/podujatia-a-akcie",
+   "startDate": "2026-07-12",
+   "confidence": 0.86,
+   "discipline": [
+    "xco"
+   ],
+   "externalId": "detska-vrl-2026-07-12-sarisske bohdanovce",
+   "seriesName": "Detská VRL Adriána Babiča",
+   "seriesSlug": "detska-vrl",
+   "websiteUrl": "https://vychodroadliga.eu/",
+   "countryHint": "SK",
+   "seriesWebsite": "https://vychodroadliga.eu/",
+   "regulationsUrl": "https://ctkzabokrekynn.sk/propozicie-6-rocnika-zabokreky-tour-2026/"
+  },
+  "owner": [
+   {
+    "id": "71d5b977-658f-4a1b-bedc-770356737272",
+    "name": "Detská VRL — Šarišské Bohdanovce",
+    "start_date": "2026-07-12",
+    "end_date": "2026-07-12",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "detska-vrl-sarisske-bohdanovce-2026",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.vychodroadliga.sk/slovensky-pohar-nyna-gravel",
+    "merged_into_id": null,
+    "location_id": "607ed13d-d45d-47b7-9e86-a2867b177fd5"
+   }
+  ]
+ },
+ {
+  "id": "0354f550-e0ea-4d5d-9a10-6a421d2d74d2",
+  "status": "waiting",
+  "reason": "existing_data_quarantined:date_conflict",
+  "p": {
+   "name": "SEVEROČESKÝ PUMPTRACKOVÝ POHÁR",
+   "endDate": "2025-04-26",
+   "placeText": "Sobotka",
+   "sourceUrl": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+   "startDate": "2026-04-26",
+   "confidence": 0,
+   "discipline": [
+    "bmx"
+   ],
+   "externalId": "csc-1695",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "7132a46d-c1a3-4d79-aaf0-a1878ffb973e",
+    "name": "Rhein-Eifel MTB Cup — Friedewald",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "rhein-eifel-mtb-cup-friedewald-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://rhein-eifel-mtb-cup.de/",
+    "merged_into_id": null,
+    "location_id": "1961666c-efc4-47de-847a-e6b937262fd5"
+   },
+   {
+    "id": "2f643217-63d4-4e2e-a7bb-e3ecc2f63729",
+    "name": "CUBE Cup — Trieb",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "cube-cup-trieb-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://cup.cube.eu/rennen-detail/trieb-d",
+    "merged_into_id": null,
+    "location_id": "dd7419df-c856-42f5-9465-cac28e9b15c5"
+   },
+   {
+    "id": "05e318cd-9244-4285-84ac-e91ca6ce0064",
+    "name": "Dětský MTB Cup — Sobotka",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "detsky-mtb-cup-sobotka-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://detskymtbcup.cz/sobotka-p2/",
+    "merged_into_id": null,
+    "location_id": "e65f537d-12b6-4e0a-9ae2-9861e6432ba3"
+   },
+   {
+    "id": "1935126f-6975-4ffd-a5a0-9cda8db30c7b",
+    "name": "REMBikE Kids Trophy 2026",
+    "start_date": "2026-04-26",
+    "end_date": "2026-09-13",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "rembike-kids-trophy-2026",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://my.raceresult.com/384398/",
+    "merged_into_id": null,
+    "location_id": "b8ebbee2-e8cb-416a-8d94-0e3432336c8a"
+   },
+   {
+    "id": "16ca9759-a672-414d-8606-35b699aabf20",
+    "name": "Rund um Köln Jedermann",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "rund-um-koln-jedermann-2026",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "cc8079a1-6987-4a9f-99e9-3b9c1ccc5033"
+   },
+   {
+    "id": "facc6045-4c2d-4664-ad30-bad3d2c0da43",
+    "name": "Gunsha Gravelday - Grenzkamm Gravel 105",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "gunsha-gravelday-grenzkamm-gravel-105-2026",
+    "disciplines": [
+     "gravel",
+     "gran_fondo"
+    ],
+    "website_url": "https://bikeboard.at/termine/gunsha-gravelday-grenzkamm-gravel-105-termin16127",
+    "merged_into_id": null,
+    "location_id": "6bfaccf3-b2a1-41c9-a862-44b28d2d26ff"
+   }
+  ]
+ },
+ {
+  "id": "3bbea97f-24d4-4d48-a56b-43d295690f6e",
+  "status": "waiting",
+  "reason": "pipeline_data_review_required:end_before_start",
+  "p": {
+   "name": "SEVEROČESKÝ PUMPTRACKOVÝ POHÁR",
+   "endDate": "2025-04-26",
+   "audience": "mixed",
+   "placeText": "Sobotka",
+   "sourceUrl": "https://portal.czechcyclingfederation.com/RaceDetail/Race/1695",
+   "startDate": "2026-04-26",
+   "confidence": 0.9,
+   "discipline": [
+    "bmx"
+   ],
+   "externalId": "csc-1695",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "7132a46d-c1a3-4d79-aaf0-a1878ffb973e",
+    "name": "Rhein-Eifel MTB Cup — Friedewald",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "rhein-eifel-mtb-cup-friedewald-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://rhein-eifel-mtb-cup.de/",
+    "merged_into_id": null,
+    "location_id": "1961666c-efc4-47de-847a-e6b937262fd5"
+   },
+   {
+    "id": "2f643217-63d4-4e2e-a7bb-e3ecc2f63729",
+    "name": "CUBE Cup — Trieb",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "cube-cup-trieb-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://cup.cube.eu/rennen-detail/trieb-d",
+    "merged_into_id": null,
+    "location_id": "dd7419df-c856-42f5-9465-cac28e9b15c5"
+   },
+   {
+    "id": "05e318cd-9244-4285-84ac-e91ca6ce0064",
+    "name": "Dětský MTB Cup — Sobotka",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "detsky-mtb-cup-sobotka-2026",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://detskymtbcup.cz/sobotka-p2/",
+    "merged_into_id": null,
+    "location_id": "e65f537d-12b6-4e0a-9ae2-9861e6432ba3"
+   },
+   {
+    "id": "1935126f-6975-4ffd-a5a0-9cda8db30c7b",
+    "name": "REMBikE Kids Trophy 2026",
+    "start_date": "2026-04-26",
+    "end_date": "2026-09-13",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "rembike-kids-trophy-2026",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://my.raceresult.com/384398/",
+    "merged_into_id": null,
+    "location_id": "b8ebbee2-e8cb-416a-8d94-0e3432336c8a"
+   },
+   {
+    "id": "16ca9759-a672-414d-8606-35b699aabf20",
+    "name": "Rund um Köln Jedermann",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "rund-um-koln-jedermann-2026",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "cc8079a1-6987-4a9f-99e9-3b9c1ccc5033"
+   },
+   {
+    "id": "facc6045-4c2d-4664-ad30-bad3d2c0da43",
+    "name": "Gunsha Gravelday - Grenzkamm Gravel 105",
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-26",
+    "status": "completed",
+    "visibility": "public",
+    "slug": "gunsha-gravelday-grenzkamm-gravel-105-2026",
+    "disciplines": [
+     "gravel",
+     "gran_fondo"
+    ],
+    "website_url": "https://bikeboard.at/termine/gunsha-gravelday-grenzkamm-gravel-105-termin16127",
+    "merged_into_id": null,
+    "location_id": "6bfaccf3-b2a1-41c9-a862-44b28d2d26ff"
+   }
+  ]
+ },
+ {
+  "id": "ea070fbc-a159-421f-9b98-a5fd8e4b8d17",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "Strunk Connect Lesák CUP 2027",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "Strunk Connect Lesák CUP | 12. ročník 28. 8. 2027 | Centrum Červeného Kostelce\nPříští ročník\n\nVidíme se 28. srpna 2027 v centru Červeného Kostelce",
+    "method": "llm_calendar",
+    "version": "calendar-v6",
+    "sourceUrl": "https://lesak-cup.cz/"
+   },
+   "placeText": "Centrum Červeného Kostelce",
+   "sourceUrl": "https://lesak-cup.cz",
+   "startDate": "2027-08-28",
+   "confidence": 0.85,
+   "externalId": "strunk connect lesak-2027-08-28",
+   "regulationsUrl": "https://lesak-cup.cz/propozice/",
+   "registrationUrl": "https://lesak-cup.cz"
+  },
+  "owner": [
+   {
+    "id": "3289ec19-69f0-4058-9248-a79a95ae0cee",
+    "name": "SPOKE Maraton",
+    "start_date": "2027-08-28",
+    "end_date": null,
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "spoke-maraton-2027",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://spokemaraton.cz/",
+    "merged_into_id": null,
+    "location_id": "1ddf669e-364a-40df-aa39-65ac1fb3bd9b"
+   },
+   {
+    "id": "3f73e3a4-9f3f-45df-8d83-6dd4d178a953",
+    "name": "Le Tour des Stations",
+    "start_date": "2027-08-28",
+    "end_date": "2027-08-28",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "le-tour-des-stations-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://tourdesstations.ch/de/",
+    "merged_into_id": null,
+    "location_id": "f4728612-3361-4f38-a7a2-47c7d4a3bbc2"
+   },
+   {
+    "id": "4b123ab3-8ce1-4bd4-a20b-ba2d56f4016a",
+    "name": "Chlumecký triatlon2027",
+    "start_date": "2027-08-28",
+    "end_date": "2027-08-28",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "chlumecky-triatlon2027-2027",
+    "disciplines": [],
+    "website_url": "https://zavodnicasomira.cz/zavody/chlumecky-triatlon/2027",
+    "merged_into_id": null,
+    "location_id": "db8616fb-01bb-414d-9593-0f27c6a3bb5f"
+   },
+   {
+    "id": "c5efad16-a158-4022-8361-0f353be6905d",
+    "name": "VICC Race Day VI",
+    "start_date": "2027-08-28",
+    "end_date": "2027-08-28",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "vicc-race-day-vi-2027",
+    "disciplines": [
+     "criterium"
+    ],
+    "website_url": "https://www.vicc.racing/",
+    "merged_into_id": null,
+    "location_id": "189835ad-0ba6-4fe3-a813-c6495f79df53"
+   },
+   {
+    "id": "6ec8db88-6a1f-4393-8bcc-64596f5c62a9",
+    "name": "Bike the bugles XCO Race",
+    "start_date": "2027-08-28",
+    "end_date": "2027-08-28",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "bike-the-bugles-xco-race-2027",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://www.bikethebugles.at/",
+    "merged_into_id": null,
+    "location_id": "6bb41127-d49c-42e1-aea7-21dca6638c7f"
+   },
+   {
+    "id": "e0b7bf45-0340-40e5-8c06-12deade3df28",
+    "name": "Knappenman",
+    "start_date": "2027-08-28",
+    "end_date": "2027-08-29",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "knappenman-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "http://www.knappenman.de/",
+    "merged_into_id": null,
+    "location_id": "ef9757ba-817b-48ba-b69d-d2b23bbb9dcf"
+   }
+  ]
+ },
+ {
+  "id": "df880db5-363c-4737-a069-d736e2723a06",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "Pražská 50",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "TISKOVÁ ZPRÁVA 2026 – prazska50.cz\n29. ročník Pražské 50 se uskuteční v sobotu 18. září 2027.",
+    "method": "llm_calendar",
+    "version": "calendar-v6",
+    "sourceUrl": "https://prazska50.cz/tiskova-zprava/"
+   },
+   "placeText": "",
+   "sourceUrl": "https://prazska50.cz/tiskova-zprava/",
+   "startDate": "2027-09-18",
+   "confidence": 0.7,
+   "externalId": "llm-prazska50.cz-prazska 50-2027-09-18"
+  },
+  "owner": [
+   {
+    "id": "850704f9-3915-4042-81a9-0486713da963",
+    "name": "Styroica",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "styroica-2027",
+    "disciplines": [
+     "road_race"
+    ],
+    "website_url": "https://bikeboard.at/termine/styroica-termin16415",
+    "merged_into_id": null,
+    "location_id": "31a8d810-464b-4c14-8cba-4f779ca7f9b0"
+   },
+   {
+    "id": "3cf21dc8-a3e8-479d-9de7-1e96a5a7402f",
+    "name": "Autofreier Tag auf die Mendel",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "autofreier-tag-auf-die-mendel-2027",
+    "disciplines": [
+     "xco",
+     "road"
+    ],
+    "website_url": "https://www.kaltern.com/de/autofreier-tag-auf-die-mendel.html",
+    "merged_into_id": null,
+    "location_id": "379a5b46-02dc-4923-965a-7056fdf289b8"
+   },
+   {
+    "id": "5bdeff86-9e00-450d-b2f7-2ca3f8d2ba5a",
+    "name": "Asvö King of the Lake am Attersee",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "asvo-king-of-the-lake-am-attersee-2027",
+    "disciplines": [
+     "tt"
+    ],
+    "website_url": "https://www.atterbiker.at/",
+    "merged_into_id": null,
+    "location_id": "72f05d27-0a2b-430e-b141-fe6e49fa3a75"
+   },
+   {
+    "id": "740f0189-2901-43cb-8bdb-72abe01d1670",
+    "name": "AGS",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "ags-2027",
+    "disciplines": [
+     "dh"
+    ],
+    "website_url": "https://www.semmering.com/?utm_medium=referral",
+    "merged_into_id": null,
+    "location_id": "8cf4246f-422f-451b-8ec4-207108efa087"
+   },
+   {
+    "id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "name": "Dirndltal Race Gravel & MTB",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "dirndltal-race-gravel-mtb-2027",
+    "disciplines": [
+     "mtb",
+     "gravel"
+    ],
+    "website_url": "https://www.rcpurgstall.at/",
+    "merged_into_id": null,
+    "location_id": "79d7f721-29c7-4418-8c88-1b224c59cf6c"
+   },
+   {
+    "id": "c6fc5a92-5ba8-4d22-bf21-99978065f9ed",
+    "name": "Brąswałd MTB",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "braswald-mtb-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://odjazd.pl/wydarzenie/6730038f-8d57-4806-b1a1-8b8c8a2d2838",
+    "merged_into_id": null,
+    "location_id": "c8fd397d-d5b5-4775-bf16-bdd5bca8a88b"
+   }
+  ]
+ },
+ {
+  "id": "cb209d18-ff5b-435b-8061-4303b7727353",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "ROAD STAGE SERIES 2027 — Orlické hory",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "ROAD STAGE SERIES 2027\n5. 6. 2027 Orlické hory\n05 / 06 / 2027 ORLICKÉ HORY",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.roadstage.cz/"
+   },
+   "placeText": "Orlické hory",
+   "sourceUrl": "https://www.roadstage.cz/",
+   "startDate": "2027-06-05",
+   "confidence": 0.7,
+   "externalId": "llm-roadstage.cz-road stage series orlicke hory-2027-06-05",
+   "seriesName": "ROAD STAGE SERIES 2027"
+  },
+  "owner": [
+   {
+    "id": "3ff74433-3530-4feb-b5c3-a82275b6a4be",
+    "name": "Heubacher Mountainbikefestival \"Bike the",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "heubacher-mountainbikefestival-bike-the-2027",
+    "disciplines": [
+     "xco",
+     "xcm",
+     "enduro",
+     "gravel",
+     "bmx"
+    ],
+    "website_url": "https://www.heubach.de/22585814.htm?utm_medium=referral",
+    "merged_into_id": null,
+    "location_id": "4c952c35-179f-4f1d-9e46-8961f1e2e962"
+   },
+   {
+    "id": "03501bb4-21ad-4dec-b6a5-a24d4e0c6404",
+    "name": "Ostfalenbrevet 600",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "ostfalenbrevet-600-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.ostfalen-randonneure.de/index.php/sidemenu-brevets/600km",
+    "merged_into_id": null,
+    "location_id": "a430a805-6637-4751-a7c3-acdc795fa33c"
+   },
+   {
+    "id": "793ebc43-886e-477d-8969-4fefe063f6dc",
+    "name": "Gravel Adventure",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "gravel-adventure-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.graveladventure.pl/",
+    "merged_into_id": null,
+    "location_id": "ac584805-02dc-414f-a6b5-15e48a204283"
+   },
+   {
+    "id": "53113f14-41ed-463a-97f8-25faa194d283",
+    "name": "Nabídka pro partnery",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "nabidka-pro-partnery-2027",
+    "disciplines": [],
+    "website_url": "https://www.roadstage.cz/nabidka-pro-partnery",
+    "merged_into_id": null,
+    "location_id": "97285359-7e43-42ab-9562-9dc022466e06"
+   },
+   {
+    "id": "fd15d4ac-7c4f-41f5-8cb9-76418d611a73",
+    "name": "Stage Security",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "stage-security-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.roadstage.cz/stage-security#uzavirky",
+    "merged_into_id": null,
+    "location_id": "97285359-7e43-42ab-9562-9dc022466e06"
+   },
+   {
+    "id": "7f59b874-fc1f-4be2-9449-b3852e874797",
+    "name": "15° G.P. F.W.R. BARON - VENETO - ITALIA",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "15-g-p-f-w-r-baron-veneto-italia-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "641498ba-398b-46c0-8b05-b8379176859a"
+   }
+  ]
+ },
+ {
+  "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "QUICK SPORT JARNÝ ŠPRINT",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "25. 04. 2027 | [QUICK SPORT JARNÝ ŠPRINT](https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/) | Bystrička\n25. 04. 2027 | [QUICK SPORT JARNÝ ŠPRINT](https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/) | Bystrička",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Bystrička",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/april/25-04-2027/quick-sport-jarny-sprint/",
+   "startDate": "2027-04-25",
+   "confidence": 0.7,
+   "externalId": "llm-bikepoint.sk-quick sport jarny sprint-2027-04-25"
+  },
+  "owner": [
+   {
+    "id": "6d544093-82de-4446-9b1d-4809e234e119",
+    "name": "www.321vabank.cz",
+    "start_date": "2027-04-25",
+    "end_date": "2027-04-25",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "www-321vabank-cz-2027",
+    "disciplines": [],
+    "website_url": "https://www.321vabank.cz/",
+    "merged_into_id": null,
+    "location_id": "4759c36b-2d76-4b6b-b3c6-3833b6b280fa"
+   },
+   {
+    "id": "f1faca79-2023-4d97-95c6-dd5c9ca4913f",
+    "name": "Termine 2027 — 43. Überherrner Straßenrennen auf dem Wallerfanger Saargau",
+    "start_date": "2027-04-25",
+    "end_date": "2027-04-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "43-uberherrner-strassenrennen-auf-dem-wallerfanger-saargau-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.dsergebnis.de/",
+    "merged_into_id": null,
+    "location_id": "d37d0a98-c065-4a7c-ba1d-c44d023ef0d1"
+   },
+   {
+    "id": "90b4dc29-b05d-46d4-81df-c9047eb1cd03",
+    "name": "80° GRAN PREMIO DELLA LIBERAZIONE",
+    "start_date": "2027-04-25",
+    "end_date": "2027-04-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "80-gran-premio-della-liberazione-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "a158610e-ac90-414e-ba64-ef2cd6fc9e09"
+   },
+   {
+    "id": "b7e0c755-f61f-450a-a488-5dc08bb78299",
+    "name": "72^ COPPA MONTES - GRAN PREMIO DELLA RESISTENZA",
+    "start_date": "2027-04-25",
+    "end_date": "2027-04-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "72-coppa-montes-gran-premio-della-resistenza-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "a44c2a93-074c-421a-82d6-66d2e629ab3f"
+   },
+   {
+    "id": "662df41c-53c5-424a-8472-c3ab2199b2c1",
+    "name": "ScanHausMarlow RTF",
+    "start_date": "2027-04-25",
+    "end_date": "2027-04-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "scanhausmarlow-rtf-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.scanhauscup-marlow.de/scanhausmarlow-rtf/",
+    "merged_into_id": null,
+    "location_id": "78ac4493-47a9-4ce9-abd0-47029b343151"
+   },
+   {
+    "id": "3c3cf7c9-6747-474a-829a-f7933f73abc3",
+    "name": "Peklo Severu Road N°2 RR 50,8 km",
+    "start_date": "2027-04-25",
+    "end_date": "2027-04-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "peklo-severu-road-n-1-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+    "merged_into_id": null,
+    "location_id": "1179055e-6d7d-4f56-8935-b149266f6366"
+   }
+  ]
+ },
+ {
+  "id": "a5fe9884-ffd5-489a-ab87-a818392f6d1b",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "Majstrovstvá Slovenska E-XC EBIKE CUP 2026",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "06. 05. 2027 | [Majstrovstvá Slovenska E-XC EBIKE CUP 2026](https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/) | Skalica /Zlatnická dolina\n06. 05. 2027 | [Majstrovstvá Slovenska E-XC EBIKE CUP 2026](https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/) | Skalica /Zlatnická dolina",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Skalica /Zlatnická dolina",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/maj/06-05-2027/majstrovstva-slovenska-e-xc-ebike-cup-2026/",
+   "startDate": "2027-05-06",
+   "confidence": 0.7,
+   "externalId": "llm-bikepoint.sk-majstrovstva slovenska e xc ebike-2027-05-06"
+  },
+  "owner": [
+   {
+    "id": "d80c5f42-8727-424d-ac63-e697f09987f0",
+    "name": "Termine 2027 — 35. GP von Buchholz",
+    "start_date": "2027-05-06",
+    "end_date": "2027-05-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "35-gp-von-buchholz-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.dsergebnis.de/34-grosser-preis-von-buchholz/",
+    "merged_into_id": null,
+    "location_id": "801ee161-35f1-41d2-b5d1-7eb9d58040ad"
+   },
+   {
+    "id": "e5696d2d-aa8f-413d-83fd-d91adcd91e5e",
+    "name": "Rund um de Zürisee",
+    "start_date": "2027-05-06",
+    "end_date": "2027-05-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "rund-um-de-zurisee-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "866f17ee-4141-4fe2-82f1-2085e0d6abe0"
+   },
+   {
+    "id": "c11f48cf-529d-4b00-96c6-58ef8677a5ca",
+    "name": "Odenwald Marathon",
+    "start_date": "2027-05-06",
+    "end_date": "2027-05-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "odenwald-marathon-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://rtf.sportfreunde-rodgau.de/",
+    "merged_into_id": null,
+    "location_id": "b9192a2f-f7a4-4439-932b-fab03c3aeba2"
+   },
+   {
+    "id": "97e62bd3-84ab-4037-861e-889749a61325",
+    "name": "Volksradfahren Rodgau",
+    "start_date": "2027-05-06",
+    "end_date": "2027-05-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "volksradfahren-rodgau-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://rtf.sportfreunde-rodgau.de/",
+    "merged_into_id": null,
+    "location_id": "06f40529-8e26-4120-b9ef-1b5723de2be4"
+   },
+   {
+    "id": "dc6cb485-fbc7-4f27-97bb-ade3404df47e",
+    "name": "Rodgau Gravel Tour",
+    "start_date": "2027-05-06",
+    "end_date": "2027-05-06",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "rodgau-gravel-tour-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://rtf.sportfreunde-rodgau.de/",
+    "merged_into_id": null,
+    "location_id": "06f40529-8e26-4120-b9ef-1b5723de2be4"
+   },
+   {
+    "id": "71eb9c31-6274-41e4-8ddf-f7dbb6d80c0f",
+    "name": "Závod míru juniorů",
+    "start_date": "2027-05-06",
+    "end_date": "2027-05-09",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "zavod-miru-junioru-2027",
+    "disciplines": [
+     "road_race"
+    ],
+    "website_url": "https://www.uci.org/competition-details/2027/ROA/81168",
+    "merged_into_id": null,
+    "location_id": "58434fa6-171e-4c55-a604-d30e5f1803b2"
+   }
+  ]
+ },
+ {
+  "id": "506455da-b3b3-41ac-9912-508076e012fd",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "BikeFest maratón 2027",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "30. 05. 2027 | [BikeFest maratón 2027](https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/) | Kálnica\n30. 05. 2027 | [BikeFest maratón 2027](https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/) | Kálnica",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Kálnica",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/maj/30-05-2027/bikefest-maraton-2027/",
+   "startDate": "2027-05-30",
+   "confidence": 0.7,
+   "discipline": [
+    "xcm"
+   ],
+   "externalId": "llm-bikepoint.sk-bikefest maraton-2027-05-30"
+  },
+  "owner": [
+   {
+    "id": "28451850-a1e9-4e88-a63c-7d605fcac890",
+    "name": "Kraslický šíp RR 86,2 km",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "kraslicky-sip-rr-86-2-km-2027-05-30",
+    "disciplines": [],
+    "website_url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+    "merged_into_id": null,
+    "location_id": null
+   },
+   {
+    "id": "ca8c9779-f418-4dd0-9325-f0087c148ef6",
+    "name": "Volksradfahren Wenigumstadt",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "volksradfahren-wenigumstadt-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://rsv-wenigumstadt.de/radsportwochenende/volksradfahren",
+    "merged_into_id": null,
+    "location_id": "09acc9a3-2411-44ee-b078-92a91a33f446"
+   },
+   {
+    "id": "7c3151be-a9a7-4a1c-bed2-b96f85f59a96",
+    "name": "RSV Wenigumstadt Gravel Day",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "rsv-wenigumstadt-gravel-day-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://rsv-wenigumstadt.de/radsportwochenende/gravel-tour",
+    "merged_into_id": null,
+    "location_id": "5c870060-d62f-4378-ad1a-95ceb9547f89"
+   },
+   {
+    "id": "4893dbdb-8abd-42df-81e7-685ed5a81314",
+    "name": "Sudovia Road",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "status": "hidden",
+    "visibility": "hidden",
+    "slug": "sudovia-road-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://odjazd.pl/wydarzenie/b862ddf6-4fa4-437c-9f6d-114171ecc7ea",
+    "merged_into_id": null,
+    "location_id": "f702e546-8ce3-463b-87d2-ba1b53c1270d"
+   },
+   {
+    "id": "d99e68a0-b647-4688-875f-2f398146831e",
+    "name": "Kriterium Trumau",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "kriterium-trumau-2027",
+    "disciplines": [
+     "criterium"
+    ],
+    "website_url": "https://www.radclub-trumau.at/",
+    "merged_into_id": null,
+    "location_id": "44681e6c-e874-4c13-9306-cac149d026df"
+   },
+   {
+    "id": "05a28ad3-3fde-4996-a663-c4f19b59e03e",
+    "name": "BONNET-Radmarathon",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "bonnet-radmarathon-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://rsv-wenigumstadt.de/radsportwochenende/radmarathoncup",
+    "merged_into_id": null,
+    "location_id": "5c870060-d62f-4378-ad1a-95ceb9547f89"
+   }
+  ]
+ },
+ {
+  "id": "19815d62-5a3d-4c18-870f-b587f8b4c531",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "ŠKODA MARATÓN SLOVENSKÝ RAJ",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "05. 06. 2027 | [ŠKODA MARATÓN SLOVENSKÝ RAJ](https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/) | Hrabušice\n05. 06. 2027 | [ŠKODA MARATÓN SLOVENSKÝ RAJ](https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/) | Hrabušice",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Hrabušice",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/jun/05-06-2027/skoda-maraton-slovensky-raj/",
+   "startDate": "2027-06-05",
+   "confidence": 0.7,
+   "discipline": [
+    "xcm"
+   ],
+   "externalId": "llm-bikepoint.sk-skoda maraton slovensky raj-2027-06-05"
+  },
+  "owner": [
+   {
+    "id": "3ff74433-3530-4feb-b5c3-a82275b6a4be",
+    "name": "Heubacher Mountainbikefestival \"Bike the",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "heubacher-mountainbikefestival-bike-the-2027",
+    "disciplines": [
+     "xco",
+     "xcm",
+     "enduro",
+     "gravel",
+     "bmx"
+    ],
+    "website_url": "https://www.heubach.de/22585814.htm?utm_medium=referral",
+    "merged_into_id": null,
+    "location_id": "4c952c35-179f-4f1d-9e46-8961f1e2e962"
+   },
+   {
+    "id": "03501bb4-21ad-4dec-b6a5-a24d4e0c6404",
+    "name": "Ostfalenbrevet 600",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "ostfalenbrevet-600-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.ostfalen-randonneure.de/index.php/sidemenu-brevets/600km",
+    "merged_into_id": null,
+    "location_id": "a430a805-6637-4751-a7c3-acdc795fa33c"
+   },
+   {
+    "id": "793ebc43-886e-477d-8969-4fefe063f6dc",
+    "name": "Gravel Adventure",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "gravel-adventure-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.graveladventure.pl/",
+    "merged_into_id": null,
+    "location_id": "ac584805-02dc-414f-a6b5-15e48a204283"
+   },
+   {
+    "id": "53113f14-41ed-463a-97f8-25faa194d283",
+    "name": "Nabídka pro partnery",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "nabidka-pro-partnery-2027",
+    "disciplines": [],
+    "website_url": "https://www.roadstage.cz/nabidka-pro-partnery",
+    "merged_into_id": null,
+    "location_id": "97285359-7e43-42ab-9562-9dc022466e06"
+   },
+   {
+    "id": "fd15d4ac-7c4f-41f5-8cb9-76418d611a73",
+    "name": "Stage Security",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "stage-security-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.roadstage.cz/stage-security#uzavirky",
+    "merged_into_id": null,
+    "location_id": "97285359-7e43-42ab-9562-9dc022466e06"
+   },
+   {
+    "id": "7f59b874-fc1f-4be2-9449-b3852e874797",
+    "name": "15° G.P. F.W.R. BARON - VENETO - ITALIA",
+    "start_date": "2027-06-05",
+    "end_date": "2027-06-05",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "15-g-p-f-w-r-baron-veneto-italia-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": null,
+    "merged_into_id": null,
+    "location_id": "641498ba-398b-46c0-8b05-b8379176859a"
+   }
+  ]
+ },
+ {
+  "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "ŠKODA CYKLOMARATÓN TOPOLČIANKY",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "19. 06. 2027 | [ŠKODA CYKLOMARATÓN TOPOLČIANKY](https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/) | Topoľčianky\n19. 06. 2027 | [ŠKODA CYKLOMARATÓN TOPOLČIANKY](https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/) | Topoľčianky",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Topoľčianky",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/jun/19-06-2027/skoda-cyklomaraton-topolcianky/",
+   "startDate": "2027-06-19",
+   "confidence": 0.7,
+   "externalId": "llm-bikepoint.sk-skoda cyklomaraton topolcianky-2027-06-19"
+  },
+  "owner": [
+   {
+    "id": "9fd1c0f7-e35e-4315-ba92-ba1e695e6398",
+    "name": "Brittnauer Ironbike",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-20",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "brittnauer-ironbike-2027",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://www.ironbike.ch/",
+    "merged_into_id": null,
+    "location_id": "9c5d5f05-e22a-43d1-8273-e2434c12ebdc"
+   },
+   {
+    "id": "c04842aa-824c-4879-af74-3013d5c47681",
+    "name": "L'Etape Czech Republic - Hilly Stage 2027",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-19",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "l-etape-czech-republic-hilly-stage-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.letapeczech.cz/",
+    "merged_into_id": null,
+    "location_id": "c37eea33-213c-4c5b-a049-5ea661aae412"
+   },
+   {
+    "id": "a641d5fd-f4d8-4c3e-84d0-d6a1fc51d48b",
+    "name": "Bayrisch-Böhmisches Biere und Bäder Brevet",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-19",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "bayrisch-bohmisches-biere-und-bader-brevet-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://aramuc.de/brevets/1000-km-bayerisch-boehmisches-biere-und-baeder-brevet-2027",
+    "merged_into_id": null,
+    "location_id": "0ed4be9b-917a-4fe0-bd2a-f2ada5c0e5c7"
+   },
+   {
+    "id": "c5b3151a-86cb-47f1-afdb-57746f33d1f2",
+    "name": "Chainreaction - Bikeconvoy for Ukraine",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-19",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "chainreaction-bikeconvoy-for-ukraine-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://aramuc.de/brevets/1200-km-chainreaction-bikeconvoy-ukraine-brevet-mit-zeitlimit-2027",
+    "merged_into_id": null,
+    "location_id": "0ed4be9b-917a-4fe0-bd2a-f2ada5c0e5c7"
+   },
+   {
+    "id": "b200d3c6-98f6-4389-b0dd-6980ec78adce",
+    "name": "Gravallo",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-19",
+    "status": "hidden",
+    "visibility": "hidden",
+    "slug": "gravallo-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://www.gravallo.bike",
+    "merged_into_id": "fa9cbb9a-f2ef-42e3-9e2a-5aebb3034d4f",
+    "location_id": "ccb8d401-78ca-4eea-9947-a8316b72ce4a"
+   },
+   {
+    "id": "b71b1c27-1386-419b-b019-011c3cd7c271",
+    "name": "18. Hügelland Trophy",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-19",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "18-hugelland-trophy-2027",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://www.radclublassnitzhoehe.sportunion.at/",
+    "merged_into_id": null,
+    "location_id": "5964f624-bab4-4edc-8f1b-c3ac2eb7dd44"
+   }
+  ]
+ },
+ {
+  "id": "42d4cf90-5713-4e32-ab17-736efc7c26dc",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "Považský MTB ŠPECIÁL MARATÓN Považská Bystrica",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "03. 07. 2027 | [Považský MTB ŠPECIÁL MARATÓN Považská Bystrica](https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/) | Považská Bystrica\n03. 07. 2027 | [Považský MTB ŠPECIÁL MARATÓN Považská Bystrica](https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/) | Považská Bystrica",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Považská Bystrica",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/jul/03-07-2027/povazsky-mtb-special-maraton-povazska-bystrica/",
+   "startDate": "2027-07-03",
+   "confidence": 0.7,
+   "discipline": [
+    "xcm",
+    "mtb"
+   ],
+   "externalId": "llm-bikepoint.sk-povazsky special maraton povazska bystrica-2027-07-03"
+  },
+  "owner": [
+   {
+    "id": "ae9267f7-3aac-4260-8963-33d536375105",
+    "name": "Stoigles Cup",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-03",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "stoigles-cup-2027",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "http://www.sportverein-machtolsheim.de",
+    "merged_into_id": null,
+    "location_id": "97cb46c6-e83b-4790-8e0e-0933a8cca780"
+   },
+   {
+    "id": "f860da53-1dac-416a-85fd-5f27db6625e6",
+    "name": "Lausitzer Seenland100",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-03",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "lausitzer-seenland100-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "http://www.seenland100.de",
+    "merged_into_id": null,
+    "location_id": "81695f83-ccdb-4773-af68-84f07ce02f74"
+   },
+   {
+    "id": "17400a59-d3c0-4ca4-9b64-4c12baf02451",
+    "name": "Wiatrakowy Gravel Race",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "wiatrakowy-gravel-race-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://miastoaktywni.pl/",
+    "merged_into_id": null,
+    "location_id": "b78c5ba7-a770-47bd-a968-6db33bf0e808"
+   },
+   {
+    "id": "fd32d0c5-b45a-4f17-aee6-1f56b640fddd",
+    "name": "Giro Bavarese",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "giro-bavarese-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://girobavarese.de",
+    "merged_into_id": null,
+    "location_id": "84e57bb4-8077-42d7-bced-be753c1dc290"
+   },
+   {
+    "id": "360bf884-b406-4ddb-ad8c-d28fe5cc65d6",
+    "name": "Schöckl Gipfelsturm",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-03",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "schockl-gipfelsturm-2027",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://www.bike09.at/",
+    "merged_into_id": null,
+    "location_id": "7f3cc447-bb4e-424f-bfbd-534459195df9"
+   },
+   {
+    "id": "f6570080-be78-498d-aa81-680b5c4b4e60",
+    "name": "100 Jahre Rund in Serrig",
+    "start_date": "2027-07-03",
+    "end_date": "2027-07-04",
+    "status": "hidden",
+    "visibility": "hidden",
+    "slug": "100-jahre-rund-in-serrig-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.dsergebnis.de/",
+    "merged_into_id": null,
+    "location_id": "34648c3e-0241-47ae-8c14-5e4d848e4a98"
+   }
+  ]
+ },
+ {
+  "id": "415144cf-44e4-4dd1-9268-1a0b6c8b08b5",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "POVAŽSKÝ MTB ŠPECIALIK",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "04. 07. 2027 | [POVAŽSKÝ MTB ŠPECIALIK](https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/) | Považská Bystrica\n04. 07. 2027 | [POVAŽSKÝ MTB ŠPECIALIK](https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/) | Považská Bystrica",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Považská Bystrica",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/jul/04-07-2027/povazsky-mtb-specialik/",
+   "startDate": "2027-07-04",
+   "confidence": 0.7,
+   "discipline": [
+    "mtb"
+   ],
+   "externalId": "llm-bikepoint.sk-povazsky specialik-2027-07-04",
+   "countryHint": "SK"
+  },
+  "owner": [
+   {
+    "id": "ab910db6-ef12-4273-9c87-cef5cafe2499",
+    "name": "The Bright Midnight",
+    "start_date": "2027-07-04",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "the-bright-midnight-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://brightmidnight.cc",
+    "merged_into_id": null,
+    "location_id": "97a0a233-c958-498e-86e2-64d968a1b50b"
+   },
+   {
+    "id": "f5ff3fec-6e15-4e18-9a7d-a214eb32a6aa",
+    "name": "PoKoP Wisła 1200",
+    "start_date": "2027-07-04",
+    "end_date": "2027-07-11",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "pokop-wisla-1200-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://odjazd.pl/wydarzenie/65636bdc-914b-4364-bf3d-46952832c8f9",
+    "merged_into_id": null,
+    "location_id": "53a419c4-118d-4bb7-a4a7-2d894b3fc343"
+   },
+   {
+    "id": "98619294-17fa-4e38-a1e8-ffbb8cdb9894",
+    "name": "Biedermeiertalrundfahrt",
+    "start_date": "2027-07-04",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "biedermeiertalrundfahrt-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.rad-club.at/",
+    "merged_into_id": null,
+    "location_id": "ea7af997-ff19-40c7-95d6-539c6b254745"
+   },
+   {
+    "id": "482715af-1f49-46d9-b286-03a63ae60d26",
+    "name": "Grazer Junior Challenge Stattegg",
+    "start_date": "2027-07-04",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "grazer-junior-challenge-stattegg-2027",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://www.bike09.at/",
+    "merged_into_id": null,
+    "location_id": "7f3cc447-bb4e-424f-bfbd-534459195df9"
+   },
+   {
+    "id": "0565575a-f9d9-450f-86ad-4b737206ae97",
+    "name": "Waldmünchner Radrundfahrt",
+    "start_date": "2027-07-04",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "waldmunchner-radrundfahrt-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://waldmuenchner-radrundfahrt.de/",
+    "merged_into_id": null,
+    "location_id": "e9cb223f-0671-4da7-9b97-5abce8331322"
+   },
+   {
+    "id": "3ec07b4b-67bb-4fcd-b2ad-2eab3c3c2b62",
+    "name": "Hegau Gravel Race",
+    "start_date": "2027-07-04",
+    "end_date": "2027-07-04",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "hegau-gravel-race-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://hegaugravel.de/",
+    "merged_into_id": null,
+    "location_id": "1909a50e-b6b6-477b-89bf-c3531fc7eca0"
+   }
+  ]
+ },
+ {
+  "id": "074faf63-97e6-4323-bebd-e2b9c2542b79",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "MTB maratón Bike4you Hlohovec - Poniklec",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "21. 08. 2027 | [MTB maratón Bike4you Hlohovec - Poniklec](https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/) | Hlohovec\n21. 08. 2027 | [MTB maratón Bike4you Hlohovec - Poniklec](https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/) | Hlohovec",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Hlohovec",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/august/21-08-2027/mtb-maraton-bike4you-hlohovec-poniklec/",
+   "startDate": "2027-08-21",
+   "confidence": 0.7,
+   "discipline": [
+    "xcm",
+    "mtb"
+   ],
+   "externalId": "llm-bikepoint.sk-maraton bike4you hlohovec poniklec-2027-08-21"
+  },
+  "owner": [
+   {
+    "id": "468aa081-6560-4b70-b000-1b2335851e79",
+    "name": "HIGH POINT Galaxy MTB maraton",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-21",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "high-point-galaxy-mtb-maraton-2027",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://www.mtbmaratonsusice.cz/",
+    "merged_into_id": null,
+    "location_id": "1e88e004-90c8-4948-a89d-8bf475b254c7"
+   },
+   {
+    "id": "ff0b16e4-73ee-42ca-bfc6-b8c6456a7588",
+    "name": "MTB maratón Čarnohurec 2027",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-21",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "mtb-maraton-carnohurec-2027",
+    "disciplines": [
+     "mtb",
+     "xcm"
+    ],
+    "website_url": "https://racetime.sk/terminovka",
+    "merged_into_id": null,
+    "location_id": "1b9d500b-fe44-4045-b81d-b714dd7466c2"
+   },
+   {
+    "id": "e5f95621-66aa-423b-83d8-9b4d766d22c1",
+    "name": "Warta Gravel",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-23",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "warta-gravel-2027",
+    "disciplines": [
+     "gravel"
+    ],
+    "website_url": "https://wartagravel.com/",
+    "merged_into_id": null,
+    "location_id": "8f84c87f-2ca1-48ed-9fec-af89fdbcc60a"
+   },
+   {
+    "id": "98f4fbb2-7ed8-4b7c-8126-3bd3daa76390",
+    "name": "Radwandertag Kirchschlag",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-21",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "radwandertag-kirchschlag-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://www.mtb-team-bucklige-welt.at/",
+    "merged_into_id": null,
+    "location_id": "5bf38f65-6d32-4c3c-bf5d-e33d5c0ad6c9"
+   },
+   {
+    "id": "0b0caa25-5106-438a-aff8-312d0d5aec99",
+    "name": "Grand Raid BCVS",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-21",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "grand-raid-bcvs-2027",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "https://grand-raid-bcvs.ch/",
+    "merged_into_id": null,
+    "location_id": "c3e6a675-dd00-4920-9785-3afcc742fbcd"
+   },
+   {
+    "id": "1b813592-d910-45c1-a44e-a286b9c5acf9",
+    "name": "Tour de Kosová2027",
+    "start_date": "2027-08-21",
+    "end_date": "2027-08-21",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "tour-de-kosova-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://zavodnicasomira.cz/zavody/tour-de-kosova/2027",
+    "merged_into_id": null,
+    "location_id": "ded21d2c-c79b-4746-9e51-0667ebc2ee8b"
+   }
+  ]
+ },
+ {
+  "id": "4ad37087-1496-4de4-8da1-a6b2d246da11",
+  "status": "waiting",
+  "reason": "independent_discovery_requires_identity_and_authority_review",
+  "p": {
+   "name": "BREZNIANSKY MTB MARATÓN 2027",
+   "evidence": {
+    "model": "claude-haiku-5-5",
+    "quote": "18. 09. 2027 | [BREZNIANSKY MTB MARATÓN 2027](https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/) | Brezno\n18. 09. 2027 | [BREZNIANSKY MTB MARATÓN 2027](https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/) | Brezno",
+    "method": "llm_calendar",
+    "version": "calendar-v7",
+    "sourceUrl": "https://www.bikepoint.sk/kalendar/"
+   },
+   "placeText": "Brezno",
+   "sourceUrl": "https://www.bikepoint.sk/kalendar/september/18-09-2027/brezniansky-mtb-maraton-2027/",
+   "startDate": "2027-09-18",
+   "confidence": 0.7,
+   "discipline": [
+    "xcm",
+    "mtb"
+   ],
+   "externalId": "llm-bikepoint.sk-brezniansky maraton-2027-09-18"
+  },
+  "owner": [
+   {
+    "id": "850704f9-3915-4042-81a9-0486713da963",
+    "name": "Styroica",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "styroica-2027",
+    "disciplines": [
+     "road_race"
+    ],
+    "website_url": "https://bikeboard.at/termine/styroica-termin16415",
+    "merged_into_id": null,
+    "location_id": "31a8d810-464b-4c14-8cba-4f779ca7f9b0"
+   },
+   {
+    "id": "3cf21dc8-a3e8-479d-9de7-1e96a5a7402f",
+    "name": "Autofreier Tag auf die Mendel",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "autofreier-tag-auf-die-mendel-2027",
+    "disciplines": [
+     "xco",
+     "road"
+    ],
+    "website_url": "https://www.kaltern.com/de/autofreier-tag-auf-die-mendel.html",
+    "merged_into_id": null,
+    "location_id": "379a5b46-02dc-4923-965a-7056fdf289b8"
+   },
+   {
+    "id": "5bdeff86-9e00-450d-b2f7-2ca3f8d2ba5a",
+    "name": "Asvö King of the Lake am Attersee",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "asvo-king-of-the-lake-am-attersee-2027",
+    "disciplines": [
+     "tt"
+    ],
+    "website_url": "https://www.atterbiker.at/",
+    "merged_into_id": null,
+    "location_id": "72f05d27-0a2b-430e-b141-fe6e49fa3a75"
+   },
+   {
+    "id": "740f0189-2901-43cb-8bdb-72abe01d1670",
+    "name": "AGS",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "ags-2027",
+    "disciplines": [
+     "dh"
+    ],
+    "website_url": "https://www.semmering.com/?utm_medium=referral",
+    "merged_into_id": null,
+    "location_id": "8cf4246f-422f-451b-8ec4-207108efa087"
+   },
+   {
+    "id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "name": "Dirndltal Race Gravel & MTB",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "dirndltal-race-gravel-mtb-2027",
+    "disciplines": [
+     "mtb",
+     "gravel"
+    ],
+    "website_url": "https://www.rcpurgstall.at/",
+    "merged_into_id": null,
+    "location_id": "79d7f721-29c7-4418-8c88-1b224c59cf6c"
+   },
+   {
+    "id": "c6fc5a92-5ba8-4d22-bf21-99978065f9ed",
+    "name": "Brąswałd MTB",
+    "start_date": "2027-09-18",
+    "end_date": "2027-09-18",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "braswald-mtb-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://odjazd.pl/wydarzenie/6730038f-8d57-4806-b1a1-8b8c8a2d2838",
+    "merged_into_id": null,
+    "location_id": "c8fd397d-d5b5-4775-bf16-bdd5bca8a88b"
+   }
+  ]
+ },
+ {
+  "id": "cb504b8d-0bf5-42e6-bdc5-e862b9f27ba7",
+  "status": "waiting",
+  "reason": "existing_data_quarantined:date_conflict",
+  "p": {
+   "name": "Zeitfahren Hintersee 2026",
+   "endDate": "2027-05-17",
+   "placeText": "Hintersee",
+   "sourceUrl": "https://my.raceresult.com/382600/",
+   "startDate": "2027-05-17",
+   "confidence": 0,
+   "discipline": [
+    "road"
+   ],
+   "externalId": "rr-382600",
+   "countryHint": "DE"
+  },
+  "owner": [
+   {
+    "id": "aa7ce393-5666-4361-97ef-51cde8ae2564",
+    "name": "Zeitfahren Hintersee 2026",
+    "start_date": "2027-05-17",
+    "end_date": "2027-05-17",
+    "status": "completed",
+    "visibility": "hidden",
+    "slug": "zeitfahren-hintersee-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "http://www.radteamhintersee.de/",
+    "merged_into_id": null,
+    "location_id": "92de4eca-f001-480f-a6b8-78ca5696e668"
+   },
+   {
+    "id": "107a10c5-55d3-499f-89af-7c9111cf8f20",
+    "name": "Einzelzeitfahren Hintersee 2027",
+    "start_date": "2027-05-17",
+    "end_date": "2027-05-17",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "einzelzeitfahren-hintersee-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://my.raceresult.com/426246/",
+    "merged_into_id": null,
+    "location_id": null
+   },
+   {
+    "id": "c1b6d6ae-19ee-4b12-829b-0bfa3b717a17",
+    "name": "Jura Derby",
+    "start_date": "2027-05-17",
+    "end_date": "2027-05-17",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "jura-derby-2027-05-17",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.jura-derby.ch",
+    "merged_into_id": null,
+    "location_id": "76dc5ffe-5c40-457b-88b3-8293fd9ac69b"
+   },
+   {
+    "id": "900e4164-f72c-4a9b-a5be-a3f5026b8a64",
+    "name": "MTB Marathon Dresden",
+    "start_date": "2027-05-17",
+    "end_date": "2027-05-17",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "mtb-marathon-dresden-2027",
+    "disciplines": [
+     "xcm"
+    ],
+    "website_url": "http://www.mtb-marathon-dresden.de",
+    "merged_into_id": null,
+    "location_id": "9759117c-de7c-4a12-84bb-13fd417064b7"
+   }
+  ]
+ },
+ {
+  "id": "16a1f07c-8810-4290-b559-d9ceaced491f",
+  "status": "waiting",
+  "reason": "Provisional date or edition: Change existing scheduled/public→tbc/hidden and lock. Candidate June1 22:00 preserved only as provisional admin value; exact start/finish town unpublished. Distance800+ and12–18k elevation not exact. Start list confirms entries exist, does not confirm final date or venue.",
+  "p": {
+   "name": "Lost Ride",
+   "evidence": {
+    "quote": "the date is still under discussion and may move 1-2 days earlier or later.",
+    "method": "manual_primary_source_review",
+    "version": "cz-2027-2026-10-29",
+    "sourceUrl": "https://lost-ride.cz/"
+   },
+   "placeText": "Česko — místo bude oznámeno",
+   "sourceUrl": "https://lost-ride.cz/",
+   "startDate": "2027-06-01",
+   "confidence": 0.5,
+   "discipline": [
+    "gravel"
+   ],
+   "externalId": "review-cz2027-lost",
+   "websiteUrl": "https://lost-ride.cz/",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "187c4711-6119-4cb5-ae01-5fa5847d0ee6",
+    "name": "GRAN FONDO SIERRA DE ALBACETE",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "gran-fondo-sierra-de-albacete-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://www.finishers.com/en/event/gran-fondo-sierra-de-albacete",
+    "merged_into_id": null,
+    "location_id": "6987add7-9301-476f-b12e-3bcfa7962a91"
+   },
+   {
+    "id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+    "name": "Lost Ride",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "tbc",
+    "visibility": "hidden",
+    "slug": "lost-ride-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://lost-ride.cz/",
+    "merged_into_id": null,
+    "location_id": "164f82a7-b15a-407d-82bd-d7c5d079e394"
+   },
+   {
+    "id": "408a312f-89aa-449d-9fbf-01551307629a",
+    "name": "Quebrantahuesos",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "quebrantahuesos-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.finishers.com/en/event/quebrantahuesos",
+    "merged_into_id": null,
+    "location_id": "5e2e2d7a-f85e-4c67-8dd6-8f5e753d2016"
+   },
+   {
+    "id": "0deee5af-b9d8-479c-a5b2-9b202a92a5f6",
+    "name": "The Step Czech Republic",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "tbc",
+    "visibility": "hidden",
+    "slug": "the-step-czech-republic-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.finishers.com/en/event/the-step-czech-republic",
+    "merged_into_id": null,
+    "location_id": "c37eea33-213c-4c5b-a049-5ea661aae412"
+   },
+   {
+    "id": "681056a1-425e-4751-90dd-0bda665b5c21",
+    "name": "Polish Bike Tour - East 1200",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "polish-bike-tour-east-1200-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.finishers.com/en/event/polish-bike-tour-east-1200",
+    "merged_into_id": null,
+    "location_id": "ef481c7d-6efd-456a-9b49-f8fd1fd79a73"
+   },
+   {
+    "id": "a5f299fa-a95d-45bf-b7d3-c61de2f2c72e",
+    "name": "Traveler's Marathon",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "traveler-s-marathon-2027",
+    "disciplines": [
+     "road",
+     "xcm"
+    ],
+    "website_url": "https://www.finishers.com/en/event/traveler-s-marathon",
+    "merged_into_id": null,
+    "location_id": "abae26ec-e42a-4525-a063-01ed9b71524d"
+   }
+  ]
+ },
+ {
+  "id": "d7e8f6c7-dd91-47c7-9e32-c01308d7d2e3",
+  "status": "waiting",
+  "reason": "Provisional date or edition: Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation.",
+  "p": {
+   "name": "Author Valtické Cyklobraní",
+   "evidence": {
+    "quote": "Propozice závodu - dočasně neplatné. | Termín a místo | září 2027 | Místo startu a cíle | Bude oznámeno.",
+    "method": "manual_primary_source_review",
+    "version": "cz-2027-2026-10-29",
+    "sourceUrl": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu"
+   },
+   "placeText": "Valtice",
+   "sourceUrl": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+   "startDate": "2027-09-24",
+   "confidence": 0.5,
+   "discipline": [
+    "mtb",
+    "gravel"
+   ],
+   "externalId": "review-cz2027-cyklobrani",
+   "websiteUrl": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "0769002c-1c63-4a48-b298-bc7c6cc2f266",
+    "name": "BIKE INFECTION XC-BATTLE",
+    "start_date": "2027-09-24",
+    "end_date": "2027-09-24",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "bike-infection-xc-battle-2027",
+    "disciplines": [
+     "xcc"
+    ],
+    "website_url": "https://www.bikeinfection.at/",
+    "merged_into_id": null,
+    "location_id": "8f2f71cd-2ed1-4e32-a1f6-85b48363e027"
+   },
+   {
+    "id": "13b431c4-84a9-4ab3-97b4-5e2d1a6d82e2",
+    "name": "Author Valtické Cyklobraní",
+    "start_date": "2027-09-24",
+    "end_date": "2027-09-24",
+    "status": "tbc",
+    "visibility": "hidden",
+    "slug": "author-valticke-cyklobrani-2027",
+    "disciplines": [
+     "mtb",
+     "gravel"
+    ],
+    "website_url": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu",
+    "merged_into_id": null,
+    "location_id": "4e3d5253-bf3b-4f1a-a17a-dbee6765904d"
+   },
+   {
+    "id": "3205f0a3-0b92-4e70-9a8b-0eea89daa6da",
+    "name": "LA REINE Badische Weinstrasse 2027",
+    "start_date": "2027-09-24",
+    "end_date": "2027-09-25",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "la-reine-badische-weinstrasse-2027",
+    "disciplines": [
+     "gran_fondo"
+    ],
+    "website_url": "https://my.raceresult.com/425050/",
+    "merged_into_id": null,
+    "location_id": "1e69717b-5ead-40cc-8224-31aafa1682d5"
+   }
+  ]
+ },
+ {
+  "id": "38b6c306-c67d-463b-9f45-0aecd1af0405",
+  "status": "waiting",
+  "reason": "Provisional date or edition: Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced.",
+  "p": {
+   "name": "KM TRADING CZ trophy",
+   "evidence": {
+    "quote": "Závod 2026 je za námi | O ročníku 2027 vás budeme s předstihem informovat. | 15. srpna 2026",
+    "method": "manual_primary_source_review",
+    "version": "cz-2027-2026-10-29",
+    "sourceUrl": "https://unlimitedcycling.cz/our-race"
+   },
+   "placeText": "KM TRADING",
+   "sourceUrl": "https://unlimitedcycling.cz/our-race",
+   "startDate": "2027-08-15",
+   "confidence": 0.5,
+   "discipline": [
+    "road_race"
+   ],
+   "externalId": "review-cz2027-km-trophy",
+   "websiteUrl": "https://unlimitedcycling.cz/our-race",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "eed25067-5f70-4574-99d6-60a2c2f24294",
+    "name": "SenseBike",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "sensebike-2027",
+    "disciplines": [
+     "xco"
+    ],
+    "website_url": "https://www.sensebike.ch/",
+    "merged_into_id": null,
+    "location_id": "ef6fea92-7c7c-4e21-b7d5-c299b675014a"
+   },
+   {
+    "id": "b2ddfb26-1eb0-46c0-babe-7746d7cab7f4",
+    "name": "KM TRADING CZ trophy",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "status": "tbc",
+    "visibility": "hidden",
+    "slug": "km-trading-cz-trophy-2027",
+    "disciplines": [
+     "road_race"
+    ],
+    "website_url": "https://unlimitedcycling.cz/our-race",
+    "merged_into_id": null,
+    "location_id": "e719d106-581f-4330-beb5-90c2d384bc63"
+   },
+   {
+    "id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "name": "38. Internationales Kitzbühler Hahnenkamm Mountainbike Rennen",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "38-internationales-kitzbuhler-hahnenkamm-mountainbike-rennen-2027",
+    "disciplines": [
+     "hill_climb"
+    ],
+    "website_url": "https://www.kitzsport.at/sportverein",
+    "merged_into_id": null,
+    "location_id": "a6f67aad-b987-49cd-84fd-abe9d0a4f082"
+   },
+   {
+    "id": "f3d57c60-54ab-4bf5-b0a8-e2f2096eaca7",
+    "name": "19. ročník časovky do vrchu Jantex Banské - Mláčky",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "19-rocnik-casovky-do-vrchu-jantex-banske-mlacky-2027",
+    "disciplines": [
+     "tt"
+    ],
+    "website_url": "https://racetime.sk/terminovka",
+    "merged_into_id": null,
+    "location_id": "dbfc1b4e-d34e-4093-85fa-343a636c1c9a"
+   },
+   {
+    "id": "df59e814-c7ed-458f-a510-190002554ea4",
+    "name": "Cyklozávod ČEZ Kolem Lipna",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "cyklozavod-cez-kolem-lipna-2027",
+    "disciplines": [
+     "mtb",
+     "gravel"
+    ],
+    "website_url": "https://www.lipnosportfestival.cz/cyklo-/",
+    "merged_into_id": null,
+    "location_id": "645f2d0e-b9c3-415e-ae10-f411bbb8d75a"
+   },
+   {
+    "id": "051afdd3-5db1-4915-8f87-dbed022f1965",
+    "name": "ADAC Cyclassics Hamburg",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "adac-cyclassics-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://www.cyclassics-hamburg.de/de",
+    "merged_into_id": null,
+    "location_id": "402d8f8b-fd33-4983-b6fd-2e3dc9cf1391"
+   }
+  ]
+ },
+ {
+  "id": "25b5f74f-a9f1-4051-8946-cd3333d41921",
+  "status": "waiting",
+  "reason": "Provisional date or edition: June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden.",
+  "p": {
+   "name": "The Step Czech Republic",
+   "evidence": {
+    "quote": "Next event: Mid-June 2027",
+    "method": "manual_primary_source_review",
+    "version": "cz-2027-2026-10-29",
+    "sourceUrl": "https://www.finishers.com/en/event/the-step-czech-republic"
+   },
+   "placeText": "Prague",
+   "sourceUrl": "https://www.finishers.com/en/event/the-step-czech-republic",
+   "startDate": "2027-06-01",
+   "confidence": 0.5,
+   "discipline": [
+    "road"
+   ],
+   "externalId": "review-cz2027-the-step",
+   "websiteUrl": "https://www.finishers.com/en/event/the-step-czech-republic",
+   "countryHint": "CZ"
+  },
+  "owner": [
+   {
+    "id": "187c4711-6119-4cb5-ae01-5fa5847d0ee6",
+    "name": "GRAN FONDO SIERRA DE ALBACETE",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "gran-fondo-sierra-de-albacete-2027",
+    "disciplines": [
+     "road",
+     "gran_fondo"
+    ],
+    "website_url": "https://www.finishers.com/en/event/gran-fondo-sierra-de-albacete",
+    "merged_into_id": null,
+    "location_id": "6987add7-9301-476f-b12e-3bcfa7962a91"
+   },
+   {
+    "id": "ce93409c-87ee-4886-8ff9-5a07000b0dc0",
+    "name": "Lost Ride",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "tbc",
+    "visibility": "hidden",
+    "slug": "lost-ride-2027",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://lost-ride.cz/",
+    "merged_into_id": null,
+    "location_id": "164f82a7-b15a-407d-82bd-d7c5d079e394"
+   },
+   {
+    "id": "408a312f-89aa-449d-9fbf-01551307629a",
+    "name": "Quebrantahuesos",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "hidden",
+    "slug": "quebrantahuesos-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.finishers.com/en/event/quebrantahuesos",
+    "merged_into_id": null,
+    "location_id": "5e2e2d7a-f85e-4c67-8dd6-8f5e753d2016"
+   },
+   {
+    "id": "0deee5af-b9d8-479c-a5b2-9b202a92a5f6",
+    "name": "The Step Czech Republic",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "tbc",
+    "visibility": "hidden",
+    "slug": "the-step-czech-republic-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.finishers.com/en/event/the-step-czech-republic",
+    "merged_into_id": null,
+    "location_id": "c37eea33-213c-4c5b-a049-5ea661aae412"
+   },
+   {
+    "id": "681056a1-425e-4751-90dd-0bda665b5c21",
+    "name": "Polish Bike Tour - East 1200",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "polish-bike-tour-east-1200-2027",
+    "disciplines": [
+     "road"
+    ],
+    "website_url": "https://www.finishers.com/en/event/polish-bike-tour-east-1200",
+    "merged_into_id": null,
+    "location_id": "ef481c7d-6efd-456a-9b49-f8fd1fd79a73"
+   },
+   {
+    "id": "a5f299fa-a95d-45bf-b7d3-c61de2f2c72e",
+    "name": "Traveler's Marathon",
+    "start_date": "2027-06-01",
+    "end_date": "2027-06-01",
+    "status": "scheduled",
+    "visibility": "public",
+    "slug": "traveler-s-marathon-2027",
+    "disciplines": [
+     "road",
+     "xcm"
+    ],
+    "website_url": "https://www.finishers.com/en/event/traveler-s-marathon",
+    "merged_into_id": null,
+    "location_id": "abae26ec-e42a-4525-a063-01ed9b71524d"
+   }
+  ]
+ },
+ {
+  "id": "0f86b993-da47-468b-a9a6-073bbc84bcb7",
+  "status": "waiting",
+  "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.",
+  "p": {
+   "name": "Bohemian Border Bash Race",
+   "placeText": "Srbská Kamenice",
+   "sourceUrl": "https://www.borderbash.cc/",
+   "confidence": 0.5,
+   "discipline": [
+    "gravel"
+   ],
+   "websiteUrl": "https://www.borderbash.cc/",
+   "countryHint": "CZ",
+   "tentativeStartDate": "2027-09-11"
+  },
+  "owner": []
+ },
+ {
+  "id": "97f72e9d-8a6e-498b-a0bc-5cb23a823d13",
+  "status": "waiting",
+  "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.",
+  "p": {
+   "name": "Jesenický Ultrasurovec",
+   "placeText": "Jesenice u Rakovníka",
+   "sourceUrl": "https://www.jesenickysurovec.cz/ultrasurovec/",
+   "confidence": 0.5,
+   "discipline": [
+    "mtb"
+   ],
+   "websiteUrl": "https://www.jesenickysurovec.cz/ultrasurovec/",
+   "countryHint": "CZ",
+   "tentativeStartDate": "2027-10-15"
+  },
+  "owner": []
+ }
+]
