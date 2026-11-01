@@ -11,7 +11,7 @@ struct MonitorSnapshot: Decodable {
     struct Result: Decodable { let problems: [Problem]?; let reads: Int?; let created: Int?; let updated: Int?; let failed: Int?; let deferred: Int?; let unreadable: Int?; let leads: Int?; let queued: Int?; let at: Double? }
     struct Server: Decodable {
         struct Job: Decodable {
-            struct Summary: Decodable { let problems: [Problem]?; let count: Int?; let created: Int?; let updated: Int?; let failed: Int?; let queued: Int? }
+            struct Summary: Decodable { let problems: [Problem]?; let count: Int?; let created: Int?; let updated: Int?; let failed: Int?; let unreadable: Int?; let deferred: Int?; let queued: Int? }
             let key: String; let started_at: String; let finished_at: String?; let status: String; let summary: Summary
         }
         struct Budget: Decodable { let spentUsd: Double; let monthCapUsd: Double }
@@ -220,7 +220,12 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let serverRunning = snapshot?.serverRequestRunning == true || (job?.status == "running" && (job?.started_at).flatMap(parsedDate).map { Date().timeIntervalSince($0) < 900 } == true)
         var serverLines = "Poslední: \(shortDate(job?.finished_at)) · další: \(nextServerTime())"
         if !freshServer { serverLines += "\nStav teď nelze ověřit. Použij Obnovit stav." }
-        else if let job { serverLines += "\nVýsledek: \(job.summary.count ?? 0) zdrojů · \(job.summary.created ?? 0) nových · \(job.summary.updated ?? 0) změněných" }
+        else if let job {
+            serverLines += "\nVýsledek: \(job.summary.count ?? 0) zdrojů · \(job.summary.created ?? 0) nových · \(job.summary.updated ?? 0) změněných"
+            if (job.summary.failed ?? 0) > 0 { serverLines += " · \(job.summary.failed ?? 0) chyb" }
+            if (job.summary.unreadable ?? 0) > 0 { serverLines += "\n\(job.summary.unreadable ?? 0) čtení potřebuje jinou čtečku" }
+            if (job.summary.deferred ?? 0) > 0 { serverLines += "\n\(job.summary.deferred ?? 0) kontrol odloženo; další pokus zůstává naplánovaný" }
+        }
         if serverRunning { serverLines += "\nBěží na serveru · nejvýše přibližně 5 minut" }
         if let e = snapshot?.serverRequestError { serverLines += "\n\(e)" }
         let serverColor: NSColor = !freshServer || job == nil || job?.status == "error" || job?.status == "attention" ? .systemOrange : .systemGreen

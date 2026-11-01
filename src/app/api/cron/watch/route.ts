@@ -2,6 +2,7 @@ import { pipelineJob } from "@/lib/pipeline/operations";
 import { NextResponse } from "next/server";
 import { withCron } from "@/lib/api/guards";
 import { runDueWatches } from "@/lib/watcher/run";
+import { watchBatchResult } from "@/lib/watcher/run-summary";
 import { geocodePendingLocations } from "@/lib/geocode";
 import { sendOpsAlert } from "@/lib/ops/alerts";
 
@@ -36,12 +37,12 @@ export const GET = withCron(async (req) => NextResponse.json(await pipelineJob("
   // A full-tag revalidate here rewrote every race/hub cache entry and blew the
   // Hobby ISR write + Origin Transfer budgets when crawlers rewarmed.
 
-  const fails = outcomes.filter((o) => o && "ok" in o && o.ok === false);
-  const failRate = outcomes.length ? fails.length / outcomes.length : 0;
-  if (req.headers.get("x-letsrace-monitor") !== "1" && (fails.length >= 3 || failRate >= 0.35)) {
+  const result = watchBatchResult(outcomes);
+  const failRate = result.count ? result.failed / result.count : 0;
+  if (req.headers.get("x-letsrace-monitor") !== "1" && (result.failed >= 3 || failRate >= 0.35)) {
     await sendOpsAlert({
       title: "Let's Race ingest: elevated failures",
-      body: `${fails.length}/${outcomes.length} watches failed in this cron run.`,
+      body: `${result.failed}/${result.count} watches failed in this cron run.`,
       meta: {
         failRate: Number(failRate.toFixed(2)),
         geocoded: geocode && typeof geocode === "object" && "updated" in geocode
@@ -51,7 +52,7 @@ export const GET = withCron(async (req) => NextResponse.json(await pipelineJob("
     });
   }
 
-  return { ok: fails.length === 0, count: outcomes.length, created: outcomes.reduce((s,r)=>s+(r.eventsCreated??0),0), updated: outcomes.reduce((s,r)=>s+(r.eventsUpdated??0),0), failed: fails.length, problems: fails.map(r=>({url:r.url,error:r.error??"unknown"})), unchanged: outcomes.filter(r=>r.unchanged).length, geocode };
+  return { ...result, geocode };
 })));
 
 export const POST = GET;

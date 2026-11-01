@@ -8,29 +8,47 @@ export function isUnreadableSource(message: string): boolean {
   return ["unsupported_or_empty_source", "low confidence or empty extract", "dynamic_render_unavailable"].includes(message);
 }
 
-export function summarizeWatches(outcomes: WatchOutcome[]) {
-  const pending = outcomes.filter(o => !o.ok);
-  const deferred = pending.filter(o => isBudgetDeferral(o.error ?? "") && !(o.eventsFailed ?? 0));
-  // Unsupported pages are a reader limitation, not a failed job. Keep them
-  // retryable for a capable reader; never mask partial write failures.
-  const unreadable = pending.filter(o => isUnreadableSource(o.error ?? "") && !(o.eventsFailed ?? 0));
-  return { watched: outcomes.length, upserted: outcomes.reduce((n, o) => n + o.eventsUpserted, 0),
-    created: outcomes.reduce((n, o) => n + (o.eventsCreated ?? 0), 0),
-    failed: pending.length - deferred.length - unreadable.length, deferred: deferred.length, unreadable: unreadable.length };
+export function watchOutcomeState(outcome: WatchOutcome): "ok" | "failed" | "deferred" | "unreadable" {
+  // A partial write failure always requires attention, even if the reader also
+  // reported a limitation or a caller accidentally marked the source successful.
+  if ((outcome.eventsFailed ?? 0) > 0) return "failed";
+  if (outcome.ok) return "ok";
+  if (isBudgetDeferral(outcome.error ?? "")) return "deferred";
+  if (isUnreadableSource(outcome.error ?? "")) return "unreadable";
+  return "failed";
 }
 
-/** One machine-readable contract shared by scheduled and manual readers. */
-export function reportWatchBatch(outcomes: WatchOutcome[]) {
+export function summarizeWatches(outcomes: WatchOutcome[]) {
+  const states = outcomes.map(watchOutcomeState);
+  return { watched: outcomes.length, upserted: outcomes.reduce((n, o) => n + o.eventsUpserted, 0),
+    created: outcomes.reduce((n, o) => n + (o.eventsCreated ?? 0), 0),
+    failed: states.filter(s => s === "failed").length,
+    deferred: states.filter(s => s === "deferred").length,
+    unreadable: states.filter(s => s === "unreadable").length };
+}
+
+/** Shared result for the server response, stored job and local runner log. */
+export function watchBatchResult(outcomes: WatchOutcome[]) {
   const summary = summarizeWatches(outcomes);
-  console.info("pipeline_batch", JSON.stringify({
-    reads: outcomes.length, created: summary.created,
+  return {
+    ok: summary.failed === 0,
+    status: summary.failed ? "attention" : summary.deferred ? "deferred" : summary.unreadable ? "limited" : "ok",
+    // Keep both names while older server clients use count and the Mac uses reads.
+    count: outcomes.length, reads: outcomes.length, created: summary.created,
     updated: outcomes.reduce((sum, o) => sum + (o.eventsUpdated ?? 0), 0),
     failed: summary.failed, deferred: summary.deferred, unreadable: summary.unreadable,
     deferredWrites: outcomes.reduce((sum, o) => sum + (o.eventsDeferred ?? 0), 0),
     unchanged: outcomes.filter(o => o.unchanged).length,
-    okUrls: outcomes.filter(o => o.ok).map(o => o.url),
-    problems: outcomes.filter(o => !o.ok).map(o => ({ url: o.url, error: (o.error ?? "unknown").slice(0, 1200) })),
-  }));
+    okUrls: outcomes.filter(o => watchOutcomeState(o) === "ok").map(o => o.url),
+    problems: outcomes.filter(o => watchOutcomeState(o) !== "ok").map(o => ({
+      url: o.url, state: watchOutcomeState(o), error: (o.error ?? "unknown").slice(0, 1200),
+    })),
+  };
+}
+
+/** One machine-readable contract shared by scheduled and manual readers. */
+export function reportWatchBatch(outcomes: WatchOutcome[]) {
+  console.info("pipeline_batch", JSON.stringify(watchBatchResult(outcomes)));
   for (const outcome of outcomes) reportFederation(outcome);
 }
 
