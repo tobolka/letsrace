@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scoreDuplicate, DEDUP_THRESHOLD, type DedupEvent } from "@/lib/dedup";
+import { scoreDuplicate, DEDUP_THRESHOLD, normalizeUrlForDedup, type DedupEvent } from "@/lib/dedup";
 import { sourceEditionId, calendarRowCandidates } from "@/lib/watcher/source-identity";
 import { combineExtractedEvents } from "@/lib/watcher/core";
 import type { ParsedEvent } from "@/lib/domain";
@@ -82,4 +82,12 @@ it('does not import race-office pages or marketing headings as race identities',
   expect(isSiteIdentityName('Kancelář závodu Grande Finale')).toBe(true);
   expect(isSiteIdentityName('Silniční závody pro amatéry i profesionály 2027')).toBe(true);
   expect(isSiteIdentityName('Road Stage Grande Finale')).toBe(false);
+});
+
+it("recognizes RaceHub tabs without joining other events or editions", () => {
+  const root = "https://race-hub.io/events/3135789b-5589-48d1-b87f-bfc6c00506ec";
+  expect(normalizeUrlForDedup(`${root}/info`)).toBe(normalizeUrlForDedup(`${root}/participants`));
+  expect(normalizeUrlForDedup(`${root}/results`)).toBe(normalizeUrlForDedup(root));
+  expect(normalizeUrlForDedup(`${root}/info`)).not.toBe(normalizeUrlForDedup("https://race-hub.io/events/4135789b-5589-48d1-b87f-bfc6c00506ec/info"));
+  expect(scoreDuplicate({ ...race, urls: [`${root}/info`] }, { ...race, startDate: "2027-10-11", urls: [`${root}/participants`] }).reasons).toContain("edition_conflict");
 });

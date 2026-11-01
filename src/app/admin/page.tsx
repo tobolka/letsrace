@@ -160,8 +160,8 @@ export default async function AdminHomePage() {
           icon={Radar}
           label="to triage"
           count={o.pendingDiscovery}
-          hint="Discovered links awaiting a verdict"
-          quiet="Every discovered link has a verdict"
+          hint="New websites and race evidence awaiting review"
+          quiet="No websites or race evidence awaiting review"
         />
         <Queue
           href="/admin/inbox"

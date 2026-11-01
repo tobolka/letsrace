@@ -1304,7 +1304,11 @@ export async function watchOne(row: {
       preview: extracted.events.slice(0, 5),
     };
   } catch (e) {
-    const message = e instanceof Error ? e.message : "unknown error";
+    const causeCode = e instanceof Error && e.cause instanceof Error
+      ? (e.cause as Error & { code?: string }).code : undefined;
+    const tlsDetail = causeCode && /^(UNABLE_TO_|CERT_|ERR_TLS_)/.test(causeCode)
+      ? `; TLS certificate verification failed (${causeCode})` : "";
+    const message = (e instanceof Error ? e.message : "unknown error") + tlsDetail;
     const priorFail = row.last_extract_status === "error" ? 2 : 1;
     await supabase
       .from("watched_urls")

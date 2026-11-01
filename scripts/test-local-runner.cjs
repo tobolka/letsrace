@@ -16,3 +16,8 @@ assert.equal(recentResults(state.history,now+2).failed,1);
 assert.equal(recentResults(state.history,now+2).problems.length,1);
 assert.equal(recentResults(state.history,now+25*60*60_000).reads,0);
 console.log('PASS: empty runs preserve earlier activity and 24-hour problems without inventing new writes');
+
+const {normalizeResult}=require('./local-runner.cjs');
+assert.deepEqual(normalizeResult({failed:3,problems:[{error:'unsupported_or_empty_source'},{error:'low confidence or empty extract'},{error:'HTTP 503'}]}),{failed:1,unreadable:2,problems:[{error:'unsupported_or_empty_source'},{error:'low confidence or empty extract'},{error:'HTTP 503'}]});
+assert.equal(normalizeResult({failed:2,unreadable:1,problems:[{error:'unsupported_or_empty_source'}]}).failed,2);
+console.log('PASS: historical diagnostics separate reader limits without hiding unknown failures');

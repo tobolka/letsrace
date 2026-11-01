@@ -11,6 +11,7 @@
  * still lists races, or when it simply has not been read in a long time. Both
  * are silent, and both need a person.
  */
+import { isUnreadableSource } from "@/lib/watcher/run-summary";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 /** Recorded states that claim "nothing here" — the ones worth double-checking. */
@@ -104,6 +105,9 @@ export async function getSourceHealth(): Promise<SourceHealthReport> {
   for (const row of rows) {
     const days = daysSince(row.last_fetched_at as string | null);
     const state = (row.last_extract_status as string | null) ?? null;
+    // Fresh unsupported reads are visible in the monitor's reader queue;
+    // repeating the same free reader is not an administrator repair task.
+    if (days != null && days < STALE_DAYS && isUnreadableSource(row.last_error ?? "")) continue;
     let reason: StalledSource["reason"] | null = null;
 
     if (!row.last_fetched_at) reason = "never read";

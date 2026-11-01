@@ -21,12 +21,13 @@ export async function getAdminWorkCounts(): Promise<AdminWorkCounts> {
   const supabase = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
 
-  const [health, discovery, feedback, submissions, unlinked] = await Promise.all([
+  const [health, discovery, candidates, feedback, submissions, unlinked] = await Promise.all([
     getSourceHealth(),
     supabase
       .from("discovered_links")
       .select("*", { count: "exact", head: true })
       .eq("status", "pending"),
+    supabase.from("pipeline_candidates").select("id", { count: "exact", head: true }).in("status", ["pending", "waiting", "conflict", "publishing"]),
     // The inbox lists what riders sent: feedback and race URLs, open while
     // pending. This used to count a `feedback` table that does not exist, so
     // the badge read 0 whatever was waiting.
@@ -41,8 +42,11 @@ export async function getAdminWorkCounts(): Promise<AdminWorkCounts> {
       .is("registration_url", null),
   ]);
 
+  for (const result of [discovery, candidates, feedback, submissions, unlinked]) {
+    if (result.error) throw new Error(result.error.message);
+  }
   return {
-    discovery: discovery.count ?? 0,
+    discovery: (discovery.count ?? 0) + (candidates.count ?? 0),
     inbox: (feedback.count ?? 0) + (submissions.count ?? 0),
     stalled: health.stalled.length,
     unlinked: unlinked.count ?? 0,

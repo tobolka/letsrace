@@ -1,6 +1,6 @@
 # LetsRace: kde co běží a co ovládat
 
-Aktuální provoz: **29. 10. 2026**. AI zůstává na Macu; její přesun na server byl na žádost zastaven.
+Aktuální provoz: **1. 11. 2026**. AI zůstává na Macu; její přesun na server byl na žádost zastaven.
 
 | Co | Kde | Kdy se spustí samo | Kde to vidíš |
 | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ Běžný sběr čte splatné zdroje přes HTML/API/PDF a podporované dynamické
 - Chceš pauzu: **Pozastavit**. Běžící práce se dokončí. Tlačítko se změní na **Obnovit**.
 - Zavření panelu sběr nezastaví. Panel znovu otevřeš z `~/Applications/LetsRace Monitor.app`.
 
-Zelená znamená běh nebo úspěšné čekání. Oranžová znamená neúspěšné zdroje, podklady k ověření nebo neověřený stav serveru. Není to automaticky zaseknutý program. Červená znamená, že opravdu chybí čerstvé hlášení místního sběrače. Hlášení se obnovuje každých 10 sekund.
+Zelená znamená běh nebo úspěšné čekání. Oranžová znamená skutečnou chybu čtení nebo zápisu, podklady k ověření nebo neověřený stav serveru. Nepodporované čtení je uvedené zvlášť jako potřeba jiné čtečky a samo o sobě neznamená selhání sběru. Není to automaticky zaseknutý program. Červená znamená, že opravdu chybí čerstvé hlášení místního sběrače. Hlášení se obnovuje každých 10 sekund.
 
 Při vypnutém Macu pokračuje server zdarma. Mac po zapnutí a přihlášení naváže. Serverová AI nyní **není zapnutá**.
 
@@ -41,7 +41,7 @@ AI má společný limit **0,50 USD za den a 5 USD za měsíc**, placené hledán
 
 Splatnost se respektuje: 1 564 aktivních zdrojů neznamená 1 564 nových závodů při každém cyklu. Pokud se zdroj nezměnil nebo ještě nezveřejnil rok 2027, další kontrola nemusí nic přidat. Nepodporovaná stránka se nezkouší stále dokola po dvou hodinách; čeká na další kontrolu za několik dní. Návrhy neznámých zdrojů a sporné závody zůstávají k ověření.
 
-Reálné skeny ČSC během úpravy přečetly 419 záznamů a provedly 248 zápisů; nešlo o 248 nových závodů. Dva záznamy zůstaly k ověření: chybný konec před začátkem a rozpor identity. Chybné datum ani sloučení se nehádají.
+Reálné skeny ČSC během úpravy přečetly 419 záznamů a provedly 248 zápisů; nešlo o 248 nových závodů. Tehdy dva záznamy zůstaly k ověření. Chybný konec před začátkem byl následně opraven 1. listopadu; aktuální stav ukazuje poslední skutečný sken. Chybné datum ani sloučení se nehádají.
 
 ## Jediné místní spuštění
 
@@ -55,3 +55,9 @@ Původní `cz.letsrace.ingest-csc` je vypnutý a uložený jako `.plist.disabled
 Soukromý běhový adresář je `~/Library/Application Support/LetsRace/runtime`, stav a logy jsou v `~/Library/Application Support/LetsRace/data`. Přihlašovací údaje se v panelu nezobrazují. Zdrojový projekt zůstává v `Documents/GitHub/letsrace`; přemístění pracovního adresáře tak nezastaví naplánované úlohy.
 
 Pro technickou kontrolu: `npm run pipeline:status` nebo `npm run pipeline:status -- --json`. Aktualizaci soukromé kopie po změně kódu provádí `scripts/install-local-runner.cjs`; při aktualizaci zachová data i rozpočet. Běžné používání žádný příkaz nevyžaduje.
+
+## Co je ve frontách administrace
+
+„Discovery queue“ ukazuje zvlášť návrhy nových webů a podklady ke konkrétním závodům, které čekají na ověření termínu či identity. Počet práce zahrnuje obě skupiny. Navržený termín ve frontě není potvrzený den závodu. Přehled zdrojů neoznačuje čerstvé nepodporované čtení za poruchu; skutečné chyby spojení a zápisu zůstávají viditelné.
+
+Eventiv nyní u veřejného kalendářového rozhraní vrací HTTP 401. Čtečka tuto skutečnost hlásí místo úspěšného prázdného výsledku. Uložené závody kvůli tomu nemaže; přístupové omezení neobchází. AI kontrola se řídí rozpočtem a není zárukou přečtení každé čekající stránky.

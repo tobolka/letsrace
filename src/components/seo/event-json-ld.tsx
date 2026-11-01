@@ -84,18 +84,13 @@ export function EventJsonLd({
       url: absoluteUrl(localePath(locale, `series/${event.series.slug}`)),
     };
   }
-  // An offer is a claim that entry is open. Every race with an entry link used
-  // to carry one marked InStock, including the ones run months ago — so only
-  // while the race is still ahead. (No `validThrough`: entry deadlines are not
-  // published anywhere on the site.)
+  // A registration link does not prove entries are open or places available.
+  // Publish the destination without inventing InStock availability or a fee.
   const today = new Date().toISOString().slice(0, 10);
-  if (event.registrationUrl && (event.endDate ?? event.startDate) >= today) {
-    const offer: Record<string, unknown> = {
-      "@type": "Offer",
-      url: event.registrationUrl,
-      availability: "https://schema.org/InStock",
-    };
-    data.offers = offer;
+  const closes = event.registrationClosesAt?.slice(0, 10);
+  if (event.registrationUrl && (event.endDate ?? event.startDate) >= today &&
+      (!closes || closes >= today) && !["cancelled", "postponed"].includes(event.status)) {
+    data.offers = { "@type": "Offer", url: event.registrationUrl };
   }
   if (placeLabel || event.location?.lat != null) {
     const location: Record<string, unknown> = {

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ea070fbc-a159-421f-9b98-a5fd8e4b8d17",
+    "evidenceHash": "5b174b003e89d81c40f09c383f38a3d91db3ad5008506b412976f2117aeaf01d",
+    "action": "reject",
+    "reason": "Duplicate proposal already represented by verified Strunk Connect Lesák CUP on 2027-08-28, Červený Kostelec; canonical event 062802f7-278a-4c36-86ec-03787bf79c3d, previous duplicate 3f3564dc-e017-4348-b15c-d72c6f8c2585 already merged. Official source https://lesak-cup.cz/. No new race or new date published.",
+    "reviewedAt": "2026-11-01T22:16:43.520Z",
+    "expectedEventId": "062802f7-278a-4c36-86ec-03787bf79c3d"
+  }
+]

@@ -56,3 +56,14 @@ it("does not rediscover tag listings, old seasons or results as fresh races", ()
   expect(isArchiveDiscoveryUrl("https://club.test/cyclocross-2026-2027/", 2026)).toBe(false);
   expect(isArchiveDiscoveryUrl("https://club.test/rennen-2027/", 2026)).toBe(false);
 });
+
+it("separates unsupported reads from failures without hiding failed writes", () => {
+  const base: WatchOutcome = { watchedUrlId: "a", url: "https://race.test", ok: false, eventsUpserted: 0, linksDiscovered: 0 };
+  expect(summarizeWatches([
+    { ...base, error: "unsupported_or_empty_source" },
+    { ...base, error: "low confidence or empty extract" },
+    { ...base, error: "dynamic_render_unavailable" },
+    { ...base, error: "unsupported_or_empty_source", eventsFailed: 1 },
+    { ...base, error: "HTTP 401" },
+  ])).toMatchObject({ watched: 5, failed: 2, unreadable: 3, deferred: 0 });
+});

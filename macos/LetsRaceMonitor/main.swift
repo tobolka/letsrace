@@ -8,7 +8,7 @@ struct MonitorSnapshot: Decodable {
     struct Counters: Decodable { let reads: Int?; let created: Int?; let updated: Int?; let failed: Int?; let leads: Int?; let queued: Int? }
     struct Problem: Decodable { let url: String?; let error: String? }
     struct Total: Decodable { let season: String; let total: Int; let essentials: Int? }
-    struct Result: Decodable { let problems: [Problem]?; let reads: Int?; let created: Int?; let updated: Int?; let failed: Int?; let deferred: Int?; let leads: Int?; let queued: Int?; let at: Double? }
+    struct Result: Decodable { let problems: [Problem]?; let reads: Int?; let created: Int?; let updated: Int?; let failed: Int?; let deferred: Int?; let unreadable: Int?; let leads: Int?; let queued: Int?; let at: Double? }
     struct Server: Decodable {
         struct Job: Decodable {
             struct Summary: Decodable { let problems: [Problem]?; let count: Int?; let created: Int?; let updated: Int?; let failed: Int?; let queued: Int? }
@@ -230,9 +230,10 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let r = snapshot?.lastResult
         var localLines = "Poslední: \(r?.at.map(time) ?? "zatím bez záznamu") · další: \(snapshot.map { time($0.nextRunAt) } ?? "—")"
         if let r { localLines += "\n\(r.reads ?? 0) zdrojů · \(r.created ?? 0) nových · \(r.updated ?? 0) změněných · \(r.failed ?? 0) selhalo" }
+        if (r?.unreadable ?? 0) > 0 { localLines += " · \(r?.unreadable ?? 0) potřebuje jinou čtečku" }
         if (r?.deferred ?? 0) > 0 { localLines += " · \(r?.deferred ?? 0) odloženo" }
         if r?.reads == 0 { localLines += "\nŽádný zdroj nebyl splatný; tento běh nic nepřidal." }
-        if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) stránek se nepodařilo přečíst (to je běžné, viz Problémy a řešení)" }
+        if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) chyb · \(recent.unreadable ?? 0) čtení potřebuje jinou čtečku" }
         if localRunning { localLines += "\n\(translatedStage(snapshot?.stage)) · \(eta(snapshot?.activeTask ?? "refresh", started: snapshot?.startedAt))" }
         else if localBusy { localLines += "\nTeď běží federace; běžný sběr můžeš zařadit za ni." }
         if snapshot?.paused == true { localLines += localBusy ? "\nAutomatika je pozastavená; probíhající běh se dokončí." : "\nAutomatika je pozastavená." }
@@ -258,7 +259,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let h = server?.health { health += "\nZa 24 h: \(h.ok24h)/\(h.reads24h) čtení OK · čeká \(h.due)/\(h.sources) zdrojů" }
         if let broken = server?.brokenSources, let unread = server?.unreadableSources {
             health += "\nK řešení: \(broken) zdrojů s chybou · čeká na pořadatele nebo rozhodnutí: \(server?.reviewCandidates ?? 0)"
-            health += "\nBez problému: \(unread) stránek zdarma nepřečteme, počkají na AI kontrolu"
+            health += "\nČeká na jinou čtečku: \(unread) stránek; AI je zkusí v rámci rozpočtu"
         } else if let attention = server?.attentionSources { health += "\n\(attention) zdrojů má problém · \(server?.reviewCandidates ?? 0) podkladů čeká na ověření" }
         let healthLabel = label(health, size: 10, color: .secondaryLabelColor); healthLabel.maximumNumberOfLines = 4
         stack.addArrangedSubview(healthLabel)
@@ -294,8 +295,10 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard !problems.isEmpty else { return "Není zaznamenaná konkrétní chyba. Čerstvý výsledek se doplní po dokončení běhu." }
         let groups = Dictionary(grouping: problems) { p -> String in
             let e = p.error ?? ""
-            if e.contains("unsupported_or_empty_source") { return "Stránka neobsahuje podporovaný seznam závodů. Potřebuje jinou čtečku nebo kontrolu AI; opakované ruční spuštění samo nepomůže." }
+            if ["unsupported_or_empty_source", "low confidence or empty extract", "dynamic_render_unavailable"].contains(e) { return "Stránka neobsahuje podporovaný seznam závodů. Potřebuje jinou čtečku nebo kontrolu AI; opakované ruční spuštění samo nepomůže." }
             if e.contains("source_document_too_large") { return "Dokument překračuje limit této čtečky. Vyžaduje úpravu čtečky; závody z něj se nehádají." }
+            if e.contains("eventiv_api_http_401") || e.contains("eventiv_api_http_403") { return "Eventiv vyžaduje přihlášení ke kalendáři. Veřejné čtení teď není dostupné; uložené závody zůstávají zachované." }
+            if e.contains("TLS certificate") { return "Web zdroje nemá ověřitelný certifikát. Připojení se neobchází; zdroj je potřeba zkontrolovat." }
             if e.contains("fetch failed") { return "Zdroj se nepodařilo stáhnout. Automatika ho zkusí znovu podle splatnosti; nemusíš nic spouštět." }
             if e.contains("HTTP 500") { return "Web zdroje vrací chybu 500. Automatika ho zkusí znovu; opravuje se na straně zdroje." }
             return "Čtení nebo ověření se nedokončilo. Podrobný důvod je v diagnostice."

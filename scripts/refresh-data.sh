@@ -55,11 +55,9 @@ weekly_browser_step() {
   local stamp="tmp/.browser-csc-week"
   if [ "$(cat "$stamp" 2>/dev/null)" = "$week" ]; then return 0; fi
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then DEFERRED=$((DEFERRED + 1)); return 0; fi
-  local failuresBefore="$FAILURES" deferredBefore="$DEFERRED" browserStatus="ok"
   LLM_BUDGET_USD=0 LLM_DAILY_BUDGET_USD=0 LLM_MONTHLY_BUDGET_USD=0 LLM_CALENDARS=0 step "Chrome: Czech federation calendar" scripts/ingest-calendars.ts portal.czechcyclingfederation.com/Races
-  if [ "$FAILURES" -gt "$failuresBefore" ]; then browserStatus="failed";
-  elif [ "$DEFERRED" -gt "$deferredBefore" ]; then browserStatus="needs_review"; fi
-  printf '{"at":"%s","status":"%s","log":"current refresh log"}\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$browserStatus" > tmp/pipeline-browser-status.json
+  # The runner records pipeline_federation with counts and the actual issue.
+  # Do not overwrite that report with an empty shell-level status.
   # Preserve the partial/error result in the log; normal source polling handles
   # retries. Do not force another full Chrome calendar read every two hours.
   echo "$week" > "$stamp"

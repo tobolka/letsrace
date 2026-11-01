@@ -69,7 +69,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   }
 
   const since14 = new Date(Date.now() - 14 * 864e5);
-  const [health, eventCount, sourceCount, activeCount, pendingDiscovery, feedback, runs, fresh] =
+  const [health, eventCount, sourceCount, activeCount, pendingDiscovery, candidates, feedback, submissions, runs, fresh] =
     await Promise.all([
       getSourceHealth(),
       supabase.from("events").select("*", { count: "exact", head: true }),
@@ -79,7 +79,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         .from("discovered_links")
         .select("*", { count: "exact", head: true })
         .eq("status", "pending"),
+      supabase.from("pipeline_candidates").select("id", { count: "exact", head: true }).in("status", ["pending", "waiting", "conflict", "publishing"]),
       supabase.from("feedback_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("race_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
       supabase
         .from("ingest_runs")
         .select("ok, events_upserted, started_at")
@@ -97,6 +99,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
           .range(from, to),
       ).then((data) => ({ data })),
     ]);
+
+  if (candidates.error) throw new Error(candidates.error.message);
 
   const byMonth = new Map<string, number>();
   const byCountry = new Map<string, CountryCoverage>();
@@ -141,8 +145,8 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 
   return {
     stalled: health.stalled,
-    pendingDiscovery: pendingDiscovery.count ?? 0,
-    openFeedback: feedback.error ? 0 : (feedback.count ?? 0),
+    pendingDiscovery: (pendingDiscovery.count ?? 0) + (candidates.count ?? 0),
+    openFeedback: (feedback.count ?? 0) + (submissions.count ?? 0),
     incompleteUpcoming: incomplete,
     totals: {
       events: eventCount.count ?? 0,

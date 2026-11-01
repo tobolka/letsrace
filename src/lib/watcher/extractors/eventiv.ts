@@ -472,9 +472,10 @@ async function fetchBikeMap(sport: string): Promise<MapFeature[]> {
     },
     signal: AbortSignal.timeout(60000),
   });
-  if (!res.ok) return [];
+  if (!res.ok) throw new Error(`eventiv_api_http_${res.status}: cycling calendar unavailable`);
   const data = (await res.json()) as MapResponse;
-  return data.features ?? [];
+  if (data.type !== "FeatureCollection" || !Array.isArray(data.features)) throw new Error("eventiv_api_invalid_response");
+  return data.features;
 }
 
 /** eventivsport.com/map — GeoJSON map API, cycling sports only. */

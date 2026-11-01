@@ -1,0 +1,871 @@
+[
+  {
+    "path": "/cs",
+    "status": 200,
+    "redirect": null,
+    "ms": 805,
+    "bytes": 231096,
+    "title": "Všechny cyklistické závody na jedné mapě · Let's Race",
+    "canonical": "https://letsrace.cz/cs",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "Všechny cyklistické závody na jedné mapě",
+    "raceLinks": 90,
+    "invalidSchema": false
+  },
+  {
+    "path": "/en",
+    "status": 200,
+    "redirect": null,
+    "ms": 87,
+    "bytes": 228363,
+    "title": "Every cycling race, on one map · Let's Race",
+    "canonical": "https://letsrace.cz/en",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "Every cycling race, on one map",
+    "raceLinks": 0,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/seznam",
+    "status": 200,
+    "redirect": null,
+    "ms": 88,
+    "bytes": 113566,
+    "title": "Seznam cyklistických závodů · Let's Race",
+    "canonical": "https://letsrace.cz/cs/seznam",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/list"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/seznam"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/lista"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/zoznam"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/liste"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/list"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "Seznam cyklistických závodů",
+    "raceLinks": 50,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/kalendar",
+    "status": 200,
+    "redirect": null,
+    "ms": 87,
+    "bytes": 113527,
+    "title": "Kalendář cyklistických závodů · Let's Race",
+    "canonical": "https://letsrace.cz/cs/kalendar",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/calendar"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/kalendar"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/kalendarz"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/kalendar"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/kalender"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/calendar"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "Kalendář cyklistických závodů",
+    "raceLinks": 50,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavody/cz",
+    "status": 200,
+    "redirect": null,
+    "ms": 784,
+    "bytes": 426418,
+    "title": "Cyklistické závody v Česku 2026/27 – kalendář · Let's Race",
+    "canonical": "https://letsrace.cz/cs/zavody/cz",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/races/cz"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavody/cz"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscigi/cz"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/preteky/cz"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/radrennen/cz"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/races/cz"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "Cyklistické závody v Česku 2026/27",
+    "raceLinks": 50,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavody/cz/mtb",
+    "status": 200,
+    "redirect": null,
+    "ms": 286,
+    "bytes": 549411,
+    "title": "MTB závody v Česku 2026/27 – kalendář · Let's Race",
+    "canonical": "https://letsrace.cz/cs/zavody/cz/mtb",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/races/cz/mtb"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavody/cz/mtb"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscigi/cz/mtb"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/preteky/cz/mtb"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/radrennen/cz/mtb"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/races/cz/mtb"
+      }
+    ],
+    "h1": "MTB závody v Česku 2026/27",
+    "raceLinks": 75,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavody/cz/mtb?page=2",
+    "status": 200,
+    "redirect": null,
+    "ms": 188,
+    "bytes": 290356,
+    "title": "MTB závody v Česku 2026/27 – kalendář · Let's Race",
+    "canonical": "https://letsrace.cz/cs/zavody/cz/mtb",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/races/cz/mtb"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavody/cz/mtb"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscigi/cz/mtb"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/preteky/cz/mtb"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/radrennen/cz/mtb"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/races/cz/mtb"
+      }
+    ],
+    "h1": "MTB závody v Česku 2026/27",
+    "raceLinks": 27,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/seznam?q=test",
+    "status": 200,
+    "redirect": null,
+    "ms": 55,
+    "bytes": 113566,
+    "title": "Seznam cyklistických závodů · Let's Race",
+    "canonical": "https://letsrace.cz/cs/seznam",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/list"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/seznam"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/lista"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/zoznam"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/liste"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/list"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "Seznam cyklistických závodů",
+    "raceLinks": 50,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/not-a-real-race-20271101",
+    "status": 404,
+    "redirect": null,
+    "ms": 341,
+    "bytes": 48849,
+    "title": "Všechny cyklistické závody na jedné mapě · Let's Race",
+    "canonical": "https://letsrace.cz/cs",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en"
+      }
+    ],
+    "robots": "noindex",
+    "h1": "",
+    "raceLinks": 0,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/dekom-sudety-tour-medio-fondo-2027",
+    "status": 200,
+    "redirect": null,
+    "ms": 155,
+    "bytes": 153463,
+    "title": "DEKOM Sudety Tour MEDIO FONDO 2027 – silniční závod, Broumov",
+    "canonical": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-2027",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/dekom-sudety-tour-medio-fondo-2027"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-2027"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/dekom-sudety-tour-medio-fondo-2027"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/dekom-sudety-tour-medio-fondo-2027"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/dekom-sudety-tour-medio-fondo-2027"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/dekom-sudety-tour-medio-fondo-2027"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "DEKOM Sudety Tour MEDIO FONDO",
+    "raceLinks": 0,
+    "event": {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "DEKOM Sudety Tour MEDIO FONDO",
+      "url": "https://letsrace.cz/cs/zavod/dekom-sudety-tour-medio-fondo-2027",
+      "startDate": "2027-05-09",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "inLanguage": "cs",
+      "endDate": "2027-05-09",
+      "sameAs": [
+        "https://www.sudetytour.cz/"
+      ],
+      "description": "Mediofondo Sudety Tour, 9. 5. 2027, Broumov (Královéhradecký kraj). Samostatná soutěž v rámci víkendu Sudety Tour 8.–9. 5. 2027, pořadatel CzechCycleHub. Délka 85,4 km je zatím převzatá z trasy 2026 a může se změnit. Časovka se koná 8. 5., Granfondo 9. 5.; podrobnosti všech soutěží jsou u Dekom System Sudety Tour 2027.",
+      "sport": "Cycling",
+      "image": [
+        "https://letsrace.cz/race-card/cs/dekom-sudety-tour-medio-fondo-2027"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "url": "https://nasecasomira.cz/register/6a0743188f03b406ed5194f7/",
+        "availability": "https://schema.org/InStock"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Broumov",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "CZ",
+          "addressLocality": "Broumov"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 50.5854557,
+          "longitude": 16.3322957
+        }
+      }
+    },
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+    "status": 200,
+    "redirect": null,
+    "ms": 196,
+    "bytes": 171079,
+    "title": "L'Etape Czech Republic - Hilly Stage 2027 – silniční závod",
+    "canonical": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/l-etape-czech-republic-hilly-stage-2027"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-hilly-stage-2027"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/l-etape-czech-republic-hilly-stage-2027"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/l-etape-czech-republic-hilly-stage-2027"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/l-etape-czech-republic-hilly-stage-2027"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/l-etape-czech-republic-hilly-stage-2027"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "L'Etape Czech Republic - Hilly Stage 2027",
+    "raceLinks": 1,
+    "event": {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "L'Etape Czech Republic - Hilly Stage 2027",
+      "url": "https://letsrace.cz/cs/zavod/l-etape-czech-republic-hilly-stage-2027",
+      "startDate": "2027-06-19",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "inLanguage": "cs",
+      "endDate": "2027-06-19",
+      "sameAs": [
+        "https://kalendar.winspace.cz/kalendar/2027-letape-czech-republic-by-tour-de-france-59ef7215",
+        "https://www.letapeczech.cz/"
+      ],
+      "description": "L’Etape Czech Republic by Tour de France – Kopcovitá etapa (Hilly Stage), Praha, 19. 6. 2027. Pořadatel Petr Čech Sport, a.s. Registrační formulář pro 2027 nabízí krátkou trasu 60 km, střední 100 km a dlouhou 130 km. Jde o jeden závod s variantami tras, nikoli dvě samostatné akce; části webu stále popisují rok 2026. Anglická registrace: https://www.letapeczech.cz/en/registrace/step1/.",
+      "sport": "Cycling",
+      "image": [
+        "https://letsrace.cz/race-card/cs/l-etape-czech-republic-hilly-stage-2027"
+      ],
+      "superEvent": {
+        "@type": "EventSeries",
+        "name": "L'Etape Czech Republic",
+        "url": "https://letsrace.cz/cs/serie/l-etape-czech-republic"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://www.letapeczech.cz/registrace/krok1/",
+        "availability": "https://schema.org/InStock"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Prague",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "CZ",
+          "addressLocality": "Prague"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 50.0874654,
+          "longitude": 14.4212535
+        }
+      }
+    },
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/nrw-cross-cup-donkey-creek-cross-donkey-creek-2026",
+    "status": 308,
+    "redirect": "/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026",
+    "ms": 289,
+    "bytes": 50933,
+    "title": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross · Let's Race",
+    "canonical": "https://letsrace.cz/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-donkey-creek-cross-2026"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "",
+    "raceLinks": 0,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026",
+    "status": 200,
+    "redirect": null,
+    "ms": 247,
+    "bytes": 177723,
+    "title": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross · Let's Race",
+    "canonical": "https://letsrace.cz/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/nrw-cross-cup-donkey-creek-cross-2026"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-donkey-creek-cross-2026"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross",
+    "raceLinks": 3,
+    "event": {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross",
+      "url": "https://letsrace.cz/cs/zavod/nrw-cross-cup-donkey-creek-cross-2026",
+      "startDate": "2026-11-21",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "inLanguage": "cs",
+      "endDate": "2026-11-21",
+      "sameAs": [
+        "https://race-hub.io/events/36a2576b-9b6e-4b00-abf9-9823a4592822/participants"
+      ],
+      "description": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross je cyklokrosový závod – termín 21. listopadu 2026, místo Nideggen-Schmidt (Německo). Je to kolo seriálu NRW Cross Cup 2026/27. Kategorie: Elite, Masters. Přihlásit se dá online.",
+      "sport": "Cycling",
+      "image": [
+        "https://letsrace.cz/race-card/cs/nrw-cross-cup-donkey-creek-cross-2026"
+      ],
+      "superEvent": {
+        "@type": "EventSeries",
+        "name": "NRW Cross Cup 2026/27",
+        "url": "https://letsrace.cz/cs/serie/nrw-cross-cup-2026-27"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://race-hub.io/events/36a2576b-9b6e-4b00-abf9-9823a4592822",
+        "availability": "https://schema.org/InStock"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Nideggen-Schmidt",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "DE",
+          "addressLocality": "Nideggen-Schmidt"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 50.6616237,
+          "longitude": 6.4079353
+        }
+      }
+    },
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-hurth-2026",
+    "status": 308,
+    "redirect": "/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026",
+    "ms": 409,
+    "bytes": 51191,
+    "title": "NRW Cross Cup Die Mauer von Kendenich — Kendenich 2026",
+    "canonical": "https://letsrace.cz/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "",
+    "raceLinks": 0,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026",
+    "status": 200,
+    "redirect": null,
+    "ms": 166,
+    "bytes": 179374,
+    "title": "NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW 2026",
+    "canonical": "https://letsrace.cz/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW — Campus",
+    "raceLinks": 3,
+    "event": {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW — Campus",
+      "url": "https://letsrace.cz/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026",
+      "startDate": "2026-12-05",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "inLanguage": "cs",
+      "endDate": "2026-12-05",
+      "sameAs": [
+        "https://www.dsergebnis.de/nrw-cross-cup-2026/",
+        "https://www.dsergebnis.de/ausschreibungen-rad-net/"
+      ],
+      "description": "NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW — Campus je cyklokrosový závod – termín 5. prosince 2026, místo Campus (Německo). Je to kolo seriálu NRW Cross Cup 2026/27. Přihlásit se dá online. Pořadatel zveřejnil propozice.",
+      "sport": "Cycling",
+      "image": [
+        "https://letsrace.cz/race-card/cs/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      ],
+      "superEvent": {
+        "@type": "EventSeries",
+        "name": "NRW Cross Cup 2026/27",
+        "url": "https://letsrace.cz/cs/serie/nrw-cross-cup-2026-27"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://speedhive.mylaps.com/LiveTiming",
+        "availability": "https://schema.org/InStock"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Campus",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "DE",
+          "addressLocality": "Campus"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 54.7730773,
+          "longitude": 9.4529753
+        }
+      }
+    },
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-2026",
+    "status": 308,
+    "redirect": "/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026",
+    "ms": 383,
+    "bytes": 51714,
+    "title": "NRW Cross Cup Frank Oxenfart Campus Cross LVM NRW 2026",
+    "canonical": "https://letsrace.cz/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-frank-oxenfart-campus-cross-lvm-nrw-campus-2026"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "",
+    "raceLinks": 0,
+    "invalidSchema": false
+  },
+  {
+    "path": "/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026",
+    "status": 200,
+    "redirect": null,
+    "ms": 156,
+    "bytes": 181444,
+    "title": "NRW Cross Cup Die Mauer von Kendenich — Kendenich 2026",
+    "canonical": "https://letsrace.cz/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026",
+    "alternates": [
+      {
+        "language": "en",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "cs",
+        "href": "https://letsrace.cz/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "pl",
+        "href": "https://letsrace.cz/pl/wyscig/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "sk",
+        "href": "https://letsrace.cz/sk/pretek/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "de",
+        "href": "https://letsrace.cz/de/rennen/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      },
+      {
+        "language": "x-default",
+        "href": "https://letsrace.cz/en/race/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      }
+    ],
+    "robots": "index, follow",
+    "h1": "NRW Cross Cup Die Mauer von Kendenich — Kendenich",
+    "raceLinks": 3,
+    "event": {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "NRW Cross Cup Die Mauer von Kendenich — Kendenich",
+      "url": "https://letsrace.cz/cs/zavod/nrw-cross-cup-die-mauer-von-kendenich-2026",
+      "startDate": "2026-11-07",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "inLanguage": "cs",
+      "endDate": "2026-11-07",
+      "sameAs": [
+        "https://race-hub.io/events/3135789b-5589-48d1-b87f-bfc6c00506ec/participants",
+        "https://www.dsergebnis.de/ausschreibungen-rad-net/"
+      ],
+      "description": "NRW Cross Cup Die Mauer von Kendenich — Kendenich je cyklokrosový závod – termín 7. listopadu 2026, místo Hürth (Německo). Je to kolo seriálu NRW Cross Cup 2026/27. Kategorie: U11, U13, U15, U17, Děti, Mládež, Junioři, Elite, Amatéři, Masters. Online přihlášky jsme zatím nenašli, ověř si je u pořadatele. Pořadatel zveřejnil propozice.",
+      "sport": "Cycling",
+      "image": [
+        "https://letsrace.cz/race-card/cs/nrw-cross-cup-die-mauer-von-kendenich-2026"
+      ],
+      "superEvent": {
+        "@type": "EventSeries",
+        "name": "NRW Cross Cup 2026/27",
+        "url": "https://letsrace.cz/cs/serie/nrw-cross-cup-2026-27"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "Hürth",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "DE",
+          "addressLocality": "Hürth"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 50.862662,
+          "longitude": 6.8804154
+        }
+      }
+    },
+    "invalidSchema": false
+  }
+]

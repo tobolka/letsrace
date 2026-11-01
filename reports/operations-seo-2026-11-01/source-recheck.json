@@ -1,0 +1,18 @@
+[
+  {
+    "watchedUrlId": "d970adaa-5206-4d9b-add3-14a576b5d486",
+    "url": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+    "ok": false,
+    "eventsUpserted": 0,
+    "linksDiscovered": 0,
+    "error": "fetch failed; TLS certificate verification failed (UNABLE_TO_GET_ISSUER_CERT_LOCALLY)"
+  },
+  {
+    "watchedUrlId": "dab453d8-639d-4f6e-baba-b48130b7f852",
+    "url": "https://eventivsport.com/map",
+    "ok": false,
+    "eventsUpserted": 0,
+    "linksDiscovered": 0,
+    "error": "eventiv_api_http_401: cycling calendar unavailable"
+  }
+]

@@ -17,10 +17,18 @@ function rememberResult(state, result) {
  if(result.reads||result.created||result.updated||result.queued||result.failed||result.deferred)state.lastActivityResult=result;
  state.lastResult=result;
 }
+// Older snapshots counted every unsupported read as a failure. Reclassify
+// only recorded exact reasons; missing/truncated diagnostics remain failures.
+function normalizeResult(result) {
+ if (!result || result.unreadable != null) return result;
+ const unreadable=(result.problems||[]).filter(p=>['unsupported_or_empty_source','low confidence or empty extract','dynamic_render_unavailable'].includes(p.error)).length;
+ const count=Math.min(Number(result.failed||0),unreadable);
+ return {...result,failed:Number(result.failed||0)-count,unreadable:count};
+}
 function recentResults(history, now=Date.now()) {
- const rows=(history||[]).filter(r=>r.at>now-24*60*60_000);
- const totals={runs:rows.length,reads:0,created:0,updated:0,failed:0,deferred:0};
- for(const row of rows)for(const key of ['reads','created','updated','failed','deferred'])totals[key]+=Number(row[key]||0);
+ const rows=(history||[]).filter(r=>r.at>now-24*60*60_000).map(normalizeResult);
+ const totals={runs:rows.length,reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0};
+ for(const row of rows)for(const key of ['reads','created','updated','failed','deferred','unreadable'])totals[key]+=Number(row[key]||0);
  return {...totals,problems:rows.flatMap(r=>r.problems||[]).slice(-30)};
 }
 function systemSample() {
@@ -57,8 +65,8 @@ function main() {
    const file=path.join(data,name),at=fs.statSync(file).mtimeMs;
    if(at<Date.now()-24*60*60_000)continue;
    const log=fs.readFileSync(file,'utf8');if(!/^=== done /m.test(log))continue;
-   const result={at,reads:0,created:0,updated:0,failed:0,deferred:0,problems:[],logPath:file};
-   for(const line of log.split('\n'))if(line.startsWith('pipeline_batch ')){try{const batch=JSON.parse(line.slice(15));for(const key of ['reads','created','updated','failed','deferred'])result[key]+=Number(batch[key]||0);result.problems.push(...(batch.problems||[]));}catch{}}
+   const result={at,reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,problems:[],logPath:file};
+   for(const line of log.split('\n'))if(line.startsWith('pipeline_batch ')){try{const batch=JSON.parse(line.slice(15));for(const key of ['reads','created','updated','failed','deferred','unreadable'])result[key]+=Number(batch[key]||0);result.problems.push(...(batch.problems||[]));}catch{}}
    rememberResult(previous,result);
   }
  }
@@ -120,14 +128,14 @@ function main() {
    status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode}),
    activeTask:state.activeTask||null,pendingTasks:state.pendingTasks||[],paused:control.paused===true,childPid:child?.pid||null,stage:state.stage,startedAt:state.startedAt||null,lastOutputAt:state.lastOutputAt||null,
    lastFinishedAt:state.lastFinishedAt||null,lastExitCode:state.lastExitCode??null,nextRunAt:state.nextRunAt,
-   server,serverRequestRunning:state.serverRequestRunning===true,serverRequestError:state.serverRequestError||null,estimates:state.durations||{},catalogueAt:overview?.at||null,lastResult:state.lastResult||null,lastActivityResult:state.lastActivityResult||null,recent:recentResults(state.history),logPath:state.logPath||null,lastError:state.lastError||null,counters:state.counters||{},browser,totals,
+   server,serverRequestRunning:state.serverRequestRunning===true,serverRequestError:state.serverRequestError||null,estimates:state.durations||{},catalogueAt:overview?.at||null,lastResult:normalizeResult(state.lastResult)||null,lastActivityResult:normalizeResult(state.lastActivityResult)||null,recent:recentResults(state.history),logPath:state.logPath||null,lastError:state.lastError||null,counters:state.counters||{},browser,totals,
    ai:{lastRunAt:state.lastAiFinishedAt||null,month,spentUsd:ledger.months?.[month]??0,monthCapUsd:5,dayCapUsd:0.5,schedule:'Mac · úterý a pátek'},
    system,countries:['CZ','SK','DE','AT','CH','IT','PL'],interrupted:state.interrupted===true});
  }
  function start(task="refresh") {
   if(child||stopping)return;
   const stamp=new Date().toISOString().replace(/[:.]/g,'-');
-  state={...state,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
+  state={...state,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
   logStream=fs.createWriteStream(state.logPath,{flags:'a',mode:0o600});buffer='';
   const command=process.env.LETSRACE_RUN_COMMAND||path.join(root,task==='federation'?'scripts/ingest-csc.sh':'scripts/refresh-data.sh');
   child=spawn('/usr/bin/caffeinate',['-i','/bin/bash',command],{cwd:root,env:{...process.env,LETSRACE_MANAGED:"1",...(task==='ai'?{PIPELINE_AI_MODE:'ai'}:task==='federation'?{PIPELINE_AI_MODE:'free'}:{}),LLM_LEDGER_PATH:path.join(data,'llm-budget.json')},detached:true,stdio:['ignore','pipe','pipe']});
@@ -138,7 +146,7 @@ function main() {
    for(const line of lines){
     if(line.startsWith('Pipeline mode: ai;'))state.aiDetected=true;
     const stage=line.match(/^=== (.+?)\s+\(\d/);if(stage)state.stage=stage[1];
-    if(line.startsWith('pipeline_batch ')){try{const m=JSON.parse(line.slice(15));for(const k of ['reads','created','updated','failed','deferred','unchanged'])state.counters[k]+=Number(m[k]||0);state.problems.push(...(m.problems||[]));}catch{}}
+    if(line.startsWith('pipeline_batch ')){try{const m=JSON.parse(line.slice(15));for(const k of ['reads','created','updated','failed','deferred','unreadable','unchanged'])state.counters[k]+=Number(m[k]||0);state.problems.push(...(m.problems||[]));}catch{}}
     if(line.startsWith('pipeline_discovery ')){try{state.counters.leads+=Number(JSON.parse(line.slice(19)).leads||0);}catch{}}
     if(line.startsWith('pipeline_federation ')){try{const m=JSON.parse(line.slice(20)),old=json(path.join(data,'pipeline-browser-status.json'));atomic(path.join(data,'pipeline-browser-status.json'),{...m,at:new Date().toISOString(),log:state.logPath,lastReadAt:m.read>0?new Date().toISOString():old.lastReadAt,lastReadCount:m.read>0?m.read:old.lastReadCount});if(task==='federation'){state.counters.reads++;state.counters.created+=Number(m.created||0);state.counters.updated+=Number(m.updated||0);}}catch{}}
     if(line.startsWith('pipeline_candidates ')){try{state.counters.queued+=Number(JSON.parse(line.slice(20)).queued||0);}catch{}}
@@ -174,5 +182,5 @@ function main() {
  process.on('SIGTERM',shutdown);process.on('SIGINT',shutdown);
  save();tick();setInterval(tick,10000);
 }
-module.exports={health,alive,json,atomic,rememberResult,recentResults};
+module.exports={health,alive,json,atomic,rememberResult,recentResults,normalizeResult};
 if(require.main===module)main();

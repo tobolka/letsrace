@@ -1,0 +1,321 @@
+{
+  "at": "2026-11-01T22:15:43.728Z",
+  "links": [
+    {
+      "id": "e15c83a8-fdae-4aec-8987-98c74b3cc4d1",
+      "url": "https://tgv-team.pl/wydarzenia-mtb/kalendarz-zawodow-mtb-kompletny",
+      "finalUrl": "https://tgv-team.pl/wydarzenia-mtb/kalendarz-zawodow-mtb-kompletny/",
+      "status": 200,
+      "title": "Kalendarz Zawodów MTB 2026 – Terminarz wyścigów w Polsce",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "51bb7240-332c-474c-bd54-e8dfa2d74132",
+      "url": "https://velorace.pl",
+      "finalUrl": "https://www.velorace.pl/",
+      "status": 200,
+      "title": "VeloRace — Portal wyścigów kolarskich",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "3e89545d-d9c0-4147-989b-c5d82f9cd039",
+      "url": "https://centrumrowerowe.pl/blog/kalendarz-zawodow-mtb",
+      "finalUrl": "https://www.centrumrowerowe.pl/blog/kalendarz-zawodow-mtb/",
+      "status": 200,
+      "title": "Kalendarz zawodów MTB 2026 – terminy, trasy, przygotowanie | CentrumRowerowe.pl",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "7d9027ae-cbef-4ad9-97d1-892ed3bbdd05",
+      "url": "https://ultimasport.pl/zapisy",
+      "finalUrl": "https://ultimasport.pl/zapisy/",
+      "status": 200,
+      "title": "Zapisy – ultimasport",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "7791fd65-c6a3-460c-ba1e-5d63fe943f69",
+      "url": "https://tgv-team.pl/wydarzenia-mtb/kalendarz-zawodow-mtb-w",
+      "finalUrl": "https://tgv-team.pl/wydarzenia-mtb/kalendarz-zawodow-mtb-w/",
+      "status": 200,
+      "title": "Kalendarz Zawodów MTB w Polsce 2026 – Terminarz i Najważniejsze Imprezy",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "5e6e5fb0-c6fb-4892-8f0e-df63a0be6d08",
+      "url": "https://mtbkamiensk.pl",
+      "finalUrl": "https://mtbkamiensk.pl/",
+      "status": 200,
+      "title": "MTB Kamieńsk - www.mtbkamiensk.pl",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "f9bd095a-7bb1-41f8-9216-47f7e664a638",
+      "url": "http://uphillmtb.pl",
+      "finalUrl": "http://uphillmtb.pl/",
+      "status": 200,
+      "title": "Cykl UPHILL MTB BESKIDY",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "36be3c87-5920-40c6-842c-829bb664d3b8",
+      "url": "https://czasnarower.pl/wyscigi/kategoria/8",
+      "finalUrl": "https://www.czasnarower.pl/wyscigi/kategoria/8",
+      "status": 200,
+      "title": "MTBO - Kalendarz wyścigów rowerowych 2026 | Czas na rower",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "f8dfc41b-ed92-4e13-aa12-756a81c2fb62",
+      "url": "https://bisonmtb.pl",
+      "finalUrl": "https://bisonmtb.pl/",
+      "status": 200,
+      "title": "Bison MTB",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "bf83e16e-d54c-4f30-8d7c-ab205146449c",
+      "url": "https://competit.pl/zawody-rowerowe",
+      "finalUrl": "https://competit.pl/zawody-rowerowe/",
+      "status": 200,
+      "title": "Zawody rowerowe 2026/2027",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "be2ee32a-3921-4211-ba34-04e530330e17",
+      "url": "https://elektronicznezapisy.pl/15/kolarstwo.html",
+      "finalUrl": "https://elektronicznezapisy.pl/15/kolarstwo.html",
+      "status": 200,
+      "title": "ELEKTRONICZNEZAPISY",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "4b6e8e3a-030e-4d17-9411-836f13539ff1",
+      "url": "https://kpzkol.pl/zawody-kolarskie",
+      "finalUrl": "https://kpzkol.pl/zawody-kolarskie/",
+      "status": 200,
+      "title": "Zawody kolarskie – emocjonujące wyścigi na dwóch kółkach | kpzkol.pl",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "42392c30-5094-45e9-9809-8f5c8f1ac7b0",
+      "url": "http://tbcserie.cz",
+      "finalUrl": "http://tbcserie.cz/",
+      "status": 200,
+      "title": "Úvod",
+      "racingWords": true,
+      "decision": "review_only"
+    },
+    {
+      "id": "eb2775f4-0e92-4bcd-aa7b-c0ab3d506161",
+      "url": "https://4bikes-festival.de",
+      "finalUrl": "http://4bikes-festival.de/",
+      "status": 500,
+      "title": "WordPress › Fehler",
+      "racingWords": false,
+      "decision": "review_only"
+    }
+  ],
+  "existing": [
+    {
+      "id": "062802f7-278a-4c36-86ec-03787bf79c3d",
+      "name": "Strunk Connect Lesák CUP",
+      "start_date": "2027-08-28",
+      "slug": "lesak-cup-2027",
+      "visibility": "public",
+      "merged_into_id": null
+    },
+    {
+      "id": "3f3564dc-e017-4348-b15c-d72c6f8c2585",
+      "name": "Strunk Connect Lesák CUP 2027",
+      "start_date": "2027-08-28",
+      "slug": "strunk-connect-lesak-cup-2027",
+      "visibility": "hidden",
+      "merged_into_id": "062802f7-278a-4c36-86ec-03787bf79c3d"
+    },
+    {
+      "id": "0e3d2362-ede4-4bc8-a120-f3ee6ba2f843",
+      "name": "Road Stage Orlické hory RR 77 km",
+      "start_date": "2027-06-06",
+      "slug": "road-stage-orlicke-hory-rr-77-km-2027",
+      "visibility": "hidden",
+      "merged_into_id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b"
+    },
+    {
+      "id": "13863284-c4e4-43b8-828f-464357ee87d8",
+      "name": "Road Stage Orlické hory RR 77 km",
+      "start_date": "2027-06-06",
+      "slug": "road-stage-orlicke-hory-rr-77-km-2027-06-06",
+      "visibility": "hidden",
+      "merged_into_id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b"
+    },
+    {
+      "id": "3f4305a3-c824-48ad-94bb-f5d4ddd895fb",
+      "name": "Kancelář závodu Orlické hory",
+      "start_date": "2027-06-05",
+      "slug": "orlicke-hory-2027",
+      "visibility": "hidden",
+      "merged_into_id": null
+    },
+    {
+      "id": "0deee5af-b9d8-479c-a5b2-9b202a92a5f6",
+      "name": "The Step Czech Republic",
+      "start_date": "2027-06-01",
+      "slug": "the-step-czech-republic-2027",
+      "visibility": "hidden",
+      "merged_into_id": null
+    }
+  ],
+  "candidates": [
+    {
+      "id": "206f42f6-97a3-460c-8978-3e0a5939cbb1",
+      "name": "Detská VRL — Šarišské Bohdanovce",
+      "proposedDate": "2026-07-12",
+      "reason": "identity_review_required: conflicting fingerprint owned by 71d5b977-658f-4a1b-bedc-770356737272",
+      "source": "https://www.soof.sk/podujatia-a-akcie"
+    },
+    {
+      "id": "ea070fbc-a159-421f-9b98-a5fd8e4b8d17",
+      "name": "Strunk Connect Lesák CUP 2027",
+      "proposedDate": "2027-08-28",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://lesak-cup.cz/"
+    },
+    {
+      "id": "df880db5-363c-4737-a069-d736e2723a06",
+      "name": "Pražská 50",
+      "proposedDate": "2027-09-18",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://prazska50.cz/tiskova-zprava/"
+    },
+    {
+      "id": "cb209d18-ff5b-435b-8061-4303b7727353",
+      "name": "ROAD STAGE SERIES 2027 — Orlické hory",
+      "proposedDate": "2027-06-05",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.roadstage.cz/"
+    },
+    {
+      "id": "5629a8fe-da76-46fd-903f-23b7cacb0748",
+      "name": "QUICK SPORT JARNÝ ŠPRINT",
+      "proposedDate": "2027-04-25",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "a5fe9884-ffd5-489a-ab87-a818392f6d1b",
+      "name": "Majstrovstvá Slovenska E-XC EBIKE CUP 2026",
+      "proposedDate": "2027-05-06",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "506455da-b3b3-41ac-9912-508076e012fd",
+      "name": "BikeFest maratón 2027",
+      "proposedDate": "2027-05-30",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "19815d62-5a3d-4c18-870f-b587f8b4c531",
+      "name": "ŠKODA MARATÓN SLOVENSKÝ RAJ",
+      "proposedDate": "2027-06-05",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "0e13ed64-21e6-47d5-acef-4a6120efeea9",
+      "name": "ŠKODA CYKLOMARATÓN TOPOLČIANKY",
+      "proposedDate": "2027-06-19",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "42d4cf90-5713-4e32-ab17-736efc7c26dc",
+      "name": "Považský MTB ŠPECIÁL MARATÓN Považská Bystrica",
+      "proposedDate": "2027-07-03",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "415144cf-44e4-4dd1-9268-1a0b6c8b08b5",
+      "name": "POVAŽSKÝ MTB ŠPECIALIK",
+      "proposedDate": "2027-07-04",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "074faf63-97e6-4323-bebd-e2b9c2542b79",
+      "name": "MTB maratón Bike4you Hlohovec - Poniklec",
+      "proposedDate": "2027-08-21",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "4ad37087-1496-4de4-8da1-a6b2d246da11",
+      "name": "BREZNIANSKY MTB MARATÓN 2027",
+      "proposedDate": "2027-09-18",
+      "reason": "independent_discovery_requires_identity_and_authority_review",
+      "source": "https://www.bikepoint.sk/kalendar/"
+    },
+    {
+      "id": "cb504b8d-0bf5-42e6-bdc5-e862b9f27ba7",
+      "name": "Zeitfahren Hintersee 2026",
+      "proposedDate": "2027-05-17",
+      "reason": "existing_data_quarantined:date_conflict",
+      "source": "https://my.raceresult.com/382600/"
+    },
+    {
+      "id": "16a1f07c-8810-4290-b559-d9ceaced491f",
+      "name": "Lost Ride",
+      "proposedDate": "2027-06-01",
+      "reason": "Provisional date or edition: Change existing scheduled/public→tbc/hidden and lock. Candidate June1 22:00 preserved only as provisional admin value; exact start/finish town unpublished. Distance800+ and12–18k elevation not exact. Start list confirms entries exist, does not confirm final date or venue.",
+      "source": "https://lost-ride.cz/"
+    },
+    {
+      "id": "d7e8f6c7-dd91-47c7-9e32-c01308d7d2e3",
+      "name": "Author Valtické Cyklobraní",
+      "proposedDate": "2027-09-24",
+      "reason": "Provisional date or edition: Existing locked September24 day is not a confirmed race day. Organizer says September only, temporary invalid rules; registration on Sep24/25 does not confirm race date. Preserve locked date in admin and set tbc/hidden pending official confirmation.",
+      "source": "https://www.cyklobrani.cz/o-zavodu/propozice-zavodu"
+    },
+    {
+      "id": "38b6c306-c67d-463b-9f45-0aecd1af0405",
+      "name": "KM TRADING CZ trophy",
+      "proposedDate": "2027-08-15",
+      "reason": "Provisional date or edition: Public Aug15 2027 was recycled from2026. Keep historical candidate day only in admin, set tbc/hidden until2027 date announced.",
+      "source": "https://unlimitedcycling.cz/our-race"
+    },
+    {
+      "id": "25b5f74f-a9f1-4051-8946-cd3333d41921",
+      "name": "The Step Czech Republic",
+      "proposedDate": "2027-06-01",
+      "reason": "Provisional date or edition: June1 is an invented month placeholder. Secondary alias likely L’Etape; do not merge until identity review against existingJune19 records. Keep as tbc/hidden.",
+      "source": "https://www.finishers.com/en/event/the-step-czech-republic"
+    },
+    {
+      "id": "0f86b993-da47-468b-a9a6-073bbc84bcb7",
+      "name": "Bohemian Border Bash Race",
+      "reason": "Official website gives 11.–18. 2027 without a month; aggregator September date remains unconfirmed. Official /bbbr26-info and manual describe old edition. Require full official 2027 start date; existing 2026 editions remain separate.",
+      "source": "https://www.borderbash.cc/"
+    },
+    {
+      "id": "97f72e9d-8a6e-498b-a0bc-5cb23a823d13",
+      "name": "Jesenický Ultrasurovec",
+      "reason": "Aggregator gives 15.10.2027 but official cycling page inaccessible. Timing-provider 2027 programme confirms running on Oct 16–17, not the MTB ultra. Need explicit 2027 cycling date/identity confirmation; do not import running competitions as cycling.",
+      "source": "https://www.jesenickysurovec.cz/ultrasurovec/"
+    }
+  ]
+}

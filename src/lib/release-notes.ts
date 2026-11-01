@@ -23,11 +23,11 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       en: [
         "More 2027 races have their date, routes and registration link together in one place.",
-        "A race listed under several names appears once.",
+        "More reviewed duplicate races appear once, including the NRW Cross Cup rounds.",
       ],
       cs: [
         "U dalších závodů 2027 najdeš termín, trasy i odkaz na přihlášky pohromadě.",
-        "Závod, který je uvedený pod více názvy, se zobrazuje jen jednou.",
+        "Další ověřené duplicity se zobrazují jen jednou, včetně kol NRW Cross Cupu.",
       ],
     },
   },

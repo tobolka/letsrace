@@ -45,3 +45,12 @@ it("does not infer removal from an AI omission even after every chunk was read",
   expect(canReconcileMissingEvents({ ...read, strategy: "adapter:tbc", complete: false })).toBe(false);
   expect(canReconcileMissingEvents({ ...read, strategy: "adapter:tbc" })).toBe(true);
 });
+
+it("preserves certificate failure diagnostics without accepting an unsafe connection", async () => {
+  state.fetch.mockRejectedValue(new Error("fetch failed", { cause: Object.assign(new Error("unable to get local issuer certificate"), { code: "UNABLE_TO_GET_ISSUER_CERT_LOCALLY" }) }));
+  const result = await watchOne({ id: "source", url: "https://club.test/calendar", kind: "calendar" });
+  expect(result.ok).toBe(false);
+  expect(result.error).toContain("TLS certificate verification failed (UNABLE_TO_GET_ISSUER_CERT_LOCALLY)");
+  expect(state.extract).not.toHaveBeenCalled();
+  expect(state.hide).not.toHaveBeenCalled();
+});

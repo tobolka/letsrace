@@ -9,6 +9,8 @@ Zahrň silnici, MTB (XC, XCM, enduro, downhill), gravel, cyklokros, ultra, BMX a
 Přísná pravidla:
 - Pouze skutečné cyklistické závody. Vyluč běh, triatlon, duatlon, turistiku, multisportovní a nezávodní akce.
 - Zařazuj pouze závody s doloženým ročníkem ${season}. Neodhaduj termíny podle minulých let.
+- U známých každoročních závodů projdi i web předchozího ročníku ${season - 1}, jeho hlavní stránku, novinky a přihlášky. Navigace se starým rokem nevylučuje nové oznámení. Společnou URL čti jednou, ale datum přiřaď jen konkrétnímu doloženému kolu.
+- Předchozí ročník pomáhá určit identitu a místo; nedokládá nový termín, kategorie, délky tratí ani otevřené přihlášky. Stejný název neprokazuje stejný závod nebo místo.
 - Preferuj oficiální kalendáře, weby pořadatelů a závodních seriálů.
 - Odstraň duplicity. Každé kolo seriálu uveď samostatně. Různé délky tratí jednoho závodu automaticky nerozděluj na samostatné závody.
 - Neověřené informace nevymýšlej. Neodhaduj město, kraj ani přítomnost dětských závodů.

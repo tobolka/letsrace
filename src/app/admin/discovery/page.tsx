@@ -1,3 +1,4 @@
+import { openableUrl } from "@/lib/admin/urls";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { DiscoveryQueue } from "@/components/admin/discovery-queue";
@@ -19,6 +20,13 @@ export default async function DiscoveryPage({
     .eq("status", "pending")
     .order("created_at", { ascending: false })
     .limit(100);
+
+  const { data: candidates, error: candidateError } = await supabase
+    .from("pipeline_candidates")
+    .select("id,payload,source_url,reason,status")
+    .in("status", ["pending", "waiting", "conflict", "publishing"])
+    .order("created_at", { ascending: false });
+  if (candidateError) throw new Error(candidateError.message);
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,6 +57,23 @@ export default async function DiscoveryPage({
           </AlertDescription>
         </Alert>
       ) : null}
+      <section className="rounded-lg border p-4" aria-labelledby="candidate-heading">
+        <h2 id="candidate-heading" className="text-lg font-semibold">Race evidence awaiting review ({candidates?.length ?? 0})</h2>
+        <p className="mt-1 text-sm text-muted-foreground">These are source claims awaiting a verified date or identity decision. They are separate from new website suggestions below; a proposed date is not a confirmed race day.</p>
+        <ul className="mt-4 divide-y">
+          {(candidates ?? []).map((candidate) => {
+            const payload = candidate.payload && typeof candidate.payload === "object" && !Array.isArray(candidate.payload) ? candidate.payload : {};
+            const url = openableUrl(candidate.source_url);
+            return <li key={candidate.id} className="py-3 text-sm">
+              <div className="font-medium">{typeof payload.name === "string" ? payload.name : "Unnamed race"}</div>
+              <div className="text-muted-foreground">{candidate.status === "publishing" ? "Publication in progress" : candidate.status === "conflict" ? "Conflicting information" : "Awaiting verification"} · Proposed date: {typeof payload.startDate === "string" ? payload.startDate : "not confirmed"}</div>
+              <p className="mt-1">{candidate.reason.includes("identity") || candidate.reason.includes("fingerprint") ? "Compare the race identity with the existing catalogue before publishing." : "Check the organiser’s announcement before treating this date as confirmed."}</p>
+              <details className="mt-1 text-muted-foreground"><summary>Saved review note</summary><p className="mt-1 break-words">{candidate.reason}</p></details>
+              {url ? <a className="mt-1 inline-block underline" href={url} target="_blank" rel="noreferrer">Check source</a> : null}
+            </li>;
+          })}
+        </ul>
+      </section>
       <DiscoveryQueue initial={data ?? []} />
     </div>
   );

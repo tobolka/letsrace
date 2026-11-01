@@ -250,7 +250,9 @@ export function normalizeUrlForDedup(raw: string | null | undefined): string {
     if (!path || path === "/") return "";
     // Language-neutral identity, but only after the calendar filters have seen
     // the original path — the hub patterns are written with locale prefixes.
-    const slimPath = canonicalPath(path);
+    // RaceHub tabs describe one event UUID; keep different UUIDs separate.
+    const raceHubEvent = host === "race-hub.io" && path.match(/^\/events\/([a-f0-9-]{36})(?:\/(?:info|participants|results))?$/i);
+    const slimPath = raceHubEvent ? `/events/${raceHubEvent[1]}` : canonicalPath(path);
     const slimKey = `${host}${slimPath}`.toLowerCase();
     if (slimKey !== key) {
       if (GENERIC_HOST_PATH.test(slimKey) || CALENDAR_URL_PATH.test(slimKey)) return "";
