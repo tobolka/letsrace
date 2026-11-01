@@ -36,6 +36,85 @@ struct MonitorSnapshot: Decodable {
     let browser: Browser?; let ai: AI; let system: System; let countries: [String]
 }
 
+/// The owner sees one honest state; technical queues are not owner decisions.
+struct MonitorOverview: Codable {
+    struct State: Codable { let title: String; let detail: String; let tone: String }
+    struct LastRun: Codable { let at: Double; let created: Int; let updated: Int; let failed: Int }
+    let state: State
+    let lastRun: LastRun?
+    let reviewTitle: String
+    let reviewDetail: String
+
+    init(snapshot: MonitorSnapshot?, now: Date = Date()) {
+        func date(_ value: String?) -> Date? {
+            guard let value else { return nil }
+            let formatter = ISO8601DateFormatter(); formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            return formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value)
+        }
+        func fresh(_ value: String?, within seconds: Double) -> Bool {
+            guard let value = date(value) else { return false }
+            let age = now.timeIntervalSince(value)
+            return age >= -60 && age < seconds
+        }
+        let server = snapshot?.server
+        let serverFresh = server?.error == nil && fresh(server?.checkedAt, within: 900)
+        let job = server?.jobs?.first { $0.key == "server-free" }
+        var runs: [LastRun] = []
+        if let result = snapshot?.lastResult, let at = result.at {
+            runs.append(LastRun(at: at, created: result.created ?? 0, updated: result.updated ?? 0, failed: result.failed ?? 0))
+        }
+        if let job, let finished = date(job.finished_at), job.status != "running" {
+            runs.append(LastRun(at: finished.timeIntervalSince1970 * 1000, created: job.summary.created ?? 0, updated: job.summary.updated ?? 0, failed: job.summary.failed ?? 0))
+        }
+        if let browser = snapshot?.browser, let at = date(browser.at), (browser.read ?? 0) > 0 {
+            runs.append(LastRun(at: at.timeIntervalSince1970 * 1000, created: browser.created ?? 0, updated: browser.updated ?? 0, failed: browser.status == "failed" ? 1 : 0))
+        }
+        lastRun = runs.max { $0.at < $1.at }
+        if serverFresh, let waiting = server?.reviewCandidates {
+            reviewTitle = waiting > 0 ? "Podklady čekají na ověření" : "Není připravená žádná otázka pro tebe"
+            let pending = waiting == 1 ? "1 podklad čeká na kontrolu." : (2...4).contains(waiting) ? "\(waiting) podklady čekají na kontrolu." : "\(waiting) podkladů čeká na kontrolu."
+            reviewDetail = waiting > 0
+                ? pending + " Jejich samostatné vyřizování ještě není zapnuté. Další sken nemusíš spouštět ručně."
+                : "Běžné kontroly se spouštějí samy. Podrobnosti najdeš níže."
+        } else {
+            reviewTitle = "Čekající podklady teď nelze ověřit"
+            reviewDetail = "Poslední známé počty jsou v podrobnostech. Nedostupný přehled neznamená, že je fronta prázdná."
+        }
+        guard let snapshot else {
+            state = State(title: "Stav zatím není dostupný", detail: "Čekám na hlášení sběru. Chybějící hlášení neznamená, že je vše v pořádku.", tone: "warning")
+            return
+        }
+        if !fresh(snapshot.at, within: 120) {
+            state = State(title: "Mac se nehlásí", detail: serverFresh ? "Server je dostupný, ale práci na Macu teď nelze ověřit." : "Práci na Macu ani stav serveru teď nelze ověřit.", tone: "warning")
+        } else if snapshot.paused {
+            state = State(title: "Sběr na Macu je pozastavený", detail: snapshot.childPid != nil ? "Probíhající kontrola se dokončí. Pauza platí pouze pro Mac." : "Pauza platí pouze pro Mac. Serverové kontroly tím nejsou pozastavené.", tone: "muted")
+        } else if snapshot.status == "quiet" {
+            state = State(title: "Sběr se dlouho neozval", detail: "Probíhající kontrola dlouho neposlala nový výsledek. Poslední dostupný průběh je v podrobnostech.", tone: "warning")
+        } else if !serverFresh {
+            state = State(title: "Stav serveru nelze ověřit", detail: "Mac se hlásí. Dostupnost serverové části teď není potvrzená.", tone: "warning")
+        } else if server?.brokenSources == nil || server?.unreadableSources == nil || server?.reviewCandidates == nil {
+            state = State(title: "Přehled sběru není úplný", detail: "Server odpovídá, ale část stavu není potvrzená. Chybějící počty se nepovažují za nulu.", tone: "warning")
+        } else if job == nil {
+            state = State(title: "První serverová kontrola není potvrzená", detail: "Server odpovídá, ale dokončený běh zatím není zaznamenaný.", tone: "warning")
+        } else if snapshot.status == "attention" && snapshot.lastExitCode == 1 {
+            state = State(title: "Poslední sběr na Macu nedoběhl", detail: "Část kontroly skončila chybou. Už uložené výsledky zůstávají zachované; příčina je v podrobnostech.", tone: "warning")
+        } else if job?.status == "running" && !fresh(job?.started_at, within: 900) {
+            state = State(title: "Serverová kontrola se nedokončila", detail: "Poslední běh zůstává bez výsledku. Podrobnosti obsahují poslední dostupný stav.", tone: "warning")
+        } else {
+            let busy = snapshot.childPid != nil || snapshot.serverRequestRunning == true || job?.status == "running"
+            if (server?.brokenSources ?? 0) > 0 || (lastRun?.failed ?? 0) > 0 {
+                state = State(title: busy ? "Probíhá sběr s omezením" : "Sběr funguje s omezením", detail: "Některé zdroje se nepodařilo zpracovat. Zbytek sběru pokračuje podle plánu. Příčiny najdeš v podrobnostech.", tone: "warning")
+            } else if busy {
+                state = State(title: "Právě probíhá sběr", detail: "Zpracovávají se dostupné zdroje. Další kontrolu nemusíš spouštět.", tone: "busy")
+            } else if (server?.unreadableSources ?? 0) > 0 || (server?.reviewCandidates ?? 0) > 0 {
+                state = State(title: "Sběr funguje, ověřování čeká", detail: "Část stránek potřebuje jiný způsob přečtení nebo další podklad. Uložené údaje tím nejsou automaticky ověřené.", tone: "warning")
+            } else {
+                state = State(title: "Další sběr je naplánovaný", detail: "Běžné kontroly se spouštějí samy. Není potřeba vybírat jednotlivé sběrače.", tone: "good")
+            }
+        }
+    }
+}
+
 @MainActor
 final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let logger = Logger(subsystem: "cz.letsrace.monitor", category: "menu")
@@ -51,6 +130,10 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let iso: ISO8601DateFormatter = { let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]; return f }()
     private let popover = NSPopover()
     private var contentStack: NSStackView?
+    private var showingDetails = false
+    private let previewSnapshotURL: URL?
+    init(snapshotURL: URL? = nil) { previewSnapshotURL = snapshotURL; super.init() }
+    private var overview: MonitorOverview { MonitorOverview(snapshot: snapshot) }
     private func parsedDate(_ value: String) -> Date? {
         iso.date(from: value) ?? ISO8601DateFormatter().date(from: value)
     }
@@ -66,8 +149,8 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         timer = Timer(timeInterval: 10, target: self, selector: #selector(refresh), userInfo: nil, repeats: true)
         if let timer { RunLoop.main.add(timer, forMode: .common) }
         logger.notice("LetsRace menu started")
-        if !UserDefaults.standard.bool(forKey: "shownFourCategoryOverview") {
-            UserDefaults.standard.set(true, forKey: "shownFourCategoryOverview")
+        if !UserDefaults.standard.bool(forKey: "shownSimpleOverview") {
+            UserDefaults.standard.set(true, forKey: "shownSimpleOverview")
             DispatchQueue.main.async { [weak self] in self?.togglePanel() }
         }
     }
@@ -80,30 +163,20 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard let snapshot, let date = parsedDate(snapshot.at) else { return true }
         return Date().timeIntervalSince(date) > 120
     }
-    private var headline: String {
-        guard let snapshot else { return "Čekám na stav sběrače" }
-        if stale { return "Sběrač se nehlásí" }
-        switch snapshot.status {
-        case "running": return snapshot.paused ? "Běží · pak se pozastaví" : "Sběr právě běží"
-        case "quiet": return "Dlouho bez nového výstupu"
-        case "paused": return "Sběr je pozastavený"
-        case "attention": return snapshot.lastExitCode == 2 ? "Čeká · část údajů je k ověření" : "Poslední běh potřebuje pozornost"
-        default: return "V pořádku · čeká na další běh"
-        }
-    }
+    private var headline: String { overview.state.title }
     private var stateColor: NSColor {
-        if snapshot == nil || stale { return .systemRed }
-        switch snapshot?.status {
-        case "quiet", "attention": return .systemOrange
-        case "paused": return .secondaryLabelColor
+        switch overview.state.tone {
+        case "warning": return NSColor.systemOrange.blended(withFraction: 0.35, of: .black) ?? .systemOrange
+        case "muted": return .secondaryLabelColor
+        case "busy": return .systemBlue
         default: return .systemGreen
         }
     }
     @objc private func refresh() {
         do {
-            snapshot = try JSONDecoder().decode(MonitorSnapshot.self, from: Data(contentsOf: dataURL.appendingPathComponent("monitor.json")))
+            snapshot = try JSONDecoder().decode(MonitorSnapshot.self, from: Data(contentsOf: previewSnapshotURL ?? dataURL.appendingPathComponent("monitor.json")))
             snapshotError = nil
-        } catch { snapshotError = "Stav zatím není dostupný." }
+        } catch { snapshot = nil; snapshotError = "Stav zatím není dostupný." }
         if let button = item?.button {
             let image = NSImage(systemSymbolName: "bicycle", accessibilityDescription: headline)
             image?.isTemplate = true
@@ -116,6 +189,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     @objc private func togglePanel() {
         if popover.isShown { popover.performClose(nil); return }
+        showingDetails = false
         refresh(); renderPanel()
         if let button = item.button { popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY) }
     }
@@ -169,11 +243,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     private func eta(_ task: String, started: Double?) -> String {
         guard let started else { return "" }
-        let elapsed = max(0, (Date().timeIntervalSince1970 * 1000 - started) / 1000)
-        guard let samples = snapshot?.estimates?[task], !samples.isEmpty else { return "Běží \(duration(started)) · zbývající čas zatím nelze odhadnout" }
-        let mean = samples.reduce(0, +) / Double(samples.count) / 1000
-        if elapsed >= mean { return "Běží \(duration(started)) · trvá déle než obvykle, konec nelze určit" }
-        return "Běží \(duration(started)) · odhad zbývá ~\(max(1, Int(ceil((mean - elapsed) / 60)))) min"
+        return "Běží \(duration(started))"
     }
     private func shortDate(_ value: String?) -> String { value.flatMap(parsedDate).map { time($0.timeIntervalSince1970 * 1000) } ?? "zatím bez záznamu" }
     private func nextServerTime() -> String {
@@ -191,6 +261,72 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return "od \(f.string(from: next)), při nejbližším cyklu"
     }
     private func renderPanel() {
+        let focusedAction = (popover.contentViewController?.view.window?.firstResponder as? NSButton)?.action
+        if showingDetails { renderTechnicalPanel() } else { renderOverviewPanel() }
+        // Refreshes must not steal keyboard focus from a button being used.
+        if let focusedAction, let view = popover.contentViewController?.view {
+            func restore(in candidate: NSView) -> Bool {
+                if let button = candidate as? NSButton, button.action == focusedAction, button.isEnabled {
+                    view.window?.makeFirstResponder(button); return true
+                }
+                return candidate.subviews.contains { restore(in: $0) }
+            }
+            _ = restore(in: view)
+        }
+    }
+    @objc private func openTechnicalPanel() { showingDetails = true; renderPanel() }
+    @objc private func openOverviewPanel() { showingDetails = false; renderPanel() }
+    private func renderOverviewPanel() {
+        guard let view = popover.contentViewController?.view else { return }
+        view.subviews.forEach { $0.removeFromSuperview() }
+        view.wantsLayer = true; view.layer?.backgroundColor = NSColor.white.cgColor
+        let scroll = NSScrollView(); scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.drawsBackground = false; scroll.hasVerticalScroller = true; scroll.autohidesScrollers = true
+        view.addSubview(scroll)
+        NSLayoutConstraint.activate([scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor), scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor), scroll.topAnchor.constraint(equalTo: view.topAnchor), scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        let document = NSView(frame: NSRect(x: 0, y: 0, width: 378, height: 500)); scroll.documentView = document
+        let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .leading; stack.spacing = 22
+        stack.translatesAutoresizingMaskIntoConstraints = false; document.addSubview(stack)
+        NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 22), stack.widthAnchor.constraint(equalToConstant: 334), stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 22)])
+        func add(_ text: String, size: CGFloat, bold: Bool = false, color: NSColor = .labelColor, to parent: NSStackView) {
+            let field = label(text, size: size, bold: bold, color: color); field.maximumNumberOfLines = 0
+            parent.addArrangedSubview(field); field.widthAnchor.constraint(equalTo: parent.widthAnchor).isActive = true
+        }
+        func section() -> NSStackView {
+            let result = NSStackView(); result.orientation = .vertical; result.alignment = .leading; result.spacing = 7
+            stack.addArrangedSubview(result); result.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+            return result
+        }
+        add("LetsRace", size: 16, bold: true, to: stack)
+        let summary = overview
+        let status = section()
+        add(summary.state.title, size: 21, bold: true, color: stateColor, to: status)
+        add(summary.state.detail, size: 12, color: .secondaryLabelColor, to: status)
+        let result = section()
+        add("Poslední dokončená kontrola", size: 11, color: .secondaryLabelColor, to: result)
+        if let last = summary.lastRun {
+            add(time(last.at), size: 12, bold: true, to: result)
+            add("Nové položky v katalogu: \(last.created)\nUložené změny: \(last.updated)", size: 13, to: result)
+        } else {
+            add("Zatím bez výsledku", size: 13, to: result)
+        }
+        let review = section()
+        add(summary.reviewTitle, size: 13, bold: true, to: review)
+        add(summary.reviewDetail, size: 12, color: .secondaryLabelColor, to: review)
+        let actions = NSStackView(views: [smallButton("Otevřít LetsRace", #selector(openSite)), smallButton("Zobrazit podrobnosti", #selector(openTechnicalPanel))]); actions.spacing = 12
+        stack.addArrangedSubview(actions)
+        let footer = section()
+        footer.addArrangedSubview(smallButton(snapshot?.paused == true ? "Obnovit sběr na Macu" : "Pozastavit sběr na Macu", #selector(togglePause), enabled: snapshot != nil && !stale))
+        add("Poslední hlášení: \(shortDate(snapshot?.at))", size: 10, color: .secondaryLabelColor, to: footer)
+        document.layoutSubtreeIfNeeded()
+        let height = stack.fittingSize.height + 44
+        document.setFrameSize(NSSize(width: 378, height: height))
+        let screenHeight = item?.button?.window?.screen?.visibleFrame.height ?? 900
+        let panelHeight = min(height, screenHeight - 70)
+        popover.contentSize = NSSize(width: 378, height: panelHeight)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight)))
+    }
+    private func renderTechnicalPanel() {
         guard let view = popover.contentViewController?.view else { return }
         let oldScroll = view.subviews.first as? NSScrollView
         let fromTop = oldScroll.map { max(0, ($0.documentView?.frame.height ?? 0) - $0.documentVisibleRect.maxY) } ?? 0
@@ -204,7 +340,8 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .leading; stack.spacing = 11
         stack.translatesAutoresizingMaskIntoConstraints = false; document.addSubview(stack)
         NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 17), stack.widthAnchor.constraint(equalToConstant: 376), stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 16)])
-        stack.addArrangedSubview(label("LetsRace", size: 18, bold: true))
+        stack.addArrangedSubview(smallButton("Zpět na přehled", #selector(openOverviewPanel)))
+        stack.addArrangedSubview(label("Podrobnosti sběru", size: 18, bold: true))
         let totals = snapshot?.totals ?? []
         let coverage = totals.map { t in
             let n = t.essentials ?? 0, percent = t.total > 0 ? Int((100 * Double(n) / Double(t.total)).rounded()) : 0
@@ -226,7 +363,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             if (job.summary.unreadable ?? 0) > 0 { serverLines += "\n\(job.summary.unreadable ?? 0) čtení potřebuje jinou čtečku" }
             if (job.summary.deferred ?? 0) > 0 { serverLines += "\n\(job.summary.deferred ?? 0) kontrol odloženo; další pokus zůstává naplánovaný" }
         }
-        if serverRunning { serverLines += "\nBěží na serveru · nejvýše přibližně 5 minut" }
+        if serverRunning { serverLines += "\nBěží na serveru" }
         if let e = snapshot?.serverRequestError { serverLines += "\n\(e)" }
         let serverColor: NSColor = !freshServer || job == nil || job?.status == "error" || job?.status == "attention" ? .systemOrange : .systemGreen
         card("Server zdarma", detail: serverLines, color: serverColor, buttons: [smallButton(serverRunning ? "Běží…" : "Spustit sběr", #selector(runServer), enabled: !serverRunning), smallButton("Obnovit stav", #selector(refreshServer)), smallButton("Stav a problémy", #selector(showServerProblems))], in: stack)
@@ -241,7 +378,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) chyb · \(recent.unreadable ?? 0) čtení potřebuje jinou čtečku" }
         if localRunning { localLines += "\n\(translatedStage(snapshot?.stage)) · \(eta(snapshot?.activeTask ?? "refresh", started: snapshot?.startedAt))" }
         else if localBusy { localLines += "\nTeď běží federace; běžný sběr můžeš zařadit za ni." }
-        if snapshot?.paused == true { localLines += localBusy ? "\nAutomatika je pozastavená; probíhající běh se dokončí." : "\nAutomatika je pozastavená." }
+        if snapshot?.paused == true { localLines += localBusy ? "\nSběr na Macu je pozastavený; probíhající běh se dokončí." : "\nSběr na Macu je pozastavený." }
         if stale { localLines += "\nChybí čerstvé hlášení sběrače." }
         card("Mac zdarma · běžný sběr", detail: localLines, color: stale || (r?.failed ?? 0) > 0 ? .systemOrange : .systemGreen, buttons: [smallButton(localRunning ? "Běží…" : localBusy ? "Zařadit sběr" : "Spustit sběr", #selector(runNow), enabled: !localRunning), smallButton("Problémy a řešení", #selector(showLocalProblems))], in: stack)
         let browser = snapshot?.browser
@@ -264,11 +401,11 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let h = server?.health { health += "\nZa 24 h: \(h.ok24h)/\(h.reads24h) čtení OK · čeká \(h.due)/\(h.sources) zdrojů" }
         if let broken = server?.brokenSources, let unread = server?.unreadableSources {
             health += "\nK řešení: \(broken) zdrojů s chybou · čeká na pořadatele nebo rozhodnutí: \(server?.reviewCandidates ?? 0)"
-            health += "\nČeká na jinou čtečku: \(unread) stránek; AI je zkusí v rámci rozpočtu"
+            health += "\nČeká na jinou čtečku: \(unread) stránek"
         } else if let attention = server?.attentionSources { health += "\n\(attention) zdrojů má problém · \(server?.reviewCandidates ?? 0) podkladů čeká na ověření" }
         let healthLabel = label(health, size: 10, color: .secondaryLabelColor); healthLabel.maximumNumberOfLines = 4
         stack.addArrangedSubview(healthLabel)
-        let footer = NSStackView(views: [smallButton(snapshot?.paused == true ? "Obnovit automatiku" : "Pozastavit automatiku", #selector(togglePause)), smallButton("Jak to funguje", #selector(showHelp)), smallButton("Další…", #selector(showDetails))]); footer.spacing = 8; stack.addArrangedSubview(footer)
+        let footer = NSStackView(views: [smallButton("Jak to funguje", #selector(showHelp)), smallButton("Nástroje…", #selector(showDetails))]); footer.spacing = 8; stack.addArrangedSubview(footer)
         document.layoutSubtreeIfNeeded()
         let height = stack.fittingSize.height + 32
         document.setFrameSize(NSSize(width: 410, height: height))
@@ -277,7 +414,8 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         popover.contentSize = NSSize(width: 410, height: panelHeight)
         scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight - fromTop)))
     }
-    func savePreview(to path: String) throws {
+    func savePreview(to path: String, details: Bool = false) throws {
+        showingDetails = details
         // Offscreen rendering of our own view for layout validation; no desktop capture.
         popover.contentViewController = NSViewController()
         popover.contentViewController?.view = NSView(frame: NSRect(x: 0, y: 0, width: 410, height: 800))
@@ -423,7 +561,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     @objc private func showHelp() {
         let a = NSAlert(); a.messageText = "Sběr se o sebe stará sám"
-        a.informativeText = "Procenta ukazují podíl uložených závodů s vyplněným názvem, termínem, místem, zemí, disciplínou a zdrojem. Nejsou důkazem správnosti a neříkají, kolik všech existujících závodů jsme našli. Změněné závody znamenají skutečnou změnu uloženého údaje; samy o sobě neprokazují, že je celý závod správný.\n\nČasy dokončení jsou odhady z posledních běhů; u nového typu běhu ani celého katalogu dobu neslibujeme.\n\nPo přihlášení se automaticky spustí panel i sběrač. Bezplatný sběr kontroluje zdroje každé dvě hodiny, Chrome se použije podle potřeby. AI kontrola běží na Macu v úterý a pátek ve společném limitu 5 USD za měsíc.\n\nZelená: běží nebo čeká na další spuštění. Oranžová: dlouho bez výstupu nebo výsledek k ověření. Červená: chybí čerstvé hlášení.\n\nZavření panelu nezastaví sběr. Při vypnutém Macu pokračuje server zdarma; místní sběr naváže po zapnutí a přihlášení."
+        a.informativeText = "Procenta ukazují podíl uložených závodů s vyplněným názvem, termínem, místem, zemí, disciplínou a zdrojem. Nejsou důkazem správnosti a neříkají, kolik všech existujících závodů jsme našli. Změněné závody znamenají skutečnou změnu uloženého údaje; samy o sobě neprokazují, že je celý závod správný.\n\nPanel ukazuje skutečný stav a dobu běhu, bez odpočtu do dokončení.\n\nPo přihlášení se automaticky spustí panel i sběrač. Bezplatný sběr kontroluje zdroje každé dvě hodiny, Chrome se použije podle potřeby. AI kontrola běží na Macu v úterý a pátek ve společném limitu 5 USD za měsíc.\n\nZelená: běží nebo čeká na další spuštění. Oranžová: dlouho bez výstupu nebo výsledek k ověření. Červená: chybí čerstvé hlášení.\n\nZavření panelu nezastaví sběr. Při vypnutém Macu pokračuje server zdarma; místní sběr naváže po zapnutí a přihlášení."
         a.runModal()
     }
     @objc private func quit() {
@@ -434,9 +572,20 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
 @main enum LetsRaceMonitor {
     static func main() {
-        if CommandLine.arguments.count == 3 && CommandLine.arguments[1] == "--render-preview" {
+        let args = CommandLine.arguments
+        if args.count >= 3 && args[1] == "--describe-snapshot" {
+            do {
+                let snapshot: MonitorSnapshot? = args[2] == "-" ? nil : try JSONDecoder().decode(MonitorSnapshot.self, from: Data(contentsOf: URL(fileURLWithPath: args[2])))
+                let now = args.count > 3 ? Date(timeIntervalSince1970: Double(args[3]) ?? Date().timeIntervalSince1970) : Date()
+                let value = try JSONEncoder().encode(MonitorOverview(snapshot: snapshot, now: now))
+                print(String(decoding: value, as: UTF8.self))
+            } catch { fputs("Snapshot test failed: \(error)\n", stderr); exit(1) }
+            return
+        }
+        if args.count >= 3 && args[1] == "--render-preview" {
             let app = NSApplication.shared; app.setActivationPolicy(.prohibited)
-            do { try MonitorController().savePreview(to: CommandLine.arguments[2]) }
+            let fixture = args.dropFirst(3).first { !$0.hasPrefix("--") }.map { URL(fileURLWithPath: $0) }
+            do { try MonitorController(snapshotURL: fixture).savePreview(to: args[2], details: args.contains("--details")) }
             catch { fputs("Preview failed: \(error)\n", stderr); exit(1) }
             return
         }

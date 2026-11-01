@@ -1,6 +1,6 @@
 # LetsRace: kde co běží a co ovládat
 
-Aktuální provoz: **1. 11. 2026**. AI zůstává na Macu; její přesun na server byl na žádost zastaven.
+Aktuální provoz: **2. 11. 2026**. AI zůstává na Macu; její přesun na server byl na žádost zastaven.
 
 | Co | Kde | Kdy se spustí samo | Kde to vidíš |
 | --- | --- | --- | --- |
@@ -13,13 +13,14 @@ Běžný sběr čte splatné zdroje přes HTML/API/PDF a podporované dynamické
 
 ## Co dělat
 
-**Běžně nic.** Po přihlášení se sběrač i panel spouštějí automaticky. V liště je jen ikona kola. Kliknutím uvidíš aktuální činnost, poslední sken federace a skutečný přínos posledního dokončeného běhu.
+**Běžně nic.** Po přihlášení se sběrač i panel spouštějí automaticky. V liště je jen ikona kola. Po otevření uvidíš jeden stav, výsledek poslední dokončené kontroly a informaci o čekajících podkladech. Výsledky serveru a Macu se nesčítají; zobrazuje se nejnovější dokončený běh. Nové položky a uložené změny nejsou označené za nezávisle ověřená data.
 
-- Chceš znovu načíst federaci: **Spustit sken federace**. Pokud běží jiná práce, sken počká; druhý souběžný běh nevznikne.
-- Chceš spustit běžný sběr: **Podrobnosti → Spustit sběr teď**.
-- Chceš vidět průběh: **Podrobnosti → Otevřít živý log**.
-- Chceš pauzu: **Pozastavit**. Běžící práce se dokončí. Tlačítko se změní na **Obnovit**.
+- **Zobrazit podrobnosti** otevře jednotlivé sběrače, rozpočet, příčiny omezení a ruční nástroje. **Zpět na přehled** vrátí jednoduchý pohled.
+- **Pozastavit sběr na Macu** pozastaví jen místní automatiku; běžící kontrola se dokončí. Server tím není pozastavený. Tlačítko se změní na **Obnovit sběr na Macu**.
+- **Otevřít LetsRace** otevře web.
 - Zavření panelu sběr nezastaví. Panel znovu otevřeš z `~/Applications/LetsRace Monitor.app`.
+
+Čekající podklady nejsou vydávané za připravené otázky pro vlastníka. Dokud neexistuje samostatný ověřovatel fronty, panel to výslovně říká. Nedostupný server neznamená prázdnou frontu. Čerstvé hlášení Macu samo neznamená bezchybný celý systém. Panel neukazuje odhad zbývajícího času.
 
 Zelená znamená běh nebo úspěšné čekání. Oranžová znamená skutečnou chybu čtení nebo zápisu, podklady k ověření nebo neověřený stav serveru. Nepodporované čtení je uvedené zvlášť jako potřeba jiné čtečky a samo o sobě neznamená selhání sběru. Není to automaticky zaseknutý program. Červená znamená, že opravdu chybí čerstvé hlášení místního sběrače. Hlášení se obnovuje každých 10 sekund.
 
