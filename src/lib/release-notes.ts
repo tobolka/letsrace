@@ -29,6 +29,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Race pages list the routes and categories the organiser published, with distances and ages.",
         "Each race page says which pages we took it from, the organiser's own website first.",
         "Organisers can take over their race or series and edit its date, links, routes and categories themselves; their races show a verified badge.",
+        "Anyone signed in can send a correction to a race or series straight from its page.",
       ],
       cs: [
         "Na stránce zrušeného závodu zůstává jasná informace o zrušení.",
@@ -38,6 +39,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Na stránce závodu najdeš trasy a kategorie, jak je pořadatel zveřejnil, i s délkou a věkem.",
         "U každého závodu je vidět, odkud ho máme – nejdřív web pořadatele.",
         "Pořadatelé si můžou převzít svůj závod nebo seriál a sami upravovat termín, odkazy, trasy a kategorie; jejich závody mají odznak ověření.",
+        "Kdo je přihlášený, pošle opravu závodu nebo seriálu přímo z jeho stránky.",
       ],
     },
   },

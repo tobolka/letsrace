@@ -46,6 +46,27 @@ type Copy = {
   verify: string;
   signIn: string;
   manage: string;
+  editLink: string;
+  editTitle: string;
+  editIntro: string;
+  optionOrganizer: string;
+  optionSuggest: string;
+  suggestPlaceholder: string;
+  suggestSend: string;
+  suggestThanks: string;
+  adminNote: string;
+  adminEdit: string;
+  organizerNote: string;
+  pendingNote: string;
+  seriesClaim: {
+    claimLink: string;
+    dialogTitle: string;
+    dialogIntro: string;
+    editTitle: string;
+    editIntro: string;
+    points: string[];
+    manage: string;
+  };
 };
 
 /** The organiser's pages and the bits of the race page that point to them. */
@@ -96,6 +117,27 @@ export const organizerCopy: Record<Locale, Copy> = {
     verify: "Když se přihlásíš e-mailem na doméně webu závodu, ověříme tě hned. Jinak žádost potvrdíme ručně, obvykle do dvou dnů.",
     signIn: "Nejdřív se přihlas:",
     manage: "Otevřít správu závodu",
+    editLink: "Upravit údaje",
+    editTitle: "Upravit závod",
+    editIntro: "Vidíš u {name} chybu, nebo ho pořádáš? Pořadatel si závod převezme a upravuje ho sám, ostatní nám pošlou opravu.",
+    optionOrganizer: "Pořádám ho",
+    optionSuggest: "Navrhnout opravu",
+    suggestPlaceholder: "Co je špatně a jak to má být správně? Ideálně i s odkazem na zdroj.",
+    suggestSend: "Odeslat opravu",
+    suggestThanks: "Díky! Opravu zkontrolujeme a zapracujeme.",
+    adminNote: "Jsi admin – upravit můžeš rovnou.",
+    adminEdit: "Upravit v administraci",
+    organizerNote: "Tohle spravuješ jako pořadatel.",
+    pendingNote: "Tvoje žádost o převzetí čeká na potvrzení. Mezitím nám můžeš poslat opravu.",
+    seriesClaim: {
+      claimLink: "Pořádáš tento seriál? Převezmi ho",
+      dialogTitle: "Převzít seriál",
+      dialogIntro: "Pořádáš {name}? Převezmi celý seriál a spravuj všechna jeho kola sám.",
+      editTitle: "Upravit seriál",
+      editIntro: "Vidíš u {name} chybu, nebo ho pořádáš? Pořadatel si seriál převezme a upravuje všechna kola sám, ostatní nám pošlou opravu.",
+      points: ["Upravíš termíny, odkazy, popis, trasy a kategorie u každého kola.", "Změny jsou na webu hned a naše automatické stahování je už nepřepíše.", "Seriál i jeho kola dostanou odznak Ověřeno pořadatelem."],
+      manage: "Otevřít správu seriálu",
+    },
   },
   en: {
     title: "For organisers",
@@ -143,6 +185,27 @@ export const organizerCopy: Record<Locale, Copy> = {
     verify: "If you sign in with an address on the race website's domain, you are verified at once. Otherwise we confirm the request by hand, usually within two days.",
     signIn: "Sign in first:",
     manage: "Open race management",
+    editLink: "Edit details",
+    editTitle: "Edit this race",
+    editIntro: "Spotted a mistake in {name}, or do you organise it? The organiser takes the race over and edits it; anyone else can send us a correction.",
+    optionOrganizer: "I organise it",
+    optionSuggest: "Suggest a correction",
+    suggestPlaceholder: "What is wrong and what should it say? A link to the source helps.",
+    suggestSend: "Send correction",
+    suggestThanks: "Thanks! We will check the correction and apply it.",
+    adminNote: "You are an admin and can edit it directly.",
+    adminEdit: "Edit in admin",
+    organizerNote: "You look after this as its organiser.",
+    pendingNote: "Your request to take it over is waiting for confirmation. Meanwhile you can send us a correction.",
+    seriesClaim: {
+      claimLink: "Organising this series? Take it over",
+      dialogTitle: "Take over this series",
+      dialogIntro: "Organising {name}? Take over the whole series and look after every round yourself.",
+      editTitle: "Edit this series",
+      editIntro: "Spotted a mistake in {name}, or do you organise it? The organiser takes the series over and edits every round; anyone else can send us a correction.",
+      points: ["Edit the dates, links, description, routes and categories of every round.", "Changes are on the site at once, and our automatic updates no longer overwrite them.", "The series and its rounds get a Verified by the organiser badge."],
+      manage: "Open series management",
+    },
   },
   sk: {
     title: "Pre organizátorov",
@@ -190,6 +253,27 @@ export const organizerCopy: Record<Locale, Copy> = {
     verify: "Ak sa prihlásiš e-mailom na doméne webu preteku, overíme ťa hneď. Inak žiadosť potvrdíme ručne, zvyčajne do dvoch dní.",
     signIn: "Najprv sa prihlás:",
     manage: "Otvoriť správu preteku",
+    editLink: "Upraviť údaje",
+    editTitle: "Upraviť pretek",
+    editIntro: "Vidíš pri {name} chybu, alebo ho organizuješ? Organizátor si pretek prevezme a upravuje ho sám, ostatní nám pošlú opravu.",
+    optionOrganizer: "Organizujem ho",
+    optionSuggest: "Navrhnúť opravu",
+    suggestPlaceholder: "Čo je zle a ako to má byť správne? Ideálne aj s odkazom na zdroj.",
+    suggestSend: "Odoslať opravu",
+    suggestThanks: "Vďaka! Opravu skontrolujeme a zapracujeme.",
+    adminNote: "Si admin – upraviť môžeš rovno.",
+    adminEdit: "Upraviť v administrácii",
+    organizerNote: "Toto spravuješ ako organizátor.",
+    pendingNote: "Tvoja žiadosť o prevzatie čaká na potvrdenie. Medzitým nám môžeš poslať opravu.",
+    seriesClaim: {
+      claimLink: "Organizuješ tento seriál? Prevezmi ho",
+      dialogTitle: "Prevziať seriál",
+      dialogIntro: "Organizuješ {name}? Prevezmi celý seriál a spravuj všetky jeho kolá sám.",
+      editTitle: "Upraviť seriál",
+      editIntro: "Vidíš pri {name} chybu, alebo ho organizuješ? Organizátor si seriál prevezme a upravuje všetky kolá sám, ostatní nám pošlú opravu.",
+      points: ["Upravíš termíny, odkazy, popis, trasy a kategórie každého kola.", "Zmeny sú na webe hneď a naše automatické sťahovanie ich už neprepíše.", "Seriál aj jeho kolá dostanú odznak Overené organizátorom."],
+      manage: "Otvoriť správu seriálu",
+    },
   },
   pl: {
     title: "Dla organizatorów",
@@ -237,6 +321,27 @@ export const organizerCopy: Record<Locale, Copy> = {
     verify: "Jeśli logujesz się adresem w domenie strony wyścigu, weryfikujemy cię od razu. W innym razie potwierdzamy prośbę ręcznie, zwykle w ciągu dwóch dni.",
     signIn: "Najpierw się zaloguj:",
     manage: "Otwórz zarządzanie wyścigiem",
+    editLink: "Edytuj dane",
+    editTitle: "Edytuj wyścig",
+    editIntro: "Widzisz błąd w {name} albo go organizujesz? Organizator przejmuje wyścig i sam go edytuje, pozostali przesyłają nam poprawkę.",
+    optionOrganizer: "Organizuję go",
+    optionSuggest: "Zaproponuj poprawkę",
+    suggestPlaceholder: "Co jest nie tak i jak powinno być? Najlepiej z linkiem do źródła.",
+    suggestSend: "Wyślij poprawkę",
+    suggestThanks: "Dzięki! Sprawdzimy poprawkę i ją wprowadzimy.",
+    adminNote: "Jesteś adminem i możesz edytować od razu.",
+    adminEdit: "Edytuj w panelu admina",
+    organizerNote: "Zarządzasz tym jako organizator.",
+    pendingNote: "Twoja prośba o przejęcie czeka na potwierdzenie. W międzyczasie możesz wysłać nam poprawkę.",
+    seriesClaim: {
+      claimLink: "Organizujesz ten cykl? Przejmij go",
+      dialogTitle: "Przejmij cykl",
+      dialogIntro: "Organizujesz {name}? Przejmij cały cykl i sam zarządzaj wszystkimi rundami.",
+      editTitle: "Edytuj cykl",
+      editIntro: "Widzisz błąd w {name} albo go organizujesz? Organizator przejmuje cykl i sam edytuje wszystkie rundy, pozostali przesyłają nam poprawkę.",
+      points: ["Edytujesz terminy, linki, opis, trasy i kategorie każdej rundy.", "Zmiany są na stronie od razu, a nasze automatyczne aktualizacje już ich nie nadpiszą.", "Cykl i jego rundy dostają odznakę Zweryfikowane przez organizatora."],
+      manage: "Otwórz zarządzanie cyklem",
+    },
   },
   de: {
     title: "Für Veranstalter",
@@ -284,5 +389,26 @@ export const organizerCopy: Record<Locale, Copy> = {
     verify: "Meldest du dich mit einer Adresse auf der Domain der Rennwebsite an, bist du sofort bestätigt. Sonst prüfen wir die Anfrage von Hand, meist innerhalb von zwei Tagen.",
     signIn: "Melde dich zuerst an:",
     manage: "Rennverwaltung öffnen",
+    editLink: "Angaben bearbeiten",
+    editTitle: "Rennen bearbeiten",
+    editIntro: "Fehler bei {name} entdeckt, oder veranstaltest du es? Der Veranstalter übernimmt das Rennen und pflegt es selbst, alle anderen schicken uns eine Korrektur.",
+    optionOrganizer: "Ich veranstalte es",
+    optionSuggest: "Korrektur vorschlagen",
+    suggestPlaceholder: "Was stimmt nicht und wie muss es lauten? Am besten mit Link zur Quelle.",
+    suggestSend: "Korrektur senden",
+    suggestThanks: "Danke! Wir prüfen die Korrektur und übernehmen sie.",
+    adminNote: "Du bist Admin und kannst direkt bearbeiten.",
+    adminEdit: "Im Admin bearbeiten",
+    organizerNote: "Du betreust das als Veranstalter.",
+    pendingNote: "Deine Übernahme-Anfrage wartet auf Bestätigung. Bis dahin kannst du uns eine Korrektur schicken.",
+    seriesClaim: {
+      claimLink: "Du veranstaltest diese Serie? Übernimm sie",
+      dialogTitle: "Serie übernehmen",
+      dialogIntro: "Du veranstaltest {name}? Übernimm die ganze Serie und betreue jeden Lauf selbst.",
+      editTitle: "Serie bearbeiten",
+      editIntro: "Fehler bei {name} entdeckt, oder veranstaltest du sie? Der Veranstalter übernimmt die Serie und pflegt jeden Lauf selbst, alle anderen schicken uns eine Korrektur.",
+      points: ["Du bearbeitest Termine, Links, Beschreibung, Strecken und Klassen jedes Laufs.", "Änderungen sind sofort online, und unsere automatischen Updates überschreiben sie nicht mehr.", "Die Serie und ihre Läufe bekommen das Abzeichen Vom Veranstalter bestätigt."],
+      manage: "Serienverwaltung öffnen",
+    },
   },
 };

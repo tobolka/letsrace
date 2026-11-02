@@ -4,6 +4,9 @@ import Link from "next/link";
 import { MapPinned } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getPublicSeriesRow, getSeriesBySlug } from "@/lib/events";
+import { BadgeCheck } from "lucide-react";
+import { ClaimRaceDialog } from "@/components/race/claim-race-dialog";
+import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
@@ -95,6 +98,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
   const upcoming = data.events.filter((e) => e.startDate >= today);
   const past = data.events.filter((e) => e.startDate < today);
   const rc = raceCopy[locale];
+  const oc = organizerCopy[locale];
   const countries = [...new Set(data.events.map((e) => e.location?.countryCode).filter((c): c is string => Boolean(c) && isListedCountry(c!)))];
 
   const copy = hubCopy[locale];
@@ -128,6 +132,16 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
             </Link>
           </Button>
         </BrowseIntro>
+        <p className="mt-3 text-xs text-muted-foreground">
+          {data.series.organizerVerified ? (
+            <span className="inline-flex items-center gap-1 font-medium text-foreground" title={oc.badgeHelp}>
+              <BadgeCheck className="size-3.5 text-sky-600 dark:text-sky-400" aria-hidden />
+              {oc.badge}
+            </span>
+          ) : (
+            <ClaimRaceDialog kind="series" locale={locale} slug={data.series.slug} name={data.series.name} />
+          )}
+        </p>
         {words.own ? (
           <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}

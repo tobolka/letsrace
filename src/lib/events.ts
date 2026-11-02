@@ -344,6 +344,8 @@ export type SeriesListItem = {
   competitionType: string;
   season: string | null;
   eventCount: number;
+  /** An organiser of the series verified it. */
+  organizerVerified: boolean;
 };
 
 function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListItem {
@@ -362,11 +364,12 @@ function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListI
     competitionType: String(row.competition_type ?? "other"),
     season: row.season ? String(row.season) : null,
     eventCount,
+    organizerVerified: Boolean(row.organizer_verified_at),
   };
 }
 
 const SERIES_PUBLIC_COLUMNS =
-  "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, series_type, level, competition_type, season";
+  "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, series_type, level, competition_type, season, organizer_verified_at";
 
 export async function listSeries(filters: EventFilters = {}): Promise<SeriesListItem[]> {
   const supabase = createServerSupabase();
@@ -441,7 +444,9 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
   // multi-round cups (≥2). Deep links to a one-race series still work via
   // getSeriesBySlug / ?series=… on the events API.
   return (series ?? [])
-    .map((s) => mapSeriesRow(s as Record<string, unknown>, tally.get(s.id as string) ?? 0))
+    // `organizer_verified_at` is newer than the generated types; rows are read loosely.
+    .map((s) => s as unknown as Record<string, unknown>)
+    .map((s) => mapSeriesRow(s, tally.get(s.id as string) ?? 0))
     .filter((s) => s.eventCount >= 2)
     .filter((s) => !s.countryCode || isListedCountry(s.countryCode))
     .sort((a, b) => b.eventCount - a.eventCount || a.name.localeCompare(b.name, "cs"));
@@ -461,7 +466,7 @@ export const getPublicSeriesRow = cache(unstable_cache(async function getPublicS
     .maybeSingle();
   if (error) throw new Error(error.message);
   return row;
-}, ["public-series-row-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
+}, ["public-series-row-v2"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
 
 export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySlug(
   slug: string,
@@ -477,7 +482,7 @@ export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySl
        location:locations!inner(id, name, municipality, country_code, lat, lng),
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
     )
-    .eq("series_id", row.id)
+    .eq("series_id", (row as unknown as { id: string }).id)
     .eq("visibility", "public")
     .in("location.country_code", [...PUBLIC_COUNTRY_CODES])
     .order("start_date", { ascending: true })
@@ -486,10 +491,10 @@ export const getSeriesBySlug = cache(unstable_cache(async function getSeriesBySl
 
   const events = (eventRows ?? []).map((e) => mapEventRow(e as Record<string, unknown>));
   return {
-    series: mapSeriesRow(row as Record<string, unknown>, events.length),
+    series: mapSeriesRow(row as unknown as Record<string, unknown>, events.length),
     events,
   };
-}, ["public-series-rounds-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
+}, ["public-series-rounds-v2"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();
