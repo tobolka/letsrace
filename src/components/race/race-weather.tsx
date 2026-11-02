@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
 import { MetaRow } from "@/components/explore/meta-row";
 import { ExplainedHint } from "@/components/explore/explained-badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
 import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather";
 import { createWeatherLoader, currentWeather } from "@/lib/weather-cache";
@@ -17,6 +18,7 @@ const copy: Record<Locale, {
   rainChance: string;
   wind: string;
   past: string;
+  pastShort: string;
   pastRain: string;
   climateHelp: string;
   windy: string;
@@ -43,6 +45,7 @@ const copy: Record<Locale, {
     rainChance: "rain {n} %",
     wind: "wind {n} km/h",
     past: "In past years around this date",
+    pastShort: "Past years",
     pastRain: "rain on {n} % of days",
     climateHelp: "Average of the week around this date over the last {n} years. Weather data: Open-Meteo.",
     windy: "Forecast on Windy",
@@ -69,6 +72,7 @@ const copy: Record<Locale, {
     rainChance: "déšť {n} %",
     wind: "vítr {n} km/h",
     past: "V minulých letech kolem tohoto data",
+    pastShort: "Minulé roky",
     pastRain: "pršelo v {n} % dnů",
     climateHelp: "Průměr týdne kolem tohoto data za posledních {n} let. Data o počasí: Open-Meteo.",
     windy: "Předpověď na Windy",
@@ -95,6 +99,7 @@ const copy: Record<Locale, {
     rainChance: "deszcz {n} %",
     wind: "wiatr {n} km/h",
     past: "W poprzednich latach w tym terminie",
+    pastShort: "Poprzednie lata",
     pastRain: "deszcz w {n} % dni",
     climateHelp: "Średnia z tygodnia wokół tej daty z ostatnich {n} lat. Dane pogodowe: Open-Meteo.",
     windy: "Prognoza na Windy",
@@ -121,6 +126,7 @@ const copy: Record<Locale, {
     rainChance: "dážď {n} %",
     wind: "vietor {n} km/h",
     past: "V minulých rokoch okolo tohto dátumu",
+    pastShort: "Minulé roky",
     pastRain: "pršalo v {n} % dní",
     climateHelp: "Priemer týždňa okolo tohto dátumu za posledných {n} rokov. Údaje o počasí: Open-Meteo.",
     windy: "Predpoveď na Windy",
@@ -147,6 +153,7 @@ const copy: Record<Locale, {
     rainChance: "Regen {n} %",
     wind: "Wind {n} km/h",
     past: "In den letzten Jahren um dieses Datum",
+    pastShort: "Vorjahre",
     pastRain: "Regen an {n} % der Tage",
     climateHelp: "Durchschnitt der Woche um dieses Datum in den letzten {n} Jahren. Wetterdaten: Open-Meteo.",
     windy: "Vorhersage auf Windy",
@@ -250,9 +257,12 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
   const hi = racing.length ? Math.max(...racing.map((h) => h.temp)) : f?.tmax;
   const temps = lo != null && lo !== hi ? `${lo}–${hi}°` : `${hi}°`;
   const sky = f && f.sky !== "rain" ? `, ${c.sky[f.sky]}` : "";
-  const past = k
-    ? `${c.past}: ${c.day} ${k.tmax}°, ${fill(c.pastRain, { n: Math.round(k.rainyShare * 100) })}`
-    : null;
+  // Short on the line; the tooltip says what it is: the week around this date,
+  // averaged over the last years, and where the numbers come from.
+  const past = k ? `${c.pastShort}: ${k.tmax}°, ${fill(c.rainChance, { n: Math.round(k.rainyShare * 100) })}` : null;
+  const pastHelp = k
+    ? `${c.past}: ${c.day} ${k.tmax}°, ${fill(c.pastRain, { n: Math.round(k.rainyShare * 100) })}. ${fill(c.climateHelp, { n: k.years }).replace("Open-Meteo", climateSource.name)}`
+    : "";
   return (
     <MetaRow icon={f ? SKY_ICON[f.sky] : <Thermometer />} label={c.label}>
       <span className="text-sm">
@@ -276,9 +286,14 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
           </ExplainedHint>
         ) : null}
         {past ? (
-          <span className={f ? "block text-xs text-muted-foreground" : "block"} title={fill(c.climateHelp, { n: k!.years }).replace("Open-Meteo", climateSource.name)}>
-            {past}
-          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={f ? "block w-fit cursor-help text-xs text-muted-foreground" : "block w-fit cursor-help"}>{past}</span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6} className="max-w-64 text-pretty">
+              {pastHelp}
+            </TooltipContent>
+          </Tooltip>
         ) : null}
         <a
           href={windyUrl(lat, lng)}
