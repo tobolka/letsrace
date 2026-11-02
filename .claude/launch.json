@@ -12,6 +12,11 @@
       "autoPort": false
     },
     {
+      "name": "letsrace-running",
+      "url": "http://localhost:3044",
+      "port": 3044
+    },
+    {
       "name": "letsrace-prod",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

@@ -165,7 +165,11 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   ]);
   const nearby = pickNearbyRaces(event, around, today);
   const categories = distinctCategories(event.categories ?? []);
-  const sources = [...(event.sources ?? [])].sort((a, b) => SOURCE_ORDER.indexOf(a.kind) - SOURCE_ORDER.indexOf(b.kind));
+  // One row per website: a calendar we read several pages of is one source,
+  // shown under the most trustworthy kind it was read as.
+  const sources = [...(event.sources ?? [])]
+    .sort((a, b) => SOURCE_ORDER.indexOf(a.kind) - SOURCE_ORDER.indexOf(b.kind))
+    .filter((s, i, all) => all.findIndex((o) => hostOf(o.url) === hostOf(s.url)) === i);
   const otherRounds = (seriesData?.events ?? []).filter((e) => e.id !== event.id);
   const upcomingRounds = otherRounds.filter((e) => e.startDate >= today);
   const rounds = (upcomingRounds.length ? upcomingRounds : otherRounds).slice(0, 12);
