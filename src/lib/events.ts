@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, publicEventTag } from "@/lib/catalogue-cache";
 import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
@@ -29,6 +29,7 @@ import { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy, shouldHide
 import type { Insert, Json, Update } from "@/lib/supabase/tables";
 
 export type EventListItem = {
+  publicRevision?: string | null;
   description?: string | null;
   id: string;
   slug: string;
@@ -515,14 +516,14 @@ export async function getEventBySlug(slug: string) {
 }
 
 /** Public race by slug for SEO pages and deep links. */
-export const getPublicEventBySlug = cache(unstable_cache(async function getPublicEventBySlug(
+async function loadPublicEventBySlug(
   slug: string,
 ): Promise<EventListItem | null> {
   const supabase = createServerSupabase();
   const { data, error } = await supabase
     .from("events")
     .select(
-      `${EVENT_LIST_COLUMNS}, description,
+      `${EVENT_LIST_COLUMNS}, description, public_revision,
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
        sources:event_sources(source_url)`,
@@ -552,11 +553,16 @@ export const getPublicEventBySlug = cache(unstable_cache(async function getPubli
     return getPublicEventBySlug(canonical.slug);
   }
   const event = mapEventRow(data as Record<string, unknown>);
-  if (shouldHideFromMap(event.name, event.status, event.visibility)) return null;
+  // A cancelled race leaves the map, but its detail must explain cancellation.
+  if (shouldHideFromMap(event.name, event.status === "cancelled" ? "scheduled" : event.status, event.visibility)) return null;
   const cc = event.location?.countryCode;
   if (cc && !isListedCountry(cc)) return null;
   return event;
-}, ["public-event-by-slug-v1"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] }));
+}
+export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
+  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v2", slug],
+  { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
+)());
 
 /**
  * Races an address no race has may mean: the one to send it to, when the
@@ -726,6 +732,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
   });
   return {
     description: (row.description as string | null) ?? null,
+    publicRevision: (row.public_revision as string | null) ?? null,
     id: String(row.id),
     slug: String(row.slug),
     // Names arrive from a hundred calendars, some of them mis-decoded on the

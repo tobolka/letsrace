@@ -128,6 +128,7 @@ if [ "${LLM_DAILY:-0}" = "1" ]; then
 fi
 step "Last year's editions"                scripts/carry-forward-editions.ts --apply
 step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30
+step "Publish saved changes and check public pages" scripts/publish-catalogue-changes.ts
 SOURCE_RUN_DEADLINE=0 step "Coverage after" scripts/audit-catalogue-overview.ts
 if [ "${CATALOG_DETAIL_ENRICHMENT:-0}" = "1" ]; then
   SOURCE_RUN_DEADLINE=0 step "Detailed category diagnostics" scripts/audit-data-goal.ts

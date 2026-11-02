@@ -19,6 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-02",
+    items: {
+      en: ["The page of a cancelled race stays available and clearly shows the cancellation."],
+      cs: ["Na stránce zrušeného závodu zůstává jasná informace o zrušení."],
+    },
+  },
+  {
     date: "2026-11-01",
     items: {
       en: [

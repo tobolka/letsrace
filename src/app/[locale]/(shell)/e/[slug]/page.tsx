@@ -159,7 +159,12 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   const hub = hubs.find((h) => event.disciplines.some((d) => isHubDiscipline(h.discipline) && disciplineMatches(h.discipline, d)));
 
   return (
-    <article className="relative min-h-full bg-background">
+    <article className="relative min-h-full bg-background" data-race-revision={event.publicRevision ?? undefined} data-race-id={event.id}>
+      {event.status === "cancelled" && (
+        <p role="status" className="mx-auto max-w-5xl px-4 py-4 font-semibold text-destructive">
+          {{ cs: "Tento závod je zrušený.", en: "This race is cancelled.", sk: "Tieto preteky sú zrušené.", pl: "Ten wyścig został odwołany.", de: "Dieses Rennen wurde abgesagt." }[locale]}
+        </p>
+      )}
       <RacePageView raceId={event.id} slug={event.slug} hasRegistration={Boolean(event.registrationUrl)} hasPrimaryOutbound={Boolean(event.registrationUrl || event.websiteUrl || event.listingUrl || event.regulationsUrl)} isPast={isPast} />
       <EventJsonLd
         event={event}

@@ -14,7 +14,7 @@ export const UPCOMING_EVENT_STATUSES = ["scheduled", "postponed", "registration_
  * their pages, all of them indexed. A race that happened is still a race that
  * happened; the map hides it by date, not by status.
  */
-export const PUBLIC_EVENT_STATUSES = [...UPCOMING_EVENT_STATUSES, "completed"] as const;
+export const PUBLIC_EVENT_STATUSES = [...UPCOMING_EVENT_STATUSES, "completed", "cancelled"] as const;
 
 /**
  * Statuses the catalogue still works on: fills ages, merges duplicates, checks

@@ -14,6 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
+      pipeline_tasks: {
+        Row: {key:string;kind:string;capability:string;entity_id:string|null;priority:number;payload:Json;status:string;available_at:string;lease_until:string|null;token:string|null;attempts:number;result:Json|null;last_error:string|null;created_at:string;updated_at:string;finished_at:string|null};
+        Insert: {key:string;kind:string;capability:string;entity_id?:string|null;priority?:number;payload?:Json;status?:string;available_at?:string;lease_until?:string|null;token?:string|null;attempts?:number;result?:Json|null;last_error?:string|null;created_at?:string;updated_at?:string;finished_at?:string|null};
+        Update: {payload?:Json;status?:string;available_at?:string;lease_until?:string|null;token?:string|null;attempts?:number;result?:Json|null;last_error?:string|null;updated_at?:string;finished_at?:string|null}; Relationships: [];
+      };
       pipeline_jobs: {
         Row: {key:string;run_id:string;started_at:string;finished_at:string|null;status:string;summary:Json};
         Insert: {key:string;run_id:string;started_at?:string;finished_at?:string|null;status?:string;summary?:Json};
@@ -592,6 +597,7 @@ export type Database = {
       }
       events: {
         Row: {
+          public_revision: string
           age_categories: string[]
           age_confidence: string | null
           audience: string
@@ -630,6 +636,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          public_revision?: string
           age_categories?: string[]
           age_confidence?: string | null
           audience?: string
@@ -668,6 +675,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          public_revision?: string
           age_categories?: string[]
           age_confidence?: string | null
           audience?: string
@@ -1436,6 +1444,9 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_claim_tasks: {Args:{p_kind:string;p_capabilities:string[];p_limit?:number};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
+      pipeline_finish_task: {Args:{p_key:string;p_token:string;p_payload:Json;p_result:Json};Returns:boolean};
+      pipeline_retry_task: {Args:{p_key:string;p_token:string;p_error:string;p_delay_seconds?:number};Returns:boolean};
       pipeline_health: {Args:Record<string,never>;Returns:Json};
       pipeline_begin: {Args:{p_key:string;p_run:string};Returns:boolean};
       app_carry_previous_edition: { Args: { target_id: string; previous_id: string; expected: Json; patch: Json }; Returns: boolean }
