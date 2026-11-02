@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { withCron } from "@/lib/api/guards";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { PUBLIC_CATALOGUE_TAG, publicEventTag } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag } from "@/lib/catalogue-cache";
 import { publicationPayload } from "@/lib/pipeline/publication";
 import { locales } from "@/lib/i18n/messages";
 
@@ -13,7 +13,13 @@ export const POST = withCron(async req => {
   const db = createServerSupabase();
   const { data, error } = await db.from("pipeline_tasks").select("*").eq("key", input.key).single();
   if (error) throw error;
-  if (data.kind !== "public_refresh" || data.status !== "running" || data.token !== input.token || !data.lease_until || !Number.isFinite(Date.parse(data.lease_until)) || Date.parse(data.lease_until) <= Date.now()) return NextResponse.json({ error: "Publication claim expired" }, { status: 409 });
+  if (!["public_refresh", "catalogue_refresh"].includes(data.kind) || data.status !== "running" || data.token !== input.token || !data.lease_until || !Number.isFinite(Date.parse(data.lease_until)) || Date.parse(data.lease_until) <= Date.now()) return NextResponse.json({ error: "Publication claim expired" }, { status: 409 });
+  if (data.kind === "catalogue_refresh") {
+    const payload = data.payload as { revision?: string };
+    if (data.key !== "catalogue:upcoming" || typeof payload.revision !== "string" || payload.revision !== input.revision) return NextResponse.json({ error: "Publication superseded" }, { status: 409 });
+    revalidateTag(PUBLIC_CATALOGUE_VIEWS_TAG, { expire: 0 });
+    return NextResponse.json({ refreshed: true, revision: payload.revision }, { headers: { "Cache-Control": "private, no-store" } });
+  }
   const payload = publicationPayload(data.payload);
   if (payload.revision !== input.revision) return NextResponse.json({ error: "Publication superseded" }, { status: 409 });
   // Explicit operator batch only. Routine watcher publication stays race-scoped.

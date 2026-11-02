@@ -15,5 +15,8 @@ export const CATALOGUE_CDN_CACHE = `public, s-maxage=${CATALOGUE_CDN_SECONDS}, s
 /** Shared by `unstable_cache` entries and `refreshPublicCatalogue`. */
 export const PUBLIC_CATALOGUE_TAG = "public-catalogue";
 
+/** Shared lists only: refreshing a batch must not expire every race detail. */
+export const PUBLIC_CATALOGUE_VIEWS_TAG = "public-catalogue-views";
+
 /** One changed race must not invalidate every catalogue page. */
 export function publicEventTag(slug: string) { return `public-event:${slug}`.slice(0, 256); }

@@ -19,4 +19,6 @@
 
 Schránka bezpečně ukládá odpovědi, ale ještě neexistuje obecné automatické vytváření a vykonávání všech typů rozhodnutí. Samostatné posuzování podkladů, úplné společné řízení práce a nezávislé měření nejsou tímto dokončené. Nevznikly žádné umělé otázky ani změny závodů.
 
-Nasazení a kontrola přihlášené stránky se doplní po dokončení vydání.
+## Nasazení
+
+Commit `d5b8bd67` je na hlavní větvi; Vercel `dpl_DRQk4nZs4VC8SPMXKyMcuvLaMtig` je READY. Po běžném přihlášení Googlem ověřeno skutečné nové `/admin` i zachované `/admin/tools`. Snímek: [produkční přehled](production.jpg). Kontrola změněného aplikačního kódu bez chyb.

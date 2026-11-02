@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { listEvents } from "@/lib/events";
-import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG } from "@/lib/catalogue-cache";
 import { addDaysIso } from "@/lib/seo-race-copy";
 import { racePlace } from "@/lib/race-place";
 
@@ -16,6 +16,6 @@ const loadPreview = unstable_cache(async (today: string) => {
     place: racePlace(event),
     country: event.location?.countryCode ?? null,
   }));
-}, ["catalogue-html-preview-v1"], { revalidate: 86400, tags: [PUBLIC_CATALOGUE_TAG] });
+}, ["catalogue-html-preview-v1"], { revalidate: 86400, tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG] });
 
 export const getCataloguePreview = cache(() => loadPreview(new Date().toISOString().slice(0, 10)));

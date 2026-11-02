@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG } from "@/lib/catalogue-cache";
 import { listEvents } from "@/lib/events";
 import { listQualifyingHubs } from "@/lib/discipline-hubs";
 import { addDaysIso, seriesIn } from "@/lib/seo-race-copy";
@@ -27,7 +27,7 @@ const loadSiteIndex = unstable_cache(async (today: string) => {
       location: e.location ? { municipality: e.location.municipality } : null,
     })),
   };
-}, ["site-index-links-v1"], { revalidate: 60 * 60 * 24 * 7, tags: [PUBLIC_CATALOGUE_TAG] });
+}, ["site-index-links-v1"], { revalidate: 60 * 60 * 24 * 7, tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG] });
 
 export const getSiteIndexData = cache(() =>
   loadSiteIndex(new Date().toISOString().slice(0, 10)).catch(() => ({ hubs: [], series: [], soon: [] })),

@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/publication",
+      "schedule": "40 5 * * *"
+    },
+    {
       "path": "/api/cron/watch",
       "schedule": "0 5 * * *"
     },

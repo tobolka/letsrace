@@ -21,6 +21,14 @@ it("refreshes aggregate views only for an explicitly requested operator batch", 
   expect((await send(true)).status).toBe(200);
   expect(state.tag).toHaveBeenCalledWith("public-catalogue", { expire: 0 });
 });
+it("refreshes only shared views for a current aggregate claim", async () => {
+  state.task = { ...state.task, key: "catalogue:upcoming", kind: "catalogue_refresh", payload: { revision: "r2" } };
+  expect((await send()).status).toBe(200);
+  expect(state.tag.mock.calls).toEqual([["public-catalogue-views", { expire: 0 }]]);
+  expect(state.path).not.toHaveBeenCalled();
+  state.task.key = "arbitrary-task";
+  expect((await send()).status).toBe(409);
+});
 it("refuses broad invalidation without authentication and a current claimed revision", async () => {
   state.authorised = false; expect((await send(true)).status).toBe(401);
   state.authorised = true; state.task.status = "done"; expect((await send(true)).status).toBe(409);

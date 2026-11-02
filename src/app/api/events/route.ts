@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { parseQuery } from "@/lib/api/validate";
 import { eventsQuerySchema } from "@/lib/api/events-query";
-import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG } from "@/lib/catalogue-cache";
 import { listEvents } from "@/lib/events";
 
 /**
@@ -16,7 +16,7 @@ const upcomingCatalogue = unstable_cache(
   ["public-catalogue-feed-v1"],
   // 24h data cache + CDN below: Free-tier Supabase egress/log ingestion cannot
   // afford a full catalogue pull on every short TTL miss.
-  { revalidate: 60 * 60 * 24, tags: [PUBLIC_CATALOGUE_TAG] },
+  { revalidate: 60 * 60 * 24, tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG] },
 );
 
 export async function GET(req: NextRequest) {
@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
     const events = await upcomingCatalogue();
     return NextResponse.json(events, {
       headers: {
-        "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+        "Cache-Control": "public, max-age=60, must-revalidate",
+        "Vercel-Cache-Tag": PUBLIC_CATALOGUE_VIEWS_TAG,
         "CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
         "Vercel-CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
       },

@@ -22,6 +22,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-02",
     items: {
       en: [
+        "Saved race corrections also reach the shared map and calendar automatically.",
         "Race pages show similar races nearby, the routes and categories, earlier and later editions of the race and where we found it.",
         "Races show the weather: an hour-by-hour forecast close to the day, the same week in past years, and a link to Windy.",
         "A race in a series shows its stated round number and how many rounds we list for that season.",
@@ -36,6 +37,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Links to withdrawn races no longer lead to a different race with a similar name.",
       ],
       cs: [
+        "Opravené údaje se automaticky promítají i do společné mapy a kalendáře.",
         "Na stránce závodu najdeš podobné závody v okolí, trasy a kategorie, předchozí i další ročníky a to, odkud závod máme.",
         "U závodů uvidíš počasí: když se blíží, předpověď po hodinách, k tomu ten týden v minulých letech a odkaz na Windy.",
         "U závodu v seriálu vidíš doložené číslo kola a počet kol, která máme pro daný ročník v kalendáři.",
