@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { BadgeCheck, Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
+import { BadgeCheck, Bike, CalendarHeart, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
@@ -13,6 +13,7 @@ import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races
 import { RaceDayFacts, RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { roundOf } from "@/lib/series-rounds";
+import { raceHolidays } from "@/lib/holidays";
 import { birthYears } from "@/lib/birth-years";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
@@ -167,7 +168,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   // What links this page into the rest of the site: its series' other rounds,
   // similar races nearby, and the hub for its kind of racing.
   const here = event.location;
-  const [seriesData, hubs, around, editions, organiserRaces] = await Promise.all([
+  const [seriesData, hubs, around, editions, organiserRaces, holidays] = await Promise.all([
     event.series ? getSeriesBySlug(event.series.slug).catch(() => null) : Promise.resolve(null),
     hubCountry ? listQualifyingHubs([hubCountry]).catch(() => []) : Promise.resolve([]),
     // A race already run still points on to the next ones like it.
@@ -176,6 +177,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
       : Promise.resolve([]),
     getRaceEditions(event).catch(() => []),
     listOrganiserRaces(event).catch(() => []),
+    isPast
+      ? Promise.resolve([] as string[])
+      : raceHolidays({ startDate: event.startDate, endDate: event.endDate, countryCode: event.location?.countryCode ?? null }, locale).catch(() => []),
   ]);
   const nearby = pickNearbyRaces(event, around, today);
   const categories = distinctCategories(event.categories ?? []);
@@ -310,6 +314,12 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
           {!isPast && here?.lat != null && here.lng != null ? (
             <RaceDayFacts lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} countryCode={here.countryCode} />
+          ) : null}
+          {holidays.length > 0 ? (
+            // Public holiday, long weekend, summer holidays: what the date means for a family.
+            <MetaRow icon={<CalendarHeart />} label={holidays.join(", ")}>
+              <span className="text-sm">{holidays.join(" · ")}</span>
+            </MetaRow>
           ) : null}
         </div>
 
