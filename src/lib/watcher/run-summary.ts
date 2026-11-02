@@ -1,7 +1,7 @@
 import type { WatchOutcome } from "@/lib/watcher/run";
 
 export function isBudgetDeferral(message: string): boolean {
-  return /provider_deferred:|LLM budget of|Shared LLM budget|calendar_budget_exhausted|calendar_time_budget_exhausted|write_time_budget_exhausted|time budget exceeded|chunk_limit/.test(message);
+  return /provider_deferred:|LLM budget of|Shared LLM budget|calendar_budget_exhausted|calendar_time_budget_exhausted|write_time_budget_exhausted|time budget exceeded|chunk_limit|source_reader_unavailable_or_running|source_changed_before_read/.test(message);
 }
 
 export function isUnreadableSource(message: string): boolean {
@@ -55,7 +55,7 @@ export function reportWatchBatch(outcomes: WatchOutcome[]) {
 export function reportFederation(out: WatchOutcome) {
   if (!/portal\.czechcyclingfederation\.com/i.test(out.url)) return;
   console.info("pipeline_federation", JSON.stringify({
-    status: out.ok ? "ok" : /identity_review_required|pipeline_data_review_required/.test(out.error ?? "") ? "needs_review" : "failed",
+    status: out.ok ? "ok" : watchOutcomeState(out) === "deferred" ? "deferred" : /identity_review_required|pipeline_data_review_required/.test(out.error ?? "") ? "needs_review" : "failed",
     read: out.eventsExtracted ?? 0, written: out.eventsUpserted,
     created: out.eventsCreated ?? 0, updated: out.eventsUpdated ?? 0,
     issue: out.error?.slice(0, 1200) ?? null,

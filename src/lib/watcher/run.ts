@@ -166,7 +166,7 @@ export async function runDueWatches(
   return outcomes;
 }
 
-export async function watchOne(row: {
+type SourceReadInput = {
   id: string;
   url: string;
   etag?: string | null;
@@ -174,7 +174,12 @@ export async function watchOne(row: {
   content_hash?: string | null;
   kind?: string;
   last_extract_status?: string | null;
-}, opts?: { deadline?: number }): Promise<WatchOutcome> {
+};
+export async function watchOne(row: SourceReadInput, opts?: { deadline?: number }): Promise<WatchOutcome> {
+  const { withSourceWork } = await import("@/lib/pipeline/source-work");
+  return withSourceWork(row, () => readClaimedSource(row, opts));
+}
+async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: number }): Promise<WatchOutcome> {
   const supabase = createServerSupabase();
   const runInsert = await supabase
     .from("ingest_runs")

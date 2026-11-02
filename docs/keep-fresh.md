@@ -26,6 +26,12 @@ Zelená znamená běh nebo úspěšné čekání. Oranžová znamená skutečnou
 
 Při vypnutém Macu pokračuje server zdarma. Mac po zapnutí a přihlášení naváže. Serverová AI nyní **není zapnutá**.
 
+Mac posílá jednou za pět minut stručné provozní hlášení na stejný soukromý serverový přehled: stav, pauzu, další běh a číselný výsledek poslední kontroly. Neposílá místní cesty, seznam procesů ani obsah logů. Čas přijetí hlášení určuje server. Webový přehled tak může rozlišit čerstvě hlásící se Mac od vypnutého nebo nedostupného počítače.
+
+Pravidelné, přímé i prohlížečové čtení nyní před čtením přebírá stejnou trvalou práci `source_read`. Jedno převzetí platí nejvýše dvacet minut; jiný pracovník ho nepřevezme a po pádu vyprší. Server nepřebírá práci označenou jako prohlížečová. Dosavadní termín `next_poll_at` zůstává plánem a převádí se do stejné fronty, takže nevzniká druhý nezávislý plánovač. Pozastavený zdroj se sám neaktivuje.
+
+Změna závodu a žádost o zveřejnění se ukládají v jedné databázové transakci. Navazující pracovník obnoví konkrétní detail a kontroluje skutečné české a anglické HTML: totožnost, revizi, termín, stav a uložený odkaz na přihlášku. Při neshodě práce zůstává otevřená a opakuje se s odstupem. Stejné změny se slučují do jednoho čekajícího úkolu; starý pracovník nemůže prohlásit novější změnu za hotovou. Výslovné načítání má společný strop šedesáti pokusů za den, včetně přerušených pokusů. Ostatní jazyky se obnovují při návštěvě. Toto zatím neřeší čerstvost všech přehledů katalogu.
+
 ## Výsledky a peníze
 
 „Nové“ znamená nově založené závody. „Změněné“ znamená změněné uložené údaje, nikoli pouhé znovunačtení nebo posunutí času kontroly. Počet načtených řádků kalendáře ani počet zápisů do databáze není počet nových závodů.

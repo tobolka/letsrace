@@ -14,6 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
+      pipeline_workers: {
+        Row:{key:string;heartbeat_at:string;status:string;paused:boolean;next_run_at:string|null;summary:Json|null};
+        Insert:{key:string;heartbeat_at?:string;status:string;paused?:boolean;next_run_at?:string|null;summary?:Json|null};
+        Update:{heartbeat_at?:string;status?:string;paused?:boolean;next_run_at?:string|null;summary?:Json|null};Relationships:[];
+      };
       pipeline_tasks: {
         Row: {key:string;kind:string;capability:string;entity_id:string|null;priority:number;payload:Json;status:string;available_at:string;lease_until:string|null;token:string|null;attempts:number;result:Json|null;last_error:string|null;created_at:string;updated_at:string;finished_at:string|null};
         Insert: {key:string;kind:string;capability:string;entity_id?:string|null;priority?:number;payload?:Json;status?:string;available_at?:string;lease_until?:string|null;token?:string|null;attempts?:number;result?:Json|null;last_error?:string|null;created_at?:string;updated_at?:string;finished_at?:string|null};
@@ -1445,6 +1450,8 @@ export type Database = {
     }
     Functions: {
       pipeline_claim_tasks: {Args:{p_kind:string;p_capabilities:string[];p_limit?:number};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
+      pipeline_claim_source: {Args:{p_source:string;p_capabilities:string[]};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
+      pipeline_finish_source: {Args:{p_key:string;p_token:string;p_url:string;p_result:Json};Returns:boolean};
       pipeline_finish_task: {Args:{p_key:string;p_token:string;p_payload:Json;p_result:Json};Returns:boolean};
       pipeline_retry_task: {Args:{p_key:string;p_token:string;p_error:string;p_delay_seconds?:number};Returns:boolean};
       pipeline_health: {Args:Record<string,never>;Returns:Json};
