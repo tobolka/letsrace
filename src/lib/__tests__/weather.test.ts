@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { climateFrom, RACE_HOURS, raceDayHours, skyOf, wantsForecast } from "@/lib/weather";
+import { archiveWindows, climateFrom, RACE_HOURS, raceDayHours, skyOf, wantsForecast } from "@/lib/weather";
 
 describe("weather", () => {
   it("reads WMO codes as the sky a rider dresses for", () => {
@@ -57,5 +57,19 @@ describe("raceDayHours", () => {
     });
     expect(hours.map((h) => h.hour)).toEqual(RACE_HOURS);
     expect(hours[0]).toEqual({ hour: 6, temp: 13, rainMm: 0, rainChance: 30, windKmh: 12, gustKmh: 25, windFrom: 270, sky: "partly", day: false });
+  });
+});
+
+describe("archiveWindows", () => {
+  it("reads only the week around each race date in each of ten years", () => {
+    const windows = archiveWindows(["2027-05-10"], 2026);
+    expect(windows).toHaveLength(10);
+    expect(windows[0]).toEqual(["2017-05-07", "2017-05-13"]);
+    expect(windows.at(-1)).toEqual(["2026-05-07", "2026-05-13"]);
+  });
+
+  it("joins close dates and crosses the new year", () => {
+    expect(archiveWindows(["2027-05-10", "2027-05-12"], 2026)[0]).toEqual(["2017-05-07", "2017-05-15"]);
+    expect(archiveWindows(["2027-01-01"], 2026)[0]).toEqual(["2016-12-29", "2017-01-04"]);
   });
 });

@@ -156,22 +156,61 @@ export function climateFrom(days: string[], tmax: (number | null)[], tmin: (numb
   };
 }
 
+/**
+ * The date ranges to read for these race dates: the week around each date in
+ * each of the last ten years. Dates in a place close together share a range.
+ */
+export function archiveWindows(dates: string[], lastYear: number): [string, string][] {
+  const out: [string, string][] = [];
+  const shift = (iso: string, days: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+  for (let year = lastYear - CLIMATE_YEARS + 1; year <= lastYear; year++) {
+    const centers = [...new Set(dates.map((date) => `${year}-${date.slice(5) === "02-29" ? "02-28" : date.slice(5)}`))].sort();
+    for (const center of centers) {
+      const from = shift(center, -CLIMATE_WINDOW);
+      const to = shift(center, CLIMATE_WINDOW);
+      const last = out.at(-1);
+      // Overlapping or touching weeks become one range.
+      if (last && from <= shift(last[1], 1)) last[1] = to > last[1] ? to : last[1];
+      else out.push([from, to]);
+    }
+  }
+  return out;
+}
+
 async function openMeteoHistory(lat: number, lng: number, dates: string[], today: string): Promise<Record<string, Climate>> {
   const lastYear = Number(today.slice(0, 4)) - 1;
-  const q = new URLSearchParams({
-    latitude: String(lat),
-    longitude: String(lng),
-    start_date: new Date(Date.UTC(lastYear - CLIMATE_YEARS + 1, 0, 1 - CLIMATE_WINDOW)).toISOString().slice(0, 10),
-    end_date: `${lastYear + 1}-01-0${CLIMATE_WINDOW}`,
-    daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
-    timezone: "auto",
-  });
-  const json = await getJson(`https://archive-api.open-meteo.com/v1/archive?${q}`, 6000);
-  const d = json?.daily as Daily | undefined;
-  if (!d?.time) throw new Error("weather_archive_unavailable");
+  // Only the week around each race date in each year, not ten whole years:
+  // Open-Meteo weighs a request by the data it returns, and ten years of days
+  // cost about eighty requests per place — the free budget ran out after a
+  // hundred places. Seven days per year is about a tenth of that.
+  const windows = archiveWindows(dates, lastYear);
+  const rows = new Map<string, [number | null, number | null, number | null]>();
+  for (let i = 0; i < windows.length; i += 2) {
+    await Promise.all(windows.slice(i, i + 2).map(async ([from, to]) => {
+      const q = new URLSearchParams({
+        latitude: String(lat),
+        longitude: String(lng),
+        start_date: from,
+        end_date: to,
+        daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
+        timezone: "auto",
+      });
+      const json = await getJson(`https://archive-api.open-meteo.com/v1/archive?${q}`, 6000);
+      const d = json?.daily as Daily | undefined;
+      if (!d?.time) throw new Error("weather_archive_unavailable");
+      (d.time as string[]).forEach((day, k) => rows.set(day, [
+        (d.temperature_2m_max as (number | null)[])[k] ?? null,
+        (d.temperature_2m_min as (number | null)[])[k] ?? null,
+        (d.precipitation_sum as (number | null)[])[k] ?? null,
+      ]));
+    }));
+  }
+  const days = [...rows.keys()].sort();
+  const pick = (n: 0 | 1 | 2) => days.map((day) => rows.get(day)![n]);
+  const d = { time: days, temperature_2m_max: pick(0), temperature_2m_min: pick(1), precipitation_sum: pick(2) };
   const result: Record<string, Climate> = {};
   for (const date of dates) {
-    const climate = climateFrom(d.time as string[], d.temperature_2m_max as (number | null)[], d.temperature_2m_min as (number | null)[], d.precipitation_sum as (number | null)[], date, { firstYear: lastYear - CLIMATE_YEARS + 1, lastYear, fullWindow: true });
+    const climate = climateFrom(d.time, d.temperature_2m_max, d.temperature_2m_min, d.precipitation_sum, date, { firstYear: lastYear - CLIMATE_YEARS + 1, lastYear, fullWindow: true });
     if (!climate || climate.years < CLIMATE_YEARS) throw new Error("weather_archive_incomplete");
     result[date.slice(5)] = { ...climate, source: "open-meteo", referenceYear: lastYear };
   }
