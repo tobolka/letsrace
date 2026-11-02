@@ -10,7 +10,7 @@ import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, listEvents, type EventListItem } from "@/lib/events";
 import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
-import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
+import { RaceDayFacts, RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { roundOf } from "@/lib/series-rounds";
 import { birthYears } from "@/lib/birth-years";
@@ -306,6 +306,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
           {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
             <RaceWeather lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} />
+          ) : null}
+          {!isPast && here?.lat != null && here.lng != null ? (
+            <RaceDayFacts lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} countryCode={here.countryCode} />
           ) : null}
         </div>
 

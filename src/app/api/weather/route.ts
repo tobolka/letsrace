@@ -4,7 +4,7 @@ import { parseQuery } from "@/lib/api/validate";
 import { apiError } from "@/lib/api/respond";
 import { first, isoDay } from "@/lib/api/schemas";
 import { clientIp, rateLimit } from "@/lib/security";
-import { raceWeather } from "@/lib/weather";
+import { elevationAt, raceWeather } from "@/lib/weather";
 import { readWeatherHistory } from "@/lib/weather-history";
 import { weatherCacheSeconds } from "@/lib/weather-cache";
 
@@ -31,8 +31,11 @@ export async function GET(req: NextRequest) {
   const today = new Date().toISOString().slice(0, 10);
   if (date < today) return apiError(404, "race day has passed");
 
-  const history = await readWeatherHistory(lat, lng, date).catch(() => null);
-  const weather = await raceWeather(lat, lng, date, today, history?.climate ?? null);
+  const [history, elevation] = await Promise.all([
+    readWeatherHistory(lat, lng, date).catch(() => null),
+    elevationAt(lat, lng).catch(() => null),
+  ]);
+  const weather = { ...(await raceWeather(lat, lng, date, today, history?.climate ?? null)), elevation };
   // A forecast moves every few hours; ten years of history barely moves at all.
   // But an answer with a part missing is Open-Meteo having a slow minute, not
   // the weather: held for a month, it hid the weather of a race for a month.

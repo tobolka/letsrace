@@ -40,7 +40,14 @@ export type Forecast = {
 /** One past year's week around the race's date. */
 export type ClimateYear = { year: number; tmax: number; tmin: number; rainMm: number };
 export type Climate = { tmax: number; tmin: number; rainyShare: number; years: number; byYear: ClimateYear[]; source?: "open-meteo" | "visual-crossing"; referenceYear?: number };
-export type RaceWeather = { forecast: Forecast | null; climate: Climate | null; forecastFetchedAt?: string | null };
+export type RaceWeather = { forecast: Forecast | null; climate: Climate | null; forecastFetchedAt?: string | null; elevation?: number | null };
+
+/** Metres above sea level at the start, from Open-Meteo's terrain model. */
+export async function elevationAt(lat: number, lng: number): Promise<number | null> {
+  const json = await getJson(`https://api.open-meteo.com/v1/elevation?${new URLSearchParams({ latitude: String(lat), longitude: String(lng) })}`, 4000);
+  const value = (json?.elevation as number[] | undefined)?.[0];
+  return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : null;
+}
 
 export class WeatherProviderError extends Error {
   constructor(public status: number) { super(`weather_provider_http_${status}`); }
