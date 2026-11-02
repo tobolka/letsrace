@@ -250,7 +250,6 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               {[place, discChips.join(", "), event.series?.name].filter(Boolean).join(" · ")}
             </span>
           </p>
-          {summary.length ? <p className="mt-1 text-sm text-muted-foreground">{capitalizeFirst(summary.join(" · "))}</p> : null}
           {isPast ? <p className="mt-2 text-sm font-medium">{rc.taken}</p> : null}
         </header>
 
@@ -368,6 +367,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
 
         <section className="mt-10">
           <h2 className="mb-3 text-lg font-semibold">{rc.about}</h2>
+          {/* The race at a glance — routes and the youngest category — before the account of it. */}
+          {summary.length ? <p className="mb-2 text-sm font-medium">{capitalizeFirst(summary.join(" · "))}</p> : null}
           {/* One paragraph: the sentences are one account of the race, not a list. */}
           <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
             {event.description?.trim() || raceSummary(event, locale).join(" ")}
