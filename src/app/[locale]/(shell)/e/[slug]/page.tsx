@@ -214,7 +214,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             {/* Same casing as the page title: a name the source wrote in capitals is not shouted. */}
             {unshout(event.name)}
           </h1>
-          <p className="mt-3 text-sm">
+          <p className="mt-2 text-sm leading-relaxed">
             <time className="font-medium tabular-nums" dateTime={event.startDate}>
               {dateLabel}
             </time>
@@ -227,7 +227,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         </header>
 
         {/* The same rows and badges as the race card on the map. */}
-        <div className="mt-6 flex flex-col gap-2.5">
+        <div className="mt-5 flex flex-col gap-2">
           <MetaRow icon={<UserRound />} label={t.audience}>
             {whoChips.length > 0 ? (
               <>
@@ -281,7 +281,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
           {actionLinks.map((link, index) => (
             <OutboundTrackLink
               key={link.href}
@@ -303,8 +303,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             </Link>
           </Button>
         </div>
-        {actionLinks.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">{t.noOnlineEntry}</p> : null}
-        <p className="mt-3 text-xs text-muted-foreground">
+        {actionLinks.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">{t.noOnlineEntry}</p> : null}
+        <p className="mt-2 text-xs text-muted-foreground">
           {trustText}
           {checkedText && event.lastSeenAt ? (
             <>
@@ -316,7 +316,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
         </p>
 
-        <section className="mt-8">
+        <section className="mt-10">
           <h2 className="mb-3 text-lg font-semibold">{rc.about}</h2>
           {/* One paragraph: the sentences are one account of the race, not a list. */}
           <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
@@ -327,13 +327,13 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         {categories.length > 0 ? (
           // The routes and classes as the organiser published them, each with
           // what its name does not already say — the distance, the ages.
-          <section className="mt-8">
+          <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{t.sourceCategories}</h2>
             <ul className="divide-y divide-border/60 rounded-xl border px-4 text-sm">
               {categories.map((category) => {
                 const detail = categoryDetail(category, locale);
                 return (
-                  <li key={category.id} className="flex min-w-0 items-baseline justify-between gap-3 py-2.5">
+                  <li key={category.id} className="flex min-w-0 items-baseline justify-between gap-3 py-3 leading-snug">
                     <span className="min-w-0 break-words font-medium">{category.name}</span>
                     {detail ? <span className="shrink-0 tabular-nums text-muted-foreground">{detail}</span> : null}
                   </li>
@@ -344,7 +344,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </section>
         ) : null}
 
-        <section className="mt-8">
+        <section className="mt-10">
           <RaceDetailMap events={[event]} locale={locale} href={mapHref} label={t.viewOnMap} />
         </section>
 
@@ -353,7 +353,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         ) : null}
 
         {event.series && rounds.length > 0 ? (
-          <section className="mt-8">
+          <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{fill(rc.otherRounds, { name: event.series.name })}</h2>
             <RaceLinkList events={rounds} locale={locale} groupByMonth={false} />
             <Button asChild variant="link" className="mt-1 px-0">
@@ -365,7 +365,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         ) : null}
 
         {nearby.length > 0 ? (
-          <section className="mt-8">
+          <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{rc.nearbySimilar}</h2>
             <RaceLinkList
               events={nearby.map((n) => n.event)}
@@ -379,11 +379,11 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         {sources.length > 0 ? (
           // Where the race was read from: the organiser's own page first, then
           // federations, series and calendars. Links, not endorsements.
-          <section className="mt-8">
+          <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{rc.sources}</h2>
             <ul className="divide-y divide-border/60 rounded-xl border px-4 text-sm">
               {sources.map((s) => (
-                <li key={s.url} className="flex min-w-0 items-baseline justify-between gap-3 py-2.5">
+                <li key={s.url} className="flex min-w-0 items-baseline justify-between gap-3 py-3 leading-snug">
                   <a href={s.url} target="_blank" rel="nofollow noopener noreferrer" className="min-w-0 truncate font-medium underline-offset-4 hover:underline">
                     {hostOf(s.url)}
                   </a>

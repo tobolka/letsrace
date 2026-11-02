@@ -296,7 +296,7 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
   const hasPast = Boolean(climate && climate.byYear.length >= 3);
   if (!hasDay && !hasPast) return null;
   return (
-    <section className="mt-8">
+    <section className="mt-10">
       <h2 className="mb-3 text-lg font-semibold">{c.section}</h2>
       <div className="flex flex-col gap-4">
         {hasDay ? <RaceDayForecast hours={hours} date={date} locale={locale} lat={lat} lng={lng} /> : null}
