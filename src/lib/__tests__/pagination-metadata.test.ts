@@ -18,7 +18,7 @@ describe.each(cases)("paginated metadata $path", ({ metadata, path }) => {
     const result = await metadata("2");
     expect(result.alternates?.canonical).toBe(`https://letsrace.cz/cs/${path("cs")}?page=2`);
     expect(result.alternates?.languages?.en).toBe(`https://letsrace.cz/en/${path("en")}?page=2`);
-    expect(result.alternates?.languages?.["x-default"]).toBe(result.alternates?.languages?.en);
+    expect(result.alternates?.languages?.["x-default"]).toBe(result.alternates?.languages?.cs);
     expect(result.openGraph?.url).toBe(result.alternates?.canonical);
   });
   it("canonicalizes out-of-range requests to the slice actually shown", async () => {

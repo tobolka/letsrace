@@ -13,7 +13,7 @@ import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, fillCopy, hubCopy, localeAlternates, raceOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
-import { fill, raceCopy, raceDescription, raceSummary, raceTitle } from "@/lib/seo-race-copy";
+import { fill, raceCopy, raceDescription, raceSummary, raceTitle, unshout } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -200,7 +200,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             style={{ background: disciplineColor(event.disciplines) }}
           />
           <h1 data-page-title className="text-balance text-3xl font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[2.125rem]">
-            {event.name}
+            {/* Same casing as the page title: a name the source wrote in capitals is not shouted. */}
+            {unshout(event.name)}
           </h1>
           <p className="mt-3 text-sm">
             <time className="font-medium tabular-nums" dateTime={event.startDate}>

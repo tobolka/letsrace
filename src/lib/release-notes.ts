@@ -21,8 +21,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     date: "2026-11-02",
     items: {
-      en: ["The page of a cancelled race stays available and clearly shows the cancellation."],
-      cs: ["Na stránce zrušeného závodu zůstává jasná informace o zrušení."],
+      en: [
+        "The page of a cancelled race stays available and clearly shows the cancellation.",
+        "Race names the organiser wrote in capitals no longer shout at the top of the race page.",
+      ],
+      cs: [
+        "Na stránce zrušeného závodu zůstává jasná informace o zrušení.",
+        "Názvy závodů, které pořadatel napsal velkými písmeny, už na stránce závodu nekřičí.",
+      ],
     },
   },
   {

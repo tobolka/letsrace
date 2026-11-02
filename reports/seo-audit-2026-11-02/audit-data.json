@@ -1,0 +1,71 @@
+{
+  "summary": {
+    "health_score": 76,
+    "business_type": "Programmatic event directory (cycling races)",
+    "top_findings": [
+      "Only 2 of ~10,400 URLs indexed; 10,372 \"Discovered \u2013 currently not indexed\" (GSC, to 2026-10-23)",
+      "~8,800 template race pages risk non-indexing (unverified without GSC)",
+      "Race titles over 60 chars (16/60) and one duplicate",
+      "SportsEvent missing organizer, address, offer price/availability",
+      "/list and /calendar near duplicates without schema",
+      "404 page has conflicting robots metas"
+    ],
+    "quick_wins": [
+      "Cap title length",
+      "Remove stray index,follow on 404",
+      "Split sitemap by type",
+      "Add organizer to SportsEvent"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 70,
+      "what_works": [],
+      "findings": []
+    },
+    {
+      "name": "Content Quality",
+      "score": 65,
+      "what_works": [],
+      "findings": []
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 82,
+      "what_works": [],
+      "findings": []
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 78,
+      "what_works": [],
+      "findings": []
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": 80,
+      "what_works": [],
+      "findings": []
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": 88,
+      "what_works": [],
+      "findings": []
+    },
+    {
+      "name": "Images",
+      "score": 85,
+      "what_works": [],
+      "findings": []
+    }
+  ],
+  "action_plan": {
+    "phases": []
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}

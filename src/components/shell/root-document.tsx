@@ -63,10 +63,9 @@ export const rootMetadata: Metadata = {
   creator: SITE_AUTHOR.name,
   openGraph: rootSocial.openGraph,
   twitter: rootSocial.twitter,
-  robots: {
-    index: true,
-    follow: true,
-  },
+  // No site-wide `robots`: indexing is the default without one, and an
+  // explicit "index, follow" was inherited by every 404 page, beside the
+  // "noindex" Next adds there — two contradicting tags on one page.
   /**
    * Search-console ownership, supplied by env so a code can be pasted into
    * Vercel without a deploy of its own. Seznam is not optional here: it carries

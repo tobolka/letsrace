@@ -2,7 +2,9 @@ import { de } from "@/lib/i18n/messages-de";
 
 export const locales = ["en", "cs", "pl", "sk", "de"] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = "en";
+// The home market: the bare domain and `x-default` lead here for anyone (and any
+// crawler) whose language is not one of ours.
+export const defaultLocale: Locale = "cs";
 
 export const messages = {
   en: {
