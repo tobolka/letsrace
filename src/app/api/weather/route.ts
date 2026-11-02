@@ -30,9 +30,13 @@ export async function GET(req: NextRequest) {
   if (date < today) return apiError(404, "race day has passed");
 
   const weather = await raceWeather(lat, lng, date, today);
+  const near = wantsForecast(date, today);
   // A forecast moves every few hours; ten years of history barely moves at all.
-  const maxAge = wantsForecast(date, today) ? 3 * 3600 : 30 * 86400;
+  // But an answer with a part missing is Open-Meteo having a slow minute, not
+  // the weather: held for a month, it hid the weather of a race for a month.
+  const complete = weather.climate != null && (!near || weather.forecast != null);
+  const maxAge = !complete ? 300 : near ? 3 * 3600 : 30 * 86400;
   return NextResponse.json(weather, {
-    headers: { "Cache-Control": `public, s-maxage=${maxAge}, stale-while-revalidate=${maxAge}` },
+    headers: { "Cache-Control": `public, s-maxage=${maxAge}, stale-while-revalidate=${complete ? maxAge : 60}` },
   });
 }

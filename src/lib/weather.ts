@@ -59,7 +59,7 @@ function daysBetween(from: string, to: string): number {
 const round = (n: number) => Math.round(n);
 
 async function getJson(url: string): Promise<Record<string, unknown> | null> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
   if (!res.ok) return null;
   return (await res.json()) as Record<string, unknown>;
 }
