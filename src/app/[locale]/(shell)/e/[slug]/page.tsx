@@ -401,13 +401,17 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
 
         {editions.length > 0 ? (
           <section className="mt-10" aria-labelledby="previous-editions">
-            <h2 id="previous-editions" className="mb-3 text-lg font-semibold">{({ cs: "Předchozí ročníky", en: "Previous editions", de: "Frühere Austragungen", pl: "Poprzednie edycje", sk: "Predchádzajúce ročníky" })[locale]}</h2>
-            <ul className="space-y-2 text-sm">
+            <h2 id="previous-editions" className="mb-3 text-lg font-semibold">{rc.previousEditions}</h2>
+            {/* The same rows as the routes and sources lists: the name, then the date on the right. */}
+            <ul className="divide-y divide-border/60 rounded-xl border px-4 text-sm">
               {editions.map(edition => (
-                <li key={edition.id}>
-                  <Link href={localePath(locale, `e/${edition.slug}`)} className="font-medium underline-offset-4 hover:underline">
-                    {unshout(edition.name)} · {format(parseISO(edition.start_date), "d. M. yyyy")}
+                <li key={edition.id} className="flex min-w-0 items-baseline justify-between gap-3 py-3 leading-snug">
+                  <Link href={localePath(locale, `e/${edition.slug}`)} className="min-w-0 truncate font-medium underline-offset-4 hover:underline">
+                    {unshout(edition.name)}
                   </Link>
+                  <time className="shrink-0 tabular-nums text-muted-foreground" dateTime={edition.start_date}>
+                    {format(parseISO(edition.start_date), "PPP", { locale: df })}
+                  </time>
                 </li>
               ))}
             </ul>

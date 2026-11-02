@@ -24,6 +24,7 @@ export const raceCopy: Record<Locale, {
   otherRounds: string;
   sameWeekend: string;
   nearbySimilar: string;
+  previousEditions: string;
   sources: string;
   sourcesHelp: string;
   sourceKinds: Record<string, string>;
@@ -67,6 +68,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Other rounds of {name}",
     sameWeekend: "Also that weekend nearby",
     nearbySimilar: "Similar races nearby",
+    previousEditions: "Previous editions",
     sources: "Where we found it",
     sourcesHelp: "We read the race from these pages and check them regularly. The organiser's regulations always decide.",
     sourceKinds: { official: "Organiser's website", race: "Race website", series: "Series", national_federation: "Federation", uci: "UCI", aggregator: "Race calendar", other: "Other source" },
@@ -106,6 +108,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Další kola – {name}",
     sameWeekend: "Ten víkend v okolí",
     nearbySimilar: "Podobné závody v okolí",
+    previousEditions: "Předchozí ročníky",
     sources: "Odkud to víme",
     sourcesHelp: "Závod jsme převzali z těchto stránek a pravidelně je kontrolujeme. Rozhodují vždy propozice pořadatele.",
     sourceKinds: { official: "Web pořadatele", race: "Web závodu", series: "Seriál", national_federation: "Svaz", uci: "UCI", aggregator: "Kalendář závodů", other: "Jiný zdroj" },
@@ -145,6 +148,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Inne rundy – {name}",
     sameWeekend: "W ten weekend w pobliżu",
     nearbySimilar: "Podobne wyścigi w okolicy",
+    previousEditions: "Poprzednie edycje",
     sources: "Skąd to wiemy",
     sourcesHelp: "Wyścig pochodzi z tych stron i regularnie je sprawdzamy. Decyduje zawsze regulamin organizatora.",
     sourceKinds: { official: "Strona organizatora", race: "Strona wyścigu", series: "Cykl", national_federation: "Związek", uci: "UCI", aggregator: "Kalendarz wyścigów", other: "Inne źródło" },
@@ -184,6 +188,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Ďalšie kolá – {name}",
     sameWeekend: "V ten víkend v okolí",
     nearbySimilar: "Podobné preteky v okolí",
+    previousEditions: "Predchádzajúce ročníky",
     sources: "Odkiaľ to vieme",
     sourcesHelp: "Pretek sme prevzali z týchto stránok a pravidelne ich kontrolujeme. Rozhodujú vždy propozície organizátora.",
     sourceKinds: { official: "Web organizátora", race: "Web preteku", series: "Seriál", national_federation: "Zväz", uci: "UCI", aggregator: "Kalendár pretekov", other: "Iný zdroj" },
@@ -223,6 +228,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Weitere Läufe – {name}",
     sameWeekend: "Am selben Wochenende in der Nähe",
     nearbySimilar: "Ähnliche Rennen in der Nähe",
+    previousEditions: "Frühere Austragungen",
     sources: "Woher wir es wissen",
     sourcesHelp: "Wir haben das Rennen von diesen Seiten übernommen und prüfen sie regelmäßig. Es gilt immer die Ausschreibung des Veranstalters.",
     sourceKinds: { official: "Website des Veranstalters", race: "Rennwebsite", series: "Serie", national_federation: "Verband", uci: "UCI", aggregator: "Rennkalender", other: "Andere Quelle" },
