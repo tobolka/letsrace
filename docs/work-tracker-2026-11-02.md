@@ -44,6 +44,6 @@ Uvádět odděleně lokální změnu, uložení do databáze, nasazení, veřejn
 
 ## Následná kontrola večerních změn
 
-[Konkrétní review 26 nových commitů](../reports/review-2026-11-02-evening/REVIEW.md): neatomické admin úpravy, souběžné/stárnoucí návrhy, nepodložené věky, odhad pořadí kol, skutečný rozpočet a čas historie počasí. Po následném zadání se opravují Elite, kola, skutečné limity počasí, tooltip a rozsah vzdáleností; odstraňují se výška a časy slunce. Zapisovač úprav a schvalování návrhů zůstávají stranou, veřejný formulář je stažený. Odkazy „Další ročníky“ již jsou nasazené a ověřené v obou směrech; žádné nové datum tím nevzniká.
+[Konkrétní review 26 nových commitů](../reports/review-2026-11-02-evening/REVIEW.md): neatomické admin úpravy, souběžné/stárnoucí návrhy, nepodložené věky, odhad pořadí kol, skutečný rozpočet a čas historie počasí. Následné opravy Elite, kol, skutečných limitů počasí, tooltipu a rozsahu vzdáleností jsou nasazené a veřejně ověřené (`32dbeb4c`); výška a časy slunce byly odstraněné. Zapisovač úprav a schvalování návrhů zůstávají stranou, veřejný formulář je stažený. Odkazy „Další ročníky“ již jsou nasazené a ověřené v obou směrech; žádné nové datum tím nevzniká.
 
 Podrobný výsledek následných oprav: [opravy po večerním review](../reports/review-fixes-2026-11-02/RESULT.md). Původní etapy pipeline ani velký seznam dalších závodů tím nejsou označené za dokončené.
