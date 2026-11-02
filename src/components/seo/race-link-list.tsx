@@ -3,9 +3,7 @@ import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
 import { eventPagePath } from "@/lib/event-url";
 import { monthHeading } from "@/lib/seo-race-copy";
-import { EVENT_ROW_CLASS, EventRowBody } from "@/components/explore/event-row-body";
-import { Item, ItemGroup } from "@/components/ui/item";
-import { cn } from "@/lib/utils";
+import { EventRowBody } from "@/components/explore/event-row-body";
 import { PlannedRaceRow } from "@/components/race/planned-race-row";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 
@@ -45,19 +43,18 @@ export function RaceLinkList({
               {monthHeading(`${key}-01`, locale)}
             </Heading>
           ) : null}
-          <ItemGroup className="overflow-hidden rounded-xl border">
+          {/* Short class names from globals.css: these rows are sent twice, as HTML and as page data. */}
+          <div role="list" className="race-list">
             {list.map((event) => (
-              <PlannedRaceRow eventId={event.id} key={event.id} className="relative border-b border-border/50 last:border-b-0">
-                <Item asChild size="sm" className={cn(EVENT_ROW_CLASS, "pr-12 max-md:py-2.5")}>
-                  <Link href={eventPagePath(locale, event.slug)} className="relative">
-                    <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} />
-                  </Link>
-                </Item>
+              <PlannedRaceRow eventId={event.id} key={event.id} className="race-row">
+                <Link href={eventPagePath(locale, event.slug)} className="race-row-link">
+                  <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} compact />
+                </Link>
                 {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}
-                <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} className="absolute right-2 top-1/2 -translate-y-1/2" />
+                <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="row" />
               </PlannedRaceRow>
             ))}
-          </ItemGroup>
+          </div>
         </section>
       ))}
     </div>

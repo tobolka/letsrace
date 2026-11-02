@@ -26,10 +26,18 @@ export function EventRowBody({
   locale,
   distanceKm: km,
   wrapName = false,
+  compact = false,
 }: {
   event: EventListItem;
   locale: string;
   distanceKm?: number | null;
+  /**
+   * Short class names defined once in globals.css (`.race-row-*`) instead of
+   * utility strings. For the server-rendered race lists, where every row's
+   * classes were sent twice — in the HTML and in the page's data — and made a
+   * country page half a megabyte.
+   */
+  compact?: boolean;
   /**
    * Up to two lines for the name. The list page has no map rebuilding it
    * under the reader, so a name cut at "Mistrzostwa Polski w konk…" is
@@ -51,6 +59,28 @@ export function EventRowBody({
   const uciLabel = event.uciClass ? `UCI ${UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}` : null;
   const extraLabel = [uciLabel, discLabel, event.series?.name].filter(Boolean).join(" · ");
   const metadataLabel = [placeLabel, extraLabel].filter(Boolean).join(" · ");
+
+  if (compact) {
+    return (
+      <>
+        <span aria-hidden className="race-row-edge" style={{ background: disciplineColor(event.disciplines) }} />
+        <span className="race-row-body">
+          <span className="race-row-name">{event.name}</span>
+          <span className="race-row-meta">
+            <time dateTime={event.startDate} className="race-row-date">{dateLabel}</time>
+            {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
+            <span className="race-row-place" title={metadataLabel}>{metadataLabel}</span>
+            {distanceLabel ? (
+              <ExplainedHint explanation={t.distanceFromOrigin} className="race-row-distance">
+                ↗ {distanceLabel}
+                <span className="sr-only"> · {t.distanceFromOrigin}</span>
+              </ExplainedHint>
+            ) : null}
+          </span>
+        </span>
+      </>
+    );
+  }
 
   return (
     <>

@@ -483,3 +483,48 @@ time,
     stroke-dashoffset: 0;
   }
 }
+
+/*
+ * Race rows of the server-rendered lists (country, collection, series and
+ * race pages). One short class per element instead of long utility strings:
+ * each row is sent twice — in the HTML and in the page's data — and the
+ * strings made a country page half a megabyte. Same look as the app's list.
+ */
+@layer components {
+  .race-list {
+    @apply flex flex-col overflow-hidden rounded-xl border;
+  }
+  .race-row {
+    @apply relative border-b border-border/50 last:border-b-0;
+  }
+  .race-row-link {
+    @apply relative flex items-center gap-2.5 px-4 py-3 pr-12 text-sm outline-none transition-colors duration-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 active:bg-accent max-md:py-2.5 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/50;
+  }
+  .race-row-edge {
+    @apply absolute inset-y-2.5 left-1.5 w-[3px] rounded-full max-md:inset-y-2;
+  }
+  .race-row-body {
+    @apply flex min-w-0 flex-1 flex-col gap-0.5 max-md:gap-0;
+  }
+  .race-row-name {
+    @apply block w-full min-w-0 truncate text-sm font-medium leading-snug;
+  }
+  .race-row-meta {
+    @apply flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug;
+  }
+  .race-row-date {
+    @apply shrink-0 font-medium tabular-nums;
+  }
+  .race-row-place {
+    @apply truncate text-muted-foreground;
+  }
+  .race-row-distance {
+    @apply ms-auto shrink-0 tabular-nums text-muted-foreground;
+  }
+  .race-row-save {
+    @apply absolute right-2 top-1/2 inline-flex size-8 -translate-y-1/2 items-center justify-center rounded-md transition-colors disabled:opacity-50 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent [@media(pointer:coarse)]:size-11 [&_svg]:size-4 [&_svg]:shrink-0;
+  }
+  .race-row-save.is-added {
+    @apply text-primary;
+  }
+}
