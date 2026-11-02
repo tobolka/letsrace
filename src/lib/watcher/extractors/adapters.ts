@@ -10,6 +10,7 @@ import { parseFederciclismo } from "@/lib/watcher/extractors/federciclismo";
 import { parseVelokal } from "@/lib/watcher/extractors/velokal";
 import { parseRadsportEvents } from "@/lib/watcher/extractors/radsport";
 import { parseEventiv } from "@/lib/watcher/extractors/eventiv";
+import { parseChotebuz } from "@/lib/watcher/extractors/chotebuz";
 import { isPzkolHost, parsePzkolSeasons } from "@/lib/watcher/extractors/pzkol";
 import { isDostartuHost, parseDostartu } from "@/lib/watcher/extractors/dostartu";
 import { isBikeboardHost, parseBikeboardCalendar } from "@/lib/watcher/extractors/bikeboard";
@@ -351,6 +352,9 @@ export async function extractWithAdapter(
   }
   if (host.includes("eventivsport.com")) {
     return { events: await parseEventiv(url, html), strategy: "adapter:eventiv" };
+  }
+  if (["www.tjsokolchotebuz.cz", "tjsokolchotebuz.cz"].includes(host)) {
+    return { events: parseChotebuz(url, html), strategy: "adapter:chotebuz" };
   }
   if (isRacementHost(host)) {
     return {

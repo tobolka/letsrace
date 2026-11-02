@@ -9,7 +9,7 @@ Tento přehled zachovává celé zadání, ne jen poslední zprávu. Bez odhadů
 | Teď | JBC 4X Revelations 2027 | Hotovo: ID `4a99a311-023a-4b88-8a78-ad8e954eb926`, termín UCI, 4X, obě Elite kategorie, areál, veřejný detail a společný seznam. Dětský program a registrace 2027 zatím nepotvrzené. |
 | Teď | Road Stage Orlické hory 2027 | Hotovo: původní ID a registrace zachované; Deštné, správné souřadnice a kraj, oprava čtení JSON-LD i ochranný zámek. Detail, hledání i společný seznam opravené. |
 | Potom | Dávka nových českých závodů 2027 z přílohy | Samostatně uložená kompletní příloha níže. Při této dvojici úkolů se znovu neřeší staré opravy ani ostatní závody. Potom každá položka dostane výsledek, ID, zdroj a odkaz; potvrzené datum neblokuje chybějící registrace. |
-| Pokračuje | Společná pipeline, schránka rozhodnutí a jednoduché ovládání | Zůstávají všechny původní etapy 0–6; konkrétní stav v [operations-progress.md](operations-progress.md). Jednoduchý webový přehled a bezpečné ukládání odpovědí nasazené (`d5b8bd67`), ověřené po přihlášení. Automatické provádění rozhodnutí zbývá. Další krok: společné zveřejnění seznamu/mapy. |
+| Pokračuje | Společná pipeline, schránka rozhodnutí a jednoduché ovládání | Zůstávají všechny původní etapy 0–6; konkrétní stav v [operations-progress.md](operations-progress.md). Jednoduchý přehled nasazený (`d5b8bd67`) a ověřený po přihlášení. Společná dávka seznamu/mapy nasazená (`ec8c8441`), první veřejná kontrola prošla pro 1 006 závodů. Automatické provádění rozhodnutí zbývá. |
 | Pokračuje | Automatické doplňování historie počasí | Uložiště, denní serverový běh a bezplatná záloha nasazené; celé úvodní naplnění katalogu není dokončené. Limity a poslední dobrá data se zachovávají. |
 
 Kompletní příloha pro pozdější import: [referenční seznam závodů](requests/2026-11-02-czech-races-import-reference.md). Je to podklad k ověření a provedení; číslo kandidátů v příloze není důkazem počtu nových závodů v katalogu.
@@ -47,3 +47,9 @@ Uvádět odděleně lokální změnu, uložení do databáze, nasazení, veřejn
 [Konkrétní review 26 nových commitů](../reports/review-2026-11-02-evening/REVIEW.md): neatomické admin úpravy, souběžné/stárnoucí návrhy, nepodložené věky, odhad pořadí kol, skutečný rozpočet a čas historie počasí. Následné opravy Elite, kol, skutečných limitů počasí, tooltipu a rozsahu vzdáleností jsou nasazené a veřejně ověřené (`32dbeb4c`); výška a časy slunce byly odstraněné. Zapisovač úprav a schvalování návrhů zůstávají stranou, veřejný formulář je stažený. Odkazy „Další ročníky“ již jsou nasazené a ověřené v obou směrech; žádné nové datum tím nevzniká.
 
 Podrobný výsledek následných oprav: [opravy po večerním review](../reports/review-fixes-2026-11-02/RESULT.md). Původní etapy pipeline ani velký seznam dalších závodů tím nejsou označené za dokončené.
+
+## Pokračování po nasazení adminu
+
+- [Obnova čtení Chotěbuze, Eventiv a ochrana známých údajů](../reports/source-recovery-2026-11-02/RESULT.md). Chotěbuz skutečně zpracovaná; Eventiv stále vyžaduje přístup na straně poskytovatele, nevydává se za úspěšný prázdný kalendář.
+- Další práce: inventura všech položek dodaného seznamu závodů proti aktuální databázi, doplnění skutečně chybějících doložených závodů a nezávislá kontrolní sada.
+- Navazující SEO návrh je uložený v [seo-next-steps-2026-11-02.md](seo-next-steps-2026-11-02.md); návrhy vstupních stránek nejsou označené jako implementované. Zůstává nutná kvalita podkladů a kontrola skutečného indexování.

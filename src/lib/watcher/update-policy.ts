@@ -26,11 +26,18 @@ export function protectOfficialFields(
   return protectedFields;
 }
 
+/** A default classification is not a new assertion about an already identified race. */
+export function preserveUnstatedDisciplines(stored: Record<string, unknown> | null, source: { discipline?: readonly string[] }, proposed: Record<string, unknown>): void {
+  if (source.discipline?.length || !Array.isArray(stored?.disciplines) || !stored.disciplines.length) return;
+  proposed.disciplines = stored.disciplines;
+  proposed.formats = Array.isArray(stored.formats) ? stored.formats : [];
+}
+
 /** Missing/general assertions cannot erase specific facts, even in a federation list. */
 export function protectSpecificFacts(stored: Record<string, unknown> | null, proposed: Record<string, unknown>): string[] {
   if (!stored) return [];
   const kept: string[] = [];
-  const keep = (field: string) => { proposed[field] = stored[field]; kept.push(field); };
+  const keep = (field: string) => { if (JSON.stringify(proposed[field]) !== JSON.stringify(stored[field])) { proposed[field] = stored[field]; kept.push(field); } };
   for (const field of ["class_label", "uci_class", "formats", "competition_type"]) {
     const old = stored[field], next = proposed[field];
     if (!(field in proposed) || old == null || old === "" || old === "other" || old === "Local" || old === "community" || Array.isArray(old) && !old.length) continue;

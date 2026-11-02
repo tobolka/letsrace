@@ -1,0 +1,44 @@
+{
+  "at": "2026-11-02T20:26:30.221Z",
+  "url": "https://letsrace.cz/api/events?catalogue=1",
+  "status": 200,
+  "cache": "HIT",
+  "count": 1006,
+  "races": [
+    {
+      "id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+      "slug": "road-stage-orlicke-hory-2027",
+      "startDate": "2027-06-05",
+      "endDate": "2027-06-05",
+      "disciplines": [
+        "road"
+      ],
+      "location": {
+        "id": "85cdbe7d-f4ec-44af-b7fe-0689040f313b",
+        "name": "Deštné v Orlických horách",
+        "municipality": "Deštné v Orlických horách",
+        "countryCode": "CZ",
+        "lat": 50.304743,
+        "lng": 16.350751
+      }
+    },
+    {
+      "id": "4a99a311-023a-4b88-8a78-ad8e954eb926",
+      "slug": "jbc-4x-revelations-2027",
+      "startDate": "2027-07-09",
+      "endDate": "2027-07-10",
+      "disciplines": [
+        "mtb",
+        "four_cross"
+      ],
+      "location": {
+        "id": "15694d90-5302-4162-b2fb-53497a2002dc",
+        "name": "Areál Dobrá Voda, Jablonec nad Nisou",
+        "municipality": "Jablonec nad Nisou",
+        "countryCode": "CZ",
+        "lat": 50.70933,
+        "lng": 15.1610825
+      }
+    }
+  ]
+}

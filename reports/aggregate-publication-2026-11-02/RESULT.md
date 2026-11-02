@@ -25,4 +25,8 @@ Kontrola prokazuje shodu společných dat pro mapu, seznam a kalendář s datab�
 
 Při návratu lze vrátit tento webový commit a Mac skript; trvalá čekající dávka zůstane v databázi pro další pokračování. Limity se při návratu nemažou.
 
-Veřejná kontrola se doplní po nasazení.
+## Produkce
+
+Commit `ec8c8441`, Vercel `dpl_DZu3mwCXepdQC9cRpxh8VfikQvfV` READY. První skutečná dávka skončila `done` 2. listopadu v 21:23 českého času: 1 006 závodů, shoda `a0d366bbf81fc8810e0626a37d5814ff8628814951b3c24925be32c5e2ac4d26`. Žádné zápisy závodů. Následný běžný požadavek již dostal veřejnou uloženou odpověď (`HIT`); JBC i opravené Deštné jsou v ní. [Veřejný kontrolní výsledek](public-check.json).
+
+V databázi je jeden pokus společné dávky a stále pouze původních 60 pokusů detailů. Čtečka na Macu aktualizovaná v 21:23; sdílené finanční záznamy a čekající práce zachované.

@@ -25,7 +25,7 @@ import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
-import { protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
+import { preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline } from "@/lib/supabase/request-budget";
 import { countryFromVenue } from "@/lib/geo/country-label";
@@ -2266,7 +2266,8 @@ async function upsertParsedEvent(
       ev,
       existingRow,
     ),
-    source_kind: "scraped",
+    // Reading an official record again must not erase its established origin.
+    source_kind: (existingFull as { source_kind?: string | null } | null)?.source_kind ?? "scraped",
     level: mergedLevel.level,
     class_label: overviewOnly && mergedLevel.classLabel === "Local" ? null : mergedLevel.classLabel ?? null,
     uci_class: mergedLevel.uciClass ?? null,
@@ -2384,6 +2385,7 @@ async function upsertParsedEvent(
     }
   }
 
+  preserveUnstatedDisciplines(existingFull as unknown as Record<string, unknown> | null, ev, payload as unknown as Record<string, unknown>);
   const protectedFields = [
     ...protectSpecificFacts(existingFull as unknown as Record<string, unknown> | null, payload as unknown as Record<string, unknown>),
     ...protectOfficialFields(watchedKind, existingFull as unknown as Record<string, unknown> | null, payload as unknown as Record<string, unknown>),

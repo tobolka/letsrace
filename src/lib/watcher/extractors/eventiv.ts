@@ -484,7 +484,10 @@ export async function parseEventiv(_url: string, _html?: string): Promise<Parsed
   const sports = ["road", "mtb", "gravel", "cyclocross", "bmx", "track"];
 
   // Parallel sport fetches (each filtered server-side — much smaller than full map)
-  const batches = await Promise.all(sports.map((s) => fetchBikeMap(s)));
+  // An authentication gate applies to the whole map. Probe once before
+  // starting the other sports, rather than sending six rejected requests.
+  const first = await fetchBikeMap(sports[0]);
+  const batches = [first, ...await Promise.all(sports.slice(1).map((s) => fetchBikeMap(s)))];
   for (const features of batches) {
     for (const f of features) {
       const ev = toParsed(f);

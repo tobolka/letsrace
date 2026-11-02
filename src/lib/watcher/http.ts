@@ -46,12 +46,20 @@ async function rawFetch(url: string, opts: FetchOpts): Promise<FetchResult> {
   if (opts.lastModified) headers["If-Modified-Since"] = opts.lastModified;
   if (opts.contentType) headers["Content-Type"] = opts.contentType;
 
-  const res = await fetchPublic(url, {
+  const request = {
     headers,
     method: opts.method ?? "GET",
     ...(opts.body != null ? { body: opts.body } : {}),
     signal: AbortSignal.timeout(opts.timeoutMs ?? 25_000),
-  });
+  };
+  let res: Response;
+  try { res = await fetchPublic(url, request); }
+  catch (error) {
+    const host = hostnameOf(url);
+    if (error instanceof UnsafeUrlError || opts.method === "POST" || !((isTlsVerifyError(error) && CURL_TLS_FALLBACK_HOSTS.has(host)) || CURL_FETCH_FALLBACK_HOSTS.has(host))) throw error;
+    const { fetchPublicViaCurl } = await import("@/lib/watcher/curl");
+    res = await fetchPublicViaCurl(url, headers, opts.timeoutMs ?? 25_000);
+  }
 
   if (res.status === 304) {
     return {
@@ -155,38 +163,13 @@ export function decodeBody(bytes: Uint8Array, contentType?: string | null): stri
   return new TextDecoder("utf-8").decode(bytes);
 }
 
-const CURL_TLS_FALLBACK_HOSTS = new Set(["zapadoceskaamaterskaliga.cz"]);
-const CURL_FETCH_FALLBACK_HOSTS = new Set([
-  "transmaurienne-vanoise.com",
-  "haervejsloebet.dk",
-]);
+const CURL_TLS_FALLBACK_HOSTS = new Set(["zapadoceskaamaterskaliga.cz", "tjsokolchotebuz.cz", "www.tjsokolchotebuz.cz"]);
+const CURL_FETCH_FALLBACK_HOSTS = new Set(["transmaurienne-vanoise.com", "haervejsloebet.dk"]);
 
 function isTlsVerifyError(err: unknown): boolean {
-  const msg = err instanceof Error ? `${err.message} ${err.cause ?? ""}` : String(err);
-  return /UNABLE_TO_VERIFY|unable to verify the first certificate|CERT_/i.test(msg);
-}
-
-async function fetchViaCurl(url: string, insecure = false): Promise<FetchResult> {
-  // curl follows redirects on its own, so only the address we hand it can be vetted.
-  await assertPublicHttpUrl(url);
-  const { execFile } = await import("node:child_process");
-  const { promisify } = await import("node:util");
-  const execFileAsync = promisify(execFile);
-  const args = ["-sL", "-A", BOT_UA, "--max-time", "25"];
-  if (insecure) args.push("-k");
-  args.push(url);
-  const { stdout } = await execFileAsync("curl", args, {
-    maxBuffer: 6_000_000,
-    encoding: "utf8",
-  });
-  const html = stdout;
-  const hash = createHash("sha256").update(html).digest("hex");
-  return {
-    html,
-    status: html.length > 200 ? 200 : 0,
-    hash,
-    unchanged: false,
-  };
+  if (!(err instanceof Error)) return false;
+  const cause = err.cause as { code?: string; message?: string } | undefined;
+  return /UNABLE_TO_|CERT_|ERR_TLS_/.test(cause?.code ?? "") || /unable to (verify| get.*issuer)|certificate/i.test(`${err.message} ${cause?.message ?? ""}`);
 }
 
 function retryable(status: number): boolean {
@@ -221,16 +204,6 @@ async function fetchPageUncached(url: string, opts: FetchOpts = {}): Promise<Fet
         // A refused address is the same answer every time; do not retry it.
         if (e instanceof UnsafeUrlError) throw e;
         lastErr = e;
-        if (
-          (isTlsVerifyError(e) && CURL_TLS_FALLBACK_HOSTS.has(host)) ||
-          CURL_FETCH_FALLBACK_HOSTS.has(host)
-        ) {
-          try {
-            return await fetchViaCurl(url, CURL_FETCH_FALLBACK_HOSTS.has(host));
-          } catch {
-            /* fall through to retry/throw */
-          }
-        }
         if (attempt === retries) throw e;
         await sleep(Math.min(12_000, 500 * 2 ** attempt) + Math.floor(Math.random() * 300));
       }
