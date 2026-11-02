@@ -2,6 +2,7 @@ import type { EventListItem } from "@/lib/events";
 import { absoluteUrl, raceOgImagePath } from "@/lib/seo";
 import { localePath } from "@/lib/localized-paths";
 import { racePlace } from "@/lib/race-place";
+import { typicalAgeRange } from "@/lib/birth-years";
 
 /**
  * Race names come from scraped third-party pages, so a name containing
@@ -74,6 +75,9 @@ export function EventJsonLd({
   if (sameAs.length) data.sameAs = sameAs;
   if (description) data.description = description;
   data.sport = "Cycling";
+  // Who may start, by age — only when the organiser named the categories.
+  const ages = event.ageConfidence === "explicit" ? typicalAgeRange(event.ageCategories) : null;
+  if (ages) data.typicalAgeRange = ages;
   data.image = [absoluteUrl(raceOgImagePath(locale, event.slug))];
   // The series is the event this race is a round of — not its organiser,
   // which is what this block used to call it.

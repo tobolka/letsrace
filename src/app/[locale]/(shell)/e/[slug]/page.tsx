@@ -13,6 +13,7 @@ import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { roundOf } from "@/lib/series-rounds";
+import { birthYears } from "@/lib/birth-years";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
@@ -139,9 +140,18 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   const countryName = hubCountry ? countryDisplayName(hubCountry, locale) : null;
   const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
   // The ages a chip stands for, by its label: "Junior" → "17–18 let".
+  const categoryOf = (label: string) => AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
+  // Birth years only where the categories are the organiser's, this year or last.
+  const showYears = event.ageConfidence === "explicit" || event.ageConfidence === "previous";
+  const yearsFor = (label: string) => {
+    const id = categoryOf(label);
+    return id && showYears ? birthYears(id, event.startDate, event.disciplines, locale) : null;
+  };
   const ageHintFor = (label: string) => {
-    const id = AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
-    return id ? ageCategoryHelp(id, locale) : "";
+    const id = categoryOf(label);
+    if (!id) return "";
+    const years = yearsFor(label);
+    return [ageCategoryHelp(id, locale), years ? fill(rc.bornIn, { years }) : null].filter(Boolean).join(" · ");
   };
   const discChips = event.disciplines.slice(0, 4).map((d) => disciplineLabel(d, locale)).filter(Boolean);
   // Entry first — it is what the page is for — then the organiser's own pages.
@@ -249,6 +259,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
                     className={event.ageConfidence === "explicit" ? undefined : "border-dashed"}
                   >
                     {chip}
+                    {yearsFor(chip) ? <span className="ml-1 font-normal tabular-nums text-muted-foreground">{yearsFor(chip)}</span> : null}
                   </ExplainedBadge>
                 ))}
                 {event.ageConfidence === "explicit" ? null : (
