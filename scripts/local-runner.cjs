@@ -7,10 +7,15 @@ const { spawn, execFileSync } = require('node:child_process');
 function atomic(file, value) { const temp = `${file}.${process.pid}.tmp`; fs.writeFileSync(temp, JSON.stringify(value, null, 2), { mode: 0o600 }); fs.renameSync(temp, file); }
 function json(file, fallback = {}) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; } }
 function alive(pid) { if (!Number.isInteger(pid) || pid <= 1) return false; try { process.kill(pid, 0); return true; } catch { return false; } }
-function health({ active, paused, lastOutputAt, now, lastExitCode }) {
+function isDeferredExit(code, tail) {
+ return code === 2 && /(?:^|\n)=== done [^\n]+\n=== failed steps: 0\n=== deferred steps: [1-9]\d*$/.test(String(tail||'').trimEnd());
+}
+function health({ active, paused, lastOutputAt, now, lastExitCode, deferredOnly=false }) {
  if (active) return now - lastOutputAt > 20 * 60_000 ? 'quiet' : 'running';
  if (paused) return 'paused';
- return lastExitCode != null && lastExitCode !== 0 ? 'attention' : 'waiting';
+ // refresh-data.sh reserves 2 for deferred work, with zero failed steps.
+ // It resumes automatically; this is not an owner decision or a broken run.
+ return lastExitCode != null && lastExitCode !== 0 && !(lastExitCode === 2 && deferredOnly) ? 'attention' : 'waiting';
 }
 function rememberResult(state, result) {
  state.history=[...(state.history||[]),result].filter(r=>r.at>Date.now()-24*60*60_000).slice(-100);
@@ -58,6 +63,9 @@ function main() {
  fs.writeFileSync(pidFile,String(process.pid),{mode:0o600});
  const stateFile=path.join(data,'runner-state.json'), controlFile=path.join(data,'control.json');
  const previous=json(stateFile);
+ if(previous.lastExitCode===2 && previous.deferredOnly==null && previous.logPath && path.dirname(previous.logPath)===data){
+  let fd;try{fd=fs.openSync(previous.logPath,'r');const size=fs.fstatSync(fd).size,b=Buffer.alloc(Math.min(size,4096));fs.readSync(fd,b,0,b.length,size-b.length);previous.deferredOnly=isDeferredExit(2,b.toString());}catch{}finally{if(fd!=null)fs.closeSync(fd);}
+ }
  // Recover completed run history once when upgrading an installed collector.
  if(!previous.history){
   previous.history=[];
@@ -111,7 +119,7 @@ function main() {
     const control=json(controlFile),now=Date.now(),last=normalizeResult(state.lastResult);
     const lastResult=last?Object.fromEntries(['at','reads','created','updated','failed','deferred','unreadable'].filter(key=>typeof last[key]==='number').map(key=>[key,last[key]])):null;
     const response=await fetch('https://letsrace.cz/api/ops/pipeline-status',{method:'POST',headers:{Authorization:`Bearer ${env.CRON_SECRET}`,'Content-Type':'application/json'},
-     body:JSON.stringify({status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode}),paused:control.paused===true,nextRunAt:state.nextRunAt||null,lastResult}),signal:AbortSignal.timeout(15000)});
+     body:JSON.stringify({status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),paused:control.paused===true,nextRunAt:state.nextRunAt||null,lastResult}),signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw Error(`Stav serveru není dostupný (HTTP ${response.status})`);
     if(!response.headers.get('content-type')?.includes('application/json'))throw Error('Přehled serveru zatím není dostupný');
     server={...(await response.json()),checkedAt:new Date().toISOString(),error:null};
@@ -128,7 +136,7 @@ function main() {
   const overview=json(path.join(data,'catalogue-overview-latest.json'),null);
   const totals=overview?.summary?.filter(r=>r.key?.endsWith(':ALL')).map(r=>({season:r.key.split(':')[0],total:r.total,essentials:r.populatedEssentials}))||[];
   atomic(path.join(data,'monitor.json'),{version:1,at:new Date().toISOString(),pid:process.pid,root,data,
-   status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode}),
+   status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),
    activeTask:state.activeTask||null,pendingTasks:state.pendingTasks||[],paused:control.paused===true,childPid:child?.pid||null,stage:state.stage,startedAt:state.startedAt||null,lastOutputAt:state.lastOutputAt||null,
    lastFinishedAt:state.lastFinishedAt||null,lastExitCode:state.lastExitCode??null,nextRunAt:state.nextRunAt,
    server,serverRequestRunning:state.serverRequestRunning===true,serverRequestError:state.serverRequestError||null,estimates:state.durations||{},catalogueAt:overview?.at||null,lastResult:normalizeResult(state.lastResult)||null,lastActivityResult:normalizeResult(state.lastActivityResult)||null,recent:recentResults(state.history),logPath:state.logPath||null,lastError:state.lastError||null,counters:state.counters||{},browser,totals,
@@ -138,13 +146,13 @@ function main() {
  function start(task="refresh") {
   if(child||stopping)return;
   const stamp=new Date().toISOString().replace(/[:.]/g,'-');
-  state={...state,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
+  state={...state,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,deferredOnly:false,runTail:'',counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
   logStream=fs.createWriteStream(state.logPath,{flags:'a',mode:0o600});buffer='';
   const command=process.env.LETSRACE_RUN_COMMAND||path.join(root,task==='federation'?'scripts/ingest-csc.sh':'scripts/refresh-data.sh');
   child=spawn('/usr/bin/caffeinate',['-i','/bin/bash',command],{cwd:root,env:{...process.env,LETSRACE_MANAGED:"1",...(task==='ai'?{PIPELINE_AI_MODE:'ai'}:task==='federation'?{PIPELINE_AI_MODE:'free'}:{}),LLM_LEDGER_PATH:path.join(data,'llm-budget.json')},detached:true,stdio:['ignore','pipe','pipe']});
   state.childPid=child.pid;save();snapshot();
   const record=chunk=>{
-   state.lastOutputAt=Date.now();logStream?.write(chunk);buffer+=chunk.toString();
+   state.lastOutputAt=Date.now();logStream?.write(chunk);buffer+=chunk.toString();state.runTail=(state.runTail+chunk.toString()).slice(-4096);
    const lines=buffer.split('\n');buffer=lines.pop().slice(-20000);
    for(const line of lines){
     if(line.startsWith('Pipeline mode: ai;'))state.aiDetected=true;
@@ -159,6 +167,7 @@ function main() {
   child.stdout.on('data',record);child.stderr.on('data',record);
   child.on('error',e=>{state.lastError=e.message;});
   child.on('close',(code,signal)=>{
+   state.deferredOnly=isDeferredExit(code,state.runTail);
    child=null;state.childPid=null;state.durations={...state.durations,[task]:[...(state.durations?.[task]||[]),Date.now()-state.startedAt].slice(-5)};state.lastExitCode=code??1;state.lastFinishedAt=Date.now();if(state.aiDetected)state.lastAiFinishedAt=state.lastFinishedAt;if(task!=='federation')state.nextRunAt=Date.now()+interval;
    if(signal)state.lastError=`Běh ukončen (${signal}); další pokus naváže na uložená data.`;
    if(task!=='federation')rememberResult(state,{...state.counters,problems:state.problems||[],at:state.lastFinishedAt,exitCode:state.lastExitCode,logPath:state.logPath});state.activeTask=null;state.stage=null;logStream?.end();logStream=null;save();snapshot();if(stopping)finish();
@@ -185,5 +194,5 @@ function main() {
  process.on('SIGTERM',shutdown);process.on('SIGINT',shutdown);
  save();tick();setInterval(tick,10000);
 }
-module.exports={health,alive,json,atomic,rememberResult,recentResults,normalizeResult};
+module.exports={health,isDeferredExit,alive,json,atomic,rememberResult,recentResults,normalizeResult};
 if(require.main===module)main();
