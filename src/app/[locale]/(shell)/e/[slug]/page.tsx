@@ -12,6 +12,7 @@ import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, listEve
 import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
+import { roundOf } from "@/lib/series-rounds";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
@@ -173,6 +174,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     .sort((a, b) => SOURCE_ORDER.indexOf(a.kind) - SOURCE_ORDER.indexOf(b.kind))
     .filter((s, i, all) => all.findIndex((o) => hostOf(o.url) === hostOf(s.url)) === i);
   const otherRounds = (seriesData?.events ?? []).filter((e) => e.id !== event.id);
+  // Which round of its season this race is, counted over the rounds we list.
+  const round = seriesData ? roundOf(event.id, [...otherRounds, event]) : null;
   const upcomingRounds = otherRounds.filter((e) => e.startDate >= today);
   const rounds = (upcomingRounds.length ? upcomingRounds : otherRounds).slice(0, 12);
   const hub = hubs.find((h) => event.disciplines.some((d) => isHubDiscipline(h.discipline) && disciplineMatches(h.discipline, d)));
@@ -282,6 +285,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
                   <span className="truncate">{event.series.name}</span>
                 </Link>
               </Button>
+              {round ? (
+                <span className="text-sm tabular-nums text-muted-foreground">{fill(rc.roundOf, { n: String(round.n), of: String(round.of) })}</span>
+              ) : null}
             </MetaRow>
           ) : null}
           {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (

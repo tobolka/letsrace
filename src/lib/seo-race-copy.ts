@@ -24,6 +24,7 @@ export const raceCopy: Record<Locale, {
   otherRounds: string;
   sameWeekend: string;
   nearbySimilar: string;
+  roundOf: string;
   previousEditions: string;
   sources: string;
   sourcesHelp: string;
@@ -68,6 +69,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Other rounds of {name}",
     sameWeekend: "Also that weekend nearby",
     nearbySimilar: "Similar races nearby",
+    roundOf: "Round {n} of {of}",
     previousEditions: "Previous editions",
     sources: "Where we found it",
     sourcesHelp: "We read the race from these pages and check them regularly. The organiser's regulations always decide.",
@@ -108,6 +110,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Další kola – {name}",
     sameWeekend: "Ten víkend v okolí",
     nearbySimilar: "Podobné závody v okolí",
+    roundOf: "{n}. kolo z {of}",
     previousEditions: "Předchozí ročníky",
     sources: "Odkud to víme",
     sourcesHelp: "Závod jsme převzali z těchto stránek a pravidelně je kontrolujeme. Rozhodují vždy propozice pořadatele.",
@@ -148,6 +151,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Inne rundy – {name}",
     sameWeekend: "W ten weekend w pobliżu",
     nearbySimilar: "Podobne wyścigi w okolicy",
+    roundOf: "Runda {n} z {of}",
     previousEditions: "Poprzednie edycje",
     sources: "Skąd to wiemy",
     sourcesHelp: "Wyścig pochodzi z tych stron i regularnie je sprawdzamy. Decyduje zawsze regulamin organizatora.",
@@ -188,6 +192,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Ďalšie kolá – {name}",
     sameWeekend: "V ten víkend v okolí",
     nearbySimilar: "Podobné preteky v okolí",
+    roundOf: "{n}. kolo z {of}",
     previousEditions: "Predchádzajúce ročníky",
     sources: "Odkiaľ to vieme",
     sourcesHelp: "Pretek sme prevzali z týchto stránok a pravidelne ich kontrolujeme. Rozhodujú vždy propozície organizátora.",
@@ -228,6 +233,7 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Weitere Läufe – {name}",
     sameWeekend: "Am selben Wochenende in der Nähe",
     nearbySimilar: "Ähnliche Rennen in der Nähe",
+    roundOf: "Lauf {n} von {of}",
     previousEditions: "Frühere Austragungen",
     sources: "Woher wir es wissen",
     sourcesHelp: "Wir haben das Rennen von diesen Seiten übernommen und prüfen sie regelmäßig. Es gilt immer die Ausschreibung des Veranstalters.",
