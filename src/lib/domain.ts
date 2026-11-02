@@ -35,6 +35,8 @@ export type ParsedEvent = {
    */
   ageCategories?: AgeCategory[];
   categories?: ParsedCategory[];
+  /** Literal description for this edition from its own source, never generated copy. */
+  description?: string;
   /** Provenance / discovery URL (may be an aggregator page). */
   sourceUrl: string;
   /** Official race website for UI — never an aggregator calendar. */

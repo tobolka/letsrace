@@ -107,7 +107,7 @@ export async function runDueWatches(
     // render it; claiming it here only overwrites a successful local scan with
     // a known error and makes the health signal misleading.
     const eligible = (due ?? []).filter((row) =>
-      !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races\/Race\/Pub/i.test(row.url as string))
+      !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races(?:\/|$)/i.test(row.url as string))
     );
     const rest = eligible.filter((row) => !dumpHost.test(row.url as string));
     const dumps = eligible.filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
@@ -2231,6 +2231,9 @@ async function upsertParsedEvent(
     : audience;
 
   const payload: Omit<Insert<"events">, "slug"> = {
+    // Source prose only fills an empty description; organiser/manual copy wins.
+    ...(ev.description?.trim() && watchedKind !== "aggregator" && !(existingFull as { description?: string | null } | null)?.description?.trim()
+      ? { description: ev.description.trim().slice(0, 3000) } : {}),
     ...(ev.status === "cancelled" ? { status: "cancelled" } : {}),
     name: mergedName,
     name_normalized: normalizeName(mergedName),

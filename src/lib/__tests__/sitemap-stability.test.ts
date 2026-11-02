@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/events", () => ({
-  listSitemapEvents: async () => [{ slug: "test-race", startDate: "2026-11-01", updatedAt: "2026-10-10T12:00:00Z" }],
+  listSitemapEvents: vi.fn(async () => [{ slug: "test-race", startDate: "2026-11-01", updatedAt: "2026-10-10T12:00:00Z" }]),
   listSitemapSeries: async () => [
     { slug: "test-series", updatedAt: "2026-10-09T12:00:00Z" },
     { slug: "undated-series", updatedAt: null },
@@ -13,6 +13,7 @@ vi.mock("@/lib/discipline-hubs", () => ({
 vi.mock("@/lib/race-collection-data", () => ({ listCollectionSummaries: async () => [] }));
 
 import sitemap, { generateSitemaps } from "@/app/sitemaps/sitemap";
+import { listSitemapEvents } from "@/lib/events";
 import { GET as sitemapIndex } from "@/app/sitemap.xml/route";
 
 afterEach(() => vi.useRealTimers());
@@ -22,6 +23,10 @@ const stamped = (entries: Awaited<ReturnType<typeof sitemap>>, iso: string) =>
   entries.filter((entry) => entry.lastModified instanceof Date && entry.lastModified.toISOString() === iso);
 
 describe("sitemap cache stability", () => {
+  it("fails regeneration instead of publishing an empty race file on a database outage", async () => {
+    vi.mocked(listSitemapEvents).mockRejectedValueOnce(new Error("database unavailable"));
+    await expect(build("races-cs")).rejects.toThrow("database unavailable");
+  });
   it("keeps unchanged catalogue output identical across regenerations", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-10-12T08:00:00Z"));

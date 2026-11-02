@@ -72,7 +72,7 @@ export type EventListItem = {
     lng: number | null;
   } | null;
   series: { id: string; name: string; slug: string } | null;
-  /** An organiser of the race or its series verified it; on the race's own page only. */
+  /** Legacy property name: a race/series has a managing organiser, not verified facts. */
   organizerVerified?: boolean;
   /** Where the race was found, on the race's own page only. */
   sources?: { url: string; kind: string }[];
@@ -344,7 +344,7 @@ export type SeriesListItem = {
   competitionType: string;
   season: string | null;
   eventCount: number;
-  /** An organiser of the series verified it. */
+  /** Legacy property name: this series has a managing organiser. */
   organizerVerified: boolean;
 };
 
@@ -659,7 +659,7 @@ export async function listSitemapSeries(
         .gte("events.start_date", today)
         .order("id", { ascending: true })
         .range(from, to),
-    { max: limit },
+    { max: limit, throwOnError: true },
   );
   const seen = new Set<string>();
   const out: { slug: string; updatedAt: string | null }[] = [];
@@ -703,7 +703,7 @@ export async function listSitemapEvents(limit = 4000): Promise<
         .order("start_date", { ascending: true })
         .order("id", { ascending: true })
         .range(from, to),
-    { max: limit },
+    { max: limit, throwOnError: true },
   );
   return data
     .filter((row) => {

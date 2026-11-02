@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getRaceEditions } from "@/lib/race-editions";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -156,13 +157,14 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   // What links this page into the rest of the site: its series' other rounds,
   // similar races nearby, and the hub for its kind of racing.
   const here = event.location;
-  const [seriesData, hubs, around] = await Promise.all([
+  const [seriesData, hubs, around, editions] = await Promise.all([
     event.series ? getSeriesBySlug(event.series.slug).catch(() => null) : Promise.resolve(null),
     hubCountry ? listQualifyingHubs([hubCountry]).catch(() => []) : Promise.resolve([]),
     // A race already run still points on to the next ones like it.
     here?.lat != null && here.lng != null
       ? listEvents({ ...boxAround(here.lat, here.lng, NEARBY_RADIUS_KM), dateFrom: today }).catch(() => [])
       : Promise.resolve([]),
+    getRaceEditions(event).catch(() => []),
   ]);
   const nearby = pickNearbyRaces(event, around, today);
   const categories = distinctCategories(event.categories ?? []);
@@ -313,7 +315,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         {actionLinks.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">{t.noOnlineEntry}</p> : null}
         <p className="mt-2 text-xs text-muted-foreground">
           {event.organizerVerified ? (
-            // The organiser looks after this race themselves: that outranks any source we read.
+            // Ownership is not a claim that every displayed fact was checked.
             <span className="inline-flex items-center gap-1 font-medium text-foreground" title={oc.badgeHelp}>
               <BadgeCheck className="size-3.5 text-sky-600 dark:text-sky-400" aria-hidden />
               {oc.badge}
@@ -394,6 +396,21 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               locale={locale}
               groupByMonth={false}
             />
+          </section>
+        ) : null}
+
+        {editions.length > 0 ? (
+          <section className="mt-10" aria-labelledby="previous-editions">
+            <h2 id="previous-editions" className="mb-3 text-lg font-semibold">{({ cs: "Předchozí ročníky", en: "Previous editions", de: "Frühere Austragungen", pl: "Poprzednie edycje", sk: "Predchádzajúce ročníky" })[locale]}</h2>
+            <ul className="space-y-2 text-sm">
+              {editions.map(edition => (
+                <li key={edition.id}>
+                  <Link href={localePath(locale, `e/${edition.slug}`)} className="font-medium underline-offset-4 hover:underline">
+                    {unshout(edition.name)} · {format(parseISO(edition.start_date), "d. M. yyyy")}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </section>
         ) : null}
 

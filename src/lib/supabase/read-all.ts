@@ -14,13 +14,14 @@
  */
 export async function readAllRows<T>(
   page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
-  opts?: { pageSize?: number; max?: number },
+  opts?: { pageSize?: number; max?: number; throwOnError?: boolean },
 ): Promise<T[]> {
   const size = opts?.pageSize ?? 1000;
   const max = opts?.max ?? 100_000;
   const rows: T[] = [];
   for (let from = 0; from < max; from += size) {
     const { data, error } = await page(from, from + size - 1);
+    if (error && opts?.throwOnError) throw new Error(`Incomplete database read: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     const batch = data ?? [];
     rows.push(...batch);
     if (error || batch.length < size) break;

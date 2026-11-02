@@ -30,6 +30,15 @@ describe("weather", () => {
   it("gives nothing without data", () => {
     expect(climateFrom([], [], [], [], "2027-05-10")).toBeNull();
   });
+  it("does not count missing rainfall as a dry day", () => {
+    expect(climateFrom(["2025-05-10"], [20], [10], [null], "2027-05-10")).toBeNull();
+  });
+  it("includes December in a complete January historical week", () => {
+    const days = ["2024-12-29", "2024-12-30", "2024-12-31", "2025-01-01", "2025-01-02", "2025-01-03", "2025-01-04"];
+    const result = climateFrom(days, days.map(() => 5), days.map(() => 0), days.map(() => 1), "2027-01-01", { firstYear: 2025, lastYear: 2025, fullWindow: true });
+    expect(result?.years).toBe(1);
+    expect(result?.byYear).toEqual([{ year: 2025, tmax: 5, tmin: 0, rainMm: 7 }]);
+  });
 });
 
 describe("raceDayHours", () => {

@@ -55,13 +55,11 @@ export default async function sitemap(props: { id: Promise<string> }): Promise<M
   };
 
   if (raceLocale) {
-    try {
-      for (const event of await listSitemapEvents()) {
-        const lastModified = event.updatedAt ? new Date(event.updatedAt) : new Date(event.startDate);
-        add(`e/${event.slug}`, lastModified, "weekly", 0.6, [raceLocale]);
-      }
-    } catch {
-      // An empty race file is better than a failed one; the hubs still link the races.
+    // Throw on an incomplete rebuild: ISR keeps the last successful file.
+    // A successful empty sitemap would replace it and hide all race URLs.
+    for (const event of await listSitemapEvents()) {
+      const lastModified = event.updatedAt ? new Date(event.updatedAt) : new Date(event.startDate);
+      add(`e/${event.slug}`, lastModified, "weekly", 0.6, [raceLocale]);
     }
     return entries;
   }
@@ -77,33 +75,27 @@ export default async function sitemap(props: { id: Promise<string> }): Promise<M
   add("about", new Date("2026-10-10"), "monthly", 0.5);
   for (const code of PUBLIC_COUNTRY_CODES) add((l) => hubPath(l, code), undefined, "daily", 0.8);
 
-  try {
+  {
     for (const collection of await listCollectionSummaries()) {
       if (collection.count < MIN_COLLECTION_RACES) continue;
       // No invented modification timestamp: membership changes with dates and
       // source updates, independently of when this sitemap is requested.
       add((l) => collectionPath(l, collection.slug, collection.countryCode), undefined, "daily", 0.75);
     }
-  } catch {
-    // Collection counts must not take the existing catalogue sitemap down.
   }
 
-  try {
+  {
     // Only combinations that clear the race threshold — a thin hub in the
     // sitemap asks Google to index a page competing with its own parent.
     for (const hub of await listQualifyingHubs([...PUBLIC_COUNTRY_CODES])) {
       add((l) => hubPath(l, hub.countryCode, hub.discipline), undefined, "daily", 0.75);
     }
-  } catch {
-    // Hub outage must not take the rest of the sitemap down.
   }
 
-  try {
+  {
     for (const s of await listSitemapSeries()) {
       add(`series/${s.slug}`, s.updatedAt ? new Date(s.updatedAt) : undefined, "weekly", 0.7);
     }
-  } catch {
-    // A series outage must not take the hub pages down with it.
   }
 
   return entries;

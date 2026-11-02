@@ -28,6 +28,7 @@ export type ForecastHour = {
   day: boolean;
 };
 export type Forecast = {
+  source?: "open-meteo" | "visual-crossing";
   tmax: number;
   tmin: number;
   rainChance: number | null;
@@ -38,8 +39,12 @@ export type Forecast = {
 };
 /** One past year's week around the race's date. */
 export type ClimateYear = { year: number; tmax: number; tmin: number; rainMm: number };
-export type Climate = { tmax: number; tmin: number; rainyShare: number; years: number; byYear: ClimateYear[] };
-export type RaceWeather = { forecast: Forecast | null; climate: Climate | null };
+export type Climate = { tmax: number; tmin: number; rainyShare: number; years: number; byYear: ClimateYear[]; source?: "open-meteo" | "visual-crossing"; referenceYear?: number };
+export type RaceWeather = { forecast: Forecast | null; climate: Climate | null; forecastFetchedAt?: string | null };
+
+export class WeatherProviderError extends Error {
+  constructor(public status: number) { super(`weather_provider_http_${status}`); }
+}
 
 /** WMO weather code to the few kinds of sky a rider dresses for. */
 export function skyOf(code: number): Sky {
@@ -58,9 +63,9 @@ function daysBetween(from: string, to: string): number {
 
 const round = (n: number) => Math.round(n);
 
-async function getJson(url: string): Promise<Record<string, unknown> | null> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
-  if (!res.ok) return null;
+async function getJson(url: string, timeoutMs = 12000): Promise<Record<string, unknown> | null> {
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+  if (!res.ok) throw new WeatherProviderError(res.status);
   return (await res.json()) as Record<string, unknown>;
 }
 
@@ -77,7 +82,8 @@ export function raceDayHours(h: Daily | undefined): ForecastHour[] {
     const hour = Number(time.slice(11, 13));
     const temp = num("temperature_2m", i);
     const code = num("weather_code", i);
-    if (!RACE_HOURS.includes(hour) || temp == null || code == null) return [];
+    if (!RACE_HOURS.includes(hour) || temp == null || code == null ||
+      ["precipitation", "wind_speed_10m", "wind_gusts_10m", "wind_direction_10m", "is_day"].some(key => num(key, i) == null)) return [];
     return [{
       hour,
       temp: round(temp),
@@ -102,14 +108,15 @@ async function forecastFor(lat: number, lng: number, date: string): Promise<Fore
     start_date: date,
     end_date: date,
   });
-  const json = await getJson(`https://api.open-meteo.com/v1/forecast?${q}`);
+  const json = await getJson(`https://api.open-meteo.com/v1/forecast?${q}`, 6000);
   const d = json?.daily as Daily | undefined;
   const at = (k: string) => (d?.[k] as (number | null)[] | undefined)?.[0] ?? null;
   const tmax = at("temperature_2m_max");
   const tmin = at("temperature_2m_min");
   const code = at("weather_code");
-  if (tmax == null || tmin == null || code == null) return null;
+  if (tmax == null || tmin == null || code == null || at("precipitation_sum") == null || at("wind_speed_10m_max") == null) return null;
   return {
+    source: "open-meteo",
     tmax: round(tmax),
     tmin: round(tmin),
     rainChance: at("precipitation_probability_max"),
@@ -121,54 +128,59 @@ async function forecastFor(lat: number, lng: number, date: string): Promise<Fore
 }
 
 /** The days of each past year within the window around the race's day of the year, overall and year by year. */
-export function climateFrom(days: string[], tmax: (number | null)[], tmin: (number | null)[], rain: (number | null)[], date: string): Climate | null {
-  const md = date.slice(5);
-  const hi: number[] = [];
-  const lo: number[] = [];
-  let rainy = 0;
-  const perYear = new Map<number, { hi: number[]; lo: number[]; rain: number }>();
+export function climateFrom(days: string[], tmax: (number | null)[], tmin: (number | null)[], rain: (number | null)[], date: string,
+  options?: { firstYear: number; lastYear: number; fullWindow?: boolean }): Climate | null {
+  const md = date.slice(5) === "02-29" ? "02-28" : date.slice(5);
+  const years = new Map<number, { hi: number[]; lo: number[]; rain: number; rainy: number }>();
   days.forEach((day, i) => {
-    const sameDay = `${day.slice(0, 4)}-${md === "02-29" ? "02-28" : md}`;
-    if (Math.abs(daysBetween(sameDay, day)) > CLIMATE_WINDOW) return;
-    if (tmax[i] == null || tmin[i] == null) return;
-    hi.push(tmax[i]!);
-    lo.push(tmin[i]!);
-    if ((rain[i] ?? 0) >= 1) rainy += 1;
-    const year = Number(day.slice(0, 4));
-    const y = perYear.get(year) ?? { hi: [], lo: [], rain: 0 };
-    y.hi.push(tmax[i]!);
-    y.lo.push(tmin[i]!);
-    y.rain += rain[i] ?? 0;
-    perYear.set(year, y);
+    if (tmax[i] == null || tmin[i] == null || rain[i] == null) return;
+    const y = Number(day.slice(0, 4));
+    // A January week includes December; group it by its central race date.
+    const centers = [y - 1, y, y + 1].map(year => ({ year, distance: Math.abs(daysBetween(`${year}-${md}`, day)) }));
+    const center = centers.sort((a, b) => a.distance - b.distance)[0];
+    if (center.distance > CLIMATE_WINDOW || options && (center.year < options.firstYear || center.year > options.lastYear)) return;
+    const held = years.get(center.year) ?? { hi: [], lo: [], rain: 0, rainy: 0 };
+    held.hi.push(tmax[i]!); held.lo.push(tmin[i]!); held.rain += rain[i]!;
+    if (rain[i]! >= 1) held.rainy++;
+    years.set(center.year, held);
   });
-  if (!hi.length) return null;
+  const valid = [...years].filter(([, y]) => !options?.fullWindow || y.hi.length === CLIMATE_WINDOW * 2 + 1).sort(([a], [b]) => a - b);
+  if (!valid.length) return null;
   const avg = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
-  const byYear = [...perYear.entries()]
-    .sort(([a], [b]) => a - b)
-    .map(([year, y]) => ({ year, tmax: round(avg(y.hi)), tmin: round(avg(y.lo)), rainMm: Math.round(y.rain) }));
-  return { tmax: round(avg(hi)), tmin: round(avg(lo)), rainyShare: Math.round((rainy / hi.length) * 100) / 100, years: byYear.length, byYear };
+  const hi = valid.flatMap(([, y]) => y.hi), lo = valid.flatMap(([, y]) => y.lo);
+  return {
+    tmax: round(avg(hi)), tmin: round(avg(lo)),
+    rainyShare: Math.round(valid.reduce((n, [, y]) => n + y.rainy, 0) / hi.length * 100) / 100,
+    years: valid.length,
+    byYear: valid.map(([year, y]) => ({ year, tmax: round(avg(y.hi)), tmin: round(avg(y.lo)), rainMm: Math.round(y.rain) })),
+  };
 }
 
-async function climateFor(lat: number, lng: number, date: string, today: string): Promise<Climate | null> {
+async function openMeteoHistory(lat: number, lng: number, dates: string[], today: string): Promise<Record<string, Climate>> {
   const lastYear = Number(today.slice(0, 4)) - 1;
   const q = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lng),
-    start_date: `${lastYear - CLIMATE_YEARS + 1}-01-01`,
-    end_date: `${lastYear}-12-31`,
+    start_date: new Date(Date.UTC(lastYear - CLIMATE_YEARS + 1, 0, 1 - CLIMATE_WINDOW)).toISOString().slice(0, 10),
+    end_date: `${lastYear + 1}-01-0${CLIMATE_WINDOW}`,
     daily: "temperature_2m_max,temperature_2m_min,precipitation_sum",
     timezone: "auto",
   });
-  const json = await getJson(`https://archive-api.open-meteo.com/v1/archive?${q}`);
+  const json = await getJson(`https://archive-api.open-meteo.com/v1/archive?${q}`, 6000);
   const d = json?.daily as Daily | undefined;
-  if (!d?.time) return null;
-  return climateFrom(
-    d.time as string[],
-    d.temperature_2m_max as (number | null)[],
-    d.temperature_2m_min as (number | null)[],
-    d.precipitation_sum as (number | null)[],
-    date,
-  );
+  if (!d?.time) throw new Error("weather_archive_unavailable");
+  const result: Record<string, Climate> = {};
+  for (const date of dates) {
+    const climate = climateFrom(d.time as string[], d.temperature_2m_max as (number | null)[], d.temperature_2m_min as (number | null)[], d.precipitation_sum as (number | null)[], date, { firstYear: lastYear - CLIMATE_YEARS + 1, lastYear, fullWindow: true });
+    if (!climate || climate.years < CLIMATE_YEARS) throw new Error("weather_archive_incomplete");
+    result[date.slice(5)] = { ...climate, source: "open-meteo", referenceYear: lastYear };
+  }
+  return result;
+}
+
+export async function historicalSummaries(lat: number, lng: number, dates: string[], today: string) {
+  try { return await openMeteoHistory(lat, lng, dates, today); }
+  catch { return (await import("@/lib/weather-visual-crossing")).visualCrossingHistory(lat, lng, dates, today); }
 }
 
 /** Whether a race on `date` is close enough for a forecast. */
@@ -177,10 +189,8 @@ export function wantsForecast(date: string, today: string): boolean {
   return ahead >= 0 && ahead <= FORECAST_DAYS;
 }
 
-export async function raceWeather(lat: number, lng: number, date: string, today: string): Promise<RaceWeather> {
-  const [forecast, climate] = await Promise.all([
-    wantsForecast(date, today) ? forecastFor(lat, lng, date).catch(() => null) : Promise.resolve(null),
-    climateFor(lat, lng, date, today).catch(() => null),
-  ]);
-  return { forecast, climate };
+export async function raceWeather(lat: number, lng: number, date: string, today: string, climate: Climate | null = null): Promise<RaceWeather> {
+  let forecast = wantsForecast(date, today) ? await forecastFor(lat, lng, date).catch(() => null) : null;
+  if (!forecast && wantsForecast(date, today)) forecast = await (await import("@/lib/weather-visual-crossing")).visualCrossingForecastFor(lat, lng, date).catch(() => null);
+  return { forecast, climate, forecastFetchedAt: forecast ? new Date().toISOString() : null };
 }

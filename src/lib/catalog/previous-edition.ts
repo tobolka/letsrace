@@ -1,41 +1,12 @@
 import { lockedFieldsOf, type OverridesEmbed } from "./overrides";
-import { differentInstalment } from "./merge-duplicates";
+import { findPreviousEdition } from "./edition-identity";
+export { editionKey } from "./edition-identity";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import type { Update } from "@/lib/supabase/tables";
 
 const PAGE = 1000;
-const MAX_KM = 15;
 
-/**
- * A race's name without the parts that change every year: the year, the
- * edition ("32. ročník", "XXXIX", "#3", "N°1"), the words for "edition".
- * "32. ročník Českopetrovická koolna 2026" and "31. ročník Českopetrovická
- * koolna 2025" are the same race.
- */
-export function editionKey(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .replace(/\b(19|20)\d{2}\b(\s*[/-]\s*(19|20)?\d{2}\b)?/g, " ")
-    .replace(/[-_]\d{2}\b/g, " ")
-    .replace(/#\s*\d+|n[°º]\s*\d+|\b\d+\s*\.\s*(rocnik|edycja|ausgabe|edizione|edition|kolo|zavod|round)?/g, " ")
-    .replace(/\b(rocnik|rocniku|edycja|edycji|ausgabe|edizione|edition|jahrgang)\b/g, " ")
-    .replace(/\b[ivxlc]{2,}\b/g, " ")
-    .replace(/\b\d+(st|nd|rd|th|e|er|eme|°)\b/g, " ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
-  const r = Math.PI / 180;
-  const dLat = (b.lat - a.lat) * r;
-  const dLng = (b.lng - a.lng) * r;
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
-  return 12_742 * Math.asin(Math.sqrt(h));
-}
 
 type Row = {
   id: string;
@@ -112,41 +83,10 @@ export async function carryForwardFromPreviousEditions(opts?: {
   );
   const past = await readRange(addDays(today, -430), addDays(today, 200));
 
-  const byKey = new Map<string, Row[]>();
-  const bySeries = new Map<string, Row[]>();
-  for (const p of past) {
-    const key = editionKey(p.name);
-    if (key.length >= 5) byKey.set(key, [...(byKey.get(key) ?? []), p]);
-    if (p.series_id) bySeries.set(p.series_id, [...(bySeries.get(p.series_id) ?? []), p]);
-  }
-
   const result = { considered: upcoming.length, matched: 0, ages: 0, disciplines: 0, websites: 0 };
   for (const ev of upcoming) {
-    const here = ev.location?.lat != null && ev.location?.lng != null ? { lat: ev.location.lat, lng: ev.location.lng } : null;
-    const lo = addDays(ev.start_date, -430);
-    const hi = addDays(ev.start_date, -300);
-    const key = editionKey(ev.name);
-    const near = (p: Row) => {
-      if (p.id === ev.id || p.start_date < lo || p.start_date > hi) return false;
-      const there = p.location?.lat != null && p.location?.lng != null ? { lat: p.location.lat, lng: p.location.lng } : null;
-      if (p.location?.country_code !== ev.location?.country_code || !ev.location?.country_code) return false;
-      if (differentInstalment(p.name, ev.name)) return false;
-      if (p.disciplines?.length && ev.disciplines?.length && !p.disciplines.some(d => ev.disciplines!.includes(d))) return false;
-      return here && there ? km(here, there) <= MAX_KM : Boolean(ev.location?.municipality && p.location?.municipality && editionKey(ev.location.municipality) === editionKey(p.location.municipality));
-    };
-    // The same name without its year, near. A series alone is not enough: a
-    // cup runs several rounds at one venue (Motol XCC and XCO), so a series
-    // match counts only when it is the one round of that series there.
-    let candidates = key.length >= 5 ? (byKey.get(key) ?? []).filter(near) : [];
-    if (!candidates.length && ev.series_id && here) {
-      const rounds = (bySeries.get(ev.series_id) ?? []).filter(
-        (p) => near(p) && p.location?.lat != null,
-      );
-      if (rounds.length === 1) candidates = rounds;
-    }
-    // Ambiguity is never resolved by guessing the nearest anniversary.
-    if (candidates.length !== 1) continue;
-    const prev = candidates[0]!;
+    const prev = findPreviousEdition(ev, past);
+    if (!prev) continue;
 
     const patch: Update<"events"> = {};
     const hasAges = (ev.age_categories ?? []).length > 0;

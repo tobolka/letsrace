@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { httpUrl, isoDay } from "@/lib/api/schemas";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { organizerDb } from "@/lib/organizer";
 import { refreshOrganizerPages } from "@/lib/organizer-publish";
-import type { Json, Update } from "@/lib/supabase/tables";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Json } from "@/lib/supabase/tables";
 
 /** What an organiser may change on their race; anything left out stays as it is. */
 export const organizerEditSchema = z
@@ -23,7 +23,7 @@ export const organizerEditSchema = z
           distanceKm: z.number().positive().max(2000).nullable().optional(),
           ageMin: z.number().int().min(0).max(99).nullable().optional(),
           ageMax: z.number().int().min(0).max(99).nullable().optional(),
-        }),
+        }).refine((v) => v.ageMin == null || v.ageMax == null || v.ageMin <= v.ageMax, { error: "ageMin after ageMax" }),
       )
       .max(40)
       .optional(),
@@ -50,83 +50,23 @@ const COLUMN: Record<Exclude<keyof OrganizerEdit, "categories">, string> = {
  */
 export async function applyOrganizerEdit(opts: { eventId: string; claimId: string; userId: string; edit: OrganizerEdit }) {
   const { eventId, claimId, userId, edit } = opts;
-  const supabase = createServerSupabase();
-  const { data: before, error: readError } = await supabase
-    .from("events")
-    .select("slug, start_date, end_date, status, website_url, registration_url, regulations_url, registration_closes_at, description, categories:event_categories(name, distance_km, age_min, age_max)")
-    .eq("id", eventId)
-    .single();
-  if (readError || !before) throw new Error(readError?.message ?? "race not found");
-  const prev = before as unknown as Record<string, unknown>;
-
-  const payload: Record<string, unknown> = {};
-  const history: { field: string; previous: unknown; value: unknown }[] = [];
-  for (const [key, column] of Object.entries(COLUMN) as [keyof typeof COLUMN, string][]) {
-    if (edit[key] === undefined) continue;
-    const value = edit[key] === "" ? null : edit[key];
-    if (JSON.stringify(prev[column] ?? null) === JSON.stringify(value ?? null)) continue;
-    payload[column] = value;
-    history.push({ field: column, previous: prev[column] ?? null, value });
-  }
-
-  const locked: string[] = Object.keys(payload);
-  if (payload.status) {
-    // A cancelled race stays on the site and says so; nothing else changes its visibility.
-    locked.push("status");
-  }
-  if (Object.keys(payload).length) {
-    const { error } = await supabase
-      .from("events")
-      .update({ ...payload, updated_at: new Date().toISOString() } as Update<"events">)
-      .eq("id", eventId);
-    if (error) throw new Error(error.message);
-  }
-
-  if (edit.categories) {
-    const rows = edit.categories.map((c) => ({
-      name: c.name,
-      distance_km: c.distanceKm ?? null,
-      age_min: c.ageMin ?? null,
-      age_max: c.ageMax ?? null,
-    }));
-    const previous = (prev.categories as Record<string, unknown>[] | null) ?? [];
-    if (JSON.stringify(previous) !== JSON.stringify(rows)) {
-      const { error: deleteError } = await supabase.from("event_categories").delete().eq("event_id", eventId);
-      if (deleteError) throw new Error(deleteError.message);
-      if (rows.length) {
-        const { error: insertError } = await supabase
-          .from("event_categories")
-          .insert(rows.map((r) => ({ ...r, event_id: eventId })));
-        if (insertError) throw new Error(insertError.message);
-      }
-      locked.push("categories");
-      history.push({ field: "categories", previous, value: rows });
-    }
-  }
-
-  if (!history.length) return { changed: 0 };
-
-  const { data: existing } = await supabase
-    .from("event_overrides")
-    .select("locked_fields, fields")
-    .eq("event_id", eventId)
-    .maybeSingle();
-  const prevFields = existing?.fields && typeof existing.fields === "object" ? (existing.fields as Record<string, unknown>) : {};
-  await supabase.from("event_overrides").upsert(
-    {
-      event_id: eventId,
-      fields: { ...prevFields, ...payload } as Json,
-      locked_fields: [...new Set([...((existing?.locked_fields as string[] | null) ?? []), ...locked])],
-      updated_by: "organizer",
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "event_id" },
+  const payload = Object.fromEntries(
+    Object.entries(COLUMN).filter(([key]) => edit[key as keyof OrganizerEdit] !== undefined)
+      .map(([key, column]) => [column, edit[key as keyof OrganizerEdit]]),
   );
-
-  await organizerDb()
-    .from("organizer_edits")
-    .insert(history.map((h) => ({ claim_id: claimId, user_id: userId, event_id: eventId, field: h.field, previous: h.previous, value: h.value })));
-
-  await refreshOrganizerPages([String(prev.slug)]);
-  return { changed: history.length };
+  const db = createServerSupabase() as unknown as SupabaseClient;
+  const { data, error } = await db.rpc("organizer_apply_edit", {
+    p_event_id: eventId, p_claim_id: claimId, p_user_id: userId,
+    p_changes: payload as Json,
+    p_categories: edit.categories === undefined ? null : edit.categories,
+  });
+  if (error) throw new Error(error.message);
+  const result = data as { changed: number; slug: string; seriesSlug: string | null };
+  // Publication is already queued in the same transaction. A refresh outage
+  // must not tell the organiser their successfully committed edit was lost.
+  if (result.changed) {
+    await refreshOrganizerPages([result.slug], result.seriesSlug ? [result.seriesSlug] : [])
+      .catch((error: unknown) => console.error("organizer page refresh deferred", error));
+  }
+  return { changed: result.changed };
 }

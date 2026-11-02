@@ -29,6 +29,7 @@ export function extractJsonLdEvents(sourceUrl: string, html: string): ParsedEven
           startDate: String(start).slice(0, 10),
           endDate: item.endDate ? String(item.endDate).slice(0, 10) : undefined,
           placeText: String(place || "Unknown"),
+          description: typeof item.description === "string" ? cheerio.load(item.description).text().trim().slice(0, 3000) || undefined : undefined,
           countryHint: countryFromLabel(typeof country === "string" ? country : country?.name) ?? countryFromLabel(place),
           sourceUrl: item.url || sourceUrl,
           registrationUrl: item.url,

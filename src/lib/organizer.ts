@@ -100,15 +100,17 @@ export async function syncBadge(target: { eventId?: string | null; seriesId?: st
   const supabase = createServerSupabase();
   const column = target.eventId ? "event_id" : "series_id";
   const id = (target.eventId ?? target.seriesId)!;
-  const { count } = await db
+  const { count, error: countError } = await db
     .from("organizer_claims")
     .select("id", { count: "exact", head: true })
     .eq(column, id)
     .eq("status", "verified");
+  if (countError) throw new Error(countError.message);
   const verifiedAt = count ? new Date().toISOString() : null;
   const table = target.eventId ? "events" : "series";
   // Keep the first verification's time while one stands.
   let update = supabase.from(table).update({ organizer_verified_at: verifiedAt } as never).eq("id", id);
   if (verifiedAt) update = update.is("organizer_verified_at" as never, null);
-  await update;
+  const { error } = await update;
+  if (error) throw new Error(error.message);
 }

@@ -30,6 +30,10 @@ describe("readAllRows", () => {
     expect(rows).toHaveLength(1000);
   });
 
+  it("refuses partial results for callers publishing complete snapshots", async () => {
+    await expect(readAllRows((from, to) => from === 0 ? page(from, to) : Promise.resolve({ data: null, error: { message: "connection lost" } }), { throwOnError: true })).rejects.toThrow("connection lost");
+  });
+
   it("does not loop for ever on a table that keeps answering", async () => {
     const rows = await readAllRows(
       (from, to) => Promise.resolve({ data: Array.from({ length: to - from + 1 }, () => ({ id: 0 })), error: null }),

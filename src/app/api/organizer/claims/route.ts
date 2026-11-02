@@ -87,9 +87,12 @@ export async function POST(req: NextRequest) {
 
   const db = organizerDb();
   const column = kind === "race" ? "event_id" : "series_id";
-  const { data: existing } = await db.from("organizer_claims").select("*").eq("user_id", user.id).eq(column, t.id).maybeSingle();
-  if (existing && existing.status !== "rejected" && existing.status !== "revoked") {
-    return NextResponse.json({ id: existing.id, status: existing.status });
+  const { data: existing, error: existingError } = await db.from("organizer_claims").select("*").eq("user_id", user.id).eq(column, t.id).maybeSingle();
+  if (existingError) return serverError("reading organiser claim failed", existingError);
+  // Only an explicit owner decision may restore rejected or revoked access.
+  // Repeating this request must never re-run automatic domain approval.
+  if (existing) {
+    return NextResponse.json({ id: existing.id, status: existing.status }, { status: existing.status === "rejected" || existing.status === "revoked" ? 403 : 200 });
   }
 
   // Google signs in only with a confirmed address; anything else must have confirmed it.
@@ -106,9 +109,7 @@ export async function POST(req: NextRequest) {
     created_at: new Date().toISOString(),
     decided_at: verified ? new Date().toISOString() : null,
   };
-  const { data: claim, error } = existing
-    ? await db.from("organizer_claims").update(row).eq("id", existing.id).select("id, status").single()
-    : await db.from("organizer_claims").insert(row).select("id, status").single();
+  const { data: claim, error } = await db.from("organizer_claims").insert(row).select("id, status").single();
   if (error || !claim) return serverError("saving organiser claim failed", error);
 
   if (verified) {

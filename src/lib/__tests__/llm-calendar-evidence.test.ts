@@ -3,6 +3,16 @@ import { pageAsText, verifyRaces } from "@/lib/watcher/extractors/llm-calendar";
 const url = "https://club.test/calendar";
 const verify = (raw: Parameters<typeof verifyRaces>[0], text: string) => verifyRaces(raw, text, new Set(), url, "2026-01-01");
 
+it("retains source categories, distances and ages from the same race and edition", () => {
+  const quote = "14. 11. 2026 Perlcross";
+  const categories_quote = "Perlcross 2026: Trasa 12,5 km, Junioři 15–18 let";
+  const raw = { name: "Perlcross", start_date: "2026-11-14", quote, categories: ["Trasa 12,5 km", "Junioři 15–18 let", "Invented category"], categories_quote };
+  expect(verify([raw], `${quote}\n${categories_quote}`)[0].categories).toEqual([
+    { name: "Trasa 12,5 km", distanceKm: 12.5 }, { name: "Junioři 15–18 let", ageMin: 15, ageMax: 18 },
+  ]);
+  expect(verify([{ ...raw, categories_quote: categories_quote.replace("2026", "2025") }], `${quote}\n${categories_quote.replace("2026", "2025")}`)[0].categories).toBeUndefined();
+});
+
 describe("calendar evidence belongs to one row", () => {
   it("separates an inline date's year from the following caption", () => {
     const { text, links } = pageAsText("<html><body><p>So 8. 5. <span>2027</span><span>Časovka</span></p><p>Archiv 2026</p></body></html>", url);

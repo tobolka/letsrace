@@ -5,6 +5,8 @@ import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSn
 import { MetaRow } from "@/components/explore/meta-row";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
 import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather";
+import { createWeatherLoader } from "@/lib/weather-cache";
+import { wantsForecast } from "@/lib/weather";
 
 const copy: Record<Locale, {
   label: string;
@@ -188,33 +190,33 @@ export function windyUrl(lat: number, lng: number): string {
 }
 
 // The line and the chart on one page ask the same question once.
-const pending = new Map<string, Promise<Weather | null>>();
-function loadWeather(lat: number, lng: number, date: string): Promise<Weather | null> {
-  const q = new URLSearchParams({ lat: lat.toFixed(2), lng: lng.toFixed(2), date }).toString();
-  if (!pending.has(q)) {
-    pending.set(
-      q,
-      fetch(`/api/weather?${q}`)
-        .then((res) => (res.ok ? (res.json() as Promise<Weather>) : null))
-        .catch(() => null),
-    );
-  }
-  return pending.get(q)!;
-}
+const loadWeather = createWeatherLoader();
 
 function useWeather(lat: number, lng: number, date: string) {
   const [weather, setWeather] = useState<Weather | null>(null);
   useEffect(() => {
     let live = true;
-    loadWeather(lat, lng, date).then((w) => live && setWeather(w));
+    const refresh = () => {
+      if (document.visibilityState === "hidden") return;
+      loadWeather(lat, lng, date).then((w) => live && setWeather(w));
+    };
+    refresh();
+    const interval = window.setInterval(refresh, 60_000);
+    document.addEventListener("visibilitychange", refresh);
     return () => {
       live = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refresh);
     };
   }, [lat, lng, date]);
   return weather;
 }
 
 type Props = { lat: number; lng: number; date: string; locale: string };
+const WEATHER_SOURCES = {
+  "open-meteo": { name: "Open-Meteo", url: "https://open-meteo.com/" },
+  "visual-crossing": { name: "Visual Crossing Weather", url: "https://www.visualcrossing.com/" },
+};
 
 /**
  * The race day's weather, loaded after the page: a forecast when the day is
@@ -226,7 +228,17 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
   const c = copy[asLocale(locale)];
   const f = weather?.forecast;
   const k = weather?.climate;
-  if (!f && !k) return null;
+  const forecastSource = WEATHER_SOURCES[f?.source ?? "open-meteo"];
+  const climateSource = WEATHER_SOURCES[k?.source ?? "open-meteo"];
+  const near = wantsForecast(date, new Date().toISOString().slice(0, 10));
+  if (!weather || !f && !k && !near) return null;
+  const freshnessCopy = {
+    cs: { at: "Načteno", unavailable: "Předpověď se teď nepodařilo načíst. Zkusíme to znovu." },
+    en: { at: "Retrieved", unavailable: "The forecast is temporarily unavailable. We will retry." },
+    de: { at: "Abgerufen", unavailable: "Die Vorhersage ist derzeit nicht verfügbar. Wir versuchen es erneut." },
+    pl: { at: "Pobrano", unavailable: "Prognoza jest chwilowo niedostępna. Spróbujemy ponownie." },
+    sk: { at: "Načítané", unavailable: "Predpoveď sa teraz nepodarilo načítať. Skúsime to znova." },
+  }[asLocale(locale)];
 
   // Races are ridden by day: the temperature from morning to late afternoon,
   // not the night's low. The sky is named only when it is not rain — the rain
@@ -242,6 +254,7 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
   return (
     <MetaRow icon={f ? SKY_ICON[f.sky] : <Thermometer />} label={c.label}>
       <span className="text-sm">
+        {near && !f ? <span className="block text-muted-foreground">{freshnessCopy.unavailable}</span> : null}
         {f ? (
           <span className="block">
             <span className="font-medium">
@@ -249,10 +262,12 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
             </span>
             {f.rainChance != null ? `, ${fill(c.rainChance, { n: f.rainChance })}` : ""}
             {`, ${fill(c.wind, { n: f.windKmh })}`}
+            {weather.forecastFetchedAt ? <span className="block text-xs text-muted-foreground">{freshnessCopy.at} <time dateTime={weather.forecastFetchedAt}>{new Intl.DateTimeFormat(locale, { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(weather.forecastFetchedAt))}</time></span> : null}
+            <a href={forecastSource.url} target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground underline underline-offset-4">{forecastSource.name}</a>
           </span>
         ) : null}
         {past ? (
-          <span className={f ? "block text-xs text-muted-foreground" : "block"} title={fill(c.climateHelp, { n: k!.years })}>
+          <span className={f ? "block text-xs text-muted-foreground" : "block"} title={fill(c.climateHelp, { n: k!.years }).replace("Open-Meteo", climateSource.name)}>
             {past}
           </span>
         ) : null}
@@ -300,6 +315,8 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
   const c = copy[asLocale(locale)];
   const hours = weather?.forecast?.hours ?? [];
   const climate = weather?.climate;
+  const climateSource = WEATHER_SOURCES[climate?.source ?? "open-meteo"];
+  const forecastSource = WEATHER_SOURCES[weather?.forecast?.source ?? "open-meteo"];
   const hasDay = hours.length >= 4;
   const hasPast = Boolean(climate && climate.byYear.length >= 3);
   if (!hasDay && !hasPast) return null;
@@ -310,6 +327,8 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
         {hasDay ? <RaceDayForecast hours={hours} date={date} locale={locale} lat={lat} lng={lng} /> : null}
         {hasPast ? <PastYears climate={climate!} date={date} locale={locale} /> : null}
       </div>
+      {hasDay ? <p className="mt-2 text-xs text-muted-foreground"><a href={forecastSource.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{forecastSource.name}</a></p> : null}
+      {hasPast ? <p className="mt-2 text-xs text-muted-foreground">{climate!.byYear[0].year}–{climate!.byYear.at(-1)!.year} · <a href={climateSource.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{climateSource.name}</a></p> : null}
     </section>
   );
 }
