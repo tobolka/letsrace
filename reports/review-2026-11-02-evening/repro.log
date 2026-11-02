@@ -1,0 +1,8 @@
+
+ RUN  v5.0.3 /Users/radektobolka/Documents/GitHub/letsrace
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  20:27:08
+   Duration  227ms (transform 52%, import 42%, tests 4%, worker 2%)

@@ -29,6 +29,7 @@ export const raceCopy: Record<Locale, {
   bornIn: string;
   roundOf: string;
   previousEditions: string;
+  nextEditions: string;
   sources: string;
   sourcesHelp: string;
   sourceKinds: Record<string, string>;
@@ -77,6 +78,7 @@ export const raceCopy: Record<Locale, {
     bornIn: "born {years}",
     roundOf: "Round {n} of {of}",
     previousEditions: "Previous editions",
+    nextEditions: "Later editions",
     sources: "Where we found it",
     sourcesHelp: "We read the race from these pages and check them regularly. The organiser's regulations always decide.",
     sourceKinds: { official: "Organiser's website", race: "Race website", series: "Series", national_federation: "Federation", uci: "UCI", aggregator: "Race calendar", other: "Other source" },
@@ -121,6 +123,7 @@ export const raceCopy: Record<Locale, {
     bornIn: "ročníky {years}",
     roundOf: "{n}. kolo z {of}",
     previousEditions: "Předchozí ročníky",
+    nextEditions: "Další ročníky",
     sources: "Odkud to víme",
     sourcesHelp: "Závod jsme převzali z těchto stránek a pravidelně je kontrolujeme. Rozhodují vždy propozice pořadatele.",
     sourceKinds: { official: "Web pořadatele", race: "Web závodu", series: "Seriál", national_federation: "Svaz", uci: "UCI", aggregator: "Kalendář závodů", other: "Jiný zdroj" },
@@ -165,6 +168,7 @@ export const raceCopy: Record<Locale, {
     bornIn: "roczniki {years}",
     roundOf: "Runda {n} z {of}",
     previousEditions: "Poprzednie edycje",
+    nextEditions: "Kolejne edycje",
     sources: "Skąd to wiemy",
     sourcesHelp: "Wyścig pochodzi z tych stron i regularnie je sprawdzamy. Decyduje zawsze regulamin organizatora.",
     sourceKinds: { official: "Strona organizatora", race: "Strona wyścigu", series: "Cykl", national_federation: "Związek", uci: "UCI", aggregator: "Kalendarz wyścigów", other: "Inne źródło" },
@@ -209,6 +213,7 @@ export const raceCopy: Record<Locale, {
     bornIn: "ročníky {years}",
     roundOf: "{n}. kolo z {of}",
     previousEditions: "Predchádzajúce ročníky",
+    nextEditions: "Ďalšie ročníky",
     sources: "Odkiaľ to vieme",
     sourcesHelp: "Pretek sme prevzali z týchto stránok a pravidelne ich kontrolujeme. Rozhodujú vždy propozície organizátora.",
     sourceKinds: { official: "Web organizátora", race: "Web preteku", series: "Seriál", national_federation: "Zväz", uci: "UCI", aggregator: "Kalendár pretekov", other: "Iný zdroj" },
@@ -253,6 +258,7 @@ export const raceCopy: Record<Locale, {
     bornIn: "Jahrgänge {years}",
     roundOf: "Lauf {n} von {of}",
     previousEditions: "Frühere Austragungen",
+    nextEditions: "Spätere Austragungen",
     sources: "Woher wir es wissen",
     sourcesHelp: "Wir haben das Rennen von diesen Seiten übernommen und prüfen sie regelmäßig. Es gilt immer die Ausschreibung des Veranstalters.",
     sourceKinds: { official: "Website des Veranstalters", race: "Rennwebsite", series: "Serie", national_federation: "Verband", uci: "UCI", aggregator: "Rennkalender", other: "Andere Quelle" },

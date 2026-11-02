@@ -6,8 +6,8 @@ Tento přehled zachovává celé zadání, ne jen poslední zprávu. Bez odhadů
 
 | Priorita | Práce | Stav a další konkrétní krok |
 |---|---|---|
-| Teď | JBC 4X Revelations 2027 | Ověřit UCI 9.–10. 7. 2027 a areál, prohledat i neveřejné záznamy, uložit a zveřejnit hlavní závod. Dětský závod jen s podkladem pro rok 2027. |
-| Teď | Road Stage Orlické hory 2027 | Zachovat ID `26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b`; opravit místo „Kikirikiii“, souřadnice a kraj. Opravit příčinu v importu a ověřit veřejné pohledy. |
+| Teď | JBC 4X Revelations 2027 | Hotovo: ID `4a99a311-023a-4b88-8a78-ad8e954eb926`, termín UCI, 4X, obě Elite kategorie, areál, veřejný detail a společný seznam. Dětský program a registrace 2027 zatím nepotvrzené. |
+| Teď | Road Stage Orlické hory 2027 | Hotovo: původní ID a registrace zachované; Deštné, správné souřadnice a kraj, oprava čtení JSON-LD i ochranný zámek. Detail, hledání i společný seznam opravené. |
 | Potom | Dávka nových českých závodů 2027 z přílohy | Samostatně uložená kompletní příloha níže. Při této dvojici úkolů se znovu neřeší staré opravy ani ostatní závody. Potom každá položka dostane výsledek, ID, zdroj a odkaz; potvrzené datum neblokuje chybějící registrace. |
 | Pokračuje | Společná pipeline, schránka rozhodnutí a jednoduché ovládání | Zůstávají všechny původní etapy 0–6; konkrétní stav v [operations-progress.md](operations-progress.md). Rozpracované změny administrace jsou lokální a nesmějí se zahodit. |
 | Pokračuje | Automatické doplňování historie počasí | Uložiště, denní serverový běh a bezplatná záloha nasazené; celé úvodní naplnění katalogu není dokončené. Limity a poslední dobrá data se zachovávají. |
@@ -41,3 +41,7 @@ Důkazy, provedené změny a omezení: [výsledek poslední sady oprav](../repor
 ## Požadavky na budoucí hlášení
 
 Uvádět odděleně lokální změnu, uložení do databáze, nasazení, veřejné ověření a zbývající práci. Nevymýšlet časové odhady, nové počty ani úspěšné importy bez skutečného zápisu a kontroly. Nežádat vlastníka, aby ručně řešil technickou chybu, kterou může opravit systém.
+
+## Následná kontrola večerních změn
+
+[Konkrétní review 26 nových commitů](../reports/review-2026-11-02-evening/REVIEW.md): neatomické admin úpravy, souběžné/stárnoucí návrhy, nepodložené věky, odhad pořadí kol, skutečný rozpočet a čas historie počasí. Tyto nálezy zatím nejsou opravené. Nově se doplňují odkazy „Další ročníky“; žádné nové datum tím nevzniká.

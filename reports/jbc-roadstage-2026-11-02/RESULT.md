@@ -29,7 +29,7 @@ Datové změny byly provedeny atomicky skriptem [apply.sql](apply.sql). [before.
 
 - Databázový zápis i zpětné čtení: dokončeno, včetně kategorií, souřadnic a jejich prostorové reprezentace.
 - Testy: celá sada 1 374 prošla; následný test zapojení UCI do skutečné cesty sběrače také prošel. Kontrola typů, sestavení a kontrola stylu prošly.
-- Nasazení a veřejné ověření: doplní se po nasazení této změny; samotné uložení do DB se nevydává za důkaz veřejného zobrazení.
+- Nasazení `bc8a710e` READY, pozdější uživatelské nasazení `f8a2ab30` rovněž READY. Oba publikační úkoly dokončené. Ověřeno 8 skutečných veřejných odpovědí: české a anglické detaily, společný seznam, hledání, MTB/4X, země a opravené prostorové filtrování. [Důkaz](public-checks.json). Starý společný seznam vyžadoval jednorázovou obnovu dat a CDN; samotný detail tuto závadu neodhalil. Limity publikace se nenavyšovaly.
 - Samostatný uživatelský filtr krajů současná aplikace nemá. Kraje jsou správně uložené, ale nelze tvrdit, že byl otestován neexistující výběr kraje. Ověřují se existující země, disciplíny, hledání a prostorové filtrování.
 
 Ostatní zadání a velká příloha nových závodů zůstávají v [pracovním přehledu](../../docs/work-tracker-2026-11-02.md).

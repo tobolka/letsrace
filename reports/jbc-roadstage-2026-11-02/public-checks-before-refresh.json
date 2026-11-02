@@ -1,0 +1,229 @@
+[
+  {
+    "path": "/api/events?catalogue=1",
+    "status": 200,
+    "total": 993,
+    "selected": [
+      {
+        "description": null,
+        "id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+        "slug": "road-stage-orlicke-hory-2027",
+        "name": "RoadStage — Deštné v Orlických horách",
+        "startDate": "2027-06-05",
+        "endDate": "2027-06-05",
+        "disciplines": [
+          "road"
+        ],
+        "formats": [],
+        "audience": "adults",
+        "ageCategories": [
+          "elite",
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "race",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.roadstage.cz/orlicke-hory",
+        "registrationUrl": "https://registrace.sportsoft.cz/registration.aspx?e=3630",
+        "regulationsUrl": "https://www.roadstage.cz/orlicke-hory/kancelar-zavodu",
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-01T10:05:41.55+00:00",
+        "location": {
+          "id": "4d89763e-dc33-4630-b64f-29c599525a56",
+          "name": "Kikirikiii",
+          "municipality": "Kikirikiii",
+          "countryCode": "CZ",
+          "lat": 50.2960259,
+          "lng": 16.3680954
+        },
+        "series": {
+          "id": "ffa6dcf3-924c-42e7-a002-3f5ad87c8a02",
+          "name": "RoadStage",
+          "slug": "roadstage"
+        },
+        "categories": []
+      }
+    ]
+  },
+  {
+    "path": "/api/events?q=JBC&season=2027&disciplines=four_cross&country=CZ&anyDate=1",
+    "status": 200,
+    "total": 1,
+    "selected": [
+      {
+        "description": null,
+        "publicRevision": null,
+        "id": "4a99a311-023a-4b88-8a78-ad8e954eb926",
+        "slug": "jbc-4x-revelations-2027",
+        "name": "4X Pro Tour - JBC 4X Revelations",
+        "startDate": "2027-07-09",
+        "endDate": "2027-07-10",
+        "disciplines": [
+          "mtb",
+          "four_cross"
+        ],
+        "formats": [
+          "four_cross"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "elite"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "race",
+        "competitionType": "uci",
+        "season": "2027",
+        "websiteUrl": "https://www.jbc4xrevelations.com/",
+        "registrationUrl": null,
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "international",
+        "classLabel": "C3",
+        "uciClass": "c3",
+        "lastSeenAt": "2026-11-02T15:18:58.716061+00:00",
+        "location": {
+          "id": "15694d90-5302-4162-b2fb-53497a2002dc",
+          "name": "Areál Dobrá Voda, Jablonec nad Nisou",
+          "municipality": "Jablonec nad Nisou",
+          "countryCode": "CZ",
+          "lat": 50.70933,
+          "lng": 15.1610825
+        },
+        "series": {
+          "id": "b044d087-1b8e-4080-8ec6-57db4b62486f",
+          "name": "4X Pro Tour",
+          "slug": "4x-pro-tour"
+        },
+        "categories": []
+      }
+    ]
+  },
+  {
+    "path": "/api/events?q=JBC&season=2027&disciplines=mtb&country=CZ&anyDate=1",
+    "status": 200,
+    "total": 1,
+    "selected": [
+      {
+        "description": null,
+        "publicRevision": null,
+        "id": "4a99a311-023a-4b88-8a78-ad8e954eb926",
+        "slug": "jbc-4x-revelations-2027",
+        "name": "4X Pro Tour - JBC 4X Revelations",
+        "startDate": "2027-07-09",
+        "endDate": "2027-07-10",
+        "disciplines": [
+          "mtb",
+          "four_cross"
+        ],
+        "formats": [
+          "four_cross"
+        ],
+        "audience": "adults",
+        "ageCategories": [
+          "elite"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "race",
+        "competitionType": "uci",
+        "season": "2027",
+        "websiteUrl": "https://www.jbc4xrevelations.com/",
+        "registrationUrl": null,
+        "regulationsUrl": null,
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "international",
+        "classLabel": "C3",
+        "uciClass": "c3",
+        "lastSeenAt": "2026-11-02T15:18:58.716061+00:00",
+        "location": {
+          "id": "15694d90-5302-4162-b2fb-53497a2002dc",
+          "name": "Areál Dobrá Voda, Jablonec nad Nisou",
+          "municipality": "Jablonec nad Nisou",
+          "countryCode": "CZ",
+          "lat": 50.70933,
+          "lng": 15.1610825
+        },
+        "series": {
+          "id": "b044d087-1b8e-4080-8ec6-57db4b62486f",
+          "name": "4X Pro Tour",
+          "slug": "4x-pro-tour"
+        },
+        "categories": []
+      }
+    ]
+  },
+  {
+    "path": "/api/events?q=RoadStage&season=2027&anyDate=1&west=16.34&east=16.36&south=50.30&north=50.31",
+    "status": 200,
+    "total": 1,
+    "selected": [
+      {
+        "description": null,
+        "publicRevision": null,
+        "id": "26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b",
+        "slug": "road-stage-orlicke-hory-2027",
+        "name": "RoadStage — Deštné v Orlických horách",
+        "startDate": "2027-06-05",
+        "endDate": "2027-06-05",
+        "disciplines": [
+          "road"
+        ],
+        "formats": [],
+        "audience": "adults",
+        "ageCategories": [
+          "elite",
+          "amateur"
+        ],
+        "ageConfidence": "explicit",
+        "status": "scheduled",
+        "visibility": "public",
+        "eventType": "race",
+        "competitionType": "other",
+        "season": "2027",
+        "websiteUrl": "https://www.roadstage.cz/orlicke-hory",
+        "registrationUrl": "https://registrace.sportsoft.cz/registration.aspx?e=3630",
+        "regulationsUrl": "https://www.roadstage.cz/orlicke-hory/kancelar-zavodu",
+        "resultsUrl": null,
+        "registrationClosesAt": null,
+        "listingUrl": null,
+        "sourceKind": "scraped",
+        "level": "local",
+        "classLabel": null,
+        "uciClass": null,
+        "lastSeenAt": "2026-11-02T10:34:11.526+00:00",
+        "location": {
+          "id": "85cdbe7d-f4ec-44af-b7fe-0689040f313b",
+          "name": "Deštné v Orlických horách",
+          "municipality": "Deštné v Orlických horách",
+          "countryCode": "CZ",
+          "lat": 50.304743,
+          "lng": 16.350751
+        },
+        "series": {
+          "id": "ffa6dcf3-924c-42e7-a002-3f5ad87c8a02",
+          "name": "RoadStage",
+          "slug": "roadstage"
+        },
+        "categories": []
+      }
+    ]
+  }
+]

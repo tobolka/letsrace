@@ -59,3 +59,15 @@ export function findPreviousEdition<T extends EditionIdentity>(event: EditionIde
   const bySeries = event.series_id && here?.lat != null ? eligible.filter(p => p.series_id === event.series_id && p.location?.lat != null) : [];
   return bySeries.length === 1 ? bySeries[0] : null;
 }
+
+/** Reverse the same identity check; ambiguous future editions never become links. */
+export function findNextEdition<T extends EditionIdentity>(event: EditionIdentity, candidates: T[], yearsAhead = 1): T | null {
+  const pool: EditionIdentity[] = candidates.some(row => row.id === event.id) ? candidates : [...candidates, event];
+  const offset = 365 * (yearsAhead - 1);
+  const matches = candidates.filter(candidate => {
+    const days = (Date.parse(candidate.start_date) - Date.parse(event.start_date)) / 86400_000;
+    return days >= 300 + offset && days <= 430 + offset &&
+      findPreviousEdition(candidate, pool, yearsAhead)?.id === event.id;
+  });
+  return matches.length === 1 ? matches[0] : null;
+}

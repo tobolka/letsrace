@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getRaceEditions } from "@/lib/race-editions";
+import { getRaceEditionLinks } from "@/lib/race-editions";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -175,7 +175,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     here?.lat != null && here.lng != null
       ? listEvents({ ...boxAround(here.lat, here.lng, NEARBY_RADIUS_KM), dateFrom: today }).catch(() => [])
       : Promise.resolve([]),
-    getRaceEditions(event).catch(() => []),
+    getRaceEditionLinks(event).catch(() => ({ previous: [], next: [] })),
     listOrganiserRaces(event).catch(() => []),
     isPast
       ? Promise.resolve([] as string[])
@@ -427,12 +427,12 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </section>
         ) : null}
 
-        {editions.length > 0 ? (
-          <section className="mt-10" aria-labelledby="previous-editions">
-            <h2 id="previous-editions" className="mb-3 text-lg font-semibold">{rc.previousEditions}</h2>
+        {([{ id: "previous-editions", title: rc.previousEditions, rows: editions.previous }, { id: "next-editions", title: rc.nextEditions, rows: editions.next }]).filter(group => group.rows.length > 0).map(group => (
+          <section key={group.id} className="mt-10" aria-labelledby={group.id}>
+            <h2 id={group.id} className="mb-3 text-lg font-semibold">{group.title}</h2>
             {/* The same rows as the routes and sources lists: the name, then the date on the right. */}
             <ul className="divide-y divide-border/60 rounded-xl border px-4 text-sm">
-              {editions.map(edition => (
+              {group.rows.map(edition => (
                 <li key={edition.id} className="flex min-w-0 items-baseline justify-between gap-3 py-3 leading-snug">
                   <Link href={localePath(locale, `e/${edition.slug}`)} className="min-w-0 truncate font-medium underline-offset-4 hover:underline">
                     {unshout(edition.name)}
@@ -444,7 +444,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               ))}
             </ul>
           </section>
-        ) : null}
+        ))}
 
         {organiserRaces.length > 0 ? (
           <section className="mt-10">
