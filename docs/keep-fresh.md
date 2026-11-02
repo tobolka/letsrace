@@ -63,4 +63,14 @@ Pro technickou kontrolu: `npm run pipeline:status` nebo `npm run pipeline:status
 
 Eventiv nyní u veřejného kalendářového rozhraní vrací HTTP 401. Čtečka tuto skutečnost hlásí místo úspěšného prázdného výsledku. Uložené závody kvůli tomu nemaže; přístupové omezení neobchází. AI kontrola se řídí rozpočtem a není zárukou přečtení každé čekající stránky.
 
+### Opakovaná kontrola čekajících podkladů
+
+Místní běžný cyklus nyní zahrnuje `recheck-discovery-candidates.ts --max=20 --apply`. Zkontroluje pouze splatné podklady ve stavu pending/waiting/conflict. Datum dalšího pokusu a výsledek jsou společně uložené v `pipeline_candidates.decision.followUp`; původní rozhodnutí, důkaz, stav a vazba na závod zůstávají zachované. Pracovní převzetí na pět minut brání souběžným pokusům a po pádu samo vyprší. Změna rozhodnutí během čtení zabrání přepsání novějšího výsledku.
+
+Čte se původní zdroj, výslovný detail/web z podkladu a případně výslovně doplněné `decision.recheckUrls` (nejvýše čtyři). Adresy se nehádají. Sdílené adresy se v jedné dávce načtou jednou. Pozastavené nebo odmítnuté zdroje se neaktivují ani nečtou; kontroluje se i normalizovaná adresa bez sledovacích parametrů. Běh má limit tři minuty a nepoužívá model ani placené hledání. Snímky přečtených dokumentů jsou v soukromém místním `tmp/candidate-follow-ups/`.
+
+Nezměněný podklad se vrátí za sedm dní. Selhání se zkusí za hodinu, šest hodin, den, tři dny a potom nejvýše jednou týdně. Změna textu se označí pro navazující ověření a znovu zkontroluje za den; samotná změna celého kalendáře nepotvrzuje změnu konkrétního závodu. První snímek bez starého srovnatelného otisku je pouze výchozí stav. Neúplné čtení není úspěšná kontrola a úspěšný snímek zůstane zachovaný i přes další výpadek.
+
+Tento krok **nepublikuje, neslučuje ani neověřuje pravdivost závodu**. Odstraňuje čekání bez dalšího pokusu; samostatné vyhodnocení nových podkladů ještě není dokončené. Běží na Macu, při jeho vypnutí čeká a po zapnutí pokračuje podle společně uložených termínů. Ručně lze použít stejný příkaz bez `--apply` pro čtení a náhled bez změn databáze. Vypnutím tohoto kroku se zachovají všechny dosavadní snímky i rozhodnutí.
+
 Další ročníky se hledají přes skutečné odkazy a oznámení pořadatelů. Sběrač již automaticky nezakládá ani neoživuje sledované adresy pouhou změnou roku v URL; tato cesta vytvářela neověřené články a archivní adresy. Dříve načtené užitečné zdroje zůstávají sledované.

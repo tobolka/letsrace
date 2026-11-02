@@ -41,7 +41,8 @@ async function main() {
     if (["published", "publishing", "rejected"].includes(row.status)) throw new Error(`Cannot replace terminal/in-flight decision ${row.id}`);
     if (decision.action !== "publish") {
       if (apply) {
-        const { data, error } = await db.from("pipeline_candidates").update({ status: decision.action === "reject" ? "rejected" : "waiting", decision: decision as unknown as Json, updated_at: new Date().toISOString() }).eq("id", row.id).eq("status", row.status).select("id");
+        const reviewedAt = new Date().toISOString();
+        const { data, error } = await db.from("pipeline_candidates").update({ status: decision.action === "reject" ? "rejected" : "waiting", decision: { ...decision, reviewedAt } as unknown as Json, updated_at: reviewedAt }).eq("id", row.id).eq("status", row.status).eq("updated_at", row.updated_at).select("id");
         if (error || data?.length !== 1) throw new Error(error?.message ?? "Candidate changed concurrently");
       }
       outcomes.push({ id: row.id, action: decision.action, applied: apply }); continue;
@@ -56,7 +57,8 @@ async function main() {
     if (linkError) throw linkError;
     if (links?.some(l => ["rejected", "ignored"].includes(l.status))) throw new Error("Source was explicitly rejected/ignored");
     if (!apply) { outcomes.push({ id: row.id, action: "publish", applied: false, expectedEventId: decision.expectedEventId }); continue; }
-    const { data: claim, error: claimError } = await db.from("pipeline_candidates").update({ status: "publishing", decision: decision as unknown as Json, updated_at: new Date().toISOString() }).eq("id", row.id).eq("status", row.status).select("id");
+    const reviewedAt = new Date().toISOString();
+    const { data: claim, error: claimError } = await db.from("pipeline_candidates").update({ status: "publishing", decision: { ...decision, reviewedAt } as unknown as Json, updated_at: reviewedAt }).eq("id", row.id).eq("status", row.status).eq("updated_at", row.updated_at).select("id");
     if (claimError || claim?.length !== 1) throw new Error(claimError?.message ?? "Candidate claimed concurrently");
     // Leave interrupted writes visibly in publishing. Never silently retry a
     // potentially partial multi-step write or publish another duplicate.

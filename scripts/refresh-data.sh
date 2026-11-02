@@ -65,6 +65,7 @@ weekly_browser_step() {
 
 step "Coverage before"                     scripts/audit-catalogue-overview.ts
 step "Structured calendars, no model or search cost" scripts/check-free-calendars.ts
+step "Follow up waiting race evidence, no publication" scripts/recheck-discovery-candidates.ts --max=20 --apply
 weekly_browser_step
 daily_step "Free discovery of new source links" scripts/explore-sources.ts
 # Standalone discovery remains a manual tool; regular source finding is free.
