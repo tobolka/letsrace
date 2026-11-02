@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, Flag } from "lucide-react";
+import { Trophy, Flag, PencilLine } from "lucide-react";
+import { AuthForm } from "@/components/account/auth-form";
+import { RaceForm } from "@/components/race/race-form";
+import { createBrowserSupabase } from "@/lib/supabase/browser";
+import { asLocale } from "@/lib/i18n/messages";
+import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,10 +34,13 @@ export function SubmitRaceModal({
   open,
   onClose,
   messages,
+  locale,
 }: {
   open: boolean;
   onClose: () => void;
   messages: Messages;
+  /** The reader's language, for creating a race in the shared form. */
+  locale?: string;
 }) {
   const [kind, setKind] = useState<Kind>("race");
   const [url, setUrl] = useState("");
@@ -40,6 +48,16 @@ export function SubmitRaceModal({
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const series = kind === "series";
+  // Creating a race in the shared form instead of sending its address.
+  const [creating, setCreating] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const c = organizerCopy[asLocale(locale ?? "en")];
+
+  async function startCreating() {
+    setCreating(true);
+    const { data } = await createBrowserSupabase().auth.getUser();
+    setSignedIn(Boolean(data.user));
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,11 +80,31 @@ export function SubmitRaceModal({
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
-      <DialogContent className="overscroll-contain sm:max-w-md">
+      <DialogContent className="max-h-[92dvh] overflow-y-auto overscroll-contain sm:max-w-md">
+        {creating ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>{c.formCreate}</DialogTitle>
+              <DialogDescription>{c.proposalNote}</DialogDescription>
+            </DialogHeader>
+            {signedIn === null ? null : signedIn ? (
+              <RaceForm locale={locale ?? "en"} onDone={onClose} />
+            ) : (
+              <AuthForm locale={locale ?? "en"} hideTitle onSuccess={() => setSignedIn(true)} />
+            )}
+          </>
+        ) : (
+        <>
         <DialogHeader>
           <DialogTitle>{messages.reportRaceOrSeries}</DialogTitle>
           <DialogDescription>{series ? messages.submitRaceHelpSeries : messages.submitRaceHelpRace}</DialogDescription>
         </DialogHeader>
+        {series ? null : (
+          <Button type="button" variant="outline" onClick={() => void startCreating()}>
+            <PencilLine data-icon="inline-start" />
+            {c.createLink}
+          </Button>
+        )}
         <form onSubmit={submit}>
           <FieldGroup className="gap-5">
             <Field>
@@ -128,6 +166,8 @@ export function SubmitRaceModal({
             </DialogFooter>
           </FieldGroup>
         </form>
+        </>
+        )}
       </DialogContent>
     </Dialog>
   );

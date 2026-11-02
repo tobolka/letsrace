@@ -14,6 +14,7 @@ import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { asLocale } from "@/lib/i18n/messages";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { localePath } from "@/lib/localized-paths";
+import { RaceForm } from "@/components/race/race-form";
 
 /** Set on the address while the dialog is open, so signing in with Google brings the reader back to it. */
 const OPEN_PARAM = "edit";
@@ -39,6 +40,8 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
   const [access, setAccess] = useState<Access | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [mode, setMode] = useState<"suggest" | "organizer">("suggest");
+  // On a race, the claim is a step off the form, not a choice beside it.
+  const [claimFlow, setClaimFlow] = useState(false);
   const [text, setText] = useState("");
   const [claimStatus, setClaimStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -59,6 +62,7 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
 
   function show(next: boolean) {
     setOpen(next);
+    if (next) setClaimFlow(false);
     const url = new URL(window.location.href);
     if (next) url.searchParams.set(OPEN_PARAM, "1");
     else url.searchParams.delete(OPEN_PARAM);
@@ -119,7 +123,7 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
       </button>
       <Dialog open={open} onOpenChange={show}>
         {/* The sign-in dialog's shape: what this is for on the left, what to do on the right. */}
-        <DialogContent className="gap-0 overscroll-contain p-0 sm:max-w-3xl md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
+        <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto overscroll-contain p-0 sm:max-w-3xl md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-3 border-b bg-muted/50 px-6 pt-6 pb-5 md:justify-center md:gap-0 md:border-r md:border-b-0 md:p-10">
             <BrandMark size="sm" className="md:mb-8" />
             <DialogTitle className="text-xl leading-tight font-semibold tracking-tight text-balance md:text-3xl">{w.editTitle}</DialogTitle>
@@ -156,6 +160,24 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
               </>
             ) : step === "suggested" ? (
               done(c.suggestThanks)
+            ) : kind === "race" && !claimFlow ? (
+              // A race is edited in the form itself; the admin's and an organiser's
+              // changes land at once, anyone else's wait for approval.
+              <>
+                <RaceForm locale={locale} slug={slug} onDone={() => show(false)} />
+                {access && !access.admin && !access.verified && !access.pending ? (
+                  <button
+                    type="button"
+                    className="text-left text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                    onClick={() => {
+                      setClaimFlow(true);
+                      setMode("organizer");
+                    }}
+                  >
+                    {w.claimLink}
+                  </button>
+                ) : null}
+              </>
             ) : access?.admin ? (
               <>
                 <p className="text-sm">{c.adminNote}</p>

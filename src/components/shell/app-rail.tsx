@@ -146,7 +146,7 @@ function UserMenu({ locale }: { locale: string }) {
           </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
-      {dialog === "submit" ? <SubmitRaceModal open onClose={() => setDialog(null)} messages={t} /> : null}
+      {dialog === "submit" ? <SubmitRaceModal open onClose={() => setDialog(null)} messages={t} locale={locale} /> : null}
       {dialog === "feedback" ? <FeedbackModal open onClose={() => setDialog(null)} /> : null}
       {dialog === "auth" ? (
         <AuthDialog open onClose={() => setDialog(null)} onSuccess={() => setDialog(null)} locale={locale} />
