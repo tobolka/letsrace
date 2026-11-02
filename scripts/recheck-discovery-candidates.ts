@@ -9,12 +9,15 @@ import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 import { discoveryUrl } from "../src/lib/discovery/plan";
 import { decisionObject, followUpDue, followUpOf, followUpUrls, finishFollowUp, type FollowUpDocument } from "../src/lib/discovery/follow-up";
 import { writeJsonAtomic } from "../src/lib/catalog/local-source-cache";
+import { organizerLinks } from "../src/lib/discovery/organizer-links";
 import type { Json } from "../src/lib/supabase/database.types";
 
 async function main() {
   for (const [key, value] of Object.entries(parse(await readFile(".env.local", "utf8")))) process.env[key] ??= value;
   const apply = process.argv.includes("--apply");
   const max = Number(process.argv.find(arg => arg.startsWith("--max="))?.slice(6) ?? 20);
+  const id = process.argv.find(arg => arg.startsWith("--id="))?.slice(5);
+  if (id && !/^[a-f0-9-]{36}$/i.test(id)) throw Error("--id must be a candidate UUID");
   if (!Number.isInteger(max) || max < 1 || max > 100) throw Error("--max must be 1–100");
   const started = Date.now();
   const deadline = Math.min(started + 180_000, Number(process.env.SOURCE_RUN_DEADLINE || 0) * 1000 || Infinity);
@@ -26,7 +29,8 @@ async function main() {
     if (error) throw Error(`Reading candidate follow-ups: ${error.message}`);
     rows.push(...data); if (data.length < 500) break;
   }
-  const due = rows.filter(row => followUpDue(row, started)).slice(0, max);
+  // A targeted service retry may advance its date, but cannot steal a live claim.
+  const due = rows.filter(row => id ? row.id === id && !(Date.parse(followUpOf(row)?.leaseUntil ?? "") > started) : followUpDue(row, started)).slice(0, max);
   const urls = [...new Set(due.flatMap(followUpUrls))];
   const blocked = new Set<string>();
   // Compare normalized URLs too: a tracking suffix must not bypass a pause.
@@ -36,7 +40,7 @@ async function main() {
       if (error) throw Error(`Reading ${table} source policy: ${error.message}`);
       for (const row of data) {
         const url = discoveryUrl(row.url);
-        if (url && urls.includes(url) && (table === "watched_urls" ? row.status !== "active" : ["rejected", "ignored"].includes(row.status))) blocked.add(url);
+        if (url && (table === "watched_urls" ? row.status !== "active" : ["rejected", "ignored"].includes(row.status))) blocked.add(url);
       }
       if (data.length < 1000) break;
     }
@@ -57,7 +61,7 @@ async function main() {
       const snapshot = resolve(directory, `${createHash("sha256").update(url).digest("hex")}-${doc.hash}.json`);
       // Archive failures are worker failures, never mislabeled as a bad source.
       await writeJsonAtomic(snapshot, { url, fetchedAt: new Date().toISOString(), documentHash: doc.hash, textHash, html: doc.html, text });
-      return { url, outcome: "read", documentHash: doc.hash, textHash, snapshot };
+      return { url, outcome: "read", documentHash: doc.hash, textHash, snapshot, organizerUrls: organizerLinks(doc.html, url) };
     })());
     return documents.get(url)!;
   };
@@ -77,9 +81,19 @@ async function main() {
       expected = data[0].updated_at;
     }
     const result: FollowUpDocument[] = [];
-    for (const url of followUpUrls(row)) {
+    const targets = followUpUrls(row).map(url => ({ url, linkedFrom: followUpOf(row)?.documents.find(doc => doc.url === url)?.linkedFrom }));
+    for (let index = 0; index < targets.length; index++) {
+      const { url, linkedFrom } = targets[index];
       if (Date.now() + 20_000 >= deadline) { result.push({ url, outcome: "unavailable", error: "worker_deadline" }); continue; }
-      result.push(await read(url));
+      const document = await read(url);
+      result.push({ ...document, ...(linkedFrom ? { linkedFrom } : {}) });
+      // Only follow organizer blocks from the explicit event detail, one hop.
+      // The aggregate calendar must not assign another race's organizer to this one.
+      if (!linkedFrom && url === discoveryUrl(String(decisionObject(row.payload).sourceUrl ?? ""))) {
+        for (const organizer of document.organizerUrls ?? []) {
+          if (targets.length < 6 && !targets.some(target => target.url === organizer)) targets.push({ url: organizer, linkedFrom: url });
+        }
+      }
     }
     const followUp = finishFollowUp(row, result, Date.now());
     if (apply) {

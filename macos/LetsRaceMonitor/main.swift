@@ -364,7 +364,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         section("2. Nové závody ze známých webů", "Pravidelný automatický sběr", "Prochází sledované kalendáře a weby. Nález porovná s katalogem: nový závod přidá, známý aktualizuje a nejasnou shodu odloží k ověření.")
         section("3. Doplňování existujících závodů", "Část automaticky · AI v omezeném režimu", "Dohledává například web pořadatele a přihlášky. Podrobné doplňování neběží v každém cyklu; AI se spouští jen ve vybrané dny a v rozpočtu. Staré údaje nejsou novým potvrzením.")
         let waiting: String
-        if let server = snapshot?.server, server.error == nil, let checked = server.checkedAt, let at = parsedDate(checked), Date().timeIntervalSince(at) < 900, let count = server.reviewCandidates {
+        if let server = snapshot?.server, server.error == nil, let checked = server.checkedAt, let at = parsedDate(checked), (-60..<900).contains(Date().timeIntervalSince(at)), let count = server.reviewCandidates {
             waiting = count == 1 ? "1 podklad čeká na ověření" : (2...4).contains(count) ? "\(count) podklady čekají na ověření" : "\(count) podkladů čeká na ověření"
         } else { waiting = "Aktuální počet čekajících podkladů není potvrzený" }
         section("4. Ověřování sporných nálezů", waiting, "Mac opakovaně kontroluje zdroje a ukládá další termín pokusu. Samostatné posouzení a zveřejnění zatím chybí. Změna stránky sama nepotvrzuje závod.")

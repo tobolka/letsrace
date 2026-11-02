@@ -1,6 +1,6 @@
 # LetsRace Monitor
 
-Native AppKit menubar utility. The default popover shows one overall state, the latest completed result and an honest account of pending review. Technical lanes and manual controls are behind “Zobrazit podrobnosti”, with a return button. The pause explicitly affects only the Mac. No completion estimates and no third-party UI dependency.
+Native AppKit menubar utility. The default popover shows one overall state, the latest completed result and an honest account of pending review. Technical lanes and manual controls are behind “Co systém dělá” → “Zobrazit průběh a nástroje”, with a return button. The pause explicitly affects only the Mac. No completion estimates and no third-party UI dependency.
 
 “Co systém dělá” opens a plain-language map of the four workstreams: finding new websites, finding races in known sources, enriching existing races, and reviewing uncertain findings. It distinguishes configured automatic work from unfinished automation; it is not a fabricated per-lane live progress display. Technical controls are available via “Zobrazit průběh a nástroje”.
 

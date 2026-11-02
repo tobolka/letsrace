@@ -6,6 +6,7 @@ const HOUR = 3_600_000;
 export type FollowUpDocument = {
   url: string; outcome: "read" | "unavailable" | "blocked";
   documentHash?: string; textHash?: string; snapshot?: string; error?: string;
+  organizerUrls?: string[]; linkedFrom?: string;
 };
 export type FollowUp = {
   version: 1; attempts: number; failures: number; checkedAt?: string;
@@ -36,8 +37,9 @@ export function followUpDue(row: ReviewRow, now: number): boolean {
 export function followUpUrls(row: ReviewRow): string[] {
   const payload = decisionObject(row.payload);
   const extra = decisionObject(row.decision).recheckUrls;
+  const linked = followUpOf(row)?.documents.filter(doc => doc.linkedFrom).map(doc => doc.url) ?? [];
   return [...new Set([row.source_url, payload.sourceUrl, payload.websiteUrl,
-    ...(Array.isArray(extra) ? extra.slice(0, 4) : [])]
+    ...(Array.isArray(extra) ? extra.slice(0, 4) : []), ...linked]
     .filter((url): url is string => typeof url === "string")
     .map(discoveryUrl).filter((url): url is string => Boolean(url)))].slice(0, 6);
 }

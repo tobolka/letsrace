@@ -19,6 +19,10 @@ describe("waiting evidence follow-up", () => {
       .toEqual(["https://race.test/", "https://race.test/detail"]);
     expect(followUpUrls(row).join(" ")).not.toContain("2027");
   });
+  it("retains previously followed organizer URLs for the next scheduled attempt", () => {
+    const result = finishFollowUp(row, [read, { ...read, url: "https://organizer.test/", linkedFrom: "https://race.test/detail" }], now);
+    expect(followUpUrls(withResult(result))).toEqual(["https://race.test/", "https://race.test/detail", "https://organizer.test/"]);
+  });
   it("ignores changed HTML decoration when source text is unchanged", () => {
     const result = finishFollowUp(row, [read], now);
     expect(result.outcome).toBe("unchanged");
