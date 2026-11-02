@@ -1,4 +1,11 @@
 import { FORECAST_DAYS, wantsForecast, type RaceWeather } from "@/lib/weather";
+const FORECAST_SECONDS = 1800;
+
+/** Expired weather may remain in a suspended tab; never display it as a forecast. */
+export function currentWeather(weather: RaceWeather | null, now = Date.now()): RaceWeather | null {
+  return weather?.forecast && weather.forecastFetchedAt && now - Date.parse(weather.forecastFetchedAt) >= FORECAST_SECONDS * 1000
+    ? { ...weather, forecast: null } : weather;
+}
 
 /** Even a good historical answer must expire before the forecast becomes available. */
 export function weatherCacheSeconds(weather: RaceWeather, date: string, now = Date.now()): number {
@@ -7,7 +14,7 @@ export function weatherCacheSeconds(weather: RaceWeather, date: string, now = Da
   if (near) {
     if (!weather.forecast) return 60;
     const fetched = weather.forecastFetchedAt ? Date.parse(weather.forecastFetchedAt) : now;
-    return Math.max(1, Math.floor(1800 - Math.max(0, now - fetched) / 1000));
+    return Math.max(1, Math.floor(FORECAST_SECONDS - Math.max(0, now - fetched) / 1000));
   }
   if (!weather.climate) return 300;
   const boundary = Date.parse(`${date}T00:00:00Z`) - FORECAST_DAYS * 86400_000;

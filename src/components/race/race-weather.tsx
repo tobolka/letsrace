@@ -5,7 +5,7 @@ import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSn
 import { MetaRow } from "@/components/explore/meta-row";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
 import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather";
-import { createWeatherLoader } from "@/lib/weather-cache";
+import { createWeatherLoader, currentWeather } from "@/lib/weather-cache";
 import { wantsForecast } from "@/lib/weather";
 
 const copy: Record<Locale, {
@@ -193,12 +193,13 @@ export function windyUrl(lat: number, lng: number): string {
 const loadWeather = createWeatherLoader();
 
 function useWeather(lat: number, lng: number, date: string) {
-  const [weather, setWeather] = useState<Weather | null>(null);
+  const key = `${lat.toFixed(2)},${lng.toFixed(2)}:${date}`;
+  const [weather, setWeather] = useState<{ key: string; data: Weather | null } | null>(null);
   useEffect(() => {
     let live = true;
     const refresh = () => {
       if (document.visibilityState === "hidden") return;
-      loadWeather(lat, lng, date).then((w) => live && setWeather(w));
+      loadWeather(lat, lng, date).then((w) => live && setWeather({ key, data: w }));
     };
     refresh();
     const interval = window.setInterval(refresh, 60_000);
@@ -208,8 +209,8 @@ function useWeather(lat: number, lng: number, date: string) {
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [lat, lng, date]);
-  return weather;
+  }, [lat, lng, date, key]);
+  return weather?.key === key ? currentWeather(weather.data) : null;
 }
 
 type Props = { lat: number; lng: number; date: string; locale: string };

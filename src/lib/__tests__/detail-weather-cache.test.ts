@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { weatherCacheSeconds, createWeatherLoader } from "@/lib/weather-cache";
+import { weatherCacheSeconds, createWeatherLoader, currentWeather } from "@/lib/weather-cache";
 import { historyTargets } from "@/lib/weather-history";
 import { categoryFromLabel } from "@/lib/catalog/category-label";
 import type { RaceWeather } from "@/lib/weather";
@@ -15,6 +15,8 @@ describe("weather retention", () => {
     const weather = { ...historical, forecast: { tmax: 10, tmin: 1, rainChance: 0, rainMm: 0, windKmh: 5, sky: "clear" as const, hours: [] }, forecastFetchedAt: "2026-11-02T11:35:00Z" };
     expect(weatherCacheSeconds(weather, "2026-11-07", now)).toBe(300);
     expect(weatherCacheSeconds(weather, "2026-11-07", now + 600_000)).toBe(1);
+    expect(currentWeather(weather, now + 600_000)?.forecast).toBeNull();
+    expect(currentWeather(weather, now + 600_000)?.climate).toEqual(historical.climate);
   });
   it("deduplicates concurrent readers and retries failed requests after expiry", async () => {
     let now = Date.parse("2026-11-02T12:00:00Z");

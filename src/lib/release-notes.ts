@@ -31,6 +31,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Organisers can take over their race or series and edit its date, links, routes and categories themselves; their races say who manages them.",
         "Race pages link to earlier editions of the same race when the match is clear.",
         "Historical weather stays available when its provider is temporarily unavailable.",
+        "Forecasts show their source and retrieval time, and an old forecast is no longer displayed after it expires.",
         "Anyone signed in can send a correction to a race or series straight from its page.",
       ],
       cs: [
@@ -43,6 +44,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Pořadatelé si můžou převzít svůj závod nebo seriál a sami upravovat termín, odkazy, trasy a kategorie; u jejich závodů je uvedeno, kdo je spravuje.",
         "Ze stránky závodu přejdeš na předchozí ročníky stejného závodu, pokud je shoda jednoznačná.",
         "Historie počasí zůstává dostupná i při dočasném výpadku jejího poskytovatele.",
+        "U předpovědi vidíš zdroj i čas načtení a po vypršení platnosti se stará předpověď nezobrazuje.",
         "Kdo je přihlášený, pošle opravu závodu nebo seriálu přímo z jeho stránky.",
       ],
     },
