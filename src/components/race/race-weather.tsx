@@ -325,7 +325,6 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
   const hours = weather?.forecast?.hours ?? [];
   const climate = weather?.climate;
   const climateSource = WEATHER_SOURCES[climate?.source ?? "open-meteo"];
-  const forecastSource = WEATHER_SOURCES[weather?.forecast?.source ?? "open-meteo"];
   const hasDay = hours.length >= 4;
   const hasPast = Boolean(climate && climate.byYear.length >= 3);
   if (!hasDay && !hasPast) return null;
@@ -336,7 +335,6 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
         {hasDay ? <RaceDayForecast hours={hours} date={date} locale={locale} lat={lat} lng={lng} /> : null}
         {hasPast ? <PastYears climate={climate!} date={date} locale={locale} /> : null}
       </div>
-      {hasDay ? <p className="mt-2 text-xs text-muted-foreground"><a href={forecastSource.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{forecastSource.name}</a></p> : null}
       {hasPast ? <p className="mt-2 text-xs text-muted-foreground">{climate!.byYear[0].year}–{climate!.byYear.at(-1)!.year} · <a href={climateSource.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{climateSource.name}</a></p> : null}
     </section>
   );

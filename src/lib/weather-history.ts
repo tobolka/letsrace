@@ -30,7 +30,11 @@ export function historyTargets(rows: { start_date: string; location: { lat: numb
 }
 
 /** A daily shared reservation cap includes failures and crashes. Never erases a good snapshot. */
-export async function warmWeatherHistory(today: string, deadline = Date.now() + 45_000) {
+/**
+ * `limit` places per pass: the nightly cron takes what fits in its minute; the
+ * backfill script passes a large limit and a long deadline to fill the catalogue.
+ */
+export async function warmWeatherHistory(today: string, deadline = Date.now() + 45_000, limit = 60) {
   const db = createServerSupabase() as unknown as SupabaseClient;
   const rows: Parameters<typeof historyTargets>[0] = [];
   // Page explicitly: the REST row limit must not silently discard later races.
@@ -59,7 +63,7 @@ export async function warmWeatherHistory(today: string, deadline = Date.now() + 
   }).filter(target => target.dates.length);
   const result = { locations: targets.length, pendingPeriods: todo.reduce((n, t) => n + t.dates.length, 0), claimed: 0, updated: 0, failed: 0, deferred: 0 };
   for (const target of todo) {
-    if (Date.now() > deadline - 29_000 || result.claimed >= 12) { result.deferred++; continue; }
+    if (Date.now() > deadline - 29_000 || result.claimed >= limit) { result.deferred++; continue; }
     const args = { p_lat: weatherCell(target.lat), p_lng: weatherCell(target.lng) };
     const { data: token, error } = await db.rpc("weather_history_claim", { ...args, p_year: year, p_days: target.dates.map(d => d.slice(5)) });
     if (error) throw new Error(error.message);
