@@ -124,24 +124,39 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
       </button>
       <Dialog open={open} onOpenChange={show}>
         {formOnly ? (
-          // Signed in on a race: the form and nothing else. The panel about
-          // taking a race over is for those who have not signed in or chose to.
-          <DialogContent className="max-h-[92dvh] overflow-y-auto overscroll-contain sm:max-w-lg">
-            <DialogTitle>{w.editTitle}</DialogTitle>
-            <DialogDescription className="sr-only">{name}</DialogDescription>
-            <RaceForm locale={locale} slug={slug} onDone={() => show(false)} />
-            {access && !access.admin && !access.verified && !access.pending ? (
-              <button
-                type="button"
-                className="text-left text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-                onClick={() => {
-                  setClaimFlow(true);
-                  setMode("organizer");
-                }}
-              >
-                {w.claimLink}
-              </button>
-            ) : null}
+          // Signed in on a race: what can be changed on the left, the form on
+          // the right — wider, and scrolling on its own so the left stays put.
+          <DialogContent className="flex max-h-[88dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl md:grid md:grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)] md:grid-rows-[minmax(0,1fr)]">
+            <div className="flex flex-col gap-2 border-b bg-muted/50 px-6 pt-6 pb-4 md:gap-0 md:border-r md:border-b-0 md:p-8">
+              <BrandMark size="sm" className="hidden md:mb-6 md:block" />
+              <DialogTitle className="text-xl leading-tight font-semibold tracking-tight text-balance md:text-2xl">{w.editTitle}</DialogTitle>
+              <DialogDescription className="text-sm text-pretty md:mt-2">{name}</DialogDescription>
+              <ul className="mt-6 hidden flex-col gap-2.5 md:flex">
+                {c.editHints.map((hint) => (
+                  <li key={hint} className="flex items-start gap-3 text-sm">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
+                      <Check className="size-3" strokeWidth={3} aria-hidden />
+                    </span>
+                    {hint}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-6 md:p-8">
+              <RaceForm locale={locale} slug={slug} onDone={() => show(false)} />
+              {access && !access.admin && !access.verified && !access.pending ? (
+                <button
+                  type="button"
+                  className="mt-4 text-left text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                  onClick={() => {
+                    setClaimFlow(true);
+                    setMode("organizer");
+                  }}
+                >
+                  {w.claimLink}
+                </button>
+              ) : null}
+            </div>
           </DialogContent>
         ) : (
         /* The sign-in dialog's shape: what this is for on the left, what to do on the right. */

@@ -24,6 +24,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       en: [
         "Race pages show similar races nearby, the routes and categories, earlier editions of the race and where we found it.",
         "Races show the weather: an hour-by-hour forecast close to the day, the same week in past years, and a link to Windy.",
+        "Anyone signed in can fix a race's details from its page; we check changes before they go live, and organisers' changes go live at once.",
         "Four-cross races have their own 4X filter, and Road Stage Orlické hory 2027 is on the map with its three routes.",
         "A cancelled race keeps its page and says so clearly, and names written in capitals no longer shout.",
         "Links to withdrawn races no longer lead to a different race with a similar name.",
@@ -31,6 +32,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       cs: [
         "Na stránce závodu najdeš podobné závody v okolí, trasy a kategorie, předchozí ročníky i to, odkud závod máme.",
         "U závodů uvidíš počasí: když se blíží, předpověď po hodinách, k tomu ten týden v minulých letech a odkaz na Windy.",
+        "Kdo je přihlášený, opraví údaje závodu přímo z jeho stránky; změny před zveřejněním zkontrolujeme, změny pořadatelů platí hned.",
         "Fourcrossové závody mají vlastní filtr 4X a Road Stage Orlické hory 2027 je na mapě i se třemi trasami.",
         "Zrušený závod si nechá svou stránku s jasnou informací o zrušení a názvy psané velkými písmeny už nekřičí.",
         "Odkazy na stažené závody už nevedou na jiný závod s podobným názvem.",

@@ -64,6 +64,7 @@ type Copy = {
   notDuplicate: string;
   createLink: string;
   editLink: string;
+  editHints: string[];
   editTitle: string;
   editIntro: string;
   optionOrganizer: string;
@@ -151,6 +152,7 @@ export const organizerCopy: Record<Locale, Copy> = {
     duplicatesTitle: "Tenhle závod už možná máme:",
     notDuplicate: "Je to jiný závod, pokračovat",
     createLink: "Vytvořit závod",
+    editHints: ["Termín, stav a uzávěrka přihlášek", "Odkazy na web, přihlášky a propozice", "Popis závodu", "Trasy a kategorie s délkou a věkem"],
     editLink: "Upravit údaje",
     editTitle: "Upravit závod",
     editIntro: "Vidíš u {name} chybu? Oprav ji rovnou ve formuláři, změnu zkontrolujeme. Pořadatel si závod může převzít a upravovat ho bez schvalování.",
@@ -236,6 +238,7 @@ export const organizerCopy: Record<Locale, Copy> = {
     duplicatesTitle: "We may list this race already:",
     notDuplicate: "It is a different race, continue",
     createLink: "Create a race",
+    editHints: ["Date, status and entry deadline", "Links to the website, entries and regulations", "Description of the race", "Routes and categories with distance and ages"],
     editLink: "Edit details",
     editTitle: "Edit this race",
     editIntro: "Spotted a mistake in {name}? Fix it right in the form and we will check the change. An organiser can take the race over and edit it without approval.",
@@ -321,6 +324,7 @@ export const organizerCopy: Record<Locale, Copy> = {
     duplicatesTitle: "Tento pretek už možno máme:",
     notDuplicate: "Je to iný pretek, pokračovať",
     createLink: "Vytvoriť pretek",
+    editHints: ["Termín, stav a uzávierka prihlášok", "Odkazy na web, prihlášky a propozície", "Popis preteku", "Trasy a kategórie s dĺžkou a vekom"],
     editLink: "Upraviť údaje",
     editTitle: "Upraviť pretek",
     editIntro: "Vidíš pri {name} chybu? Oprav ju priamo vo formulári, zmenu skontrolujeme. Organizátor si pretek môže prevziať a upravovať ho bez schvaľovania.",
@@ -406,6 +410,7 @@ export const organizerCopy: Record<Locale, Copy> = {
     duplicatesTitle: "Ten wyścig być może już mamy:",
     notDuplicate: "To inny wyścig, kontynuuj",
     createLink: "Utwórz wyścig",
+    editHints: ["Termin, status i koniec zapisów", "Linki do strony, zapisów i regulaminu", "Opis wyścigu", "Trasy i kategorie z dystansem i wiekiem"],
     editLink: "Edytuj dane",
     editTitle: "Edytuj wyścig",
     editIntro: "Widzisz błąd w {name}? Popraw go od razu w formularzu, a my sprawdzimy zmianę. Organizator może przejąć wyścig i edytować go bez zatwierdzania.",
@@ -491,6 +496,7 @@ export const organizerCopy: Record<Locale, Copy> = {
     duplicatesTitle: "Dieses Rennen haben wir vielleicht schon:",
     notDuplicate: "Es ist ein anderes Rennen, weiter",
     createLink: "Rennen anlegen",
+    editHints: ["Termin, Status und Anmeldeschluss", "Links zu Website, Anmeldung und Ausschreibung", "Beschreibung des Rennens", "Strecken und Klassen mit Distanz und Alter"],
     editLink: "Angaben bearbeiten",
     editTitle: "Rennen bearbeiten",
     editIntro: "Fehler bei {name} entdeckt? Korrigiere ihn direkt im Formular, wir prüfen die Änderung. Ein Veranstalter kann das Rennen übernehmen und ohne Freigabe bearbeiten.",
