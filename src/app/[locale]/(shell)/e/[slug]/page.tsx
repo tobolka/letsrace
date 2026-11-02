@@ -294,11 +294,12 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               <Button asChild variant="outline" size="xs" className="max-w-full min-w-0 shrink justify-start overflow-hidden">
                 <Link href={localePath(locale, `series/${event.series.slug}`)} title={event.series.name} className="min-w-0">
                   <span className="truncate">{event.series.name}</span>
+                  {/* The round inside the pill, as the categories carry their birth years. */}
+                  {round ? (
+                    <span className="ml-1 shrink-0 font-normal tabular-nums text-muted-foreground">{fill(rc.roundOf, { n: String(round.n), of: String(round.of) })}</span>
+                  ) : null}
                 </Link>
               </Button>
-              {round ? (
-                <span className="text-sm tabular-nums text-muted-foreground">{fill(rc.roundOf, { n: String(round.n), of: String(round.of) })}</span>
-              ) : null}
             </MetaRow>
           ) : null}
           {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
