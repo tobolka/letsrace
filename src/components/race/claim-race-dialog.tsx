@@ -82,6 +82,7 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
 
   // A reader whose claim is waiting can still send a correction.
   const claiming = mode === "organizer" && !access?.pending;
+  const formOnly = kind === "race" && step === "choose" && !claimFlow;
 
   async function send() {
     setBusy(true);
@@ -122,7 +123,28 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
         {c.editLink}
       </button>
       <Dialog open={open} onOpenChange={show}>
-        {/* The sign-in dialog's shape: what this is for on the left, what to do on the right. */}
+        {formOnly ? (
+          // Signed in on a race: the form and nothing else. The panel about
+          // taking a race over is for those who have not signed in or chose to.
+          <DialogContent className="max-h-[92dvh] overflow-y-auto overscroll-contain sm:max-w-lg">
+            <DialogTitle>{w.editTitle}</DialogTitle>
+            <DialogDescription className="sr-only">{name}</DialogDescription>
+            <RaceForm locale={locale} slug={slug} onDone={() => show(false)} />
+            {access && !access.admin && !access.verified && !access.pending ? (
+              <button
+                type="button"
+                className="text-left text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                onClick={() => {
+                  setClaimFlow(true);
+                  setMode("organizer");
+                }}
+              >
+                {w.claimLink}
+              </button>
+            ) : null}
+          </DialogContent>
+        ) : (
+        /* The sign-in dialog's shape: what this is for on the left, what to do on the right. */
         <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto overscroll-contain p-0 sm:max-w-3xl md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-3 border-b bg-muted/50 px-6 pt-6 pb-5 md:justify-center md:gap-0 md:border-r md:border-b-0 md:p-10">
             <BrandMark size="sm" className="md:mb-8" />
@@ -234,6 +256,7 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
             )}
           </div>
         </DialogContent>
+        )}
       </Dialog>
     </>
   );
