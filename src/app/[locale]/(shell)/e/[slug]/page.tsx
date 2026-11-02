@@ -10,7 +10,7 @@ import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, hostOfUrl, listEvents, listOrganiserRaces, type EventListItem } from "@/lib/events";
 import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
-import { RaceDayFacts, RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
+import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { roundOf } from "@/lib/series-rounds";
 import { raceHolidays } from "@/lib/holidays";
@@ -302,7 +302,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
                   <span className="truncate">{event.series.name}</span>
                   {/* The round inside the pill, as the categories carry their birth years. */}
                   {round ? (
-                    <span className="ml-1 shrink-0 font-normal tabular-nums text-muted-foreground">{fill(rc.roundOf, { n: String(round.n), of: String(round.of) })}</span>
+                    <span className="ml-1 shrink-0 font-normal tabular-nums text-muted-foreground">{fill(round.of == null ? rc.round : rc.roundOf, { n: String(round.n), of: String(round.of ?? "") })}</span>
                   ) : null}
                 </Link>
               </Button>
@@ -310,9 +310,6 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
           {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
             <RaceWeather lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} />
-          ) : null}
-          {!isPast && here?.lat != null && here.lng != null ? (
-            <RaceDayFacts lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} countryCode={here.countryCode} />
           ) : null}
           {holidays.length > 0 ? (
             // Public holiday, long weekend, summer holidays: what the date means for a family.

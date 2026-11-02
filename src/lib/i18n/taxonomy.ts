@@ -76,7 +76,7 @@ export function ageGroupHint(id: string, locale: string): string {
     case "u23":
       return yrs("19–22");
     case "elite":
-      return yrs("19+");
+      return ({ cs: "Věkové podmínky podle propozic závodu", sk: "Vekové podmienky podľa propozícií pretekov", pl: "Warunki wiekowe według regulaminu wyścigu", de: "Altersgrenzen laut Ausschreibung", en: "Age eligibility follows the race regulations" })[locale] ?? "Age eligibility follows the race regulations";
     case "amateur":
       return anyAge;
     case "masters":

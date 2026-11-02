@@ -65,22 +65,26 @@ export async function warmWeatherHistory(today: string, deadline = Date.now() + 
   for (const target of todo) {
     if (Date.now() > deadline - 29_000 || result.claimed >= limit) { result.deferred++; continue; }
     const args = { p_lat: weatherCell(target.lat), p_lng: weatherCell(target.lng) };
-    const { data: token, error } = await db.rpc("weather_history_claim", { ...args, p_year: year, p_days: target.dates.map(d => d.slice(5)) });
+    // One period per place/pass bounds requests; other periods stay queued and stored work survives.
+    const wanted = target.dates.slice(0, 1);
+    const { data: token, error } = await db.rpc("weather_history_claim", { ...args, p_year: year, p_days: wanted.map(d => d.slice(5)) });
     if (error) throw new Error(error.message);
     if (!token) { result.deferred++; continue; }
     result.claimed++;
     const { data: held, error: heldError } = await db.from("weather_history").select("summaries,reference_year").eq("lat_cell", args.p_lat).eq("lng_cell", args.p_lng).single();
     if (heldError) throw new Error(heldError.message);
     const stored = held.summaries as Record<string, Climate>;
-    const dates = target.dates.filter(d => !stored[d.slice(5)] || (stored[d.slice(5)].referenceYear ?? held.reference_year ?? 0) < year);
+    const dates = wanted.filter(d => !stored[d.slice(5)] || (stored[d.slice(5)].referenceYear ?? held.reference_year ?? 0) < year);
     let summaries: Record<string, Climate> | null = null, problem: string | null = null;
-    try { summaries = await historicalSummaries(target.lat, target.lng, dates, today); }
+    try { summaries = await historicalSummaries(target.lat, target.lng, dates, today, Math.min(deadline - 3000, Date.now() + 25_000)); }
     catch (error) { problem = error instanceof Error ? error.message : "archive_failed"; }
     const saved = await db.rpc("weather_history_finish", { ...args, p_token: token, p_year: year, p_summaries: summaries, p_error: problem });
     if (saved.error) throw new Error(saved.error.message);
-    if (saved.data && !problem) { result.updated++; result.pendingPeriods -= Object.keys(summaries!).length; } else result.failed++;
+    if (saved.data && !problem) { result.updated++; result.pendingPeriods -= Object.keys(summaries!).length; }
+    else if (problem?.startsWith("weather_budget_deferred") || problem?.startsWith("weather_deadline_deferred")) result.deferred++;
+    else result.failed++;
     // Stop the batch on provider-wide failure; do not hit another eleven places.
-    if (problem && (/(?:weather_provider|visual_crossing)_http_(429|5\d\d)/.test(problem))) {
+    if (problem && (/(?:weather_provider|visual_crossing)_http_(429|5\d\d)|weather_(?:budget|deadline)_deferred/.test(problem))) {
       result.deferred += todo.length - todo.indexOf(target) - 1;
       break;
     }

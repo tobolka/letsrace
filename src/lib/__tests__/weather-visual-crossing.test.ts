@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { visualCrossingForecast, visualCrossingHistory } from "@/lib/weather-visual-crossing";
 
 afterEach(() => vi.unstubAllGlobals());
+vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: (name: string) => ({ abortSignal: async () => ({ data: name === "weather_provider_claim_batch" ? Array.from({ length: 10 }, (_, i) => `claim-${i}`) : name === "weather_provider_claim" ? "test-reservation" : null, error: null }) }) }) }));
 describe("independent weather fallback", () => {
   it("keeps local racing hours and refuses missing values or a different day", () => {
     const day = { datetime: "2026-11-07", tempmax: 7, tempmin: 1, precip: 0, windspeed: 5, icon: "clear-day", sunrise: "07:00:00", sunset: "16:00:00", hours: [

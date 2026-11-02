@@ -53,3 +53,7 @@ Každý požadavek má vlastní časový limit, ale celý archivní průchod ho 
 - JBC a Road Stage již mají úlohy zveřejnění dokončené a správné veřejné detaily. Běžný společný seznam pro mapu/kalendář ale ještě vracel starou obec Kikirikiii a neobsahoval JBC. Dokončení dříve autorizované opravy proto zahrnovalo jednorázovou obnovu označených dat a CDN. Následný skutečný seznam obsahuje oba závody se správnými místy. Toto není vydáváno za automaticky vyřešené zveřejňování celého katalogu.
 
 V tomto review nebyl nový kód úprav, věků, pořadí kol ani počasí přepsán. Jejich opravy zůstávají konkrétními následujícími kroky; původní změny uživatele byly zachovány.
+
+## Následné zadání
+
+Uživatel následně zadal opravu Elite, kol, limitů počasí, tooltipu a rozsahu vzdáleností a odstranění výšky a časů slunce. Výsledek je vedený v [navazujícím reportu](../review-fixes-2026-11-02/RESULT.md). Body 1–2 tohoto review zůstávají neopravené; veřejný formulář je nyní stažený.

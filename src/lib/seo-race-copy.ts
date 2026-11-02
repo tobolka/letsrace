@@ -28,6 +28,7 @@ export const raceCopy: Record<Locale, {
   organiserVia: string;
   bornIn: string;
   roundOf: string;
+  round: string;
   previousEditions: string;
   nextEditions: string;
   sources: string;
@@ -76,7 +77,8 @@ export const raceCopy: Record<Locale, {
     organiserRaces: "More races by this organiser",
     organiserVia: "Matched by their website {host}",
     bornIn: "born {years}",
-    roundOf: "Round {n} of {of}",
+    roundOf: "Round {n} · {of} listed",
+    round: "Round {n}",
     previousEditions: "Previous editions",
     nextEditions: "Later editions",
     sources: "Where we found it",
@@ -121,7 +123,8 @@ export const raceCopy: Record<Locale, {
     organiserRaces: "Další závody pořadatele",
     organiserVia: "Podle webu pořadatele {host}",
     bornIn: "ročníky {years}",
-    roundOf: "{n}. kolo z {of}",
+    roundOf: "{n}. kolo · {of} v kalendáři",
+    round: "{n}. kolo",
     previousEditions: "Předchozí ročníky",
     nextEditions: "Další ročníky",
     sources: "Odkud to víme",
@@ -166,7 +169,8 @@ export const raceCopy: Record<Locale, {
     organiserRaces: "Inne wyścigi organizatora",
     organiserVia: "Według strony organizatora {host}",
     bornIn: "roczniki {years}",
-    roundOf: "Runda {n} z {of}",
+    roundOf: "Runda {n} · {of} w kalendarzu",
+    round: "Runda {n}",
     previousEditions: "Poprzednie edycje",
     nextEditions: "Kolejne edycje",
     sources: "Skąd to wiemy",
@@ -211,7 +215,8 @@ export const raceCopy: Record<Locale, {
     organiserRaces: "Ďalšie preteky organizátora",
     organiserVia: "Podľa webu organizátora {host}",
     bornIn: "ročníky {years}",
-    roundOf: "{n}. kolo z {of}",
+    roundOf: "{n}. kolo · {of} v kalendári",
+    round: "{n}. kolo",
     previousEditions: "Predchádzajúce ročníky",
     nextEditions: "Ďalšie ročníky",
     sources: "Odkiaľ to vieme",
@@ -256,7 +261,8 @@ export const raceCopy: Record<Locale, {
     organiserRaces: "Weitere Rennen des Veranstalters",
     organiserVia: "Nach der Website des Veranstalters {host}",
     bornIn: "Jahrgänge {years}",
-    roundOf: "Lauf {n} von {of}",
+    roundOf: "Lauf {n} · {of} im Kalender",
+    round: "Lauf {n}",
     previousEditions: "Frühere Austragungen",
     nextEditions: "Spätere Austragungen",
     sources: "Woher wir es wissen",
@@ -646,23 +652,12 @@ export function flagEmoji(code: string): string {
   return code.toUpperCase().replace(/[A-Z]/g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65));
 }
 
-const ROUTE_WORDS: Record<Locale, { one: string; few: string; many: string; youngestOpen: string; youngestBand: string }> = {
-  cs: { one: "Trasa {km}", few: "{n} trasy {km}", many: "{n} tras {km}", youngestOpen: "i pro děti do {old} let", youngestBand: "nejmladší kategorie {young}–{old} let" },
-  sk: { one: "Trasa {km}", few: "{n} trasy {km}", many: "{n} trás {km}", youngestOpen: "aj pre deti do {old} rokov", youngestBand: "najmladšia kategória {young}–{old} rokov" },
-  pl: { one: "Trasa {km}", few: "{n} trasy {km}", many: "{n} tras {km}", youngestOpen: "także dla dzieci do {old} lat", youngestBand: "najmłodsza kategoria {young}–{old} lat" },
-  de: { one: "Eine Strecke, {km}", few: "{n} Strecken, {km}", many: "{n} Strecken, {km}", youngestOpen: "auch für Kinder bis {old} Jahre", youngestBand: "jüngste Klasse {young}–{old} Jahre" },
-  en: { one: "One route, {km}", few: "{n} routes, {km}", many: "{n} routes, {km}", youngestOpen: "also for children up to {old}", youngestBand: "youngest category {young}–{old}" },
+const ROUTE_WORDS: Record<Locale, string> = {
+  cs: "Vzdálenosti {km}", sk: "Vzdialenosti {km}", pl: "Dystanse {km}",
+  de: "Distanzen {km}", en: "Distances {km}",
 };
 
-/** The youngest band a race has, by the ages it covers: [from, to]. */
-const YOUNGEST: [string, number | null, number][] = [
-  ["u7", null, 6], ["u9", 7, 8], ["u11", 9, 10], ["kids", null, 10], ["u13", 11, 12], ["u15", 13, 14], ["u17", 15, 16], ["youth", 11, 16],
-];
-
-/**
- * The race at a glance, from the organiser's own routes and categories:
- * "3 trasy 70–210 km", "i pro děti do 6 let". Empty parts are left out.
- */
+/** Stated distance range; distances alone do not establish a number of routes. */
 export function routeSummary(event: EventListItem, locale: Locale): string[] {
   const w = ROUTE_WORDS[locale];
   const out: string[] = [];
@@ -670,16 +665,7 @@ export function routeSummary(event: EventListItem, locale: Locale): string[] {
   if (km.length) {
     const nf = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
     const range = km.length === 1 ? `${nf.format(km[0])} km` : `${nf.format(km[0])}–${nf.format(km.at(-1)!)} km`;
-    const n = km.length;
-    const word = n === 1 ? w.one : n < 5 ? w.few : w.many;
-    out.push(fill(word, { n, km: range }));
-  }
-  if (event.ageConfidence === "explicit") {
-    const youngest = YOUNGEST.find(([id]) => event.ageCategories.includes(id));
-    if (youngest) {
-      const [, young, old] = youngest;
-      out.push(young == null ? fill(w.youngestOpen, { old }) : fill(w.youngestBand, { young, old }));
-    }
+    out.push(fill(w, { km: range }));
   }
   return out;
 }

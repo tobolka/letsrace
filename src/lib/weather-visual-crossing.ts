@@ -1,22 +1,22 @@
-import { climateFrom, CLIMATE_WINDOW, RACE_HOURS, type Climate, type Forecast, type ForecastHour, type Sky } from "@/lib/weather";
+import { climateFrom, CLIMATE_WINDOW, RACE_HOURS, type Climate, type Forecast, type ForecastHour, type Sky } from "@/lib/weather-model";
+import { reserveWeatherRequests, weatherRequest, WeatherDeferred } from "@/lib/weather-request";
 
 type Day = { datetime?: string; tempmax?: number; tempmin?: number; temp?: number; precip?: number; precipprob?: number; windspeed?: number; windgust?: number; winddir?: number; cloudcover?: number; icon?: string; sunrise?: string; sunset?: string; hours?: Day[] };
 const finite = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const tenth = (v: number) => Math.round(v * 10) / 10;
 
-async function timeline(lat: number, lng: number, from: string, to?: string, hours = false, deadline = Date.now() + 8000) {
+async function timeline(lat: number, lng: number, from: string, to?: string, hours = false, deadline = Date.now() + 8000, token?: string) {
   const q = new URLSearchParams({ unitGroup: "metric", include: hours ? "days,hours" : "days", contentType: "json", elements: hours
     ? "datetime,tempmax,tempmin,temp,precip,precipprob,windspeed,windgust,winddir,icon,cloudcover,sunrise,sunset"
     : "datetime,tempmax,tempmin,precip" });
   // Anonymous access: no account, card or billable key. Fair-use 429s are respected.
-  const res = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${lat.toFixed(2)},${lng.toFixed(2)}/${from}${to ? `/${to}` : ""}?${q}`, {
+  if (Date.now() >= deadline) throw new WeatherDeferred("deadline");
+  const units = hours ? 25 : to ? Math.round((Date.parse(to) - Date.parse(from)) / 86400_000) + 1 : 1;
+  const json = await weatherRequest("visual-crossing", `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${lat.toFixed(2)},${lng.toFixed(2)}/${from}${to ? `/${to}` : ""}?${q}`, units, deadline, 8000, {
     headers: { "Accept-Encoding": "gzip", Accept: "application/json" },
-    signal: AbortSignal.timeout(Math.max(1, Math.min(8000, deadline - Date.now()))),
-  });
-  if (!res.ok) throw new Error(`visual_crossing_http_${res.status}`);
-  const json = await res.json() as { days?: Day[] };
+  }, !hours, token);
   if (!Array.isArray(json.days)) throw new Error("visual_crossing_invalid_days");
-  return json.days;
+  return json.days as Day[];
 }
 
 function sky(day: Day): Sky {
@@ -43,28 +43,28 @@ export function visualCrossingForecast(day: Day, date: string): Forecast | null 
     rainChance: finite(day.precipprob) ? day.precipprob : null, windKmh: Math.round(day.windspeed!), sky: sky(day), hours, source: "visual-crossing" };
 }
 
-export async function visualCrossingForecastFor(lat: number, lng: number, date: string) {
-  const days = await timeline(lat, lng, date, undefined, true);
+export async function visualCrossingForecastFor(lat: number, lng: number, date: string, deadline = Date.now() + 8000) {
+  const days = await timeline(lat, lng, date, undefined, true, deadline);
   return days.length === 1 ? visualCrossingForecast(days[0], date) : null;
 }
 
 /** Ten seven-day windows, not ten entire years. Bounded to two concurrent reads. */
-export async function visualCrossingHistory(lat: number, lng: number, dates: string[], today: string): Promise<Record<string, Climate>> {
+export async function visualCrossingHistory(lat: number, lng: number, dates: string[], today: string, deadline = Date.now() + 22_000): Promise<Record<string, Climate>> {
   const last = Number(today.slice(0, 4)) - 1;
-  const deadline = Date.now() + 22_000;
   const result: Record<string, Climate> = {};
   // Cap this fallback at one requested period per location/batch (70 daily records).
   // Other periods remain absent and are picked up on the next scheduled pass.
   const date = dates[0];
   const md = date.slice(5) === "02-29" ? "02-28" : date.slice(5);
   const collected = new Map<string, Day>();
+  const tokens = await reserveWeatherRequests("visual-crossing", Array.from({ length: 10 }, () => 2 * CLIMATE_WINDOW + 1), deadline);
   for (let y = last - 9; y <= last; y += 2) {
     if (Date.now() >= deadline) throw new Error("visual_crossing_history_deadline");
     const batch = await Promise.all([y, y + 1].map(async year => {
       const day = Date.parse(`${year}-${md}T00:00:00Z`);
       const from = new Date(day - CLIMATE_WINDOW * 86400_000).toISOString().slice(0, 10);
       const to = new Date(day + CLIMATE_WINDOW * 86400_000).toISOString().slice(0, 10);
-      return timeline(lat, lng, from, to, false, deadline);
+      return timeline(lat, lng, from, to, false, deadline, tokens[year - (last - 9)]);
     }));
     for (const rows of batch) for (const row of rows) if (row.datetime) collected.set(row.datetime, row);
   }

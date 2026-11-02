@@ -9,7 +9,7 @@ import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { RaceWeather } from "@/components/race/race-weather";
 import { ExplainedHint } from "@/components/explore/explained-badge";
-import { roundOf } from "@/lib/series-rounds";
+import { currentSeriesRound, roundOf, type RoundPosition, type SeriesRound } from "@/lib/series-rounds";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -49,7 +49,7 @@ export function EventDetailBody({
   const t = messagesFor(locale);
   const round = useSeriesRound(event);
   const seriesHint = event.series
-    ? [event.series.name, round ? (ROUND_OF[locale] ?? ROUND_OF.en).replace("{n}", String(round.n)).replace("{of}", String(round.of)) : null].filter(Boolean).join(" · ")
+    ? [event.series.name, round ? (round.of == null ? (ROUND[locale] ?? ROUND.en) : (ROUND_OF[locale] ?? ROUND_OF.en)).replace("{n}", String(round.n)).replace("{of}", String(round.of ?? "")) : null].filter(Boolean).join(" · ")
     : "";
   return (
     <>
@@ -200,24 +200,21 @@ export function EventDetailBody({
   );
 }
 
-const ROUND_OF: Record<string, string> = { cs: "{n}. kolo z {of}", sk: "{n}. kolo z {of}", pl: "Runda {n} z {of}", de: "Lauf {n} von {of}", en: "Round {n} of {of}" };
+const ROUND: Record<string, string> = { cs: "{n}. kolo", sk: "{n}. kolo", pl: "Runda {n}", de: "Lauf {n}", en: "Round {n}" };
+const ROUND_OF: Record<string, string> = { cs: "{n}. kolo · {of} v kalendáři", sk: "{n}. kolo · {of} v kalendári", pl: "Runda {n} · {of} w kalendarzu", de: "Lauf {n} · {of} im Kalender", en: "Round {n} · {of} listed" };
 
-/** Which round of its season the race is, read from the series' own rounds once the card opens. */
 function useSeriesRound(event: EventListItem) {
-  const [round, setRound] = useState<{ n: number; of: number } | null>(null);
+  const [result, setResult] = useState<{ key: string; value: RoundPosition | null } | null>(null);
   const slug = event.series?.slug;
+  const key = `${event.id}:${slug ?? ""}`;
   useEffect(() => {
     if (!slug) return;
-    let live = true;
-    fetch(`/api/series/${encodeURIComponent(slug)}`)
-      .then((res) => (res.ok ? (res.json() as Promise<{ events: { id: string; startDate: string }[] }>) : null))
-      .then((data) => {
-        if (live && data) setRound(roundOf(event.id, data.events));
-      })
+    const controller = new AbortController();
+    fetch(`/api/series/${encodeURIComponent(slug)}`, { signal: controller.signal })
+      .then(res => res.ok ? res.json() as Promise<{ events: SeriesRound[] }> : null)
+      .then(data => { if (!controller.signal.aborted && data) setResult({ key, value: roundOf(event.id, data.events) }); })
       .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, [slug, event.id]);
-  return round;
+    return () => controller.abort();
+  }, [slug, event.id, key]);
+  return currentSeriesRound(result, key);
 }

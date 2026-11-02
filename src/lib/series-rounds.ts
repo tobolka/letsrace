@@ -1,25 +1,39 @@
-/** A pause this long between two rounds ends a season. */
-const SEASON_GAP_DAYS = 90;
+export type SeriesRound = { id: string; startDate: string; name?: string; season?: string | null; disciplines?: string[] };
+export type RoundPosition = { n: number; of: number | null };
 
-const day = (iso: string) => Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / 86_400_000;
+/** Only an actual round designation, never an edition number or chronological guess. */
+export function statedRound(name: string): number | null {
+  const match = name.match(/\b(\d{1,2})\.?\s*(?:kolo|round|runda|lauf)\b/i) ??
+    name.match(/\b(?:kolo|round|runda|lauf|wyścig|wyscig)\s*[#:]?\s*(\d{1,2})\b/i);
+  const n = match ? Number(match[1]) : 0;
+  return n > 0 ? n : null;
+}
 
-/**
- * Which round of its season a race is: "3 of 8". The season is read from the
- * dates, not the `season` field — sources write "2026" and "2026/27" for the
- * same cyclocross winter — so rounds belong together until a long pause.
- * Null when the season has fewer than two rounds or the race is not in it.
- */
-export function roundOf(raceId: string, rounds: { id: string; startDate: string }[]): { n: number; of: number } | null {
-  const sorted = [...rounds].sort((a, b) => a.startDate.localeCompare(b.startDate) || a.id.localeCompare(b.id));
-  let season: typeof sorted = [];
-  for (const round of sorted) {
-    const last = season.at(-1);
-    if (last && day(round.startDate) - day(last.startDate) > SEASON_GAP_DAYS) {
-      if (season.some((r) => r.id === raceId)) break;
-      season = [];
-    }
-    season.push(round);
+function seasonOf(race: SeriesRound): string {
+  const year = Number(race.startDate.slice(0, 4));
+  const winter = race.season?.match(/^(20\d{2})\s*[/-]\s*((?:20)?\d{2})$/);
+  if (winter) {
+    const end = winter[2].length === 2 ? Number(winter[1].slice(0, 2) + winter[2]) : Number(winter[2]);
+    if (end === Number(winter[1]) + 1) return String(end);
   }
-  const index = season.findIndex((r) => r.id === raceId);
-  return index < 0 || season.length < 2 ? null : { n: index + 1, of: season.length };
+  if (race.disciplines?.includes("cx")) return String(year + (Number(race.startDate.slice(5, 7)) >= 9 ? 1 : 0));
+  return String(year);
+}
+
+/** Known round number and number of listed rounds, not a claim of calendar completeness. */
+export function roundOf(raceId: string, rounds: SeriesRound[]): RoundPosition | null {
+  const race = rounds.find(row => row.id === raceId);
+  if (!race) return null;
+  const n = statedRound(race.name ?? "");
+  if (!n) return null;
+  const season = rounds.filter(row => seasonOf(row) === seasonOf(race));
+  const numbers = season.map(row => statedRound(row.name ?? ""));
+  const unique = new Set(numbers);
+  const completeRun = numbers.every(value => value != null) && unique.size >= 2 && Math.max(...numbers as number[]) === unique.size;
+  return { n, of: completeRun ? unique.size : null };
+}
+
+/** A cached tooltip result belongs to one race and one series only. */
+export function currentSeriesRound(result: { key: string; value: RoundPosition | null } | null, key: string) {
+  return result?.key === key ? result.value : null;
 }

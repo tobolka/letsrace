@@ -17,7 +17,7 @@ export const CATEGORY_AGES: Record<string, [number | null, number | null]> = {
   youth: [11, 16],
   junior: [17, 18],
   u23: [19, 22],
-  elite: [19, null],
+  // Elite describes a competition category, not a universal minimum age.
   masters: [35, null],
 };
 

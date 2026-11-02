@@ -1,4 +1,4 @@
-import { FORECAST_DAYS, wantsForecast, type RaceWeather } from "@/lib/weather";
+import { FORECAST_DAYS, wantsForecast, type RaceWeather } from "@/lib/weather-model";
 const FORECAST_SECONDS = 1800;
 
 /** Expired weather may remain in a suspended tab; never display it as a forecast. */

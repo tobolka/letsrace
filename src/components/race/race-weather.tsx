@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind, Sunrise } from "lucide-react";
+import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
 import { MetaRow } from "@/components/explore/meta-row";
 import { ExplainedHint } from "@/components/explore/explained-badge";
-import { localClock, sunTimes } from "@/lib/sun";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
-import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather";
+import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather-model";
 import { createWeatherLoader, currentWeather } from "@/lib/weather-cache";
-import { wantsForecast } from "@/lib/weather";
+import { wantsForecast } from "@/lib/weather-model";
 
 const copy: Record<Locale, {
   label: string;
@@ -636,40 +635,5 @@ function MiniChart({
         })}
       </svg>
     </div>
-  );
-}
-
-const DAY_COPY: Record<Locale, { sun: string; elevation: string; help: string }> = {
-  cs: { sun: "Slunce {rise}–{set}", elevation: "{m} m n. m.", help: "Východ a západ slunce v den závodu a nadmořská výška místa startu." },
-  sk: { sun: "Slnko {rise}–{set}", elevation: "{m} m n. m.", help: "Východ a západ slnka v deň preteku a nadmorská výška miesta štartu." },
-  pl: { sun: "Słońce {rise}–{set}", elevation: "{m} m n.p.m.", help: "Wschód i zachód słońca w dniu wyścigu oraz wysokość miejsca startu." },
-  de: { sun: "Tageslicht {rise}–{set}", elevation: "{m} m ü. M.", help: "Sonnenauf- und -untergang am Renntag und die Höhe des Startorts." },
-  en: { sun: "Daylight {rise}–{set}", elevation: "{m} m above sea level", help: "Sunrise and sunset on race day, and the height of the start." },
-};
-
-/**
- * The race day's light and the start's height: "Slunce 6:59–16:28 · 598 m n. m."
- * The sun is computed here; the height comes with the weather answer.
- */
-export function RaceDayFacts({ lat, lng, date, locale, countryCode }: Props & { countryCode: string | null }) {
-  const weather = useWeather(lat, lng, date);
-  const c = DAY_COPY[asLocale(locale)];
-  const sun = sunTimes(lat, lng, date);
-  const parts = [
-    sun ? fill(c.sun, { rise: localClock(sun.rise, countryCode, locale), set: localClock(sun.set, countryCode, locale) }) : null,
-    weather?.elevation != null ? fill(c.elevation, { m: weather.elevation }) : null,
-  ].filter(Boolean);
-  if (!parts.length) return null;
-  return (
-    <MetaRow icon={<Sunrise />} label={c.help}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="w-fit cursor-help text-sm">{parts.join(" · ")}</span>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" sideOffset={6} className="max-w-64 text-pretty">
-          {c.help}
-        </TooltipContent>
-      </Tooltip>
-    </MetaRow>
   );
 }
