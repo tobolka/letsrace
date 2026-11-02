@@ -591,7 +591,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
       ) : null}
 
       {submitOpen ? (
-        <SubmitRaceModal open onClose={() => setSubmitOpen(false)} messages={messages} locale={locale} />
+        <SubmitRaceModal open onClose={() => setSubmitOpen(false)} messages={messages} />
       ) : null}
       {feedbackOpen ? <FeedbackModal open onClose={() => setFeedbackOpen(false)} /> : null}
       {authOpen ? (

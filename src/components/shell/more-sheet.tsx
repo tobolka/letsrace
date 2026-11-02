@@ -186,7 +186,7 @@ export function MoreSheet({
         </DrawerContent>
       </Drawer>
 
-      {dialog === "submit" ? <SubmitRaceModal open onClose={() => setDialog(null)} messages={t} locale={locale} /> : null}
+      {dialog === "submit" ? <SubmitRaceModal open onClose={() => setDialog(null)} messages={t} /> : null}
       {dialog === "feedback" ? <FeedbackModal open onClose={() => setDialog(null)} /> : null}
       {dialog === "auth" ? (
         <AuthDialog open onClose={() => setDialog(null)} onSuccess={() => setDialog(null)} locale={locale} />
