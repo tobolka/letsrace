@@ -130,7 +130,8 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let iso: ISO8601DateFormatter = { let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]; return f }()
     private let popover = NSPopover()
     private var contentStack: NSStackView?
-    private var showingDetails = false
+    private enum Panel { case overview, workstreams, technical }
+    private var panel: Panel = .overview
     private let previewSnapshotURL: URL?
     init(snapshotURL: URL? = nil) { previewSnapshotURL = snapshotURL; super.init() }
     private var overview: MonitorOverview { MonitorOverview(snapshot: snapshot) }
@@ -189,7 +190,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     @objc private func togglePanel() {
         if popover.isShown { popover.performClose(nil); return }
-        showingDetails = false
+        panel = .overview
         refresh(); renderPanel()
         if let button = item.button { popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY) }
     }
@@ -262,7 +263,11 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     private func renderPanel() {
         let focusedAction = (popover.contentViewController?.view.window?.firstResponder as? NSButton)?.action
-        if showingDetails { renderTechnicalPanel() } else { renderOverviewPanel() }
+        switch panel {
+        case .overview: renderOverviewPanel()
+        case .workstreams: renderWorkstreamsPanel()
+        case .technical: renderTechnicalPanel()
+        }
         // Refreshes must not steal keyboard focus from a button being used.
         if let focusedAction, let view = popover.contentViewController?.view {
             func restore(in candidate: NSView) -> Bool {
@@ -274,8 +279,9 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             _ = restore(in: view)
         }
     }
-    @objc private func openTechnicalPanel() { showingDetails = true; renderPanel() }
-    @objc private func openOverviewPanel() { showingDetails = false; renderPanel() }
+    @objc private func openTechnicalPanel() { panel = .technical; renderPanel() }
+    @objc private func openWorkstreamsPanel() { panel = .workstreams; renderPanel() }
+    @objc private func openOverviewPanel() { panel = .overview; renderPanel() }
     private func renderOverviewPanel() {
         guard let view = popover.contentViewController?.view else { return }
         view.subviews.forEach { $0.removeFromSuperview() }
@@ -313,7 +319,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let review = section()
         add(summary.reviewTitle, size: 13, bold: true, to: review)
         add(summary.reviewDetail, size: 12, color: .secondaryLabelColor, to: review)
-        let actions = NSStackView(views: [smallButton("Otevřít LetsRace", #selector(openSite)), smallButton("Zobrazit podrobnosti", #selector(openTechnicalPanel))]); actions.spacing = 12
+        let actions = NSStackView(views: [smallButton("Otevřít LetsRace", #selector(openSite)), smallButton("Co systém dělá", #selector(openWorkstreamsPanel))]); actions.spacing = 12
         stack.addArrangedSubview(actions)
         let footer = section()
         footer.addArrangedSubview(smallButton(snapshot?.paused == true ? "Obnovit sběr na Macu" : "Pozastavit sběr na Macu", #selector(togglePause), enabled: snapshot != nil && !stale))
@@ -325,6 +331,52 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let panelHeight = min(height, screenHeight - 70)
         popover.contentSize = NSSize(width: 378, height: panelHeight)
         scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight)))
+    }
+    private func renderWorkstreamsPanel() {
+        guard let view = popover.contentViewController?.view else { return }
+        let previousScroll = view.subviews.first as? NSScrollView
+        let fromTop = previousScroll.map { max(0, ($0.documentView?.frame.height ?? 0) - $0.documentVisibleRect.maxY) } ?? 0
+        view.subviews.forEach { $0.removeFromSuperview() }
+        view.wantsLayer = true; view.layer?.backgroundColor = NSColor.white.cgColor
+        let scroll = NSScrollView(); scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.drawsBackground = false; scroll.hasVerticalScroller = true; scroll.autohidesScrollers = true
+        view.addSubview(scroll)
+        NSLayoutConstraint.activate([scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor), scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor), scroll.topAnchor.constraint(equalTo: view.topAnchor), scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        let document = NSView(frame: NSRect(x: 0, y: 0, width: 410, height: 800)); scroll.documentView = document
+        let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .leading; stack.spacing = 24
+        stack.translatesAutoresizingMaskIntoConstraints = false; document.addSubview(stack)
+        NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 22), stack.widthAnchor.constraint(equalToConstant: 366), stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 22)])
+        func text(_ value: String, size: CGFloat = 12, bold: Bool = false, color: NSColor = .labelColor, to parent: NSStackView) {
+            let field = label(value, size: size, bold: bold, color: color); field.maximumNumberOfLines = 0
+            parent.addArrangedSubview(field); field.widthAnchor.constraint(equalTo: parent.widthAnchor).isActive = true
+        }
+        func section(_ title: String, _ mode: String, _ detail: String) {
+            let group = NSStackView(); group.orientation = .vertical; group.alignment = .leading; group.spacing = 6
+            stack.addArrangedSubview(group); group.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+            text(title, size: 15, bold: true, to: group)
+            text(mode, bold: true, to: group)
+            text(detail, color: .secondaryLabelColor, to: group)
+        }
+        stack.addArrangedSubview(smallButton("Zpět na přehled", #selector(openOverviewPanel)))
+        text("Co systém dělá", size: 22, bold: true, to: stack)
+        text("Čtyři činnosti, jeden katalog. Tady je jejich nastavený režim; aktuální stav sběru je v přehledu.", color: .secondaryLabelColor, to: stack)
+        section("1. Hledání nových webů", "Hledání automaticky · přijetí zdrojů čeká", "Hledá dosud neznámé pořadatele a kalendáře. Nalezený web je návrh zdroje, ještě ne nový závod. Jeho přijetí není plně automatické.")
+        section("2. Nové závody ze známých webů", "Pravidelný automatický sběr", "Prochází sledované kalendáře a weby. Nález porovná s katalogem: nový závod přidá, známý aktualizuje a nejasnou shodu odloží k ověření.")
+        section("3. Doplňování existujících závodů", "Část automaticky · AI v omezeném režimu", "Dohledává například web pořadatele a přihlášky. Podrobné doplňování neběží v každém cyklu; AI se spouští jen ve vybrané dny a v rozpočtu. Staré údaje nejsou novým potvrzením.")
+        let waiting: String
+        if let server = snapshot?.server, server.error == nil, let checked = server.checkedAt, let at = parsedDate(checked), Date().timeIntervalSince(at) < 900, let count = server.reviewCandidates {
+            waiting = count == 1 ? "1 podklad čeká na ověření" : (2...4).contains(count) ? "\(count) podklady čekají na ověření" : "\(count) podkladů čeká na ověření"
+        } else { waiting = "Aktuální počet čekajících podkladů není potvrzený" }
+        section("4. Ověřování sporných nálezů", waiting, "Mac opakovaně kontroluje zdroje a ukládá další termín pokusu. Samostatné posouzení a zveřejnění zatím chybí. Změna stránky sama nepotvrzuje závod.")
+        section("Co potřebuje tebe?", "Nemusíš vybírat ani spouštět sběrače", "Čekající podklady jsou práce k ověření, ne automaticky otázky pro tebe. Běžná technická chyba se nemá měnit v tvůj úkol.")
+        stack.addArrangedSubview(smallButton("Zobrazit průběh a nástroje", #selector(openTechnicalPanel)))
+        document.layoutSubtreeIfNeeded()
+        let height = stack.fittingSize.height + 44
+        document.setFrameSize(NSSize(width: 410, height: height))
+        let screenHeight = item?.button?.window?.screen?.visibleFrame.height ?? 900
+        let panelHeight = min(height, screenHeight - 70)
+        popover.contentSize = NSSize(width: 410, height: panelHeight)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight - fromTop)))
     }
     private func renderTechnicalPanel() {
         guard let view = popover.contentViewController?.view else { return }
@@ -414,8 +466,8 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         popover.contentSize = NSSize(width: 410, height: panelHeight)
         scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight - fromTop)))
     }
-    func savePreview(to path: String, details: Bool = false) throws {
-        showingDetails = details
+    func savePreview(to path: String, details: Bool = false, workstreams: Bool = false) throws {
+        panel = workstreams ? .workstreams : details ? .technical : .overview
         // Offscreen rendering of our own view for layout validation; no desktop capture.
         popover.contentViewController = NSViewController()
         popover.contentViewController?.view = NSView(frame: NSRect(x: 0, y: 0, width: 410, height: 800))
@@ -585,7 +637,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if args.count >= 3 && args[1] == "--render-preview" {
             let app = NSApplication.shared; app.setActivationPolicy(.prohibited)
             let fixture = args.dropFirst(3).first { !$0.hasPrefix("--") }.map { URL(fileURLWithPath: $0) }
-            do { try MonitorController(snapshotURL: fixture).savePreview(to: args[2], details: args.contains("--details")) }
+            do { try MonitorController(snapshotURL: fixture).savePreview(to: args[2], details: args.contains("--details"), workstreams: args.contains("--workstreams")) }
             catch { fputs("Preview failed: \(error)\n", stderr); exit(1) }
             return
         }

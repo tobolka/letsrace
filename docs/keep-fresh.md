@@ -65,6 +65,8 @@ Eventiv nyní u veřejného kalendářového rozhraní vrací HTTP 401. Čtečka
 
 ### Opakovaná kontrola čekajících podkladů
 
+V panelu na Macu tlačítko **Co systém dělá** vysvětluje čtyři samostatné činnosti: hledání nových webů, závody ze známých webů, doplňování existujících závodů a ověřování sporných nálezů. Uvádí jejich nastavený režim a nedokončenou automatiku. Nezaměňuje tento popis za živé měření jednotlivých činností. Odtud jsou dostupné i podrobné nástroje.
+
 Místní běžný cyklus nyní zahrnuje `recheck-discovery-candidates.ts --max=20 --apply`. Zkontroluje pouze splatné podklady ve stavu pending/waiting/conflict. Datum dalšího pokusu a výsledek jsou společně uložené v `pipeline_candidates.decision.followUp`; původní rozhodnutí, důkaz, stav a vazba na závod zůstávají zachované. Pracovní převzetí na pět minut brání souběžným pokusům a po pádu samo vyprší. Změna rozhodnutí během čtení zabrání přepsání novějšího výsledku.
 
 Čte se původní zdroj, výslovný detail/web z podkladu a případně výslovně doplněné `decision.recheckUrls` (nejvýše čtyři). Adresy se nehádají. Sdílené adresy se v jedné dávce načtou jednou. Pozastavené nebo odmítnuté zdroje se neaktivují ani nečtou; kontroluje se i normalizovaná adresa bez sledovacích parametrů. Běh má limit tři minuty a nepoužívá model ani placené hledání. Snímky přečtených dokumentů jsou v soukromém místním `tmp/candidate-follow-ups/`.
