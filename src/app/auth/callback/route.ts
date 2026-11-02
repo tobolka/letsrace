@@ -34,9 +34,14 @@ function allowedOrigins(): Set<string> {
   return out;
 }
 
+/** A dev server on any local port: sign-in on :3044 used to land on the live site. */
+function localDevOrigin(origin: string): boolean {
+  return process.env.NODE_ENV !== "production" && /^http:\/\/(localhost|127\.0\.0\.1):\d{2,5}$/.test(origin);
+}
+
 function redirectBase(request: NextRequest, origin: string): string {
   const allowed = allowedOrigins();
-  if (allowed.has(origin)) return origin;
+  if (allowed.has(origin) || localDevOrigin(origin)) return origin;
 
   const forwardedHost = request.headers.get("x-forwarded-host");
   if (forwardedHost) {
