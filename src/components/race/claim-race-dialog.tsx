@@ -5,7 +5,8 @@ import Link from "next/link";
 import { BadgeCheck, Check } from "lucide-react";
 import { AuthForm } from "@/components/account/auth-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { BrandMark } from "@/components/brand-mark";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
@@ -81,60 +82,64 @@ export function ClaimRaceDialog({ locale, slug, name }: { locale: string; slug: 
         {c.claimLink}
       </button>
       <Dialog open={open} onOpenChange={show}>
-        <DialogContent className="overscroll-contain sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{c.dialogTitle}</DialogTitle>
-            <DialogDescription>{c.dialogIntro.replace("{name}", name)}</DialogDescription>
-          </DialogHeader>
+        {/* The sign-in dialog's shape: the promise on the left, the form on the right. */}
+        <DialogContent className="gap-0 overscroll-contain p-0 sm:max-w-3xl md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-3 border-b bg-muted/50 px-6 pt-6 pb-5 md:justify-center md:gap-0 md:border-r md:border-b-0 md:p-10">
+            <BrandMark size="sm" className="md:mb-8" />
+            <DialogTitle className="text-xl leading-tight font-semibold tracking-tight text-balance md:text-3xl">
+              {c.dialogTitle}
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed text-pretty md:mt-4 md:text-base">
+              {c.dialogIntro.replace("{name}", name)}
+            </DialogDescription>
+            <ul className="mt-8 hidden flex-col gap-3 md:flex">
+              {c.points.map((point) => (
+                <li key={point} className="flex items-start gap-3 text-sm">
+                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
+                    <Check className="size-3" strokeWidth={3} aria-hidden />
+                  </span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 hidden text-xs leading-relaxed text-muted-foreground md:block">{c.verify}</p>
+          </div>
 
-          {step === "verified" || step === "pending" ? (
-            <p className="flex items-start gap-2 text-sm">
-              <BadgeCheck className="mt-0.5 size-4 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden />
-              {step === "verified" ? c.claimVerified : c.claimPending}
-            </p>
-          ) : (
-            <>
-              <ul className="flex flex-col gap-2 text-sm">
-                {c.points.map((point) => (
-                  <li key={point} className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-xs text-muted-foreground">{c.verify}</p>
-
-              {step === "loading" ? (
-                <div className="flex justify-center py-4">
-                  <Spinner />
-                </div>
-              ) : step === "signedOut" ? (
-                <div className="flex flex-col gap-2 border-t pt-4">
-                  <p className="text-sm font-medium">{c.signIn}</p>
-                  <AuthForm locale={locale} hideTitle onSuccess={() => void check()} />
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2 border-t pt-4">
-                  {email ? <p className="text-sm text-muted-foreground">{c.account.replace("{email}", email)}</p> : null}
-                  <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={c.notePlaceholder} rows={3} maxLength={2000} />
-                  {failed ? <p className="text-sm text-destructive">{c.failed}</p> : null}
-                </div>
-              )}
-            </>
-          )}
-
-          <DialogFooter>
-            {step === "ready" ? (
-              <Button onClick={() => void claim()} disabled={busy}>
-                {busy ? <Spinner data-icon="inline-start" /> : <BadgeCheck data-icon="inline-start" />}
-                {c.claimRace}
-              </Button>
-            ) : step === "verified" || step === "pending" ? (
-              <Button asChild>
-                <Link href={manage}>{c.manage}</Link>
-              </Button>
-            ) : null}
-          </DialogFooter>
+          <div className="flex flex-col gap-4 px-6 py-6 md:justify-center md:p-10">
+            {step === "loading" ? (
+              <div className="flex justify-center py-8">
+                <Spinner />
+              </div>
+            ) : step === "signedOut" ? (
+              <>
+                <p className="text-sm text-muted-foreground md:hidden">{c.verify}</p>
+                <AuthForm locale={locale} hideTitle onSuccess={() => void check()} />
+              </>
+            ) : step === "ready" ? (
+              <>
+                <p className="text-sm text-muted-foreground md:hidden">{c.verify}</p>
+                {email ? <p className="text-sm font-medium">{c.account.replace("{email}", email)}</p> : null}
+                <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={c.notePlaceholder} rows={4} maxLength={2000} />
+                {failed ? <p className="text-sm text-destructive">{c.failed}</p> : null}
+                <Button className="w-full" onClick={() => void claim()} disabled={busy}>
+                  {busy ? <Spinner data-icon="inline-start" /> : <BadgeCheck data-icon="inline-start" />}
+                  {c.claimRace}
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="flex items-start gap-3 text-sm">
+                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
+                    <BadgeCheck className="size-3.5" aria-hidden />
+                  </span>
+                  {step === "verified" ? c.claimVerified : c.claimPending}
+                </p>
+                <Button className="w-full" asChild>
+                  <Link href={manage}>{c.manage}</Link>
+                </Button>
+              </>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </>
