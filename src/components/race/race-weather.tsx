@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
 import { MetaRow } from "@/components/explore/meta-row";
+import { ExplainedHint } from "@/components/explore/explained-badge";
 import { asLocale, type Locale } from "@/lib/i18n/messages";
 import type { Climate, ClimateYear, ForecastHour, RaceWeather as Weather, Sky } from "@/lib/weather";
 import { createWeatherLoader, currentWeather } from "@/lib/weather-cache";
@@ -257,15 +258,22 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
       <span className="text-sm">
         {near && !f ? <span className="block text-muted-foreground">{freshnessCopy.unavailable}</span> : null}
         {f ? (
-          <span className="block">
+          // Where the forecast is from and when it was read belong to the line, not under it.
+          <ExplainedHint
+            className="block"
+            explanation={[
+              forecastSource.name,
+              weather.forecastFetchedAt
+                ? `${freshnessCopy.at} ${new Intl.DateTimeFormat(locale, { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(weather.forecastFetchedAt))}`
+                : null,
+            ].filter(Boolean).join(" · ")}
+          >
             <span className="font-medium">
               {c.forecast}: {temps}{sky}
             </span>
             {f.rainChance != null ? `, ${fill(c.rainChance, { n: f.rainChance })}` : ""}
             {`, ${fill(c.wind, { n: f.windKmh })}`}
-            {weather.forecastFetchedAt ? <span className="block text-xs text-muted-foreground">{freshnessCopy.at} <time dateTime={weather.forecastFetchedAt}>{new Intl.DateTimeFormat(locale, { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(weather.forecastFetchedAt))}</time></span> : null}
-            <a href={forecastSource.url} target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground underline underline-offset-4">{forecastSource.name}</a>
-          </span>
+          </ExplainedHint>
         ) : null}
         {past ? (
           <span className={f ? "block text-xs text-muted-foreground" : "block"} title={fill(c.climateHelp, { n: k!.years }).replace("Open-Meteo", climateSource.name)}>
