@@ -24,10 +24,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       en: [
         "The page of a cancelled race stays available and clearly shows the cancellation.",
         "Race names the organiser wrote in capitals no longer shout at the top of the race page.",
+        "Each race page lists similar races nearby, the same kind of racing for the same age groups first, with how far away they are.",
+        "Races show the weather: an hour-by-hour forecast for the race day when it is close, a chart of that week in past years, and a link to Windy for the spot.",
       ],
       cs: [
         "Na stránce zrušeného závodu zůstává jasná informace o zrušení.",
         "Názvy závodů, které pořadatel napsal velkými písmeny, už na stránce závodu nekřičí.",
+        "Na stránce závodu najdeš podobné závody v okolí – nejdřív stejnou disciplínu pro stejné kategorie – i s tím, jak jsou daleko.",
+        "U závodů uvidíš počasí: když se blíží, předpověď na den závodu po hodinách, k tomu graf toho týdne v minulých letech a odkaz na Windy přímo na místo závodu.",
       ],
     },
   },

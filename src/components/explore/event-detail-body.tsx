@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
+import { RaceWeather } from "@/components/race/race-weather";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -155,6 +156,10 @@ export function EventDetailBody({
                 </Button>
               </div>
             </MetaRow>
+          ) : null}
+          {event.location?.lat != null && event.location.lng != null && event.status !== "cancelled" &&
+          (event.endDate ?? event.startDate) >= new Date().toISOString().slice(0, 10) ? (
+            <RaceWeather key={event.id} lat={event.location.lat} lng={event.location.lng} date={event.startDate} locale={locale} />
           ) : null}
         </div>
 

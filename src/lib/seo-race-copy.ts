@@ -23,6 +23,7 @@ export const raceCopy: Record<Locale, {
   results: string;
   otherRounds: string;
   sameWeekend: string;
+  nearbySimilar: string;
   taken: string;
   pastRounds: string;
   home: string;
@@ -62,6 +63,7 @@ export const raceCopy: Record<Locale, {
     results: "Results",
     otherRounds: "Other rounds of {name}",
     sameWeekend: "Also that weekend nearby",
+    nearbySimilar: "Similar races nearby",
     taken: "This race has taken place.",
     pastRounds: "Already ridden",
     home: "Races",
@@ -97,6 +99,7 @@ export const raceCopy: Record<Locale, {
     results: "Výsledky",
     otherRounds: "Další kola – {name}",
     sameWeekend: "Ten víkend v okolí",
+    nearbySimilar: "Podobné závody v okolí",
     taken: "Tento závod už proběhl.",
     pastRounds: "Už odjeté",
     home: "Závody",
@@ -132,6 +135,7 @@ export const raceCopy: Record<Locale, {
     results: "Wyniki",
     otherRounds: "Inne rundy – {name}",
     sameWeekend: "W ten weekend w pobliżu",
+    nearbySimilar: "Podobne wyścigi w okolicy",
     taken: "Ten wyścig już się odbył.",
     pastRounds: "Już rozegrane",
     home: "Wyścigi",
@@ -167,6 +171,7 @@ export const raceCopy: Record<Locale, {
     results: "Výsledky",
     otherRounds: "Ďalšie kolá – {name}",
     sameWeekend: "V ten víkend v okolí",
+    nearbySimilar: "Podobné preteky v okolí",
     taken: "Tento pretek sa už konal.",
     pastRounds: "Už odjazdené",
     home: "Preteky",
@@ -202,6 +207,7 @@ export const raceCopy: Record<Locale, {
     results: "Ergebnisse",
     otherRounds: "Weitere Läufe – {name}",
     sameWeekend: "Am selben Wochenende in der Nähe",
+    nearbySimilar: "Ähnliche Rennen in der Nähe",
     taken: "Dieses Rennen hat bereits stattgefunden.",
     pastRounds: "Bereits gefahren",
     home: "Rennen",

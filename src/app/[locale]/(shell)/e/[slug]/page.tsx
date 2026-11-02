@@ -7,7 +7,9 @@ import { Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, Use
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, type EventListItem } from "@/lib/events";
+import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, listEvents, type EventListItem } from "@/lib/events";
+import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
+import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
@@ -148,11 +150,17 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     .filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);
 
   // What links this page into the rest of the site: its series' other rounds,
-  // races the same weekend nearby, and the hub for its kind of racing.
-  const [seriesData, hubs] = await Promise.all([
+  // similar races nearby, and the hub for its kind of racing.
+  const here = event.location;
+  const [seriesData, hubs, around] = await Promise.all([
     event.series ? getSeriesBySlug(event.series.slug).catch(() => null) : Promise.resolve(null),
     hubCountry ? listQualifyingHubs([hubCountry]).catch(() => []) : Promise.resolve([]),
+    // A race already run still points on to the next ones like it.
+    here?.lat != null && here.lng != null
+      ? listEvents({ ...boxAround(here.lat, here.lng, NEARBY_RADIUS_KM), dateFrom: today }).catch(() => [])
+      : Promise.resolve([]),
   ]);
+  const nearby = pickNearbyRaces(event, around, today);
   const otherRounds = (seriesData?.events ?? []).filter((e) => e.id !== event.id);
   const upcomingRounds = otherRounds.filter((e) => e.startDate >= today);
   const rounds = (upcomingRounds.length ? upcomingRounds : otherRounds).slice(0, 12);
@@ -265,6 +273,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               </Button>
             </MetaRow>
           ) : null}
+          {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
+            <RaceWeather lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} />
+          ) : null}
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
@@ -314,6 +325,10 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           <RaceDetailMap events={[event]} locale={locale} href={mapHref} label={t.viewOnMap} />
         </section>
 
+        {!isPast && event.status !== "cancelled" && here?.lat != null && here.lng != null ? (
+          <RaceWeatherSection lat={here.lat} lng={here.lng} date={event.startDate} locale={locale} />
+        ) : null}
+
         {event.series && rounds.length > 0 ? (
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{fill(rc.otherRounds, { name: event.series.name })}</h2>
@@ -323,6 +338,18 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
                 {fillCopy(hubCopy[locale].seriesTitle, { name: event.series.name })}
               </Link>
             </Button>
+          </section>
+        ) : null}
+
+        {nearby.length > 0 ? (
+          <section className="mt-8">
+            <h2 className="mb-3 text-lg font-semibold">{rc.nearbySimilar}</h2>
+            <RaceLinkList
+              events={nearby.map((n) => n.event)}
+              distances={new Map(nearby.map((n) => [n.event.id, n.km]))}
+              locale={locale}
+              groupByMonth={false}
+            />
           </section>
         ) : null}
 

@@ -19,11 +19,14 @@ export function RaceLinkList({
   locale,
   groupByMonth = true,
   headingLevel = "h2",
+  distances,
 }: {
   events: EventListItem[];
   locale: Locale;
   groupByMonth?: boolean;
   headingLevel?: "h2" | "h3";
+  /** How far each race is from the page's own, by race id. */
+  distances?: Map<string, number>;
 }) {
   if (!events.length) return null;
   const groups = new Map<string, EventListItem[]>();
@@ -47,7 +50,7 @@ export function RaceLinkList({
               <PlannedRaceRow eventId={event.id} key={event.id} className="relative border-b border-border/50 last:border-b-0">
                 <Item asChild size="sm" className={cn(EVENT_ROW_CLASS, "pr-12 max-md:py-2.5")}>
                   <Link href={eventPagePath(locale, event.slug)} className="relative">
-                    <EventRowBody event={event} locale={locale} />
+                    <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} />
                   </Link>
                 </Item>
                 {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}
