@@ -28,6 +28,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Races show the weather: an hour-by-hour forecast for the race day when it is close, a chart of that week in past years, and a link to Windy for the spot.",
         "Race pages list the routes and categories the organiser published, with distances and ages.",
         "Each race page says which pages we took it from, the organiser's own website first.",
+        "Organisers can take over their race or series and edit its date, links, routes and categories themselves; their races show a verified badge.",
       ],
       cs: [
         "Na stránce zrušeného závodu zůstává jasná informace o zrušení.",
@@ -36,6 +37,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "U závodů uvidíš počasí: když se blíží, předpověď na den závodu po hodinách, k tomu graf toho týdne v minulých letech a odkaz na Windy přímo na místo závodu.",
         "Na stránce závodu najdeš trasy a kategorie, jak je pořadatel zveřejnil, i s délkou a věkem.",
         "U každého závodu je vidět, odkud ho máme – nejdřív web pořadatele.",
+        "Pořadatelé si můžou převzít svůj závod nebo seriál a sami upravovat termín, odkazy, trasy a kategorie; jejich závody mají odznak ověření.",
       ],
     },
   },

@@ -22,14 +22,14 @@ export const SECTION_SLUGS: Record<Locale, Record<Section, string>> = {
   de: { e: "rennen", series: "serie", list: "liste", schedule: "kalender", account: "mein-plan", c: "radrennen" },
 };
 
-type AccountPage = "alerts" | "recommendations" | "riders" | "settings";
+type AccountPage = "alerts" | "recommendations" | "riders" | "settings" | "organizer";
 
 const ACCOUNT_SLUGS: Record<Locale, Record<AccountPage, string>> = {
-  cs: { alerts: "upozorneni", recommendations: "doporuceni", riders: "jezdci", settings: "nastaveni" },
-  en: { alerts: "alerts", recommendations: "recommendations", riders: "riders", settings: "settings" },
-  sk: { alerts: "upozornenia", recommendations: "odporucania", riders: "jazdci", settings: "nastavenia" },
-  pl: { alerts: "powiadomienia", recommendations: "rekomendacje", riders: "zawodnicy", settings: "ustawienia" },
-  de: { alerts: "benachrichtigungen", recommendations: "empfehlungen", riders: "fahrer", settings: "einstellungen" },
+  cs: { alerts: "upozorneni", recommendations: "doporuceni", riders: "jezdci", settings: "nastaveni", organizer: "poradatel" },
+  en: { alerts: "alerts", recommendations: "recommendations", riders: "riders", settings: "settings", organizer: "organiser" },
+  sk: { alerts: "upozornenia", recommendations: "odporucania", riders: "jazdci", settings: "nastavenia", organizer: "organizator" },
+  pl: { alerts: "powiadomienia", recommendations: "rekomendacje", riders: "zawodnicy", settings: "ustawienia", organizer: "organizator" },
+  de: { alerts: "benachrichtigungen", recommendations: "empfehlungen", riders: "fahrer", settings: "einstellungen", organizer: "veranstalter" },
 };
 
 export const COLLECTION_URL_SLUGS: Record<Locale, Record<CollectionSlug, string>> = {

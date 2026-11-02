@@ -72,6 +72,8 @@ export type EventListItem = {
     lng: number | null;
   } | null;
   series: { id: string; name: string; slug: string } | null;
+  /** An organiser of the race or its series verified it; on the race's own page only. */
+  organizerVerified?: boolean;
   /** Where the race was found, on the race's own page only. */
   sources?: { url: string; kind: string }[];
   categories?: {
@@ -525,9 +527,9 @@ async function loadPublicEventBySlug(
   const { data, error } = await supabase
     .from("events")
     .select(
-      `${EVENT_LIST_COLUMNS}, description, public_revision,
+      `${EVENT_LIST_COLUMNS}, description, public_revision, organizer_verified_at,
        location:locations(id, name, municipality, country_code, lat, lng),
-       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories, organizer_verified_at),
        sources:event_sources(source_url, kind),
        categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
     )
@@ -555,7 +557,8 @@ async function loadPublicEventBySlug(
     if (!canonical?.slug || canonical.slug === slug || canonical.merged_into_id) return null;
     return getPublicEventBySlug(canonical.slug);
   }
-  const event = mapEventRow(data as Record<string, unknown>);
+  // `organizer_verified_at` is newer than the generated types; the row is read loosely.
+  const event = mapEventRow(data as unknown as Record<string, unknown>);
   // A cancelled race leaves the map, but its detail must explain cancellation.
   if (shouldHideFromMap(event.name, event.status === "cancelled" ? "scheduled" : event.status, event.visibility)) return null;
   const cc = event.location?.countryCode;
@@ -563,7 +566,7 @@ async function loadPublicEventBySlug(
   return event;
 }
 export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
-  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v4", slug],
+  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v5", slug],
   { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
 )());
 
@@ -816,6 +819,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
           }
         : null,
     sources: sourcesFromRow(row),
+    organizerVerified: Boolean(row.organizer_verified_at || series?.organizer_verified_at) || undefined,
     categories: (categories ?? []).map((c) => ({
       id: String(c.id),
       name: String(c.name),

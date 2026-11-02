@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
+import { BadgeCheck, Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
@@ -11,6 +11,7 @@ import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, listEve
 import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
+import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
@@ -106,6 +107,7 @@ export default async function EventPage({ params }: Props) {
 async function Race({ locale, event }: { locale: Locale; event: EventListItem }) {
   const t = messages[locale];
   const rc = raceCopy[locale];
+  const oc = organizerCopy[locale];
   const today = new Date().toISOString().slice(0, 10);
   const isPast = (event.endDate ?? event.startDate) < today;
   const place =
@@ -305,7 +307,15 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         </div>
         {actionLinks.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">{t.noOnlineEntry}</p> : null}
         <p className="mt-2 text-xs text-muted-foreground">
-          {trustText}
+          {event.organizerVerified ? (
+            // The organiser looks after this race themselves: that outranks any source we read.
+            <span className="inline-flex items-center gap-1 font-medium text-foreground" title={oc.badgeHelp}>
+              <BadgeCheck className="size-3.5 text-sky-600 dark:text-sky-400" aria-hidden />
+              {oc.badge}
+            </span>
+          ) : (
+            trustText
+          )}
           {checkedText && event.lastSeenAt ? (
             <>
               <span aria-hidden> · </span>
@@ -314,6 +324,14 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               </time>
             </>
           ) : null}
+          {event.organizerVerified || isPast ? null : (
+            <>
+              <span aria-hidden> · </span>
+              <Link href={`${localePath(locale, "account/organizer")}?race=${encodeURIComponent(event.slug)}`} className="underline-offset-4 hover:underline">
+                {oc.claimLink}
+              </Link>
+            </>
+          )}
         </p>
 
         <section className="mt-10">
