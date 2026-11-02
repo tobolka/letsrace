@@ -33,6 +33,7 @@ import { isArchiveDiscoveryUrl, isAuxiliaryDiscoveryUrl } from "@/lib/watcher/di
 import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 import type { Insert, Update } from "@/lib/supabase/tables";
 import type { Json } from "@/lib/supabase/database.types";
+import type { ReviewDecision, ReviewRow } from "@/lib/discovery/review";
 
 export type WatchOutcome = {
   watchedUrlId: string;
@@ -2559,12 +2560,19 @@ async function upsertParsedEvent(
 }
 
 /** Explicitly reviewed assertion; uses all normal identity, lock and evidence protections. */
-export async function ingestReviewedCandidate(event: ParsedEvent, review: {
-  sourceUrl: string; authority: "official" | "national_federation" | "series";
-  expectedEventId: string | null; watchedUrlId: string | null;
-}) {
+export async function ingestReviewedCandidate(row: ReviewRow, decision: ReviewDecision) {
+  const { validateReviewSource } = await import("@/lib/discovery/review-source");
+  const { catalogueWindow } = await import("@/lib/catalog/overview-quality");
+  // Do not trust a calling script to have run the evidence gate. Re-read just
+  // before writing; the source may have changed since its preview/claim.
+  await validateReviewSource(row, decision, catalogueWindow().from);
+  const event = row.payload as unknown as ParsedEvent;
+  const review = { sourceUrl: row.source_url, authority: decision.authority!, expectedEventId: decision.expectedEventId!, watchedUrlId: row.watched_url_id };
   const db = createServerSupabase();
   const { canonicalExploreUrl } = await import("./explore");
+  const { data: links, error: linkError } = await db.from("discovered_links").select("status").eq("url", canonicalExploreUrl(review.sourceUrl)!);
+  if (linkError) throw linkError;
+  if (links?.some(link => ["rejected", "ignored"].includes(link.status))) throw Error("Source was explicitly rejected/ignored");
   let source: { id: string; url: string; status: string; added_by: string | null } | undefined;
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db.from("watched_urls").select("id,url,status,added_by").order("id").range(from, from + 999);

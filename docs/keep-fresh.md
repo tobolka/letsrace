@@ -59,6 +59,8 @@ Pro technickou kontrolu: `npm run pipeline:status` nebo `npm run pipeline:status
 
 ## Co je ve frontách administrace
 
+Stav původních sedmi etap přestavby je v [operations-progress.md](operations-progress.md). Dokončený panel nebo opakovaná kontrola podkladů neznamenají dokončení celé přestavby.
+
 „Discovery queue“ ukazuje zvlášť návrhy nových webů a podklady ke konkrétním závodům, které čekají na ověření termínu či identity. Počet práce zahrnuje obě skupiny. Navržený termín ve frontě není potvrzený den závodu. Přehled zdrojů neoznačuje čerstvé nepodporované čtení za poruchu; skutečné chyby spojení a zápisu zůstávají viditelné.
 
 Eventiv nyní u veřejného kalendářového rozhraní vrací HTTP 401. Čtečka tuto skutečnost hlásí místo úspěšného prázdného výsledku. Uložené závody kvůli tomu nemaže; přístupové omezení neobchází. AI kontrola se řídí rozpočtem a není zárukou přečtení každé čekající stránky.
@@ -76,5 +78,7 @@ U konkrétního detailu Bikepoint kontrola následuje nejvýše dva skutečné o
 Nezměněný podklad se vrátí za sedm dní. Selhání se zkusí za hodinu, šest hodin, den, tři dny a potom nejvýše jednou týdně. Změna textu se označí pro navazující ověření a znovu zkontroluje za den; samotná změna celého kalendáře nepotvrzuje změnu konkrétního závodu. První snímek bez starého srovnatelného otisku je pouze výchozí stav. Neúplné čtení není úspěšná kontrola a úspěšný snímek zůstane zachovaný i přes další výpadek.
 
 Tento krok **nepublikuje, neslučuje ani neověřuje pravdivost závodu**. Odstraňuje čekání bez dalšího pokusu; samostatné vyhodnocení nových podkladů ještě není dokončené. Běží na Macu, při jeho vypnutí čeká a po zapnutí pokračuje podle společně uložených termínů. Ručně lze použít stejný příkaz bez `--apply` pro čtení a náhled bez změn databáze. Vypnutím tohoto kroku se zachovají všechny dosavadní snímky i rozhodnutí.
+
+Při explicitním rozhodnutí zveřejnit kandidáta se před zápisem používá společná kontrola `validateReviewSource`, také přímo uvnitř zapisovače. Ověřuje aktuální dokument proti posouzenému snímku, doslovné citace a výslovný rok; konec vícedenního závodu také potřebuje doklad. Samotný název země nenahrazuje místo. Zapisovač zachovává kontrolu odmítnutých/pozastavených zdrojů a ochrany identity a ručních zámků. Jde zatím o cestu posouzených kandidátů, ne o záruku sjednocení všech automatických zápisů nebo ověření veřejné stránky.
 
 Další ročníky se hledají přes skutečné odkazy a oznámení pořadatelů. Sběrač již automaticky nezakládá ani neoživuje sledované adresy pouhou změnou roku v URL; tato cesta vytvářela neověřené články a archivní adresy. Dříve načtené užitečné zdroje zůstávají sledované.

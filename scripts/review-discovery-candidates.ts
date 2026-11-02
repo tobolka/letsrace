@@ -1,15 +1,12 @@
 import { canonicalExploreUrl } from "../src/lib/watcher/explore";
-import { createHash } from "node:crypto";
-import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 /** Export candidates; apply an explicit evidence-bound decision manifest. Dry-run by default. */
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { parse } from "dotenv";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { validateReview, type ReviewDecision } from "../src/lib/discovery/review";
-import { fetchPage } from "../src/lib/watcher/http";
+import { validateReviewSource } from "../src/lib/discovery/review-source";
 import { ingestReviewedCandidate } from "../src/lib/watcher/run";
 import { catalogueWindow } from "../src/lib/catalog/overview-quality";
-import type { ParsedEvent } from "../src/lib/domain";
 import type { Json } from "../src/lib/supabase/database.types";
 
 async function main() {
@@ -47,11 +44,7 @@ async function main() {
       }
       outcomes.push({ id: row.id, action: decision.action, applied: apply }); continue;
     }
-    const source = await fetchPage(row.source_url, { fresh: true });
-    const evidence = row.evidence as { documentHash: string; textHash?: string };
-    const needsRawDocument = (row.payload as unknown as ParsedEvent).evidence?.method === "structured_calendar";
-    const sameDocument = evidence.textHash && !needsRawDocument ? createHash("sha256").update(pageAsText(source.html, row.source_url).text).digest("hex") === evidence.textHash : source.hash === evidence.documentHash;
-    if (source.status !== 200 || !sameDocument) throw new Error(`Source changed or unavailable: ${row.id}; re-read and review`);
+    await validateReviewSource(row, decision, catalogueWindow().from);
     // No automatic resurrection of paused/rejected sources.
     const { data: links, error: linkError } = await db.from("discovered_links").select("status").eq("url", canonicalExploreUrl(row.source_url)!);
     if (linkError) throw linkError;
@@ -62,9 +55,7 @@ async function main() {
     if (claimError || claim?.length !== 1) throw new Error(claimError?.message ?? "Candidate claimed concurrently");
     // Leave interrupted writes visibly in publishing. Never silently retry a
     // potentially partial multi-step write or publish another duplicate.
-    const result = await ingestReviewedCandidate(row.payload as unknown as ParsedEvent, {
-      sourceUrl: row.source_url, authority: decision.authority!, expectedEventId: decision.expectedEventId!, watchedUrlId: row.watched_url_id,
-    });
+    const result = await ingestReviewedCandidate(row, decision);
     const { error: saved } = await db.from("pipeline_candidates").update({ status: "published", event_id: result.id, updated_at: new Date().toISOString() }).eq("id", row.id).eq("status", "publishing");
     if (saved) throw saved;
     outcomes.push({ id: row.id, status: "published", eventId: result.id, created: result.created });

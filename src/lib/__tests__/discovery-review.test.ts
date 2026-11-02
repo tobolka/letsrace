@@ -64,6 +64,10 @@ it("keeps tentative dates in review and rejects the wrong edition", () => {
   expect(() => validateReview({ ...row, payload: JSON.parse(JSON.stringify(tentative)) }, decision, "2026-10-25")).toThrow("tentative");
   expect(() => validateReview({ ...row, season: 2026 }, decision, "2026-10-25")).toThrow("edition");
 });
+it("requires explicit end-date evidence and an actual place rather than only a country", () => {
+  expect(() => validateReview({ ...row, payload: JSON.parse(JSON.stringify({ ...event, endDate: "2027-08-29" })) }, decision, "2026-10-25")).toThrow("end-date evidence");
+  expect(() => validateReview({ ...row, payload: JSON.parse(JSON.stringify({ ...event, placeText: "Česko" })) }, decision, "2026-10-25")).toThrow("Missing place");
+});
 it("searches Slovakia in the local language and retains winter sources", () => {
   const plan = discoveryPlan(2027, ["ai", "brave"], "SK");
   expect(plan.every(p => p.country === "SK")).toBe(true);
