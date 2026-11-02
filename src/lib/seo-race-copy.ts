@@ -24,6 +24,8 @@ export const raceCopy: Record<Locale, {
   otherRounds: string;
   sameWeekend: string;
   nearbySimilar: string;
+  organiserRaces: string;
+  organiserVia: string;
   bornIn: string;
   roundOf: string;
   previousEditions: string;
@@ -70,6 +72,8 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Other rounds of {name}",
     sameWeekend: "Also that weekend nearby",
     nearbySimilar: "Similar races nearby",
+    organiserRaces: "More races by this organiser",
+    organiserVia: "Matched by their website {host}",
     bornIn: "born {years}",
     roundOf: "Round {n} of {of}",
     previousEditions: "Previous editions",
@@ -112,6 +116,8 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Další kola – {name}",
     sameWeekend: "Ten víkend v okolí",
     nearbySimilar: "Podobné závody v okolí",
+    organiserRaces: "Další závody pořadatele",
+    organiserVia: "Podle webu pořadatele {host}",
     bornIn: "ročníky {years}",
     roundOf: "{n}. kolo z {of}",
     previousEditions: "Předchozí ročníky",
@@ -154,6 +160,8 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Inne rundy – {name}",
     sameWeekend: "W ten weekend w pobliżu",
     nearbySimilar: "Podobne wyścigi w okolicy",
+    organiserRaces: "Inne wyścigi organizatora",
+    organiserVia: "Według strony organizatora {host}",
     bornIn: "roczniki {years}",
     roundOf: "Runda {n} z {of}",
     previousEditions: "Poprzednie edycje",
@@ -196,6 +204,8 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Ďalšie kolá – {name}",
     sameWeekend: "V ten víkend v okolí",
     nearbySimilar: "Podobné preteky v okolí",
+    organiserRaces: "Ďalšie preteky organizátora",
+    organiserVia: "Podľa webu organizátora {host}",
     bornIn: "ročníky {years}",
     roundOf: "{n}. kolo z {of}",
     previousEditions: "Predchádzajúce ročníky",
@@ -238,6 +248,8 @@ export const raceCopy: Record<Locale, {
     otherRounds: "Weitere Läufe – {name}",
     sameWeekend: "Am selben Wochenende in der Nähe",
     nearbySimilar: "Ähnliche Rennen in der Nähe",
+    organiserRaces: "Weitere Rennen des Veranstalters",
+    organiserVia: "Nach der Website des Veranstalters {host}",
     bornIn: "Jahrgänge {years}",
     roundOf: "Lauf {n} von {of}",
     previousEditions: "Frühere Austragungen",

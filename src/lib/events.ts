@@ -1111,3 +1111,57 @@ export async function setEventsVisibility(ids: string[], visibility: "public" | 
 
   refreshPublicCatalogue();
 }
+
+/** Ticket and timing platforms: many organisers share them, so they say nothing about who runs a race. */
+const PLATFORM_HOSTS = ["raceresult.com", "my.raceresult.com", "finishers.com", "racetime.sk", "sportsoft.cz", "registrace.cz"];
+/** A club does not run more upcoming races than this; a host that has more is a platform or a calendar. */
+const ORGANISER_MAX_RACES = 20;
+
+export const hostOfUrl = (url: string | null | undefined) => {
+  try {
+    return url ? new URL(url).hostname.toLowerCase().replace(/^www\./, "") : null;
+  } catch {
+    return null;
+  }
+};
+
+/** Hosts we read as calendars, federations or link lists — never an organiser's own site. */
+const listCalendarHosts = unstable_cache(async function listCalendarHosts(): Promise<string[]> {
+  const supabase = createServerSupabase();
+  const { data, error } = await supabase.from("watched_urls").select("url").in("kind", ["aggregator", "calendar", "federation", "outbound"]);
+  if (error) throw new Error(error.message);
+  return [...new Set((data ?? []).map((row) => hostOfUrl(row.url)).filter((h): h is string => Boolean(h)))];
+}, ["calendar-hosts-v1"], { revalidate: 86_400 });
+
+/**
+ * Other upcoming races on the same organiser's website, outside the race's
+ * own series (its rounds are listed already). Empty when the website is a
+ * calendar, a federation, a ticket platform or simply hosts too many races.
+ */
+export async function listOrganiserRaces(event: EventListItem, limit = 6): Promise<EventListItem[]> {
+  const host = hostOfUrl(event.websiteUrl);
+  if (!host || PLATFORM_HOSTS.includes(host)) return [];
+  if ((await listCalendarHosts()).includes(host)) return [];
+  const supabase = createServerSupabase();
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      `${EVENT_LIST_COLUMNS},
+       location:locations(id, name, municipality, country_code, lat, lng),
+       series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
+    )
+    .eq("visibility", PUBLIC_VISIBILITY)
+    .is("merged_into_id", null)
+    .in("status", [...PUBLIC_EVENT_STATUSES])
+    .gte("start_date", today)
+    .or(`website_url.ilike.%://${host}%,website_url.ilike.%://www.${host}%`)
+    .order("start_date")
+    .limit(ORGANISER_MAX_RACES + 1);
+  if (error) throw new Error(error.message);
+  const rows = (data ?? []).map((row) => mapEventRow(row as unknown as Record<string, unknown>));
+  if (rows.length > ORGANISER_MAX_RACES) return [];
+  return rows
+    .filter((e) => e.id !== event.id && hostOfUrl(e.websiteUrl) === host && (!event.series || e.series?.id !== event.series.id))
+    .slice(0, limit);
+}

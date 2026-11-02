@@ -8,7 +8,7 @@ import { BadgeCheck, Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned,
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, listEvents, type EventListItem } from "@/lib/events";
+import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, hostOfUrl, listEvents, listOrganiserRaces, type EventListItem } from "@/lib/events";
 import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
 import { RaceDayFacts, RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
@@ -167,7 +167,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   // What links this page into the rest of the site: its series' other rounds,
   // similar races nearby, and the hub for its kind of racing.
   const here = event.location;
-  const [seriesData, hubs, around, editions] = await Promise.all([
+  const [seriesData, hubs, around, editions, organiserRaces] = await Promise.all([
     event.series ? getSeriesBySlug(event.series.slug).catch(() => null) : Promise.resolve(null),
     hubCountry ? listQualifyingHubs([hubCountry]).catch(() => []) : Promise.resolve([]),
     // A race already run still points on to the next ones like it.
@@ -175,6 +175,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
       ? listEvents({ ...boxAround(here.lat, here.lng, NEARBY_RADIUS_KM), dateFrom: today }).catch(() => [])
       : Promise.resolve([]),
     getRaceEditions(event).catch(() => []),
+    listOrganiserRaces(event).catch(() => []),
   ]);
   const nearby = pickNearbyRaces(event, around, today);
   const categories = distinctCategories(event.categories ?? []);
@@ -431,6 +432,14 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {organiserRaces.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="mb-3 text-lg font-semibold">{rc.organiserRaces}</h2>
+            <RaceLinkList events={organiserRaces} locale={locale} groupByMonth={false} />
+            <p className="mt-2 text-xs text-muted-foreground">{fill(rc.organiserVia, { host: hostOfUrl(event.websiteUrl) ?? "" })}</p>
           </section>
         ) : null}
 
