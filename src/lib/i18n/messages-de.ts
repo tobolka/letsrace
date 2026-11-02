@@ -66,6 +66,8 @@ export const de = {
   calendarListing: "Kalendereintrag",
   disciplines: "Disziplinen",
   audience: "Für wen",
+  sourceCategories: "Strecken und Klassen",
+  sourceCategoriesHelp: "Laut Veranstalter. Das vollständige Programm steht in der Ausschreibung.",
   whoUnknown: "Nicht bestätigt",
   formatLabel: "Format",
   formatUnknown: "Nicht bestätigt",

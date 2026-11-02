@@ -10,6 +10,7 @@ import { MetaRow } from "@/components/explore/meta-row";
 import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, listEvents, type EventListItem } from "@/lib/events";
 import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
+import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
@@ -161,6 +162,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
       : Promise.resolve([]),
   ]);
   const nearby = pickNearbyRaces(event, around, today);
+  const categories = distinctCategories(event.categories ?? []);
+  const sources = [...(event.sources ?? [])].sort((a, b) => SOURCE_ORDER.indexOf(a.kind) - SOURCE_ORDER.indexOf(b.kind));
   const otherRounds = (seriesData?.events ?? []).filter((e) => e.id !== event.id);
   const upcomingRounds = otherRounds.filter((e) => e.startDate >= today);
   const rounds = (upcomingRounds.length ? upcomingRounds : otherRounds).slice(0, 12);
@@ -321,6 +324,26 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </p>
         </section>
 
+        {categories.length > 0 ? (
+          // The routes and classes as the organiser published them, each with
+          // what its name does not already say — the distance, the ages.
+          <section className="mt-8">
+            <h2 className="mb-3 text-lg font-semibold">{t.sourceCategories}</h2>
+            <ul className="divide-y divide-border/60 rounded-xl border px-4 text-sm">
+              {categories.map((category) => {
+                const detail = categoryDetail(category, locale);
+                return (
+                  <li key={category.id} className="flex min-w-0 items-baseline justify-between gap-3 py-2.5">
+                    <span className="min-w-0 break-words font-medium">{category.name}</span>
+                    {detail ? <span className="shrink-0 tabular-nums text-muted-foreground">{detail}</span> : null}
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">{t.sourceCategoriesHelp}</p>
+          </section>
+        ) : null}
+
         <section className="mt-8">
           <RaceDetailMap events={[event]} locale={locale} href={mapHref} label={t.viewOnMap} />
         </section>
@@ -353,6 +376,25 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </section>
         ) : null}
 
+        {sources.length > 0 ? (
+          // Where the race was read from: the organiser's own page first, then
+          // federations, series and calendars. Links, not endorsements.
+          <section className="mt-8">
+            <h2 className="mb-3 text-lg font-semibold">{rc.sources}</h2>
+            <ul className="divide-y divide-border/60 rounded-xl border px-4 text-sm">
+              {sources.map((s) => (
+                <li key={s.url} className="flex min-w-0 items-baseline justify-between gap-3 py-2.5">
+                  <a href={s.url} target="_blank" rel="nofollow noopener noreferrer" className="min-w-0 truncate font-medium underline-offset-4 hover:underline">
+                    {hostOf(s.url)}
+                  </a>
+                  <span className="shrink-0 text-muted-foreground">{rc.sourceKinds[s.kind] ?? rc.sourceKinds.other}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">{rc.sourcesHelp}</p>
+          </section>
+        ) : null}
+
       </div>
 
     </article>
@@ -360,6 +402,18 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
 }
 
 /** A race's discipline belongs to a hub's family. */
+/** The organiser's own word first, a calendar's last. */
+const SOURCE_ORDER = ["official", "race", "national_federation", "uci", "series", "aggregator", "other"];
+
+/** "www.inveloveritas.at" for a source's address, or the address itself if it will not parse. */
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
 function disciplineMatches(family: HubDiscipline, discipline: string): boolean {
   return (disciplineLeavesOf(family) as string[]).includes(discipline);
 }

@@ -72,6 +72,8 @@ export type EventListItem = {
     lng: number | null;
   } | null;
   series: { id: string; name: string; slug: string } | null;
+  /** Where the race was found, on the race's own page only. */
+  sources?: { url: string; kind: string }[];
   categories?: {
     id: string;
     name: string;
@@ -526,7 +528,8 @@ async function loadPublicEventBySlug(
       `${EVENT_LIST_COLUMNS}, description, public_revision,
        location:locations(id, name, municipality, country_code, lat, lng),
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories),
-       sources:event_sources(source_url)`,
+       sources:event_sources(source_url, kind),
+       categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
     )
     .eq("slug", slug)
     .eq("visibility", PUBLIC_VISIBILITY)
@@ -560,7 +563,7 @@ async function loadPublicEventBySlug(
   return event;
 }
 export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
-  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v2", slug],
+  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v4", slug],
   { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
 )());
 
@@ -718,6 +721,18 @@ function sourceUrlsFromRow(row: Record<string, unknown>): string[] {
   return sources.map((s) => s.source_url).filter((u): u is string => Boolean(u));
 }
 
+/** The pages a race was read from, once each, when the query asked for their kind. */
+function sourcesFromRow(row: Record<string, unknown>): { url: string; kind: string }[] | undefined {
+  const sources = row.sources as { source_url?: string | null; kind?: string | null }[] | null;
+  if (!sources?.some((s) => s.kind)) return undefined;
+  const seen = new Set<string>();
+  return sources.flatMap((s) => {
+    if (!s.source_url || seen.has(s.source_url)) return [];
+    seen.add(s.source_url);
+    return [{ url: s.source_url, kind: s.kind ?? "other" }];
+  });
+}
+
 function mapEventRow(row: Record<string, unknown>): EventListItem {
   const location = row.location as Record<string, unknown> | null;
   const series = row.series as Record<string, unknown> | null;
@@ -800,6 +815,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
             slug: String(series.slug),
           }
         : null,
+    sources: sourcesFromRow(row),
     categories: (categories ?? []).map((c) => ({
       id: String(c.id),
       name: String(c.name),
