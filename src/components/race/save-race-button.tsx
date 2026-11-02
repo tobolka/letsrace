@@ -85,11 +85,13 @@ export function SaveRaceButton({
   }
 
   if (variant === "row") {
+    // The icon is drawn by the stylesheet, not repeated as markup on every row.
+    const rowIcon = busy ? <Spinner /> : <span aria-hidden className="race-row-save-icon" />;
     return (
       <>
         {added ? (
           <Link href={localePath(locale, `account`)} aria-label={`${label} — ${raceName}`} title={label} className="race-row-save is-added">
-            {icon}
+            {rowIcon}
           </Link>
         ) : (
           <button
@@ -109,7 +111,7 @@ export function SaveRaceButton({
               }
             }}
           >
-            {icon}
+            {rowIcon}
           </button>
         )}
         {authOpen ? (
