@@ -1,0 +1,43 @@
+# LetsRace — rozpracovaná práce z 2. listopadu 2026
+
+Tento přehled zachovává celé zadání, ne jen poslední zprávu. Bez odhadů délky práce. Dokončení jedné opravy neznamená dokončení přestavby systému.
+
+## Aktuální pořadí
+
+| Priorita | Práce | Stav a další konkrétní krok |
+|---|---|---|
+| Teď | JBC 4X Revelations 2027 | Ověřit UCI 9.–10. 7. 2027 a areál, prohledat i neveřejné záznamy, uložit a zveřejnit hlavní závod. Dětský závod jen s podkladem pro rok 2027. |
+| Teď | Road Stage Orlické hory 2027 | Zachovat ID `26c164f6-fd6a-4be5-83ca-fa7ed9f4ce3b`; opravit místo „Kikirikiii“, souřadnice a kraj. Opravit příčinu v importu a ověřit veřejné pohledy. |
+| Potom | Dávka nových českých závodů 2027 z přílohy | Samostatně uložená kompletní příloha níže. Při této dvojici úkolů se znovu neřeší staré opravy ani ostatní závody. Potom každá položka dostane výsledek, ID, zdroj a odkaz; potvrzené datum neblokuje chybějící registrace. |
+| Pokračuje | Společná pipeline, schránka rozhodnutí a jednoduché ovládání | Zůstávají všechny původní etapy 0–6; konkrétní stav v [operations-progress.md](operations-progress.md). Rozpracované změny administrace jsou lokální a nesmějí se zahodit. |
+| Pokračuje | Automatické doplňování historie počasí | Uložiště, denní serverový běh a bezplatná záloha nasazené; celé úvodní naplnění katalogu není dokončené. Limity a poslední dobrá data se zachovávají. |
+
+Kompletní příloha pro pozdější import: [referenční seznam závodů](requests/2026-11-02-czech-races-import-reference.md). Je to podklad k ověření a provedení; číslo kandidátů v příloze není důkazem počtu nových závodů v katalogu.
+
+## Co z dnešního zadání už žije na webu
+
+- Čtení a předávání podrobných kategorií a doslovných popisů; nevydávat historické podrobnosti za potvrzené nové údaje.
+- Společné párování ročníků pro doplňování i odkazy v detailu. Ročníky zůstávají samostatné; nejde o nový systém slučování různých závodů.
+- Bezpečné společné uložení úprav pořadatele, ochranných zámků, historie a požadavku na zveřejnění. Odebraný přístup se neobnoví opětovnou žádostí.
+- Označení „Spravuje pořadatel“ místo automatického tvrzení o ověření všech údajů. Návrh budoucích nastavitelných ověřovacích statusů uživatel odložil.
+- Oprava neúplné sitemap a nežádoucího odhadu přesměrování známých skrytých adres. Potvrzená sloučení mají vlastní cestu.
+- Počasí: trvalá historie na serveru, předpověď s půlhodinovou platností, čas načtení, viditelný zdroj, výpadky a automatické opakování. Visual Crossing funguje anonymně; nevznikl placený plán ani nový účet.
+- Čtečka na Macu aktualizovaná; doložené odložení práce se nevydává za technickou poruchu.
+
+Důkazy, provedené změny a omezení: [výsledek poslední sady oprav](../reports/detail-pipeline-2026-11-02/RESULT.md). Veřejná verze této sady: `54ecbc42`.
+
+## Původní zadání, které stále platí
+
+1. Minimum ruční správy: jeden přehled a pouze skutečné otázky pro vlastníka; technické nástroje zůstávají opravitelné a dohledatelné.
+2. Přehledně odlišit hledání nových zdrojů, hledání závodů ve známých zdrojích, doplňování existujících závodů a řešení rozporů/duplicit.
+3. Jedna trvalá práce se zámky, opakováním a rozdělením mezi server a Mac; výpadek nesmí ztratit práci.
+4. Každý údaj má původ, stáří a pravidla přepisu; respektovat ruční zámky a finanční limity. AI sama není zdroj pravdy.
+5. Duplicity řešit před importem i po něm, zachovat adresy, vazby a plány; nejasnosti neslučovat odhadem.
+6. Další ročníky stavět na ověřeném předchozím závodu. Nové datum vyžaduje výslovný nový rok, ne výpočet z minulého ročníku.
+7. Nové příležitosti pro SEO a více užitečných údajů v detailu. Nezahajovat ostatní nápady z nezávislého auditu mimo duplicity a SEO.
+8. Dokončit práci na promptu a postupu hledání nových závodů; měřit skutečně nové a správné závody, ne jen načtené stránky nebo zápisy.
+9. Nezávisle doložit správnost, pokrytí, chybná sloučení, cenu a čas vlastníka. Testy kódu a nasazení toto měření nenahrazují.
+
+## Požadavky na budoucí hlášení
+
+Uvádět odděleně lokální změnu, uložení do databáze, nasazení, veřejné ověření a zbývající práci. Nevymýšlet časové odhady, nové počty ani úspěšné importy bez skutečného zápisu a kontroly. Nežádat vlastníka, aby ručně řešil technickou chybu, kterou může opravit systém.

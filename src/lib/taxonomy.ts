@@ -17,6 +17,7 @@ export const DISCIPLINES = [
   "xce",
   "xcm",
   "mtbo",
+  "four_cross",
   "dh",
   "enduro",
   "gravel",
@@ -41,6 +42,7 @@ export const DISCIPLINE_LABELS: Record<Discipline, string> = {
   xce: "XCE",
   xcm: "XCM",
   mtbo: "MTBO",
+  four_cross: "4X",
   dh: "Downhill",
   enduro: "Enduro",
   gravel: "Gravel",
@@ -78,6 +80,7 @@ export const DISCIPLINE_TREE: {
       { id: "xce", label: "XCE" },
       { id: "xcm", label: "XCM" },
       { id: "mtbo", label: "MTBO" },
+      { id: "four_cross", label: "4X" },
       { id: "dh", label: "Downhill" },
       { id: "enduro", label: "Enduro" },
     ],
@@ -99,7 +102,7 @@ export const DISCIPLINE_TREE: {
   { id: "bmx", label: "BMX" },
 ];
 
-const MTB_LEAVES: Discipline[] = ["xco", "xcc", "xce", "xcm", "mtbo", "dh", "enduro", "mtb"];
+const MTB_LEAVES: Discipline[] = ["xco", "xcc", "xce", "xcm", "mtbo", "four_cross", "dh", "enduro", "mtb"];
 const ROAD_LEAVES: Discipline[] = [
   "road",
   "road_race",
@@ -111,6 +114,7 @@ const ROAD_LEAVES: Discipline[] = [
 
 /** Leaf ids stored also in `formats` for display / finer queries. */
 export const FORMAT_IDS = [
+  "four_cross",
   "xco",
   "xcc",
   "xce",
@@ -142,7 +146,7 @@ export function expandDisciplineFilter(ids: string[]): string[] {
   return [...out];
 }
 
-const MTB_RACE = new Set<string>(["mtb", "xco", "xcc", "xce", "mtbo", "dh", "enduro"]);
+const MTB_RACE = new Set<string>(["mtb", "xco", "xcc", "xce", "mtbo", "four_cross", "dh", "enduro"]);
 const FAMILY_FILTERS = new Set<string>(["mtb", "road", "gravel", "cx", "track", "bmx"]);
 
 export function disciplineFamily(id: string | null | undefined): Discipline {
@@ -250,6 +254,10 @@ const LEGACY_DISC: Record<string, Discipline> = {
   "para-cycling": "road",
   other: "other",
   mtbo: "mtbo",
+  "4x": "four_cross",
+  fourcross: "four_cross",
+  "four-cross": "four_cross",
+  "four cross": "four_cross",
   biathlon: "other",
   kids: "other",
 };
@@ -292,6 +300,7 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   else if (/marath?on/.test(tf) && isMtbMarathon(tf)) found.add("xcm");
   if (/\bxco\b/.test(t)) found.add("xco");
   if (/\bmtbo\b|mtb\s+orient/.test(tf)) found.add("mtbo");
+  if (/\b4x\b|four[\s-]?cross/.test(tf)) found.add("four_cross");
   if (/\bdh\b|downhill|sjezd/.test(t)) found.add("dh");
   if (/\benduro\b/.test(t)) found.add("enduro");
   if (/\bgravel\b|gravelow/.test(t)) found.add("gravel");
@@ -321,7 +330,7 @@ export function inferDisciplines(text: string, existing?: string[] | null): Disc
   ) {
     found.add("track");
   }
-  // UCI races pumptrack under BMX; four-cross is MTB gravity with no leaf of its own.
+  // UCI races pumptrack under BMX; four-cross belongs to MTB.
   if (/\bbmx\b|pump[\s-]?track/.test(t)) found.add("bmx");
   if (/\broad[\s-]?race\b|silniční závod|silnicni zavod|wyścig szosowy|wyscig szosowy/.test(t))
     found.add("road_race");

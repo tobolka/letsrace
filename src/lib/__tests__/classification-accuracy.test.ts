@@ -434,7 +434,7 @@ describe("Polish race vocabulary", () => {
 
   it("files pumptrack under BMX and four-cross under MTB", () => {
     expect(inferDisciplines("Puchar Polski #5 Pumptrack")).toEqual(["bmx"]);
-    expect(inferDisciplines("Mistrzostwa Polski 4X")).toEqual(["mtb"]);
+    expect(inferDisciplines("Mistrzostwa Polski 4X")).toEqual(["four_cross"]);
   });
 
   it("marks a touring ride and a brevet as a ride, not a race", () => {

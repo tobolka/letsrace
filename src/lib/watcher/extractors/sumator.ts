@@ -20,7 +20,7 @@ const DISC_MAP: Record<string, Discipline> = {
   cx: "cx",
   bmx: "bmx",
   track: "track",
-  "4x": "other",
+  "4x": "four_cross",
   event: "other",
   akce: "other",
 };

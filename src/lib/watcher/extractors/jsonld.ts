@@ -20,7 +20,7 @@ export function extractJsonLdEvents(sourceUrl: string, html: string): ParsedEven
         const place =
           typeof item.location === "string"
             ? item.location
-            : item.location?.name || item.location?.address?.addressLocality || "";
+            : item.location?.address?.addressLocality || item.location?.name || "";
         const geo = item.location?.geo;
         const country = item.location?.address?.addressCountry;
         out.push({

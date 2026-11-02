@@ -29,6 +29,10 @@ export function disciplinesFromCsv(disciplina: string, podtyp: string): Discipli
     out.add("mtb");
     out.add("mtbo");
   }
+  if (/\b4x\b|four[\s-]?cross/.test(blob)) {
+    out.add("mtb");
+    out.add("four_cross");
+  }
   if (/\bxcc\b/.test(blob)) out.add("xcc");
   if (/\bxce\b|eliminat/.test(blob)) out.add("xce");
   // Road marathon / gran fondo is not MTB XCM.

@@ -105,6 +105,7 @@ import {
   parseCyclingAustriaCups,
 } from "@/lib/watcher/extractors/cyclingaustria";
 import { parseUciMtbWorldSeries } from "@/lib/watcher/extractors/uciws";
+import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
 import { parseSwissCycling } from "@/lib/watcher/extractors/swisscycling";
 import {
   parseBikeKingdomKidsCup,
@@ -671,6 +672,9 @@ export async function extractWithAdapter(
   }
   if (host.includes("ucimtbworldseries.com")) {
     return { events: parseUciMtbWorldSeries(url, html), strategy: "adapter:uciws" };
+  }
+  if (host === "uci.org" && /\/competition-details\/20\d{2}\/MTB\/\d+/i.test(url)) {
+    return { events: parseUciCompetition(url, html), strategy: "adapter:uci-competition" };
   }
   if (host.includes("swiss-cycling.ch")) {
     if (!/\/kalender/i.test(url)) {

@@ -19,6 +19,7 @@ async function main() {
   const deadline = Math.min(Number(process.env.SOURCE_RUN_DEADLINE || 0) * 1000 || Infinity, Date.now() + 180_000);
   if (Date.now() + 90_000 > deadline) { process.exitCode = 2; return; }
   let verified = 0, pending = 0, processed = 0;
+  let refreshCatalogue = process.env.PUBLICATION_REFRESH_CATALOGUE === "1";
   for (let index = 0; index < 10 && Date.now() + 90_000 < deadline; index++) {
     // Claim only when ready to work; queued items must not expire while waiting here.
     const { data: tasks, error } = await db.rpc("pipeline_claim_tasks", { p_kind: "public_refresh", p_capabilities: ["web"], p_limit: 1 });
@@ -27,13 +28,14 @@ async function main() {
     processed++;
     try {
       const payload = publicationPayload(task.payload), expected = payload.expected;
-      const response = await fetch(`${getSiteUrl()}/api/ops/publication`, { method: "POST", redirect: "error", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" }, body: JSON.stringify({ key: task.key, token: task.token, revision: payload.revision }), signal: AbortSignal.timeout(30_000) });
+      const response = await fetch(`${getSiteUrl()}/api/ops/publication`, { method: "POST", redirect: "error", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" }, body: JSON.stringify({ key: task.key, token: task.token, revision: payload.revision, ...(refreshCatalogue ? { catalogue: true } : {}) }), signal: AbortSignal.timeout(30_000) });
       if (response.status === 409) {
         const { error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { superseded: true } });
         if (error) throw error;
         pending++; continue;
       }
       if (!response.ok) throw Error(`Publication service returned HTTP ${response.status}`);
+      refreshCatalogue = false;
       const hidden = expected.visibility !== "public" || shouldHideFromMap(String(expected.name), expected.status === "cancelled" ? "scheduled" : String(expected.status), String(expected.visibility));
       let outside = false;
       if (expected.location_id) {

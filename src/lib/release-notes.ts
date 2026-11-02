@@ -22,6 +22,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-02",
     items: {
       en: [
+        "You can find four-cross races under MTB or the new 4X filter, including JBC 4X Revelations on 9–10 July 2027.",
+        "Road Stage Orlické hory 2027 appears in Deštné v Orlických horách, with its three routes listed.",
         "The page of a cancelled race stays available and clearly shows the cancellation.",
         "Race names the organiser wrote in capitals no longer shout at the top of the race page.",
         "Each race page lists similar races nearby, the same kind of racing for the same age groups first, with how far away they are.",
@@ -36,6 +38,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Anyone signed in can send a correction to a race or series straight from its page.",
       ],
       cs: [
+        "Fourcrossové závody najdeš pod MTB i novým filtrem 4X, včetně JBC 4X Revelations 9.–10. července 2027.",
+        "Road Stage Orlické hory 2027 se zobrazuje v Deštném v Orlických horách i se svými třemi trasami.",
         "Na stránce zrušeného závodu zůstává jasná informace o zrušení.",
         "Názvy závodů, které pořadatel napsal velkými písmeny, už na stránce závodu nekřičí.",
         "Na stránce závodu najdeš podobné závody v okolí – nejdřív stejnou disciplínu pro stejné kategorie – i s tím, jak jsou daleko.",

@@ -1622,6 +1622,7 @@ async function upsertParsedEvent(
   const { publicRaceUrl, preferDeeperOfficialUrl } = await import("@/lib/watcher/public-url");
   const classified = inferClassification({
     name: ev.name,
+    existingClassLabel: ev.uciClass,
     placeText: ev.placeText,
     seriesName: ev.seriesName,
     seriesSlug: ev.seriesSlug,

@@ -59,6 +59,7 @@ export const DISCIPLINE_WORDS: Record<string, RegExp> = {
   xco: /\bxco\b|cross.?country|olymp/i,
   xcc: /\bxcc\b|short.?track/i,
   xce: /\bxce\b|eliminator/i,
+  four_cross: /\b4x\b|four[\s-]?cross/i,
   xcm: /\bxcm\b|marat[oó]n|marathon/i,
   mtb: /\bmtb\b|mountain.?bike|horsk[eéáý]|bike.?park|\bvtt\b|fuoristrada|g[óo]rsk|bike.?marathon/i,
   dh: /downhill|\bdh\b|sjezd|discesa/i,

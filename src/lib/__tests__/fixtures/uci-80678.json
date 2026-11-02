@@ -1,0 +1,40 @@
+{
+  "competitionDetails": {
+    "name": "4X Pro Tour - JBC 4X Revelations",
+    "dates": "09 Jul - 10 Jul 2027",
+    "venue": "Jablonec nad Nisou",
+    "country": "Czech Republic",
+    "competitionClass": "3 - Class 3",
+    "website": {
+      "title": "www.jbc4xrevelations.com",
+      "url": "https://www.jbc4xrevelations.com",
+      "isExternal": true
+    },
+    "email": {
+      "title": "info@jbc4xrevelations.com",
+      "url": "mailto:info@jbc4xrevelations.com",
+      "isExternal": true
+    }
+  },
+  "schedule": {
+    "items": [
+      {
+        "date": "09 Jul 2027",
+        "races": [
+          {
+            "raceName": "4X Men Elite",
+            "raceType": "4X",
+            "raceClass": "3 - Class 3",
+            "category": "Men Elite"
+          },
+          {
+            "raceName": "4X Women Elite",
+            "raceType": "4X",
+            "raceClass": "3 - Class 3",
+            "category": "Women Elite"
+          }
+        ]
+      }
+    ]
+  }
+}

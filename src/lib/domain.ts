@@ -37,6 +37,8 @@ export type ParsedEvent = {
   categories?: ParsedCategory[];
   /** Literal description for this edition from its own source, never generated copy. */
   description?: string;
+  /** Explicit class from the governing federation, not an inference from the title. */
+  uciClass?: import("@/lib/taxonomy").UciClass;
   /** Provenance / discovery URL (may be an aggregator page). */
   sourceUrl: string;
   /** Official race website for UI — never an aggregator calendar. */
