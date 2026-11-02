@@ -20,7 +20,7 @@ import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, fillCopy, hubCopy, localeAlternates, raceOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
-import { fill, raceCopy, raceDescription, raceSummary, raceTitle, unshout } from "@/lib/seo-race-copy";
+import { fill, raceCopy, raceDescription, raceSummary, raceTitle, routeSummary, unshout } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { BrowseHeader } from "@/components/browse/browse-ui";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -178,6 +178,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   ]);
   const nearby = pickNearbyRaces(event, around, today);
   const categories = distinctCategories(event.categories ?? []);
+  const summary = routeSummary(event, locale);
   // One row per website: a calendar we read several pages of is one source,
   // shown under the most trustworthy kind it was read as.
   const sources = [...(event.sources ?? [])]
@@ -244,6 +245,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               {[place, discChips.join(", "), event.series?.name].filter(Boolean).join(" · ")}
             </span>
           </p>
+          {summary.length ? <p className="mt-1 text-sm text-muted-foreground">{capitalizeFirst(summary.join(" · "))}</p> : null}
           {isPast ? <p className="mt-2 text-sm font-medium">{rc.taken}</p> : null}
         </header>
 
@@ -474,3 +476,5 @@ function disciplineMatches(family: HubDiscipline, discipline: string): boolean {
 function disciplineLabelForHub(locale: Locale, family: HubDiscipline): string {
   return disciplineLabel(family, locale);
 }
+
+const capitalizeFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);

@@ -590,8 +590,12 @@ export function raceDescription(event: EventListItem, locale: Locale): string {
   const series = event.series ? fill(w.series, { series: event.series.name }) : null;
   const regulations = event.regulationsUrl ? c.regsAvailable : null;
 
+  // "3 trasy 70–210 km, i pro děti do 6 let." — what a rider weighs first, after when and where.
+  const summary = routeSummary(event, locale);
+  const routes = summary.length ? `${capitalize(summary.join(", "))}.` : null;
+
   let out = lead;
-  for (const sentence of [entry, classes, series, regulations, w.closer]) {
+  for (const sentence of [routes, entry, classes, series, regulations, w.closer]) {
     if (sentence && out.length + 1 + sentence.length <= DESCRIPTION_MAX) out += ` ${sentence}`;
   }
   return out;
@@ -622,4 +626,42 @@ export function seriesIn(events: EventListItem[]): { slug: string; name: string;
 /** A country's flag from its two letters, as the regional-indicator emoji pair. */
 export function flagEmoji(code: string): string {
   return code.toUpperCase().replace(/[A-Z]/g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65));
+}
+
+const ROUTE_WORDS: Record<Locale, { one: string; few: string; many: string; youngestOpen: string; youngestBand: string }> = {
+  cs: { one: "Trasa {km}", few: "{n} trasy {km}", many: "{n} tras {km}", youngestOpen: "i pro děti do {old} let", youngestBand: "nejmladší kategorie {young}–{old} let" },
+  sk: { one: "Trasa {km}", few: "{n} trasy {km}", many: "{n} trás {km}", youngestOpen: "aj pre deti do {old} rokov", youngestBand: "najmladšia kategória {young}–{old} rokov" },
+  pl: { one: "Trasa {km}", few: "{n} trasy {km}", many: "{n} tras {km}", youngestOpen: "także dla dzieci do {old} lat", youngestBand: "najmłodsza kategoria {young}–{old} lat" },
+  de: { one: "Eine Strecke, {km}", few: "{n} Strecken, {km}", many: "{n} Strecken, {km}", youngestOpen: "auch für Kinder bis {old} Jahre", youngestBand: "jüngste Klasse {young}–{old} Jahre" },
+  en: { one: "One route, {km}", few: "{n} routes, {km}", many: "{n} routes, {km}", youngestOpen: "also for children up to {old}", youngestBand: "youngest category {young}–{old}" },
+};
+
+/** The youngest band a race has, by the ages it covers: [from, to]. */
+const YOUNGEST: [string, number | null, number][] = [
+  ["u7", null, 6], ["u9", 7, 8], ["u11", 9, 10], ["kids", null, 10], ["u13", 11, 12], ["u15", 13, 14], ["u17", 15, 16], ["youth", 11, 16],
+];
+
+/**
+ * The race at a glance, from the organiser's own routes and categories:
+ * "3 trasy 70–210 km", "i pro děti do 6 let". Empty parts are left out.
+ */
+export function routeSummary(event: EventListItem, locale: Locale): string[] {
+  const w = ROUTE_WORDS[locale];
+  const out: string[] = [];
+  const km = [...new Set((event.categories ?? []).map((c) => c.distanceKm).filter((d): d is number => d != null && d > 0))].sort((a, b) => a - b);
+  if (km.length) {
+    const nf = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+    const range = km.length === 1 ? `${nf.format(km[0])} km` : `${nf.format(km[0])}–${nf.format(km.at(-1)!)} km`;
+    const n = km.length;
+    const word = n === 1 ? w.one : n < 5 ? w.few : w.many;
+    out.push(fill(word, { n, km: range }));
+  }
+  if (event.ageConfidence === "explicit") {
+    const youngest = YOUNGEST.find(([id]) => event.ageCategories.includes(id));
+    if (youngest) {
+      const [, young, old] = youngest;
+      out.push(young == null ? fill(w.youngestOpen, { old }) : fill(w.youngestBand, { young, old }));
+    }
+  }
+  return out;
 }

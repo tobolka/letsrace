@@ -10,8 +10,11 @@ import {
 } from "@/lib/taxonomy";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
+import { birthYears } from "@/lib/birth-years";
 
 export type DetailLink = { href: string; label: string; kind: string };
+
+const BORN_IN: Record<string, string> = { cs: "ročníky {years}", sk: "ročníky {years}", pl: "roczniki {years}", de: "Jahrgänge {years}", en: "born {years}" };
 
 /**
  * Google Maps directions to a race, from wherever the person is. Without an
@@ -56,9 +59,14 @@ export function buildDetailModel(
   );
   const whoChips = whoLabel ? whoLabel.split(" · ").filter(Boolean) : [];
   // The ages a chip stands for, by its label: "Junior" → "17–18 let".
+  // Birth years beside the ages, as on the race page — only for the organiser's own categories.
+  const showYears = event.ageConfidence === "explicit" || event.ageConfidence === "previous";
   const ageHintFor = (label: string) => {
     const id = AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
-    return id ? ageCategoryHelp(id, locale) : "";
+    if (!id) return "";
+    const years = showYears ? birthYears(id, event.startDate, event.disciplines, locale) : null;
+    const born = years ? (BORN_IN[locale] ?? BORN_IN.en).replace("{years}", years) : null;
+    return [ageCategoryHelp(id, locale), born].filter(Boolean).join(" · ");
   };
   const levelHelp = event.uciClass ? uciClassHelp(event.uciClass, locale) : "";
   const discChips = event.disciplines

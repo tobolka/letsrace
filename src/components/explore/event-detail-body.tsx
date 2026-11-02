@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { ArrowUpRight, Bike, Calendar, ChartNoAxesColumnIncreasing, ExternalLink, MapPin, Navigation, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
@@ -7,6 +8,8 @@ import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { RaceWeather } from "@/components/race/race-weather";
+import { ExplainedHint } from "@/components/explore/explained-badge";
+import { roundOf } from "@/lib/series-rounds";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -44,6 +47,10 @@ export function EventDetailBody({
   trackEnter: (kind: string) => void;
 }) {
   const t = messagesFor(locale);
+  const round = useSeriesRound(event);
+  const seriesHint = event.series
+    ? [event.series.name, round ? (ROUND_OF[locale] ?? ROUND_OF.en).replace("{n}", String(round.n)).replace("{of}", String(round.of)) : null].filter(Boolean).join(" · ")
+    : "";
   return (
     <>
         <div className="flex flex-col gap-2">
@@ -118,12 +125,12 @@ export function EventDetailBody({
             <MetaRow icon={<Trophy />} label={t.seriesFilter}>
               {/* The tag narrows to the series; the arrow opens its page. */}
               <div className="flex max-w-full min-w-0 items-center gap-1">
+                <ExplainedHint explanation={seriesHint} className="flex min-w-0 max-w-full cursor-default">
                 {onSelectSeries ? (
                   <Button
                     type="button"
                     variant="outline"
                     size="xs"
-                    title={event.series.name}
                     className="max-w-full min-w-0 shrink justify-start overflow-hidden"
                     onClick={() => onSelectSeries(event.series!.slug)}
                   >
@@ -138,13 +145,13 @@ export function EventDetailBody({
                   >
                     <Link
                       href={`/${locale}?series=${event.series.slug}`}
-                      title={event.series.name}
                       className="min-w-0"
                     >
                       <span className="truncate">{event.series.name}</span>
                     </Link>
                   </Button>
                 )}
+                </ExplainedHint>
                 <Button asChild variant="outline" size="icon-xs" className="shrink-0">
                   <Link
                     href={localePath(locale, `series/${event.series.slug}`)}
@@ -191,4 +198,26 @@ export function EventDetailBody({
         )}
     </>
   );
+}
+
+const ROUND_OF: Record<string, string> = { cs: "{n}. kolo z {of}", sk: "{n}. kolo z {of}", pl: "Runda {n} z {of}", de: "Lauf {n} von {of}", en: "Round {n} of {of}" };
+
+/** Which round of its season the race is, read from the series' own rounds once the card opens. */
+function useSeriesRound(event: EventListItem) {
+  const [round, setRound] = useState<{ n: number; of: number } | null>(null);
+  const slug = event.series?.slug;
+  useEffect(() => {
+    if (!slug) return;
+    let live = true;
+    fetch(`/api/series/${encodeURIComponent(slug)}`)
+      .then((res) => (res.ok ? (res.json() as Promise<{ events: { id: string; startDate: string }[] }>) : null))
+      .then((data) => {
+        if (live && data) setRound(roundOf(event.id, data.events));
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [slug, event.id]);
+  return round;
 }
