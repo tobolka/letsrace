@@ -5,7 +5,7 @@ export function isBudgetDeferral(message: string): boolean {
 }
 
 export function isUnreadableSource(message: string): boolean {
-  return ["unsupported_or_empty_source", "low confidence or empty extract", "dynamic_render_unavailable"].includes(message);
+  return ["unsupported_or_empty_source", "low confidence or empty extract", "dynamic_render_unavailable"].includes(message) || /^(source_document_too_large|pdf_has_no_text)/.test(message);
 }
 
 export function watchOutcomeState(outcome: WatchOutcome): "ok" | "failed" | "deferred" | "unreadable" {
@@ -16,6 +16,12 @@ export function watchOutcomeState(outcome: WatchOutcome): "ok" | "failed" | "def
   if (isBudgetDeferral(outcome.error ?? "")) return "deferred";
   if (isUnreadableSource(outcome.error ?? "")) return "unreadable";
   return "failed";
+}
+
+export function recordedRunState(run:{ok:boolean|null;error:string|null;finished_at:string|null}){
+  if(!run.finished_at)return 'running' as const;
+  if(run.ok==null)return 'unknown' as const;
+  return watchOutcomeState({watchedUrlId:'',url:'',ok:run.ok,error:run.error??undefined,eventsUpserted:0,linksDiscovered:0});
 }
 
 export function summarizeWatches(outcomes: WatchOutcome[]) {

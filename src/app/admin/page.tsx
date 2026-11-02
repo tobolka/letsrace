@@ -1,288 +1,60 @@
 import Link from "next/link";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  CalendarRange,
-  Check,
-  Flag,
-  Inbox,
-  MapPin,
-  Play,
-  Plus,
-  Radar,
-  TrendingDown,
-} from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/require-admin-page";
-import { getAdminOverview, type GrowthDay } from "@/lib/admin/overview";
-import { StalledSources } from "@/components/admin/stalled-sources";
-import { Badge } from "@/components/ui/badge";
+import { getOwnerOverview } from "@/lib/admin/owner-overview";
+import { OwnerRefresh, OwnerRefreshButton } from "@/components/admin/owner-refresh";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { z } from "zod";
+import { discoveryUrl } from "@/lib/discovery/plan";
 
 export const dynamic = "force-dynamic";
-
-function pct(n: number, d: number) {
-  return d ? Math.round((n / d) * 100) : 0;
+function time(value: string | null) {
+  return value ? new Intl.DateTimeFormat("cs-CZ", { timeZone: "Europe/Prague", day: "numeric", month: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value)) : "Není potvrzený";
 }
-
-/**
- * A thing waiting for a person, with somewhere to go and do it.
- *
- * An empty queue is drawn as clearly as a full one: the whole point of coming
- * here is to find out whether anything needs you, and a row of quiet zeros is
- * a good answer.
- */
-function Queue({
-  href,
-  icon: Icon,
-  label,
-  count,
-  hint,
-  quiet,
-}: {
-  href: string;
-  icon: typeof Inbox;
-  label: string;
-  count: number;
-  hint: string;
-  quiet?: string;
-}) {
-  const clear = count === 0;
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "group flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-accent",
-        !clear && "border-foreground/15 bg-card shadow-xs",
-      )}
-    >
-      <span
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-md",
-          clear ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground",
-        )}
-      >
-        {clear && quiet ? <Check className="size-4" /> : <Icon className="size-4" />}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex items-baseline gap-2">
-          <span
-            className={cn(
-              "text-2xl font-semibold tabular-nums",
-              clear && "text-muted-foreground",
-            )}
-          >
-            {count}
-          </span>
-          <span className="text-sm font-medium">{label}</span>
-        </span>
-        <span className="block truncate text-xs text-muted-foreground">
-          {clear && quiet ? quiet : hint}
-        </span>
-      </span>
-    </Link>
-  );
-}
-
-/** Fourteen days of arrivals. Bars, because the shape is the whole message. */
-function Pulse({ days }: { days: GrowthDay[] }) {
-  const max = Math.max(1, ...days.map((d) => d.added));
-  return (
-    <div className="flex h-16 items-end gap-1">
-      {days.map((d, i) => (
-        <div
-          key={d.day}
-          title={`${d.day}: ${d.added}`}
-          className={cn(
-            "min-w-0 flex-1 rounded-sm transition-colors",
-            i >= days.length - 7 ? "bg-primary/80" : "bg-muted-foreground/25",
-          )}
-          style={{ height: `${Math.max(4, (d.added / max) * 100)}%` }}
-        />
-      ))}
-    </div>
-  );
-}
-
-export default async function AdminHomePage() {
+const optionsSchema=z.array(z.object({value:z.string().min(1).max(100),label:z.string().min(1).max(160)})).min(2).max(4);
+const evidenceSchema=z.object({sources:z.array(z.object({url:z.string().max(2000),quote:z.string().max(800).optional()})).max(5).optional()});
+export default async function AdminHomePage({searchParams}: {searchParams:Promise<{decision?:string;decisions?:string}>}) {
   await requireAdminPage();
-  const o = await getAdminOverview();
-
-  const monthMax = Math.max(1, ...o.forward.map((f) => f.races));
-  const cliff = o.beyond90 < o.totals.publicUpcoming * 0.15;
-  const delta = o.growth.thisWeek - o.growth.lastWeek;
-
+  const params=await searchParams;
+  const offset=Math.max(0,Math.min(10000,Number.parseInt(params.decisions??'0',10)||0));
+  let o: Awaited<ReturnType<typeof getOwnerOverview>>;
+  try { o = await getOwnerOverview(offset); }
+  catch {
+    return <section className="mx-auto flex w-full max-w-4xl flex-col gap-5"><OwnerRefresh/><h1 className="text-2xl font-semibold">Stav LetsRace není dostupný</h1><p>Přehled se nepodařilo načíst. Chybějící údaje nejsou nulová fronta ani potvrzení, že vše funguje.</p><OwnerRefreshButton/></section>;
+  }
+  const streams = [
+    { title: "Hledání nových webů", mode: "Hledání automaticky", value: `Návrhy k prověření: ${o.newSourcesWaiting}`, text: "Hledá nové pořadatele a kalendáře. Návrh webu ještě není nový závod; samostatné přijetí všech návrhů není dokončené." },
+    { title: "Nové závody ze známých webů", mode: "Pravidelný sběr", value: `Sledované zdroje: ${o.activeSources}`, text: "Čte známé weby a porovnává nálezy s katalogem. Nejasnou totožnost odkládá, aby nevytvářel další závod naslepo." },
+    { title: "Doplňování existujících závodů", mode: "Část automaticky", value: "Weby, přihlášky a další dostupné údaje", text: "Doplňuje známé závody. AI má omezený režim a rozpočet; uložený údaj není automaticky nově ověřený údaj." },
+    { title: "Ověřování sporných nálezů", mode: "Opakované čtení automaticky", value: `Podklady k posouzení: ${o.candidates}`, text: `Naplánované další kontroly: ${o.candidatesScheduled}. Samostatné posuzování a zveřejňování ještě není dokončené.` },
+  ];
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Control room</h1>
-          <p className="text-sm text-muted-foreground">
-            {o.totals.publicUpcoming.toLocaleString()} upcoming races ·{" "}
-            {o.totals.activeSources} active sources ·{" "}
-            {o.failRate7d.runs > 0
-              ? `${pct(o.failRate7d.fails, o.failRate7d.runs)}% run failures this week`
-              : "no runs this week"}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild size="sm">
-            <Link href="/admin/events/new">
-              <Plus /> Add race
-            </Link>
-          </Button>
-          <form action="/api/admin/watch-now" method="post">
-            <Button type="submit" size="sm" variant="outline">
-              <Play /> Run watcher
-            </Button>
-          </form>
-          <form action="/api/admin/geocode" method="post">
-            <Button type="submit" size="sm" variant="outline">
-              <MapPin /> Geocode
-            </Button>
-          </form>
-        </div>
-      </div>
-
-      {/* What needs a person, before anything that merely can be counted. */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Queue
-          href="/admin/discovery"
-          icon={Radar}
-          label="to triage"
-          count={o.pendingDiscovery}
-          hint="New websites and race evidence awaiting review"
-          quiet="No websites or race evidence awaiting review"
-        />
-        <Queue
-          href="/admin/inbox"
-          icon={Inbox}
-          label="from riders"
-          count={o.openFeedback}
-          hint="Corrections and submissions"
-          quiet="Nothing unanswered"
-        />
-        <Queue
-          href="/admin/events?filter=incomplete"
-          icon={Flag}
-          label="incomplete"
-          count={o.incompleteUpcoming}
-          hint="Upcoming races missing a link or a pin"
-          quiet="Every upcoming race has a link and a pin"
-        />
-        <Queue
-          href="/admin/sources"
-          icon={CalendarRange}
-          label="sources"
-          count={o.totals.sources}
-          hint={`${o.totals.activeSources} active`}
-        />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-2">
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2">
-              New races
-              <Badge variant={delta >= 0 ? "secondary" : "outline"} className="gap-1 tabular-nums">
-                {delta >= 0 ? (
-                  <ArrowUpRight className="size-3" />
-                ) : (
-                  <ArrowDownRight className="size-3" />
-                )}
-                {delta >= 0 ? "+" : ""}
-                {delta}
-              </Badge>
-            </CardTitle>
-            <CardDescription>
-              {o.growth.thisWeek.toLocaleString()} added in the last seven days, against{" "}
-              {o.growth.lastWeek.toLocaleString()} the week before.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <Pulse days={o.growth.days} />
-            <p className="mt-2 text-xs text-muted-foreground">
-              Solid bars are this week. Every one of them is a race someone can now find.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-3">
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2">
-              Forward calendar
-              {cliff && (
-                <Badge variant="secondary" className="gap-1">
-                  <TrendingDown className="size-3" /> thin beyond 90 days
-                </Badge>
-              )}
-            </CardTitle>
-            <CardDescription>
-              {o.beyond90} of {o.totals.publicUpcoming} races are more than 90 days out — this is
-              what someone planning next season sees.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2 pt-6">
-            {o.forward.map((f) => (
-              <div key={f.month} className="flex items-center gap-3">
-                <span className="w-16 shrink-0 text-xs tabular-nums text-muted-foreground">
-                  {f.month}
-                </span>
-                <div className="h-5 flex-1 overflow-hidden rounded-sm bg-muted">
-                  <div
-                    className="h-full rounded-sm bg-primary/80"
-                    style={{ width: `${Math.max(2, (f.races / monthMax) * 100)}%` }}
-                  />
-                </div>
-                <span className="w-12 shrink-0 text-right text-xs tabular-nums">{f.races}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Silent failures: real, but not the first thing anyone can act on. */}
-      <StalledSources initial={o.stalled} />
-
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Coverage by market</CardTitle>
-          <CardDescription>Upcoming races with a usable link and a map pin.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-x-8 gap-y-4 pt-6 sm:grid-cols-2">
-          {o.coverage.map((c) => (
-            <div key={c.code} className="flex flex-col gap-1.5">
-              <div className="flex items-baseline justify-between text-sm">
-                <span className="font-medium">{c.code}</span>
-                <span className="tabular-nums text-muted-foreground">
-                  {c.upcoming} races · {pct(c.withLink, c.upcoming)}% linked ·{" "}
-                  {pct(c.withPin, c.upcoming)}% pinned
-                </span>
-              </div>
-              <Progress value={pct(c.withPin, c.upcoming)} className="h-1.5" />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      {o.lastRun?.at && (
-        <>
-          <Separator />
-          <p className="text-xs text-muted-foreground">
-            Last ingest run {new Date(o.lastRun.at).toLocaleString()} —{" "}
-            {o.lastRun.ok === false ? "failed" : `${o.lastRun.upserted} races upserted`}
-          </p>
-        </>
-      )}
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
+      <OwnerRefresh />
+      {params.decision && <p role="status" className="rounded-lg border p-4 text-sm">{params.decision==='saved'?'Rozhodnutí je uložené.':params.decision==='changed'?'Podklad se mezitím změnil nebo už má odpověď. Zkontroluj aktuální otázku.':'Odpověď se nepodařilo uložit. Vyber jednu z nabídnutých možností.'}</p>}
+      <header className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-sm text-muted-foreground">LetsRace</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Stav a další práce</h1></div><Button asChild variant="outline"><Link href="/cs">Otevřít LetsRace</Link></Button></header>
+      <Card><CardHeader><Badge variant={o.state.tone === "good" ? "secondary" : "outline"} className="mb-2">{o.state.tone === "good" ? "Provoz potvrzený" : o.state.tone === "muted" ? "Pozastaveno na Macu" : "Provoz s omezením"}</Badge><CardTitle className="text-2xl">{o.state.title}</CardTitle><CardDescription className="max-w-2xl text-sm leading-relaxed">{o.state.detail}</CardDescription></CardHeader><CardContent><dl className="grid gap-4 text-sm sm:grid-cols-2"><div><dt className="text-muted-foreground">Poslední hlášení Macu</dt><dd className="mt-1 font-medium">{time(o.macAt)}</dd></div><div><dt className="text-muted-foreground">Dokončená serverová kontrola</dt><dd className="mt-1 font-medium">{time(o.serverAt)}</dd></div></dl></CardContent></Card>
+      <section aria-labelledby="owner-decisions" className="space-y-4">
+        <h2 id="owner-decisions" className="text-lg font-semibold">Potřebuje něco tebe?</h2>
+        {o.questionCount===0 ? <><p>Teď není připravená žádná konkrétní otázka k rozhodnutí.</p><p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">Čekající podklady jsou práce systému. Nemusíš spouštět sběrače ani schvalovat každý nález.</p></> : <>
+          <p className="text-sm text-muted-foreground">Konkrétní rozhodnutí: {o.questionCount}. Technické fronty do tohoto počtu nepatří.</p>
+          {o.questions.map(question=>{
+            const options=optionsSchema.safeParse(question.options),evidence=evidenceSchema.safeParse(question.evidence);
+            return <Card key={question.key}><CardHeader><CardTitle className="text-lg">{question.question}</CardTitle><CardDescription className="leading-relaxed">{question.reason}</CardDescription></CardHeader><CardContent className="space-y-4 text-sm">
+              <p><strong>Doporučení:</strong> {question.recommendation}</p><p><strong>Když neodpovíš:</strong> {question.default_action}</p>
+              {evidence.success && evidence.data.sources?.map(source=>{const url=discoveryUrl(source.url);return url?<div key={url} className="space-y-1"><a href={url} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-4">Otevřít podklad: {new URL(url).hostname}</a>{source.quote&&<p className="text-muted-foreground">{source.quote}</p>}</div>:null;})}
+              {options.success?<form action="/api/admin/owner-decision" method="post" className="flex flex-wrap gap-3"><input type="hidden" name="key" value={question.key}/><input type="hidden" name="updatedAt" value={question.updated_at}/>{options.data.map(option=><Button key={option.value} name="answer" value={option.value} type="submit" variant="outline">{option.label}</Button>)}</form>:<p>Možnosti odpovědi zatím nejsou platné. Podklad potřebuje opravu; nejde o úkol pro tebe.</p>}
+            </CardContent></Card>;
+          })}
+          <nav aria-label="Další rozhodnutí" className="flex flex-wrap gap-4">{offset>0&&<Link className="underline" href={`/admin?decisions=${Math.max(0,offset-20)}`}>Předchozí otázky</Link>}{offset+20<o.questionCount&&<Link className="underline" href={`/admin?decisions=${offset+20}`}>Další otázky</Link>}</nav>
+        </>}
+        {o.answersWaiting>0&&<p className="text-sm text-muted-foreground">Uložená rozhodnutí čekající na provedení: {o.answersWaiting}. Uložená odpověď ještě neznamená provedenou změnu.</p>}
+      </section>
+      <section aria-labelledby="system-work"><h2 id="system-work" className="text-lg font-semibold">Co systém dělá</h2><p className="mb-4 mt-1 text-sm text-muted-foreground">Čtyři činnosti nad jedním katalogem. Počty zdrojů a podkladů nejsou počty ověřených závodů.</p><div className="grid gap-4 md:grid-cols-2">{streams.map(stream => <Card key={stream.title}><CardHeader className="gap-2"><p className="text-xs text-muted-foreground">{stream.mode}</p><CardTitle className="text-base">{stream.title}</CardTitle><p className="text-sm font-medium tabular-nums">{stream.value}</p></CardHeader><CardContent className="text-sm leading-relaxed text-muted-foreground">{stream.text}</CardContent></Card>)}</div></section>
+      <section aria-labelledby="public-results"><h2 id="public-results" className="text-lg font-semibold">Co se skutečně dostalo na web</h2><dl className="mt-3 grid gap-4 text-sm sm:grid-cols-2"><div><dt className="text-muted-foreground">Kontroly změn na veřejných stránkách za 24 hodin</dt><dd className="mt-1 text-2xl font-semibold tabular-nums">{o.publicChecks24h}</dd></div><div><dt className="text-muted-foreground">Změny čekající na zveřejnění nebo kontrolu</dt><dd className="mt-1 text-2xl font-semibold tabular-nums">{o.publicationPending}</dd></div></dl><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Kontrola stránky ověřuje shodu s uloženou změnou. Není to nezávislé ověření pravdivosti závodu ani počet nových závodů.</p></section>
+      <details className="rounded-lg border p-4 text-sm"><summary className="cursor-pointer font-medium">Omezení a podrobnosti</summary><div className="mt-4 space-y-3 leading-relaxed text-muted-foreground"><p>Skutečné chyby spojení nebo zpracování: <strong className="text-foreground">{o.broken}</strong>. Stránky čekající na jiný způsob čtení: <strong className="text-foreground">{o.unreadable}</strong>.</p><p>Další posouzení zdrojů: {o.sourceReview}. Čtení odložená kvůli omezením: {o.sourceDeferred}. Plánované kontroly se zpožděním přes 36 hodin: {o.overdueSources}.</p><p>Nejstarší neuzavřený podklad: {time(o.oldestCandidate)}. Historické pokusy nejsou počet aktuálních poruch.</p><p>Limit AI zůstává 0,50 USD za den a 5 USD za měsíc. Placené hledání je vypnuté. Při vypnutém Macu pokračují serverové kontroly; místní práce čeká.</p><Button asChild variant="outline"><Link href="/admin/tools">Otevřít servisní nástroje</Link></Button></div></details>
+      <p className="text-xs text-muted-foreground">Přehled načten {time(new Date(o.now).toISOString())}; při otevřené stránce se obnovuje automaticky.</p>
     </div>
   );
 }

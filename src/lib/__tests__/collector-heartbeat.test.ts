@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 const state=vi.hoisted(()=>({allowed:true,saved:null as Record<string,unknown>|null}));
 vi.mock('@/lib/cron-auth',()=>({requireCronSecret:()=>state.allowed}));
-vi.mock('@/lib/supabase/server',()=>({createServerSupabase:()=>({rpc:async()=>({data:{},error:null}),from:(table:string)=>{
+vi.mock('@/lib/supabase/server',()=>({createServerSupabase:()=>({rpc:async(name:string)=>({data:name==='pipeline_source_counts'?{sources:0,due:0,overdue:0,broken:0,unreadable:0,deferred:0,review:0}:{},error:null}),from:(table:string)=>{
  const query:unknown=new Proxy({},{get:(_target,key)=>{
   if(key==='then')return(resolve:(value:unknown)=>void)=>resolve({data:[],count:0,error:null});
   if(key==='upsert')return async(value:Record<string,unknown>)=>{expect(table).toBe('pipeline_workers');state.saved=value;return{error:null};};

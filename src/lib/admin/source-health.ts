@@ -9,9 +9,8 @@
  *
  * A source is *stalled* when its own record says it has nothing while the site
  * still lists races, or when it simply has not been read in a long time. Both
- * are silent, and both need a person.
+ * need follow-up; they are not automatically questions for the owner.
  */
-import { isUnreadableSource } from "@/lib/watcher/run-summary";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 /** Recorded states that claim "nothing here" — the ones worth double-checking. */
@@ -82,7 +81,7 @@ export async function getSourceHealth(): Promise<SourceHealthReport> {
   const supabase = createServerSupabase();
   const { data, error } = await supabase
     .from("watched_urls")
-    .select("id,url,kind,status,last_extract_status,last_error,last_fetched_at")
+    .select("id,url,kind,status,last_extract_status,last_error,last_fetched_at,operational_state")
     .eq("status", "active")
     .in("kind", CALENDAR_KINDS);
   if (error) throw new Error(error.message);
@@ -107,12 +106,12 @@ export async function getSourceHealth(): Promise<SourceHealthReport> {
     const state = (row.last_extract_status as string | null) ?? null;
     // Fresh unsupported reads are visible in the monitor's reader queue;
     // repeating the same free reader is not an administrator repair task.
-    if (days != null && days < STALE_DAYS && isUnreadableSource(row.last_error ?? "")) continue;
+    if (days != null && days < STALE_DAYS && ["unreadable","deferred","review"].includes(row.operational_state)) continue;
     let reason: StalledSource["reason"] | null = null;
 
     if (!row.last_fetched_at) reason = "never read";
     else if (days != null && days >= STALE_DAYS) reason = "not read recently";
-    else if (state === "error" || row.last_error) reason = "erroring";
+    else if (row.operational_state === "broken") reason = "erroring";
     else if (
       QUIET_STATES.includes(state as (typeof QUIET_STATES)[number]) &&
       withUpcoming.has(row.id as string)

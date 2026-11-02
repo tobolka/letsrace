@@ -1,0 +1,11 @@
+import { expect, it } from "vitest";
+import { ownerState, type OwnerStateInput } from "@/lib/admin/owner-overview";
+const now=Date.parse('2026-11-02T10:00:00Z');
+const base:OwnerStateInput={now,macAt:new Date(now-60000).toISOString(),macPaused:false,macStatus:'waiting',serverAt:new Date(now-24*3600000).toISOString(),serverStatus:'ok',broken:0,unreadable:0,candidates:0,publicationPending:0,newSourceLeads:0,sourceReview:0,sourceDeferred:0,overdueSources:0};
+it('confirms operation only with fresh worker evidence and no unresolved work',()=>{expect(ownerState(base).tone).toBe('good');expect(ownerState({...base,macStatus:'running'}).title).toMatch(/Právě/);});
+it('does not treat an unknown or limited result as successful',()=>{for(const patch of [{macStatus:null},{macStatus:'unexpected'},{serverStatus:undefined},{serverStatus:'limited'},{serverStatus:'unexpected'}])expect(ownerState({...base,...patch}).tone).toBe('warning');});
+it('never presents a powered-off or unknown Mac as running',()=>{expect(ownerState({...base,macAt:null}).title).toBe('Mac se nehlásí');expect(ownerState({...base,macAt:new Date(now-16*60000).toISOString()}).tone).toBe('warning');});
+it('does not turn missing server evidence into healthy operation',()=>{expect(ownerState({...base,serverAt:null}).title).toMatch(/není čerstvá/);expect(ownerState({...base,macAt:null,serverAt:null}).title).toMatch(/není potvrzený/);expect(ownerState({...base,serverAt:new Date(now+5*60000).toISOString()}).tone).toBe('warning');});
+it('keeps incomplete work visible even when both workers are reporting',()=>{for(const field of ['candidates','unreadable','publicationPending','newSourceLeads','sourceReview','sourceDeferred','overdueSources'] as const)expect(ownerState({...base,[field]:1}).tone).toBe('warning');});
+it('separates a local pause from stopping the server',()=>{const state=ownerState({...base,macPaused:true});expect(state.tone).toBe('muted');expect(state.detail).toMatch(/pouze pro Mac/);});
+it('does not hide failed or deferred runs behind a recent timestamp',()=>{for(const serverStatus of ['error','attention','deferred'])expect(ownerState({...base,serverStatus}).tone).toBe('warning');expect(ownerState({...base,macStatus:'attention'}).tone).toBe('warning');});

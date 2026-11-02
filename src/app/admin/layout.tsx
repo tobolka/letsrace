@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   // A root layout of its own, outside the language segment.
   return (
-    <RootDocument lang="en">
+    <RootDocument lang="cs">
       <AdminShell>{children}</AdminShell>
     </RootDocument>
   );

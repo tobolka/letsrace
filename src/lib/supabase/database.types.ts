@@ -14,6 +14,16 @@ export type Database = {
   }
   public: {
     Tables: {
+      pipeline_owner_decisions: {
+        Row:{key:string;kind:string;status:string;question:string;reason:string;recommendation:string;default_action:string;options:Json;evidence:Json;answer:string|null;created_at:string;updated_at:string;answered_at:string|null};
+        Insert:{key:string;kind:string;status?:string;question:string;reason:string;recommendation:string;default_action:string;options:Json;evidence?:Json;answer?:string|null;created_at?:string;updated_at?:string;answered_at?:string|null};
+        Update:{status?:string;question?:string;reason?:string;recommendation?:string;default_action?:string;options?:Json;evidence?:Json;answer?:string|null;updated_at?:string;answered_at?:string|null};Relationships:[];
+      };
+      pipeline_task_attempts: {
+        Row:{token:string;task_key:string;kind:string;started_at:string;finished_at:string|null;outcome:string|null;result:Json|null;error:string|null};
+        Insert:{token:string;task_key:string;kind:string;started_at?:string;finished_at?:string|null;outcome?:string|null;result?:Json|null;error?:string|null};
+        Update:{finished_at?:string|null;outcome?:string|null;result?:Json|null;error?:string|null};Relationships:[];
+      };
       pipeline_workers: {
         Row:{key:string;heartbeat_at:string;status:string;paused:boolean;next_run_at:string|null;summary:Json|null};
         Insert:{key:string;heartbeat_at?:string;status:string;paused?:boolean;next_run_at?:string|null;summary?:Json|null};
@@ -1324,6 +1334,7 @@ export type Database = {
       }
       watched_urls: {
         Row: {
+          operational_state: string
           added_by: string | null
           content_hash: string | null
           created_at: string
@@ -1449,6 +1460,8 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_source_counts:{Args:Record<string,never>;Returns:Json};
+      pipeline_answer_owner:{Args:{p_key:string;p_expected:string;p_answer:string};Returns:boolean};
       pipeline_claim_tasks: {Args:{p_kind:string;p_capabilities:string[];p_limit?:number};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
       pipeline_claim_source: {Args:{p_source:string;p_capabilities:string[]};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
       pipeline_finish_source: {Args:{p_key:string;p_token:string;p_url:string;p_result:Json};Returns:boolean};

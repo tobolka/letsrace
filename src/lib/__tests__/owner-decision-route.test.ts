@@ -1,0 +1,13 @@
+import { beforeEach,expect,it,vi } from 'vitest';
+import { NextRequest } from 'next/server';
+const state=vi.hoisted(()=>({allowed:true,rpc:vi.fn()}));
+vi.mock('@/lib/auth/admin',()=>({isAdminAuthenticated:async()=>state.allowed}));
+vi.mock('@/lib/supabase/server',()=>({createServerSupabase:()=>({rpc:state.rpc})}));
+import { POST } from '@/app/api/admin/owner-decision/route';
+const input={key:'locked-date:race',updatedAt:'2026-11-02T10:00:00.123456+00:00',answer:'keep'};
+const send=(origin='https://letsrace.test',body=input)=>POST(new NextRequest('https://letsrace.test/api/admin/owner-decision',{method:'POST',headers:{origin,'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(body).toString()}),undefined);
+beforeEach(()=>{state.allowed=true;state.rpc.mockReset().mockResolvedValue({data:true,error:null});});
+it('stores only a selected answer tied to the exact version of the question',async()=>{const response=await send();expect(response.status).toBe(303);expect(response.headers.get('location')).toMatch(/decision=saved/);expect(state.rpc).toHaveBeenCalledWith('pipeline_answer_owner',{p_key:input.key,p_expected:input.updatedAt,p_answer:'keep'});});
+it('does not accept an unauthenticated or cross-site answer',async()=>{state.allowed=false;expect((await send()).status).toBe(401);state.allowed=true;expect((await send('https://unrelated.test')).status).toBe(403);expect(state.rpc).not.toHaveBeenCalled();});
+it('reports an obsolete decision without pretending it changed a race',async()=>{state.rpc.mockResolvedValue({data:false,error:null});expect((await send()).headers.get('location')).toMatch(/decision=changed/);});
+it('rejects incomplete inputs before reaching the decision store',async()=>{expect((await send(undefined,{...input,updatedAt:'not-a-date'})).headers.get('location')).toMatch(/decision=invalid/);expect(state.rpc).not.toHaveBeenCalled();});

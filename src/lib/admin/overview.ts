@@ -10,6 +10,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
 import { getSourceHealth, type StalledSource } from "@/lib/admin/source-health";
+import { recordedRunState } from "@/lib/watcher/run-summary";
 
 export type ForwardBucket = { month: string; races: number };
 
@@ -36,7 +37,7 @@ export type AdminOverview = {
   forward: ForwardBucket[];
   beyond90: number;
   coverage: CountryCoverage[];
-  lastRun: { at: string | null; ok: boolean | null; upserted: number } | null;
+  lastRun: { at: string | null; ok: boolean | null; upserted: number;state:ReturnType<typeof recordedRunState> } | null;
   failRate7d: { fails: number; runs: number };
   /** Fourteen days of new races, and this week against last week. */
   growth: { days: GrowthDay[]; thisWeek: number; lastWeek: number };
@@ -56,7 +57,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     locations: { country_code?: string | null; lat?: number | null } | null;
   }[] = [];
   for (let from = 0; ; from += PAGE) {
-    const { data } = await supabase
+    const { data,error } = await supabase
       .from("events")
       .select("start_date,website_url,registration_url,age_categories,locations(country_code,lat)")
       .eq("visibility", "public")
@@ -64,6 +65,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       .order("start_date")
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
+    if(error)throw Error(error.message);
     rows.push(...(data ?? []));
     if (!data || data.length < PAGE) break;
   }
@@ -84,7 +86,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       supabase.from("race_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
       supabase
         .from("ingest_runs")
-        .select("ok, events_upserted, started_at")
+        .select("ok, error, finished_at, events_upserted, started_at")
         .gte("started_at", new Date(Date.now() - 7 * 864e5).toISOString())
         .order("started_at", { ascending: false })
         .limit(500),
@@ -94,13 +96,14 @@ export async function getAdminOverview(): Promise<AdminOverview> {
         supabase
           .from("events")
           .select("id, created_at")
+          .eq("visibility","public").is("merged_into_id",null)
           .gte("created_at", since14.toISOString())
           .order("id", { ascending: true })
           .range(from, to),
       ).then((data) => ({ data })),
     ]);
 
-  if (candidates.error) throw new Error(candidates.error.message);
+  for(const result of [eventCount,sourceCount,activeCount,pendingDiscovery,candidates,feedback,submissions,runs])if(result.error)throw Error(result.error.message);
 
   const byMonth = new Map<string, number>();
   const byCountry = new Map<string, CountryCoverage>();
@@ -165,11 +168,12 @@ export async function getAdminOverview(): Promise<AdminOverview> {
           at: (last.started_at as string) ?? null,
           ok: (last.ok as boolean | null) ?? null,
           upserted: (last.events_upserted as number) ?? 0,
+          state:recordedRunState(last),
         }
       : null,
     failRate7d: {
-      fails: runRows.filter((r) => r.ok === false).length,
-      runs: runRows.length,
+      fails: runRows.filter((r) => recordedRunState(r) === 'failed').length,
+      runs: runRows.filter((r)=>r.finished_at!=null).length,
     },
     growth: { days, thisWeek, lastWeek },
   };

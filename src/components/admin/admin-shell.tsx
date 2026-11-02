@@ -16,6 +16,7 @@ import {
   Radar,
   TriangleAlert,
   Users,
+  Wrench,
 } from "lucide-react";
 import { AdminCommand } from "@/components/admin/admin-command";
 import { Badge } from "@/components/ui/badge";
@@ -90,7 +91,8 @@ const CATALOGUE: NavItem[] = [
 ];
 
 const NAV: NavItem[] = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/admin", label: "Stav LetsRace", icon: LayoutDashboard, exact: true },
+  { href: "/admin/tools", label: "Servisní nástroje", icon: Wrench, exact: true },
   ...WAITING,
   ...CATALOGUE,
 ];
@@ -153,13 +155,14 @@ function NavRow({
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const onLogin = pathname === "/admin/login";
+  const isService = !onLogin && pathname !== "/admin";
   const [counts, setCounts] = useState<WorkCounts | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
   // The badges are the reason to open the admin at all, so they are refreshed
   // while you work rather than frozen at the moment the page was rendered.
   useEffect(() => {
-    if (onLogin) return;
+    if (onLogin || !isService) return;
     let alive = true;
     const load = async () => {
       try {
@@ -177,7 +180,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       alive = false;
       window.clearInterval(id);
     };
-  }, [onLogin, pathname]);
+  }, [onLogin, isService, pathname]);
 
 
   useEffect(() => {
@@ -226,20 +229,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive(pathname, "/admin", true)}
-                    tooltip="Overview"
+                    tooltip="Stav LetsRace"
                   >
                     <Link href="/admin">
                       <LayoutDashboard />
-                      <span>Overview</span>
+                      <span>Stav LetsRace</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                <NavRow item={NAV[1]} pathname={pathname} counts={null}/>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarGroup>
-            <SidebarGroupLabel>Waiting for you</SidebarGroupLabel>
+          {isService && <><SidebarGroup>
+            <SidebarGroupLabel>Čekající podklady a zprávy</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {WAITING.map((item) => (
@@ -250,7 +254,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </SidebarGroup>
 
           <SidebarGroup>
-            <SidebarGroupLabel>Catalogue</SidebarGroupLabel>
+            <SidebarGroupLabel>Servis katalogu</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {CATALOGUE.map((item) => (
@@ -266,15 +270,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
-          </SidebarGroup>
+          </SidebarGroup></>}
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Map">
-                <Link href="/en">
+                <Link href="/cs">
                   <Map />
-                  <span>Back to map</span>
+                  <span>Zpět na mapu</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -287,12 +291,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <SidebarTrigger />
             <Separator orientation="vertical" className="h-4" />
             <span className="truncate text-sm font-medium">{crumbFor(pathname)}</span>
-            {waiting > 0 ? (
+            {isService && waiting > 0 ? (
               <Badge variant="secondary" className="tabular-nums">
-                {waiting} waiting
+                {waiting} čeká na zpracování
               </Badge>
             ) : null}
-            {counts && counts.stalled > 0 ? (
+            {isService && counts && counts.stalled > 0 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link href="/admin" className="shrink-0">
@@ -307,7 +311,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             ) : null}
 
             <div className="ml-auto flex items-center gap-1">
-              <Button
+              {isService && <Button
                 variant="outline"
                 size="sm"
                 className="gap-2 text-muted-foreground"
@@ -316,9 +320,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <CommandIcon className="size-3.5" />
                 <span className="hidden sm:inline">Search</span>
                 <kbd className="hidden rounded border bg-muted px-1 text-[10px] sm:inline">⌘K</kbd>
-              </Button>
+              </Button>}
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/en">Map</Link>
+                <Link href="/cs">Mapa</Link>
               </Button>
             </div>
           </header>
