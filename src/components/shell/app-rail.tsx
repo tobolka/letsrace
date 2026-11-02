@@ -176,7 +176,10 @@ export function AppSidebar({ locale }: { locale: string }) {
       variant="inset"
       collapsible="icon"
       aria-label={t.navPrimary}
-      className="p-0 py-1.5 md:group-data-[collapsible=icon]:w-14"
+      // In the icon rail the labels are hidden but the gap before them stayed:
+      // each button's content was 8px wider than the button, and focus coming
+      // back from a dialog scrolled the "+" icon out of line with the rest.
+      className="p-0 py-1.5 md:group-data-[collapsible=icon]:w-14 [&_[data-sidebar=menu-button]]:group-data-[collapsible=icon]:gap-0"
     >
       <SidebarContent className="gap-0 pt-2">
         <NavGroup items={exploreNav(locale, t, pathname)} carry={carry} />
