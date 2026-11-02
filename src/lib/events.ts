@@ -588,6 +588,11 @@ export async function findRacesForMissingSlug(
   const searchable = words.filter((w) => w.length >= 3 && /^[a-z0-9]+$/.test(w)).slice(0, 6);
   if (!searchable.length) return { match: null, near: [] };
   const supabase = createServerSupabase();
+  // A known record is not a missing address. Its visibility decision or
+  // explicit merge owns the URL; a slug guess must never resurrect/redirect it.
+  const { data: known, error: knownError } = await supabase.from("events").select("id").eq("slug", slug).maybeSingle();
+  if (knownError) throw new Error(knownError.message);
+  if (known) return { match: null, near: [] };
   // Slugs and days only: a common word ("cup") matches hundreds of races, and
   // all of them are scored before any is loaded whole.
   let query = supabase

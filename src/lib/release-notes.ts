@@ -32,6 +32,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Race pages link to earlier editions of the same race when the match is clear.",
         "Historical weather stays available when its provider is temporarily unavailable.",
         "Forecasts show their source and retrieval time, and an old forecast is no longer displayed after it expires.",
+        "Links to withdrawn races no longer lead to a different race just because its name is similar.",
         "Anyone signed in can send a correction to a race or series straight from its page.",
       ],
       cs: [
@@ -45,6 +46,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Ze stránky závodu přejdeš na předchozí ročníky stejného závodu, pokud je shoda jednoznačná.",
         "Historie počasí zůstává dostupná i při dočasném výpadku jejího poskytovatele.",
         "U předpovědi vidíš zdroj i čas načtení a po vypršení platnosti se stará předpověď nezobrazuje.",
+        "Odkazy na stažené závody už nevedou na jiný závod jen kvůli podobnému názvu.",
         "Kdo je přihlášený, pošle opravu závodu nebo seriálu přímo z jeho stránky.",
       ],
     },
