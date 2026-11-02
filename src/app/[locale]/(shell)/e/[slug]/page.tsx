@@ -12,6 +12,7 @@ import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
+import { ClaimRaceDialog } from "@/components/race/claim-race-dialog";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
@@ -331,9 +332,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           {event.organizerVerified || isPast ? null : (
             <>
               <span aria-hidden> · </span>
-              <Link href={`${localePath(locale, "account/organizer")}?race=${encodeURIComponent(event.slug)}`} className="underline-offset-4 hover:underline">
-                {oc.claimLink}
-              </Link>
+              <ClaimRaceDialog locale={locale} slug={event.slug} name={unshout(event.name)} />
             </>
           )}
         </p>

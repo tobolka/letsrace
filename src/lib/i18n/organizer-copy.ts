@@ -40,6 +40,12 @@ type Copy = {
   badge: string;
   badgeHelp: string;
   claimLink: string;
+  dialogTitle: string;
+  dialogIntro: string;
+  points: string[];
+  verify: string;
+  signIn: string;
+  manage: string;
 };
 
 /** The organiser's pages and the bits of the race page that point to them. */
@@ -84,6 +90,12 @@ export const organizerCopy: Record<Locale, Copy> = {
     badge: "Ověřeno pořadatelem",
     badgeHelp: "Údaje spravuje přímo pořadatel závodu.",
     claimLink: "Pořádáš tento závod? Převezmi ho",
+    dialogTitle: "Převzít závod",
+    dialogIntro: "Pořádáš {name}? Převezmi ho a údaje u nás spravuj sám.",
+    points: ["Upravíš termín, odkazy na přihlášky a propozice, popis i trasy a kategorie.", "Změny jsou na webu hned a naše automatické stahování je už nepřepíše.", "Závod dostane odznak Ověřeno pořadatelem."],
+    verify: "Když se přihlásíš e-mailem na doméně webu závodu, ověříme tě hned. Jinak žádost potvrdíme ručně, obvykle do dvou dnů.",
+    signIn: "Nejdřív se přihlas:",
+    manage: "Otevřít správu závodu",
   },
   en: {
     title: "For organisers",
@@ -125,6 +137,12 @@ export const organizerCopy: Record<Locale, Copy> = {
     badge: "Verified by the organiser",
     badgeHelp: "The race's organiser looks after these details.",
     claimLink: "Organising this race? Take it over",
+    dialogTitle: "Take over this race",
+    dialogIntro: "Organising {name}? Take it over and look after its details yourself.",
+    points: ["Edit the date, entry and regulations links, the description, routes and categories.", "Changes are on the site at once, and our automatic updates no longer overwrite them.", "The race gets a Verified by the organiser badge."],
+    verify: "If you sign in with an address on the race website's domain, you are verified at once. Otherwise we confirm the request by hand, usually within two days.",
+    signIn: "Sign in first:",
+    manage: "Open race management",
   },
   sk: {
     title: "Pre organizátorov",
@@ -166,6 +184,12 @@ export const organizerCopy: Record<Locale, Copy> = {
     badge: "Overené organizátorom",
     badgeHelp: "Údaje spravuje priamo organizátor preteku.",
     claimLink: "Organizuješ tento pretek? Prevezmi ho",
+    dialogTitle: "Prevziať pretek",
+    dialogIntro: "Organizuješ {name}? Prevezmi ho a údaje u nás spravuj sám.",
+    points: ["Upravíš termín, odkazy na prihlášky a propozície, popis aj trasy a kategórie.", "Zmeny sú na webe hneď a naše automatické sťahovanie ich už neprepíše.", "Pretek dostane odznak Overené organizátorom."],
+    verify: "Ak sa prihlásiš e-mailom na doméne webu preteku, overíme ťa hneď. Inak žiadosť potvrdíme ručne, zvyčajne do dvoch dní.",
+    signIn: "Najprv sa prihlás:",
+    manage: "Otvoriť správu preteku",
   },
   pl: {
     title: "Dla organizatorów",
@@ -207,6 +231,12 @@ export const organizerCopy: Record<Locale, Copy> = {
     badge: "Zweryfikowane przez organizatora",
     badgeHelp: "Dane prowadzi bezpośrednio organizator wyścigu.",
     claimLink: "Organizujesz ten wyścig? Przejmij go",
+    dialogTitle: "Przejmij wyścig",
+    dialogIntro: "Organizujesz {name}? Przejmij go i sam zarządzaj jego danymi.",
+    points: ["Edytujesz termin, linki do zapisów i regulaminu, opis oraz trasy i kategorie.", "Zmiany są na stronie od razu, a nasze automatyczne aktualizacje już ich nie nadpiszą.", "Wyścig dostaje odznakę Zweryfikowane przez organizatora."],
+    verify: "Jeśli logujesz się adresem w domenie strony wyścigu, weryfikujemy cię od razu. W innym razie potwierdzamy prośbę ręcznie, zwykle w ciągu dwóch dni.",
+    signIn: "Najpierw się zaloguj:",
+    manage: "Otwórz zarządzanie wyścigiem",
   },
   de: {
     title: "Für Veranstalter",
@@ -248,5 +278,11 @@ export const organizerCopy: Record<Locale, Copy> = {
     badge: "Vom Veranstalter bestätigt",
     badgeHelp: "Die Angaben pflegt der Veranstalter des Rennens selbst.",
     claimLink: "Du veranstaltest dieses Rennen? Übernimm es",
+    dialogTitle: "Rennen übernehmen",
+    dialogIntro: "Du veranstaltest {name}? Übernimm es und pflege die Angaben selbst.",
+    points: ["Du bearbeitest Termin, Anmelde- und Ausschreibungslinks, Beschreibung, Strecken und Klassen.", "Änderungen sind sofort online, und unsere automatischen Updates überschreiben sie nicht mehr.", "Das Rennen bekommt das Abzeichen Vom Veranstalter bestätigt."],
+    verify: "Meldest du dich mit einer Adresse auf der Domain der Rennwebsite an, bist du sofort bestätigt. Sonst prüfen wir die Anfrage von Hand, meist innerhalb von zwei Tagen.",
+    signIn: "Melde dich zuerst an:",
+    manage: "Rennverwaltung öffnen",
   },
 };
