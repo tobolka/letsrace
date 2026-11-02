@@ -228,8 +228,16 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
   const k = weather?.climate;
   if (!f && !k) return null;
 
+  // Races are ridden by day: the temperature from morning to late afternoon,
+  // not the night's low. The sky is named only when it is not rain — the rain
+  // chance says that already.
+  const racing = f?.hours.filter((h) => h.hour >= 8 && h.hour <= 18) ?? [];
+  const lo = racing.length ? Math.min(...racing.map((h) => h.temp)) : null;
+  const hi = racing.length ? Math.max(...racing.map((h) => h.temp)) : f?.tmax;
+  const temps = lo != null && lo !== hi ? `${lo}–${hi}°` : `${hi}°`;
+  const sky = f && f.sky !== "rain" ? `, ${c.sky[f.sky]}` : "";
   const past = k
-    ? `${c.past}: ${c.day} ${k.tmax}°, ${c.night} ${k.tmin}°, ${fill(c.pastRain, { n: Math.round(k.rainyShare * 100) })}`
+    ? `${c.past}: ${c.day} ${k.tmax}°, ${fill(c.pastRain, { n: Math.round(k.rainyShare * 100) })}`
     : null;
   return (
     <MetaRow icon={f ? SKY_ICON[f.sky] : <Thermometer />} label={c.label}>
@@ -237,7 +245,7 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
         {f ? (
           <span className="block">
             <span className="font-medium">
-              {c.forecast}: {c.day} {f.tmax}°, {c.night} {f.tmin}°, {c.sky[f.sky]}
+              {c.forecast}: {temps}{sky}
             </span>
             {f.rainChance != null ? `, ${fill(c.rainChance, { n: f.rainChance })}` : ""}
             {`, ${fill(c.wind, { n: f.windKmh })}`}
