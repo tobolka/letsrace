@@ -1463,6 +1463,8 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_finish_plan_changes: { Args: { p_key: string; p_token: string; p_payload: Json; p_changes: Json }; Returns: boolean };
+      pipeline_update_watcher_bundle: { Args: { p_event: string; p_revision: string; p_patch: Json; p_evidence: Json; p_source: Json; p_source_hash: string; p_reader: string; p_categories: Json; p_reviewed?: boolean }; Returns: Json };
       pipeline_claim_candidate: { Args: { p_id: string; p_hash: string; p_updated: string; p_decision: Json }; Returns: Json };
       pipeline_retry_candidate: { Args: { p_id: string; p_token: string; p_error: string }; Returns: boolean };
       pipeline_publish_candidate: { Args: { p_id: string; p_token: string; p_hash: string; p_event: string; p_revision: string | null; p_payload: Json; p_source: Json; p_source_hash: string; p_reader: string; p_location: Json; p_categories: Json; p_secondary: string[] }; Returns: Json };

@@ -26,13 +26,12 @@ import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/
 import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
-import { mergeCategoryEvidence, mergeStatedAges, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
+import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
 import { preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline } from "@/lib/supabase/request-budget";
 import { countryFromVenue } from "@/lib/geo/country-label";
 import { isArchiveDiscoveryUrl, isAuxiliaryDiscoveryUrl } from "@/lib/watcher/discovery-policy";
-import { saveSourceEvidence } from "@/lib/catalog/source-evidence";
 import type { Insert, Update } from "@/lib/supabase/tables";
 import type { Json } from "@/lib/supabase/database.types";
 import type { ReviewDecision, ReviewRow } from "@/lib/discovery/review";
@@ -2414,6 +2413,7 @@ async function upsertParsedEvent(
       revision: (existingFull as { public_revision: string }).public_revision,
       sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote, model: ev.evidence?.model,
       location: locationPlan, secondarySeries: pendingSeriesIds, sourceKind: watchedKind,
+      source: { watchedUrlId, kind: watchedKind ?? "official", event: ev },
     });
     changed = fieldsChanged;
     if (retainedKey) console.info("watcher_key_collision", JSON.stringify({ eventId, source: watchedUrl, retainedExistingKey: true }));
@@ -2443,12 +2443,8 @@ async function upsertParsedEvent(
         if (!pickIncomingDuplicate(incomingDedup, [asCandidate(raced as unknown as CandidateRow)])) {
           throw new Error(`identity_review_required: conflicting fingerprint owned by ${raced.id}`);
         }
-        eventId = raced.id;
-        const { error: seenError } = await supabase
-          .from("events")
-          .update({ last_seen_at: new Date().toISOString() })
-          .eq("id", raced.id);
-        if (seenError) throw new Error(`Touching matched race: ${seenError.message}`);
+        // The winning row needs a fresh revision and complete enrichment plan.
+        throw new Error("concurrent_event_update: matching race was created while preparing the import");
       } else {
         // Not a fingerprint clash — a slug collision with an unrelated race.
         const d2 = await create(`${slug}-${Date.now().toString(36)}`);
@@ -2464,73 +2460,7 @@ async function upsertParsedEvent(
 
   if (!eventId) throw new Error("Race write returned no id");
 
-  if (!review && !created) await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
 
-  if (beforeSnap) {
-    try {
-      const { recordEventPlanChanges } = await import("@/lib/plan-changes-db");
-      await recordEventPlanChanges(supabase, eventId, beforeSnap, {
-        name: payload.name ?? beforeSnap.name,
-        startDate: payload.start_date ?? beforeSnap.startDate,
-        endDate: payload.end_date ?? beforeSnap.endDate,
-        status: typeof payload.status === "string" ? payload.status : beforeSnap.status,
-        disciplines: payload.disciplines ?? beforeSnap.disciplines,
-        registrationUrl:
-          typeof payload.registration_url === "string"
-            ? payload.registration_url
-            : beforeSnap.registrationUrl,
-      });
-    } catch (err) {
-      console.error("recordEventPlanChanges", err);
-    }
-  }
-
-  if (!review && !created) {
-    const { error: sourceWriteError } = await supabase.from("event_sources").upsert(
-      {
-        event_id: eventId,
-        watched_url_id: watchedUrlId,
-        source_url: ev.sourceUrl,
-        external_id: ev.externalId,
-        kind:
-          watchedKind === "federation"
-            ? "national_federation"
-            : watchedKind === "aggregator"
-              ? "aggregator"
-              : watchedKind === "series"
-                ? "series"
-                : "official",
-        is_canonical: true,
-      },
-      { onConflict: "watched_url_id,external_id" },
-    );
-    if (sourceWriteError) throw sourceWriteError;
-  }
-
-  if (!review && !created && ev.categories?.length && !lockedFields.includes("categories")) {
-    const { data: held, error: readError } = await supabase.from("event_categories")
-      .select("id,name,distance_km,age_min,age_max,audience").eq("event_id", eventId);
-    if (readError) throw readError;
-    const incoming: CategoryEvidence[] = ev.categories.map((c) => ({
-        name: c.name,
-        distance_km: c.distanceKm ?? null,
-        age_min: c.ageMin ?? null,
-        age_max: c.ageMax ?? null,
-        audience: c.audience ?? ev.audience ?? null,
-    }));
-    for (const row of mergeCategoryEvidence((held ?? []) as CategoryEvidence[], incoming)) {
-      if (row.id) {
-        const before = held?.find(r => r.id === row.id);
-        if (JSON.stringify(before) === JSON.stringify(row)) continue;
-        const { id, ...values } = row;
-        const { error } = await supabase.from("event_categories").update(values).eq("id", id).eq("event_id", eventId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("event_categories").insert({ ...row, event_id: eventId });
-        if (error) throw error;
-      }
-    }
-  }
 
 
   return { id: eventId, created, changed };

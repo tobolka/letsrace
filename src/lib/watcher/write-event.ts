@@ -34,11 +34,14 @@ export async function updateEventPreservingKey(
   supabase: SupabaseClient,
   id: string,
   payload: Record<string, unknown>,
-  evidence: { revision: string; sourceUrl: string; quote?: string | null; model?: string | null; location?: NewRaceLocationPlan | null; secondarySeries?: string[]; sourceKind?: string },
+  evidence: { revision: string; sourceUrl: string; quote?: string | null; model?: string | null; location?: NewRaceLocationPlan | null; secondarySeries?: string[]; sourceKind?: string; source?: { watchedUrlId: string; kind: string; event: ParsedEvent } },
 ): Promise<{ retainedKey: boolean; changed: boolean }> {
-  const { data, error } = await supabase.rpc("pipeline_update_watcher_event", {
+  const { watcherEvidencePlan } = await import("./evidence-plan");
+  const plan = evidence.source ? await watcherEvidencePlan(supabase, id, evidence.source, true) : null;
+  const { data, error } = await supabase.rpc(plan ? "pipeline_update_watcher_bundle" : "pipeline_update_watcher_event", {
     p_event: id, p_revision: evidence.revision, p_patch: payload,
     p_evidence: { sourceUrl: evidence.sourceUrl, quote: evidence.quote ?? null, model: evidence.model ?? null, location: evidence.location ?? null, secondarySeries: evidence.secondarySeries ?? [], sourceKind: evidence.sourceKind ?? null, lease: currentSourceLease() ?? null },
+    ...(plan ? { p_source: plan.snapshot.value, p_source_hash: plan.snapshot.hash, p_reader: plan.snapshot.reader, p_categories: plan.categories } : {}),
   });
   if (error) throw new Error(`Updating race: ${error.message}`);
   const receipt = data as { retainedKey?: unknown; changed?: unknown; applied?: unknown } | null;

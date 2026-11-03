@@ -1,8 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ParsedEvent } from "@/lib/domain";
-import { sourceEvidenceRecord } from "@/lib/catalog/source-evidence";
-import { mergeCategoryEvidence, type CategoryEvidence } from "@/lib/catalog/merge-category-evidence";
+import { watcherEvidencePlan } from "@/lib/watcher/evidence-plan";
 import type { NewRaceLocationPlan } from "@/lib/watcher/write-event";
 
 export type CandidatePublication = { id: string; token: string; evidenceHash: string };
@@ -14,16 +13,7 @@ export async function publishCandidatePlan(db: SupabaseClient, claim: CandidateP
   location: NewRaceLocationPlan | null; secondarySeries: string[];
 }) {
   const id = plan.eventId ?? randomUUID();
-  const snapshot = sourceEvidenceRecord(id, plan.watchedUrlId, plan.kind, plan.event);
-  let held: CategoryEvidence[] = [];
-  if (plan.eventId && plan.event.categories?.length) {
-    const { data, error } = await db.from("event_categories").select("id,name,distance_km,age_min,age_max,audience").eq("event_id", id);
-    if (error) throw Error(`Reading reviewed categories: ${error.message}`);
-    held = data ?? [];
-  }
-  const categories = plan.event.categories?.length ? mergeCategoryEvidence(held, plan.event.categories.map(c => ({
-    name: c.name, distance_km: c.distanceKm ?? null, age_min: c.ageMin ?? null, age_max: c.ageMax ?? null, audience: c.audience ?? plan.event.audience ?? null,
-  }))) : [];
+  const { snapshot, categories } = await watcherEvidencePlan(db, id, plan, Boolean(plan.eventId));
   const { data, error } = await db.rpc("pipeline_publish_candidate", {
     p_id: claim.id, p_token: claim.token, p_hash: claim.evidenceHash, p_event: id, p_revision: plan.revision ?? null,
     p_payload: plan.payload, p_source: snapshot.value, p_source_hash: snapshot.hash, p_reader: snapshot.reader,

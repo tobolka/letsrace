@@ -74,3 +74,12 @@ it("separates unsupported reads from failures without hiding failed writes", () 
     { ...base, error: "HTTP 401" },
   ])).toMatchObject({ watched: 5, failed: 2, unreadable: 3, deferred: 0 });
 });
+
+it("commits normal source enrichment with the protected race update", async () => {
+  const rpc = vi.fn().mockResolvedValue({ data: { retainedKey: false, changed: true, applied: { name: "Verified race" } }, error: null });
+  const db = { rpc } as unknown as SupabaseClient;
+  const payload = { name: "Verified race" };
+  const source = { watchedUrlId: "watched", kind: "race", event: { externalId: "one", name: "Verified race", startDate: "2027-05-01", placeText: "Town", sourceUrl: "https://race.test/", confidence: 1 } };
+  expect(await updateEventPreservingKey(db, "race", payload, { ...evidence, source })).toEqual({ retainedKey: false, changed: true });
+  expect(rpc).toHaveBeenCalledWith("pipeline_update_watcher_bundle", expect.objectContaining({ p_source: expect.objectContaining({ watchedUrlId: "watched" }), p_categories: [] }));
+});
