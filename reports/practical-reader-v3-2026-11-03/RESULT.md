@@ -22,6 +22,13 @@ Existující závod `72427d58-6a5b-4a97-860f-c80c77041d3b`, RAAB FORCE Rohálovs
 
 [Výstupy náhledu, zápisu a opakování](roh-extraction.json) zachovávají citace a seznam skutečně přečtených adres; nikoli veřejné bankovní údaje celé stránky.
 
+## Nasazení a veřejný výsledek
+
+- **1 476 testů / 226 souborů prošlo**, sestavení i cílená kontrola kódu prošly. Logy: `tmp/practical-v3-all-tests.log`, `tmp/practical-v3-build.log`, `tmp/practical-v3-lint.log`. Integrační zkouška nedokončeného průchodu ověřuje limit pěti dokumentů, odložení bez falešného dokončení, opakovatelný checkpoint a nulové volání modelu.
+- Kód nasazený jako `135b024c`, Vercel `dpl_Kc6P9wiLVRhGgFY7D23aKEyLnMMg` READY na produkční doméně. Nainstalovaný Mac má totožné soubory čtečky i skládání výsledků. Runner i panel běží; hlášení při kontrole staré šest sekund.
+- Na [veřejném detailu](https://letsrace.cz/cs/zavod/raab-force-rohalovska-50ka-rocnik-2027) ověřen pořadatel, datum a hlavní start 12:30 včetně odkazů na propozice. Uložený pořadatel je i v JSON-LD jako `Organization`; `SportsEvent.startDate` zůstává datem 2027-05-01, nenaznačujeme přenos času do tohoto pole.
+- [Snímek veřejného detailu](production.jpg). Nejde o nezávislý test pokrytí katalogu ani o důkaz indexace Googlu.
+
 ## Zbývající práce
 
 Rozšíření běžného textu a složitých cenových podmínek, širší nezávislé vzorky a plošné doplnění katalogu. Střídání odkazů je omezený průchod, nikoli důkaz přečtení celého webu. Konfliktní hodnoty z různých důvěryhodných zdrojů zatím vyžadují další pravidla; jejich řešení tato změna neslibuje. Schéma samo o sobě nepotvrzuje pravdivost všech údajů.
