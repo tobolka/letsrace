@@ -1,3 +1,5 @@
+import { PUBLIC_EVENT_STATUSES, shouldHideFromMap } from "@/lib/event-visibility";
+import { isListedCountry } from "@/lib/geo/europe";
 import { load } from "cheerio";
 import type { Json } from "@/lib/supabase/database.types";
 import { practicalDetailsForEvent } from "@/lib/practical-details";
@@ -60,4 +62,10 @@ export function publicationLocation(row: { name: string; start_date: string; end
   const name = venue?.name || place?.venue || town;
   if (!name) return null;
   return { name, ...(venue?.streetAddress ? { streetAddress: venue.streetAddress } : {}), ...(venue?.postalCode ? { postalCode: venue.postalCode } : {}), ...(!venue && place?.lat != null && place.lng != null ? { lat: place.lat, lng: place.lng } : {}) };
+}
+
+export function publicationIsVisible(expected: Publication["expected"], countryCode: string | null) {
+  return PUBLIC_EVENT_STATUSES.some(status => status === expected.status)
+    && !shouldHideFromMap(String(expected.name), expected.status === "cancelled" ? "scheduled" : String(expected.status), String(expected.visibility))
+    && (!countryCode || isListedCountry(countryCode));
 }

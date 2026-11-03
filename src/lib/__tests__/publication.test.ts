@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { publicationPayload, verifyPublicRevision, type Publication } from "@/lib/pipeline/publication";
+import { publicationPayload, publicationIsVisible, verifyPublicRevision, type Publication } from "@/lib/pipeline/publication";
 const publication: Publication = { revision: "revision-2", slug: "race-2027", expected: { id: "race", name: "Race 2027", start_date: "2027-08-28", end_date: null, status: "scheduled", registration_url: "https://entries.test/2027" } };
 function page(change: Record<string, unknown> = {}, revision = publication.revision) {
   return `<article data-race-id="race" data-race-revision="${revision}"><a href="https://entries.test/2027">Enter</a></article><script type="application/ld+json">${JSON.stringify({ "@type": "SportsEvent", name: "Race 2027", startDate: "2027-08-28", endDate: "2027-08-28", eventStatus: "https://schema.org/EventScheduled", ...change })}</script>`;
@@ -41,4 +41,13 @@ it("checks location and address in metadata and visible content independently", 
   expect(() => verifyPublicRevision(page({ location: json }), 200, target, true)).toThrow("visible page");
   expect(() => verifyPublicRevision(html.replace('"streetAddress":"Turnovská 40"', '"streetAddress":"Wrong 1"'), 200, target, true)).toThrow("address");
   expect(() => verifyPublicRevision(html.replace('"name":"Areál Dobrá Voda"', '"name":"Other venue"'), 200, target, true)).toThrow("location");
+});
+
+it("checks the canonical target's country after a merge, rather than assuming every public row has a page", () => {
+  const expected = { ...publication.expected, visibility: "public" };
+  expect(publicationIsVisible(expected, "CZ")).toBe(true);
+  expect(publicationIsVisible(expected, "ZZ")).toBe(false);
+  expect(publicationIsVisible({ ...expected, visibility: "hidden" }, "CZ")).toBe(false);
+  expect(publicationIsVisible({ ...expected, status: "tbc" }, "CZ")).toBe(false);
+  expect(publicationIsVisible({ ...expected, status: "cancelled" }, "CZ")).toBe(true);
 });

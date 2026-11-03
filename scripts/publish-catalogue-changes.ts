@@ -2,12 +2,10 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "dotenv";
 import { createServerSupabase } from "../src/lib/supabase/server";
-import { publicationPayload, publicationLocation, verifyPublicRevision } from "../src/lib/pipeline/publication";
+import { publicationPayload, publicationLocation, publicationIsVisible, verifyPublicRevision } from "../src/lib/pipeline/publication";
 import { getSiteUrl } from "../src/lib/seo";
 import { localePath } from "../src/lib/localized-paths";
 import { fetchPublic } from "../src/lib/http/safe-url";
-import { shouldHideFromMap } from "../src/lib/event-visibility";
-import { isListedCountry } from "../src/lib/geo/europe";
 import { boundedBody } from "../src/lib/watcher/http";
 
 async function main() {
@@ -36,13 +34,6 @@ async function main() {
       }
       if (!response.ok) throw Error(`Publication service returned HTTP ${response.status}`);
       refreshCatalogue = false;
-      const hidden = expected.visibility !== "public" || shouldHideFromMap(String(expected.name), expected.status === "cancelled" ? "scheduled" : String(expected.status), String(expected.visibility));
-      let outside = false;
-      if (expected.location_id) {
-        const { data: location, error } = await db.from("locations").select("country_code").eq("id", String(expected.location_id)).maybeSingle();
-        if (error) throw error;
-        outside = Boolean(location?.country_code && !isListedCountry(location.country_code));
-      }
       let target = payload;
       if (expected.merged_into_id) {
         const { data: canonical, error } = await db.from("events").select("slug,public_revision,name,start_date,end_date,status,visibility,registration_url,id").eq("id", String(expected.merged_into_id)).single();
@@ -56,7 +47,7 @@ async function main() {
       for (const locale of ["cs", "en"] as const) {
         const page = await fetchPublic(`${getSiteUrl()}${localePath(locale, `e/${payload.slug}`)}`, { headers: { "User-Agent": "LetsRace-Publication-Check/1.0" }, signal: AbortSignal.timeout(30_000) });
         const html = new TextDecoder().decode(await boundedBody(page, 2 * 1024 * 1024));
-        verifyPublicRevision(html, page.status, target, expected.merged_into_id ? target.expected.visibility === "public" : !hidden && !outside);
+        verifyPublicRevision(html, page.status, target, publicationIsVisible(target.expected, current.location?.country_code ?? null));
       }
       const { data: finished, error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { verifiedAt: new Date().toISOString(), revision: payload.revision, locales: ["cs", "en"] } });
       if (error) throw error;

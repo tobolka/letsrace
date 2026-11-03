@@ -1,0 +1,98 @@
+[
+  {
+    "path": "/cs/zavody/cesko-2027",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/cesko-2027",
+    "robots": "index, follow",
+    "languages": [
+      {
+        "language": "en",
+        "url": "https://letsrace.cz/en/races/czechia-2027"
+      },
+      {
+        "language": "cs",
+        "url": "https://letsrace.cz/cs/zavody/cesko-2027"
+      },
+      {
+        "language": "pl",
+        "url": "https://letsrace.cz/pl/wyscigi/czechy-2027"
+      },
+      {
+        "language": "sk",
+        "url": "https://letsrace.cz/sk/preteky/cesko-2027"
+      },
+      {
+        "language": "de",
+        "url": "https://letsrace.cz/de/radrennen/tschechien-2027"
+      },
+      {
+        "language": "x-default",
+        "url": "https://letsrace.cz/cs/zavody/cesko-2027"
+      }
+    ]
+  },
+  {
+    "path": "/cs/zavody/mtb-cesko-2027",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/mtb-cesko-2027",
+    "robots": "index, follow",
+    "languages": [
+      {
+        "language": "en",
+        "url": "https://letsrace.cz/en/races/mtb-czechia-2027"
+      },
+      {
+        "language": "cs",
+        "url": "https://letsrace.cz/cs/zavody/mtb-cesko-2027"
+      },
+      {
+        "language": "pl",
+        "url": "https://letsrace.cz/pl/wyscigi/mtb-czechy-2027"
+      },
+      {
+        "language": "sk",
+        "url": "https://letsrace.cz/sk/preteky/mtb-cesko-2027"
+      },
+      {
+        "language": "de",
+        "url": "https://letsrace.cz/de/radrennen/mtb-tschechien-2027"
+      },
+      {
+        "language": "x-default",
+        "url": "https://letsrace.cz/cs/zavody/mtb-cesko-2027"
+      }
+    ]
+  },
+  {
+    "path": "/cs/zavody/deti-2027",
+    "status": 200,
+    "canonical": "https://letsrace.cz/cs/zavody/deti-2027",
+    "robots": "index, follow",
+    "languages": [
+      {
+        "language": "en",
+        "url": "https://letsrace.cz/en/races/kids-2027"
+      },
+      {
+        "language": "cs",
+        "url": "https://letsrace.cz/cs/zavody/deti-2027"
+      },
+      {
+        "language": "pl",
+        "url": "https://letsrace.cz/pl/wyscigi/dzieci-2027"
+      },
+      {
+        "language": "sk",
+        "url": "https://letsrace.cz/sk/preteky/deti-2027"
+      },
+      {
+        "language": "de",
+        "url": "https://letsrace.cz/de/radrennen/kinder-2027"
+      },
+      {
+        "language": "x-default",
+        "url": "https://letsrace.cz/cs/zavody/deti-2027"
+      }
+    ]
+  }
+]

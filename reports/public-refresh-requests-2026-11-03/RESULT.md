@@ -24,3 +24,11 @@ Běh je zapojený před běžnou práci Macu i do existujícího denního server
 ## Hranice
 
 Požadavek není důkazem veřejného výsledku ani indexace Googlu. Kontroly detailů se dočerpávají v dosavadních limitech; čerstvější očekávaná verze může starší kontrolu nahradit. Tato změna nedokazuje úplnost a pravdivost katalogu ani nedokončuje původních sedm etap provozu.
+
+## Ověření na produkci
+
+Vydání `f07e269f` nasazeno, Vercel `dpl_GtS4bp4mDU3W1N9HUy1By8asT46V` READY. Skutečný první běh: 200 vyžádaných aktualizací, žádná z nich tím označena za ověřený detail. Databáze uchovává 200 potvrzení požadavků; následující kontroly běží samostatně. Produkční admin ověřen po přihlášení a zachycen v `production-admin.jpg`.
+
+Při prvním běhu kontroly detailů prošly 4 z 10. Šest dalších správně vracelo 404 po sloučení do závodu mimo podporované země; kontrola chybně předpokládala veřejnou stránku jen podle viditelnosti cílového řádku. Opraveno posouzení skutečného cíle včetně země, statusu a běžných pravidel viditelnosti. Další živá dávka prošla 10 z 10 bez zápisu závodů. Osm testů kontroly zveřejnění a kontrola typů prošly.
+
+Úplná sada po oddělení požadavků: 1 447 testů / 221 souborů. Pozdější cílená ochrana sloučeného cíle přidává jeden test; jeho úspěch se nevydává za nové úplné měření.
