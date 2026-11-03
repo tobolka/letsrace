@@ -44,3 +44,5 @@ V etapě 3 `operations-progress.md` doplněno trvalé zveřejnění změn seriá
 Vydání `8f31731f` je na produkci, Vercel `dpl_2Kz1Er1L4QvNmK5kEAtVrG6waYC7` má stav READY. Všechny tři skutečné veřejné detaily vrací 200. Běžný sdílený seznam `/api/events?catalogue=1` obsahuje všechny tři záznamy se správnými termíny, zařazením, disciplínami a souřadnicemi; podklad pro mapu, seznam a kalendář v `production-checks.json`. Výběr DH/XCO/XCM odpovídá konkrétním závodům.
 
 Cílená dávka zveřejnění ověřila osm detailů bez chyby, včetně těchto tří, v původním denním limitu. Oddělená dávka požadavků v té chvíli správně čekala na časový odstup; její limit nebyl vynulován ani navýšen. Přechodné pozastavení této jedné dávky při nasazení bylo zrušeno.
+
+Po vydání `c9159297` ověřeny také srozumitelné štítky UCI World Cup / Continental Series a jejich nápovědy. Skutečný veřejný Black Forest se zobrazuje jako Světový pohár, s kategoriemi Elite i amatérů a zachovanou registrací; náhled `blackforest-production.jpg`. Databázová kontrola potvrdila nula nově založených UCI Trials závodů.

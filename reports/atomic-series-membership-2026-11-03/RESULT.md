@@ -20,3 +20,9 @@ Také změna vedlejší vazby vytvoří aktualizaci závodu i dotčených seriá
 ## Zbývající rozsah
 
 Tato změna nepřevádí celý hlavní import ani zápis kandidáta do jedné transakce. Neřeší všechny ostatní přímé zapisovače, automatické rozhodování o rozporech či nezávislé měření pokrytí. Historie vazby není tvrzení o nezávislém ověření závodu a návrat transakce není automatický návrat libovolné pozdější ruční změny.
+
+## Nasazení a veřejný výsledek
+
+Vydání `c9159297` je nasazené na produkci; Vercel `dpl_Caj5BGfbL7fE5WdLV8E9r3CJYJuf` READY. Spravovaný sběr na Macu aktualizován a soubory čtečky UCI i zápisu vazeb porovnány se současným zdrojovým kódem.
+
+Skutečný ověřený příklad: `https://letsrace.cz/cs/serie/nrw-cross-cup-2026` uvádí závod Die Mauer von Kendenich právě jednou a odkazuje na zachovaný záznam `a55944aa-c6ac-4428-bfcd-eba0a897582d`, i když jde o vedlejší vazbu k seriálu. Náhled `production-series.jpg`. Nová kopie závodu nevznikla.
