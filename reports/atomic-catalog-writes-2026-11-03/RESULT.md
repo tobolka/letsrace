@@ -19,4 +19,4 @@ Databázové změny byly aplikovány na produkci. Funkce jsou `SECURITY INVOKER`
 
 ## Co není dokončeno
 
-Celý hlavní import a kandidáti nadále ukládají více částí odděleně. Schránka ještě nemá vykonavatele všech rozhodnutí, plošná bezpečná deduplikace ani nezávislé měření pravdivosti a pokrytí nejsou hotové. Úspěšné testy nejsou důkazem těchto výsledků. Tato změna nevrací žádné závody ani hromadně nemaže skutečné kategorie.
+Celý hlavní import a kandidáti nadále ukládají více částí odděleně. Schránka ještě nemá vykonavatele všech rozhodnutí, plošná bezpečná deduplikace ani nezávislé měření pravdivosti a pokrytí nejsou hotové. Úspěšné testy nejsou důkazem těchto výsledků. Tato změna nevrací žádné závody ani hromadně nemaže skutečné kategorie. Při navazující zkoušce hlavního sběrače byly touto funkcí úspěšně vráceny dva vlastní kontrolní zápisy obecných štítků; [podrobnosti](../atomic-watcher-update-2026-11-03/RESULT.md).

@@ -12,6 +12,9 @@ Novější souběžná úprava znamená `concurrent_event_update` a automatické
 - **1 469 testů / 224 souborů prošlo**; sestavení a cílená kontrola kódu prošly. Logy `tmp/atomic-watcher-tests.log`, `tmp/atomic-watcher-build.log`, `tmp/atomic-watcher-lint.log`.
 - Migrace byla aplikována na produkci. Transakční zkouška na skutečném závodu `000ebbbe-0e3f-4b38-bcb8-885dcd907661` provedla změnu v záměrně vrácené vnořené transakci. Potvrdila skutečné provedení změny, úplné vrácení řádku a odmítnutí staré verze. Žádná zkušební změna závodu se nezachovala.
 - `anon` ani `authenticated` nemají právo funkci volat. Používá `SECURITY INVOKER`; jediným povoleným volajícím je služba.
+- Nasazeno `32e0bc03`; Vercel `dpl_BXBp6QVgodQtVw47hfJWtFubXqnJ` READY s produkční adresou `letsrace.cz`. Nainstalovaný Mac má stejné soubory `run.ts`, `write-event.ts`, `run-summary.ts` a `source-work.ts`; běží runner i panel, hlášení při kontrole staré 4 s. Dřívější chyba přístupu k Eventivu zůstává pravdivě přiznaná.
+- Skutečný opakovaný běh Chotěbuzi se standardním `CATALOG_OVERVIEW_ONLY=1`, bez AI: **1 načtený / 0 nových / 0 změněných / 0 chyb**. [Strojový výsledek](replay.json). Zdroj je aktivní, poslední čtení `ok`, bez chyby; datum 8. května 2027 a silniční disciplína zachované.
+- První kontrolní spuštění nemělo nastavený běžný přehledový režim a změnilo dvě obecné klasifikace (`class_label: null → Local`, `competition_type: other → community`). Tyto dva vlastní zápisy byly přes `pipeline_rollback_fact` skutečně a úspěšně vráceny; historie má `rolled_back`. Poté proběhl výše uvedený stabilní běh. [První výsledek](replay-first.json). Neskrývá se jako nulová změna.
 
 ## Hranice
 
