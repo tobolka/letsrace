@@ -101,7 +101,7 @@ All IDs and previous editions are preserved. Every changed field has a previous-
 
 - Production project: `xlomrxswdcekarazaahx` / letsrace. No schema migration, no authentication or user-data change.
 - **43 investigated event groups**: 26 named in the request + 17 extra groups.
-- **13 inserted public race records**, **23 updated event records**, **4 existing correct groups** (2 main + Montes + Vabank), **1 duplicate merged**. Two additional candidates saved as `waiting`.
+- **13 inserted public race records**, **23 updated event records**, **4 existing correct groups** (2 main + Montes + Vabank), **1 duplicate merged**. 25 applied candidates reuse existing IDs instead of creating duplicates; two more existing groups are checked read-only. Two additional candidates saved as `waiting`.
 - Outcome for the 38-record applied batch: **35 scheduled public races**, **2 preserved noncompetitive rides**, **1 hidden TBC draft**. The three noncompetitive groups including Fanatik are intentionally excluded from the default race calendar.
 - 689 field-level audit facts plus an atomic batch-complete marker were recorded. Existing overrides are merged, never discarded. Verified identity, dates, classification, location, routes and registration decisions are locked against later automatic replacement.
 - Existing source identifiers, series links and organiser sources were inspected; this schema has no separate organisers/aliases/variants tables. `event_sources`, `event_series`, `event_categories`, existing slugs, the protected fields and merge history are the native mechanisms. New UltraBikers rounds link to its existing series.
@@ -132,3 +132,11 @@ Checked the supplied federation/organiser/aggregator routes, across road, TT, MT
 ## G. Export and evidence
 
 `events.csv` is UTF-8 and contains all 43 groups: confirmed/provisional dates, locality/region/coordinates, disciplines, public/official/registration URLs, event/candidate IDs, verification outcome and action. Draft tentative dates are in their own column. Source snapshots are in `sources/`; `public-checks.json`, `public-calendar.json`, `after.json`, `apply-before.json`, `actions.json`, `apply.sql`, `review-queue*.json/sql` retain the audit trail.
+
+## Production release confirmation
+
+Release commit `d398a611b863974364de4a9fb1358dea90351a14` is pushed to main. Vercel deployment `dpl_2NYYBXMb2TYFAsgz2G4tLFzyhbQP` is **READY** and aliased to **letsrace.cz**. The clean release build passes TypeScript and static generation. The public MTBO API and shared feed both return all **7** reviewed weekends; the XCO filter includes **0** MTBO events. In the live calendar UI, the MTBO filter is selected and May 2027 shows the European Championships on May 5–8 and Nejdek on May 22–23. The Czech About page displays all three new release-note sentences.
+
+[Open the verified MTBO calendar](https://letsrace.cz/cs/kalendar?month=2027-05&disciplines=mtbo&country=CZ). Final checks: `release-verification.json` and `filter-checks.json`.
+
+Pre-existing local changes to AGENTS.md and older October 30 release notes were preserved and were not included in this release. Original snapshots and source captures remain available locally for review.

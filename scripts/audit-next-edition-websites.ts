@@ -1,0 +1,208 @@
+/** Read-only, resumable audit. No AI calls and no catalogue writes.
+ * node scripts/with-node.cjs tsx scripts/audit-next-edition-websites.ts [2026]
+ */
+import { createHash } from "node:crypto";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { parse } from "dotenv";
+import * as cheerio from "cheerio";
+import { createServerSupabase } from "../src/lib/supabase/server";
+import { fetchPage } from "../src/lib/watcher/http";
+import { extractJsonLdEvents } from "../src/lib/watcher/extractors/jsonld";
+import { hostnameOf, sleep } from "../src/lib/watcher/pool";
+import { editionKey } from "../src/lib/catalog/previous-edition";
+import { isDumpListingUrl } from "../src/lib/watcher/public-url";
+import { isRegistrationPlatformUrl } from "../src/lib/watcher/registration-url";
+
+for (const [key, value] of Object.entries(parse(readFileSync(".env.local")))) process.env[key] ??= value;
+const year = Number(process.argv[2] ?? 2026);
+if (!Number.isInteger(year) || year < 2020 || year > 2090) throw new Error("Invalid season");
+const target = year + 1;
+const retryErrors = process.argv.includes("--retry-errors");
+const deferHost = process.argv.find(arg => arg.startsWith("--defer-host="))?.split("=")[1];
+const pausedHosts = new Set(deferHost ? [deferHost] : []);
+const rateLimitStreaks = new Map<string, number>();
+const runDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+const directory = `reports/next-edition-websites-${year}-to-${target}-${runDay}`;
+mkdirSync(join(directory, "pages"), { recursive: true });
+type Race = { id: string; slug: string; name: string; start_date: string; website_url: string | null; location: { municipality: string | null; country_code: string | null } | null };
+type Job = { url: string; via: string[]; purpose: string };
+type Page = Job & { at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean };
+const canonical = (raw: string): string | null => {
+  try { const u = new URL(raw); if (!/^https?:$/.test(u.protocol)) return null; u.hash = ""; return u.href; } catch { return null; }
+};
+const keyOf = (url: string) => createHash("sha256").update(url).digest("hex").slice(0, 20);
+const pages = new Map<string, Page>();
+const jobs = new Map<string, Job>();
+const attempted = new Set<string>();
+const activeHosts = new Map<string, number>();
+const hostStarts = new Map<string, number>();
+const ledger = join(directory, "pages.jsonl");
+if (existsSync(ledger)) for (const line of readFileSync(ledger, "utf8").trim().split("\n").filter(Boolean)) {
+  const page = JSON.parse(line) as Page; pages.set(page.url, page);
+}
+for (const page of pages.values()) {
+  if (retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500)) pages.delete(page.url);
+  else attempted.add(page.url);
+}
+function enqueue(raw: string, via: string, purpose: string) {
+  const url = canonical(raw); if (!url) return;
+  const held = jobs.get(url);
+  if (held) { if (!held.via.includes(via)) held.via.push(via); return; }
+  jobs.set(url, { url, via: [via], purpose });
+}
+
+async function readRaces(from: string, until: string): Promise<Race[]> {
+  const db = createServerSupabase(); const rows: Race[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await db.from("events").select("id,slug,name,start_date,website_url,location:locations(municipality,country_code)")
+      .eq("visibility", "public").is("merged_into_id", null).gte("start_date", from).lt("start_date", until).order("id").range(offset, offset + 999);
+    if (error) throw new Error(error.message);
+    rows.push(...data); if (data.length < 1000) break;
+  }
+  return rows;
+}
+
+function yearSnippets(text: string): string[] {
+  const out: string[] = []; const re = new RegExp(`\\b${target}\\b`, "g"); let match;
+  while ((match = re.exec(text)) && out.length < 100) {
+    const context = text.slice(Math.max(0, match.index - 200), match.index + 220).trim();
+    if (!out.includes(context)) out.push(context);
+  }
+  return out;
+}
+function dateSignals(text: string): string[] {
+  const y = String(target);
+  // Leads only: ranges, publication dates and registration dates require review.
+  const month = "(?:" + ("jan january januar jänner gennaio leden ledna január januára styczeń stycznia feb february februar febbraio únor února február februára luty lutego mar march märz maerz marzo březen března marec marca marzec apr april aprile duben dubna apríl apríla kwiecień kwietnia may mai maggio květen května máj mája maj maja jun june juni giugno červen června jún júna czerwiec czerwca jul july juli luglio červenec července júl júla lipiec lipca aug august agosto srpen srpna augusta sierpień sierpnia sep sept september settembre září septembra wrzesień września oct october oktober ottobre říjen října október októbra październik października nov november novembre listopad listopadu novembra listopada dec december dez dezember dicembre prosinec prosince decembra grudzień grudnia").split(" ").join("|") + ")";
+  const patterns = [new RegExp(`\\b${y}[-/.]\\d{1,2}[-/.]\\d{1,2}\\b`, "gi"), new RegExp(`\\b\\d{1,2}[-./]\\s*\\d{1,2}[-./]\\s*${y}\\b`, "gi"), new RegExp(`\\b\\d{1,2}\\.?\\s+${month}\\.?\\s*,?\\s*${y}\\b`, "gi"), new RegExp(`\\b${month}\\s+\\d{1,2}(?:st|nd|rd|th)?\\s*,?\\s*${y}\\b`, "gi")];
+  return [...new Set(patterns.flatMap(re => [...text.matchAll(re)].map(m => m[0])))];
+}
+async function inspect(job: Job): Promise<Page> {
+  const base = { ...job, at: new Date().toISOString() };
+  if (pausedHosts.has(hostnameOf(job.url))) return { ...base, requestAttempted: false, error: "deferred_rate_limit: source host repeatedly returned HTTP 429 after cooldowns; this URL was not requested" };
+  try {
+    const response = await fetchPage(job.url, { timeoutMs: retryErrors ? 25_000 : 15_000, retries: 0, skipGate: true, fresh: true });
+    const $ = cheerio.load(response.html);
+    const title = $("title").text().replace(/\s+/g, " ").trim();
+    const follow: { url: string; score: number }[] = [];
+    $("a[href]").each((_, el) => {
+      const href = $(el).attr("href")!; let url: URL;
+      try { url = new URL(href, response.finalUrl ?? job.url); } catch { return; }
+      if (hostnameOf(url.href) !== hostnameOf(response.finalUrl ?? job.url) || !/^https?:$/.test(url.protocol)) return;
+      const label = $(el).text().replace(/\s+/g, " ").trim(); const blob = `${url.pathname} ${label}`;
+      if (!new RegExp(`\\b${target}\\b`).test(blob) || /\.(?:jpg|png|webp|zip|ics|mp4)$/i.test(url.pathname)) return;
+      if (/result|ergebnis|výsled|vysled|foto|photo|galer|archiv/i.test(blob)) return;
+      url.hash = ""; follow.push({ url: url.href, score: label.includes(String(target)) ? 2 : 1 });
+    });
+    const structuredEvents = extractJsonLdEvents(response.finalUrl ?? job.url, response.html).filter(e => e.startDate.startsWith(`${target}-`));
+    $("script,style,noscript,svg,footer,nav,aside").remove();
+    $("br,p,div,section,article,h1,h2,h3,tr,li").each((_, el) => { $(el).append("\n"); });
+    const text = $("body").text().replace(/[\t\r ]+/g, " ").replace(/ *\n */g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+    const flat = text.replace(/\s+/g, " ");
+    const textFile = `pages/${keyOf(job.url)}.txt`;
+    writeFileSync(join(directory, textFile), `${response.finalUrl ?? job.url}\n${title}\n\n${text}`);
+    return { ...base, status: response.status, finalUrl: response.finalUrl, title, textLength: flat.length, textFile,
+      snippets: yearSnippets(flat), dateSignals: dateSignals(flat), structuredEvents,
+      needsBrowser: flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)|just a moment|checking your browser/i.test(flat),
+      follow: [...new Set(follow.sort((a, b) => b.score - a.score).map(x => x.url))].slice(0, 3) };
+  } catch (error) { return { ...base, error: error instanceof Error ? error.message : String(error) }; }
+}
+
+let old: Race[] = []; let existing: Race[] = []; const startedAt = new Date().toISOString();
+function save() {
+  const all = [...pages.values()];
+  const linked = old.filter(r => r.website_url && canonical(r.website_url));
+  const candidates = all.filter(p => (p.dateSignals?.length ?? 0) + (p.structuredEvents?.length ?? 0) > 0).map(p => ({ ...p, via: jobs.get(p.url)?.via ?? p.via }));
+  const unresolved = all.filter(p => p.error || (p.status ?? 0) >= 400 || p.needsBrowser);
+  const coverage = { at: new Date().toISOString(), startedAt, year, target, mode: "read-only; literal signals are leads, not confirmed event dates", totalRaces: old.length, racesWithWebsite: old.filter(r => r.website_url).length, racesWithValidWebsite: linked.length,
+    originalWebsites: new Set(linked.map(r => canonical(r.website_url!))).size,
+    originalWebsitesAttempted: [...new Set(linked.map(r => canonical(r.website_url!)))].filter(u => u && pages.has(u) && pages.get(u)?.requestAttempted !== false).length,
+    queuedPages: jobs.size, processedPages: all.length, attemptedPages: all.filter(p => p.requestAttempted !== false).length, deferredPages: all.filter(p => p.requestAttempted === false).length, successfulPages: all.filter(p => p.status && p.status >= 200 && p.status < 300 && !p.needsBrowser).length,
+    candidatePages: candidates.length, unresolvedPages: unresolved.length, complete: [...jobs.keys()].every(url => pages.has(url)), allRequestsAttempted: [...jobs.keys()].every(url => pages.has(url) && pages.get(url)?.requestAttempted !== false),
+    limitations: ["Only public, unmerged 2026 catalogue races with website_url are in scope.", "HTML/PDF text and JSON-LD are checked; image-only and browser-only dates need manual review.", "At most three explicit next-year links per original URL plus a year-neutral homepage are followed; this is not an exhaustive site crawl.", "No full date detected does not prove that no announcement exists.", "No AI calls or catalogue writes."] };
+  writeFileSync(join(directory, "coverage.json"), JSON.stringify(coverage, null, 2));
+  writeFileSync(join(directory, "candidates.json"), JSON.stringify(candidates, null, 2));
+  writeFileSync(join(directory, "unresolved.json"), JSON.stringify(unresolved, null, 2));
+  return coverage;
+}
+function saveRaceReview() {
+  const oldById = new Map(old.map(r => [r.id, r]));
+  const existingByKey = new Map<string, Race[]>();
+  for (const race of existing) {
+    const key = `${race.location?.country_code ?? ""}:${editionKey(race.name)}`;
+    existingByKey.set(key, [...existingByKey.get(key) ?? [], race]);
+  }
+  const related = new Map<string, Page[]>();
+  for (const page of pages.values()) {
+    const pending = [page.url]; const visited = new Set<string>(); const ids = new Set<string>();
+    while (pending.length) {
+      const ref = pending.pop()!; if (visited.has(ref)) continue; visited.add(ref);
+      if (oldById.has(ref)) { ids.add(ref); continue; }
+      pending.push(...(jobs.get(ref)?.via ?? pages.get(ref)?.via ?? []));
+    }
+    for (const id of ids) related.set(id, [...related.get(id) ?? [], page]);
+  }
+  const review = old.map(race => {
+    const checked = related.get(race.id) ?? [];
+    const candidates = checked.filter(p => p.dateSignals?.length || p.structuredEvents?.length);
+    const key = editionKey(race.name);
+    const known = key.length >= 5 ? existingByKey.get(`${race.location?.country_code ?? ""}:${key}`) ?? [] : [];
+    const unresolved = checked.filter(p => p.error || (p.status ?? 0) >= 400 || p.needsBrowser);
+    const status = !race.website_url ? "no_website" : !canonical(race.website_url) ? "invalid_website" : candidates.length ? "page_has_2027_dates_needs_identity_review" : checked.some(p => p.snippets?.length) ? "year_mentioned_without_full_date" : unresolved.length === checked.length ? "unreadable" : "no_date_signal_detected";
+    return { ...race, reviewStatus: status, existing2027NameMatches: known, nameMatchIsHeuristic: true, checkedUrls: checked.map(p => p.url), unresolvedUrls: unresolved.map(p => p.url), candidatePages: candidates.map(p => ({ url: p.url, title: p.title, dates: p.dateSignals, structuredEvents: p.structuredEvents, snippets: p.snippets, textFile: p.textFile })) };
+  });
+  writeFileSync(join(directory, "race-review.json"), JSON.stringify(review, null, 2));
+  writeFileSync(join(directory, "jobs.json"), JSON.stringify([...jobs.values()], null, 2));
+  const csvCell = (cell: string) => {
+    const safe = /^[=+\-@\t\r]/.test(cell) ? "'" + cell : cell;
+    return `"${safe.replace(/"/g, '""')}"`;
+  };
+  writeFileSync(join(directory, "race-review.csv"), "\uFEFF" + [["race_2026", "country", "website", "review_status", "existing_2027_name_matches", "pages_with_dates", "unresolved_pages"], ...review.map(r => [r.name, r.location?.country_code ?? "", r.website_url ?? "", r.reviewStatus, r.existing2027NameMatches.map(e => `${e.name}: ${e.start_date}`).join(" | "), r.candidatePages.map(p => `${p.url}: ${p.dates?.join("; ")}`).join(" | "), r.unresolvedUrls.join(" | ")])].map(row => row.map(csvCell).join(",")).join("\n"));
+}
+async function main() {
+  old = await readRaces(`${year}-01-01`, `${target}-01-01`);
+  existing = await readRaces(`${target}-01-01`, `${target + 1}-01-01`);
+  writeFileSync(join(directory, "races.json"), JSON.stringify({ year, target, old, existing }, null, 2));
+  for (const race of old) if (race.website_url) enqueue(race.website_url, race.id, "2026 race website");
+  const originals = [...jobs.values()];
+  // A dated detail page often remains an archive; also inspect the organiser's root.
+  const platforms = /(?:raceresult|bikeboard|pzkol|rideandrest|odjazd|kalendarzrowerowy|mtbs|sportsoft|sientries|worldracecalendar|urbanrace)\./;
+  for (const job of originals) {
+    const u = new URL(job.url);
+    if (u.pathname !== "/" && !platforms.test(u.hostname) && !isDumpListingUrl(job.url) && !isRegistrationPlatformUrl(job.url)) enqueue(u.origin + "/", job.url, "organiser homepage alongside detail URL");
+  }
+  for (const page of pages.values()) if (jobs.has(page.url) && jobs.get(page.url)?.purpose !== "next-year link") for (const url of page.follow ?? []) enqueue(url, page.url, "next-year link");
+  // Re-analyse saved text on resume when signal recognition is improved.
+  for (const page of pages.values()) if (page.textFile && existsSync(join(directory, page.textFile))) {
+    const text = readFileSync(join(directory, page.textFile), "utf8").split("\n").slice(3).join(" ").replace(/\s+/g, " ");
+    page.dateSignals = dateSignals(text); page.snippets = yearSnippets(text);
+  }
+  console.log(JSON.stringify(save()));
+  const timer = setInterval(() => console.log(JSON.stringify(save())), 30_000);
+  try {
+    async function worker() {
+      for (;;) {
+        const now = Date.now();
+        const job = [...jobs.values()].find(j => {
+          const host = hostnameOf(j.url); const interval = /raceresult/.test(host) ? 1500 : 500;
+          return !attempted.has(j.url) && (activeHosts.get(host) ?? 0) < 1 && (pausedHosts.has(host) || now - (hostStarts.get(host) ?? 0) >= interval);
+        });
+        if (!job) { if ([...jobs.keys()].every(url => attempted.has(url))) return; await sleep(100); continue; }
+        attempted.add(job.url); const host = hostnameOf(job.url);
+        activeHosts.set(host, (activeHosts.get(host) ?? 0) + 1); hostStarts.set(host, Date.now());
+        try {
+          const page = await inspect(job); pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
+          if (page.status === 429) {
+            const streak = (rateLimitStreaks.get(host) ?? 0) + 1; rateLimitStreaks.set(host, streak);
+            if (streak >= 3) pausedHosts.add(host);
+            else hostStarts.set(host, Date.now() + 60_000);
+          } else if (page.requestAttempted !== false) rateLimitStreaks.delete(host);
+          if (job.purpose !== "next-year link" && page.status === 200) for (const url of page.follow ?? []) enqueue(url, job.url, "next-year link");
+        } finally { activeHosts.set(host, activeHosts.get(host)! - 1); }
+      }
+    }
+    await Promise.all(Array.from({ length: 24 }, worker));
+  } finally { clearInterval(timer); console.log(JSON.stringify(save())); saveRaceReview(); }
+}
+main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -8,6 +8,20 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## New annual editions: build on the previous edition
+
+When an organiser announces a new annual edition, use the latest verified edition as the starting point instead of treating the race as unknown. For 2027 this usually means the 2026 record. Most recurring races retain their identity, discipline, venue and audience; reuse that knowledge and progressively replace it with information confirmed for the new edition.
+
+- Verify that this is the same race and venue, not another round of a cup or a similarly named event. Keep each annual edition as a separate record and preserve the old one.
+- A new date needs an explicit announcement for the new year from a reliable source. Never calculate it from last year's date, weekday or edition number. An announced date is enough to start the new record; do not wait for full regulations.
+- Carry forward stable facts where there is no evidence of a change: the race identity, discipline, general classification, organiser's year-neutral website and established venue. Record their origin in the previous edition; venue changes announced for the new year take precedence.
+- Use last year's age categories as a useful provisional guide, with `age_confidence = previous` and the existing “as last year” label. Do not present old categories, routes, distances or schedules as confirmed for the new year. Keep other edition-specific details as historical reference until verified.
+- Do not copy completed/cancelled status, results, old registration state or deadlines, fees, year-specific regulations, birth-year limits, or year-specific links as current information. Do not clone detailed category rows with old age/year limits.
+- New verified information replaces inherited assumptions field by field. Preserve sources and distinguish confirmed facts from inherited ones; respect manual locks and defer ambiguous matches for review.
+- When reviewing a season, check the websites linked from the previous year's races for next-year announcements, including homepages whose navigation and regulations still refer to the old year. Deduplicate shared URLs; a date elsewhere on a shared site is not automatically the date of every linked race.
+
+Operational guidance and limits of the current automation: `docs/annual-editions.md`.
+
 ## Release notes: explain every change in human words
 
 Every change that goes live gets judged for the riders and parents who use Let's Race, and written up in `src/lib/release-notes.ts`, which the About page shows under "What's new". Newest day first, one entry per day.
