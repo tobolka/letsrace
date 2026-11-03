@@ -105,12 +105,12 @@ async function CollectionBody({
           ))}
         </nav>}
         <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">{copy.collections[slug].note}</p>
-        {isSeasonCollection(slug) && events.length > 0 && <SeasonOverview events={events} locale={locale} />}
+        {isSeasonCollection(slug) && events.length > 0 && <SeasonOverview events={events} locale={locale} path={`/${locale}/${path}`} page={paginated.page} />}
         {events.length ? (
           <>
             <section className="mt-8">
               <h2 className="mb-3 text-lg font-semibold">{rc.allRaces}</h2>
-              <RaceLinkList events={paginated.events} locale={locale} groupByMonth={slug !== "weekend" && slug !== "kids-weekend"} showFacts={isSeasonCollection(slug)} headingLevel="h3" />
+              <RaceLinkList events={paginated.events} locale={locale} groupByMonth={slug !== "weekend" && slug !== "kids-weekend"} showFacts={isSeasonCollection(slug)} monthAnchors={isSeasonCollection(slug)} headingLevel="h3" />
               <RaceListPagination page={paginated.page} pages={paginated.pages} path={`/${locale}/${path}`} locale={locale} />
             </section>
             <section className="mt-8">

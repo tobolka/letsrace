@@ -20,6 +20,7 @@ export function RaceLinkList({
   headingLevel = "h2",
   distances,
   showFacts = false,
+  monthAnchors = false,
 }: {
   events: EventListItem[];
   locale: Locale;
@@ -28,6 +29,7 @@ export function RaceLinkList({
   /** How far each race is from the page's own, by race id. */
   distances?: Map<string, number>;
   showFacts?: boolean;
+  monthAnchors?: boolean;
 }) {
   if (!events.length) return null;
   const groups = new Map<string, EventListItem[]>();
@@ -40,7 +42,7 @@ export function RaceLinkList({
   return (
     <div className="flex flex-col gap-6">
       {[...groups.entries()].map(([key, list]) => (
-        <section key={key} aria-label={groupByMonth ? monthHeading(`${key}-01`, locale) : undefined}>
+        <section key={key} id={monthAnchors && groupByMonth ? `month-${key}` : undefined} className={monthAnchors ? "scroll-mt-16" : undefined} aria-label={groupByMonth ? monthHeading(`${key}-01`, locale) : undefined}>
           {groupByMonth ? (
             <Heading className="mb-2 text-sm font-semibold text-muted-foreground">
               {monthHeading(`${key}-01`, locale)}

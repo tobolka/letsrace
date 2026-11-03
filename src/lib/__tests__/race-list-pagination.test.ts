@@ -26,3 +26,13 @@ describe("race list pagination", () => {
     expect(raceListPagePath("/en/races/de", "1")).toBe("/en/races/de");
   });
 });
+
+it("links each month to a visible group or the correct paginated list", async () => {
+  const { raceMonthHref } = await import("@/lib/race-list-pagination");
+  const rows = [...Array.from({ length: 45 }, () => ({ startDate: "2027-01-10" })), ...Array.from({ length: 20 }, () => ({ startDate: "2027-03-10" })), ...Array.from({ length: 50 }, () => ({ startDate: "2027-09-10" }))];
+  expect(raceMonthHref(rows, "2027-01", "/cs/zavody/cesko-2027", 1)).toBe("#month-2027-01");
+  expect(raceMonthHref(rows, "2027-09", "/cs/zavody/cesko-2027", 1)).toBe("/cs/zavody/cesko-2027?page=2#month-2027-09");
+  expect(raceMonthHref(rows, "2027-01", "/cs/zavody/cesko-2027", 3)).toBe("/cs/zavody/cesko-2027#month-2027-01");
+  expect(raceMonthHref(rows, "2027-03", "/cs/zavody/cesko-2027", 2)).toBe("#month-2027-03");
+  expect(raceMonthHref(rows, "2027-02", "/cs/zavody/cesko-2027", 1)).toBeNull();
+});

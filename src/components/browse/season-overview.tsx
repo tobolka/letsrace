@@ -2,29 +2,28 @@ import Link from "next/link";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
-import { ageCategoryLabel } from "@/lib/i18n/taxonomy";
+import { raceMonthHref } from "@/lib/race-list-pagination";
 
 const copy = {
-  cs: { months: "Rok v našem kalendáři", distances: "Uložené vzdálenosti", categories: "Zveřejněné kategorie", series: "Seriály v této kolekci", note: "Počty a rozsahy popisují uložené závody; chybějící údaje neodhadujeme." },
-  en: { months: "The year in our calendar", distances: "Known distances", categories: "Stated categories", series: "Series in this collection", note: "Counts and ranges describe listed races; we do not guess missing information." },
-  sk: { months: "Rok v našom kalendári", distances: "Uložené vzdialenosti", categories: "Zverejnené kategórie", series: "Seriály v tejto kolekcii", note: "Počty a rozsahy opisujú uložené preteky; chýbajúce údaje neodhadujeme." },
-  pl: { months: "Rok w naszym kalendarzu", distances: "Znane dystanse", categories: "Opublikowane kategorie", series: "Cykle w tej kolekcji", note: "Liczby i zakresy opisują wyścigi w katalogu; nie zgadujemy brakujących informacji." },
-  de: { months: "Das Jahr in unserem Kalender", distances: "Bekannte Streckenlängen", categories: "Veröffentlichte Kategorien", series: "Serien in dieser Sammlung", note: "Zahlen und Spannen beschreiben gelistete Rennen; fehlende Angaben werden nicht geschätzt." },
+  cs: { months: "Rok v našem kalendáři", series: "Seriály v této kolekci", note: "Počty popisují závody v našem kalendáři." },
+  en: { months: "The year in our calendar", series: "Series in this collection", note: "Counts describe races in our calendar." },
+  sk: { months: "Rok v našom kalendári", series: "Seriály v tejto kolekcii", note: "Počty opisujú preteky v našom kalendári." },
+  pl: { months: "Rok w naszym kalendarzu", series: "Cykle w tej kolekcji", note: "Liczby opisują wyścigi w naszym kalendarzu." },
+  de: { months: "Das Jahr in unserem Kalender", series: "Serien in dieser Sammlung", note: "Die Zahlen beschreiben Rennen in unserem Kalender." },
 };
 
-export function SeasonOverview({ events, locale }: { events: EventListItem[]; locale: Locale }) {
+export function SeasonOverview({ events, locale, path, page }: { events: EventListItem[]; locale: Locale; path: string; page: number }) {
   const c = copy[locale];
-  const distances = events.flatMap(event => (event.categories ?? []).flatMap(category => category.distanceKm != null && category.distanceKm > 0 ? [category.distanceKm] : []));
-  const known = events.filter(event => event.categories?.some(category => category.distanceKm != null && category.distanceKm > 0)).length;
-  const categories = [...new Set(events.flatMap(event => event.ageConfidence === "explicit" ? event.ageCategories : []))];
   const series = [...new Map(events.flatMap(event => event.series ? [[event.series.id, event.series] as const] : [])).values()].sort((a, b) => a.name.localeCompare(b.name, locale));
-  const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
-  return <section className="mt-7 space-y-4" aria-labelledby="season-overview"><h2 id="season-overview" className="text-lg font-semibold">{c.months}</h2><dl className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-6">{Array.from({ length: 12 }, (_, month) => {
+  return <section className="mt-7 space-y-4" aria-labelledby="season-overview"><h2 id="season-overview" className="text-lg font-semibold">{c.months}</h2><ul className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-6">{Array.from({ length: 12 }, (_, month) => {
     const key = `2027-${String(month + 1).padStart(2, "0")}`;
-    return <div key={key} className="bg-background px-3 py-2"><dt className="text-xs text-muted-foreground">{new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(new Date(`${key}-15T12:00:00Z`))}</dt><dd className="mt-1 font-semibold tabular-nums">{events.filter(event => event.startDate.startsWith(key)).length}</dd></div>;
-  })}</dl><p className="text-xs text-muted-foreground">{c.note}</p>
-    {distances.length > 0 && <p className="text-sm"><span className="text-muted-foreground">{c.distances}: </span>{number.format(Math.min(...distances))}–{number.format(Math.max(...distances))} km · {known}/{events.length}</p>}
-    {categories.length > 0 && <div><h3 className="mb-2 text-sm font-medium">{c.categories}</h3><p className="text-sm leading-relaxed text-muted-foreground">{categories.map(category => ageCategoryLabel(category, locale)).join(" · ")}</p></div>}
+    const count = events.filter(event => event.startDate.startsWith(key)).length;
+    const label = new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(new Date(`${key}-15T12:00:00Z`));
+    const fullLabel = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${key}-15T12:00:00Z`));
+    const href = raceMonthHref(events, key, path, page);
+    const content = <><span className="block text-xs text-muted-foreground">{label}</span><span className="mt-1 block font-semibold tabular-nums">{count}</span></>;
+    return <li key={key} className="bg-background">{href ? <Link href={href} prefetch={false} aria-label={`${fullLabel} · ${count}`} className="block px-3 py-2 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">{content}</Link> : <div className="px-3 py-2 text-muted-foreground">{content}</div>}</li>;
+  })}</ul><p className="text-xs text-muted-foreground">{c.note}</p>
     {series.length > 0 && <div><h3 className="mb-2 text-sm font-medium">{c.series}</h3><ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{series.map(item => <li key={item.id}><Link className="underline underline-offset-4" href={localePath(locale, `series/${item.slug}`)}>{item.name}</Link></li>)}</ul></div>}
   </section>;
 }
