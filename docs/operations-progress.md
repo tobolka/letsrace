@@ -51,3 +51,5 @@ Návrat jedné doložené automatické změny je také společná operace. Změn
 Čtenář zdrojů nově kontroluje i přijetí výsledku a opakovaného pokusu. Odmítnuté dokončení po změně adresy nebo vypršení převzetí se nehlásí jako úspěšný běh. To samo ještě nezajišťuje transakčnost hlavního importu ani nezastaví již zahájené zápisy po ztrátě převzetí.
 
 Zkoušky včetně úmyslného selhání a produkčních náhledů: [výsledek](../reports/atomic-catalog-writes-2026-11-03/RESULT.md). Etapy 2 a 3 zůstávají částečné; hlavní import, kandidáti, vykonávání rozhodnutí a nezávislá kontrolní sada zůstávají na seznamu.
+
+Navazující krok v hlavním sběrači: změna **existujícího** závodu a historie jednotlivých změněných údajů se nyní ukládají společně. Zapisovač znovu kontroluje aktuální ruční zámky, sloučení a veřejnou verzi závodu. Starý návrh po souběžné změně odloží k novému výpočtu, nikoli ke schválení vlastníkem. Kolize jedinečného klíče zachová klíč původního záznamu a nedotkne se jeho jiného vlastníka. Nový závod, místa, zdrojové vazby, kategorie a následná upozornění zatím nejsou jeden společný zápis. [Důkazy a hranice](../reports/atomic-watcher-update-2026-11-03/RESULT.md).

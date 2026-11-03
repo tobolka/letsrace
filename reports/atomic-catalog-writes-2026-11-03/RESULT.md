@@ -15,7 +15,7 @@ Databázové změny byly aplikovány na produkci. Funkce jsou `SECURITY INVOKER`
 - Produkční běh doplnění: `filled: 0`; žádné závody se tímto během nezměnily. Produkční náhled návratu pěti skutečných podkladů zachoval tři zamčené disciplíny a označil dva zápisy registračních odkazů jako možné vrácení; náhled nic nezměnil.
 - Kontrola Supabase nehlásí novou závadu těchto funkcí; dosavadní nálezy PostGIS a nastavení hesel zůstávají mimo tuto změnu.
 - Celá sada: **1 468 testů / 224 souborů prošlo**. Sestavení a cílená kontrola kódu prošly (`tmp/operations-writers-tests.log`, `tmp/operations-writers-build.log`, `tmp/operations-writers-lint.log`).
-- Nasazení a shoda nainstalovaného Macu budou ověřeny po vydání.
+- Nasazeno `a432a2e2`, Vercel `dpl_3YCzSdB1fYgWNPuaMaJUJJR4dq6q` ve stavu READY s adresou `letsrace.cz`. Mac byl aktualizován; soubory doplňování disciplíny a návratu historie se shodují s pracovním kódem. Poslední instalace dalšího navazujícího vydání zahrnuje i kontrolu potvrzení čtenáře.
 
 ## Co není dokončeno
 

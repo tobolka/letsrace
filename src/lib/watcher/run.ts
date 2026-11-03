@@ -2419,7 +2419,11 @@ async function upsertParsedEvent(
   let changed = false;
   if (eventId) {
     const { updateEventPreservingKey } = await import("@/lib/watcher/write-event");
-    const { retainedKey } = await updateEventPreservingKey(supabase, eventId, payload);
+    const { retainedKey, changed: fieldsChanged } = await updateEventPreservingKey(supabase, eventId, payload, {
+      revision: (existingFull as { public_revision: string }).public_revision,
+      sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote, model: ev.evidence?.model,
+    });
+    changed = fieldsChanged;
     if (retainedKey) console.info("watcher_key_collision", JSON.stringify({ eventId, source: watchedUrl, retainedExistingKey: true }));
   } else {
     const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
@@ -2471,17 +2475,6 @@ async function upsertParsedEvent(
 
   if (!eventId) throw new Error("Race write returned no id");
 
-  if (!created && existingFull) {
-    const previous = existingFull as unknown as Record<string, unknown>;
-    const { recordFacts } = await import("@/lib/catalog/facts");
-    const changes = Object.entries(payload).filter(([field, value]) =>
-      !["last_seen_at", "updated_at", "fingerprint", "name_normalized"].includes(field) &&
-      Object.hasOwn(previous, field) && JSON.stringify(previous[field] ?? null) !== JSON.stringify(value ?? null));
-    changed = changes.length > 0;
-    await recordFacts(supabase, eventId, changes.map(([field, value]) => ({ field, value, previous: previous[field],
-      sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote ?? null })),
-      { method: "watcher_update_v2", version: "pipeline-v2", model: ev.evidence?.model });
-  }
   await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
 
   if (beforeSnap) {

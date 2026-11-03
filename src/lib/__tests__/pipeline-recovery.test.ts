@@ -7,23 +7,28 @@ import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { scoreDuplicate, hasIdentityConflict } from "@/lib/dedup";
 import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 
-it("retains the matched event's key on a collision without touching the other event", async () => {
-  const values: Record<string, unknown>[] = [];
-  const eq = vi.fn().mockResolvedValueOnce({ error: { code: "23505", message: 'duplicate key events_fingerprint_key' } }).mockResolvedValueOnce({ error: null });
-  const db = { from: vi.fn(() => ({ update: (payload: Record<string, unknown>) => { values.push({ ...payload }); return { eq }; } })) } as unknown as SupabaseClient;
-  const payload = { fingerprint: "another-row-key", name: "Verified race", start_date: "2026-11-01" };
-  expect(await updateEventPreservingKey(db, "matched-race", payload)).toEqual({ retainedKey: true });
-  expect(values).toEqual([{ fingerprint: "another-row-key", name: "Verified race", start_date: "2026-11-01" }, { name: "Verified race", start_date: "2026-11-01" }]);
-  expect(eq.mock.calls).toEqual([["id", "matched-race"], ["id", "matched-race"]]);
+const evidence = { revision: "revision", sourceUrl: "https://race.test/" };
+it("uses a single protected update and adopts only the confirmed applied fields", async () => {
+  const rpc = vi.fn().mockResolvedValue({ data: { retainedKey: true, changed: true, applied: { name: "Verified race" } }, error: null });
+  const db = { rpc } as unknown as SupabaseClient;
+  const payload = { fingerprint: "another-row-key", name: "Verified race" };
+  expect(await updateEventPreservingKey(db, "matched-race", payload, evidence)).toEqual({ retainedKey: true, changed: true });
+  expect(payload).toEqual({ name: "Verified race" });
+  expect(rpc).toHaveBeenCalledOnce();
+  expect(rpc).toHaveBeenCalledWith("pipeline_update_watcher_event", expect.objectContaining({ p_event: "matched-race", p_revision: "revision" }));
 });
 
-it("does not hide a failed second update or retry unrelated database errors", async () => {
-  for (const errors of [ [{ code: "XX001", message: "database unavailable" }], [{ code: "23505", message: "events_fingerprint_key" }, { message: "update denied" }] ]) {
-    const eq = vi.fn(); for (const error of errors) eq.mockResolvedValueOnce({ error });
-    const db = { from: () => ({ update: () => ({ eq }) }) } as unknown as SupabaseClient;
-    await expect(updateEventPreservingKey(db, "race", { fingerprint: "key" })).rejects.toThrow(errors.at(-1)!.message);
-    expect(eq).toHaveBeenCalledTimes(errors.length);
-  }
+it("does not retry database failures without protection or invent a receipt", async () => {
+  const rpc = vi.fn().mockResolvedValue({ data: null, error: { message: "database unavailable" } });
+  const db = { rpc } as unknown as SupabaseClient;
+  await expect(updateEventPreservingKey(db, "race", {}, evidence)).rejects.toThrow("database unavailable");
+  expect(rpc).toHaveBeenCalledOnce();
+  rpc.mockResolvedValue({ data: null, error: null });
+  await expect(updateEventPreservingKey(db, "race", {}, evidence)).rejects.toThrow("not confirmed");
+});
+
+it("retries a concurrent correction without turning it into an owner decision", () => {
+  expect(summarizeWatches([{ watchedUrlId: "a", url: "https://race.test/", ok: false, eventsUpserted: 0, linksDiscovered: 0, error: "concurrent_event_update: race changed before write" }])).toMatchObject({ failed: 0, deferred: 1 });
 });
 
 it("reports a budget deferral separately without classifying partial failed writes as success", () => {

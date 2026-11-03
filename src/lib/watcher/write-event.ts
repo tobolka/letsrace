@@ -1,13 +1,23 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-/** Updating a proven source match must never adopt another row's unique key. */
-export async function updateEventPreservingKey(supabase: SupabaseClient, id: string, payload: Record<string, unknown>) {
-  let { error } = await supabase.from("events").update(payload).eq("id", id);
-  const retainedKey = error?.code === "23505" && error.message.includes("events_fingerprint_key");
-  if (retainedKey) {
-    Reflect.deleteProperty(payload, "fingerprint");
-    ({ error } = await supabase.from("events").update(payload).eq("id", id));
-  }
+/** Existing matched race, protected fields and history commit together. */
+export async function updateEventPreservingKey(
+  supabase: SupabaseClient,
+  id: string,
+  payload: Record<string, unknown>,
+  evidence: { revision: string; sourceUrl: string; quote?: string | null; model?: string | null },
+): Promise<{ retainedKey: boolean; changed: boolean }> {
+  const { data, error } = await supabase.rpc("pipeline_update_watcher_event", {
+    p_event: id, p_revision: evidence.revision, p_patch: payload,
+    p_evidence: { sourceUrl: evidence.sourceUrl, quote: evidence.quote ?? null, model: evidence.model ?? null },
+  });
   if (error) throw new Error(`Updating race: ${error.message}`);
-  return { retainedKey };
+  const receipt = data as { retainedKey?: unknown; changed?: unknown; applied?: unknown } | null;
+  if (!receipt || typeof receipt.retainedKey !== "boolean" || typeof receipt.changed !== "boolean" || !receipt.applied || typeof receipt.applied !== "object" || Array.isArray(receipt.applied)) {
+    throw new Error("Race update was not confirmed");
+  }
+  // Later plan-change reporting must use what survived the current manual locks.
+  for (const key of Object.keys(payload)) Reflect.deleteProperty(payload, key);
+  Object.assign(payload, receipt.applied);
+  return { retainedKey: receipt.retainedKey, changed: receipt.changed };
 }
