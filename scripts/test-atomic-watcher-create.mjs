@@ -24,6 +24,8 @@ try {
  const details=await readFile('supabase/migrations/20261102140700_reliable_detail_data.sql','utf8');await db.exec(details.slice(details.indexOf('create function public.pipeline_detail_child_revision()'),details.indexOf('-- Shared historical weather')));
  await db.exec(await readFile('supabase/migrations/20261103194952_atomic_watcher_create.sql','utf8'));
  const fence=(await readdir('supabase/migrations')).find(f=>f.endsWith('_watcher_source_kind_fence.sql'));await db.exec(await readFile('supabase/migrations/'+fence,'utf8'));
+ await db.exec(await readFile('supabase/migrations/20261103134148_atomic_watcher_update.sql','utf8'));
+ const deps=(await readdir('supabase/migrations')).find(f=>f.endsWith('_atomic_existing_race_dependencies.sql'));await db.exec(await readFile('supabase/migrations/'+deps,'utf8'));
  await db.exec(`set role service_role;insert into watched_urls values('${watched}','https://fixture.test/','federation','active',null,now());insert into series(id,name,slug)values('${primary}','Main','main'),('${secondary}','Additional','additional');`);
  const source={watchedUrlId:watched,kind:'federation',event:{externalId:'fixture-2027',sourceUrl:'https://fixture.test/race',name:'Fixture race',startDate:'2027-05-01'}};
  const payload={name:'Fixture race',slug:'fixture-2027',start_date:'2027-05-01',fingerprint:'fixture-key',location_id:location,series_id:primary,disciplines:['mtb']};
@@ -60,6 +62,21 @@ try {
  const duplicateLoc={...loc,row:{...loc.row,id:id(21)}};
  await assert.rejects(create({id:id(11),payload:{...payload,slug:'second',location_id:id(21)},location:duplicateLoc}),/duplicate key/);assert.deepEqual(await state(),success,'fingerprint collision cannot leave an orphan location');
  await assert.rejects(create({id:id(11),payload:{...payload,slug:'second',fingerprint:'different-key',location_id:id(21)},location:duplicateLoc}),/duplicate key/);assert.deepEqual(await state(),success,'source ownership cannot be stolen by another event');
+ // Dependencies of an existing race must not invalidate their own revision check.
+ const update=async(patch,evidence={},revision)=>(await db.query('select pipeline_update_watcher_event($1,$2,$3,$4) r',[race,revision??(await state()).events.find(e=>e.id===race).public_revision,patch,{sourceUrl:'https://fixture.test/race',...evidence}])).rows[0].r;
+ await db.exec(`update locations set lat=null,lng=null where id='${location}'`);
+ const geoCurrent={action:'geocode',id:location,expectedLat:null,expectedLng:null,lat:50,lng:15};
+ assert.equal((await update({name:'Updated race',location_id:location},{location:geoCurrent,lease,sourceKind:'federation'})).changed,true);
+ assert.equal((await state()).events.find(e=>e.id===race).name,'Updated race');assert.equal((await state()).locations.find(l=>l.id===location).lat,50);
+ await db.exec(`insert into series(id,name,slug)values('${id(4)}','Third series','third')`);
+ assert.equal((await update({},{secondarySeries:[id(4)]})).changed,true);assert.equal((await state()).event_series.filter(s=>s.event_id===race).length,3);
+ const depLocation={...loc,row:{...loc.row,id:id(40)}};
+ await db.exec(`reset role;create function reject_update_history()returns trigger language plpgsql as $$begin raise exception 'update history failed';end$$;create trigger reject_update_history before insert on event_facts for each row execute function reject_update_history();set role service_role;`);
+ const beforeUpdateFailure=await state();await assert.rejects(update({name:'Unrecorded',location_id:id(40)},{location:depLocation}),/update history failed/);assert.deepEqual(await state(),beforeUpdateFailure);
+ await db.exec('reset role;drop trigger reject_update_history on event_facts;drop function reject_update_history();set role service_role');
+ const beforeStaleUpdate=await state();await assert.rejects(update({name:'Stale',location_id:id(40)},{location:depLocation},id(999)),/concurrent_event_update/);assert.deepEqual(await state(),beforeStaleUpdate);
+ await db.exec(`insert into event_overrides values('${race}',array['location_id'])`);const beforeLockedPlace=await state();assert.equal((await update({location_id:id(40)},{location:depLocation})).changed,false);assert.deepEqual(await state(),beforeLockedPlace);await db.exec('delete from event_overrides');
+ await db.exec(`update pipeline_tasks set lease_until=now()-interval '1 second' where key='source:${watched}'`);const beforeLostUpdate=await state();await assert.rejects(update({name:'Lost lease'},{lease,sourceKind:'federation'}),/source lease lost/);assert.deepEqual(await state(),beforeLostUpdate);await db.exec(`update pipeline_tasks set lease_until=now()+interval '5 minutes' where key='source:${watched}'`);
  await db.exec(`insert into locations(id,name)values('${id(30)}','Existing place');update events set location_id='${id(30)}' where id='${race}'`);
  const geocode={action:'geocode',id:id(30),expectedLat:null,expectedLng:null,lat:49,lng:16};
  const anotherSource={...source,event:{...source.event,externalId:'another'}};

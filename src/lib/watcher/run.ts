@@ -2031,32 +2031,14 @@ async function upsertParsedEvent(
         lng = reused.lng;
       }
       if (reused.lat == null && lat != null && lng != null) {
-        if (!existingId) {
-          pendingLocation = { action: "geocode", id: reused.id, expectedLat: reused.lat, expectedLng: reused.lng, lat, lng };
-        } else {
-          const { error } = await supabase.from("locations").update({ lat, lng, geocode_status: "ok", updated_at: new Date().toISOString() }).eq("id", reused.id);
-          if (error) throw Error(`Updating reused location: ${error.message}`);
-          const { error: geoError } = await supabase.rpc("set_location_geog", { loc_id: reused.id, lng, lat });
-          if (geoError) throw Error(`Updating location geometry: ${geoError.message}`);
-        }
+        pendingLocation = { action: "geocode", id: reused.id, expectedLat: reused.lat, expectedLng: reused.lng, lat, lng };
       }
     } else {
-      const newLocation = {
-        name: ev.placeText, municipality: isCountryOnlyPlace(ev.placeText) ? null : geocodeQuery,
+      locationId = randomUUID();
+      pendingLocation = { action: "create", row: {
+        id: locationId, name: ev.placeText, municipality: isCountryOnlyPlace(ev.placeText) ? null : geocodeQuery,
         country_code: country, lat, lng, geocode_query: geocodeQuery, geocode_status: geocodeStatus, timezone: timezoneForCountry(country),
-      };
-      if (!existingId) {
-        locationId = randomUUID();
-        pendingLocation = { action: "create", row: { ...newLocation, id: locationId } };
-      } else {
-        const { data: loc, error } = await supabase.from("locations").insert(newLocation).select("id").single();
-        if (error) throw Error(`Creating location: ${error.message}`);
-        locationId = loc.id;
-        if (lat != null && lng != null) {
-          const { error: geoError } = await supabase.rpc("set_location_geog", { loc_id: locationId, lng, lat });
-          if (geoError) throw Error(`Updating location geometry: ${geoError.message}`);
-        }
-      }
+      } };
     }
 
     resolvedLat = lat;
@@ -2348,6 +2330,7 @@ async function upsertParsedEvent(
 
   // Attach / create series (Talent Cup, KPŽ, …)
   let attachedSeriesId: string | undefined;
+  const pendingSeriesIds: string[] = [];
   if (ev.seriesName || ev.seriesSlug) {
     const seriesId = await resolveSeriesId(supabase, ev, classified, publicRaceUrl);
     if (
@@ -2357,14 +2340,14 @@ async function upsertParsedEvent(
     ) {
       // Already has another primary → keep it and join as a secondary membership.
       if (existingId) {
-        const { data: cur } = await supabase
+        const { data: cur, error } = await supabase
           .from("events")
           .select("series_id")
           .eq("id", existingId)
           .maybeSingle();
+        if (error) throw Error(`Reading primary series: ${error.message}`);
         if (cur?.series_id && cur.series_id !== seriesId) {
-          const { attachSecondarySeries } = await import("@/lib/catalog/event-series");
-          await attachSecondarySeries(supabase, existingId, seriesId, "watcher");
+          pendingSeriesIds.push(seriesId);
           attachedSeriesId = seriesId;
         } else {
           payload.series_id = seriesId;
@@ -2406,13 +2389,12 @@ async function upsertParsedEvent(
   const mergedIssues = overviewIssues(effective, today);
   if (mergedIssues.length) throw new Error(`pipeline_data_review_required:${mergedIssues.join(",")}`);
 
-  const newSecondarySeries: string[] = [];
-  if (!existingId) {
-    for (const extra of ev.alsoSeries ?? []) {
-      const sid = await resolveSeriesId(supabase, { ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug, seriesWebsite: extra.website, alsoSeries: undefined }, classified, publicRaceUrl);
-      if (sid && sid !== payload.series_id && await seriesAcceptsSource(supabase, sid, watchedUrl)) newSecondarySeries.push(sid);
-    }
+  for (const extra of ev.alsoSeries ?? []) {
+    const sid = await resolveSeriesId(supabase, { ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug, seriesWebsite: extra.website, alsoSeries: undefined }, classified, publicRaceUrl);
+    if (sid && sid !== payload.series_id && sid !== attachedSeriesId && await seriesAcceptsSource(supabase, sid, watchedUrl)) pendingSeriesIds.push(sid);
   }
+  const locationPlanId = pendingLocation?.action === "create" ? pendingLocation.row.id : pendingLocation?.id;
+  const locationPlan = payload.location_id && payload.location_id === locationPlanId ? pendingLocation : null;
 
   let eventId = existingId;
   let created = false;
@@ -2422,13 +2404,14 @@ async function upsertParsedEvent(
     const { retainedKey, changed: fieldsChanged } = await updateEventPreservingKey(supabase, eventId, payload, {
       revision: (existingFull as { public_revision: string }).public_revision,
       sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote, model: ev.evidence?.model,
+      location: locationPlan, secondarySeries: pendingSeriesIds, sourceKind: watchedKind,
     });
     changed = fieldsChanged;
     if (retainedKey) console.info("watcher_key_collision", JSON.stringify({ eventId, source: watchedUrl, retainedExistingKey: true }));
   } else {
     const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
     const { createWatcherEvent } = await import("@/lib/watcher/write-event");
-    const create = (slug: string) => createWatcherEvent(supabase, { ...payload, slug }, { watchedUrlId, kind: watchedKind ?? "official", event: ev, reviewed: Boolean(review) }, pendingLocation, newSecondarySeries);
+    const create = (slug: string) => createWatcherEvent(supabase, { ...payload, slug }, { watchedUrlId, kind: watchedKind ?? "official", event: ev, reviewed: Boolean(review) }, locationPlan, pendingSeriesIds);
     let data: { id: string } | null = null;
     let error: { code?: string; message: string } | null = null;
     try { data = await create(slug); }
@@ -2540,24 +2523,6 @@ async function upsertParsedEvent(
     }
   }
 
-  // Explicit secondary memberships from the parser (alsoSeries).
-  if (!created && ev.alsoSeries?.length) {
-    const { attachSecondarySeries } = await import("@/lib/catalog/event-series");
-    for (const extra of ev.alsoSeries) {
-      const extraParsed: ParsedEvent = {
-        ...ev,
-        seriesName: extra.name || extra.slug,
-        seriesSlug: extra.slug,
-        seriesWebsite: extra.website,
-        alsoSeries: undefined,
-      };
-      const sid = await resolveSeriesId(supabase, extraParsed, classified, publicRaceUrl);
-      if (!sid) continue;
-      if (!(await seriesAcceptsSource(supabase, sid, watchedUrl))) continue;
-      if (sid === attachedSeriesId || sid === payload.series_id) continue;
-      await attachSecondarySeries(supabase, eventId, sid, "watcher");
-    }
-  }
 
   return { id: eventId, created, changed };
 }

@@ -34,11 +34,11 @@ export async function updateEventPreservingKey(
   supabase: SupabaseClient,
   id: string,
   payload: Record<string, unknown>,
-  evidence: { revision: string; sourceUrl: string; quote?: string | null; model?: string | null },
+  evidence: { revision: string; sourceUrl: string; quote?: string | null; model?: string | null; location?: NewRaceLocationPlan | null; secondarySeries?: string[]; sourceKind?: string },
 ): Promise<{ retainedKey: boolean; changed: boolean }> {
   const { data, error } = await supabase.rpc("pipeline_update_watcher_event", {
     p_event: id, p_revision: evidence.revision, p_patch: payload,
-    p_evidence: { sourceUrl: evidence.sourceUrl, quote: evidence.quote ?? null, model: evidence.model ?? null },
+    p_evidence: { sourceUrl: evidence.sourceUrl, quote: evidence.quote ?? null, model: evidence.model ?? null, location: evidence.location ?? null, secondarySeries: evidence.secondarySeries ?? [], sourceKind: evidence.sourceKind ?? null, lease: currentSourceLease() ?? null },
   });
   if (error) throw new Error(`Updating race: ${error.message}`);
   const receipt = data as { retainedKey?: unknown; changed?: unknown; applied?: unknown } | null;

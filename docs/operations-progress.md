@@ -21,7 +21,7 @@ Aktualizováno 3. listopadu 2026 podle nasazených oprav doložených níže. **
 - [x] **Nový přehled a panel:** běžné ovládání je oddělené od technických nástrojů; poslední kontrola společného seznamu má samostatný údaj. [Výsledek adminu](../reports/owner-admin-2026-11-02/RESULT.md).
 - [x] **Kontrola podkladu kandidáta i v zapisovači:** nový zápis nespoléhá jen na dřívější náhled; citované části musí odpovídat zdroji. Tvorba celého záznamu kandidáta ještě není jeden společný zápis.
 - [x] **Nový závod v hlavním sběrači:** závod, plánované místo/geokódování, zdrojová vazba, snímek a kontrolní otisk čtení, kategorie, hlavní/vedlejší vazby seriálů i požadavky na zveřejnění se ukládají společně. Pravidelné čtení před zápisem ověřuje aktuální převzetí zdroje. [Zkoušky pádu a databáze](../reports/atomic-watcher-create-2026-11-03/RESULT.md).
-- [x] **Změna existujícího závodu a její historie dohromady:** aktuální ruční zámky, odmítnutí starého návrhu po souběžné změně, ochrana klíče jiného závodu. [Výsledek a skutečný běh](../reports/atomic-watcher-update-2026-11-03/RESULT.md).
+- [x] **Změna existujícího závodu a její historie dohromady:** aktuální ruční zámky, odmítnutí starého návrhu po souběžné změně, ochrana klíče jiného závodu. Plánované místo a vedlejší vazby se provedou až po této kontrole ve stejné transakci, aby nevyvolávaly vlastní falešný souběh. [Původní krok](../reports/atomic-watcher-update-2026-11-03/RESULT.md), [navazující oprava](../reports/atomic-watcher-create-2026-11-03/EXISTING-DEPENDENCIES.md).
 - [x] **Hlavní i vedlejší seriály:** společné uložení vazeb a původu; vedlejší kola se zobrazují i v přehledu seriálu. [Výsledek](../reports/atomic-series-membership-2026-11-03/RESULT.md).
 - [x] **Zveřejnění seriálů a změn jejich kol:** trvalé požadavky včetně staré adresy při přejmenování, bez nové práce při pouhém opakovaném čtení. [UCI a návaznost seriálů](../reports/uci-import-2026-11-03/RESULT.md).
 - [x] **Oddělené vyžádání aktualizace a kontrola výsledku:** společný seznam/mapa/kalendář mají vlastní kontrolu proti databázi. První doložená dávka ověřila 1 006 záznamů; nejde o aktuální počet závodů ani o indexaci Googlu. [Výsledek](../reports/aggregate-publication-2026-11-02/RESULT.md).
@@ -35,7 +35,7 @@ Aktualizováno 3. listopadu 2026 podle nasazených oprav doložených níže. **
 ## Není hotovo — konkrétní zbývající práce
 
 - [ ] **Dokončit zpracování kandidáta:** bezpečné převzetí, provedení a konečný stav, včetně pokračování po přerušení. Kontrola zdroje samotná není hotový proces.
-- [ ] **Převést ostatní přímé zapisovače:** zejména navazující změny existujících závodů, jejich zdrojů, kategorií a oznámení; kontrola stále platného převzetí uvnitř ostatních zápisů. Doplnit bezpečnou obnovu celé nahrazené sady kategorií.
+- [ ] **Převést ostatní přímé zapisovače:** zejména zdrojové vazby, snímky, kategorie a oznámení existujících závodů; kontrola stále platného převzetí uvnitř ostatních zápisů. Doplnit bezpečnou obnovu celé nahrazené sady kategorií.
 - [ ] **Dokončit nahromaděné kontroly veřejných výsledků** při zachovaných limitech. Vyžádání aktualizace neoznačovat za ověřenou stránku.
 - [ ] **Vytvářet a provádět konkrétní rozhodnutí:** technické chyby řešit automaticky, vlastníka se ptát jen na nezbytnou volbu; odpověď musí mít skutečný a dohledatelný účinek.
 - [ ] **Sjednotit automatické řešení rozporů a duplicit:** jasná pravidla pro jednoznačné případy, odložení nejasných, zachování adres, vazeb a plánů, prevence návratu duplicity a obnovitelnost.

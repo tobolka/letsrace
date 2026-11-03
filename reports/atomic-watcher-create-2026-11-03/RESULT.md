@@ -35,4 +35,6 @@ Explicitní dříve zkontrolovaný kandidát může použít svůj pozastavený 
 
 Příprava nebo dohledání samotného seriálu může předcházet transakci; při neúspěchu může zůstat seriál bez nového kola. Změny existujících závodů mají další kroky mimo společný zápis jejich hlavních údajů a historie. Konečný stav kandidáta, oznámení, ostatní přímí zapisovači, vykonávání odpovědí vlastníka, automatické řešení konfliktů/duplicit a nezávislé měření nejsou tímto dokončené. Atomické uložení samo neprokazuje správnost zdrojových údajů ani veřejné zobrazení.
 
+Následná kontrola skutečných odkladů doplnila i [plánované změny místa a vazeb existujícího závodu](EXISTING-DEPENDENCIES.md) do jeho společného zápisu. Zdrojové snímky, kategorie a oznámení existujících závodů stále vyžadují další práci.
+
 Rozpočty, pravidla ročníků a rozsah sportů se nemění. Trialové závody se nepřidávají. Změna je vnitřní oprava spolehlivosti, bez nové veřejné funkce k oznámení v novinkách.
