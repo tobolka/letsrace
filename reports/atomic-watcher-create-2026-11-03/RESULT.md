@@ -38,3 +38,11 @@ Příprava nebo dohledání samotného seriálu může předcházet transakci; p
 Následná kontrola skutečných odkladů doplnila i [plánované změny místa a vazeb existujícího závodu](EXISTING-DEPENDENCIES.md) do jeho společného zápisu. Zdrojové snímky, kategorie a oznámení existujících závodů stále vyžadují další práci.
 
 Rozpočty, pravidla ročníků a rozsah sportů se nemění. Trialové závody se nepřidávají. Změna je vnitřní oprava spolehlivosti, bez nové veřejné funkce k oznámení v novinkách.
+
+## Dokončené nasazení
+
+Nové vytváření bylo nasazené v `23647c69` (Vercel `dpl_5EhjcjXNW2rZWeEBYQqwWMeE6GgH` READY). Následná oprava vlastních konfliktů existujících závodů je nasazená v `3c58e77d` (Vercel `dpl_EsvbBrC6v3UnRK1FN2WAQMaMavaP` READY) na `letsrace.cz`. Databázové změny jsou aplikované.
+
+Mac byl aktualizovaný a soubory hlavního sběrače a zapisovače porovnány s vydaným kódem. Runner i panel běží a pravidelně hlásí stav. [Následný skutečný běh s předáním převzetí do zápisu](existing-dependency-replay.json) skončil úspěšně: 0 nových, 0 změněných a 0 chyb. Stávající nevyřešené konflikty identity či přístup Eventivu se tím neoznačují za vyřešené.
+
+Oba hlavní přehledy byly přepsané přímo v tabulkách a mají zkontrolované odkazy. Tato rozdělaná sada je dokončená; větší otevřené bloky jsou nadále označené v `docs/operations-progress.md`.

@@ -18,6 +18,8 @@ Na skutečné databázi byl scénář chybějících souřadnic připraven uvnit
 
 Logy: `tmp/atomic-create-sql.log`, `tmp/atomic-dependencies-tests.log`, `tmp/atomic-dependencies-build.log`, `tmp/atomic-dependencies-lint.log`.
 
+Nasazeno `3c58e77d`, Vercel `dpl_EsvbBrC6v3UnRK1FN2WAQMaMavaP` READY s produkční doménou. Mac má totožné soubory a běží. Skutečný opakovaný běh Chotěbuze s novým předáním převzetí do databáze: [0 nových / 0 změněných / 0 chyb](existing-dependency-replay.json).
+
 ## Hranice
 
 Změny zdrojových vazeb, celého snímku podkladu, kategorií a oznámení u existujícího závodu mají dosud další kroky. Příprava metadat seriálu může dál předcházet zápisu a vyvolat oprávněné nové vyhodnocení. Nejde o odstranění všech případů souběhu ani dokončení celé pipeline. Nejasné identity z RideAndRest/Odjazdu a odmítnutý přístup Eventivu nejsou touto změnou prohlášené za vyřešené.
