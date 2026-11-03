@@ -413,17 +413,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </section>
         ) : null}
 
-        {nearby.length > 0 ? (
-          <section className="mt-10">
-            <h2 className="mb-3 text-lg font-semibold">{rc.nearbySimilar}</h2>
-            <RaceLinkList
-              events={nearby.map((n) => n.event)}
-              distances={new Map(nearby.map((n) => [n.event.id, n.km]))}
-              locale={locale}
-              groupByMonth={false}
-            />
-          </section>
-        ) : null}
+
 
         {([{ id: "previous-editions", title: rc.previousEditions, rows: editions.previous }, { id: "next-editions", title: rc.nextEditions, rows: editions.next }]).filter(group => group.rows.length > 0).map(group => (
           <section key={group.id} className="mt-10" aria-labelledby={group.id}>
@@ -468,6 +458,18 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               ))}
             </ul>
             <p className="mt-2 text-xs text-muted-foreground">{rc.sourcesHelp}</p>
+          </section>
+        ) : null}
+
+        {nearby.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="mb-3 text-lg font-semibold">{rc.nearbySimilar}</h2>
+            <RaceLinkList
+              events={nearby.map((n) => n.event)}
+              distances={new Map(nearby.map((n) => [n.event.id, n.km]))}
+              locale={locale}
+              groupByMonth={false}
+            />
           </section>
         ) : null}
 

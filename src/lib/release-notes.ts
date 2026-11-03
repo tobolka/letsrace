@@ -22,6 +22,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-03",
     items: {
       cs: [
+        "Název areálu otevře jeho místo na mapě a podobné závody najdeš až pod zdroji informací o závodu.",
         "V přehledu seriálu najdeš i závody, které současně patří do dalšího seriálu.",
         "Black Forest ULTRA Bike Marathon 2027 má správně označený Světový pohár, v kalendáři přibyl sjezdový pohár ve Szczyrku a závod juniorů v Grazu má doplněné zařazení UCI.",
         "Z měsíčního přehledu kolekce přejdeš přímo na závody vybraného měsíce i na dalších stránkách seznamu.",
@@ -31,6 +32,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "U závodů s dostupnými podklady najdeš adresu areálu, program, startovné a varianty tras společně s jejich zdroji.",
       ],
       en: [
+        "Venue names open their location on a map, and similar races appear after the race’s sources.",
         "A series overview also includes races that belong to another series at the same time.",
         "Black Forest ULTRA Bike Marathon 2027 is correctly marked as a World Cup, Szczyrk’s downhill cup joins the calendar, and Graz’s junior race has its UCI series classification.",
         "Collection month links take you straight to that month’s races, including on later list pages.",
