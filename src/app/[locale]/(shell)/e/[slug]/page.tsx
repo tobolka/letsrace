@@ -217,16 +217,14 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         ]}
       />
 
-      <div className="relative">
-        <BrowseHeader
-          locale={locale}
-          crumbs={[
-            ...browseCrumbs(locale, browsePlace([event])),
-            ...(event.series ? [{ label: event.series.name, href: localePath(locale, `series/${event.series.slug}`) }] : []),
-            { label: event.name },
-          ]}
-        />
-      </div>
+      <BrowseHeader
+        locale={locale}
+        crumbs={[
+          ...browseCrumbs(locale, browsePlace([event])),
+          ...(event.series ? [{ label: event.series.name, href: localePath(locale, `series/${event.series.slug}`) }] : []),
+          { label: event.name },
+        ]}
+      />
       <div className="relative mx-auto max-w-3xl px-4 pb-12 pt-4 sm:px-6">
         {/* The list row's shape, larger: the discipline's colour down the
             edge, the name, then the date and where, what and which series.

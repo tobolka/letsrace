@@ -22,11 +22,13 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-03",
     items: {
       cs: [
+        "Při posouvání detailu závodu zůstává hlavička s logem nahoře a zobrazí název závodu.",
         "Aktualizace závodů se odesílají na web odděleně od následných kontrol jednotlivých stránek.",
         "V kolekcích najdeš celý rok 2027 pro Česko, české MTB a dětské závody, včetně přehledu měsíců, známých vzdáleností, kategorií a seriálů.",
         "U závodů s dostupnými podklady najdeš adresu areálu, program, startovné a varianty tras společně s jejich zdroji.",
       ],
       en: [
+        "The logo bar stays at the top as you scroll a race page and shows the race name.",
         "Race updates reach the web separately from the subsequent checks of individual pages.",
         "Collections cover the full 2027 season for Czech races, Czech MTB and children's races, with monthly counts, known distances, categories and series.",
         "Where sources are available, race pages bring together venue addresses, schedules, entry fees and route options with their sources.",
