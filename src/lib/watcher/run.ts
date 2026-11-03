@@ -1581,7 +1581,7 @@ async function upsertParsedEvent(
   watchedUrlId: string,
   watchedKind?: string,
   watchedUrl?: string,
-  review?: { expectedEventId: string | null },
+  review?: { expectedEventId: string | null; publication: import("@/lib/discovery/publication").CandidatePublication },
 ) {
   const { isIngestibleDate, inferClassification, audienceFromAgeCategories } = await import(
     "@/lib/taxonomy"
@@ -2399,7 +2399,16 @@ async function upsertParsedEvent(
   let eventId = existingId;
   let created = false;
   let changed = false;
-  if (eventId) {
+  if (review) {
+    const { publishCandidatePlan } = await import("@/lib/discovery/publication");
+    const slug = existingId ? undefined : await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
+    if (slug) (payload as Record<string, unknown>).slug = slug;
+    const result = await publishCandidatePlan(supabase, review.publication, {
+      eventId: existingId, revision: existingId ? (existingFull as { public_revision: string }).public_revision : undefined,
+      payload, watchedUrlId, kind: watchedKind ?? "official", event: ev, location: locationPlan, secondarySeries: pendingSeriesIds,
+    });
+    eventId = result.id; created = result.created; changed = result.changed;
+  } else if (eventId) {
     const { updateEventPreservingKey } = await import("@/lib/watcher/write-event");
     const { retainedKey, changed: fieldsChanged } = await updateEventPreservingKey(supabase, eventId, payload, {
       revision: (existingFull as { public_revision: string }).public_revision,
@@ -2455,7 +2464,7 @@ async function upsertParsedEvent(
 
   if (!eventId) throw new Error("Race write returned no id");
 
-  if (!created) await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
+  if (!review && !created) await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
 
   if (beforeSnap) {
     try {
@@ -2476,7 +2485,7 @@ async function upsertParsedEvent(
     }
   }
 
-  if (!created) {
+  if (!review && !created) {
     const { error: sourceWriteError } = await supabase.from("event_sources").upsert(
       {
         event_id: eventId,
@@ -2498,7 +2507,7 @@ async function upsertParsedEvent(
     if (sourceWriteError) throw sourceWriteError;
   }
 
-  if (!created && ev.categories?.length && !lockedFields.includes("categories")) {
+  if (!review && !created && ev.categories?.length && !lockedFields.includes("categories")) {
     const { data: held, error: readError } = await supabase.from("event_categories")
       .select("id,name,distance_km,age_min,age_max,audience").eq("event_id", eventId);
     if (readError) throw readError;
@@ -2528,14 +2537,15 @@ async function upsertParsedEvent(
 }
 
 /** Explicitly reviewed assertion; uses all normal identity, lock and evidence protections. */
-export async function ingestReviewedCandidate(row: ReviewRow, decision: ReviewDecision) {
+export async function ingestReviewedCandidate(row: ReviewRow, decision: ReviewDecision, publication: import("@/lib/discovery/publication").CandidatePublication) {
   const { validateReviewSource } = await import("@/lib/discovery/review-source");
   const { catalogueWindow } = await import("@/lib/catalog/overview-quality");
   // Do not trust a calling script to have run the evidence gate. Re-read just
   // before writing; the source may have changed since its preview/claim.
   await validateReviewSource(row, decision, catalogueWindow().from);
   const event = row.payload as unknown as ParsedEvent;
-  const review = { sourceUrl: row.source_url, authority: decision.authority!, expectedEventId: decision.expectedEventId!, watchedUrlId: row.watched_url_id };
+  if (publication.id !== row.id || publication.evidenceHash !== row.evidence_hash || !publication.token) throw Error("Missing candidate publication claim");
+  const review = { publication, sourceUrl: row.source_url, authority: decision.authority!, expectedEventId: decision.expectedEventId!, watchedUrlId: row.watched_url_id };
   const db = createServerSupabase();
   const { canonicalExploreUrl } = await import("./explore");
   const { data: links, error: linkError } = await db.from("discovered_links").select("status").eq("url", canonicalExploreUrl(review.sourceUrl)!);
