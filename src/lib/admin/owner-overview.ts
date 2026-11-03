@@ -2,6 +2,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { getPipelineSourceCounts } from "@/lib/pipeline/source-counts";
 import { z } from "zod";
 
+const publicationCounts = z.object({ awaitingRequest: z.number().int().nonnegative(), requestedAwaitingCheck: z.number().int().nonnegative(), awaitingCheck: z.number().int().nonnegative() });
 const catalogueCheck = z.object({ verifiedAt: z.iso.datetime({ offset: true }), races: z.number().int().nonnegative() });
 
 export type OwnerStateInput = {
@@ -25,7 +26,7 @@ export function ownerState(input: OwnerStateInput) {
 
 export async function getOwnerOverview(decisionOffset=0) {
   const db = createServerSupabase(), now = Date.now();
-  const [mac, server, sources, links, candidates, scheduled, publication, checked, oldest, questions, answered, catalogue] = await Promise.all([
+  const [mac, server, sources, links, candidates, scheduled, publication, checked, oldest, questions, answered, catalogue, refreshCounts] = await Promise.all([
     db.from("pipeline_workers").select("*").eq("key", "mac").maybeSingle(),
     db.from("pipeline_jobs").select("*").eq("key", "server-free").maybeSingle(),
     getPipelineSourceCounts(),
@@ -38,14 +39,16 @@ export async function getOwnerOverview(decisionOffset=0) {
     db.from("pipeline_owner_decisions").select("key,question,reason,recommendation,default_action,options,evidence,updated_at",{count:"exact"}).eq("status","open").order("created_at").order("key").range(decisionOffset,decisionOffset+19),
     db.from("pipeline_owner_decisions").select("key",{count:"exact",head:true}).eq("status","answered"),
     db.from("pipeline_tasks").select("result").eq("key", "catalogue:upcoming").maybeSingle(),
+    db.rpc("pipeline_publication_counts"),
   ]);
-  for (const result of [mac, server, links, candidates, scheduled, publication, checked, oldest, questions, answered, catalogue]) if (result.error) throw Error(`Reading owner overview: ${result.error.message}`);
+  for (const result of [mac, server, links, candidates, scheduled, publication, checked, oldest, questions, answered, catalogue, refreshCounts]) if (result.error) throw Error(`Reading owner overview: ${result.error.message}`);
   for(const result of [links,candidates,scheduled,publication,checked,questions,answered])if(typeof result.count!=='number')throw Error('Owner overview count is not confirmed');
   const input: OwnerStateInput = { now, macAt: mac.data?.heartbeat_at ?? null, macPaused: mac.data?.paused ?? false, macStatus: mac.data?.status ?? null,
     serverAt: server.data?.finished_at ?? null,serverStatus:server.data?.status, broken: sources.broken, unreadable: sources.unreadable, candidates: candidates.count ?? 0, publicationPending: publication.count ?? 0,
     newSourceLeads:links.count??0,sourceReview:sources.review,sourceDeferred:sources.deferred,overdueSources:sources.overdue };
   const lastCatalogueCheck = catalogueCheck.safeParse(catalogue.data?.result);
   return { ...input, state: ownerState(input), activeSources: sources.sources, newSourcesWaiting: links.count ?? 0, candidatesScheduled: scheduled.count ?? 0,
+    publicationCounts: publicationCounts.parse(refreshCounts.data),
     catalogueCheck: lastCatalogueCheck.success ? lastCatalogueCheck.data : null,
     publicChecks24h: checked.count ?? 0, oldestCandidate: oldest.data?.[0]?.created_at ?? null, mac: mac.data, server: server.data,
     questions:questions.data??[],questionCount:questions.count??0,answersWaiting:answered.count??0,decisionOffset };

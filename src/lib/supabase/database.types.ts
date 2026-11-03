@@ -1463,6 +1463,10 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_publication_counts: { Args: Record<PropertyKey, never>; Returns: Json };
+      pipeline_expiration_candidates: { Args: { p_token: string }; Returns: { key: string; payload: Json }[] };
+      pipeline_record_expirations: { Args: { p_token: string; p_items: Json }; Returns: number };
+
       pipeline_save_practical_details:{Args:{p_event:string;p_expected:string;p_details:Json};Returns:Json};
       pipeline_source_counts:{Args:Record<string,never>;Returns:Json};
       pipeline_answer_owner:{Args:{p_key:string;p_expected:string;p_answer:string};Returns:boolean};

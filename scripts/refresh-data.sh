@@ -64,6 +64,7 @@ weekly_browser_step() {
 }
 
 step "Coverage before"                     scripts/audit-catalogue-overview.ts
+step "Request changed race pages" scripts/request-public-refreshes.ts
 step "Publish saved changes in the shared map and calendar" scripts/publish-catalogue-views.ts
 step "Structured calendars, no model or search cost" scripts/check-free-calendars.ts
 step "Follow up waiting race evidence, no publication" scripts/recheck-discovery-candidates.ts --max=20 --apply
