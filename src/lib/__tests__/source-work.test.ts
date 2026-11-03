@@ -12,3 +12,21 @@ it('limits server readers to HTTP and records the actual source result',async()=
 it('lets Mac readers claim browser work without starting a second reader',async()=>{await withSourceWork(row,async()=>result);expect(rpc).toHaveBeenNthCalledWith(1,'pipeline_claim_source',{p_source:'source',p_capabilities:['http','browser']});});
 it('records a delayed retry after an unexpected interruption',async()=>{await expect(withSourceWork(row,async()=>{throw Error('Interrupted');})).rejects.toThrow('Interrupted');expect(rpc).toHaveBeenLastCalledWith('pipeline_retry_task',expect.objectContaining({p_key:'source:source',p_error:'Interrupted',p_delay_seconds:3600}));});
 it('does not invent a successful completion when recording the result fails',async()=>{rpc.mockImplementation(async name=>name==='pipeline_claim_source'?{data:[{key:'source:source',token:'claim'}],error:null}:{data:null,error:{message:'offline'}});await expect(withSourceWork(row,async()=>result)).rejects.toThrow('Recording source result: offline');});
+it('reports refused completion as deferred even when the request itself succeeds',async()=>{
+  rpc.mockResolvedValueOnce({data:[{key:'source:source',token:'claim'}],error:null}).mockResolvedValueOnce({data:false,error:null});
+  const outcome=await withSourceWork(row,async()=>result);
+  expect(outcome).toMatchObject({ok:false,strategy:'deferred',error:'source_reader_unavailable_or_running:result_not_accepted',eventsCreated:1});
+  expect(rpc).toHaveBeenCalledTimes(2);
+});
+it('does not claim an interruption was requeued after losing the lease',async()=>{
+  rpc.mockResolvedValueOnce({data:[{key:'source:source',token:'claim'}],error:null}).mockResolvedValueOnce({data:false,error:null});
+  await expect(withSourceWork(row,async()=>{throw Error('Interrupted');})).rejects.toThrow('retry_not_accepted');
+});
+it('does not start work without a confirmed lease token',async()=>{
+  const read=vi.fn();
+  rpc.mockResolvedValue({data:null,error:null});
+  await expect(withSourceWork(row,read)).rejects.toThrow('not confirmed');
+  rpc.mockResolvedValue({data:[{key:'source:source'}],error:null});
+  await expect(withSourceWork(row,read)).rejects.toThrow('no lease token');
+  expect(read).not.toHaveBeenCalled();
+});

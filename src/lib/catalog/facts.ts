@@ -69,44 +69,21 @@ export async function rollbackFacts(
   let q = supabase.from("event_facts").select("id, event_id, field, value, previous").eq("method", opts.method).eq("status", "active");
   if (opts.version) q = q.eq("version", opts.version);
   if (opts.since) q = q.gte("created_at", opts.since);
-  const { data } = await q.order("created_at", { ascending: false }).limit(10000);
+  const { data, error } = await q.order("created_at", { ascending: false }).order("id", { ascending: false }).limit(10000);
+  if (error) throw new Error(`Reading rollback evidence: ${error.message}`);
   const result = { facts: data?.length ?? 0, restored: 0, kept: 0 };
-  for (const f of (data ?? []) as { id: string; event_id: string; field: string; value: unknown; previous: unknown }[]) {
-    // Source snapshots are evidence documents, not columns on events.
-    if (f.field === "source_evidence") { result.kept += 1; continue; }
-    if (f.field === "event_categories") {
-      const saved = (f.value as { rows?: Record<string, unknown>[] } | null)?.rows;
-      if (!Array.isArray(saved) || !saved.length) { result.kept++; continue; }
-      const { data: categories, error } = await supabase.from("event_categories").select("*").eq("event_id", f.event_id);
-      if (error) throw new Error(`Reading categories for rollback: ${error.message}`);
-      if (!sameCategoryRows(saved, categories ?? [])) { result.kept++; continue; }
-      opts.log?.(`${opts.dryRun ? "DRY" : "UNDO"} ${f.event_id}: ${saved.length} original categories`);
-      if (!opts.dryRun) {
-        // Match every saved field when deleting, so later edits are preserved.
-        for (const row of saved) {
-          let deletion = supabase.from("event_categories").delete().eq("id", row.id).eq("event_id", f.event_id);
-          for (const field of ["name", "age_min", "age_max", "distance_km", "elevation_m", "gender", "audience"]) {
-            deletion = row[field] == null ? deletion.is(field, null) : deletion.eq(field, row[field]);
-          }
-          const { data: deleted, error: deleteError } = await deletion.select("id");
-          if (deleteError || deleted?.length !== 1) throw new Error(`Category rollback interrupted: ${deleteError?.message ?? "category changed concurrently"}`);
-        }
-        const { error: statusError } = await supabase.from("event_facts").update({ status: "rolled_back" }).eq("id", f.id);
-        if (statusError) throw new Error(statusError.message);
-      }
-      result.restored++; continue;
+  for (const f of (data ?? []) as { id: string; event_id: string; field: string }[]) {
+    const { data: receipt, error: rollbackError } = await supabase.rpc("pipeline_rollback_fact", { p_fact: f.id, p_dry_run: opts.dryRun ?? false });
+    if (rollbackError) throw new Error(`Rolling back recorded change: ${rollbackError.message}`);
+    const outcome = receipt as { status?: string; reason?: string } | null;
+    if (!outcome || !["restored", "kept"].includes(outcome.status ?? "")) throw new Error("Fact rollback was not confirmed");
+    if (outcome.status === "restored") {
+      result.restored++;
+      opts.log?.(`${opts.dryRun ? "DRY" : "UNDO"} ${f.event_id}: ${f.field}`);
+    } else {
+      result.kept++;
+      opts.log?.(`KEEP ${f.event_id}: ${f.field} (${outcome.reason ?? "protected"})`);
     }
-    const { data: ev } = await supabase.from("events").select(f.field).eq("id", f.event_id).maybeSingle();
-    const now = (ev as Record<string, unknown> | null)?.[f.field];
-    if (JSON.stringify(now ?? null) !== JSON.stringify(f.value ?? null)) {
-      result.kept += 1;
-      continue;
-    }
-    opts.log?.(`${opts.dryRun ? "DRY" : "UNDO"}  ${f.event_id}  ${f.field}: ${JSON.stringify(f.value)} → ${JSON.stringify(f.previous)}`);
-    result.restored += 1;
-    if (opts.dryRun) continue;
-    await supabase.from("events").update({ [f.field]: f.previous ?? null, updated_at: new Date().toISOString() }).eq("id", f.event_id);
-    await supabase.from("event_facts").update({ status: "rolled_back" }).eq("id", f.id);
   }
   return result;
 }

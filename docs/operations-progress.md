@@ -41,3 +41,13 @@ Požadavky používají stávající dávku nejvýše 200 položek a stejný lim
 Zbývající konkrétní práce: transakční zápis kandidátů a hlavního sběrače, audit ostatních přímých zapisovačů, vykonávání rozhodnutí ze schránky, samostatné řešení bezpečných shod a nezávislá sada pro měření pokrytí a pravdivosti. Tyto body se neoznačují jako hotové na základě úprav přehledu nebo běžných regresních testů.
 
 Další dokončený krok: [společný zápis vazeb seriálů](../reports/atomic-series-membership-2026-11-03/RESULT.md). Selhání ukládání historie vrátí celý zápis, ruční zámky zůstávají respektované a vedlejší vazby se promítají do přehledu seriálu. Hlavní import a kandidáti zůstávají samostatné nedokončené zapisovací cesty.
+
+## Další opravené zapisovací cesty
+
+Doplňování prázdné disciplíny z hlavního seriálu ukládá údaj, původ a požadavek na zveřejnění společně. Bere aktuální stav pod zámkem, chrání ruční zámky a již vyplněné údaje; počet doplnění potvrzuje databáze. Výběr omezuje až způsobilé závody, takže jej nezaplní prvních 3 000 již vyplněných záznamů.
+
+Návrat jedné doložené automatické změny je také společná operace. Změna údaje nebo odstranění původně vložených kategorií se vrátí při selhání zápisu historie. Novější opravy, ruční zámky, sloučené závody a později přidané kategorie zůstávají chráněné. Návrat celé dříve nahrazené sady kategorií zatím není podporován; tento případ zůstává beze změny s konkrétním důvodem.
+
+Čtenář zdrojů nově kontroluje i přijetí výsledku a opakovaného pokusu. Odmítnuté dokončení po změně adresy nebo vypršení převzetí se nehlásí jako úspěšný běh. To samo ještě nezajišťuje transakčnost hlavního importu ani nezastaví již zahájené zápisy po ztrátě převzetí.
+
+Zkoušky včetně úmyslného selhání a produkčních náhledů: [výsledek](../reports/atomic-catalog-writes-2026-11-03/RESULT.md). Etapy 2 a 3 zůstávají částečné; hlavní import, kandidáti, vykonávání rozhodnutí a nezávislá kontrolní sada zůstávají na seznamu.
