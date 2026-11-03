@@ -10,7 +10,7 @@ import { isAggregatorUrl } from "@/lib/watcher/public-url";
 import { PRACTICAL_EXTRACTION_PROMPT, PRACTICAL_READER_VERSION, verifyPracticalExtraction, type PracticalDocument } from "./practical-extraction";
 import { mergePracticalDetails, practicalDetailsSchema, readPracticalDetails, type PracticalDetails } from "@/lib/practical-details";
 import { fairCatalogueBatch } from "./overview-quality";
-import { practicalProgramme } from "./practical-programme";
+import { combinePracticalFindings, practicalProgramme } from "./practical-programme";
 import { publicLink } from "@/lib/practical-details";
 import type { Json } from "@/lib/supabase/database.types";
 
@@ -22,6 +22,14 @@ export function practicalWindows(text: string, max = 6000) {
     if (from <= last[1]) last[1] = Math.max(last[1], to); else spans.push([from, to]);
   }
   return spans.map(([from, to]) => text.slice(from, to)).join("\n[…]\n").slice(0, max);
+}
+
+/** Rotate bounded child reads so a long navigation cannot starve later rules. */
+export function rotatePracticalLinks(links: string[], attempts: number): string[] {
+  const unique = [...new Set(links)];
+  if (!unique.length) return unique;
+  const offset = Math.max(0, Math.trunc(attempts)) % unique.length;
+  return [...unique.slice(offset), ...unique.slice(0, offset)];
 }
 
 export async function savePracticalDetails(eventId: string, revision: string, details: PracticalDetails) {
@@ -55,9 +63,11 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     return Boolean(options.ids?.length || !previous || Date.now() - Date.parse(previous.last_attempt_at) > days * 86400000);
   }).sort((a, b) => Object.keys(readPracticalDetails(a.practical_details)).length - Object.keys(readPracticalDetails(b.practical_details)).length);
   const batch = fairCatalogueBatch(targets, options.max ?? 12, row => row.location?.country_code ?? "unknown");
-  const result = { considered: batch.length, read: 0, changedFacts: 0, changedRaces: 0, skippedLocked: 0, unchanged: 0, deferred: 0, failed: 0, costUsd: 0 };
+  const result = { considered: batch.length, read: 0, changedFacts: 0, changedRaces: 0, skippedLocked: 0, unchanged: 0, partialReads: 0, deferred: 0, failed: 0, costUsd: 0 };
   for (const row of batch) {
-    if (Date.now() + 60_000 >= deadline) { result.deferred++; break; }
+    let deferred = false;
+    const defer = () => { if (!deferred) { result.deferred++; deferred = true; } };
+    if (Date.now() + 60_000 >= deadline) { defer(); break; }
     const queue = [row.regulations_url, row.website_url, row.registration_url].filter((url): url is string => Boolean(url) && publicLink.safeParse(url).success);
     const documents: PracticalDocument[] = [], seen = new Set<string>();
     let unreadable = 0;
@@ -71,21 +81,25 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         if (!doc?.text.trim()) { unreadable++; continue; }
         const source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
         documents.push({ url, text: source.text, links: [...source.links] });
+        const children: string[] = [];
         for (const link of source.links) {
           const parsed = publicLink.safeParse(link);
           if (!parsed.success || seen.has(link) || /\.gpx(?:[?#]|$)/i.test(link)) continue;
           const path = new URL(link).pathname;
-          if (/kontakt|contact|propoz|regulation|ausschreibung|program|schedule|trasy?|routes?/i.test(path) && new URL(link).hostname === new URL(row.website_url!).hostname) queue.push(link);
-          else if (/\.pdf(?:[?#]|$)/i.test(link)) queue.push(link);
+          if (/kontakt|contact|propoz|regulation|ausschreibung|program|schedule|trasy?|routes?/i.test(path) && new URL(link).hostname === new URL(row.website_url!).hostname) children.push(link);
+          else if (/\.pdf(?:[?#]|$)/i.test(link)) children.push(link);
         }
+        queue.push(...rotatePracticalLinks(children, Number(history.get(row.id)?.attempts ?? 0)));
       }
       if (!documents.length) { result.failed++; checkpoint = "failed"; continue; }
-      const hash = createHash("sha256").update(JSON.stringify(documents)).digest("hex"), reader = `${probe}:${row.id}`;
-      if (await alreadyRead(db, row.website_url!, reader, hash)) { result.unchanged++; checkpoint = unreadable ? "failed" : "silent"; continue; }
-      if (Date.now() + 10_000 >= deadline) { result.deferred++; break; }
+      const partial = unreadable > 0 || queue.some(url => !seen.has(url) && !isAggregatorUrl(url));
+      if (partial) { result.partialReads++; defer(); }
+      const hash = createHash("sha256").update(JSON.stringify({ documents, name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue })).digest("hex"), reader = `${probe}:${row.id}`;
+      if (await alreadyRead(db, row.website_url!, reader, hash)) { result.unchanged++; checkpoint = partial ? "failed" : "silent"; continue; }
+      if (Date.now() + 10_000 >= deadline) { defer(); break; }
       const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, documents };
       let deterministic: PracticalDetails = {};
-      for (const document of documents) deterministic = { ...deterministic, ...practicalProgramme(document, context) };
+      for (const document of documents) deterministic = combinePracticalFindings(deterministic, practicalProgramme(document, context));
       const fieldsNeeded = ["venue", "organizer", "schedule", "fees", "routes"].filter(field => !(field in deterministic));
       const user = JSON.stringify({ fieldsNeeded, race: { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue }, documents: documents.map(doc => ({ ...doc, text: practicalWindows(doc.text, 5000), links: doc.links.slice(0, 100) })) });
       let raw: unknown = { facts: {} }, modelDeferred = false;
@@ -100,26 +114,26 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         } catch (error) {
           if (!(error instanceof LlmUnavailable) && !(error instanceof LlmResponseError)) throw error;
           if (error instanceof LlmResponseError) usage = error.usage;
-          result.deferred++; modelDeferred = true; options.log?.(error.message);
+          defer(); modelDeferred = true; options.log?.(error.message);
         }
       }
       result.costUsd += usage.costUsd; result.read++;
       const checked = verifyPracticalExtraction(raw, context);
-      checked.details = { ...checked.details, ...deterministic };
+      checked.details = combinePracticalFindings(checked.details, deterministic);
       await options.audit?.({ id: row.id, raw, documents, checked, usage });
       options.log?.(JSON.stringify({ id: row.id, name: row.name, documents: documents.length, details: checked.details, rejected: checked.rejected, dry: !options.apply }));
       if (options.apply) {
         const saved = await savePracticalDetails(row.id, row.public_revision, checked.details);
-        if (saved.status !== "saved") { result.deferred++; continue; }
+        if (saved.status !== "saved") { defer(); continue; }
         result.changedFacts += saved.changed?.length ?? 0; result.changedRaces += Number(Boolean(saved.changed?.length)); result.skippedLocked += saved.skipped?.length ?? 0;
         // Failed/partial source reads remain retryable, even after useful other facts were saved.
-        if (!unreadable && !modelDeferred) await markRead(db, row.website_url!, reader, hash);
-        checkpoint = modelDeferred ? null : unreadable ? "failed" : "silent";
+        if (!partial && !modelDeferred) await markRead(db, row.website_url!, reader, hash);
+        checkpoint = modelDeferred ? null : partial ? "failed" : "silent";
       }
       if (modelDeferred) break;
     } catch (error) {
-      if (error instanceof LlmUnavailable) { result.deferred++; options.log?.(error.message); break; }
-      if (error instanceof LlmResponseError) { result.costUsd += error.usage.costUsd; result.deferred++; options.log?.(error.message); break; }
+      if (error instanceof LlmUnavailable) { defer(); options.log?.(error.message); break; }
+      if (error instanceof LlmResponseError) { result.costUsd += error.usage.costUsd; defer(); options.log?.(error.message); break; }
       result.failed++; options.log?.(`${row.id}: ${error instanceof Error ? error.message : "Practical enrichment failed"}`);
       unreadable++; checkpoint = "failed";
     } finally {

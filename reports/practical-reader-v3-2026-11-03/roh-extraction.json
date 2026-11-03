@@ -1,0 +1,152 @@
+{
+  "preview": [
+    {
+      "id": "72427d58-6a5b-4a97-860f-c80c77041d3b",
+      "documents": [
+        "https://www.vesani.cz/propozice/",
+        "https://my.raceresult.com/408156/registration?regname=Single%20Registration",
+        "https://www.vesani.cz/trasa-a-mapy/",
+        "https://www.vesani.cz/propozice-deti/",
+        "https://www.vesani.cz/propozice-bezecky-samozavod/"
+      ],
+      "checked": {
+        "details": {
+          "organizer": {
+            "sourceUrl": "https://www.vesani.cz/propozice/",
+            "quote": "Pořadatel | Sportovní klub Vesani.cz, z.s.",
+            "checkedAt": "2026-11-03T13:53:17.267Z",
+            "editionYear": 2027,
+            "status": "current",
+            "value": {
+              "name": "Sportovní klub Vesani.cz, z.s."
+            }
+          },
+          "schedule": {
+            "sourceUrl": "https://www.vesani.cz/propozice/",
+            "quote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30",
+            "checkedAt": "2026-11-03T13:53:17.269Z",
+            "editionYear": 2027,
+            "status": "current",
+            "value": [
+              {
+                "sourceQuote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30",
+                "sourceUrl": "https://www.vesani.cz/propozice/",
+                "checkedAt": "2026-11-03T13:53:17.269Z",
+                "approximate": false,
+                "label": "Start hlavního závodu",
+                "date": "2027-05-01",
+                "time": "12:30"
+              }
+            ]
+          }
+        },
+        "rejected": []
+      },
+      "usage": {
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "costUsd": 0
+      }
+    }
+  ],
+  "apply": [
+    {
+      "id": "72427d58-6a5b-4a97-860f-c80c77041d3b",
+      "documents": [
+        "https://www.vesani.cz/propozice/",
+        "https://my.raceresult.com/408156/registration?regname=Single%20Registration",
+        "https://www.vesani.cz/trasa-a-mapy/",
+        "https://www.vesani.cz/propozice-deti/",
+        "https://www.vesani.cz/propozice-bezecky-samozavod/"
+      ],
+      "checked": {
+        "details": {
+          "organizer": {
+            "sourceUrl": "https://www.vesani.cz/propozice/",
+            "quote": "Pořadatel | Sportovní klub Vesani.cz, z.s.",
+            "checkedAt": "2026-11-03T13:54:57.712Z",
+            "editionYear": 2027,
+            "status": "current",
+            "value": {
+              "name": "Sportovní klub Vesani.cz, z.s."
+            }
+          },
+          "schedule": {
+            "sourceUrl": "https://www.vesani.cz/propozice/",
+            "quote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30",
+            "checkedAt": "2026-11-03T13:54:57.715Z",
+            "editionYear": 2027,
+            "status": "current",
+            "value": [
+              {
+                "sourceQuote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30",
+                "sourceUrl": "https://www.vesani.cz/propozice/",
+                "checkedAt": "2026-11-03T13:54:57.715Z",
+                "approximate": false,
+                "label": "Start hlavního závodu",
+                "date": "2027-05-01",
+                "time": "12:30"
+              }
+            ]
+          }
+        },
+        "rejected": []
+      },
+      "usage": {
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "costUsd": 0
+      }
+    }
+  ],
+  "replay": [
+    {
+      "id": "72427d58-6a5b-4a97-860f-c80c77041d3b",
+      "documents": [
+        "https://www.vesani.cz/propozice/",
+        "https://my.raceresult.com/408156/registration?regname=Single%20Registration",
+        "https://www.vesani.cz/propozice-deti/",
+        "https://www.vesani.cz/propozice-bezecky-samozavod/",
+        "https://www.vesani.cz/trasa-samozavodu/"
+      ],
+      "checked": {
+        "details": {
+          "organizer": {
+            "sourceUrl": "https://www.vesani.cz/propozice/",
+            "quote": "Pořadatel | Sportovní klub Vesani.cz, z.s.",
+            "checkedAt": "2026-11-03T13:57:58.721Z",
+            "editionYear": 2027,
+            "status": "current",
+            "value": {
+              "name": "Sportovní klub Vesani.cz, z.s."
+            }
+          },
+          "schedule": {
+            "sourceUrl": "https://www.vesani.cz/propozice/",
+            "quote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30",
+            "checkedAt": "2026-11-03T13:57:58.725Z",
+            "editionYear": 2027,
+            "status": "current",
+            "value": [
+              {
+                "sourceQuote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30",
+                "sourceUrl": "https://www.vesani.cz/propozice/",
+                "checkedAt": "2026-11-03T13:57:58.725Z",
+                "approximate": false,
+                "label": "Start hlavního závodu",
+                "date": "2027-05-01",
+                "time": "12:30"
+              }
+            ]
+          }
+        },
+        "rejected": []
+      },
+      "usage": {
+        "tokensIn": 0,
+        "tokensOut": 0,
+        "costUsd": 0
+      }
+    }
+  ]
+}

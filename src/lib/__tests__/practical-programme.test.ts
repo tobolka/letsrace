@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { practicalProgramme } from "@/lib/catalog/practical-programme";
+import { combinePracticalFindings, practicalProgramme } from "@/lib/catalog/practical-programme";
 import { feeQuoteSupports } from "@/lib/catalog/practical-extraction";
 import { mergePracticalDetails, type PracticalDetails } from "@/lib/practical-details";
 const doc = { url: "https://club.test/race/2027/propozice", links: [] as string[], text: "Alfa Grand Prix 2027\n31.07.2027 Town\ntrať | start | startovné | ročníky narození\n50 km MTB | ~09:30:18 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online | 2014 a starší\n20 km MTB | ~10:15:00 | 350,- Kč online termín cena splatnost 27.02.2027 350,- Kč online | 2017 a starší" };
@@ -35,4 +35,32 @@ it("merges positive variants while preserving each source and avoiding reread ti
   expect(combined.routes?.value).toHaveLength(3);
   expect(combined.routes?.value[0].sourceUrl).toBe(doc.url);
   expect(combined.routes?.value[2].sourceUrl).toBe("https://club.test/gpx");
+});
+
+const keyValueDoc = { url: "https://club.test/propozice/", links: [], text: "Club navigation\nZávod | RAAB FORCE Rohálovská 50ka 2027 - 18. ročník\nPořadatel | Sportovní klub Vesani.cz, z.s.\nTermín | 1.5.2027\nPrezence | Kulturní dům\nStart | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích. Start dětských závodů od 8:30\nStartovné | 1200 Kč tandemy 25 EUR pro zahraniční účastníky" };
+const keyValueContext = { name: "RAAB FORCE Rohálovská 50ka 2027 - 18. ročník", startDate: "2027-05-01" };
+it("reads an edition-bound label/value table at a year-neutral URL", () => {
+  const details = practicalProgramme(keyValueDoc, keyValueContext);
+  expect(details.organizer?.value.name).toBe("Sportovní klub Vesani.cz, z.s.");
+  expect(details.schedule?.value).toMatchObject([{ label: "Start hlavního závodu", date: "2027-05-01", time: "12:30" }]);
+  expect(details.schedule?.value).toHaveLength(1);
+  expect(details.fees).toBeUndefined();
+  expect(details.venue).toBeUndefined();
+});
+it("does not confirm an old table using a footer year or a nearby second race", () => {
+  expect(practicalProgramme({ ...keyValueDoc, text: keyValueDoc.text.replaceAll("2027", "2026") + "\n© 2027" }, keyValueContext)).toEqual({});
+  expect(practicalProgramme({ ...keyValueDoc, text: keyValueDoc.text.replace("Termín | 1.5.2027", "Závod | Another race 2027\nTermín | 1.5.2027") }, keyValueContext)).toEqual({});
+});
+it("does not take a preceding day's time or an unrelated identity", () => {
+  expect(practicalProgramme(keyValueDoc, { name: "Other unrelated race", startDate: "2027-05-01" })).toEqual({});
+  expect(practicalProgramme({ ...keyValueDoc, text: keyValueDoc.text.replace("Start hlavního závodu 1.5.2027", "Start hlavního závodu 30.4.2027") }, keyValueContext).schedule).toBeUndefined();
+});
+it("keeps fields and route variants across independently read documents", () => {
+  const programme = practicalProgramme(doc, context);
+  const venue: PracticalDetails = { venue: { value: { name: "Race venue", precision: "venue" }, sourceUrl: "https://club.test/contact", quote: "Race venue is here", status: "year_neutral", editionYear: 2027, checkedAt: "2026-11-03T10:00:00Z" } };
+  const combined = combinePracticalFindings(programme, venue);
+  expect(combined.schedule).toEqual(programme.schedule);
+  expect(combined.venue).toEqual(venue.venue);
+  const additional: PracticalDetails = { routes: { ...programme.routes!, value: [{ name: "Short", distanceKm: 10 }] } };
+  expect(combinePracticalFindings(combined, additional).routes?.value.map(row => row.distanceKm)).toEqual([50, 20, 10]);
 });

@@ -53,3 +53,7 @@ Návrat jedné doložené automatické změny je také společná operace. Změn
 Zkoušky včetně úmyslného selhání a produkčních náhledů: [výsledek](../reports/atomic-catalog-writes-2026-11-03/RESULT.md). Etapy 2 a 3 zůstávají částečné; hlavní import, kandidáti, vykonávání rozhodnutí a nezávislá kontrolní sada zůstávají na seznamu.
 
 Navazující krok v hlavním sběrači: změna **existujícího** závodu a historie jednotlivých změněných údajů se nyní ukládají společně. Zapisovač znovu kontroluje aktuální ruční zámky, sloučení a veřejnou verzi závodu. Starý návrh po souběžné změně odloží k novému výpočtu, nikoli ke schválení vlastníkem. Kolize jedinečného klíče zachová klíč původního záznamu a nedotkne se jeho jiného vlastníka. Nový závod, místa, zdrojové vazby, kategorie a následná upozornění zatím nejsou jeden společný zápis. [Důkazy a hranice](../reports/atomic-watcher-update-2026-11-03/RESULT.md).
+
+## Rozšíření skutečného doplňování údajů
+
+Bezplatná čtečka nově podporuje i tabulky údaj/hodnota s výslovným závodem a termínem ročníku. Z propozic Rohálovské 2027 uložila pořadatele a hlavní start 12:30, každý s vlastním podkladem. Sběr více dokumentů zachovává jejich různé položky místo nahrazení celé sady posledním dokumentem. Při dosažení limitu čtení zůstává práce výslovně částečná a pořadí následných odkazů se při dalších pokusech střídá. [Výsledek](../reports/practical-reader-v3-2026-11-03/RESULT.md). Toto je další dílčí krok etapy 5, nikoli dokončené plošné doplnění ani nezávislé měření pravdivosti.

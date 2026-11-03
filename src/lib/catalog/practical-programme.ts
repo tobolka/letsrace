@@ -1,8 +1,19 @@
 import { quoteContainsDate, verifyPracticalExtraction, type PracticalDocument } from "./practical-extraction";
-import { practicalValueSchemas, type PracticalDetails } from "@/lib/practical-details";
+import { mergePracticalDetails, practicalValueSchemas, type PracticalDetails } from "@/lib/practical-details";
 
 /** Public per-race programme tables: row-bound facts, without paying a model to copy them. */
-export function practicalProgramme(doc: PracticalDocument, context: { name: string; startDate: string; endDate?: string | null; knownVenue?: string }): PracticalDetails {
+type ProgrammeContext = { name: string; startDate: string; endDate?: string | null; knownVenue?: string };
+
+export function practicalProgramme(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
+  return combinePracticalFindings(programmeRows(doc, context), keyValueProgramme(doc, context));
+}
+
+/** Keep independent fields and route variants from every document. */
+export function combinePracticalFindings(previous: PracticalDetails, incoming: PracticalDetails): PracticalDetails {
+  return { ...previous, ...mergePracticalDetails(previous, incoming) };
+}
+
+function programmeRows(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
   const lines = doc.text.split("\n").map(line => line.trim()).filter(Boolean);
   const head = lines.slice(0, 12).join("\n"), year = context.startDate.slice(0, 4);
   if (!new URL(doc.url).pathname.includes(year) || !head.includes(year) || !quoteContainsDate(head, context.startDate)) return {};
@@ -28,4 +39,39 @@ export function practicalProgramme(doc: PracticalDocument, context: { name: stri
     fields[field] = { value: values, source_url: doc.url, quote: first.sourceQuote, identity_quote: lines[0], edition_quote: edition, status: "current" };
   }
   return verifyPracticalExtraction({ facts: fields }, { ...context, documents: [doc] }).details;
+}
+
+/** Label/value tables need an explicit race row and nearby edition date.
+ * A footer date, unrelated event, office address or children's start is not enough.
+ */
+function keyValueProgramme(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
+  const lines = doc.text.split("\n").map(line => line.trim()).filter(Boolean);
+  const identityIndex = lines.findIndex(line => /^(?:Závod|Zavod|Race|Event|Veranstaltung)\s*\|/i.test(line));
+  if (identityIndex < 0) return {};
+  const nextIdentity = lines.slice(identityIndex + 1).findIndex(line => /^(?:Závod|Zavod|Race|Event|Veranstaltung)\s*\|/i.test(line));
+  const block = lines.slice(identityIndex, nextIdentity >= 0 ? identityIndex + 1 + nextIdentity : identityIndex + 45);
+  const dateIndex = block.findIndex(line => /^(?:Termín|Termin|Date|Datum)\s*\|/i.test(line) && quoteContainsDate(line, context.startDate));
+  if (dateIndex < 1 || dateIndex > 6) return {};
+  const identity = block[0], edition = block.slice(0, dateIndex + 1).join("\n");
+  const facts: Record<string, unknown> = {};
+  const evidence = (value: unknown, quote: string) => ({ value, quote, source_url: doc.url, identity_quote: identity, edition_quote: edition, status: "current" });
+  const organizer = block.find(line => /^(?:Pořadatel|Poradatel|Organiser|Organizer|Veranstalter)\s*\|/i.test(line));
+  if (organizer) {
+    const name = organizer.split("|").slice(1).join("|").trim();
+    if (name.length <= 200 && name.length > 1) facts.organizer = evidence({ name }, organizer);
+  }
+  const starts = block.filter(line => /^(?:Start|Štart)\s*\|/i.test(line)).flatMap(line => {
+    const value = line.split("|").slice(1).join("|").trim();
+    const time = /\b(?:[01]?\d|2[0-3]):[0-5]\d(?::[0-5]\d)?\b/.exec(value);
+    if (!time) return [];
+    const beforeTime = value.slice(0, time.index);
+    const date = /\b(?:20\d{2}-\d{2}-\d{2}|\d{1,2}\.\s*\d{1,2}\.\s*20\d{2})\b/.exec(beforeTime);
+    // One explicit date before the first time binds that time to this edition.
+    if (!date || !quoteContainsDate(date[0], context.startDate) || !/^\s*(?:ve?|at|um)?\s*$/i.test(beforeTime.slice(date.index + date[0].length))) return [];
+    const label = beforeTime.slice(0, date.index).trim();
+    if (!/start|štart/i.test(label) || label.length > 200) return [];
+    return [{ label, date: context.startDate, time: time[0].padStart(time[0].length > 5 ? 8 : 5, "0"), sourceQuote: line, sourceUrl: doc.url }];
+  });
+  if (starts.length) facts.schedule = evidence(starts, starts[0].sourceQuote);
+  return verifyPracticalExtraction({ facts }, { ...context, documents: [doc] }).details;
 }
