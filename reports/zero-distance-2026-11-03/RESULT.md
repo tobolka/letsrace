@@ -18,3 +18,5 @@ Skutečnou délku tato oprava nezjišťuje ani neodhaduje. Když po odstranění
 **1 480 testů / 227 souborů prošlo**, sestavení a cílená kontrola kódu prošly. Nové testy pokrývají nulu, záporné/nečíselné/nekonečné délky, chybějící vzdálenost u pojmenované kategorie, zachování tratě 0,2 km a ochranu dříve známé délky před přepsáním nulou.
 
 Produkční databáze potvrdila odstranění právě jedné zástupné kategorie a zachování jejího původního řádku v historii opravy. Logy: `tmp/zero-distance-all-tests.log`, `tmp/zero-distance-build.log`, `tmp/zero-distance-lint.log`.
+
+Nasazeno `cc142868`, Vercel `dpl_7P2Fhvzdx3bEcR16mYBzMgygYbT7` READY s produkční doménou. Mac je aktualizovaný; nainstalovaná čtečka radsport-events se shoduje se zdrojovým kódem. Na skutečném veřejném detailu po nasazení ověřeno: žádný text `0 km` a žádná prázdná sekce „Trasy a kategorie“. [Veřejný snímek](production.jpg).
