@@ -1,5 +1,6 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
+import { isDistancePlaceholder, positiveCategoryDistance } from "@/lib/category-distance";
 
 export type ApiEvent = {
   id: number;
@@ -167,12 +168,16 @@ export function radsportEventToParsed(ev: ApiEvent): ParsedEvent | null {
   if (ev.status && ev.status.toUpperCase() !== "PUBLISHED") return null;
   const startDate = ev.eventDate.slice(0, 10);
   const cats = (ev.distances ?? [])
-    .filter((d) => d.distanceKm != null)
-    .map((d) => ({
-      name: d.label || `${d.distanceKm} km`,
-      distanceKm: Number(d.distanceKm),
-      elevationM: d.elevationMeters != null ? Number(d.elevationMeters) : undefined,
-    }));
+    .flatMap((d) => {
+      const distance = positiveCategoryDistance(d.distanceKm == null ? null : Number(d.distanceKm));
+      const label = d.label?.trim();
+      if (!distance && (!label || isDistancePlaceholder(label))) return [];
+      return [{
+        name: label && !isDistancePlaceholder(label) ? label : `${distance} km`,
+        ...(distance == null ? {} : { distanceKm: distance }),
+        elevationM: d.elevationMeters != null ? Number(d.elevationMeters) : undefined,
+      }];
+    });
 
   const detailUrl = `https://radsport-events.de/events/${ev.id}`;
   const organizer = (ev.organizerUrl || "").trim() || undefined;

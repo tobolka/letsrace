@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/i18n/messages";
+import { isDistancePlaceholder } from "@/lib/category-distance";
 
 const YEARS: Record<Locale, string> = { en: "years", cs: "let", sk: "rokov", pl: "lat", de: "Jahre" };
 
@@ -30,6 +31,7 @@ export function distinctCategories<T extends { name: string; distanceKm: number 
 ): T[] {
   const seen = new Set<string>();
   return categories.filter((c) => {
+    if (isDistancePlaceholder(c.name)) return false;
     const key = [c.name.trim().toLowerCase(), c.distanceKm, c.ageMin, c.ageMax].join("|");
     if (seen.has(key)) return false;
     seen.add(key);

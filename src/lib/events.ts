@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import { isDistancePlaceholder, positiveCategoryDistance } from "@/lib/category-distance";
 import { PUBLIC_CATALOGUE_TAG, publicEventTag, publicSeriesTag } from "@/lib/catalogue-cache";
 import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -839,12 +840,12 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
         : null,
     sources: sourcesFromRow(row),
     organizerVerified: Boolean(row.organizer_verified_at || series?.organizer_verified_at) || undefined,
-    categories: (categories ?? []).map((c) => ({
+    categories: (categories ?? []).filter(c => !isDistancePlaceholder(String(c.name))).map((c) => ({
       id: String(c.id),
       name: String(c.name),
       ageMin: (c.age_min as number) ?? null,
       ageMax: (c.age_max as number) ?? null,
-      distanceKm: (c.distance_km as number) ?? null,
+      distanceKm: positiveCategoryDistance(c.distance_km),
       audience: (c.audience as string) ?? null,
     })),
   };

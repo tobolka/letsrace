@@ -1,3 +1,5 @@
+import { isDistancePlaceholder, positiveCategoryDistance } from "@/lib/category-distance";
+
 export type CategoryEvidence = {
   id?: string; name: string; distance_km: number | null; age_min: number | null; age_max: number | null; audience: string | null;
 };
@@ -6,8 +8,9 @@ const fields = ["distance_km", "age_min", "age_max", "audience"] as const;
 
 /** Add missing classes and fill gaps. Conflicting routes/classes remain separate. */
 export function mergeCategoryEvidence(existing: CategoryEvidence[], incoming: CategoryEvidence[]) {
-  const rows = existing.map(r => ({ ...r }));
-  for (const next of incoming) {
+  const clean = (rows: CategoryEvidence[]) => rows.filter(r => !isDistancePlaceholder(r.name)).map(r => ({ ...r, distance_km: positiveCategoryDistance(r.distance_km) }));
+  const rows = clean(existing);
+  for (const next of clean(incoming)) {
     const candidates = rows.filter(r => fold(r.name) === fold(next.name)
       && fields.every(f => r[f] == null || next[f] == null || r[f] === next[f]));
     // A partial class must not assign an age to an arbitrary one of two

@@ -22,6 +22,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-03",
     items: {
       cs: [
+        "Neznámá délka trasy se nezobrazuje jako závod na 0 km.",
         "U Rohálovské 50ky 2027 najdeš pořadatele a čas hlavního startu podle aktuálních propozic.",
         "Název areálu otevře jeho místo na mapě a podobné závody najdeš až pod zdroji informací o závodu.",
         "V přehledu seriálu najdeš i závody, které současně patří do dalšího seriálu.",
@@ -33,6 +34,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "U závodů s dostupnými podklady najdeš adresu areálu, program, startovné a varianty tras společně s jejich zdroji.",
       ],
       en: [
+        "An unknown course length no longer appears as a 0 km race.",
         "Rohálovská 50ka 2027 shows the organiser and main start time from the current race regulations.",
         "Venue names open their location on a map, and similar races appear after the race’s sources.",
         "A series overview also includes races that belong to another series at the same time.",
