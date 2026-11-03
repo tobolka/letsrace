@@ -6,13 +6,13 @@ Aktualizováno 3. listopadu 2026 podle nasazených oprav doložených níže. **
 
 | Etapa | Stav | Co je hotové | Co ještě není hotové |
 |---|---|---|---|
-| **0. Společná pravidla a výchozí měření** | **Částečně** | Server a Mac rozlišují skutečnou chybu, nepodporované čtení a odloženou práci. | Nezávislé výchozí měření pravdivosti a pokrytí; dokončení kontroly všech pravidelných zapisovačů. |
+| **0. Společná pravidla a výchozí měření** | **Částečně** | Server a Mac rozlišují skutečnou chybu, nepodporované čtení a odloženou práci. | Rozšířit první tři nezávislé kontrolní případy na měření pravdivosti a pokrytí; dokončení kontroly všech pravidelných zapisovačů. |
 | **1. Jednoduchý přehled a panel** | **Rozhraní hotové, automatika částečně** | Jednoduchý panel na Macu, nový `/admin`, servisní nástroje zvlášť, schránka a ochrana zastaralých odpovědí. Admin již ukazuje poslední kontrolu společného seznamu. | Automatické vytváření konkrétních otázek a provedení odpovědí. Samotná schránka to neřeší. |
 | **2. Trvalé řízení práce** | **Částečně** | Sdílené převzetí čtení zdrojů, expirace, opakování a kontrola přijetí výsledku. Hlavní i vedlejší vazby seriálů se ukládají společně. | Společné řízení všech druhů práce a ochrana každého zápisu po ztrátě převzetí. |
 | **3. Společné ověření a zveřejnění** | **Částečně** | Posouzený kandidát má časově omezené převzetí, společný zápis závodu se závislostmi a konečným stavem a pravidelné obnovení přerušené práce. Společný zápis nového závodu v hlavním sběrači včetně místa, zdrojů, podkladů, kategorií a vazeb; také úprav pořadatele, existujícího závodu se zdroji/snímky/kategoriemi a historií, vazeb seriálů a praktických údajů. Upozornění na změny mají trvale uložené pokračování. Trvalé požadavky na zveřejnění, oddělené kontroly detailů a společného seznamu/mapy/kalendáře. | Dokončit ostatní zapisovací cesty mimo hlavní sběrač a nahromaděné kontroly. Příprava metadat seriálu zůstává samostatná. |
 | **4. Automatické řešení podkladů a duplicit** | **Částečně** | Konkrétní duplicity opravené, ochrany identity a ručních zámků, opakované čtení podkladů. | Jednotná pravidla samostatného řešení rozporů a bezpečných shod, včetně obnovy chybných sloučení. Opakované čtení není vyřešený případ. |
 | **5. Lepší pokrytí a doplňování** | **Částečně** | Čtení odkazovaných pořadatelů, doplnění praktických údajů u JBC, Podkrkonošského maratonu a Rohálovské; více zdrojů a střídání nepřečtených odkazů. Dodané dávky závodů zpracované v uvedeném rozsahu. | Plošné doplnění katalogu, pravidelné hledání chybějících ročníků a mezer podle země/disciplíny, širší podpora textů a cenových podmínek, měřený čistý přínos. |
-| **6. Nezávislé ověření zlepšení** | **Nezahájeno** | Regresní a provozní testy existují jako průběžná kontrola kódu. | Oddělená kontrolní sada, výchozí a následné měření správnosti, pokrytí, chybných sloučení, nákladů a času vlastníka. Testy kódu tento úkol nenahrazují. |
+| **6. Nezávislé ověření zlepšení** | **Zahájeno, bez důkazu zlepšení** | Regresní a provozní testy; tři zdrojově vybrané a přímo ověřené případy s uloženou referencí a výchozím porovnáním. | Rozšířit nezávislou sadu, negativní případy, cenu a čas vlastníka; provést následné měření. První cílený vzorek není důkaz zlepšení celého katalogu. |
 
 **Žádná celá etapa zatím není dokončená v původním rozsahu.** To ale neznamená, že níže označené dokončené opravy čekají na provedení znovu.
 
@@ -43,7 +43,7 @@ Aktualizováno 3. listopadu 2026 podle nasazených oprav doložených níže. **
 - [ ] **Vytvářet a provádět konkrétní rozhodnutí:** technické chyby řešit automaticky, vlastníka se ptát jen na nezbytnou volbu; odpověď musí mít skutečný a dohledatelný účinek.
 - [ ] **Sjednotit automatické řešení rozporů a duplicit:** jasná pravidla pro jednoznačné případy, odložení nejasných, zachování adres, vazeb a plánů, prevence návratu duplicity a obnovitelnost.
 - [ ] **Zajistit systematické pokrytí a doplňování:** chybějící ročníky podle výslovně oznámených termínů, mezery zemí/disciplin, více podporovaných zdrojů a měření skutečně doplněných údajů. Jednorázový audit webů není hotová pravidelná automatika.
-- [ ] **Zahájit nezávislé měření:** oddělit kontrolní případy od příkladů použitých při opravách a zaznamenat správnost, pokrytí, chybná sloučení, cenu a čas vlastníka před změnou i po ní.
+- [ ] **Rozšířit a dokončit nezávislé měření:** první tři přímo ověřené referenční případy a výchozí porovnání už existují. Doplnit reprezentativnější země/discipliny, negativní případy, chybná sloučení, náklady a čas vlastníka a následné porovnání. Případy použité k opravě dále nepočítat jako nedotčenou kontrolu. [První skutečné měření](../reports/independent-baseline-2026-11-03/RESULT.md).
 
 ## Pravidla, která stále platí
 

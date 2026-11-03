@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "referenceDate": "2026-11-03",
+  "purpose": "First source-led diagnostic baseline, selected before reader changes for these cases; not a representative catalogue sample or proof of improvement.",
+  "cases": [
+    {
+      "id": "uci-81087-2027",
+      "name": "Fullgaz Race 2027",
+      "unit": "announced competition weekend; separate disciplines may be separate records",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/81087",
+      "sourceCheckedBy": "Live rendered official UCI page, read directly rather than through a LetsRace extractor",
+      "evidenceExcerpt": "03 Apr - 04 Apr 2027",
+      "expected": { "start_date": "2027-04-03", "end_date": "2027-04-04", "country": "DE", "disciplines": ["xco", "xcc"], "level": "continental", "uci_class": "cs" },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": ["fullgaz"],
+      "identityReview": "No 2027 counterpart found by name, source URL, source ID, organiser website or German entries on the announced weekend; 2026 edition exists. This is a missing-edition investigation, not permission to guess the venue."
+    },
+    {
+      "id": "uci-80741-2027",
+      "name": "Ötztaler Mountainbike Festival 2027",
+      "unit": "announced competition weekend",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80741",
+      "sourceCheckedBy": "Live rendered official UCI page, read directly rather than through a LetsRace extractor",
+      "evidenceExcerpt": "Haiming, Austria 24 Apr - 25 Apr 2027",
+      "expected": { "start_date": "2027-04-24", "end_date": "2027-04-25", "country": "AT", "placeContains": "Haiming", "disciplines": ["xco"], "level": "continental", "uci_class": "cs" },
+      "reviewedEventIds": ["66cedec4-25e7-4a64-b387-fa0ad88e62b0"],
+      "sourceExternalIds": ["oerv-702FB4EA49A544F8BAD7EF6A62C32228-2027-04-24"],
+      "nameAliases": ["ötztaler mountainbike", "oetztaler mountainbike"],
+      "identityReview": "Matching Austrian federation source, year, venue and dates; the current local classification is a separate discrepancy."
+    },
+    {
+      "id": "oerv-910D4EA3F1B046A881FF46DFE812F02A-2027",
+      "name": "Int. Raiffeisen Österreich Grand Prix UCI XCO C1",
+      "unit": "C1 cross-country competition; not the Youngster Grand Prix or the following marathon",
+      "sourceUrl": "https://www.cyclingaustria.at/index.php?filter=view%3Devents&id=910D4EA3F1B046A881FF46DFE812F02A&option=com_events&view=event",
+      "sourceCheckedBy": "Live rendered national federation event page, read directly rather than through a LetsRace extractor",
+      "evidenceExcerpt": "4322 Windhaag bei Perg; Sa, 5. Juni 2027",
+      "expected": { "start_date": "2027-06-05", "end_date": "2027-06-05", "country": "AT", "placeContains": "Windhaag", "disciplines": ["xco"], "uci_class": "c1" },
+      "reviewedEventIds": ["41af1dec-7be3-46e5-b063-763ff462d2bb"],
+      "sourceExternalIds": ["oerv-910D4EA3F1B046A881FF46DFE812F02A-2027-06-05"],
+      "nameAliases": ["raiffeisen österreich grand prix"],
+      "identityReview": "Exact federation event identifier. Name-only search for Windhaag initially returned another competition; that is not evidence of a missing race or a duplicate."
+    }
+  ],
+  "excludedFromIndependentCases": [{ "name": "Kamptal Trophy", "reason": "Already used in October import and correction reports; a useful diagnostic, not a new independent control." }],
+  "notMeasured": ["representative coverage by country or discipline", "false positive catalogue entries", "false merges", "full duplicate rate", "provider or hosting cost per correct fact", "owner time", "public HTML freshness", "Google indexing"],
+  "futureUse": "If a case is used to adjust extraction or matching, keep its baseline but move it to regression cases and select new untouched controls before claiming generalisation. Recheck source facts before treating this dated reference as current."
+}

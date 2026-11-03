@@ -1,0 +1,181 @@
+{
+  "at": "2026-11-03T20:53:52.576Z",
+  "referenceDate": "2026-11-03",
+  "referenceHash": "bcb20de9a161afd36fc790d6afe8e6ce5a8d8ed35fad9e8cff226b4d895c5e60",
+  "scope": "Dated three-case source-led diagnostic, not estimated catalogue coverage or proof of improvement. Catalogue writes and model calls: zero.",
+  "metrics": {
+    "referenceCases": 3,
+    "reviewedPublicMatches": 2,
+    "allMeasuredFieldsMatch": 1,
+    "fieldDiscrepancies": 1,
+    "noReviewedPublicMatch": 1
+  },
+  "rows": [
+    {
+      "caseId": "uci-81087-2027",
+      "name": "Fullgaz Race 2027",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/81087",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "1841ca9a-61d0-4ad3-acbb-be8673e2c391",
+          "name": "14. Fullgaz Race 2026",
+          "startDate": "2026-03-29",
+          "visibility": "hidden",
+          "mergedInto": null
+        },
+        {
+          "id": "f9404eb6-c3f2-4b0f-95af-65002bf4329e",
+          "name": "14. Fullgaz Race 2026",
+          "startDate": "2026-03-28",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "uci-80741-2027",
+      "name": "Ötztaler Mountainbike Festival 2027",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/MTB/80741",
+      "state": "field_discrepancy",
+      "checks": {
+        "date": true,
+        "country": true,
+        "discipline": true,
+        "place": true,
+        "level": false,
+        "uciClass": false
+      },
+      "matches": [
+        {
+          "id": "66cedec4-25e7-4a64-b387-fa0ad88e62b0",
+          "name": "Ötztaler Mountainbike Festival 2027",
+          "start_date": "2027-04-24",
+          "end_date": "2027-04-25",
+          "visibility": "public",
+          "merged_into_id": null,
+          "disciplines": [
+            "xco"
+          ],
+          "level": "local",
+          "uci_class": null,
+          "location": {
+            "name": "Haiming",
+            "country_code": "AT",
+            "municipality": "Haiming"
+          },
+          "sources": [
+            {
+              "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=702FB4EA49A544F8BAD7EF6A62C32228&filter=page=2",
+              "external_id": "oerv-702FB4EA49A544F8BAD7EF6A62C32228-2027-04-24"
+            },
+            {
+              "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=702FB4EA49A544F8BAD7EF6A62C32228&filter=view=events",
+              "external_id": "oerv-702FB4EA49A544F8BAD7EF6A62C32228-2027-04-24"
+            },
+            {
+              "source_url": "https://eventivsport.com/events/uci-mountain-bike-continental-series-ötztaler-mountainbike-festival",
+              "external_id": "eventiv-668a4fec-85db-4122-8499-4d63de85eb34-2027-04-24"
+            },
+            {
+              "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=702FB4EA49A544F8BAD7EF6A62C32228",
+              "external_id": "oerv-702FB4EA49A544F8BAD7EF6A62C32228-2027-04-24"
+            },
+            {
+              "source_url": "https://bikeboard.at/termine/oetztaler-mountainbike-festival-2027-termin16370",
+              "external_id": "bikeboard-16370"
+            }
+          ]
+        }
+      ],
+      "suggestions": [
+        {
+          "id": "66cedec4-25e7-4a64-b387-fa0ad88e62b0",
+          "name": "Ötztaler Mountainbike Festival 2027",
+          "startDate": "2027-04-24",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "779d20fe-addb-46e9-ad7d-b519259a84fb",
+          "name": "Ötztaler Mountainbike Festival — Sportklasse",
+          "startDate": "2026-04-26",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "894610c8-4ce4-479e-a8aa-2b7b06f20ba1",
+          "name": "Ötztaler Mountainbike Festival Haiming",
+          "startDate": "2026-04-26",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "ecfede47-1ef8-445a-adce-514f85c7b08b",
+          "name": "Ötztaler Mountainbike Festival Haiming",
+          "startDate": "2026-04-25",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "oerv-910D4EA3F1B046A881FF46DFE812F02A-2027",
+      "name": "Int. Raiffeisen Österreich Grand Prix UCI XCO C1",
+      "sourceUrl": "https://www.cyclingaustria.at/index.php?filter=view%3Devents&id=910D4EA3F1B046A881FF46DFE812F02A&option=com_events&view=event",
+      "state": "matches_reference",
+      "checks": {
+        "date": true,
+        "country": true,
+        "discipline": true,
+        "place": true,
+        "uciClass": true
+      },
+      "matches": [
+        {
+          "id": "41af1dec-7be3-46e5-b063-763ff462d2bb",
+          "name": "Int. Raiffeisen Österreich Grand Prix UCI XCO C1",
+          "start_date": "2027-06-05",
+          "end_date": "2027-06-05",
+          "visibility": "public",
+          "merged_into_id": null,
+          "disciplines": [
+            "xco"
+          ],
+          "level": "international",
+          "uci_class": "c1",
+          "location": {
+            "name": "Windhaag bei Perg",
+            "country_code": "AT",
+            "municipality": "Windhaag bei Perg"
+          },
+          "sources": [
+            {
+              "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=910D4EA3F1B046A881FF46DFE812F02A&filter=page=3",
+              "external_id": "oerv-910D4EA3F1B046A881FF46DFE812F02A-2027-06-05"
+            },
+            {
+              "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=910D4EA3F1B046A881FF46DFE812F02A&filter=view=events",
+              "external_id": "oerv-910D4EA3F1B046A881FF46DFE812F02A-2027-06-05"
+            },
+            {
+              "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=910D4EA3F1B046A881FF46DFE812F02A&filter=view=events&page=2",
+              "external_id": "oerv-910D4EA3F1B046A881FF46DFE812F02A-2027-06-05"
+            }
+          ]
+        }
+      ],
+      "suggestions": [
+        {
+          "id": "41af1dec-7be3-46e5-b063-763ff462d2bb",
+          "name": "Int. Raiffeisen Österreich Grand Prix UCI XCO C1",
+          "startDate": "2027-06-05",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    }
+  ]
+}

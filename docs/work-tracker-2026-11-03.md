@@ -23,7 +23,7 @@ Aktualizováno 3. listopadu 2026 podle doložených nasazení. **Hotovo znamená
 | **Obecné řešení rozporů a duplicit** | **Částečně** | Ochrany identity, ručních zámků a konkrétní opravy. | Jednotné podmínky bezpečného automatického řešení, nejasné případy, obnovitelnost a měření chybných sloučení. |
 | **Historie počasí** | **Částečně — úvodní plnění pokračuje** | Sdílené uložiště, serverový běh, skutečné limity, zachování posledních dobrých dat. Aktuální předpověď má krátkou platnost. | Dokončit první naplnění historie katalogu v zachovaných limitech. Dřívější počet odložených míst není aktuální živý údaj. |
 | **Nesmyslná trasa 0 km** | **Hotovo** | Opravený import, skládání kategorií i veřejný detail; konkrétní Michaelis-Schanze opravená se zachováním historie. | Skutečná délka tohoto závodu zatím není známá a neodhaduje se. |
-| **Nezávislé měření kvality a pokrytí** | **Nezahájeno** | Existují průběžné testy kódu a jednotlivé veřejné kontroly. | Oddělená kontrolní sada, výchozí i následné měření pravdivosti, pokrytí, chybných sloučení, ceny a práce vlastníka. |
+| **Nezávislé měření kvality a pokrytí** | **Zahájeno, bez důkazu zlepšení** | Tři přímo ověřené referenční případy a výchozí porovnání uložené odděleně od úprav čteček. | Rozšířit země/discipliny, negativní případy, cenu a práci vlastníka a následné porovnání. Cílený vzorek není odhad celého katalogu. |
 
 ## Důkazy dokončených částí
 
@@ -37,3 +37,7 @@ Aktualizováno 3. listopadu 2026 podle doložených nasazení. **Hotovo znamená
 Otevřené prováděcí úkoly jsou zaškrtnutelné v [operations-progress.md](operations-progress.md); nejsou ukryté až pod zastaralou tabulkou. Tento přehled je stav práce, nikoli důkaz, že se nyní všechny otevřené úkoly samostatně vykonávají.
 
 Odložený nový koncept ověřovacích statusů ani stažené veřejné editační formuláře se neobnovují. Limity se nezvyšují. Trialové závody se nepřidávají. Původní požadavky: [tracker 2. listopadu](work-tracker-2026-11-02.md), pravidla dalších ročníků: [annual-editions.md](annual-editions.md).
+
+## První nezávislé výchozí porovnání
+
+Tři přímo ověřené případy z UCI a rakouské federace: dva posouzené protějšky, z nich jeden s rozdílem zařazení; třetí bez nalezeného nového ročníku. Malý cílený vzorek není odhad správnosti celého katalogu ani porovnání před/po. [Výsledek a omezení](../reports/independent-baseline-2026-11-03/RESULT.md). Kontroly detailů dnes vyčerpaly 60 pokusů a vyžádání aktualizací čtyři dávky za 24 hodin; nahromaděná práce zůstává otevřená.

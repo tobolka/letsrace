@@ -16,7 +16,7 @@ async function main() {
   // Other language pages refresh lazily via the race tag.
   const deadline = Math.min(Number(process.env.SOURCE_RUN_DEADLINE || 0) * 1000 || Infinity, Date.now() + 180_000);
   if (Date.now() + 90_000 > deadline) { process.exitCode = 2; return; }
-  let verified = 0, pending = 0, processed = 0;
+  let verified = 0, deferredInBatch = 0, processed = 0;
   let refreshCatalogue = process.env.PUBLICATION_REFRESH_CATALOGUE === "1";
   for (let index = 0; index < 10 && Date.now() + 90_000 < deadline; index++) {
     // Claim only when ready to work; queued items must not expire while waiting here.
@@ -30,7 +30,7 @@ async function main() {
       if (response.status === 409) {
         const { error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { superseded: true } });
         if (error) throw error;
-        pending++; continue;
+        deferredInBatch++; continue;
       }
       if (!response.ok) throw Error(`Publication service returned HTTP ${response.status}`);
       refreshCatalogue = false;
@@ -51,14 +51,16 @@ async function main() {
       }
       const { data: finished, error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { verifiedAt: new Date().toISOString(), revision: payload.revision, locales: ["cs", "en"] } });
       if (error) throw error;
-      if (finished) verified++; else pending++;
+      if (finished) verified++; else deferredInBatch++;
     } catch (error) {
       const { error: retryError } = await db.rpc("pipeline_retry_task", { p_key: task.key, p_token: task.token!, p_error: error instanceof Error ? error.message : "Publication check failed", p_delay_seconds: Math.min(86400, 300 * 2 ** Math.min(task.attempts, 8)) });
       if (retryError) throw retryError;
-      pending++;
+      deferredInBatch++;
     }
   }
-  console.log({ processed, publicRevisionsVerified: verified, pending, eventWrites: 0 });
-  if (pending) process.exitCode = 2;
+  const remaining = await db.from("pipeline_tasks").select("key", { count: "exact", head: true }).eq("kind", "public_refresh").in("status", ["pending", "running"]);
+  if (remaining.error || remaining.count === null) throw Error(remaining.error?.message ?? "Publication backlog count unavailable");
+  console.log({ processed, publicRevisionsVerified: verified, deferredInBatch, pending: remaining.count, eventWrites: 0 });
+  if (deferredInBatch || remaining.count) process.exitCode = 2;
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });
