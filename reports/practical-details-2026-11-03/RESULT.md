@@ -27,3 +27,9 @@ Migrace `20261103075455_practical_race_details.sql` aplikována.
 Nejde o dokončené plošné doplnění všech závodů. Čtení má omezenou dávku a počet dokumentů; konflikty mezi zdroji a nezávislé měření zůstávají samostatná práce. Větší množství zápisů ani úspěšné testy nedokazují pravdivost katalogu. Levné zveřejnění není dosud oddělené od následné kontroly detailů a nahromaděná fronta se nepovažuje za indexaci Googlu.
 
 Návrhy další hodnoty detailu závodu a seriálu: [konkrétní seznam](../../docs/race-series-next-content-2026-11-03.md).
+
+## Nasazení a veřejný důkaz
+
+Vydání `1254e213` je nasazené, Vercel `dpl_DvuNUh4co4oksdMWtdDgHu4XZixk` má stav READY a produkční doménu. Všech pět skutečných veřejných adres vrací 200; JBC má adresu ve viditelném obsahu i SportsEvent, Podkrkonošský maraton program a nové kolekce celé období 2027. Výsledky `production-pages.json`, skutečný náhled `production-season.jpg`.
+
+Navazující kontrola zveřejnění porovnává i aktuální místo/adresu v JSON-LD a viditelném obsahu, nezávisle na pouhé shodě čísla verze. Před porovnáním vyžaduje stejnou aktuální databázovou verzi. Stránky závodů mají vlastní značku pro cílené odstranění staré veřejné odpovědi. Sedm testů této kontroly a sestavení prošly. Fronta se tím nemaže ani nevydává za indexaci Googlu.

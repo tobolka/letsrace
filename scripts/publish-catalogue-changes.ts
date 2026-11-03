@@ -2,7 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "dotenv";
 import { createServerSupabase } from "../src/lib/supabase/server";
-import { publicationPayload, verifyPublicRevision } from "../src/lib/pipeline/publication";
+import { publicationPayload, publicationLocation, verifyPublicRevision } from "../src/lib/pipeline/publication";
 import { getSiteUrl } from "../src/lib/seo";
 import { localePath } from "../src/lib/localized-paths";
 import { fetchPublic } from "../src/lib/http/safe-url";
@@ -49,6 +49,10 @@ async function main() {
         if (error) throw error;
         target = { revision: canonical.public_revision, slug: canonical.slug, expected: canonical };
       }
+      const { data: current, error: currentError } = await db.from("events").select("name,public_revision,start_date,end_date,practical_details,location:locations(id,name,municipality,venue,country_code,lat,lng)").eq("id", String(target.expected.id)).single();
+      if (currentError) throw currentError;
+      if (current.public_revision !== target.revision) throw Error("Race changed while checking publication");
+      target = { ...target, expected: { ...target.expected, public_location: publicationLocation(current) } };
       for (const locale of ["cs", "en"] as const) {
         const page = await fetchPublic(`${getSiteUrl()}${localePath(locale, `e/${payload.slug}`)}`, { headers: { "User-Agent": "LetsRace-Publication-Check/1.0" }, signal: AbortSignal.timeout(30_000) });
         const html = new TextDecoder().decode(await boundedBody(page, 2 * 1024 * 1024));

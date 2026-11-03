@@ -32,3 +32,13 @@ it("refuses task payloads without a revision and expected race", () => {
   expect(() => publicationPayload({ slug: "race" })).toThrow("Invalid publication");
   expect(publicationPayload(publication as never)).toEqual(publication);
 });
+
+it("checks location and address in metadata and visible content independently", () => {
+  const target = { ...publication, expected: { ...publication.expected, public_location: { name: "Areál Dobrá Voda", streetAddress: "Turnovská 40", postalCode: "466 01" } } };
+  const json = { name: "Areál Dobrá Voda", address: { streetAddress: "Turnovská 40", postalCode: "466 01" } };
+  const html = page({ location: json }).replace("</article>", "<p>Areál Dobrá Voda, Turnovská 40, 466 01</p></article>");
+  expect(() => verifyPublicRevision(html, 200, target, true)).not.toThrow();
+  expect(() => verifyPublicRevision(page({ location: json }), 200, target, true)).toThrow("visible page");
+  expect(() => verifyPublicRevision(html.replace('"streetAddress":"Turnovská 40"', '"streetAddress":"Wrong 1"'), 200, target, true)).toThrow("address");
+  expect(() => verifyPublicRevision(html.replace('"name":"Areál Dobrá Voda"', '"name":"Other venue"'), 200, target, true)).toThrow("location");
+});
