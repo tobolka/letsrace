@@ -1463,6 +1463,7 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_create_watcher_event: { Args: { p_event: string; p_payload: Json; p_source: Json; p_hash: string; p_reader: string; p_reviewed: boolean; p_location: Json; p_categories: Json; p_secondary: string[]; p_lease?: Json }; Returns: Json };
       pipeline_update_watcher_event: { Args: { p_event: string; p_revision: string; p_patch: Json; p_evidence: Json }; Returns: Json };
       pipeline_rollback_fact: { Args: { p_fact: string; p_dry_run?: boolean }; Returns: Json };
       pipeline_fill_series_disciplines: { Args: { p_limit?: number }; Returns: Json };

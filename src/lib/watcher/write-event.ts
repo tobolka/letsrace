@@ -1,4 +1,33 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
+import type { ParsedEvent } from "@/lib/domain";
+import { sourceEvidenceRecord } from "@/lib/catalog/source-evidence";
+import { mergeCategoryEvidence } from "@/lib/catalog/merge-category-evidence";
+import { currentSourceLease } from "@/lib/pipeline/source-work";
+
+export type NewRaceLocationPlan = { action: "create"; row: Record<string, unknown> } | { action: "geocode"; id: string; expectedLat: number | null; expectedLng: number | null; lat: number; lng: number };
+
+/** A new race becomes visible together with its source, categories and memberships. */
+export async function createWatcherEvent(
+  supabase: SupabaseClient,
+  payload: Record<string, unknown>,
+  source: { watchedUrlId: string; kind: string; event: ParsedEvent; reviewed: boolean },
+  location: NewRaceLocationPlan | null,
+  secondarySeries: string[],
+): Promise<{ id: string }> {
+  const id = randomUUID(), snapshot = sourceEvidenceRecord(id, source.watchedUrlId, source.kind, source.event);
+  const categories = mergeCategoryEvidence([], (source.event.categories ?? []).map(c => ({
+    name: c.name, distance_km: c.distanceKm ?? null, age_min: c.ageMin ?? null, age_max: c.ageMax ?? null, audience: c.audience ?? source.event.audience ?? null,
+  })));
+  const { data, error } = await supabase.rpc("pipeline_create_watcher_event", {
+    p_event: id, p_payload: payload, p_source: snapshot.value, p_hash: snapshot.hash, p_reader: snapshot.reader,
+    p_reviewed: source.reviewed, p_location: location, p_categories: categories, p_secondary: [...new Set(secondarySeries)],
+    p_lease: currentSourceLease() ?? null,
+  });
+  if (error) throw Object.assign(new Error(`Creating race: ${error.message}`), { code: error.code });
+  if (!data || typeof data !== "object" || data.id !== id || data.created !== true) throw Error("New race transaction was not confirmed");
+  return { id };
+}
 
 /** Existing matched race, protected fields and history commit together. */
 export async function updateEventPreservingKey(

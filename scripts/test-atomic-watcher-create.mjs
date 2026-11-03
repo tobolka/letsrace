@@ -1,0 +1,74 @@
+import assert from 'node:assert/strict';
+import {readFile,readdir} from 'node:fs/promises';
+import {PGlite} from '../tmp/pipeline-db-test/node_modules/@electric-sql/pglite/dist/index.js';
+const db=new PGlite();
+const id=n=>`00000000-0000-0000-0000-${String(n).padStart(12,'0')}`;
+const watched=id(1),primary=id(2),secondary=id(3),race=id(10),location=id(20);
+try {
+ await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
+ create table events(id uuid primary key,slug text unique,name text,start_date date,end_date date,status text default 'scheduled',visibility text default 'public',merged_into_id uuid,location_id uuid,series_id uuid,disciplines text[],fingerprint text unique,last_seen_at timestamptz,updated_at timestamptz);
+ create table locations(id uuid primary key,name text,municipality text,country_code text,lat float8,lng float8,geocode_query text,geocode_status text,timezone text,geog text,updated_at timestamptz);
+ create table series(id uuid primary key,name text,slug text,visibility text default 'public',website_url text,source_url text,age_categories text[],updated_at timestamptz);
+ create table watched_urls(id uuid primary key,url text,kind text,status text,added_by text,next_poll_at timestamptz);
+ create table event_overrides(event_id uuid primary key,locked_fields text[]);
+ create table event_sources(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),watched_url_id uuid references watched_urls(id),source_url text,external_id text,kind text,is_canonical boolean,unique(watched_url_id,external_id));
+ create table event_categories(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),name text,distance_km float8,age_min int,age_max int,audience text);
+ create table event_facts(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),field text,value jsonb,previous jsonb,source_url text,quote text,method text,version text,model text);
+ create table page_reads(url text,reader text,text_hash text,read_at timestamptz,primary key(url,reader));
+ create function set_location_geog(loc_id uuid,lng float8,lat float8)returns void language sql as $$update locations set geog='test-point' where id=loc_id$$;
+ grant usage on schema public to service_role;grant all on all tables in schema public to service_role;grant execute on function set_location_geog(uuid,float8,float8) to service_role;`);
+ for(const file of ['20261102084307_durable_publication_tasks.sql','20261102090714_shared_source_work_leases.sql','20261102201557_aggregate_catalogue_publication.sql','20261103090530_separate_public_refresh_requests.sql','20261103130304_durable_series_publication.sql']) await db.exec(await readFile('supabase/migrations/'+file,'utf8'));
+ const membership=await readFile('supabase/migrations/20260917082837_event_series_membership.sql','utf8');await db.exec(membership.slice(0,membership.indexOf('-- Merges')));
+ await db.exec('grant all on event_series to service_role');
+ await db.exec(await readFile('supabase/migrations/20261103131307_atomic_series_membership.sql','utf8'));
+ const details=await readFile('supabase/migrations/20261102140700_reliable_detail_data.sql','utf8');await db.exec(details.slice(details.indexOf('create function public.pipeline_detail_child_revision()'),details.indexOf('-- Shared historical weather')));
+ await db.exec(await readFile('supabase/migrations/20261103194952_atomic_watcher_create.sql','utf8'));
+ const fence=(await readdir('supabase/migrations')).find(f=>f.endsWith('_watcher_source_kind_fence.sql'));await db.exec(await readFile('supabase/migrations/'+fence,'utf8'));
+ await db.exec(`set role service_role;insert into watched_urls values('${watched}','https://fixture.test/','federation','active',null,now());insert into series(id,name,slug)values('${primary}','Main','main'),('${secondary}','Additional','additional');`);
+ const source={watchedUrlId:watched,kind:'federation',event:{externalId:'fixture-2027',sourceUrl:'https://fixture.test/race',name:'Fixture race',startDate:'2027-05-01'}};
+ const payload={name:'Fixture race',slug:'fixture-2027',start_date:'2027-05-01',fingerprint:'fixture-key',location_id:location,series_id:primary,disciplines:['mtb']};
+ const loc={action:'create',row:{id:location,name:'Fixture venue',municipality:'Town',country_code:'CZ',lat:50,lng:15,timezone:'Europe/Prague',geocode_status:'ok',geocode_query:'Town'}};
+ const categories=[{name:'Elite',distance_km:20,age_min:19,age_max:null,audience:'adults'},{name:'Kids',distance_km:.2,age_min:null,age_max:6,audience:'kids'}];
+ const create=async(opts={})=>{
+  const s=opts.source??source,r=opts.id??race;
+  return (await db.query('select pipeline_create_watcher_event($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) r',[r,opts.payload??payload,s,'a'.repeat(40),`source-evidence-v1:${s.watchedUrlId}:${s.event.externalId}:${r}`,opts.reviewed??false,opts.location===undefined?loc:opts.location,opts.categories??categories,opts.secondary??[secondary],opts.lease??null])).rows[0].r;
+ };
+ const tables=['events','locations','event_sources','event_categories','event_facts','page_reads','event_series','pipeline_tasks'];
+ const state=async()=>{const s={};for(const table of tables)s[table]=(await db.query(`select to_jsonb(t) r from ${table} t order by to_jsonb(t)::text`)).rows.map(row=>row.r);return s;};
+ const base=await state();
+ // Fail at different points after actual preceding writes, not just at validation.
+ for(const[table,condition]of[['event_facts','true'],['page_reads','true'],['event_categories',"new.name='Kids'"]]){
+  await db.exec(`reset role;create function injected_failure()returns trigger language plpgsql as $$begin if ${condition} then raise exception 'injected ${table} failure';end if;return new;end$$;create trigger injected_failure before insert on ${table} for each row execute function injected_failure();set role service_role;`);
+  await assert.rejects(create(),new RegExp(`injected ${table} failure`));assert.deepEqual(await state(),base,`${table}: no half race or location/publication must survive`);
+  await db.exec(`reset role;drop trigger injected_failure on ${table};drop function injected_failure();set role service_role;`);
+ }
+ await assert.rejects(create({secondary:[secondary,id(999)]}),/Unknown series/);assert.deepEqual(await state(),base,'secondary failure also rolls back earlier associations');
+ await db.exec(`update watched_urls set status='paused' where id='${watched}'`);const paused=await state();await assert.rejects(create(),/source_reader_unavailable/);assert.deepEqual(await state(),paused);
+ await db.exec(`update watched_urls set status='active' where id='${watched}'`);
+ const held=(await db.query('select * from pipeline_claim_source($1,$2)',[watched,['http']])).rows[0];const lease={key:held.key,token:held.token,url:'https://fixture.test/'};
+ await db.exec(`update pipeline_tasks set lease_until=now()-interval '1 second' where key='source:${watched}'`);
+ const expired=await state();await assert.rejects(create({lease}),/lease lost/);assert.deepEqual(await state(),expired);
+ await db.exec(`update pipeline_tasks set lease_until=now()+interval '5 minutes' where key='source:${watched}'`);
+ const beforeKindChange=await state();
+ await assert.rejects(create({lease,source:{...source,kind:'aggregator'}}),/lease lost/);assert.deepEqual(await state(),beforeKindChange);
+ assert.deepEqual(await create({lease}),{id:race,created:true});
+ const success=await state();assert.equal(success.events.length,1);assert.equal(success.events[0].status,'scheduled');assert.equal(success.events[0].visibility,'public');
+ assert.equal(success.locations.length,1);assert.equal(success.locations[0].geog,'test-point');assert.equal(success.event_sources[0].kind,'national_federation');
+ assert.equal(success.event_sources[0].event_id,race);assert.equal(success.event_categories.length,2);assert.equal(success.page_reads.length,1);
+ assert.equal(success.event_series.length,2);assert.equal(success.event_series.filter(s=>s.is_primary).length,1);assert.equal(success.event_series.find(s=>s.is_primary).series_id,primary);
+ assert.equal(success.event_facts.filter(f=>f.method==='watcher_source_evidence').length,1);assert(success.pipeline_tasks.find(t=>t.key==='public:'+race));
+ const duplicateLoc={...loc,row:{...loc.row,id:id(21)}};
+ await assert.rejects(create({id:id(11),payload:{...payload,slug:'second',location_id:id(21)},location:duplicateLoc}),/duplicate key/);assert.deepEqual(await state(),success,'fingerprint collision cannot leave an orphan location');
+ await assert.rejects(create({id:id(11),payload:{...payload,slug:'second',fingerprint:'different-key',location_id:id(21)},location:duplicateLoc}),/duplicate key/);assert.deepEqual(await state(),success,'source ownership cannot be stolen by another event');
+ await db.exec(`insert into locations(id,name)values('${id(30)}','Existing place');update events set location_id='${id(30)}' where id='${race}'`);
+ const geocode={action:'geocode',id:id(30),expectedLat:null,expectedLng:null,lat:49,lng:16};
+ const anotherSource={...source,event:{...source.event,externalId:'another'}};
+ const beforeGeo=await state();await assert.rejects(create({id:id(12),payload:{...payload,location_id:id(30),slug:'third',fingerprint:'third-key'},source:anotherSource,location:geocode,secondary:[id(999)]}),/Unknown series/);assert.deepEqual(await state(),beforeGeo,'shared geocode and affected public revision roll back too');
+ await db.exec(`update locations set lat=51,lng=17 where id='${id(30)}'`);const changedPlace=await state();await assert.rejects(create({id:id(12),payload:{...payload,location_id:id(30),slug:'third',fingerprint:'third-key'},source:anotherSource,location:geocode}),/concurrent_event_update/);assert.deepEqual(await state(),changedPlace);
+ await db.exec(`update watched_urls set status='paused',added_by='pipeline_review' where id='${watched}'`);
+ assert.equal((await create({id:id(13),payload:{...payload,slug:'reviewed',fingerprint:'reviewed-key',location_id:null},source:{...source,event:{...source.event,externalId:'reviewed'}},location:null,reviewed:true})).created,true);
+ assert.equal((await db.query('select status from watched_urls where id=$1',[watched])).rows[0].status,'paused','evidence-only review must not activate monitoring');
+ await db.exec(`update watched_urls set status='dead' where id='${watched}'`);await assert.rejects(create({reviewed:true}),/source_reader_unavailable/);
+ for(const role of ['anon','authenticated']){await db.exec(`reset role;set role ${role}`);await assert.rejects(create(),/permission denied/);}
+ console.log('PASS: new race/location/source/snapshot/checkpoint/categories/series/outbox commit together; injected failures at history, checkpoint, second category and late series; defaults, one primary, short distance, source/fingerprint collision, shared geocode rollback, stale place and source lease, paused source, private access');
+}finally{await db.close();}

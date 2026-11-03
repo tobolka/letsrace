@@ -1,0 +1,39 @@
+{
+  "at": "2026-11-03T20:03:23.713Z",
+  "result": {
+    "watchedUrlId": "d970adaa-5206-4d9b-add3-14a576b5d486",
+    "url": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+    "ok": true,
+    "eventsUpserted": 1,
+    "eventsExtracted": 1,
+    "eventsCreated": 0,
+    "eventsUpdated": 0,
+    "eventsRejected": 0,
+    "eventsFailed": 0,
+    "eventsDeferred": 0,
+    "extractionComplete": true,
+    "issues": [],
+    "linksDiscovered": 0,
+    "droppedHidden": 0,
+    "strategy": "adapter:chotebuz",
+    "httpStatus": 200,
+    "preview": [
+      {
+        "externalId": "chotebuzsky-kopec-2027",
+        "name": "Chotěbuzský kopec",
+        "startDate": "2027-05-08",
+        "placeText": "Chotěbuz",
+        "countryHint": "CZ",
+        "sourceUrl": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+        "websiteUrl": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Datum konání příštího závodu je 8. května 2027",
+          "sourceUrl": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+          "method": "official-next-race-announcement",
+          "version": "1"
+        }
+      }
+    ]
+  }
+}

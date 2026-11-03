@@ -1,5 +1,9 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { WatchOutcome } from "@/lib/watcher/run";
+import { AsyncLocalStorage } from "node:async_hooks";
+
+const sourceLease = new AsyncLocalStorage<{ key: string; token: string; url: string }>();
+export const currentSourceLease = () => sourceLease.getStore();
 
 /** Every scheduled, service and browser read uses the same persisted source lease. */
 export async function withSourceWork(row: { id: string; url: string }, read: () => Promise<WatchOutcome>): Promise<WatchOutcome> {
@@ -17,7 +21,7 @@ export async function withSourceWork(row: { id: string; url: string }, read: () 
     return { watchedUrlId: row.id, url: row.url, ok: false, eventsUpserted: 0, linksDiscovered: 0, error: "source_changed_before_read", strategy: "deferred" };
   }
   let result: WatchOutcome;
-  try { result = await read(); }
+  try { result = await sourceLease.run({ key: task.key, token: task.token, url: row.url }, read); }
   catch (error) {
     const { data: retried, error: retryError } = await db.rpc("pipeline_retry_task", { p_key: task.key, p_token: task.token!, p_error: error instanceof Error ? error.message : "Source work interrupted", p_delay_seconds: 3600 });
     if (retryError) throw Error(`Recording source retry: ${retryError.message}`);

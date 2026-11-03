@@ -5,10 +5,15 @@ import { gatherDossier, type DossierDoc } from "@/lib/catalog/dossier";
 import { readDocument, type ReadDoc } from "@/lib/catalog/regulation-ages";
 
 /** Keep the complete source result even when a single display field chooses another value. */
-export async function saveSourceEvidence(s: SupabaseClient, eventId: string, watchedUrlId: string, kind: string, event: ParsedEvent) {
+export function sourceEvidenceRecord(eventId: string, watchedUrlId: string, kind: string, event: ParsedEvent) {
   const value = { watchedUrlId, kind, event };
   const hash = textHash(JSON.stringify(value));
   const reader = `source-evidence-v1:${watchedUrlId}:${event.externalId}:${eventId}`;
+  return { value, hash, reader };
+}
+
+export async function saveSourceEvidence(s: SupabaseClient, eventId: string, watchedUrlId: string, kind: string, event: ParsedEvent) {
+  const { value, hash, reader } = sourceEvidenceRecord(eventId, watchedUrlId, kind, event);
   if (await alreadyRead(s, event.sourceUrl, reader, hash)) return;
   await recordFacts(s, eventId, [{ field: "source_evidence", value, previous: null, sourceUrl: event.sourceUrl }], { method: "watcher_source_evidence", version: "source-evidence-v1" });
   await markRead(s, event.sourceUrl, reader, hash);

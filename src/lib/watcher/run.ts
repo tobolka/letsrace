@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+import type { NewRaceLocationPlan } from "@/lib/watcher/write-event";
 import { overviewIssues, isCountryOnlyPlace } from "@/lib/catalog/overview-quality";
 import { isWholeCalendarHost } from "@/lib/watcher/extractors/adapters";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -1954,6 +1956,7 @@ async function upsertParsedEvent(
   }
 
   let locationId: string | null = null;
+  let pendingLocation: NewRaceLocationPlan | null = null;
   /**
    * Coordinates as finally resolved — from the parser, the gazetteer, or a
    * reused location row. The fingerprint has to be built from these, not from
@@ -2015,11 +2018,12 @@ async function upsertParsedEvent(
         .gte("lng", ev.lng - 0.045)
         .lte("lng", ev.lng + 0.045);
     }
-    const { data: reused } = await reuseQuery
+    const { data: reused, error: reuseError } = await reuseQuery
       .order("updated_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
+    if (reuseError) throw new Error(`Reading reusable location: ${reuseError.message}`);
     if (reused?.id) {
       locationId = reused.id;
       if (reused.lat != null && reused.lng != null && !isCountryOnlyPlace(ev.placeText)) {
@@ -2027,43 +2031,31 @@ async function upsertParsedEvent(
         lng = reused.lng;
       }
       if (reused.lat == null && lat != null && lng != null) {
-        await supabase
-          .from("locations")
-          .update({
-            lat,
-            lng,
-            geocode_status: "ok",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", reused.id);
-        await supabase.rpc("set_location_geog", {
-          loc_id: reused.id,
-          lng,
-          lat,
-        });
+        if (!existingId) {
+          pendingLocation = { action: "geocode", id: reused.id, expectedLat: reused.lat, expectedLng: reused.lng, lat, lng };
+        } else {
+          const { error } = await supabase.from("locations").update({ lat, lng, geocode_status: "ok", updated_at: new Date().toISOString() }).eq("id", reused.id);
+          if (error) throw Error(`Updating reused location: ${error.message}`);
+          const { error: geoError } = await supabase.rpc("set_location_geog", { loc_id: reused.id, lng, lat });
+          if (geoError) throw Error(`Updating location geometry: ${geoError.message}`);
+        }
       }
     } else {
-      const { data: loc } = await supabase
-        .from("locations")
-        .insert({
-          name: ev.placeText,
-          municipality: isCountryOnlyPlace(ev.placeText) ? null : geocodeQuery,
-          country_code: country,
-          lat,
-          lng,
-          geocode_query: geocodeQuery,
-          geocode_status: geocodeStatus,
-          timezone: timezoneForCountry(country),
-        })
-        .select("id")
-        .single();
-      locationId = loc?.id ?? null;
-      if (locationId && lat != null && lng != null) {
-        await supabase.rpc("set_location_geog", {
-          loc_id: locationId,
-          lng,
-          lat,
-        });
+      const newLocation = {
+        name: ev.placeText, municipality: isCountryOnlyPlace(ev.placeText) ? null : geocodeQuery,
+        country_code: country, lat, lng, geocode_query: geocodeQuery, geocode_status: geocodeStatus, timezone: timezoneForCountry(country),
+      };
+      if (!existingId) {
+        locationId = randomUUID();
+        pendingLocation = { action: "create", row: { ...newLocation, id: locationId } };
+      } else {
+        const { data: loc, error } = await supabase.from("locations").insert(newLocation).select("id").single();
+        if (error) throw Error(`Creating location: ${error.message}`);
+        locationId = loc.id;
+        if (lat != null && lng != null) {
+          const { error: geoError } = await supabase.rpc("set_location_geog", { loc_id: locationId, lng, lat });
+          if (geoError) throw Error(`Updating location geometry: ${geoError.message}`);
+        }
       }
     }
 
@@ -2414,6 +2406,14 @@ async function upsertParsedEvent(
   const mergedIssues = overviewIssues(effective, today);
   if (mergedIssues.length) throw new Error(`pipeline_data_review_required:${mergedIssues.join(",")}`);
 
+  const newSecondarySeries: string[] = [];
+  if (!existingId) {
+    for (const extra of ev.alsoSeries ?? []) {
+      const sid = await resolveSeriesId(supabase, { ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug, seriesWebsite: extra.website, alsoSeries: undefined }, classified, publicRaceUrl);
+      if (sid && sid !== payload.series_id && await seriesAcceptsSource(supabase, sid, watchedUrl)) newSecondarySeries.push(sid);
+    }
+  }
+
   let eventId = existingId;
   let created = false;
   let changed = false;
@@ -2427,11 +2427,12 @@ async function upsertParsedEvent(
     if (retainedKey) console.info("watcher_key_collision", JSON.stringify({ eventId, source: watchedUrl, retainedExistingKey: true }));
   } else {
     const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
-    const { data, error } = await supabase
-      .from("events")
-      .insert({ ...payload, slug })
-      .select("id")
-      .single();
+    const { createWatcherEvent } = await import("@/lib/watcher/write-event");
+    const create = (slug: string) => createWatcherEvent(supabase, { ...payload, slug }, { watchedUrlId, kind: watchedKind ?? "official", event: ev, reviewed: Boolean(review) }, pendingLocation, newSecondarySeries);
+    let data: { id: string } | null = null;
+    let error: { code?: string; message: string } | null = null;
+    try { data = await create(slug); }
+    catch (cause) { if (!cause || typeof cause !== "object" || !("code" in cause) || cause.code !== "23505") throw cause; error = cause as { code: string; message: string }; }
     if (error) {
       if (error.code !== "23505") throw new Error(`Inserting race: ${error.message}`);
       /**
@@ -2458,16 +2459,12 @@ async function upsertParsedEvent(
         if (seenError) throw new Error(`Touching matched race: ${seenError.message}`);
       } else {
         // Not a fingerprint clash — a slug collision with an unrelated race.
-        const { data: d2, error: retryError } = await supabase
-          .from("events")
-          .insert({ ...payload, slug: `${slug}-${Date.now().toString(36)}` })
-          .select("id")
-          .single();
-        if (retryError) throw new Error(`Inserting race after slug collision: ${retryError.message}`);
+        const d2 = await create(`${slug}-${Date.now().toString(36)}`);
         eventId = d2?.id;
         created = Boolean(eventId);
       }
     } else {
+      if (!data) throw Error("New race transaction returned no result");
       eventId = data.id;
       created = true;
     }
@@ -2475,7 +2472,7 @@ async function upsertParsedEvent(
 
   if (!eventId) throw new Error("Race write returned no id");
 
-  await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
+  if (!created) await saveSourceEvidence(supabase, eventId, watchedUrlId, watchedKind ?? "official", ev);
 
   if (beforeSnap) {
     try {
@@ -2496,27 +2493,29 @@ async function upsertParsedEvent(
     }
   }
 
-  const { error: sourceWriteError } = await supabase.from("event_sources").upsert(
-    {
-      event_id: eventId,
-      watched_url_id: watchedUrlId,
-      source_url: ev.sourceUrl,
-      external_id: ev.externalId,
-      kind:
-        watchedKind === "federation"
-          ? "national_federation"
-          : watchedKind === "aggregator"
-            ? "aggregator"
-            : watchedKind === "series"
-              ? "series"
-              : "official",
-      is_canonical: true,
-    },
-    { onConflict: "watched_url_id,external_id" },
-  );
-  if (sourceWriteError) throw sourceWriteError;
+  if (!created) {
+    const { error: sourceWriteError } = await supabase.from("event_sources").upsert(
+      {
+        event_id: eventId,
+        watched_url_id: watchedUrlId,
+        source_url: ev.sourceUrl,
+        external_id: ev.externalId,
+        kind:
+          watchedKind === "federation"
+            ? "national_federation"
+            : watchedKind === "aggregator"
+              ? "aggregator"
+              : watchedKind === "series"
+                ? "series"
+                : "official",
+        is_canonical: true,
+      },
+      { onConflict: "watched_url_id,external_id" },
+    );
+    if (sourceWriteError) throw sourceWriteError;
+  }
 
-  if (ev.categories?.length && !lockedFields.includes("categories")) {
+  if (!created && ev.categories?.length && !lockedFields.includes("categories")) {
     const { data: held, error: readError } = await supabase.from("event_categories")
       .select("id,name,distance_km,age_min,age_max,audience").eq("event_id", eventId);
     if (readError) throw readError;
@@ -2542,7 +2541,7 @@ async function upsertParsedEvent(
   }
 
   // Explicit secondary memberships from the parser (alsoSeries).
-  if (ev.alsoSeries?.length) {
+  if (!created && ev.alsoSeries?.length) {
     const { attachSecondarySeries } = await import("@/lib/catalog/event-series");
     for (const extra of ev.alsoSeries) {
       const extraParsed: ParsedEvent = {

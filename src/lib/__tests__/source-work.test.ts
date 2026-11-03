@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { withSourceWork } from "@/lib/pipeline/source-work";
+import { currentSourceLease, withSourceWork } from "@/lib/pipeline/source-work";
 const rpc = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc }) }));
 const row={id:"source",url:"https://race.test/"};
@@ -29,4 +29,22 @@ it('does not start work without a confirmed lease token',async()=>{
   rpc.mockResolvedValue({data:[{key:'source:source'}],error:null});
   await expect(withSourceWork(row,read)).rejects.toThrow('no lease token');
   expect(read).not.toHaveBeenCalled();
+});
+it('provides a claim only inside its own asynchronous source work',async()=>{
+  expect(currentSourceLease()).toBeUndefined();
+  await withSourceWork(row,async()=>{
+    await Promise.resolve();
+    expect(currentSourceLease()).toEqual({key:'source:source',token:'claim',url:row.url});
+    return result;
+  });
+  expect(currentSourceLease()).toBeUndefined();
+});
+it('does not mix claims when two sources run concurrently',async()=>{
+  rpc.mockImplementation(async(name,args)=>({data:name==='pipeline_claim_source'?[{key:`source:${args.p_source}`,token:`claim-${args.p_source}`}]:true,error:null}));
+  await Promise.all(['one','two'].map(id=>withSourceWork({id,url:`https://${id}.test/`},async()=>{
+    await Promise.resolve();
+    expect(currentSourceLease()).toEqual({key:`source:${id}`,token:`claim-${id}`,url:`https://${id}.test/`});
+    return {...result,watchedUrlId:id};
+  })));
+  expect(currentSourceLease()).toBeUndefined();
 });
