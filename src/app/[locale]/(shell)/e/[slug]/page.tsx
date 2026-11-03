@@ -17,7 +17,7 @@ import { raceHolidays } from "@/lib/holidays";
 import { birthYears } from "@/lib/birth-years";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
-import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
+import { AGE_CATEGORIES, UCI_CLASS_LABELS, type UciClass, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, fillCopy, hubCopy, localeAlternates, raceOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
 import { hubPath, localePath } from "@/lib/localized-paths";
@@ -291,7 +291,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           <MetaRow icon={<ChartNoAxesColumnIncreasing />} label={t.levelFilter}>
             {levelLabel ? <Badge variant="outline">{levelLabel}</Badge> : null}
             {event.uciClass ? (
-              <ExplainedBadge explanation={uciClassHelp(event.uciClass, locale)}>UCI {event.uciClass}</ExplainedBadge>
+              <ExplainedBadge explanation={uciClassHelp(event.uciClass, locale)}>UCI {UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}</ExplainedBadge>
             ) : null}
           </MetaRow>
           {event.series ? (

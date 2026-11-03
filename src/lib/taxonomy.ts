@@ -823,8 +823,8 @@ export const UCI_CLASSES = [
 export type UciClass = (typeof UCI_CLASSES)[number];
 
 export const UCI_CLASS_LABELS: Record<UciClass, string> = {
-  cdm: "UCI World Cup",
-  cs: "UCI Continental Series",
+  cdm: "World Cup",
+  cs: "Continental Series",
   worldtour: "WorldTour",
   proseries: "ProSeries",
   hc: "HC",

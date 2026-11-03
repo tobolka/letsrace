@@ -1463,6 +1463,7 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_attach_event_series: { Args: { p_event: string; p_series: string; p_primary: boolean; p_source: string; p_promote_if_empty?: boolean }; Returns: Json };
       pipeline_publication_counts: { Args: Record<PropertyKey, never>; Returns: Json };
       pipeline_expiration_candidates: { Args: { p_token: string }; Returns: { key: string; payload: Json }[] };
       pipeline_record_expirations: { Args: { p_token: string; p_items: Json }; Returns: number };

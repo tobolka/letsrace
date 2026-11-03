@@ -38,3 +38,9 @@ V etapě 3 `operations-progress.md` doplněno trvalé zveřejnění změn seriá
 - 1 453 testů / 222 souborů prošlo; samostatně skutečný SQL test změn seriálu, členství, starých adres, návratu transakce a soukromého přístupu.
 - Sestavení a kontrola typů prošly; stávající bezpečnostní nálezy databáze bez nového zhoršení.
 - Veřejný výsledek se ověřuje po nasazení; tato část sama jej ještě nedokládá.
+
+## Veřejný výsledek
+
+Vydání `8f31731f` je na produkci, Vercel `dpl_2Kz1Er1L4QvNmK5kEAtVrG6waYC7` má stav READY. Všechny tři skutečné veřejné detaily vrací 200. Běžný sdílený seznam `/api/events?catalogue=1` obsahuje všechny tři záznamy se správnými termíny, zařazením, disciplínami a souřadnicemi; podklad pro mapu, seznam a kalendář v `production-checks.json`. Výběr DH/XCO/XCM odpovídá konkrétním závodům.
+
+Cílená dávka zveřejnění ověřila osm detailů bez chyby, včetně těchto tří, v původním denním limitu. Oddělená dávka požadavků v té chvíli správně čekala na časový odstup; její limit nebyl vynulován ani navýšen. Přechodné pozastavení této jedné dávky při nasazení bylo zrušeno.

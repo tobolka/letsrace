@@ -1,0 +1,91 @@
+{
+  "pages": [
+    {
+      "id": "48c78de2-d9ff-4db1-9722-09ffb8d5c520",
+      "url": "https://letsrace.cz/cs/zavod/ixs-european-downhill-cup-szczyrk-2027",
+      "status": 200,
+      "title": "iXS European Downhill Cup — Szczyrk",
+      "text": "{\"@context\":\"https://schema.org\",\"@type\":\"SportsEvent\",\"name\":\"iXS European Downhill Cup — Szczyrk\",\"url\":\"https://letsrace.cz/cs/zavod/ixs-european-downhill-cup-szczyrk-2027\",\"startDate\":\"2027-07-30\",\"eventStatus\":\"https://schema.org/EventScheduled\",\"eventAttendanceMode\":\"https://schema.org/OfflineEventAttendanceMode\",\"inLanguage\":\"cs\",\"endDate\":\"2027-08-01\",\"sameAs\":[\"https://www.szczyrkowski.pl/\"],\"description\":\"Kolo iXS European Downhill Cup zařazené do UCI Mountain Bike Continental Series. Termín 30. 7.–1. 8. 2027 a kategorie mužů a žen Elite a Junior potvrzuje UCI. Bod na mapě označuje areál u dolní stanice gondoly, nikoli potvrzené místo startu. Registrace a podrobný program 2027 zatím nejsou potvrzené.\",\"sport\":\"Cycling\",\"image\":[\"https://letsrace.cz/race-card/cs/ixs-european-downhill-cup-szczyrk-2027\"],\"superEvent\":{\"@type\":\"EventSeries\",\"name\":\"iXS European Downhill Cup\",\"url\":\"https://letsrace.cz/cs/serie/ixs-edc\"},\"location\":{\"@type\":\"Place\",\"name\":\"Szczyrk Mountain Resort\",\"address\":{\"@type\":\"PostalAddress\",\"addressCountry\":\"PL\",\"addressLocality\":\"Szczyrk\"},\"geo\":{\"@type\":\"GeoCoordinates\",\"latitude\":49.6958611,\"longitude\":18.9906111}}}{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Let's Race\",\"ite",
+      "revision": "e30eb246-a491-4d6b-9378-80092c5b3757",
+      "sources": [
+        "https://www.uci.org/competition-details/2027/MTB/81090"
+      ]
+    },
+    {
+      "id": "7168eed6-550f-4f65-be73-14f6f3cba953",
+      "url": "https://letsrace.cz/cs/zavod/mountainbike-junior-festival-graz-stattegg-uci-c1-uci-junior-2027",
+      "status": 200,
+      "title": "Mountainbike JUNIOR Festival Graz/Stattegg, UCI C1, UCI JUNIOR SERIES",
+      "text": "{\"@context\":\"https://schema.org\",\"@type\":\"SportsEvent\",\"name\":\"Mountainbike JUNIOR Festival Graz/Stattegg, UCI C1, UCI JUNIOR SERIES\",\"url\":\"https://letsrace.cz/cs/zavod/mountainbike-junior-festival-graz-stattegg-uci-c1-uci-junior-2027\",\"startDate\":\"2027-07-06\",\"eventStatus\":\"https://schema.org/EventScheduled\",\"eventAttendanceMode\":\"https://schema.org/OfflineEventAttendanceMode\",\"inLanguage\":\"cs\",\"endDate\":\"2027-07-06\",\"sameAs\":[\"https://www.bike020.at/\"],\"description\":\"Závod UCI XCO Junior Series pro juniory a juniorky, UCI Class 1. UCI potvrzuje 6. 7. 2027. Jde o samostatnou soutěž v rámci festivalu 6.–10. 7. 2027; ostatní závody festivalu se nekonají automaticky 6. července. Podrobné propozice a registrace 2027 zatím nejsou potvrzené.\",\"sport\":\"Cycling\",\"typicalAgeRange\":\"17-18\",\"image\":[\"https://letsrace.cz/race-card/cs/mountainbike-junior-festival-graz-stattegg-uci-c1-uci-junior-2027\"],\"superEvent\":{\"@type\":\"EventSeries\",\"name\":\"UCI XCO Junior Series\",\"url\":\"https://letsrace.cz/cs/serie/uci-xco-junior-series\"},\"location\":{\"@type\":\"Place\",\"name\":\"Graz/Stattegg\",\"address\":{\"@type\":\"PostalAddress\",\"addressCountry\":\"AT\",\"addressLocality\":\"Graz/Stattegg\"},\"geo\":{\"@type\":\"GeoCoordinates\",\"latitude\":47.137,\"longitude\":15.418}}}{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbLis",
+      "revision": "ee889b70-8ba0-4446-a4f3-4ef6a995350c",
+      "sources": [
+        "https://www.uci.org/competition-details/2027/MTB/80444"
+      ]
+    },
+    {
+      "id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+      "url": "https://letsrace.cz/cs/zavod/black-forest-ultra-bike-marathon-2027",
+      "status": 200,
+      "title": "Black Forest ULTRA Bike Marathon",
+      "text": "{\"@context\":\"https://schema.org\",\"@type\":\"SportsEvent\",\"name\":\"Black Forest ULTRA Bike Marathon\",\"url\":\"https://letsrace.cz/cs/zavod/black-forest-ultra-bike-marathon-2027\",\"startDate\":\"2027-07-25\",\"eventStatus\":\"https://schema.org/EventScheduled\",\"eventAttendanceMode\":\"https://schema.org/OfflineEventAttendanceMode\",\"inLanguage\":\"cs\",\"endDate\":\"2027-07-25\",\"sameAs\":[\"https://www.ultra-bike.de/\",\"https://www.ultra-bike.de/p/reglement\"],\"description\":\"Black Forest ULTRA Bike Marathon 25. 7. 2027 v Kirchzartenu hostí HERO UCI Cross-country Marathon World Cup. UCI potvrzuje soutěže Elite mužů a žen i doprovodné amatérské závody. Hlavní závod zůstává jedním záznamem; podrobný program dalších soutěží víkendu a registrace pro rok 2027 zatím nejsou potvrzené.\",\"sport\":\"Cycling\",\"image\":[\"https://letsrace.cz/race-card/cs/black-forest-ultra-bike-marathon-2027\"],\"superEvent\":{\"@type\":\"EventSeries\",\"name\":\"HERO UCI Cross-country Marathon World Cup\",\"url\":\"https://letsrace.cz/cs/serie/hero-uci-xcm-world-cup\"},\"offers\":{\"@type\":\"Offer\",\"url\":\"https://www.ultra-bike.de/p/anmeldung\"},\"location\":{\"@type\":\"Place\",\"name\":\"Kirchzarten\",\"address\":{\"@type\":\"PostalAddress\",\"addressCountry\":\"DE\",\"addressLocality\":\"Kirchzarten\"},\"geo\":{\"@type\":\"GeoCoordinates\",\"latitude\":47.9628257,\"longitude\":7.9506515}}",
+      "revision": "81ac7ccc-5a95-4b11-bb07-de72040a19f0",
+      "sources": [
+        "https://www.uci.org/competition-details/2027/MTB/80749"
+      ]
+    }
+  ],
+  "publicFeed": {
+    "status": 200,
+    "records": 1003,
+    "events": [
+      {
+        "id": "7168eed6-550f-4f65-be73-14f6f3cba953",
+        "startDate": "2027-07-06",
+        "endDate": "2027-07-06",
+        "level": "international",
+        "uciClass": "c1",
+        "disciplines": [
+          "xco"
+        ],
+        "lat": 47.137,
+        "lng": 15.418,
+        "series": "UCI XCO Junior Series",
+        "downhillFilter": false,
+        "xcoFilter": true,
+        "xcmFilter": false
+      },
+      {
+        "id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+        "startDate": "2027-07-25",
+        "endDate": "2027-07-25",
+        "level": "world_cup",
+        "uciClass": "cdm",
+        "disciplines": [
+          "xcm"
+        ],
+        "lat": 47.9628257,
+        "lng": 7.9506515,
+        "series": "HERO UCI Cross-country Marathon World Cup",
+        "downhillFilter": false,
+        "xcoFilter": false,
+        "xcmFilter": true
+      },
+      {
+        "id": "48c78de2-d9ff-4db1-9722-09ffb8d5c520",
+        "startDate": "2027-07-30",
+        "endDate": "2027-08-01",
+        "level": "continental",
+        "uciClass": "cs",
+        "disciplines": [
+          "dh"
+        ],
+        "lat": 49.6958611,
+        "lng": 18.9906111,
+        "series": "iXS European Downhill Cup",
+        "downhillFilter": true,
+        "xcoFilter": false,
+        "xcmFilter": false
+      }
+    ]
+  }
+}

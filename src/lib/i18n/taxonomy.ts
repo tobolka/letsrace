@@ -95,6 +95,8 @@ export function ageCategoryHelp(id: string, locale: string): string {
 export function uciClassHelp(id: string, locale: string): string {
   const copy: Record<string, Record<string, string>> = {
     en: {
+      cdm: "UCI World Cup",
+      cs: "UCI Continental Series",
       "1.1": "One day, higher UCI class",
       "1.2": "One day, lower UCI class",
       "2.1": "Stage race, higher UCI class",
@@ -107,6 +109,8 @@ export function uciClassHelp(id: string, locale: string): string {
       proseries: "UCI ProSeries",
     },
     cs: {
+      cdm: "Světový pohár UCI",
+      cs: "Kontinentální série UCI",
       "1.1": "Jeden den, vyšší třída UCI",
       "1.2": "Jeden den, nižší třída UCI",
       "2.1": "Etapa, vyšší třída UCI",
@@ -119,6 +123,8 @@ export function uciClassHelp(id: string, locale: string): string {
       proseries: "UCI ProSeries",
     },
     sk: {
+      cdm: "Svetový pohár UCI",
+      cs: "Kontinentálna séria UCI",
       "1.1": "Jeden deň, vyššia trieda UCI",
       "1.2": "Jeden deň, nižšia trieda UCI",
       "2.1": "Etapa, vyššia trieda UCI",
@@ -131,6 +137,8 @@ export function uciClassHelp(id: string, locale: string): string {
       proseries: "UCI ProSeries",
     },
     pl: {
+      cdm: "Puchar Świata UCI",
+      cs: "Seria Kontynentalna UCI",
       "1.1": "Jeden dzień, wyższa klasa UCI",
       "1.2": "Jeden dzień, niższa klasa UCI",
       "2.1": "Etapowy, wyższa klasa UCI",
@@ -143,6 +151,8 @@ export function uciClassHelp(id: string, locale: string): string {
       proseries: "UCI ProSeries",
     },
     de: {
+      cdm: "UCI-Weltcup",
+      cs: "UCI-Kontinentalserie",
       "1.1": "Ein Tag, höhere UCI-Klasse",
       "1.2": "Ein Tag, niedrigere UCI-Klasse",
       "2.1": "Etappenrennen, höhere UCI-Klasse",
