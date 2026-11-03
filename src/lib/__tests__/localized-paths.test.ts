@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { collectionPath, hubPath, localePath, routePath, SECTION_SLUGS, translatePathname } from "@/lib/localized-paths";
 import { locales } from "@/lib/i18n/messages";
-import { COLLECTION_SLUGS } from "@/lib/race-collections";
+import { COLLECTION_SLUGS, collectionFixedCountry } from "@/lib/race-collections";
 
 describe("localized addresses", () => {
   it("builds addresses in the page's language", () => {
@@ -28,7 +28,7 @@ describe("localized addresses", () => {
     expect(routePath("/cs/auth")).toBeNull();
     for (const l of locales) {
       for (const slug of COLLECTION_SLUGS) {
-        expect(routePath(`/${l}/${collectionPath(l, slug, "PL")}`)).toEqual({ rewrite: `/${l}/collections/${slug}/pl` });
+        expect(routePath(`/${l}/${collectionPath(l, slug, "PL")}`)).toEqual({ rewrite: `/${l}/collections/${slug}${collectionFixedCountry(slug) ? "" : "/pl"}` });
       }
     }
   });

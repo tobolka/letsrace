@@ -50,7 +50,8 @@ export function EventJsonLd({
 }) {
   // The town alone, and the venue-and-town string for the Place's name.
   const town = racePlace(event) || undefined;
-  const placeLabel = town;
+  const venue = event.practicalDetails?.venue?.value;
+  const placeLabel = venue?.name || event.location?.venue || town;
   const pageUrl = absoluteUrl(localePath(locale, `e/${event.slug}`));
   // Pages about this race. The entry form is not one — it goes in `offers`.
   const sameAs = [
@@ -75,6 +76,8 @@ export function EventJsonLd({
   if (sameAs.length) data.sameAs = sameAs;
   if (description) data.description = description;
   data.sport = "Cycling";
+  const organiser = event.practicalDetails?.organizer?.value;
+  if (organiser) data.organizer = { "@type": "Organization", name: organiser.name, ...(organiser.url ? { url: organiser.url } : {}) };
   // Who may start, by age — only when the organiser named the categories.
   const ages = event.ageConfidence === "explicit" ? typicalAgeRange(event.ageCategories) : null;
   if (ages) data.typicalAgeRange = ages;
@@ -101,16 +104,20 @@ export function EventJsonLd({
       "@type": "Place",
       name: placeLabel || event.name,
     };
-    if (event.location?.countryCode) {
+    if (event.location?.countryCode || venue?.countryCode || venue?.locality || venue?.streetAddress) {
       const address: Record<string, unknown> = {
         "@type": "PostalAddress",
-        addressCountry: event.location.countryCode,
+        addressCountry: event.location?.countryCode ?? venue?.countryCode,
       };
       // A town or nothing — not a venue, a country name or "TBC".
       if (town) address.addressLocality = town;
+      if (venue?.locality) address.addressLocality = venue.locality;
+      if (venue?.countryCode) address.addressCountry = venue.countryCode;
+      if (venue?.streetAddress) address.streetAddress = venue.streetAddress;
+      if (venue?.postalCode) address.postalCode = venue.postalCode;
       location.address = address;
     }
-    if (event.location?.lat != null && event.location?.lng != null) {
+    if (event.location?.lat != null && event.location?.lng != null && (!venue || venue.name === event.location.venue)) {
       location.geo = {
         "@type": "GeoCoordinates",
         latitude: event.location.lat,

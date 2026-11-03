@@ -612,6 +612,7 @@ export type Database = {
       }
       events: {
         Row: {
+          practical_details: Json
           public_revision: string
           age_categories: string[]
           age_confidence: string | null
@@ -651,6 +652,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          practical_details?: Json
           public_revision?: string
           age_categories?: string[]
           age_confidence?: string | null
@@ -690,6 +692,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          practical_details?: Json
           public_revision?: string
           age_categories?: string[]
           age_confidence?: string | null
@@ -1460,6 +1463,7 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_save_practical_details:{Args:{p_event:string;p_expected:string;p_details:Json};Returns:Json};
       pipeline_source_counts:{Args:Record<string,never>;Returns:Json};
       pipeline_answer_owner:{Args:{p_key:string;p_expected:string;p_answer:string};Returns:boolean};
       pipeline_claim_tasks: {Args:{p_kind:string;p_capabilities:string[];p_limit?:number};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};

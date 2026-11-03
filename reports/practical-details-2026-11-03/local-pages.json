@@ -1,0 +1,123 @@
+[
+  {
+    "path": "/cs/zavod/jbc-4x-revelations-2027",
+    "status": 200,
+    "title": "4X Pro Tour - JBC 4X Revelations",
+    "practical": "Před cestou na závodAreál a adresaAreál Dobrá VodaTurnovská 40, 466 01 Jablonec nad Nisou 6Údaj pořadatele bez určení ročníkuZdroj: www.jbc4xrevelations.comCo uvádí zdrojAreál Dobrá Voda Turnovská 40 466 01, Jablonec nad Nisou 6",
+    "season": "",
+    "races": 7,
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "4X Pro Tour - JBC 4X Revelations",
+        "url": "https://letsrace.cz/cs/zavod/jbc-4x-revelations-2027",
+        "startDate": "2027-07-09",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "inLanguage": "cs",
+        "endDate": "2027-07-10",
+        "sameAs": [
+          "https://www.jbc4xrevelations.com/en/contact"
+        ],
+        "description": "4X Pro Tour - JBC 4X Revelations je MTB závod – termín 9. července 2027 – 10. července 2027, místo Jablonec nad Nisou (Česko). Je to kolo seriálu 4X Pro Tour. Kategorie: Elite. Online přihlášky jsme zatím nenašli, ověř si je u pořadatele.",
+        "sport": "Cycling",
+        "image": [
+          "https://letsrace.cz/race-card/cs/jbc-4x-revelations-2027"
+        ],
+        "superEvent": {
+          "@type": "EventSeries",
+          "name": "4X Pro Tour",
+          "url": "https://letsrace.cz/cs/serie/4x-pro-tour"
+        },
+        "location": {
+          "@type": "Place",
+          "name": "Areál Dobrá Voda",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "CZ",
+            "addressLocality": "Jablonec nad Nisou 6",
+            "streetAddress": "Turnovská 40",
+            "postalCode": "466 01"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 50.70933,
+            "longitude": 15.1610825
+          }
+        }
+      }
+    ]
+  },
+  {
+    "path": "/cs/zavod/filipa-podkrkonossky-maraton-2027",
+    "status": 200,
+    "title": "FILIPA Podkrkonošský maraton",
+    "practical": "Před cestou na závodProgram a starty31. 7. 2027 · ≈ 09:02:00 — 90 km MTB31. 7. 2027 · ≈ 09:16:18 — Mladší žáci31. 7. 2027 · ≈ 09:16:48 — Mladší žákyně31. 7. 2027 · ≈ 09:34:45 — Kluci 9-1031. 7. 2027 · ≈ 09:49:33 — Holky 9-1031. 7. 2027 · ≈ 10:20:00 — 53 km MTB31. 7. 2027 · ≈ 10:20:00 — 53 km Gravel31. 7. 2027 · ≈ 10:20:00 — 30 km MTB31. 7. 2027 · ≈ 10:20:00 — 30 km MTB Family jízda31. 7. 2027 · ≈ 10:22:55 — Odstrkovadla a kola kluci31. 7. 2027 · ≈ 10:27:44 — Odstrkovadla a kola holky31. 7. 2027 · ≈ 10:34:53 — Kluci 5-631. 7. 2027 · ≈ 10:45:26 — Holky 5-631. 7. 2027 · ≈ 10:54:02 — Kluci 7-831. 7. 2027 · ≈ 11:09:55 — Holky 7-8Časy s ≈ uvádí pořadatel jako přibližné.Zdroj: www.sportchallenge.czCo uvádí zdroj90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší",
+    "season": "",
+    "races": 7,
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "FILIPA Podkrkonošský maraton",
+        "url": "https://letsrace.cz/cs/zavod/filipa-podkrkonossky-maraton-2027",
+        "startDate": "2027-07-31",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "inLanguage": "cs",
+        "endDate": "2027-07-31",
+        "sameAs": [
+          "http://www.podkrkonosskymaraton.cz/",
+          "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice"
+        ],
+        "description": "MTB maraton a gravel 31. 7. 2027 v Lázních Bělohrad. MTB 30, 53 a 90 km, gravel 53 km, rodinná jízda a dětské závody. Propozice pro 2027 jsou zveřejněné. Registrační stránka chybně tvrdí, že akce již proběhla; otevření přihlášek proto není potvrzené.",
+        "sport": "Cycling",
+        "image": [
+          "https://letsrace.cz/race-card/cs/filipa-podkrkonossky-maraton-2027"
+        ],
+        "location": {
+          "@type": "Place",
+          "name": "Lázně Bělohrad",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "CZ",
+            "addressLocality": "Lázně Bělohrad"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 50.4290274,
+            "longitude": 15.5827632
+          }
+        }
+      }
+    ]
+  },
+  {
+    "path": "/cs/zavody/cesko-2027",
+    "status": 200,
+    "title": "Cyklistické závody v Česku 2027",
+    "practical": "",
+    "season": "Rok v našem kalendářiled1úno0bře2dub10kvě29čvn22čvc8srp17zář15říj9lis0pro0Počty a rozsahy popisují uložené závody; chybějící údaje neodhadujeme.0,1–1 684 km · 29/113",
+    "races": 50,
+    "schema": []
+  },
+  {
+    "path": "/cs/zavody/mtb-cesko-2027",
+    "status": 200,
+    "title": "MTB závody v Česku 2027",
+    "practical": "",
+    "season": "Rok v našem kalendářiled0úno0bře2dub5kvě17čvn15čvc6srp10zář8říj5lis0pro0Počty a rozsahy popisují uložené závody; chybějící údaje neodhadujeme.Uložené vzdálenosti: 0,1–850 km · 14/68",
+    "races": 50,
+    "schema": []
+  },
+  {
+    "path": "/cs/zavody/deti-2027",
+    "status": 200,
+    "title": "Dětské cyklistické závody 2027 v Evropě",
+    "practical": "",
+    "season": "Rok v našem kalendářiled2úno0bře3dub8kvě14čvn16čvc12srp9zář15říj2lis0pro0Počty a rozsahy popisují uložené závody; chybějící údaje neodhadujeme.Uložené vzdálenosti: 0,1–141 km · 13/81Zveřejněné kategorieU11 · U13 · U15 · U17 · Děti · Mládež · Junioři · U23 · Elite · Amatéři · Masters · U7 · U9Seriály v této kolekciCUBE CupKTM Kamptal TrophyMTB král HostýnekNationalpark Bike-MarathonRad am RingSTEVENS CycloCross-Cup 2026/27ŠKODA Horal MTB MarathonŠKODA Pražský MTB pohárŠkoda Swiss Bike Cup",
+    "races": 50,
+    "schema": []
+  }
+]

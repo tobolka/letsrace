@@ -27,6 +27,7 @@ export function EventRowBody({
   distanceKm: km,
   wrapName = false,
   compact = false,
+  factsLabel,
 }: {
   event: EventListItem;
   locale: string;
@@ -38,6 +39,7 @@ export function EventRowBody({
    * country page half a megabyte.
    */
   compact?: boolean;
+  factsLabel?: string;
   /**
    * Up to two lines for the name. The list page has no map rebuilding it
    * under the reader, so a name cut at "Mistrzostwa Polski w konk…" is
@@ -77,6 +79,7 @@ export function EventRowBody({
               </ExplainedHint>
             ) : null}
           </span>
+          {factsLabel && <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{factsLabel}</span>}
         </span>
       </>
     );

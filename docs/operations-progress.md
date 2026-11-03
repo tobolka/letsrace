@@ -1,6 +1,6 @@
 # Zjednodušení provozu LetsRace — stav realizace
 
-Aktualizováno 2. listopadu 2026. Číslování odpovídá původním sedmi etapám. Jednotlivá dokončená oprava neznamená dokončenou etapu. Původní časové odhady se nepoužívají.
+Aktualizováno 3. listopadu 2026. Číslování odpovídá původním sedmi etapám. Jednotlivá dokončená oprava neznamená dokončenou etapu. Původní časové odhady se nepoužívají.
 
 | Etapa | Dokončená část | Co ještě chybí | Celkový stav |
 |---|---|---|---|
@@ -27,3 +27,7 @@ Aktualizováno 2. listopadu 2026. Číslování odpovídá původním sedmi etap
 Přehled běžného provozu: [keep-fresh.md](keep-fresh.md). Pravidla ročníků: [annual-editions.md](annual-editions.md).
 
 Nasazený přehled a jeho přesné hranice: [výsledek změny adminu](../reports/owner-admin-2026-11-02/RESULT.md). Společné zveřejnění: [výsledek a důkazy](../reports/aggregate-publication-2026-11-02/RESULT.md). Další konkrétní práce: oprava zbývajících chyb čtení, kontrola seznamu dodaných závodů proti dnešní databázi a následně ostatní zapisovače a nezávislá kontrolní sada.
+
+## Pokračování 3. listopadu
+
+Opraveno čtení oficiálních zdrojů, Chotěbuz ověřena bez nové duplicity a Mac aktualizován na `7a591cbd`. Dávka závodů z přílohy již byla importována; aktuální inventura potvrdila hlavní záznamy. Nové praktické údaje mají samostatné podklady po jednotlivých položkách a zápis se zámky; první skutečně uložené příklady jsou adresa JBC a program/startovné/trasy Podkrkonošského maratonu. Není tím dokončeno plošné doplnění katalogu ani nezávislé měření. Aktuální úkoly a hranice: [tracker](work-tracker-2026-11-03.md).

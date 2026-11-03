@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-03T08:34:03.429Z",
+  "checked": {
+    "details": {
+      "venue": {
+        "sourceUrl": "https://www.jbc4xrevelations.com/en/contact",
+        "quote": "Areál Dobrá Voda Turnovská 40 466 01, Jablonec nad Nisou 6",
+        "checkedAt": "2026-11-03T08:34:03.069Z",
+        "editionYear": 2027,
+        "status": "year_neutral",
+        "value": {
+          "name": "Areál Dobrá Voda",
+          "streetAddress": "Turnovská 40",
+          "postalCode": "466 01",
+          "locality": "Jablonec nad Nisou 6",
+          "countryCode": "CZ",
+          "precision": "venue"
+        }
+      }
+    },
+    "rejected": []
+  },
+  "result": {
+    "status": "saved",
+    "changed": [
+      "venue"
+    ],
+    "skipped": []
+  }
+}

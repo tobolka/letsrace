@@ -61,3 +61,22 @@ describe("collection membership", () => {
     expect(sundayNight.weekendFrom).toBe("2026-10-17");
   });
 });
+
+describe("curated full-year collections", () => {
+  const winter = collectionWindow(new Date("2026-11-03T12:00:00Z"));
+  it("covers January through December 2027 independently of the rolling window", () => {
+    for (const startDate of ["2027-01-01", "2027-12-31"]) expect(belongsToCollection(race({ startDate, location: { countryCode: "CZ" } as EventListItem["location"] }), "cz-2027", winter)).toBe(true);
+    for (const startDate of ["2026-12-31", "2028-01-01"]) expect(belongsToCollection(race({ startDate, location: { countryCode: "CZ" } as EventListItem["location"] }), "cz-2027", winter)).toBe(false);
+  });
+  it("keeps the Czech MTB collection scoped to the actual country and MTB disciplines", () => {
+    const base = { startDate: "2027-12-01", location: { countryCode: "CZ" } as EventListItem["location"] };
+    expect(belongsToCollection(race({ ...base, disciplines: ["four_cross"] }), "cz-mtb-2027", winter)).toBe(true);
+    expect(belongsToCollection(race({ ...base, disciplines: ["road"] }), "cz-mtb-2027", winter)).toBe(false);
+    expect(belongsToCollection(race({ ...base, disciplines: ["mtb"], location: { countryCode: "DE" } as EventListItem["location"] }), "cz-mtb-2027", winter)).toBe(false);
+  });
+  it("does not admit inherited children's categories merely to fill the new season page", () => {
+    const base = { startDate: "2027-12-31", ageCategories: ["u9"] };
+    expect(belongsToCollection(race({ ...base, ageConfidence: "explicit" }), "kids-2027", winter)).toBe(true);
+    expect(belongsToCollection(race({ ...base, ageConfidence: "previous" }), "kids-2027", winter)).toBe(false);
+  });
+});

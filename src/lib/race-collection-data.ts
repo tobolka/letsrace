@@ -3,20 +3,20 @@ import { unstable_cache } from "next/cache";
 import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG } from "@/lib/catalogue-cache";
 import { listEvents } from "@/lib/events";
 import { PUBLIC_COUNTRY_CODES } from "@/lib/geo/europe";
-import { belongsToCollection, collectionAgeCategories, collectionDates, collectionWindow, COLLECTION_SLUGS, type CollectionSlug, type CollectionWindow } from "@/lib/race-collections";
+import { belongsToCollection, collectionAgeCategories, collectionDates, collectionFixedCountry, isSeasonCollection, collectionWindow, COLLECTION_SLUGS, type CollectionSlug, type CollectionWindow } from "@/lib/race-collections";
 
 export type CollectionSummary = { slug: CollectionSlug; countryCode: string | null; count: number };
 
 const loadSummaries = unstable_cache(async (window: CollectionWindow): Promise<CollectionSummary[]> => {
-  const events = await listEvents({ dateFrom: window.from, dateTo: window.to });
+  const events = await listEvents({ dateFrom: window.from < "2027-01-01" ? window.from : "2027-01-01", dateTo: window.to > "2027-12-31" ? window.to : "2027-12-31" });
   return COLLECTION_SLUGS.flatMap((slug) => {
     const matches = events.filter((event) => belongsToCollection(event, slug, window));
     return [
       { slug, countryCode: null, count: matches.length },
-      ...PUBLIC_COUNTRY_CODES.map((countryCode) => ({ slug, countryCode, count: matches.filter((event) => event.location?.countryCode === countryCode).length })),
+      ...(collectionFixedCountry(slug) ? [] : PUBLIC_COUNTRY_CODES.map((countryCode) => ({ slug, countryCode, count: matches.filter((event) => event.location?.countryCode === countryCode).length }))),
     ];
   });
-}, ["race-collection-summaries-v2"], { revalidate: 60 * 60 * 24 * 7, tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG] });
+}, ["race-collection-summaries-v3"], { revalidate: 60 * 60 * 24 * 7, tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG] });
 
 /** Cache the small counts, rather than megabytes of full race records. */
 export const listCollectionSummaries = cache(() => loadSummaries(collectionWindow()));
@@ -26,7 +26,9 @@ export const getRaceCollection = cache(async (slug: CollectionSlug, countryCode?
   const window = collectionWindow();
   const { from, to } = collectionDates(slug, window);
   const events = await listEvents({
-    countryCodes: countryCode ? [countryCode] : undefined,
+    countryCodes: (collectionFixedCountry(slug) ?? countryCode) ? [collectionFixedCountry(slug) ?? countryCode!] : undefined,
+    includeCategories: isSeasonCollection(slug),
+    disciplines: slug === "cz-mtb-2027" ? ["mtb"] : undefined,
     dateFrom: from,
     dateTo: to,
     ageCategories: collectionAgeCategories(slug),

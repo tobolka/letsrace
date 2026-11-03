@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
 import { eventPagePath } from "@/lib/event-url";
-import { monthHeading } from "@/lib/seo-race-copy";
+import { monthHeading, routeSummary } from "@/lib/seo-race-copy";
+import { ageCategoryLabel } from "@/lib/i18n/taxonomy";
 import { EventRowBody } from "@/components/explore/event-row-body";
 import { PlannedRaceRow } from "@/components/race/planned-race-row";
 import { SaveRaceButton } from "@/components/race/save-race-button";
@@ -18,6 +19,7 @@ export function RaceLinkList({
   groupByMonth = true,
   headingLevel = "h2",
   distances,
+  showFacts = false,
 }: {
   events: EventListItem[];
   locale: Locale;
@@ -25,6 +27,7 @@ export function RaceLinkList({
   headingLevel?: "h2" | "h3";
   /** How far each race is from the page's own, by race id. */
   distances?: Map<string, number>;
+  showFacts?: boolean;
 }) {
   if (!events.length) return null;
   const groups = new Map<string, EventListItem[]>();
@@ -48,7 +51,7 @@ export function RaceLinkList({
             {list.map((event) => (
               <PlannedRaceRow eventId={event.id} key={event.id} className="race-row">
                 <Link href={eventPagePath(locale, event.slug)} className="race-row-link">
-                  <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} compact />
+                  <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} factsLabel={showFacts ? [...routeSummary(event, locale), ...(event.ageConfidence === "explicit" ? event.ageCategories.map(age => ageCategoryLabel(age, locale)) : [])].join(" · ") : undefined} compact />
                 </Link>
                 {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}
                 <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="row" />

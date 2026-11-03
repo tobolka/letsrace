@@ -30,6 +30,7 @@ import { disciplineLeaves as disciplineLeavesOf, isHubDiscipline, listQualifying
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
+import { PracticalRaceFacts } from "@/components/race/practical-race-facts";
 import { RacePageView } from "@/components/analytics/race-page-view";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
@@ -371,6 +372,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             {event.description?.trim() || raceSummary(event, locale).join(" ")}
           </p>
         </section>
+
+        <PracticalRaceFacts event={event} locale={locale} />
 
         {categories.length > 0 ? (
           // The routes and classes as the organiser published them, each with

@@ -87,6 +87,7 @@ step "Confirmed series categories"         scripts/apply-series-ages.ts
 step "Verified series documents, no model cost" scripts/enrich-series-documents.ts --max=500 --cached-only --apply
 fi
 step "Entry links from race pages" scripts/fill-registration-links.ts --max=1500 --apply
+step "Programme tables, fees and routes without AI cost" scripts/enrich-practical-details.ts --max=6 --minutes=2 --structured-only --apply
 step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
 step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --apply
 if [ "${SOURCE_DEEP:-0}" = "1" ]; then
@@ -103,6 +104,8 @@ fi
 TODAY=$(date +%F)
 # LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
 if [ "${LLM_DAILY:-0}" = "1" ]; then
+  # Practical decision-making facts get a bounded share of the same existing ledger.
+  LLM_BUDGET_USD=0.15 daily_step "Official venues, programmes, fees and route documents" scripts/enrich-practical-details.ts --max=12 --minutes=3 --apply
   # One season document can fill many rounds; give it first claim on the budget.
   if [ "${CATALOG_DETAIL_ENRICHMENT:-0}" = "1" ]; then
     LLM_BUDGET_USD=0.60 daily_step "Shared series propositions and categories" scripts/enrich-series-documents.ts --max=500 --apply

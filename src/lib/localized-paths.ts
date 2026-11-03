@@ -33,11 +33,11 @@ const ACCOUNT_SLUGS: Record<Locale, Record<AccountPage, string>> = {
 };
 
 export const COLLECTION_URL_SLUGS: Record<Locale, Record<CollectionSlug, string>> = {
-  cs: { weekend: "tento-vikend", "kids-weekend": "deti-tento-vikend", kids: "deti", youth: "mladez", amateur: "amateri" },
-  en: { weekend: "this-weekend", "kids-weekend": "kids-this-weekend", kids: "kids", youth: "youth", amateur: "amateur" },
-  sk: { weekend: "tento-vikend", "kids-weekend": "deti-tento-vikend", kids: "deti", youth: "mladez", amateur: "amateri" },
-  pl: { weekend: "ten-weekend", "kids-weekend": "dzieci-ten-weekend", kids: "dzieci", youth: "mlodziez", amateur: "amatorzy" },
-  de: { weekend: "dieses-wochenende", "kids-weekend": "kinder-dieses-wochenende", kids: "kinder", youth: "jugend", amateur: "amateure" },
+  cs: { "cz-2027": "cesko-2027", "cz-mtb-2027": "mtb-cesko-2027", "kids-2027": "deti-2027", weekend: "tento-vikend", "kids-weekend": "deti-tento-vikend", kids: "deti", youth: "mladez", amateur: "amateri" },
+  en: { "cz-2027": "czechia-2027", "cz-mtb-2027": "mtb-czechia-2027", "kids-2027": "kids-2027", weekend: "this-weekend", "kids-weekend": "kids-this-weekend", kids: "kids", youth: "youth", amateur: "amateur" },
+  sk: { "cz-2027": "cesko-2027", "cz-mtb-2027": "mtb-cesko-2027", "kids-2027": "deti-2027", weekend: "tento-vikend", "kids-weekend": "deti-tento-vikend", kids: "deti", youth: "mladez", amateur: "amateri" },
+  pl: { "cz-2027": "czechy-2027", "cz-mtb-2027": "mtb-czechy-2027", "kids-2027": "dzieci-2027", weekend: "ten-weekend", "kids-weekend": "dzieci-ten-weekend", kids: "dzieci", youth: "mlodziez", amateur: "amatorzy" },
+  de: { "cz-2027": "tschechien-2027", "cz-mtb-2027": "mtb-tschechien-2027", "kids-2027": "kinder-2027", weekend: "dieses-wochenende", "kids-weekend": "kinder-dieses-wochenende", kids: "kinder", youth: "jugend", amateur: "amateure" },
 };
 
 const keyOf = <K extends string>(map: Record<K, string>, value: string | undefined): K | null =>
@@ -131,5 +131,6 @@ export function hubPath(locale: Locale, countryCode?: string | null, discipline?
 
 /** `zavody/deti`, `zavody/deti/cz` — without the locale prefix. */
 export function collectionPath(locale: Locale, slug: CollectionSlug, countryCode?: string | null): string {
+  if (slug === "cz-2027" || slug === "cz-mtb-2027") countryCode = null;
   return localePath(locale, ["collections", slug, countryCode?.toLowerCase()].filter(Boolean).join("/")).slice(locale.length + 2);
 }

@@ -19,3 +19,15 @@ it("omits entry offers after the deadline and for cancelled or postponed races",
     expect(data(event as EventListItem)).not.toHaveProperty("offers");
   }
 });
+it("publishes the same real venue/address/organiser as the visible practical detail without guessed prices or times", () => {
+  const evidence = { sourceUrl: "https://club.test/contact", quote: "Race venue Areál Dobrá Voda Turnovská 40", checkedAt: "2026-11-03T08:00:00Z", editionYear: 2027, status: "year_neutral" as const };
+  const result = data({ ...base, practicalDetails: { venue: { ...evidence, value: { name: "Areál Dobrá Voda", streetAddress: "Turnovská 40", postalCode: "466 01", locality: "Jablonec nad Nisou 6", precision: "venue" } }, organizer: { ...evidence, value: { name: "Revelations Club", url: "https://club.test/" } } } });
+  expect(result.location.name).toBe("Areál Dobrá Voda");
+  expect(result.location.address).toMatchObject({ streetAddress: "Turnovská 40", postalCode: "466 01", addressLocality: "Jablonec nad Nisou 6", addressCountry: "CZ" });
+  expect(result.organizer).toEqual({ "@type": "Organization", name: "Revelations Club", url: "https://club.test/" });
+  expect(result.startDate).toBe(base.startDate);
+  expect(result.offers).not.toHaveProperty("price");
+});
+it("uses a stored venue even before additional practical evidence is available", () => {
+  expect(data({ ...base, location: { ...base.location!, venue: "Known race venue" } }).location.name).toBe("Known race venue");
+});

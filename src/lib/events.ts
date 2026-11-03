@@ -23,12 +23,14 @@ import {
 import { eventIdsForSeries } from "@/lib/catalog/event-series";
 import { formatPlaceName, joinPlace, splitPlace } from "@/lib/places";
 import { repairText } from "@/lib/text";
+import { practicalDetailsForEvent, type PracticalDetails } from "@/lib/practical-details";
 import { freeEventSlug, parseRaceSlug, rankRacesForSlug } from "@/lib/event-slug";
 import { PUBLIC_COUNTRY_CODES, isListedCountry } from "@/lib/geo/europe";
 import { PUBLIC_EVENT_STATUSES, PUBLIC_VISIBILITY, isPublicMapWorthy, shouldHideFromMap } from "@/lib/event-visibility";
 import type { Insert, Json, Update } from "@/lib/supabase/tables";
 
 export type EventListItem = {
+  practicalDetails?: PracticalDetails;
   publicRevision?: string | null;
   description?: string | null;
   id: string;
@@ -70,6 +72,8 @@ export type EventListItem = {
     countryCode: string;
     lat: number | null;
     lng: number | null;
+    venue?: string;
+    regionCode?: string;
   } | null;
   series: { id: string; name: string; slug: string } | null;
   /** Legacy property name: a race/series has a managing organiser, not verified facts. */
@@ -87,6 +91,7 @@ export type EventListItem = {
 };
 
 export type EventFilters = {
+  includeCategories?: boolean;
   q?: string;
   audience?: string[];
   disciplines?: string[];
@@ -138,7 +143,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   let query = supabase
     .from("events")
     .select(
-      `${EVENT_LIST_COLUMNS},
+      `${EVENT_LIST_COLUMNS}${filters.includeCategories ? ", categories:event_categories(id,name,age_min,age_max,distance_km,audience)" : ""},
        ${locationSelect},
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
     )
@@ -267,7 +272,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
   for (let from = 0; ; from += 1000) {
     const page = await query.range(from, from + 999);
     if (page.error) throw new Error(page.error.message);
-    data.push(...((page.data ?? []) as Record<string, unknown>[]));
+    data.push(...((page.data ?? []) as unknown as Record<string, unknown>[]));
     if (!page.data || page.data.length < 1000) break;
   }
 
@@ -532,8 +537,8 @@ async function loadPublicEventBySlug(
   const { data, error } = await supabase
     .from("events")
     .select(
-      `${EVENT_LIST_COLUMNS}, description, public_revision, organizer_verified_at,
-       location:locations(id, name, municipality, country_code, lat, lng),
+      `${EVENT_LIST_COLUMNS}, description, public_revision, organizer_verified_at, practical_details,
+       location:locations(id, name, municipality, country_code, lat, lng, venue, region_code),
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories, organizer_verified_at),
        sources:event_sources(source_url, kind),
        categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
@@ -571,7 +576,7 @@ async function loadPublicEventBySlug(
   return event;
 }
 export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
-  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v5", slug],
+  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v6", slug],
   { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
 )());
 
@@ -760,6 +765,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
   });
   return {
     description: (row.description as string | null) ?? null,
+    ...(row.practical_details ? { practicalDetails: practicalDetailsForEvent(row.practical_details, String(row.start_date), row.end_date as string | null) } : {}),
     publicRevision: (row.public_revision as string | null) ?? null,
     id: String(row.id),
     slug: String(row.slug),
@@ -818,6 +824,8 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
           countryCode: String(location.country_code),
           lat: (location.lat as number) ?? null,
           lng: (location.lng as number) ?? null,
+          ...(location.venue ? { venue: String(location.venue) } : {}),
+          ...(location.region_code ? { regionCode: String(location.region_code) } : {}),
         }
       : null,
     series:
