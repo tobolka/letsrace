@@ -1,0 +1,145 @@
+{
+  "locks": null,
+  "events": [
+    {
+      "id": "7168eed6-550f-4f65-be73-14f6f3cba953",
+      "name": "Mountainbike JUNIOR Festival Graz/Stattegg, UCI C1, UCI JUNIOR SERIES",
+      "slug": "mountainbike-junior-festival-graz-stattegg-uci-c1-uci-junior-2027",
+      "level": "international",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [
+        "xco"
+      ],
+      "audience": "youth",
+      "end_date": "2027-07-06",
+      "timezone": "Europe/Vienna",
+      "series_id": null,
+      "uci_class": "c1",
+      "created_at": "2026-10-16T05:57:11.903343+00:00",
+      "event_type": "festival",
+      "start_date": "2027-07-06",
+      "updated_at": "2026-11-01T18:22:55.866+00:00",
+      "visibility": "public",
+      "class_label": "C1",
+      "description": null,
+      "disciplines": [
+        "xco"
+      ],
+      "fingerprint": "2027-07-06:u26uc:mountainbike junior festival graz stattegg uci c1 uci junior series",
+      "location_id": "7f3cc447-bb4e-424f-bfbd-534459195df9",
+      "results_url": null,
+      "search_text": "mountainbike junior festival graz stattegg uci c1 uci junior series",
+      "source_kind": "scraped",
+      "website_url": "https://www.bike09.at/",
+      "last_seen_at": "2026-11-01T18:22:55.866+00:00",
+      "age_categories": [
+        "junior"
+      ],
+      "age_confidence": "explicit",
+      "merged_into_id": null,
+      "name_normalized": "mountainbike junior festival graz stattegg uci c1 uci junior series",
+      "public_revision": "945667b7-e76c-45ad-92a3-03c2662f937f",
+      "regulations_url": null,
+      "competition_type": "uci",
+      "registration_url": null,
+      "practical_details": {},
+      "organizer_verified_at": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    },
+    {
+      "id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+      "name": "Black Forest ULTRA Bike Marathon",
+      "slug": "black-forest-ultra-bike-marathon-2027",
+      "level": "local",
+      "season": "2027",
+      "status": "scheduled",
+      "formats": [
+        "xcm"
+      ],
+      "audience": "adults",
+      "end_date": "2027-07-25",
+      "timezone": "Europe/Berlin",
+      "series_id": null,
+      "uci_class": null,
+      "created_at": "2026-08-31T12:33:41.856184+00:00",
+      "event_type": "race",
+      "start_date": "2027-07-25",
+      "updated_at": "2026-11-02T18:51:13.954+00:00",
+      "visibility": "public",
+      "class_label": null,
+      "description": null,
+      "disciplines": [
+        "xcm"
+      ],
+      "fingerprint": "2027-07-25:u0t8u:black forest ultra bike marathon",
+      "location_id": "a7ca552d-1693-4b9d-af53-07bc07543b1a",
+      "results_url": null,
+      "search_text": "black forest ultra bike marathon",
+      "source_kind": "scraped",
+      "website_url": "https://www.ultra-bike.de/",
+      "last_seen_at": "2026-11-02T18:51:13.954+00:00",
+      "age_categories": [
+        "amateur"
+      ],
+      "age_confidence": "explicit",
+      "merged_into_id": null,
+      "name_normalized": "black forest ultra bike marathon",
+      "public_revision": "c898bd5b-21d5-4ce5-beba-b6e954b2772a",
+      "regulations_url": "https://www.ultra-bike.de/p/reglement",
+      "competition_type": "other",
+      "registration_url": "https://www.ultra-bike.de/p/anmeldung",
+      "practical_details": {},
+      "organizer_verified_at": null,
+      "registration_opens_at": null,
+      "registration_closes_at": null
+    }
+  ],
+  "categories": [
+    {
+      "id": "f0bd97ad-8516-4035-88f1-79c62d90ebf4",
+      "name": "40 km",
+      "gender": null,
+      "age_max": null,
+      "age_min": null,
+      "audience": "mixed",
+      "event_id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+      "distance_km": 40,
+      "elevation_m": null
+    },
+    {
+      "id": "252ab110-94d1-45ae-bbb1-36b011be2d9d",
+      "name": "54 km",
+      "gender": null,
+      "age_max": null,
+      "age_min": null,
+      "audience": "mixed",
+      "event_id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+      "distance_km": 54,
+      "elevation_m": null
+    },
+    {
+      "id": "42c15d2f-e995-4f8b-bce5-18068ccba57d",
+      "name": "75 km",
+      "gender": null,
+      "age_max": null,
+      "age_min": null,
+      "audience": "mixed",
+      "event_id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+      "distance_km": 75,
+      "elevation_m": null
+    },
+    {
+      "id": "a30b8576-ee97-4ea4-bd61-1bd571bebe3b",
+      "name": "118 km",
+      "gender": null,
+      "age_max": null,
+      "age_min": null,
+      "audience": "mixed",
+      "event_id": "758ecc03-41f2-4ecd-9697-9beba5ae4fa3",
+      "distance_km": 118,
+      "elevation_m": null
+    }
+  ]
+}

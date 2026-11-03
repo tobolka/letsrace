@@ -1,0 +1,52 @@
+{
+  "competitionDetails": {
+    "name": "UCI Mountain Bike Continental Series - iXS European Downhill Cup",
+    "dates": "30 Jul - 01 Aug 2027",
+    "venue": "Szczyrk Mountain Resort - Ski Resort & Bike Park by TREK",
+    "country": "Poland",
+    "competitionClass": "CS - Continental Series",
+    "website": {
+      "isExternal": true
+    },
+    "email": {
+      "title": "biuro@szczyrkowski.pl",
+      "url": "mailto:biuro@szczyrkowski.pl",
+      "isExternal": true
+    }
+  },
+  "schedule": {
+    "items": [
+      {
+        "date": "30 Jul 2027",
+        "races": [
+          {
+            "raceName": "Downhill Men Elite",
+            "raceType": "Downhill",
+            "raceClass": "CS - Continental Series",
+            "category": "Men Elite"
+          },
+          {
+            "raceName": "Downhill Women Elite",
+            "raceType": "Downhill",
+            "raceClass": "CS - Continental Series",
+            "category": "Women Elite"
+          },
+          {
+            "raceName": "Downhill Men Junior",
+            "raceType": "Downhill",
+            "raceClass": "CS - Continental Series",
+            "category": "Men Junior"
+          },
+          {
+            "raceName": "Downhill Women Junior",
+            "raceType": "Downhill",
+            "raceClass": "CS - Continental Series",
+            "category": "Women Junior"
+          }
+        ]
+      }
+    ]
+  },
+  "assignments": [],
+  "competitionName": "UCI Mountain Bike Continental Series - iXS European Downhill Cup"
+}

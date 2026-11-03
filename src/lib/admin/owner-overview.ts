@@ -2,7 +2,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { getPipelineSourceCounts } from "@/lib/pipeline/source-counts";
 import { z } from "zod";
 
-const publicationCounts = z.object({ awaitingRequest: z.number().int().nonnegative(), requestedAwaitingCheck: z.number().int().nonnegative(), awaitingCheck: z.number().int().nonnegative() });
+const publicationCounts = z.object({ seriesAwaitingRequest: z.number().int().nonnegative(), awaitingRequest: z.number().int().nonnegative(), requestedAwaitingCheck: z.number().int().nonnegative(), awaitingCheck: z.number().int().nonnegative() });
 const catalogueCheck = z.object({ verifiedAt: z.iso.datetime({ offset: true }), races: z.number().int().nonnegative() });
 
 export type OwnerStateInput = {

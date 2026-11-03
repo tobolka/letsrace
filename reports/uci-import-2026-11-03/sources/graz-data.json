@@ -1,0 +1,42 @@
+{
+  "competitionDetails": {
+    "name": "Mountainbike Junior Festival + UCI XCO Junior Series",
+    "dates": "06 Jul 2027",
+    "venue": "Graz/Stattegg",
+    "country": "Austria",
+    "competitionClass": "1 - Class 1",
+    "website": {
+      "title": "www.bike020.at",
+      "url": "https://www.bike020.at",
+      "isExternal": true
+    },
+    "email": {
+      "title": "office@bike03.at",
+      "url": "mailto:office@bike03.at",
+      "isExternal": true
+    }
+  },
+  "schedule": {
+    "items": [
+      {
+        "date": "06 Jul 2027",
+        "races": [
+          {
+            "raceName": "Cross-country Olympic Junior Series Men Junior",
+            "raceType": "Cross-country Olympic Junior Series",
+            "raceClass": "1 - Class 1",
+            "category": "Men Junior"
+          },
+          {
+            "raceName": "Cross-country Olympic Junior Series Women Junior",
+            "raceType": "Cross-country Olympic Junior Series",
+            "raceClass": "1 - Class 1",
+            "category": "Women Junior"
+          }
+        ]
+      }
+    ]
+  },
+  "assignments": [],
+  "competitionName": "Mountainbike Junior Festival + UCI XCO Junior Series"
+}

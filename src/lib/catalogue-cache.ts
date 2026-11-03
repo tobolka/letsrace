@@ -20,3 +20,6 @@ export const PUBLIC_CATALOGUE_VIEWS_TAG = "public-catalogue-views";
 
 /** One changed race must not invalidate every catalogue page. */
 export function publicEventTag(slug: string) { return `public-event:${slug}`.slice(0, 256); }
+
+/** One series, including its public round list. */
+export function publicSeriesTag(slug: string) { return `public-series:${slug}`.slice(0, 256); }

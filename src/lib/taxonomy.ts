@@ -221,6 +221,9 @@ const LEGACY_DISC: Record<string, Discipline> = {
   xce: "xce",
   xcm: "xcm",
   marathon: "xcm",
+  "cross-country marathon": "xcm",
+  "cross-country olympic": "xco",
+  "cross-country olympic junior series": "xco",
   maraton: "xcm",
   mtb: "mtb",
   dh: "dh",
@@ -804,6 +807,8 @@ export const RACE_LEVEL_LABELS: Record<RaceLevel, string> = {
 };
 
 export const UCI_CLASSES = [
+  "cdm",
+  "cs",
   "worldtour",
   "proseries",
   "hc",
@@ -818,6 +823,8 @@ export const UCI_CLASSES = [
 export type UciClass = (typeof UCI_CLASSES)[number];
 
 export const UCI_CLASS_LABELS: Record<UciClass, string> = {
+  cdm: "UCI World Cup",
+  cs: "UCI Continental Series",
   worldtour: "WorldTour",
   proseries: "ProSeries",
   hc: "HC",

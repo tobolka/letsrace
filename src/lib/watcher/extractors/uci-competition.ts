@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
-import { canonicalizeDiscipline, type Discipline, type UciClass } from "@/lib/taxonomy";
+import { canonicalizeDiscipline, type Discipline } from "@/lib/taxonomy";
+import { uciCompetitionClass } from "@/lib/uci-class";
 import { countryFromLabel } from "@/lib/geo/country-label";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -35,16 +36,18 @@ export function parseUciCompetition(url: string, html: string): ParsedEvent[] {
       const races = (props.schedule?.items ?? []).flatMap((item: { races?: { raceType?: string; category?: string }[] }) => item.races ?? []);
       const disciplines = [...new Set<Discipline>(races.map((r: { raceType?: string }) => canonicalizeDiscipline(r.raceType)).filter((d: Discipline | null): d is Discipline => d != null && d !== "other"))];
       if (!disciplines.length) continue;
-      const classes = String(detail.competitionClass ?? "").match(/\b([123])\s*-\s*Class\s*\1\b/);
-      const uciClass = classes ? `c${classes[1]}` as UciClass : undefined;
+      const uciClass = uciCompetitionClass(String(detail.competitionClass ?? "")) ?? undefined;
       const names = [...new Set<string>(races.map((r: { category?: string }) => r.category).filter((name: unknown): name is string => typeof name === "string" && name.length > 0))];
       return [{ externalId: `uci-MTB-${path[2]}-${path[1]}`, name: detail.name, startDate: dates.start, endDate: dates.end,
         placeText: detail.venue, countryHint: country, discipline: disciplines, uciClass,
         categories: names.map(name => ({ name })), sourceUrl: url,
         websiteUrl: typeof detail.website?.url === "string" && /^https?:\/\//.test(detail.website.url) ? detail.website.url : undefined,
         ...(detail.name.startsWith("4X Pro Tour") ? { seriesName: "4X Pro Tour", seriesSlug: "4x-pro-tour" } : {}),
+        ...(/iXS European Downhill Cup/i.test(detail.name) ? { seriesName: "iXS European Downhill Cup", seriesSlug: "ixs-edc" } : {}),
+        ...(/^HERO UCI Cross-country Marathon World Cup$/i.test(detail.name) ? { seriesName: "HERO UCI Cross-country Marathon World Cup", seriesSlug: "hero-uci-xcm-world-cup" } : {}),
+        ...(/UCI XCO Junior Series/i.test(detail.name) ? { seriesName: "UCI XCO Junior Series", seriesSlug: "uci-xco-junior-series" } : {}),
         confidence: 0.98,
-        evidence: { quote: JSON.stringify({ competitionDetails: detail, schedule: props.schedule }), sourceUrl: url, method: "uci_competition", version: "uci-competition-v1" },
+        evidence: { quote: JSON.stringify({ competitionDetails: detail, schedule: props.schedule }), sourceUrl: url, method: "uci_competition", version: "uci-competition-v2" },
       }];
     } catch { /* Invalid or unrelated component data is not a race. */ }
   }

@@ -89,6 +89,8 @@ export function resolveLevel(opts: {
   uciClass?: UciClass | null;
   countryHint?: string | null;
 }): LevelEvidence {
+  if (opts.uciClass === "cdm") return { level: "world_cup", reason: "uci_world_cup_class" };
+  if (opts.uciClass === "cs") return { level: "continental", reason: "uci_continental_series_class" };
   const blob = `${opts.name} ${opts.seriesName ?? ""} ${opts.seriesSlug ?? ""} ${opts.placeText ?? ""} ${(opts.categoryNames ?? []).join(" ")}`;
   const t = fold(blob);
   const tokens = foldTokens(blob);

@@ -17,3 +17,5 @@ Aktualizováno 3. listopadu 2026 podle přímých požadavků uživatele. Bez č
 | Nezávislé měření / původní etapy 0–6 | Testy ani úspěšné nasazení nejsou nezávislá správnost a pokrytí. | Oddělená kontrolní sada, audit pravidelných zapisovačů, výsledky/cena/čas člověka; neoznačit celý projekt za hotový jen po dokončení jedné vrstvy. |
 
 Odložené zůstávají nový koncept ověřovacích statusů a stažené veřejné editační formuláře. Neobnovovat je. Rozšiřování SEO má využít existující kolekce a přinášet doložené užitečné údaje.
+
+Dne 3. listopadu pokračuje etapa 3: trvalé zveřejnění seriálů a změn jejich kol, včetně starých adres, samostatných značek a stejného omezeného rozpočtu požadavků. UCI příloha: trialové závody na přání vlastníka vynechány; přidán Szczyrk, doplněn existující Graz a opraven Black Forest při zachování ID/registrace. Zpráva: [UCI import](../reports/uci-import-2026-11-03/RESULT.md).

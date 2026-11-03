@@ -3,7 +3,7 @@ import { agentLinkHeaders } from "@/lib/agent-discovery";
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { LOCALE_COOKIE, savedLocale } from "@/lib/i18n/locale-preference";
 import { estimateMarkdownTokens, homepageMarkdown } from "@/lib/markdown-pages";
-import { CATALOGUE_CDN_CACHE, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag } from "@/lib/catalogue-cache";
+import { CATALOGUE_CDN_CACHE, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag, publicSeriesTag } from "@/lib/catalogue-cache";
 import { routePath, SECTION_SLUGS } from "@/lib/localized-paths";
 
 const LOCALE_PREFIX = new RegExp(`^/(${locales.join("|")})(/|$)`);
@@ -80,6 +80,8 @@ function holdOnCdn(response: NextResponse, request: NextRequest) {
   const resolved = routePath(pathname);
   const internal = resolved && "rewrite" in resolved ? resolved.rewrite : pathname;
   const raceSlug = internal.match(/\/e\/([^/]+)\/?$/)?.[1];
+  const seriesSlug = internal.match(/\/series\/([^/]+)\/?$/)?.[1];
+  if (seriesSlug) response.headers.set("Vercel-Cache-Tag", publicSeriesTag(seriesSlug));
   if (raceSlug) response.headers.set("Vercel-Cache-Tag", publicEventTag(raceSlug));
   if (!/\/(e|series)\//.test(internal) && !(resolved && "redirect" in resolved)) {
     response.headers.set("Vercel-Cache-Tag", PUBLIC_CATALOGUE_VIEWS_TAG);

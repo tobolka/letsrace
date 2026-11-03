@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { withCron } from "@/lib/api/guards";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag, publicSeriesTag } from "@/lib/catalogue-cache";
 import { publicationPayload } from "@/lib/pipeline/publication";
 import { locales } from "@/lib/i18n/messages";
 
@@ -23,7 +23,7 @@ export const POST = withCron(async req => {
       const payload = publicationPayload(item.payload);
       for (const slug of [payload.slug, ...(payload.previousSlugs ?? [])]) {
         if (!slug || slug.length > 200 || slug.includes("/")) throw Error("Invalid race slug in publication");
-        tags.add(publicEventTag(slug));
+        tags.add(item.key.startsWith("series:") ? publicSeriesTag(slug) : publicEventTag(slug));
       }
     }
     for (const tag of tags) revalidateTag(tag, { expire: 0 });
@@ -40,7 +40,10 @@ export const POST = withCron(async req => {
   const payload = publicationPayload(data.payload);
   if (payload.revision !== input.revision) return NextResponse.json({ error: "Publication superseded" }, { status: 409 });
   // Explicit operator batch only. Routine watcher publication stays race-scoped.
-  if (input.catalogue === true) revalidateTag(PUBLIC_CATALOGUE_TAG, { expire: 0 });
+  if (input.catalogue === true) {
+    revalidateTag(PUBLIC_CATALOGUE_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_CATALOGUE_VIEWS_TAG, { expire: 0 });
+  }
   for (const slug of new Set([payload.slug, ...(payload.previousSlugs ?? [])])) {
     if (!slug || slug.length > 200 || slug.includes("/")) throw Error("Invalid race slug in publication");
     revalidateTag(publicEventTag(slug), { expire: 0 });

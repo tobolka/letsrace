@@ -1,0 +1,42 @@
+{
+  "competitionDetails": {
+    "name": "HERO UCI Cross-country Marathon World Cup",
+    "dates": "25 Jul 2027",
+    "venue": "Kirchzarten",
+    "country": "Germany",
+    "competitionClass": "CDM - World Cup",
+    "website": {
+      "title": "www.heroucimarathonworldcup.com",
+      "url": "https://www.heroucimarathonworldcup.com",
+      "isExternal": true
+    },
+    "email": {
+      "title": "info@heroucimarathonworldcup.com",
+      "url": "mailto:info@heroucimarathonworldcup.com",
+      "isExternal": true
+    }
+  },
+  "schedule": {
+    "items": [
+      {
+        "date": "25 Jul 2027",
+        "races": [
+          {
+            "raceName": "Cross-country Marathon Men Elite",
+            "raceType": "Cross-country marathon",
+            "raceClass": "CDM - World Cup",
+            "category": "Men Elite"
+          },
+          {
+            "raceName": "Cross-country Marathon Women Elite",
+            "raceType": "Cross-country marathon",
+            "raceClass": "CDM - World Cup",
+            "category": "Women Elite"
+          }
+        ]
+      }
+    ]
+  },
+  "assignments": [],
+  "competitionName": "HERO UCI Cross-country Marathon World Cup"
+}

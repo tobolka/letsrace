@@ -6,19 +6,8 @@
 import { readFileSync } from "node:fs";
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, ""); }
 
-/** "UCI C1", "C2", "XCO HC", "1.2", "2.Pro" → our class id. */
-export function uciClassIn(text: string): string | null {
-  const t = ` ${text} `;
-  const m =
-    t.match(/\bUCI[\s-]*(?:XCO|XCM|XCC|CX|DH|MTB|BMX|ROAD)?[\s-]*(HC|C1|C2|C3|1\.1|1\.2|2\.1|2\.2|1\.Pro|2\.Pro|1\.UWT|2\.UWT|WC|World\s*Cup)\b/i) ||
-    t.match(/[\s(\[]((?:XCO|XCM|CX)\s*)?(C1|C2|C3|HC)[\s)\],]/) ||
-    t.match(/[\s(\[](1\.1|1\.2|2\.1|2\.2|1\.Pro|2\.Pro)[\s)\],]/);
-  if (!m) return null;
-  const c = (m[m.length - 1] ?? "").toLowerCase().replace(/\s+/g, "");
-  if (/uwt|worldcup|wc/.test(c)) return "worldtour";
-  if (/pro/.test(c)) return "proseries";
-  return ["hc", "c1", "c2", "c3", "1.1", "1.2", "2.1", "2.2"].includes(c) ? c : null;
-}
+import { uciClassIn } from "../src/lib/uci-class";
+import { parseUciCompetition } from "../src/lib/watcher/extractors/uci-competition";
 
 async function main() {
   const apply = process.argv.includes("--apply");
@@ -39,9 +28,10 @@ async function main() {
     if (!c && uci) {
       try {
         const html = await (await fetch(uci, { signal: AbortSignal.timeout(15000), headers: { "user-agent": "Mozilla/5.0 letsrace" } })).text();
+        c = parseUciCompetition(uci, html)[0]?.uciClass ?? null;
         const m = html.replace(/<[^>]+>/g, " ").match(/Class\s*:?\s*(HC|C1|C2|C3|1\.1|1\.2|2\.1|2\.2|1\.Pro|2\.Pro|1\.UWT|2\.UWT|CDM|WC)\b/i);
-        if (m) {
-          c = uciClassIn(`UCI ${m[1]}`) ?? (/(CDM|WC)/i.test(m[1]!) ? "worldtour" : null);
+        if (!c && m) {
+          c = uciClassIn(`UCI ${m[1]}`) ?? (/(CDM|WC)/i.test(m[1]!) ? "cdm" : null);
           from = uci;
         }
       } catch {

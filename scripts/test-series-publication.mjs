@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { PGlite } from '../tmp/pipeline-db-test/node_modules/@electric-sql/pglite/dist/index.js';
+const db=new PGlite();
+const race='00000000-0000-0000-0000-000000000001',cup='00000000-0000-0000-0000-000000000002',other='00000000-0000-0000-0000-000000000003';
+try {
+ await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
+ create table events(id uuid primary key,slug text,name text,start_date date,end_date date,status text default 'scheduled',visibility text default 'public',merged_into_id uuid,location_id uuid,series_id uuid,last_seen_at timestamptz,updated_at timestamptz);
+ create table locations(id uuid primary key,name text,municipality text,country_code text,lat float,lng float,updated_at timestamptz);
+ create table series(id uuid primary key,name text,slug text,visibility text default 'public',website_url text,age_categories text[],last_seen_at timestamptz,updated_at timestamptz);grant usage on schema public to service_role;grant all on all tables in schema public to service_role;`);
+ for(const f of ['20261102084307_durable_publication_tasks.sql','20261102201557_aggregate_catalogue_publication.sql','20261103090530_separate_public_refresh_requests.sql','20261103130304_durable_series_publication.sql'])await db.exec(await readFile('supabase/migrations/'+f,'utf8'));
+ await db.exec(`set role service_role;insert into series(id,name,slug) values('${cup}','Cup','cup'),('${other}','Other','other');insert into events(id,name,slug,start_date,series_id) values('${race}','Race','race',current_date+20,'${cup}');`);
+ const task=async id=>(await db.query('select * from pipeline_tasks where key=$1',['series:'+id])).rows[0];
+ const rev=async()=>(await db.query('select public_revision from events where id=$1',[race])).rows[0].public_revision;
+ let version=(await task(cup)).payload.revision;let raceVersion=await rev();
+ await db.exec(`update series set last_seen_at=now() where id='${cup}';update events set last_seen_at=now() where id='${race}';`);
+ assert.equal((await task(cup)).payload.revision,version);assert.equal(await rev(),raceVersion);
+ await db.exec(`update series set name='Renamed Cup',slug='new-cup' where id='${cup}'`);
+ assert.notEqual((await task(cup)).payload.revision,version);assert.notEqual(await rev(),raceVersion);assert((await task(cup)).payload.previousSlugs.includes('cup'));version=(await task(cup)).payload.revision;
+ await db.exec(`update events set start_date=current_date+21 where id='${race}'`);assert.notEqual((await task(cup)).payload.revision,version);
+ const oldCupVersion=(await task(cup)).payload.revision,oldOtherVersion=(await task(other)).payload.revision;
+ await db.exec(`update events set series_id='${other}' where id='${race}'`);assert.notEqual((await task(cup)).payload.revision,oldCupVersion);assert.notEqual((await task(other)).payload.revision,oldOtherVersion);
+ const claim=(await db.query("select * from pipeline_claim_tasks('public_expire',array['web'],1)")).rows[0];assert(claim);
+ const items=(await db.query('select * from pipeline_expiration_candidates($1)',[claim.token])).rows;assert(items.some(i=>i.key==='series:'+cup));
+ await db.query('select pipeline_record_expirations($1,$2)',[claim.token,items.map(i=>({key:i.key,revision:i.payload.revision}))]);
+ assert.equal((await task(cup)).status,'done');assert.equal((await task(cup)).result.verified,false);
+ assert.equal((await db.query("select status from pipeline_tasks where key=$1",['public:'+race])).rows[0].status,'pending');
+ await db.exec(`begin;update series set name='Rolled back' where id='${other}';rollback;`);assert.equal((await task(other)).status,'done');
+ await db.exec(`delete from series where id='${cup}'`);assert.equal((await task(cup)).payload.expected.visibility,'hidden');
+ for(const role of ['anon','authenticated']){await db.exec(`reset role;set role ${role}`);await assert.rejects(db.query('select pipeline_enqueue_series($1)',[{id:cup,slug:'cup'}]),/permission denied/);}
+ console.log('PASS: series rename/aliases, inherited race revision, changed rounds and membership, no heartbeat churn, transaction rollback, deletion, private receipts and no false HTML verification');
+} finally {await db.close();}
