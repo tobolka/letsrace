@@ -1,0 +1,480 @@
+{
+  "at": "2026-11-04T21:11:14.603Z",
+  "referenceDate": "2026-11-04",
+  "referenceHash": "52d90d3c6923509a1b340467a23ee5d5667374f3776b3098fd3b2ce089e46bf7",
+  "scope": "Dated reference comparison. Separation checks and evidence limits require separate review. Catalogue writes and model calls: zero.",
+  "metrics": {
+    "referenceCases": 14,
+    "reviewedPublicMatches": 1,
+    "allMeasuredFieldsMatch": 1,
+    "fieldDiscrepancies": 0,
+    "noReviewedPublicMatch": 13
+  },
+  "rows": [
+    {
+      "caseId": "cz-czech-tour",
+      "name": "Czech Tour",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/ROA/80101",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "ab4d1381-b001-486d-8951-0ee1b39172a4",
+          "name": "Czech Tour",
+          "startDate": "2026-08-13",
+          "visibility": "hidden",
+          "mergedInto": null
+        },
+        {
+          "id": "b08a8a0e-c4fa-4a0f-a3c6-14b346aba6d9",
+          "name": "Czech tour",
+          "startDate": "2026-08-16",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "bb1b963c-bd69-4575-81d0-321b3af9c6a3",
+          "name": "Czech Tour",
+          "startDate": "2027-08-12",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "c23f77a5-6c7d-4258-be00-e5fc766a4769",
+          "name": "Czech Tour",
+          "startDate": "2026-08-13",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "de-rad-am-ring-gravel",
+      "name": "Rad am Ring – Gravel-Race",
+      "sourceUrl": "https://radamring.de/de/disziplinen/gravel-race",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "3a8123e8-a177-4196-b630-7d53e8ca1b0c",
+          "name": "Rad am Ring - Zeitfahren",
+          "startDate": "2027-07-23",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "6ca1f00c-3526-4d28-a567-9786ae26c67e",
+          "name": "Rad am Ring - Jedermannrennen",
+          "startDate": "2027-07-24",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8d6f6e82-c339-4ba3-b57d-dd4c2127235f",
+          "name": "Rad am Ring",
+          "startDate": "2026-07-25",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8e8b35e2-b94f-4c01-a034-49cdca98fd4a",
+          "name": "Rad am Ring - Tourenfahren (touristisch)",
+          "startDate": "2027-07-24",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "de-rad-am-ring-24h",
+      "name": "Rad am Ring – 24h-Radrennen",
+      "sourceUrl": "https://radamring.de/de/disziplinen/24h-radrennen",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "3a8123e8-a177-4196-b630-7d53e8ca1b0c",
+          "name": "Rad am Ring - Zeitfahren",
+          "startDate": "2027-07-23",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "6ca1f00c-3526-4d28-a567-9786ae26c67e",
+          "name": "Rad am Ring - Jedermannrennen",
+          "startDate": "2027-07-24",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8d6f6e82-c339-4ba3-b57d-dd4c2127235f",
+          "name": "Rad am Ring",
+          "startDate": "2026-07-25",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8e8b35e2-b94f-4c01-a034-49cdca98fd4a",
+          "name": "Rad am Ring - Tourenfahren (touristisch)",
+          "startDate": "2027-07-24",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "de-rad-am-ring-kids",
+      "name": "Rad am Ring – Dextro Energy Kids Race",
+      "sourceUrl": "https://radamring.de/de/disziplinen/kids-race",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "3a8123e8-a177-4196-b630-7d53e8ca1b0c",
+          "name": "Rad am Ring - Zeitfahren",
+          "startDate": "2027-07-23",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "6ca1f00c-3526-4d28-a567-9786ae26c67e",
+          "name": "Rad am Ring - Jedermannrennen",
+          "startDate": "2027-07-24",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8d6f6e82-c339-4ba3-b57d-dd4c2127235f",
+          "name": "Rad am Ring",
+          "startDate": "2026-07-25",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8e8b35e2-b94f-4c01-a034-49cdca98fd4a",
+          "name": "Rad am Ring - Tourenfahren (touristisch)",
+          "startDate": "2027-07-24",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "at-wachau",
+      "name": "Wachau Radmarathon",
+      "sourceUrl": "https://www.wachau-radmarathon.at/de/",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "274b5c9a-8a77-437e-9912-0ba9c3ed159a",
+          "name": "Wachau Radmarathon",
+          "startDate": "2026-07-12",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "30b66cc3-d28f-4233-8898-b616275a1249",
+          "name": "Wachau Radmarathon",
+          "startDate": "2027-07-18",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "df85a516-7877-4de2-a1ca-76de6ffc2b52",
+          "name": "Wachau Radmarathon",
+          "startDate": "2027-07-18",
+          "visibility": "hidden",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "at-kufstein",
+      "name": "Kufsteinerland Radmarathon",
+      "sourceUrl": "https://www.kufsteinerland-radmarathon.at/",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "3ee31c5d-e588-423a-ab1e-29e0fb3e1962",
+          "name": "Kufsteinerland Radmarathon",
+          "startDate": "2026-08-23",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "8a2604ad-3555-492c-bf77-465e916cf2fd",
+          "name": "Kufsteinerland Radmarathon",
+          "startDate": "2027-08-22",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "e07a3597-61b7-47db-b595-99e4d8d22269",
+          "name": "Kufsteinerland Radmarathon",
+          "startDate": "2027-08-22",
+          "visibility": "hidden",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "pl-mazowiecki",
+      "name": "Mazowiecki Gravel",
+      "sourceUrl": "https://www.mazowieckigravel.pl/mg/artykuly/zapisy-mg27",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "fb0edf38-2821-4aed-ab88-7fc77121c48a",
+          "name": "Mazowiecki Gravel",
+          "startDate": "2027-06-19",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "pl-bike-adventure",
+      "name": "Bike Adventure MTB",
+      "sourceUrl": "https://bikeadventure.pl/",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "e5f80f5c-1a20-4182-ab73-cdc1b7972d43",
+          "name": "Bike Adventure",
+          "startDate": "2027-07-08",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "faed6c28-51da-4074-8837-0e97d99bbac6",
+          "name": "LA CHIANINA UNCONVENTIONAL BIKE ADVENTURE 2027",
+          "startDate": "2027-06-05",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "sk-stupava-summer",
+      "name": "BAJKSERVIS Stupava maratón MTB",
+      "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+      "state": "matches_reference",
+      "checks": {
+        "date": true,
+        "country": true,
+        "discipline": true,
+        "place": true
+      },
+      "matches": [
+        {
+          "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+          "name": "BAJKSERVIS Stupava maratón MTB",
+          "start_date": "2027-06-19",
+          "end_date": "2027-06-19",
+          "visibility": "public",
+          "merged_into_id": null,
+          "disciplines": [
+            "mtb",
+            "xcm"
+          ],
+          "level": "local",
+          "uci_class": null,
+          "location": {
+            "name": "Stupava",
+            "country_code": "SK",
+            "municipality": "Stupava"
+          },
+          "sources": [
+            {
+              "source_url": "https://www.stupavskymaraton.sk/rubrika/skoda-stupava-maraton-2024/",
+              "external_id": "wishlist-2027-stupava-mtb-1"
+            },
+            {
+              "source_url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+              "external_id": "wishlist-2027-stupava-mtb-2"
+            },
+            {
+              "source_url": "https://www.stupavskymaraton.sk/",
+              "external_id": "wishlist-2027-stupava-mtb-3"
+            }
+          ]
+        }
+      ],
+      "suggestions": [
+        {
+          "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+          "name": "BAJKSERVIS Stupava maratón MTB",
+          "startDate": "2027-06-19",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+          "name": "BAJKSERVIS Stupava MTB sprint Biely kríž",
+          "startDate": "2027-08-29",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "60166d54-e74b-4275-9a02-828a41b65f3a",
+          "name": "ŠKODA Stupava maratón a Finále ŠKODA SP MTB XCM 2026",
+          "startDate": "2026-09-12",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "a952c72c-6157-4698-afb3-9e11ab51c535",
+          "name": "Župný pohár 2026 - BAJKSERVIS STUPAVA MTB SPRINT",
+          "startDate": "2026-08-30",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "afd2ea26-72ea-4cdd-9009-88efacde6c9f",
+          "name": "Škoda Stupava maratón",
+          "startDate": "2026-09-12",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "sk-stupava-winter",
+      "name": "BAJKSERVIS Stupava zimný MTB maratón",
+      "sourceUrl": "https://www.stupavskymaraton.sk/inpage/stupava-winter-maraton-2025/",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+          "name": "BAJKSERVIS Stupava maratón MTB",
+          "startDate": "2027-06-19",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "d7218f42-1737-47e5-b1d4-ad2e900c0563",
+          "name": "Stupava Winter MTB Marathon",
+          "startDate": "2027-01-16",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "ch-octopus",
+      "name": "Octopus Gravel",
+      "sourceUrl": "https://epicos.cc/events/octopus/",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "21bd624f-a035-4941-a416-f7824cb5bef9",
+          "name": "Octopus Gravel Andermatt",
+          "startDate": "2027-06-26",
+          "visibility": "public",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "ch-tour-vaud",
+      "name": "Tour du Pays de Vaud",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/ROA/81146",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": []
+    },
+    {
+      "caseId": "it-strade-bianche-gf",
+      "name": "Gran Fondo Strade Bianche",
+      "sourceUrl": "https://gfstradebianche.it/en/faq-en/",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "68106f61-6dbe-4206-9910-c16478c1b728",
+          "name": "Gran Fondo Strade Bianche 2027",
+          "startDate": "2027-03-07",
+          "visibility": "hidden",
+          "mergedInto": null
+        },
+        {
+          "id": "6d2a15f0-205b-4694-a2a3-d09873bc79ef",
+          "name": "Gran Fondo Strade Bianche",
+          "startDate": "2026-03-07",
+          "visibility": "hidden",
+          "mergedInto": null
+        }
+      ]
+    },
+    {
+      "caseId": "it-verona-bmx",
+      "name": "UEC BMX European Cup – Verona, kola 1 a 2",
+      "sourceUrl": "https://www.uec.ch/en/event/296/2027-uec-bmx-european-cup-rounds-1-2",
+      "state": "no_reviewed_public_match",
+      "checks": {},
+      "matches": [],
+      "suggestions": [
+        {
+          "id": "6c0f045d-8a0f-4ab2-9114-1e1b0e74249f",
+          "name": "UEC BMX Racing European Cup - Round 2",
+          "startDate": "2027-03-06",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "b427c111-0507-4bd4-aae7-e94274df378b",
+          "name": "UEC BMX Racing European Cup - Round 1",
+          "startDate": "2027-03-05",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "bc4623f1-b0ba-4dee-be17-009e8d404196",
+          "name": "UEC BMX Racing European Cup - Round 10",
+          "startDate": "2026-09-06",
+          "visibility": "hidden",
+          "mergedInto": null
+        },
+        {
+          "id": "c14fc333-747d-4edd-a146-b42d75ffce51",
+          "name": "UEC BMX Racing European Cup - Round 6",
+          "startDate": "2027-04-18",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "d4a1548d-1454-4d31-989c-576b5c6e01e2",
+          "name": "UEC BMX Racing European Cup - Round 5",
+          "startDate": "2027-04-17",
+          "visibility": "public",
+          "mergedInto": null
+        },
+        {
+          "id": "e0ddc310-d032-45b2-bfd6-4bfc6df1a505",
+          "name": "UEC BMX Racing European Cup - Round 12",
+          "startDate": "2026-09-27",
+          "visibility": "hidden",
+          "mergedInto": null
+        }
+      ]
+    }
+  ]
+}

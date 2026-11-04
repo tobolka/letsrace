@@ -221,6 +221,7 @@ describe("link quality", () => {
       "https://www.cyclingaustria.at/#newsletter-anmeldung",
       "https://example.cz/prihlaseni",
       "https://example.de/anmelden/",
+      "https://bikeboard.at/forum/register/",
     ]) {
       expect(isAccountOrNewsletterUrl(url), url).toBe(true);
       expect(publicRaceUrl(url), url).toBeNull();

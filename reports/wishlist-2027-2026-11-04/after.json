@@ -1,0 +1,3167 @@
+[
+ {
+  "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+  "slug": "bajkservis-stupava-maraton-mtb-2027",
+  "name": "BAJKSERVIS Stupava maratón MTB",
+  "name_normalized": "bajkservis stupava maraton",
+  "series_id": null,
+  "location_id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+  "start_date": "2027-06-19",
+  "end_date": "2027-06-19",
+  "timezone": "Europe/Bratislava",
+  "disciplines": [
+   "mtb",
+   "xcm"
+  ],
+  "audience": "mixed",
+  "status": "scheduled",
+  "website_url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+  "registration_url": null,
+  "registration_opens_at": null,
+  "registration_closes_at": null,
+  "fingerprint": "2027-06-19:u2s4e:bajkservis stupava maraton",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:07:19.231176+00:00",
+  "created_at": "2026-11-04T21:07:19.231176+00:00",
+  "updated_at": "2026-11-04T21:07:19.231176+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "21. ročník MTB maratónu v Malých Karpatech na tratích 78, 42, 25 a 7 km, se samostatným startem elektrokol na 42 km. Pořadatel ho uvádí v Župném a Slovenském poháru. Přihláška pro rok 2027 zatím vede na loňský ročník, proto ji neuvádíme. Doprovodný běh není součástí tohoto záznamu.",
+  "age_categories": [
+   "u15",
+   "u17",
+   "junior",
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [
+   "xcm"
+  ],
+  "event_type": "race",
+  "competition_type": "community",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "bajkservis stupava maraton mtb",
+  "age_confidence": "explicit",
+  "public_revision": "88fb6a10-057d-4460-93f4-55b43503a0d2",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "uhradené od 1.12. 2026 do polnoci 31.3. 2027 - 35 €",
+    "value": [
+     {
+      "label": "Uhradené do 31. 3. 2027",
+      "amount": 35,
+      "currency": "EUR",
+      "validUntil": "2027-03-31"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "Miesto: Stupava, Penzión INTENZÍVA/BAJKSERVIS (Nová ulica 66).",
+    "value": {
+     "name": "Penzión INTENZÍVA / BAJKSERVIS",
+     "locality": "Stupava",
+     "precision": "venue",
+     "countryCode": "SK",
+     "streetAddress": "Nová ulica 66"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "Maratón - dlhá trať - 78 km, Prevýšenie 1900m; stredná trať - 42km, 950m; krátka trať - 25km, 500m; family trať - 7km, 120m",
+    "value": [
+     {
+      "name": "Dlhá trať",
+      "distanceKm": 78,
+      "elevationM": 1900
+     },
+     {
+      "name": "Stredná trať",
+      "distanceKm": 42,
+      "elevationM": 950
+     },
+     {
+      "name": "Krátka trať",
+      "distanceKm": 25,
+      "elevationM": 500
+     },
+     {
+      "name": "Family trať",
+      "distanceKm": 7,
+      "elevationM": 120
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "10:00 Dlhá trať MTB 78 km; 10:40 Stredná trať MTB 42 km E-bike; 11:00 Stredná trať MTB 42 km; 11:30 Krátka trať MTB 25 km; 11:40 Family trať MTB 7km",
+    "value": [
+     {
+      "date": "2027-06-19",
+      "time": "10:00",
+      "label": "Dlhá trať 78 km",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "10:40",
+      "label": "Stredná trať 42 km E-bike",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "11:00",
+      "label": "Stredná trať 42 km",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "11:30",
+      "label": "Krátka trať 25 km",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "11:40",
+      "label": "Family trať 7 km",
+      "timeZone": "Europe/Bratislava"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "USPoriadateĽ Občianske združenie Maratón, Štúrova 50, 900 33 Marianka",
+    "value": {
+     "url": "https://www.stupavskymaraton.sk/",
+     "name": "Občianske združenie Maratón"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "geog": "0101000020E6100000CBAD5AE37D0C314076C7BD54C7234840",
+   "name": "Stupava",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Prague",
+   "created_at": "2026-08-13T20:37:50.097166+00:00",
+   "updated_at": "2026-08-13T20:37:50.138011+00:00",
+   "region_code": null,
+   "country_code": "SK",
+   "municipality": "Stupava",
+   "geocode_query": "Stupava",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "33c38854-cea1-4c4b-8cf0-bb3b3e9036db",
+   "fields": {
+    "end_date": "2027-06-19",
+    "categories": [
+     {
+      "name": "Dlhá trať 78 km",
+      "ageMin": 19,
+      "distanceKm": 78
+     },
+     {
+      "name": "Stredná trať 42 km",
+      "ageMin": 17,
+      "distanceKm": 42
+     },
+     {
+      "name": "Stredná trať 42 km E-bike",
+      "ageMin": 17,
+      "distanceKm": 42
+     },
+     {
+      "name": "Krátka trať 25 km",
+      "distanceKm": 25
+     },
+     {
+      "name": "Family trať 7 km",
+      "distanceKm": 7
+     }
+    ],
+    "start_date": "2027-06-19",
+    "disciplines": [
+     "mtb",
+     "xcm"
+    ],
+    "website_url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/"
+   },
+   "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+   "updated_at": "2026-11-04T21:07:19.231176+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "disciplines",
+    "start_date",
+    "end_date",
+    "website_url",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "9c0d34bf-4dfa-4f32-9ca6-ae690d5fd7c0",
+    "name": "Dlhá trať 78 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 19,
+    "audience": "mixed",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "distance_km": 78,
+    "elevation_m": 1900
+   },
+   {
+    "id": "cad08aba-745d-4d4d-bed0-3e789805f068",
+    "name": "Stredná trať 42 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 17,
+    "audience": "mixed",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "distance_km": 42,
+    "elevation_m": 950
+   },
+   {
+    "id": "98daa205-cc28-4af7-9600-8f3549f3ef08",
+    "name": "Stredná trať 42 km E-bike",
+    "gender": null,
+    "age_max": null,
+    "age_min": 17,
+    "audience": "mixed",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "distance_km": 42,
+    "elevation_m": 950
+   },
+   {
+    "id": "b5227cc4-7324-4783-b3eb-6957a27420a0",
+    "name": "Krátka trať 25 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "distance_km": 25,
+    "elevation_m": 500
+   },
+   {
+    "id": "ba1226a3-0a81-4cbb-a140-49bc900eec93",
+    "name": "Family trať 7 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "distance_km": 7,
+    "elevation_m": 120
+   }
+  ],
+  "sources": [
+   {
+    "id": "c4a2b979-d763-4c76-a0c1-0379d7edbe25",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:19.231176+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/rubrika/skoda-stupava-maraton-2024/",
+    "external_id": "wishlist-2027-stupava-mtb-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "338fdd8f-2597-4c4e-ba3b-346964775e59",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:19.231176+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "external_id": "wishlist-2027-stupava-mtb-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "2de28318-ad97-4e71-9eea-7120fd95cbba",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:19.231176+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/",
+    "external_id": "wishlist-2027-stupava-mtb-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+  "slug": "bajkservis-stupava-mtb-sprint-biely-kriz-2027",
+  "name": "BAJKSERVIS Stupava MTB sprint Biely kríž",
+  "name_normalized": "bajkservis stupava sprint biely kriz",
+  "series_id": null,
+  "location_id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+  "start_date": "2027-08-29",
+  "end_date": "2027-08-29",
+  "timezone": "Europe/Bratislava",
+  "disciplines": [
+   "mtb",
+   "tt",
+   "hill_climb"
+  ],
+  "audience": "mixed",
+  "status": "scheduled",
+  "website_url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+  "registration_url": null,
+  "registration_opens_at": null,
+  "registration_closes_at": "2027-08-28T10:00:00+00:00",
+  "fingerprint": "2027-08-29:u2s4e:bajkservis stupava sprint biely kriz",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:07:22.480585+00:00",
+  "created_at": "2026-11-04T21:07:22.480585+00:00",
+  "updated_at": "2026-11-04T21:07:22.480585+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "MTB časovka do vrchu ze Stupavy na Biely kríž po lesních cestách a singletracích, 11 km a 400 m převýšení. Startuje se v minutových intervalech. Online uzávěrka je 28. 8. 2027 ve 12:00, formulář pro rok 2027 ale zatím není ověřený.",
+  "age_categories": [
+   "u17",
+   "junior",
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "community",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "bajkservis stupava mtb sprint biely kriz",
+  "age_confidence": "explicit",
+  "public_revision": "c99bf678-a63c-4f4a-9383-37c1de719aaa",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "štartovné prevodom do 27.08.2027 20€; štartovné v hotovosti od 28.08.2027 do 29.08.2027 10:00 25€",
+    "value": [
+     {
+      "label": "Převodem",
+      "amount": 20,
+      "currency": "EUR",
+      "validUntil": "2027-08-27"
+     },
+     {
+      "label": "V hotovosti",
+      "amount": 25,
+      "currency": "EUR",
+      "validUntil": "2027-08-29"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "Kde Stupava, Penzión INTENZÍVA/BAJKSERVIS (Nová ulica 66). Cieľ Biely Kríž / CHATA KLINEC",
+    "value": {
+     "name": "BAJKSERVIS, cíl Biely kríž / Chata Klinec",
+     "locality": "Stupava",
+     "precision": "start",
+     "countryCode": "SK",
+     "streetAddress": "Nová ulica 66"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "11km/400m prevýšenie",
+    "value": [
+     {
+      "name": "Stupava – Biely kríž",
+      "distanceKm": 11,
+      "elevationM": 400
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "E-bike 10:30; MTB 11:00 v 1 minútových intervaloch",
+    "value": [
+     {
+      "date": "2027-08-29",
+      "time": "10:30",
+      "label": "E-bike",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-08-29",
+      "time": "11:00",
+      "label": "MTB",
+      "timeZone": "Europe/Bratislava"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "USPoriadateĽ Občianske združenie Maratón, Štúrova 50, 900 33 Marianka",
+    "value": {
+     "url": "https://www.stupavskymaraton.sk/",
+     "name": "Občianske združenie Maratón"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "geog": "0101000020E6100000CBAD5AE37D0C314076C7BD54C7234840",
+   "name": "Stupava",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Prague",
+   "created_at": "2026-08-13T20:37:50.097166+00:00",
+   "updated_at": "2026-08-13T20:37:50.138011+00:00",
+   "region_code": null,
+   "country_code": "SK",
+   "municipality": "Stupava",
+   "geocode_query": "Stupava",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "52f447db-b788-44cf-a859-d8984c631166",
+   "fields": {
+    "end_date": "2027-08-29",
+    "categories": [
+     {
+      "name": "Kadeti a kadetky 15–16 let",
+      "ageMax": 16,
+      "ageMin": 15,
+      "distanceKm": 11
+     },
+     {
+      "name": "Junioři a juniorky 17–18 let",
+      "ageMax": 18,
+      "ageMin": 17,
+      "distanceKm": 11
+     },
+     {
+      "name": "Dospělí 19–59 let",
+      "ageMax": 59,
+      "ageMin": 19,
+      "distanceKm": 11
+     },
+     {
+      "name": "Veteráni 60+",
+      "ageMin": 60,
+      "distanceKm": 11
+     },
+     {
+      "name": "E-bike open",
+      "distanceKm": 11
+     }
+    ],
+    "start_date": "2027-08-29",
+    "disciplines": [
+     "mtb",
+     "tt",
+     "hill_climb"
+    ],
+    "website_url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/"
+   },
+   "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+   "updated_at": "2026-11-04T21:07:22.480585+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "disciplines",
+    "start_date",
+    "end_date",
+    "website_url",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "a45d9f9b-2467-49b2-abc1-45cf19bcce8f",
+    "name": "Kadeti a kadetky 15–16 let",
+    "gender": null,
+    "age_max": 16,
+    "age_min": 15,
+    "audience": "youth",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "distance_km": 11,
+    "elevation_m": 400
+   },
+   {
+    "id": "44987088-33c6-4455-87b7-209ccf2836ed",
+    "name": "Junioři a juniorky 17–18 let",
+    "gender": null,
+    "age_max": 18,
+    "age_min": 17,
+    "audience": "youth",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "distance_km": 11,
+    "elevation_m": 400
+   },
+   {
+    "id": "27951dbd-32d4-4cfc-beb7-ce7925d487b2",
+    "name": "Dospělí 19–59 let",
+    "gender": null,
+    "age_max": 59,
+    "age_min": 19,
+    "audience": "adults",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "distance_km": 11,
+    "elevation_m": 400
+   },
+   {
+    "id": "fa18439c-0f76-4417-a8cb-074387ef233d",
+    "name": "Veteráni 60+",
+    "gender": null,
+    "age_max": null,
+    "age_min": 60,
+    "audience": "adults",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "distance_km": 11,
+    "elevation_m": 400
+   },
+   {
+    "id": "cc13f034-4d01-41e7-8dba-78d243a0697f",
+    "name": "E-bike open",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "distance_km": 11,
+    "elevation_m": 400
+   }
+  ],
+  "sources": [
+   {
+    "id": "e888a121-ffea-4a63-ba82-4aa6f1712db0",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:22.480585+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "external_id": "wishlist-2027-stupava-sprint-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "992b8873-844b-4ab0-9fb8-673c0b3a63b9",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:22.480585+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/",
+    "external_id": "wishlist-2027-stupava-sprint-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+  "slug": "cyklomaraton-hradec-kralove-2027",
+  "name": "Decathlon Cyklomaraton Hradec Králové",
+  "name_normalized": "decathlon cyklomaraton hradec kralove",
+  "series_id": null,
+  "location_id": "22d4849c-31d9-4aa2-baca-8f1e20bce1e6",
+  "start_date": "2027-05-30",
+  "end_date": "2027-05-30",
+  "timezone": "Europe/Prague",
+  "disciplines": [
+   "mtb",
+   "xcm",
+   "gravel"
+  ],
+  "audience": "mixed",
+  "status": "registration_open",
+  "website_url": "https://cyklomaratontour.cz/",
+  "registration_url": "https://cyklomaratontour.cz/",
+  "registration_opens_at": null,
+  "registration_closes_at": "2027-05-27T16:00:00+00:00",
+  "fingerprint": "2027-05-30:nogps:decathlon cyklomaraton hradec kralove",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:07:15.903576+00:00",
+  "created_at": "2026-10-23T21:42:12.030339+00:00",
+  "updated_at": "2026-11-04T21:10:05.521955+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "25. ročník závodu se startem a cílem v Malšovické aréně. MTB na 60 a 30 km a gravel na 30 km. Online přihláška je otevřená do 27. 5. 2027 do 18:00 nebo do naplnění limitu 1 000 závodníků; do systému EventReg vede tlačítko na stránce pořadatele. Dětské závody mají vlastní záznam NN Kids Race.",
+  "age_categories": [
+   "u17",
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [
+   "xcm"
+  ],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": "https://cyklomaratontour.cz/informace/dulezite-informace/pravidla-zavodu.html",
+  "merged_into_id": null,
+  "search_text": "decathlon cyklomaraton hradec kralove",
+  "age_confidence": "explicit",
+  "public_revision": "181c545d-d9e3-4b40-8e13-145c257583c4",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "Startovné 2027: do 31.12.2026 750 Kč; do 1.3.2027 800 Kč; do 27.5.2027 900 Kč; na místě 1000 Kč",
+    "value": [
+     {
+      "label": "Dospělí 60 a 30 km",
+      "amount": 750,
+      "currency": "CZK",
+      "validUntil": "2026-12-31"
+     },
+     {
+      "label": "Dospělí 60 a 30 km",
+      "amount": 800,
+      "currency": "CZK",
+      "validUntil": "2027-03-01"
+     },
+     {
+      "label": "Dospělí 60 a 30 km",
+      "amount": 900,
+      "currency": "CZK",
+      "validUntil": "2027-05-27"
+     },
+     {
+      "label": "Dospělí 60 a 30 km na místě",
+      "amount": 1000,
+      "currency": "CZK",
+      "validUntil": "2027-05-30"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "Místo Malšovická Aréna. Místo prezentace Hradec Králové",
+    "value": {
+     "name": "Malšovická aréna",
+     "locality": "Hradec Králové",
+     "precision": "venue",
+     "countryCode": "CZ"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "60 km DECATHLON CYKLOMARATON Hradec Králové; 30 km krátký závod; 30 km krátký závod + Gravel",
+    "value": [
+     {
+      "name": "MTB 60 km",
+      "distanceKm": 60
+     },
+     {
+      "name": "MTB 30 km",
+      "distanceKm": 30
+     },
+     {
+      "name": "Gravel 30 km",
+      "distanceKm": 30
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "12:00 START DECATHLON CYKLOMARATON HRADEC KRÁLOVÉ 6Okm; 12:20 START 30 km",
+    "value": [
+     {
+      "date": "2027-05-30",
+      "time": "12:00",
+      "label": "Start 60 km",
+      "timeZone": "Europe/Prague"
+     },
+     {
+      "date": "2027-05-30",
+      "time": "12:20",
+      "label": "Start 30 km",
+      "timeZone": "Europe/Prague"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Kontakt EVENT media s.r.o., Kaprova 42/14, 110 00 Praha 1",
+    "value": {
+     "url": "https://cyklomaratontour.cz/",
+     "name": "EVENT media s.r.o."
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "22d4849c-31d9-4aa2-baca-8f1e20bce1e6",
+   "lat": 50.2064088,
+   "lng": 15.8445799,
+   "geog": "0101000020E6100000C8B7D2C66CB02F40A5CD829A6B1A4940",
+   "name": "Malšovická aréna",
+   "venue": "Malšovická aréna",
+   "region": "Královéhradecký kraj",
+   "timezone": "Europe/Prague",
+   "created_at": "2026-10-23T21:42:11.992739+00:00",
+   "updated_at": "2026-11-04T21:07:15.903576+00:00",
+   "region_code": null,
+   "country_code": "CZ",
+   "municipality": "Hradec Králové",
+   "geocode_query": "Malšovická aréna",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "0cceef60-b1ce-4cef-994a-ef24375d2122",
+   "fields": {
+    "name": "Decathlon Cyklomaraton Hradec Králové",
+    "status": "registration_open",
+    "formats": [
+     "xcm"
+    ],
+    "end_date": "2027-05-30",
+    "series_id": null,
+    "categories": [
+     {
+      "name": "MTB 60 km",
+      "ageMin": 15,
+      "distanceKm": 60
+     },
+     {
+      "name": "MTB 30 km",
+      "ageMin": 15,
+      "distanceKm": 30
+     },
+     {
+      "name": "Gravel 30 km",
+      "ageMin": 15,
+      "distanceKm": 30
+     }
+    ],
+    "event_type": "race",
+    "start_date": "2027-05-30",
+    "visibility": "public",
+    "description": "25. ročník závodu se startem a cílem v Malšovické aréně. MTB na 60 a 30 km a gravel na 30 km. Online přihláška je otevřená do 27. 5. 2027 do 18:00 nebo do naplnění limitu 1 000 závodníků; do systému EventReg vede tlačítko na stránce pořadatele. Dětské závody mají vlastní záznam NN Kids Race.",
+    "disciplines": [
+     "mtb",
+     "xcm",
+     "gravel"
+    ],
+    "location_id": "22d4849c-31d9-4aa2-baca-8f1e20bce1e6",
+    "website_url": "https://cyklomaratontour.cz/",
+    "age_categories": [
+     "u17",
+     "amateur",
+     "masters"
+    ],
+    "age_confidence": "explicit",
+    "regulations_url": "https://cyklomaratontour.cz/informace/dulezite-informace/pravidla-zavodu.html",
+    "registration_url": "https://cyklomaratontour.cz/",
+    "registration_opens_at": null,
+    "registration_closes_at": "2027-05-27T16:00:00+00:00"
+   },
+   "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+   "updated_at": "2026-11-04T21:10:05.521955+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "registration_url",
+    "name",
+    "registration_opens_at",
+    "registration_closes_at",
+    "age_confidence",
+    "categories",
+    "disciplines",
+    "start_date",
+    "age_categories",
+    "status",
+    "description",
+    "visibility",
+    "event_type",
+    "regulations_url",
+    "series_id",
+    "end_date",
+    "location_id",
+    "website_url",
+    "formats"
+   ]
+  },
+  "categories": [
+   {
+    "id": "2bcf3694-a38c-43de-833d-cb88fcaf2b54",
+    "name": "MTB 60 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 15,
+    "audience": "mixed",
+    "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "distance_km": 60,
+    "elevation_m": null
+   },
+   {
+    "id": "4d674a8c-79c2-479b-a1e1-83d837d558c0",
+    "name": "MTB 30 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 15,
+    "audience": "mixed",
+    "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "distance_km": 30,
+    "elevation_m": null
+   },
+   {
+    "id": "d7196195-897a-4ff8-9986-ae4c6cb0169e",
+    "name": "Gravel 30 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 15,
+    "audience": "mixed",
+    "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "distance_km": 30,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "4c9de66d-c253-4668-bdf6-af841100f437",
+    "kind": "official",
+    "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:15.903576+00:00",
+    "source_url": "https://cyklomaratontour.cz/",
+    "external_id": "wishlist-2027-cyklomaraton-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "91ccfe88-2b8c-4c3f-a36b-9bade580b85d",
+    "kind": "series",
+    "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "raw_hash": null,
+    "created_at": "2026-10-23T21:42:12.296538+00:00",
+    "source_url": "https://www.cyklomaratontour.cz/",
+    "external_id": "generic-cyklomaraton hradec kralove-2027-05-30",
+    "is_canonical": true,
+    "watched_url_id": "332a076f-e054-4fe8-bce3-e0d6fe1758b5"
+   },
+   {
+    "id": "38a8f7b7-5a05-436a-af7f-a88c32b091f3",
+    "kind": "series",
+    "event_id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+    "raw_hash": null,
+    "created_at": "2026-10-24T07:23:21.300608+00:00",
+    "source_url": "https://www.cyklomaratontour.cz/clanky/25-rocnik-decathlon-cyklomaratonu-opet-v-hradci-kralove-734.html",
+    "external_id": "llm-cyklomaratontour.cz-decathlon cyklomaratonu-2027-05-30",
+    "is_canonical": true,
+    "watched_url_id": "4f7075e6-ed2f-4a13-80af-ccefd5a9b2b6"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+  "slug": "detsky-mtb-cyklomaratonik-stupava-2027",
+  "name": "Detský MTB cyklomaratónik Stupava",
+  "name_normalized": "detsky cyklomaratonik stupava",
+  "series_id": null,
+  "location_id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+  "start_date": "2027-06-20",
+  "end_date": "2027-06-20",
+  "timezone": "Europe/Bratislava",
+  "disciplines": [
+   "mtb"
+  ],
+  "audience": "kids",
+  "status": "scheduled",
+  "website_url": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+  "registration_url": null,
+  "registration_opens_at": null,
+  "registration_closes_at": "2027-06-17T21:59:00+00:00",
+  "fingerprint": "2027-06-20:u2s4e:detsky cyklomaratonik stupava",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:07:20.794137+00:00",
+  "created_at": "2026-11-04T21:07:20.794137+00:00",
+  "updated_at": "2026-11-04T21:07:20.794137+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "Dětský MTB závod v areálu BAJKSERVIS a ve Stupavském parku. Kategorie jsou od odrážedel po starší žáky narozené v letech 2013 a 2014. Přihláška pro rok 2027 zatím není ověřená.",
+  "age_categories": [
+   "kids",
+   "u7",
+   "u9",
+   "u11",
+   "u13",
+   "u15"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "community",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "detsky mtb cyklomaratonik stupava",
+  "age_confidence": "explicit",
+  "public_revision": "c3c08c31-1bb6-4bc2-9f1c-074891ba1791",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "cez online registráciu - 7€; uhradené v mieste konania - 10€",
+    "value": [
+     {
+      "label": "Online",
+      "amount": 7,
+      "currency": "EUR"
+     },
+     {
+      "label": "Na místě",
+      "amount": 10,
+      "currency": "EUR"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "DETSKÝ MTB CYKLOMARATÓNIK. Kedy: 20.6.2027. Miesto: BAJKSERVIS (Nová ulica 66)",
+    "value": {
+     "name": "BAJKSERVIS",
+     "locality": "Stupava",
+     "precision": "venue",
+     "countryCode": "SK",
+     "streetAddress": "Nová ulica 66"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/rubrika/skoda-stupava-maraton-2024/",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "Štart 11:00 kategória BABY a ostatné následne",
+    "value": [
+     {
+      "date": "2027-06-20",
+      "time": "11:00",
+      "label": "Start kategorie BABY, ostatní následně",
+      "timeZone": "Europe/Bratislava"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "USPoriadateĽ Občianske združenie Maratón, Štúrova 50, 900 33 Marianka",
+    "value": {
+     "url": "https://www.stupavskymaraton.sk/",
+     "name": "Občianske združenie Maratón"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.stupavskymaraton.sk/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "geog": "0101000020E6100000CBAD5AE37D0C314076C7BD54C7234840",
+   "name": "Stupava",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Prague",
+   "created_at": "2026-08-13T20:37:50.097166+00:00",
+   "updated_at": "2026-08-13T20:37:50.138011+00:00",
+   "region_code": null,
+   "country_code": "SK",
+   "municipality": "Stupava",
+   "geocode_query": "Stupava",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "cd811a32-d846-490a-89a4-09b6fafe14fa",
+   "fields": {
+    "audience": "kids",
+    "end_date": "2027-06-20",
+    "categories": [
+     {
+      "name": "BABY odrážedla, nar. 2023 a později",
+      "ageMax": 4,
+      "distanceKm": 0.1
+     },
+     {
+      "name": "MIKRO, nar. 2021–2022",
+      "ageMax": 6,
+      "ageMin": 5,
+      "distanceKm": 0.4
+     },
+     {
+      "name": "MILI, nar. 2019–2020",
+      "ageMax": 8,
+      "ageMin": 7,
+      "distanceKm": 0.8
+     },
+     {
+      "name": "MINI, nar. 2017–2018",
+      "ageMax": 10,
+      "ageMin": 9,
+      "distanceKm": 1.2
+     },
+     {
+      "name": "Mladší žáci a žákyně, nar. 2015–2016",
+      "ageMax": 12,
+      "ageMin": 11,
+      "distanceKm": 6
+     },
+     {
+      "name": "Starší žáci a žákyně, nar. 2013–2014",
+      "ageMax": 14,
+      "ageMin": 13,
+      "distanceKm": 6
+     }
+    ],
+    "start_date": "2027-06-20",
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://www.stupavskymaraton.sk/inpage/junior-mtb/"
+   },
+   "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+   "updated_at": "2026-11-04T21:07:20.794137+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "disciplines",
+    "start_date",
+    "end_date",
+    "audience",
+    "website_url",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "af70e97f-91d4-4f07-b923-dc48432b76f7",
+    "name": "BABY odrážedla, nar. 2023 a později",
+    "gender": null,
+    "age_max": 4,
+    "age_min": null,
+    "audience": "kids",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "distance_km": 0.1,
+    "elevation_m": null
+   },
+   {
+    "id": "69181961-eb1b-4d9b-b8c4-fd69372aabab",
+    "name": "MIKRO, nar. 2021–2022",
+    "gender": null,
+    "age_max": 6,
+    "age_min": 5,
+    "audience": "kids",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "distance_km": 0.4,
+    "elevation_m": null
+   },
+   {
+    "id": "ed943ac1-ee52-4a16-adbb-4edf68015497",
+    "name": "MILI, nar. 2019–2020",
+    "gender": null,
+    "age_max": 8,
+    "age_min": 7,
+    "audience": "kids",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "distance_km": 0.8,
+    "elevation_m": null
+   },
+   {
+    "id": "9d58dee9-0734-4228-8442-643b84235160",
+    "name": "MINI, nar. 2017–2018",
+    "gender": null,
+    "age_max": 10,
+    "age_min": 9,
+    "audience": "kids",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "distance_km": 1.2,
+    "elevation_m": null
+   },
+   {
+    "id": "b2bb4210-5671-454c-bcfc-2708b53009ef",
+    "name": "Mladší žáci a žákyně, nar. 2015–2016",
+    "gender": null,
+    "age_max": 12,
+    "age_min": 11,
+    "audience": "youth",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "distance_km": 6,
+    "elevation_m": null
+   },
+   {
+    "id": "4201f220-354c-4335-a11f-e7de3383a548",
+    "name": "Starší žáci a žákyně, nar. 2013–2014",
+    "gender": null,
+    "age_max": 14,
+    "age_min": 13,
+    "audience": "youth",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "distance_km": 6,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "13f77900-690e-4472-a12d-3ab8a98cd2ef",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:20.794137+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+    "external_id": "wishlist-2027-stupava-kids-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "835f1890-c870-4c60-af1e-c0ae5b4e46eb",
+    "kind": "official",
+    "event_id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:07:20.794137+00:00",
+    "source_url": "https://www.stupavskymaraton.sk/",
+    "external_id": "wishlist-2027-stupava-kids-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+  "slug": "dirndltal-race-gravel-mtb-2027",
+  "name": "Dirndltal Race Gravel & MTB",
+  "name_normalized": "dirndltal race gravel",
+  "series_id": "44322b75-313d-4723-9ff0-8abab96b376d",
+  "location_id": "79d7f721-29c7-4418-8c88-1b224c59cf6c",
+  "start_date": "2027-09-18",
+  "end_date": "2027-09-18",
+  "timezone": "Europe/Vienna",
+  "disciplines": [
+   "mtb",
+   "xcm",
+   "gravel"
+  ],
+  "audience": "mixed",
+  "status": "scheduled",
+  "website_url": "https://www.dirndltal-race.at/",
+  "registration_url": null,
+  "registration_opens_at": null,
+  "registration_closes_at": null,
+  "fingerprint": "2027-09-18:u2dbu:dirndltal race gravel",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:04:53.391044+00:00",
+  "created_at": "2026-09-21T05:56:30.574885+00:00",
+  "updated_at": "2026-11-04T21:04:53.391044+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "MTB a gravel v Laubenbachmühle u Frankenfelsu, kolo seriálu TopSix MTB Trophy. Fun Race, Trophy Race, Adventure Race ze St. Pöltenu s vlastní navigací podle GPS a dětské závody U7 až U15. Přímou přihlášku pro rok 2027 jsme zatím neověřili.",
+  "age_categories": [
+   "u7",
+   "u9",
+   "u11",
+   "u13",
+   "u15",
+   "u17",
+   "amateur"
+  ],
+  "uci_class": null,
+  "formats": [
+   "xcm"
+  ],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "dirndltal race gravel mtb topsix mountainbike trophy topsix mountainbike trophy",
+  "age_confidence": "explicit",
+  "public_revision": "d902787c-3fe8-4ee5-b079-f1eb8bde3a91",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "U7 bis U11 = kostenlos (freiwillige Spende); U13 bis U15 laut ÖRV = 11 Euro",
+    "value": [
+     {
+      "label": "Kids U7 bis U11",
+      "amount": 0,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+      "sourceQuote": "U7 bis U11 = kostenlos (freiwillige Spende)"
+     },
+     {
+      "label": "Youth U13 bis U15",
+      "amount": 11,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+      "sourceQuote": "U13 bis U15 laut ÖRV = 11 Euro"
+     },
+     {
+      "label": "Fun Race",
+      "amount": 45,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+      "sourceQuote": "Fun Race : € 45,- (ab 16.09.2027 + € 10,- Nachnenngebühr"
+     },
+     {
+      "label": "Fun Race Jugend (2009-2012)",
+      "amount": 40,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+      "sourceQuote": "Fun Race für Jugend (2009-2012): € 40,-"
+     },
+     {
+      "label": "Adventure Race",
+      "amount": 88,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/adventurerace",
+      "sourceQuote": "Startgebühr bis 10.9.2027 € 88,-"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "Start und Ziel direkt bei Betriebszentrum Laubenbachmühle ( Bahnhof der Mariazellerbahn ) in 3213 Frankenfels, Laubenbachgegend.",
+    "value": {
+     "name": "Bahnhof Laubenbachmühle",
+     "locality": "Frankenfels",
+     "precision": "start",
+     "postalCode": "3213",
+     "countryCode": "AT"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "Fun Race 20km und 800hm; Trophy Race 40km 1600hm; Adventure Race rund 100 km und 1.800hm",
+    "value": [
+     {
+      "name": "Fun Race",
+      "distanceKm": 20,
+      "elevationM": 800
+     },
+     {
+      "name": "Trophy Race",
+      "distanceKm": 40,
+      "elevationM": 1600
+     },
+     {
+      "name": "Adventure Race (Richtwert)",
+      "surface": "MTB oder Gravel",
+      "distanceKm": 100,
+      "elevationM": 1800
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.dirndltal-race.at/",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "Rennen 1: 09:30 Uhr - U7 Laufrad; Fun und Trophy Race ab 13:30 Uhr; Neutraler Start St. Pölten ab circa 10:00 Uhr",
+    "value": [
+     {
+      "date": "2027-09-18",
+      "time": "09:30",
+      "label": "Kids und Youth Race",
+      "timeZone": "Europe/Vienna",
+      "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+      "sourceQuote": "Rennen 1: 09:30 Uhr - U7 Laufrad"
+     },
+     {
+      "date": "2027-09-18",
+      "time": "10:00",
+      "label": "Adventure Race, St. Pölten",
+      "timeZone": "Europe/Vienna",
+      "sourceUrl": "https://www.dirndltal-race.at/adventurerace",
+      "approximate": true,
+      "sourceQuote": "St. Pölten Rathausplatz, ab circa 10:00 Uhr im Minutentakt"
+     },
+     {
+      "date": "2027-09-18",
+      "time": "13:30",
+      "label": "Fun und Trophy Race",
+      "timeZone": "Europe/Vienna",
+      "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+      "sourceQuote": "Fun und Trophy Race ab 13:30 Uhr"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Veranstalter ARBÖ RC Purgstall, Fasangartengasse 9, 3251 Purgstall",
+    "value": {
+     "url": "https://www.rcpurgstall.at/",
+     "name": "ARBÖ RC Purgstall"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.dirndltal-race.at/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "79d7f721-29c7-4418-8c88-1b224c59cf6c",
+   "lat": 47.9808035,
+   "lng": 15.3214206,
+   "geog": "0101000020E61000007A85AA3D91A42E40B32616F88AFD4740",
+   "name": "Frankenfels",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Vienna",
+   "created_at": "2026-08-24T05:37:31.848904+00:00",
+   "updated_at": "2026-08-24T05:37:31.964356+00:00",
+   "region_code": null,
+   "country_code": "AT",
+   "municipality": "Frankenfels",
+   "geocode_query": "Frankenfels",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "7f6733f2-53e8-4f6a-91f7-98e53e4d0e58",
+   "fields": {
+    "audience": "mixed",
+    "series_id": "44322b75-313d-4723-9ff0-8abab96b376d",
+    "categories": [
+     {
+      "name": "Fun Race 20 km",
+      "distanceKm": 20
+     },
+     {
+      "name": "Trophy Race 40 km",
+      "distanceKm": 40
+     },
+     {
+      "name": "Adventure Race cca 100 km (MTB nebo gravel, GPS)",
+      "distanceKm": 100
+     },
+     {
+      "name": "Kids U7 Laufrad",
+      "ageMax": 6
+     },
+     {
+      "name": "Kids U7",
+      "ageMax": 6
+     },
+     {
+      "name": "Kids U9",
+      "ageMax": 8,
+      "ageMin": 7
+     },
+     {
+      "name": "Kids U11",
+      "ageMax": 10,
+      "ageMin": 9
+     },
+     {
+      "name": "Youth U13",
+      "ageMax": 12,
+      "ageMin": 11
+     },
+     {
+      "name": "Youth U15",
+      "ageMax": 14,
+      "ageMin": 13
+     }
+    ],
+    "website_url": "https://www.dirndltal-race.at/",
+    "age_categories": [
+     "u7",
+     "u9",
+     "u11",
+     "u13",
+     "u15",
+     "u17",
+     "amateur"
+    ],
+    "age_confidence": "explicit"
+   },
+   "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+   "updated_at": "2026-11-04T21:04:53.391044+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "website_url",
+    "categories",
+    "age_categories",
+    "age_confidence",
+    "audience",
+    "series_id"
+   ]
+  },
+  "categories": [
+   {
+    "id": "c6e262c3-87c8-4e11-aa08-af6bb3e651d4",
+    "name": "Fun Race 20 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": 20,
+    "elevation_m": 800
+   },
+   {
+    "id": "2ff0e482-c8d4-4cfa-9a29-31abce04fe84",
+    "name": "Trophy Race 40 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": 40,
+    "elevation_m": 1600
+   },
+   {
+    "id": "16f6acb4-7c61-49cf-af18-7d888dc64a36",
+    "name": "Adventure Race cca 100 km (MTB nebo gravel, GPS)",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": 100,
+    "elevation_m": 1800
+   },
+   {
+    "id": "04af2462-ea26-4180-b48d-27e4751c575d",
+    "name": "Kids U7 Laufrad",
+    "gender": null,
+    "age_max": 6,
+    "age_min": null,
+    "audience": "kids",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": null,
+    "elevation_m": null
+   },
+   {
+    "id": "173aa0e6-60ed-4eed-8619-2af1323b997d",
+    "name": "Kids U7",
+    "gender": null,
+    "age_max": 6,
+    "age_min": null,
+    "audience": "kids",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": null,
+    "elevation_m": null
+   },
+   {
+    "id": "85be6270-2759-4c8e-8739-19c57e350363",
+    "name": "Kids U9",
+    "gender": null,
+    "age_max": 8,
+    "age_min": 7,
+    "audience": "kids",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": null,
+    "elevation_m": null
+   },
+   {
+    "id": "1b7d6c26-3c32-4653-8a45-9e2f30e7cad7",
+    "name": "Kids U11",
+    "gender": null,
+    "age_max": 10,
+    "age_min": 9,
+    "audience": "kids",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": null,
+    "elevation_m": null
+   },
+   {
+    "id": "f966d6ce-edaa-4513-8b3f-0ae9d876bc10",
+    "name": "Youth U13",
+    "gender": null,
+    "age_max": 12,
+    "age_min": 11,
+    "audience": "youth",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": null,
+    "elevation_m": null
+   },
+   {
+    "id": "bffd5321-d032-400a-9ad4-fa79682fc6e8",
+    "name": "Youth U15",
+    "gender": null,
+    "age_max": 14,
+    "age_min": 13,
+    "audience": "youth",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "distance_km": null,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "1558f67e-7cbf-4879-acc4-ac2572335afa",
+    "kind": "official",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:53.391044+00:00",
+    "source_url": "https://www.dirndltal-race.at/adventurerace",
+    "external_id": "wishlist-2027-dirndltal-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "cd1f6dcb-fb80-452f-a6ff-91802ae19e2a",
+    "kind": "official",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:53.391044+00:00",
+    "source_url": "https://www.dirndltal-race.at/kids-und-youth-race",
+    "external_id": "wishlist-2027-dirndltal-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "77d76ae4-f5f1-4740-9f82-30ade6342e00",
+    "kind": "official",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:53.391044+00:00",
+    "source_url": "https://www.dirndltal-race.at/funundtrophyrace",
+    "external_id": "wishlist-2027-dirndltal-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "c199796d-6c59-4577-bccd-c4054653e421",
+    "kind": "official",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:53.391044+00:00",
+    "source_url": "https://www.dirndltal-race.at/",
+    "external_id": "wishlist-2027-dirndltal-4",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "d12c0d91-c73b-4020-9ee0-942f3e3d44a6",
+    "kind": "series",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-10-19T19:37:41.083719+00:00",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4DE876DEE1E24CC2BCBA3E82A223DC17&filter=view=events&page=3",
+    "external_id": "oerv-4DE876DEE1E24CC2BCBA3E82A223DC17-2027-09-18",
+    "is_canonical": true,
+    "watched_url_id": "31a5d327-0549-497b-8fad-97adb1f9130c"
+   },
+   {
+    "id": "01f5af23-3c18-412b-9935-423e89177a1f",
+    "kind": "series",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-10-20T05:56:56.420833+00:00",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4DE876DEE1E24CC2BCBA3E82A223DC17&filter=page=5",
+    "external_id": "oerv-4DE876DEE1E24CC2BCBA3E82A223DC17-2027-09-18",
+    "is_canonical": true,
+    "watched_url_id": "2a041f0b-4efe-4d53-801b-707b133a5af7"
+   },
+   {
+    "id": "ab97323c-415b-492f-a3e4-951eb74ac7eb",
+    "kind": "aggregator",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-09-25T05:56:41.864246+00:00",
+    "source_url": "https://bikeboard.at/termine/dirndltal-race-gravel-mtb-termin16291",
+    "external_id": "bikeboard-16291",
+    "is_canonical": true,
+    "watched_url_id": "73f6a82d-6800-4fb8-aafc-d1898fd497e9"
+   },
+   {
+    "id": "acbff822-9fb1-4f7d-a0ea-e8dc387570bc",
+    "kind": "national_federation",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-09-22T05:56:33.927747+00:00",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4DE876DEE1E24CC2BCBA3E82A223DC17&filter=page=4",
+    "external_id": "oerv-4DE876DEE1E24CC2BCBA3E82A223DC17-2027-09-18",
+    "is_canonical": true,
+    "watched_url_id": "056e7e7b-c0aa-4091-84f9-8bda56091a03"
+   },
+   {
+    "id": "f859c832-7c8c-469d-9ea2-e35d3d8a7853",
+    "kind": "series",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-10-23T20:54:49.311206+00:00",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4DE876DEE1E24CC2BCBA3E82A223DC17&filter=view=events&page=4",
+    "external_id": "oerv-4DE876DEE1E24CC2BCBA3E82A223DC17-2027-09-18",
+    "is_canonical": true,
+    "watched_url_id": "59e60368-fe8f-4066-8ae8-6d4b3462fb48"
+   },
+   {
+    "id": "7da744a8-6c11-4b2b-a7f8-4ba9ed11a038",
+    "kind": "national_federation",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "raw_hash": null,
+    "created_at": "2026-09-21T05:56:30.598681+00:00",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=4DE876DEE1E24CC2BCBA3E82A223DC17&filter=view=events&page=2",
+    "external_id": "oerv-4DE876DEE1E24CC2BCBA3E82A223DC17-2027-09-18",
+    "is_canonical": true,
+    "watched_url_id": "13e9f516-0e04-47da-a94f-44bd49a6ee43"
+   }
+  ],
+  "series": [
+   {
+    "source": "series_id",
+    "event_id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+    "series_id": "44322b75-313d-4723-9ff0-8abab96b376d",
+    "created_at": "2026-11-04T21:04:53.391044+00:00",
+    "is_primary": true,
+    "updated_at": "2026-11-04T21:04:53.391044+00:00"
+   }
+  ]
+ },
+ {
+  "id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+  "slug": "good-times-gravel-2027",
+  "name": "Good Times Gravel",
+  "name_normalized": "good times gravel",
+  "series_id": null,
+  "location_id": "36e046d9-ba06-44e0-af3b-af05b765d1fc",
+  "start_date": "2027-09-25",
+  "end_date": "2027-09-25",
+  "timezone": "Europe/Vienna",
+  "disciplines": [
+   "gravel"
+  ],
+  "audience": "adults",
+  "status": "scheduled",
+  "website_url": "https://goodtimesgravel.at/",
+  "registration_url": null,
+  "registration_opens_at": null,
+  "registration_closes_at": null,
+  "fingerprint": "2027-09-25:u2e9d:good times gravel",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:04:55.267412+00:00",
+  "created_at": "2026-10-17T04:52:13.194762+00:00",
+  "updated_at": "2026-11-04T21:04:55.267412+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "Gravel v jižním Vídeňském lese s měřenými úseky, jejichž časy tvoří výsledkové pořadí. Krátká trasa má přibližně 50 km a 3 úseky, dlouhá přibližně 85 až 92 km a 6 úseků; zdroje se v délce liší a trasy pro rok 2027 pořadatel zatím výslovně nepotvrdil. Přihlášky na rok 2027 zatím nejsou otevřené.",
+  "age_categories": [
+   "amateur"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "good times gravel",
+  "age_confidence": "explicit",
+  "public_revision": "2329d115-2df4-4fc0-a2e7-27636dec313b",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "venue": {
+    "quote": "This is the event location – Freizeitgelände, Maria Enzersdorf",
+    "value": {
+     "name": "Freizeitgelände",
+     "locality": "Maria Enzersdorf",
+     "precision": "venue",
+     "postalCode": "2344",
+     "countryCode": "AT"
+    },
+    "status": "year_neutral",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://goodtimesgravel.at/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Ort 2344 Maria Enzersdorf, Niederösterreich. Veranstalter BikeSchneiderei e.U.",
+    "value": {
+     "url": "https://goodtimesgravel.at/",
+     "name": "BikeSchneiderei e.U."
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://bikeboard.at/termine/good-times-gravel-termin16408",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "36e046d9-ba06-44e0-af3b-af05b765d1fc",
+   "lat": 48.0974516,
+   "lng": 16.2837722,
+   "geog": "0101000020E610000094837E4BA5483040B078454B790C4840",
+   "name": "2344 Maria Enzersdorf",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Vienna",
+   "created_at": "2026-09-05T17:44:01.894703+00:00",
+   "updated_at": "2026-09-05T18:05:48.913094+00:00",
+   "region_code": null,
+   "country_code": "AT",
+   "municipality": "Maria Enzersdorf",
+   "geocode_query": "Maria Enzersdorf",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "edd01a4c-fb69-42d5-85ad-5641b2438ddf",
+   "fields": {
+    "categories": [
+     {
+      "name": "Krátká trasa cca 50 km, 3 měřené úseky",
+      "distanceKm": 50
+     },
+     {
+      "name": "Dlouhá trasa cca 85–92 km, 6 měřených úseků",
+      "distanceKm": 85
+     }
+    ],
+    "event_type": "race"
+   },
+   "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+   "updated_at": "2026-11-04T21:04:55.267412+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "event_type",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "81047575-0eac-4821-80d0-231f7b41d05c",
+    "name": "Krátká trasa cca 50 km, 3 měřené úseky",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "distance_km": 50,
+    "elevation_m": 900
+   },
+   {
+    "id": "3d9b1b96-bb6c-4e69-8afd-9e9a7871c66e",
+    "name": "Dlouhá trasa cca 85–92 km, 6 měřených úseků",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "distance_km": 85,
+    "elevation_m": 1600
+   }
+  ],
+  "sources": [
+   {
+    "id": "1222db01-882d-4b7a-b10c-48fd6c156905",
+    "kind": "official",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:55.267412+00:00",
+    "source_url": "https://www.tickettailor.com/all-tickets/radsportunionmariaenzersdorf/",
+    "external_id": "wishlist-2027-goodtimes-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "55ec79fd-4911-4320-80cd-6790e0f9fed7",
+    "kind": "official",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:55.267412+00:00",
+    "source_url": "https://goodtimesgravel.at/",
+    "external_id": "wishlist-2027-goodtimes-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "647accd3-881c-4827-aec5-70c53c969c6f",
+    "kind": "official",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:55.267412+00:00",
+    "source_url": "https://www.wienerwald.info/presse-202609-goodtimesgravel",
+    "external_id": "wishlist-2027-goodtimes-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "966d03c1-afcf-4279-9270-ccaa2d265e88",
+    "kind": "aggregator",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "raw_hash": null,
+    "created_at": "2026-10-17T04:52:13.470953+00:00",
+    "source_url": "https://bikeboard.at/termine/good-times-gravel-termin16408",
+    "external_id": "bikeboard-16408",
+    "is_canonical": true,
+    "watched_url_id": "73f6a82d-6800-4fb8-aafc-d1898fd497e9"
+   },
+   {
+    "id": "89bf8668-6e68-42d5-bc16-4f08f94bfabd",
+    "kind": "aggregator",
+    "event_id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+    "raw_hash": null,
+    "created_at": "2026-11-02T18:50:44.195143+00:00",
+    "source_url": "https://radsport-events.de/events/27893",
+    "external_id": "radsport-27893-2027-09-25",
+    "is_canonical": true,
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+  "slug": "jesienne-szutry-premium-2027",
+  "name": "Jesienne Szutry Premium",
+  "name_normalized": "jesienne szutry premium",
+  "series_id": null,
+  "location_id": "ef4a8529-d30c-4f96-a5ff-efeda1fadc14",
+  "start_date": "2027-09-25",
+  "end_date": "2027-09-25",
+  "timezone": "Europe/Warsaw",
+  "disciplines": [
+   "gravel"
+  ],
+  "audience": "adults",
+  "status": "registration_open",
+  "website_url": "https://szutrypremium.pl/",
+  "registration_url": "https://szutrypremium.pl/zapisy-szutry/",
+  "registration_opens_at": "2026-09-20T22:00:00+00:00",
+  "registration_closes_at": null,
+  "fingerprint": "2027-09-25:u3h4b:jesienne szutry premium",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:04:59.860865+00:00",
+  "created_at": "2026-10-01T12:41:47.174015+00:00",
+  "updated_at": "2026-11-04T21:04:59.860865+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "Gravelový maraton ve Wrocławi nebo do 30 km od města, na 100 a 200 km. Délka tras se může lišit o 10 %. Zapisují se jen plnoletí, přesné místo startu pořadatel oznámí nejpozději 14 dní předem.",
+  "age_categories": [
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "merged_into_id": null,
+  "search_text": "jesienne szutry premium",
+  "age_confidence": "default",
+  "public_revision": "b34e06a3-18ea-4c66-8683-bb0e3169389e",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "do 14.02.2027 – 249 zł; od 15.02.2027 – 299 zł; Obowiązuje jedna cena na wszystkie dystanse",
+    "value": [
+     {
+      "label": "Všechny trasy",
+      "amount": 249,
+      "currency": "PLN",
+      "validUntil": "2027-02-14"
+     },
+     {
+      "label": "Všechny trasy od 15. 2. 2027",
+      "amount": 299,
+      "currency": "PLN"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/ceny/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "25.09.2027 – WROCŁAW. Dystanse 100 i 200 km.",
+    "value": [
+     {
+      "name": "100 km",
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "distanceKm": 200
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/trasy-edycja-jesienna/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Organizatorem wydarzeń rowerowych Szutry Premium jest programersi.com sp. z o.o. z siedzibą we Wrocławiu",
+    "value": {
+     "url": "https://szutrypremium.pl/",
+     "name": "programersi.com sp. z o.o."
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "ef4a8529-d30c-4f96-a5ff-efeda1fadc14",
+   "lat": 51.126443,
+   "lng": 16.909379,
+   "geog": "0101000020E610000050ABE80FCDE8304071E7C2482F904940",
+   "name": "Wrocław",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Warsaw",
+   "created_at": "2026-10-01T06:49:19.505506+00:00",
+   "updated_at": "2026-10-01T06:49:19.566851+00:00",
+   "region_code": null,
+   "country_code": "PL",
+   "municipality": "Wrocław",
+   "geocode_query": "Wrocław",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "f2e2e0e5-16b5-4556-8fbf-be5c775565c7",
+   "fields": {
+    "categories": [
+     {
+      "name": "100 km",
+      "ageMin": 18,
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "ageMin": 18,
+      "distanceKm": 200
+     }
+    ],
+    "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "registration_url": "https://szutrypremium.pl/zapisy-szutry/",
+    "registration_opens_at": "2026-09-20T22:00:00+00:00"
+   },
+   "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+   "updated_at": "2026-11-04T21:04:59.860865+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "registration_url",
+    "registration_opens_at",
+    "regulations_url",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "d61d6cb7-2c29-4584-a9bf-3c949f8d223f",
+    "name": "100 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "distance_km": 100,
+    "elevation_m": null
+   },
+   {
+    "id": "d0ac0fc5-b56c-4e13-8613-994da8c174aa",
+    "name": "200 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "distance_km": 200,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "10222918-3daa-47a9-9cf7-08b18a0e3c82",
+    "kind": "official",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:59.860865+00:00",
+    "source_url": "https://szutrypremium.pl/zapisy-szutry/",
+    "external_id": "wishlist-2027-szutry-j-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "98cb3837-914d-4fab-9b24-670dc1324466",
+    "kind": "official",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:59.860865+00:00",
+    "source_url": "https://szutrypremium.pl/ceny/",
+    "external_id": "wishlist-2027-szutry-j-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "f8babba2-aa28-40f1-9790-c84f878de797",
+    "kind": "official",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:59.860865+00:00",
+    "source_url": "https://szutrypremium.pl/",
+    "external_id": "wishlist-2027-szutry-j-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "ba8fca99-138e-43a5-894f-ab82e0a5255c",
+    "kind": "official",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:59.860865+00:00",
+    "source_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "external_id": "wishlist-2027-szutry-j-4",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "4fa85f7d-fa77-4519-865a-ab81d63c31b6",
+    "kind": "aggregator",
+    "event_id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+    "raw_hash": null,
+    "created_at": "2026-10-01T12:41:47.234638+00:00",
+    "source_url": "https://odjazd.pl/wydarzenie/562eb76f-e0e4-4a15-b31f-0c8a88cd9498",
+    "external_id": "odjazd-562eb76f-e0e4-4a15-b31f-0c8a88cd9498",
+    "is_canonical": true,
+    "watched_url_id": "b9d56b35-0aa1-4eeb-9459-57cbe49f749c"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+  "slug": "letnie-szutry-premium-2027",
+  "name": "Letnie Szutry Premium",
+  "name_normalized": "letnie szutry premium",
+  "series_id": null,
+  "location_id": "ef4a8529-d30c-4f96-a5ff-efeda1fadc14",
+  "start_date": "2027-07-31",
+  "end_date": "2027-07-31",
+  "timezone": "Europe/Warsaw",
+  "disciplines": [
+   "gravel"
+  ],
+  "audience": "adults",
+  "status": "registration_open",
+  "website_url": "https://szutrypremium.pl/",
+  "registration_url": "https://szutrypremium.pl/zapisy-szutry/",
+  "registration_opens_at": "2026-09-20T22:00:00+00:00",
+  "registration_closes_at": null,
+  "fingerprint": "2027-07-31:u3h4b:letnie szutry premium",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:04:58.369496+00:00",
+  "created_at": "2026-10-01T12:41:45.135478+00:00",
+  "updated_at": "2026-11-04T21:04:58.369496+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "Gravelový maraton ve Wrocławi nebo do 30 km od města, na 100, 200, 300 a 400 km. Délka tras se může lišit o 10 %. Zapisují se jen plnoletí, přesné místo startu pořadatel oznámí nejpozději 14 dní předem.",
+  "age_categories": [
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "merged_into_id": null,
+  "search_text": "letnie szutry premium",
+  "age_confidence": "default",
+  "public_revision": "0c0a20f5-e99c-4a83-8b45-d27600474b8a",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "do 14.02.2027 – 349 zł; od 15.02.2027 – 399 zł; Obowiązuje jedna cena na wszystkie dystanse",
+    "value": [
+     {
+      "label": "Všechny trasy",
+      "amount": 349,
+      "currency": "PLN",
+      "validUntil": "2027-02-14"
+     },
+     {
+      "label": "Všechny trasy od 15. 2. 2027",
+      "amount": 399,
+      "currency": "PLN"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/ceny/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "31.07.2027 – WROCŁAW. Dystanse 100, 200, 300 i 400 km.",
+    "value": [
+     {
+      "name": "100 km",
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "distanceKm": 200
+     },
+     {
+      "name": "300 km",
+      "distanceKm": 300
+     },
+     {
+      "name": "400 km",
+      "distanceKm": 400
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/trasy-edycja-letnia/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Organizatorem wydarzeń rowerowych Szutry Premium jest programersi.com sp. z o.o. z siedzibą we Wrocławiu",
+    "value": {
+     "url": "https://szutrypremium.pl/",
+     "name": "programersi.com sp. z o.o."
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "ef4a8529-d30c-4f96-a5ff-efeda1fadc14",
+   "lat": 51.126443,
+   "lng": 16.909379,
+   "geog": "0101000020E610000050ABE80FCDE8304071E7C2482F904940",
+   "name": "Wrocław",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Warsaw",
+   "created_at": "2026-10-01T06:49:19.505506+00:00",
+   "updated_at": "2026-10-01T06:49:19.566851+00:00",
+   "region_code": null,
+   "country_code": "PL",
+   "municipality": "Wrocław",
+   "geocode_query": "Wrocław",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "caa47a47-b9f5-4e2a-9a23-8b8284383e2c",
+   "fields": {
+    "categories": [
+     {
+      "name": "100 km",
+      "ageMin": 18,
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "ageMin": 18,
+      "distanceKm": 200
+     },
+     {
+      "name": "300 km",
+      "ageMin": 18,
+      "distanceKm": 300
+     },
+     {
+      "name": "400 km",
+      "ageMin": 18,
+      "distanceKm": 400
+     }
+    ],
+    "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "registration_url": "https://szutrypremium.pl/zapisy-szutry/",
+    "registration_opens_at": "2026-09-20T22:00:00+00:00"
+   },
+   "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+   "updated_at": "2026-11-04T21:04:58.369496+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "registration_url",
+    "registration_opens_at",
+    "regulations_url",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "aeb78de7-5ac5-4ef5-b287-0142ced3daa9",
+    "name": "100 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "distance_km": 100,
+    "elevation_m": null
+   },
+   {
+    "id": "64a1e672-0fcf-4cd8-95ee-564cdecb9a95",
+    "name": "200 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "distance_km": 200,
+    "elevation_m": null
+   },
+   {
+    "id": "e7f35ebd-acd9-45ea-9b88-41fd7b5a7cb0",
+    "name": "300 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "distance_km": 300,
+    "elevation_m": null
+   },
+   {
+    "id": "9aaae571-e8c3-4901-8aca-79ae8bcfc16c",
+    "name": "400 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "distance_km": 400,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "53dfd3a5-a47c-4128-92d6-46ca42165235",
+    "kind": "official",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:58.369496+00:00",
+    "source_url": "https://szutrypremium.pl/zapisy-szutry/",
+    "external_id": "wishlist-2027-szutry-l-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "8f9b5c25-3bfe-41ee-bb7e-c798bf467ce7",
+    "kind": "official",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:58.369496+00:00",
+    "source_url": "https://szutrypremium.pl/ceny/",
+    "external_id": "wishlist-2027-szutry-l-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "2cb3a67c-79c6-4efc-bbdc-116a563f06b5",
+    "kind": "official",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:58.369496+00:00",
+    "source_url": "https://szutrypremium.pl/",
+    "external_id": "wishlist-2027-szutry-l-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "0c206e21-3c5e-4dd0-bdba-9842696b7d24",
+    "kind": "official",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:58.369496+00:00",
+    "source_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "external_id": "wishlist-2027-szutry-l-4",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "9113f9ee-a061-49ed-8a9b-0652e5d3ac99",
+    "kind": "aggregator",
+    "event_id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+    "raw_hash": null,
+    "created_at": "2026-10-01T12:41:45.184709+00:00",
+    "source_url": "https://odjazd.pl/wydarzenie/8d0a3553-9cfd-68fb-3560-b4bfe15f6a95",
+    "external_id": "odjazd-8d0a3553-9cfd-68fb-3560-b4bfe15f6a95",
+    "is_canonical": true,
+    "watched_url_id": "b9d56b35-0aa1-4eeb-9459-57cbe49f749c"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "00862df3-deff-45d8-816b-13a72191e6b9",
+  "slug": "nn-kids-race-2027",
+  "name": "NN KIDS RACE",
+  "name_normalized": "nn kids race",
+  "series_id": null,
+  "location_id": "22d4849c-31d9-4aa2-baca-8f1e20bce1e6",
+  "start_date": "2027-05-30",
+  "end_date": "2027-05-30",
+  "timezone": "Europe/Prague",
+  "disciplines": [
+   "mtb"
+  ],
+  "audience": "kids",
+  "status": "registration_open",
+  "website_url": "https://cyklomaratontour.cz/",
+  "registration_url": "https://cyklomaratontour.cz/",
+  "registration_opens_at": null,
+  "registration_closes_at": "2027-05-27T16:00:00+00:00",
+  "fingerprint": "2027-05-30:nogps:nn kids race",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:08:14.775163+00:00",
+  "created_at": "2026-10-23T21:42:12.169314+00:00",
+  "updated_at": "2026-11-04T21:08:14.775163+00:00",
+  "level": "local",
+  "class_label": "Local",
+  "description": "Dětské MTB závody u Decathlon Cyklomaratonu v Malšovické aréně, v kategoriích od 2 do 14 let a s limitem 200 dětí. Roky narození v kategoriích pořadatel na stránce uvádí rozdílně, proto je nepřebíráme.",
+  "age_categories": [
+   "kids",
+   "u7",
+   "u9",
+   "u11",
+   "u13",
+   "u15"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "community",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": "https://cyklomaratontour.cz/informace/dulezite-informace/pravidla-zavodu.html",
+  "merged_into_id": null,
+  "search_text": "nn kids race",
+  "age_confidence": "explicit",
+  "public_revision": "427d97dc-e448-41b7-aa20-d49dc7b733f0",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "NN Kids race: do 31.12.2026 250 Kč; do 1.3.2027 300 Kč; do 27.5.2027 350 Kč; na místě 400 Kč",
+    "value": [
+     {
+      "label": "NN Kids Race",
+      "amount": 250,
+      "currency": "CZK",
+      "validUntil": "2026-12-31"
+     },
+     {
+      "label": "NN Kids Race",
+      "amount": 300,
+      "currency": "CZK",
+      "validUntil": "2027-03-01"
+     },
+     {
+      "label": "NN Kids Race",
+      "amount": 350,
+      "currency": "CZK",
+      "validUntil": "2027-05-27"
+     },
+     {
+      "label": "NN Kids Race na místě",
+      "amount": 400,
+      "currency": "CZK",
+      "validUntil": "2027-05-30"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "NN KIDS RACE 2027, Hradec Králové - Malšovická aréna, 30.5.2027",
+    "value": {
+     "name": "Malšovická aréna",
+     "locality": "Hradec Králové",
+     "precision": "venue",
+     "countryCode": "CZ"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "10:00 - 11:00 Start Dětských závodů NN Kids Race - starty dle kategorií",
+    "value": [
+     {
+      "date": "2027-05-30",
+      "time": "10:00",
+      "label": "Start dětských závodů",
+      "timeZone": "Europe/Prague"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Kontakt EVENT media s.r.o., Kaprova 42/14, 110 00 Praha 1",
+    "value": {
+     "url": "https://cyklomaratontour.cz/",
+     "name": "EVENT media s.r.o."
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://cyklomaratontour.cz/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "22d4849c-31d9-4aa2-baca-8f1e20bce1e6",
+   "lat": 50.2064088,
+   "lng": 15.8445799,
+   "geog": "0101000020E6100000C8B7D2C66CB02F40A5CD829A6B1A4940",
+   "name": "Malšovická aréna",
+   "venue": "Malšovická aréna",
+   "region": "Královéhradecký kraj",
+   "timezone": "Europe/Prague",
+   "created_at": "2026-10-23T21:42:11.992739+00:00",
+   "updated_at": "2026-11-04T21:07:15.903576+00:00",
+   "region_code": null,
+   "country_code": "CZ",
+   "municipality": "Hradec Králové",
+   "geocode_query": "Malšovická aréna",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "474c0e4b-f8a7-4553-8c0c-bbd727134362",
+   "fields": {
+    "audience": "kids",
+    "categories": [
+     {
+      "name": "NN Kids Race 2–14 let",
+      "ageMax": 14,
+      "ageMin": 2
+     }
+    ],
+    "disciplines": [
+     "mtb"
+    ],
+    "website_url": "https://cyklomaratontour.cz/",
+    "age_categories": [
+     "kids",
+     "u7",
+     "u9",
+     "u11",
+     "u13",
+     "u15"
+    ],
+    "age_confidence": "explicit",
+    "registration_url": "https://cyklomaratontour.cz/",
+    "registration_closes_at": "2027-05-27T16:00:00+00:00"
+   },
+   "event_id": "00862df3-deff-45d8-816b-13a72191e6b9",
+   "updated_at": "2026-11-04T21:08:14.775163+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "registration_url",
+    "registration_closes_at",
+    "website_url",
+    "disciplines",
+    "audience",
+    "age_categories",
+    "age_confidence",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "7d74099f-c203-4b09-aa06-669ce3ce5a98",
+    "name": "NN Kids Race 2–14 let",
+    "gender": null,
+    "age_max": 14,
+    "age_min": 2,
+    "audience": "kids",
+    "event_id": "00862df3-deff-45d8-816b-13a72191e6b9",
+    "distance_km": null,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "11efbe63-a267-4981-84f0-ac83dded9575",
+    "kind": "official",
+    "event_id": "00862df3-deff-45d8-816b-13a72191e6b9",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:08:14.775163+00:00",
+    "source_url": "https://cyklomaratontour.cz/",
+    "external_id": "wishlist-2027-nnkids-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "85449418-cb1c-4ef7-b0f5-7620228f055b",
+    "kind": "series",
+    "event_id": "00862df3-deff-45d8-816b-13a72191e6b9",
+    "raw_hash": null,
+    "created_at": "2026-10-23T21:42:12.324056+00:00",
+    "source_url": "https://www.cyklomaratontour.cz/",
+    "external_id": "llm-cyklomaratontour.cz-nn kids race-2027-05-30",
+    "is_canonical": true,
+    "watched_url_id": "332a076f-e054-4fe8-bce3-e0d6fe1758b5"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+  "slug": "ostalb-gravel-2027",
+  "name": "Ostalb Gravel",
+  "name_normalized": "ostalb gravel",
+  "series_id": null,
+  "location_id": "dca198e9-9551-4a6c-b110-a1b139da8b97",
+  "start_date": "2027-04-11",
+  "end_date": "2027-04-11",
+  "timezone": "Europe/Berlin",
+  "disciplines": [
+   "gravel"
+  ],
+  "audience": "mixed",
+  "status": "registration_open",
+  "website_url": "https://www.ostalbgravel.de/",
+  "registration_url": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+  "registration_opens_at": "2026-11-01T08:00:00+00:00",
+  "registration_closes_at": null,
+  "fingerprint": "2027-04-11:u0xjv:ostalb gravel",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:03:07.2386+00:00",
+  "created_at": "2026-09-28T05:57:05.871057+00:00",
+  "updated_at": "2026-11-04T21:03:07.2386+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "Gravel s měřeným časem na Ostalbu, start a cíl v hale 18 Spedition Brucker v Aalenu. Povolený je gravel i MTB včetně elektrokol. Krátká trasa od 12 let, dlouhá od 16 let, počet míst je omezený.",
+  "age_categories": [
+   "u13",
+   "u15",
+   "u17",
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "ostalb gravel",
+  "age_confidence": "explicit",
+  "public_revision": "28bd7929-e75f-4c91-b078-434b28d9f2ad",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "Teilnahmegebühr: 69 €; Ermäßigte Teilnahmegebühr (U18): 39 €",
+    "value": [
+     {
+      "label": "Teilnahmegebühr",
+      "amount": 69,
+      "currency": "EUR"
+     },
+     {
+      "label": "U18",
+      "amount": 39,
+      "currency": "EUR"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.ostalbgravel.de/alle-infos/anmeldung/",
+    "editionYear": 2027
+   },
+   "venue": {
+    "quote": "Start für alle Strecken: Halle 18, Spedition Brucker GmbH, Daimlerstraße 15, 73430 Aalen",
+    "value": {
+     "name": "Halle 18, Spedition Brucker",
+     "locality": "Aalen",
+     "precision": "start",
+     "postalCode": "73430",
+     "countryCode": "DE",
+     "streetAddress": "Daimlerstraße 15"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.ostalbgravel.de/alle-infos/strecken/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "Kurzstrecke 55 km | ca. 800 hm; Langstrecke 83 km | 1.400 hm",
+    "value": [
+     {
+      "name": "Kurzstrecke",
+      "distanceKm": 55,
+      "elevationM": 800
+     },
+     {
+      "name": "Langstrecke",
+      "distanceKm": 83,
+      "elevationM": 1400
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+    "editionYear": 2027
+   },
+   "schedule": {
+    "quote": "So. 11.04.27 11:00 Uhr Kurzstrecke 55 km | ca. 800 hm So. 11.04.27 10:00 Uhr Langstrecke 83 km | 1.400 hm",
+    "value": [
+     {
+      "date": "2027-04-11",
+      "time": "10:00",
+      "label": "Langstrecke 83 km",
+      "timeZone": "Europe/Berlin"
+     },
+     {
+      "date": "2027-04-11",
+      "time": "11:00",
+      "label": "Kurzstrecke 55 km",
+      "timeZone": "Europe/Berlin"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Veranstalter: Ostalb Giro GmbH",
+    "value": {
+     "url": "https://www.ostalbgravel.de/",
+     "name": "Ostalb Giro GmbH"
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://www.ostalbgravel.de/",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "dca198e9-9551-4a6c-b110-a1b139da8b97",
+   "lat": 48.8363,
+   "lng": 10.0932,
+   "geog": "0101000020E610000072F90FE9B72F244089D2DEE00B6B4840",
+   "name": "Aalen",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Berlin",
+   "created_at": "2026-08-18T16:20:34.948588+00:00",
+   "updated_at": "2026-08-18T16:20:34.987594+00:00",
+   "region_code": null,
+   "country_code": "DE",
+   "municipality": "Aalen",
+   "geocode_query": "Aalen",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "3cb511ef-240c-4d55-bd60-e01b2a52ebdf",
+   "fields": {
+    "categories": [
+     {
+      "name": "Kurzstrecke 55 km",
+      "ageMin": 12,
+      "distanceKm": 55
+     },
+     {
+      "name": "Langstrecke 83 km",
+      "ageMin": 16,
+      "distanceKm": 83
+     }
+    ],
+    "event_type": "race",
+    "registration_url": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+    "registration_opens_at": "2026-11-01T08:00:00+00:00"
+   },
+   "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+   "updated_at": "2026-11-04T21:03:07.2386+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "event_type",
+    "registration_url",
+    "registration_opens_at",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "5692cece-3d0a-497d-a764-27e9b6125c86",
+    "name": "Kurzstrecke 55 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 12,
+    "audience": "mixed",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "distance_km": 55,
+    "elevation_m": 800
+   },
+   {
+    "id": "e074bab0-d4c5-4252-99ab-7676933f4693",
+    "name": "Langstrecke 83 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 16,
+    "audience": "mixed",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "distance_km": 83,
+    "elevation_m": 1400
+   }
+  ],
+  "sources": [
+   {
+    "id": "a97b8fad-9816-4a56-af58-f1c0a90a7537",
+    "kind": "official",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:03:07.2386+00:00",
+    "source_url": "https://www.ostalbgravel.de/",
+    "external_id": "wishlist-2027-ostalb-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "32126ff9-b038-411a-a512-1800c891c528",
+    "kind": "official",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:03:07.2386+00:00",
+    "source_url": "https://www.ostalbgravel.de/alle-infos/anmeldung/",
+    "external_id": "wishlist-2027-ostalb-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "333dd132-3328-424a-a61b-1fce3de4b5a9",
+    "kind": "official",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:03:07.2386+00:00",
+    "source_url": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+    "external_id": "wishlist-2027-ostalb-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "29aaaaa1-4944-4a64-bf71-e31d0c6f564e",
+    "kind": "official",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:03:07.2386+00:00",
+    "source_url": "https://www.ostalbgravel.de/alle-infos/faq-s/",
+    "external_id": "wishlist-2027-ostalb-4",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "4250d28b-c83f-4098-a547-1ec7afd2f6ad",
+    "kind": "aggregator",
+    "event_id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+    "raw_hash": null,
+    "created_at": "2026-09-28T05:57:05.898706+00:00",
+    "source_url": "https://radsport-events.de/events/26602",
+    "external_id": "radsport-26602-2027-04-11",
+    "is_canonical": true,
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "d7218f42-1737-47e5-b1d4-ad2e900c0563",
+  "slug": "stupava-winter-mtb-marathon-2027",
+  "name": "Stupava Winter MTB Marathon",
+  "name_normalized": "stupava winter marathon",
+  "series_id": null,
+  "location_id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+  "start_date": "2027-01-16",
+  "end_date": "2027-01-16",
+  "timezone": "Europe/Prague",
+  "disciplines": [
+   "xcm"
+  ],
+  "audience": "adults",
+  "status": "scheduled",
+  "website_url": "https://www.stupavskymaraton.sk/",
+  "registration_url": null,
+  "registration_opens_at": null,
+  "registration_closes_at": null,
+  "fingerprint": "2027-01-16:u2s4e:stupava winter marathon",
+  "source_kind": "scraped",
+  "last_seen_at": "2026-11-03T21:00:18.582+00:00",
+  "created_at": "2026-09-28T05:57:05.197192+00:00",
+  "updated_at": "2026-11-03T21:00:18.582+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": null,
+  "age_categories": [
+   "amateur"
+  ],
+  "uci_class": null,
+  "formats": [
+   "xcm"
+  ],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": null,
+  "merged_into_id": null,
+  "search_text": "stupava winter mtb marathon",
+  "age_confidence": "explicit",
+  "public_revision": "68657ed9-6d37-4a55-9ddd-0fa3a8d7ab59",
+  "organizer_verified_at": null,
+  "practical_details": {},
+  "location": {
+   "id": "9b37c02f-d50a-4493-8354-7a6ba59b3c0d",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "geog": "0101000020E6100000CBAD5AE37D0C314076C7BD54C7234840",
+   "name": "Stupava",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Prague",
+   "created_at": "2026-08-13T20:37:50.097166+00:00",
+   "updated_at": "2026-08-13T20:37:50.138011+00:00",
+   "region_code": null,
+   "country_code": "SK",
+   "municipality": "Stupava",
+   "geocode_query": "Stupava",
+   "geocode_status": "ok"
+  },
+  "overrides": null,
+  "categories": [
+   {
+    "id": "089f6fda-96c7-4113-bf7d-e7742c362d7c",
+    "name": "25 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": null,
+    "audience": "mixed",
+    "event_id": "d7218f42-1737-47e5-b1d4-ad2e900c0563",
+    "distance_km": 25,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "52460d2b-e8b4-4842-bd8b-2084f49ee116",
+    "kind": "aggregator",
+    "event_id": "d7218f42-1737-47e5-b1d4-ad2e900c0563",
+    "raw_hash": null,
+    "created_at": "2026-09-28T05:57:05.226783+00:00",
+    "source_url": "https://radsport-events.de/events/27404",
+    "external_id": "radsport-27404-2027-01-16",
+    "is_canonical": true,
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc"
+   }
+  ],
+  "series": []
+ },
+ {
+  "id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+  "slug": "wiosenne-szutry-premium-2027",
+  "name": "Wiosenne Szutry Premium",
+  "name_normalized": "wiosenne szutry premium",
+  "series_id": null,
+  "location_id": "ef4a8529-d30c-4f96-a5ff-efeda1fadc14",
+  "start_date": "2027-04-17",
+  "end_date": "2027-04-17",
+  "timezone": "Europe/Warsaw",
+  "disciplines": [
+   "gravel"
+  ],
+  "audience": "adults",
+  "status": "registration_open",
+  "website_url": "https://szutrypremium.pl/",
+  "registration_url": "https://szutrypremium.pl/zapisy-szutry/",
+  "registration_opens_at": "2026-09-20T22:00:00+00:00",
+  "registration_closes_at": null,
+  "fingerprint": "2027-04-17:u3h4b:wiosenne szutry premium",
+  "source_kind": "official",
+  "last_seen_at": "2026-11-04T21:04:56.823829+00:00",
+  "created_at": "2026-10-01T12:41:36.468144+00:00",
+  "updated_at": "2026-11-04T21:04:56.823829+00:00",
+  "level": "local",
+  "class_label": null,
+  "description": "Gravelový maraton ve Wrocławi nebo do 30 km od města, na 100 a 200 km. Délka tras se může lišit o 10 %. Zapisují se jen plnoletí, přesné místo startu pořadatel oznámí nejpozději 14 dní předem.",
+  "age_categories": [
+   "amateur",
+   "masters"
+  ],
+  "uci_class": null,
+  "formats": [],
+  "event_type": "race",
+  "competition_type": "other",
+  "season": "2027",
+  "visibility": "public",
+  "results_url": null,
+  "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "merged_into_id": null,
+  "search_text": "wiosenne szutry premium",
+  "age_confidence": "default",
+  "public_revision": "db3b4161-fddc-4698-adef-e7d9357ff265",
+  "organizer_verified_at": null,
+  "practical_details": {
+   "fees": {
+    "quote": "do 14.02.2027 – 249 zł; od 15.02.2027 – 299 zł; Obowiązuje jedna cena na wszystkie dystanse",
+    "value": [
+     {
+      "label": "Všechny trasy",
+      "amount": 249,
+      "currency": "PLN",
+      "validUntil": "2027-02-14"
+     },
+     {
+      "label": "Všechny trasy od 15. 2. 2027",
+      "amount": 299,
+      "currency": "PLN"
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/ceny/",
+    "editionYear": 2027
+   },
+   "routes": {
+    "quote": "17.04.2027 – WROCŁAW. Dystanse 100 i 200 km.",
+    "value": [
+     {
+      "name": "100 km",
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "distanceKm": 200
+     }
+    ],
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/trasy-edycja-wiosenna/",
+    "editionYear": 2027
+   },
+   "organizer": {
+    "quote": "Organizatorem wydarzeń rowerowych Szutry Premium jest programersi.com sp. z o.o. z siedzibą we Wrocławiu",
+    "value": {
+     "url": "https://szutrypremium.pl/",
+     "name": "programersi.com sp. z o.o."
+    },
+    "status": "current",
+    "checkedAt": "2026-11-04T21:30:00+01:00",
+    "sourceUrl": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "editionYear": 2027
+   }
+  },
+  "location": {
+   "id": "ef4a8529-d30c-4f96-a5ff-efeda1fadc14",
+   "lat": 51.126443,
+   "lng": 16.909379,
+   "geog": "0101000020E610000050ABE80FCDE8304071E7C2482F904940",
+   "name": "Wrocław",
+   "venue": null,
+   "region": null,
+   "timezone": "Europe/Warsaw",
+   "created_at": "2026-10-01T06:49:19.505506+00:00",
+   "updated_at": "2026-10-01T06:49:19.566851+00:00",
+   "region_code": null,
+   "country_code": "PL",
+   "municipality": "Wrocław",
+   "geocode_query": "Wrocław",
+   "geocode_status": "ok"
+  },
+  "overrides": {
+   "id": "ceb5ac6e-6d2c-4783-b481-42dff3ba38f2",
+   "fields": {
+    "categories": [
+     {
+      "name": "100 km",
+      "ageMin": 18,
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "ageMin": 18,
+      "distanceKm": 200
+     }
+    ],
+    "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "registration_url": "https://szutrypremium.pl/zapisy-szutry/",
+    "registration_opens_at": "2026-09-20T22:00:00+00:00"
+   },
+   "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+   "updated_at": "2026-11-04T21:04:56.823829+00:00",
+   "updated_by": "owner wishlist 2027 review 2026-11-04",
+   "locked_fields": [
+    "registration_url",
+    "registration_opens_at",
+    "regulations_url",
+    "categories"
+   ]
+  },
+  "categories": [
+   {
+    "id": "2338fb64-8bc2-4b28-be5b-ac96367b1c2f",
+    "name": "100 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "distance_km": 100,
+    "elevation_m": null
+   },
+   {
+    "id": "6f0266e7-29af-4764-ac4b-b6883ab8ccdb",
+    "name": "200 km",
+    "gender": null,
+    "age_max": null,
+    "age_min": 18,
+    "audience": "mixed",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "distance_km": 200,
+    "elevation_m": null
+   }
+  ],
+  "sources": [
+   {
+    "id": "751d66e9-5b1d-4dbc-a08c-f6f90d918d47",
+    "kind": "official",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:56.823829+00:00",
+    "source_url": "https://szutrypremium.pl/zapisy-szutry/",
+    "external_id": "wishlist-2027-szutry-w-1",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "3f364224-bdfc-484b-aaa0-1789805cbf9a",
+    "kind": "official",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:56.823829+00:00",
+    "source_url": "https://szutrypremium.pl/ceny/",
+    "external_id": "wishlist-2027-szutry-w-2",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "d094d272-39ee-4701-b633-d0dc2d2a4878",
+    "kind": "official",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:56.823829+00:00",
+    "source_url": "https://szutrypremium.pl/",
+    "external_id": "wishlist-2027-szutry-w-3",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "98490c93-5fea-4435-a881-908ea08293eb",
+    "kind": "official",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "raw_hash": null,
+    "created_at": "2026-11-04T21:04:56.823829+00:00",
+    "source_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "external_id": "wishlist-2027-szutry-w-4",
+    "is_canonical": false,
+    "watched_url_id": null
+   },
+   {
+    "id": "ad15ee4f-d45b-489c-a528-6cbd48e3028a",
+    "kind": "aggregator",
+    "event_id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+    "raw_hash": null,
+    "created_at": "2026-10-01T12:41:36.615629+00:00",
+    "source_url": "https://odjazd.pl/wydarzenie/9a4e823d-044c-4b18-8c5e-d92de326ba85",
+    "external_id": "odjazd-9a4e823d-044c-4b18-8c5e-d92de326ba85",
+    "is_canonical": true,
+    "watched_url_id": "b9d56b35-0aa1-4eeb-9459-57cbe49f749c"
+   }
+  ],
+  "series": []
+ }
+]

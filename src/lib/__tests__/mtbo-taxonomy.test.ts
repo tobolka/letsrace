@@ -15,6 +15,9 @@ describe("MTBO catalogue filters", () => {
     expect(matchesDisciplineFilter(["mtbo"], ["mtb"])).toBe(true);
     expect(matchesDisciplineFilter(["mtb", "mtbo"], ["mtbo"])).toBe(true);
     expect(matchesDisciplineFilter(["mtbo"], ["xco"])).toBe(false);
+    expect(matchesDisciplineFilter(["mtb", "xcm", "gravel"], ["mtb"])).toBe(true);
+    expect(matchesDisciplineFilter(["mtb", "xcm", "gravel"], ["gravel"])).toBe(true);
+    expect(matchesDisciplineFilter(["mtb", "xcm"], ["gravel"])).toBe(false);
     expect(matchesDisciplineFilter(["xco"], ["mtbo"])).toBe(false);
   });
 });

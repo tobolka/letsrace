@@ -1,0 +1,620 @@
+{
+ "at": "2026-11-04T21:11:22.142Z",
+ "db": [
+  {
+   "key": "ostalb",
+   "id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+   "slug": "ostalb-gravel-2027",
+   "name": "Ostalb Gravel",
+   "start": "2027-04-11",
+   "status": "registration_open",
+   "visibility": "public",
+   "type": "race",
+   "registration": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+   "closes": null,
+   "place": "Aalen",
+   "country": "DE",
+   "lat": 48.8363,
+   "lng": 10.0932,
+   "categories": 2,
+   "facts": 9,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "dirndltal",
+   "id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+   "slug": "dirndltal-race-gravel-mtb-2027",
+   "name": "Dirndltal Race Gravel & MTB",
+   "start": "2027-09-18",
+   "status": "scheduled",
+   "visibility": "public",
+   "type": "race",
+   "registration": null,
+   "closes": null,
+   "place": "Frankenfels",
+   "country": "AT",
+   "lat": 47.9808035,
+   "lng": 15.3214206,
+   "categories": 9,
+   "facts": 9,
+   "series": [
+    {
+     "series_id": "44322b75-313d-4723-9ff0-8abab96b376d",
+     "is_primary": true
+    }
+   ],
+   "diffs": []
+  },
+  {
+   "key": "goodtimes",
+   "id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+   "slug": "good-times-gravel-2027",
+   "name": "Good Times Gravel",
+   "start": "2027-09-25",
+   "status": "scheduled",
+   "visibility": "public",
+   "type": "race",
+   "registration": null,
+   "closes": null,
+   "place": "Maria Enzersdorf",
+   "country": "AT",
+   "lat": 48.0974516,
+   "lng": 16.2837722,
+   "categories": 2,
+   "facts": 5,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "szutry-w",
+   "id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+   "slug": "wiosenne-szutry-premium-2027",
+   "name": "Wiosenne Szutry Premium",
+   "start": "2027-04-17",
+   "status": "registration_open",
+   "visibility": "public",
+   "type": "race",
+   "registration": "https://szutrypremium.pl/zapisy-szutry/",
+   "closes": null,
+   "place": "Wrocław",
+   "country": "PL",
+   "lat": 51.126443,
+   "lng": 16.909379,
+   "categories": 2,
+   "facts": 6,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "szutry-l",
+   "id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+   "slug": "letnie-szutry-premium-2027",
+   "name": "Letnie Szutry Premium",
+   "start": "2027-07-31",
+   "status": "registration_open",
+   "visibility": "public",
+   "type": "race",
+   "registration": "https://szutrypremium.pl/zapisy-szutry/",
+   "closes": null,
+   "place": "Wrocław",
+   "country": "PL",
+   "lat": 51.126443,
+   "lng": 16.909379,
+   "categories": 4,
+   "facts": 6,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "szutry-j",
+   "id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+   "slug": "jesienne-szutry-premium-2027",
+   "name": "Jesienne Szutry Premium",
+   "start": "2027-09-25",
+   "status": "registration_open",
+   "visibility": "public",
+   "type": "race",
+   "registration": "https://szutrypremium.pl/zapisy-szutry/",
+   "closes": null,
+   "place": "Wrocław",
+   "country": "PL",
+   "lat": 51.126443,
+   "lng": 16.909379,
+   "categories": 2,
+   "facts": 6,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "cyklomaraton",
+   "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+   "slug": "cyklomaraton-hradec-kralove-2027",
+   "name": "Decathlon Cyklomaraton Hradec Králové",
+   "start": "2027-05-30",
+   "status": "registration_open",
+   "visibility": "public",
+   "type": "race",
+   "registration": "https://cyklomaratontour.cz/",
+   "closes": "2027-05-27T16:00:00+00:00",
+   "place": "Hradec Králové",
+   "country": "CZ",
+   "lat": 50.2064088,
+   "lng": 15.8445799,
+   "categories": 3,
+   "facts": 7,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "nnkids",
+   "id": "00862df3-deff-45d8-816b-13a72191e6b9",
+   "slug": "nn-kids-race-2027",
+   "name": "NN KIDS RACE",
+   "start": "2027-05-30",
+   "status": "registration_open",
+   "visibility": "public",
+   "type": "race",
+   "registration": "https://cyklomaratontour.cz/",
+   "closes": "2027-05-27T16:00:00+00:00",
+   "place": "Hradec Králové",
+   "country": "CZ",
+   "lat": 50.2064088,
+   "lng": 15.8445799,
+   "categories": 1,
+   "facts": 4,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "stupava-mtb",
+   "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+   "slug": "bajkservis-stupava-maraton-mtb-2027",
+   "name": "BAJKSERVIS Stupava maratón MTB",
+   "start": "2027-06-19",
+   "status": "scheduled",
+   "visibility": "public",
+   "type": "race",
+   "registration": null,
+   "closes": null,
+   "place": "Stupava",
+   "country": "SK",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "categories": 5,
+   "facts": 6,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "stupava-kids",
+   "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+   "slug": "detsky-mtb-cyklomaratonik-stupava-2027",
+   "name": "Detský MTB cyklomaratónik Stupava",
+   "start": "2027-06-20",
+   "status": "scheduled",
+   "visibility": "public",
+   "type": "race",
+   "registration": null,
+   "closes": "2027-06-17T21:59:00+00:00",
+   "place": "Stupava",
+   "country": "SK",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "categories": 6,
+   "facts": 4,
+   "series": [],
+   "diffs": []
+  },
+  {
+   "key": "stupava-sprint",
+   "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+   "slug": "bajkservis-stupava-mtb-sprint-biely-kriz-2027",
+   "name": "BAJKSERVIS Stupava MTB sprint Biely kríž",
+   "start": "2027-08-29",
+   "status": "scheduled",
+   "visibility": "public",
+   "type": "race",
+   "registration": null,
+   "closes": "2027-08-28T10:00:00+00:00",
+   "place": "Stupava",
+   "country": "SK",
+   "lat": 48.2795206,
+   "lng": 17.0487959,
+   "categories": 5,
+   "facts": 4,
+   "series": [],
+   "diffs": []
+  }
+ ],
+ "cataloguePublicCount": 1035,
+ "catalogueStatus": 200,
+ "public": [
+  {
+   "key": "ostalb",
+   "slug": "ostalb-gravel-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "registration_open",
+   "hasCoords": true
+  },
+  {
+   "key": "dirndltal",
+   "slug": "dirndltal-race-gravel-mtb-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "scheduled",
+   "hasCoords": true
+  },
+  {
+   "key": "goodtimes",
+   "slug": "good-times-gravel-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "scheduled",
+   "hasCoords": true
+  },
+  {
+   "key": "szutry-w",
+   "slug": "wiosenne-szutry-premium-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "registration_open",
+   "hasCoords": true
+  },
+  {
+   "key": "szutry-l",
+   "slug": "letnie-szutry-premium-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "registration_open",
+   "hasCoords": true
+  },
+  {
+   "key": "szutry-j",
+   "slug": "jesienne-szutry-premium-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "registration_open",
+   "hasCoords": true
+  },
+  {
+   "key": "cyklomaraton",
+   "slug": "cyklomaraton-hradec-kralove-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "registration_open",
+   "hasCoords": true
+  },
+  {
+   "key": "nnkids",
+   "slug": "nn-kids-race-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": true,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "registration_open",
+   "hasCoords": true
+  },
+  {
+   "key": "stupava-mtb",
+   "slug": "bajkservis-stupava-maraton-mtb-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "scheduled",
+   "hasCoords": true
+  },
+  {
+   "key": "stupava-kids",
+   "slug": "detsky-mtb-cyklomaratonik-stupava-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "scheduled",
+   "hasCoords": true
+  },
+  {
+   "key": "stupava-sprint",
+   "slug": "bajkservis-stupava-mtb-sprint-biely-kriz-2027",
+   "pages": {
+    "cs/zavod": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    },
+    "en/race": {
+     "status": 200,
+     "hasName": true,
+     "hasReg": null,
+     "hasDesc": null,
+     "forumReg": false,
+     "rcp": false,
+     "eventregRoot": false
+    }
+   },
+   "inCatalogue": true,
+   "catalogueStatus": "scheduled",
+   "hasCoords": true
+  }
+ ],
+ "filters": {
+  "gravel_AT": {
+   "status": 200,
+   "count": 3,
+   "found": [
+    "goodtimes"
+   ]
+  },
+  "gravel_DE": {
+   "status": 200,
+   "count": 5,
+   "found": [
+    "ostalb"
+   ]
+  },
+  "gravel_PL": {
+   "status": 200,
+   "count": 77,
+   "found": [
+    "szutry-w",
+    "szutry-l",
+    "szutry-j"
+   ]
+  },
+  "mtb_SK_jun": {
+   "status": 200,
+   "count": 5,
+   "found": [
+    "stupava-mtb",
+    "stupava-kids"
+   ]
+  },
+  "kids_SK": {
+   "status": 200,
+   "count": 4,
+   "found": [
+    "stupava-kids"
+   ]
+  },
+  "tt_SK": {
+   "status": 200,
+   "count": 2,
+   "found": [
+    "stupava-sprint"
+   ]
+  },
+  "hill_SK": {
+   "status": 200,
+   "count": 1,
+   "found": [
+    "stupava-sprint"
+   ]
+  },
+  "u11_AT": {
+   "status": 200,
+   "count": 13,
+   "found": [
+    "dirndltal"
+   ]
+  },
+  "u15_AT": {
+   "status": 200,
+   "count": 16,
+   "found": [
+    "dirndltal"
+   ]
+  },
+  "kids_CZ_may": {
+   "status": 200,
+   "count": 2,
+   "found": [
+    "nnkids"
+   ]
+  },
+  "gravel_CZ_may": {
+   "status": 200,
+   "count": 1,
+   "found": [
+    "cyklomaraton"
+   ]
+  },
+  "mtb_CZ_may": {
+   "status": 200,
+   "count": 2,
+   "found": [
+    "nnkids"
+   ]
+  }
+ }
+}

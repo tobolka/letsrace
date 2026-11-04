@@ -24,10 +24,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       cs: [
         "Odznak u tvého plánu a středeční e-mail připomínají přihlášení a platbu až čtyři týdny před závodem, a když se nic neděje, e-mail nepřijde.",
         "Fullgaz Race 2027 najdeš v kalendáři s XCO a XCC a Ötztaler Mountainbike Festival má správně uvedenou UCI Continental Series.",
+        "V kalendáři 2027 přibyly tři stupavské závody: MTB maratón, dětský cyklomaratónik a časovka na Biely kríž.",
+        "Ostalb Gravel a Good Times Gravel najdeš mezi závody, Dirndltal Race má dětské kategorie U7 až U15 a tři edice Szutry Premium, Ostalb Gravel i Cyklomaraton v Hradci Králové vedou k přihlášce.",
       ],
       en: [
         "The badge on your plan and the Wednesday email remind you to enter and pay only in the last four weeks before a race, and no email comes when nothing is happening.",
         "Fullgaz Race 2027 joins the calendar with XCO and XCC, and Ötztaler Mountainbike Festival is correctly listed as a UCI Continental Series event.",
+        "Three Stupava races join the 2027 calendar: the MTB marathon, the children's race and the Biely kríž time trial.",
+        "Ostalb Gravel and Good Times Gravel now appear among the races, Dirndltal Race lists its U7 to U15 children's categories, and all three Szutry Premium editions, Ostalb Gravel and the Hradec Králové Cyklomaraton lead to their entry pages.",
       ],
     },
   },

@@ -209,6 +209,8 @@ export function matchesDisciplineFilter(
   const ids = canonicalEventDisciplines(disciplines);
   const fam = eventDisciplineFamily(ids);
   return selected.some((s) => {
+    // A race with both MTB and gravel courses belongs under each of them.
+    if (s === "gravel" && (ids as string[]).includes("gravel")) return true;
     if (FAMILY_FILTERS.has(s)) return fam === s;
     return (ids as string[]).includes(s);
   });
