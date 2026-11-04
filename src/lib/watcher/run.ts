@@ -67,8 +67,6 @@ const MAX_NEW_PER_RUN_RR = 400;
 /** radsport-events serves its whole calendar in one API crawl — 640 races. */
 const MAX_NEW_PER_RUN_RSE = 700;
 const MAX_REFRESH_PER_RUN = 250;
-/** Soft claim window so overlapping crons don't double-process the same row. */
-const CLAIM_MS = 20 * 60 * 1000;
 /** Stay under Fluid Compute's 300s cap with room for geocode. */
 const DEFAULT_BUDGET_MS = 260_000;
 const DEFAULT_CONCURRENCY = 10;
@@ -80,7 +78,6 @@ export async function runDueWatches(
 ): Promise<WatchOutcome[]> {
   const supabase = createServerSupabase();
   const nowIso = new Date().toISOString();
-  const claimUntil = new Date(Date.now() + CLAIM_MS).toISOString();
 
   // A terminated serverless invocation cannot reach watchOne's catch block.
   // Its source claim expires, but the ingest_runs row otherwise says "running"
@@ -123,21 +120,8 @@ export async function runDueWatches(
       const host = hostnameOf(row.url);
       const selected = selectedByHost.get(host) ?? 0;
       if (selected >= 2) continue;
-      const { data: won } = await supabase
-        .from("watched_urls")
-        .update({
-          next_poll_at: claimUntil,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", row.id)
-        .eq("status", "active")
-        .lte("next_poll_at", nowIso)
-        .select("id")
-        .maybeSingle();
-      if (won?.id) {
-        claimed.push(row);
-        selectedByHost.set(host, selected + 1);
-      }
+      claimed.push(row);
+      selectedByHost.set(host, selected + 1);
     }
     return claimed;
   }
@@ -158,11 +142,6 @@ export async function runDueWatches(
   const concurrency = opts?.concurrency ?? DEFAULT_CONCURRENCY;
   const outcomes = await mapPool(claimed, concurrency, async (row) => {
     if (Date.now() > deadline) {
-      // Release claim so another run can pick it up soon
-      await supabase
-        .from("watched_urls")
-        .update({ next_poll_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-        .eq("id", row.id);
       return {
         watchedUrlId: row.id,
         url: row.url,
@@ -172,7 +151,7 @@ export async function runDueWatches(
         error: "time budget exceeded",
       } satisfies WatchOutcome;
     }
-    return watchOne(row, { deadline });
+    return watchOne(row, { deadline, dueBefore: nowIso });
   });
 
   return outcomes;
@@ -187,10 +166,11 @@ type SourceReadInput = {
   kind?: string;
   last_extract_status?: string | null;
   calendar_write_progress?: Json;
+  updated_at?: string;
 };
-export async function watchOne(row: SourceReadInput, opts?: { deadline?: number }): Promise<WatchOutcome> {
+export async function watchOne(row: SourceReadInput, opts?: { deadline?: number; dueBefore?: string }): Promise<WatchOutcome> {
   const { withSourceWork } = await import("@/lib/pipeline/source-work");
-  return withSourceWork(row, () => readClaimedSource(row, opts));
+  return withSourceWork(row, () => readClaimedSource(row, opts), { dueBefore: opts?.dueBefore });
 }
 async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: number }): Promise<WatchOutcome> {
   const supabase = createServerSupabase();
@@ -201,26 +181,42 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     .single();
   if (runInsert.error) throw new Error(`Starting ingest run: ${runInsert.error.message}`);
 
+  const runId = runInsert.data?.id;
+  if (!runId) throw Error("Source run was not recorded");
   const startedAt = performance.now();
   const createdIds = new Set<string>();
   const updatedIds = new Set<string>();
   let committedWrites = 0;
   let hidden = 0;
-  const recordRun = (result: Omit<Parameters<typeof finishRun>[1], "metrics" | "eventsUpserted"> & { metrics?: Record<string, Json | undefined> }) =>
-    finishRun(runInsert.data?.id, {
-      ...result,
-      eventsUpserted: committedWrites,
-      metrics: {
-        ...result.metrics,
-        timing: "measured",
-        elapsedMs: Math.round(performance.now() - startedAt),
-        created: createdIds.size,
-        updated: updatedIds.size,
-        createdIds: [...createdIds],
-        updatedIds: [...updatedIds],
-        droppedHidden: hidden,
+  let sourcePatch: Update<"watched_urls"> = {};
+  const { stageSourceReceipt } = await import("@/lib/pipeline/source-work");
+  function recordRun(result: {
+    ok: boolean; error?: string; linksDiscovered?: number;
+    strategy?: string; httpStatus?: number; metrics?: Record<string, Json | undefined>;
+  }) {
+    stageSourceReceipt({
+      runId,
+      patch: sourcePatch,
+      runResult: {
+        ok: result.ok,
+        error: result.error ?? null,
+        events_upserted: committedWrites,
+        links_discovered: result.linksDiscovered ?? 0,
+        strategy: result.strategy ?? null,
+        http_status: result.httpStatus ?? null,
+        metrics: {
+          ...result.metrics,
+          timing: "measured",
+          elapsedMs: Math.round(performance.now() - startedAt),
+          created: createdIds.size,
+          updated: updatedIds.size,
+          createdIds: [...createdIds],
+          updatedIds: [...updatedIds],
+          droppedHidden: hidden,
+        },
       },
     });
+  }
 
   try {
     // Sources whose adapter reads other pages than the one we watch (a JSON
@@ -241,19 +237,15 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     if (fetched.status === 404) {
       // Next-year calendars (`/zavody-2027/`) 404 until published — keep watching.
       if (isPendingSeasonUrl(row.url)) {
-        await supabase
-          .from("watched_urls")
-          .update({
-            status: "active",
-            http_status: 404,
-            last_fetched_at: new Date().toISOString(),
-            last_error: null,
-            last_extract_status: "off_season",
-            next_poll_at: sourcePollAt([]).toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", row.id);
-        await recordRun({
+        sourcePatch = {
+          status: "active",
+          http_status: 404,
+          last_fetched_at: new Date().toISOString(),
+          last_error: null,
+          last_extract_status: "off_season",
+          next_poll_at: sourcePollAt([]).toISOString(),
+        };
+        recordRun({
           ok: true,
           error: "404 pending season",
           httpStatus: 404,
@@ -269,19 +261,15 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
           httpStatus: 404,
         };
       }
-      await supabase
-        .from("watched_urls")
-        .update({
-          status: "dead",
-          http_status: 404,
-          last_fetched_at: new Date().toISOString(),
-          last_error: "HTTP 404",
-          last_extract_status: "dead",
-          next_poll_at: nextPollAt().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", row.id);
-      await recordRun({
+      sourcePatch = {
+        status: "dead",
+        http_status: 404,
+        last_fetched_at: new Date().toISOString(),
+        last_error: "HTTP 404",
+        last_extract_status: "dead",
+        next_poll_at: nextPollAt().toISOString(),
+      };
+      recordRun({
         ok: false,
         error: "404",
         httpStatus: 404,
@@ -300,19 +288,14 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     if (fetched.unchanged || fetched.status === 304) {
       const { touchLastSeenForWatchedUrl } = await import("@/lib/catalog/freshness");
       await touchLastSeenForWatchedUrl(row.id);
-      const { error } = await supabase
-        .from("watched_urls")
-        .update({
-          last_fetched_at: new Date().toISOString(),
-          http_status: fetched.status,
-          next_poll_at: nextPollAt().toISOString(),
-          last_extract_status: "unchanged",
-          last_error: null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", row.id);
-      if (error) throw Error(`Saving unchanged source: ${error.message}`);
-      await recordRun({ ok: true, httpStatus: fetched.status });
+      sourcePatch = {
+        last_fetched_at: new Date().toISOString(),
+        http_status: fetched.status,
+        next_poll_at: nextPollAt().toISOString(),
+        last_extract_status: "unchanged",
+        last_error: null,
+      };
+      recordRun({ ok: true, httpStatus: fetched.status });
       return {
         watchedUrlId: row.id,
         url: row.url,
@@ -1265,46 +1248,41 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       });
     }
 
-    const { error: checkpointError } = await supabase
-      .from("watched_urls")
-      .update({
-        calendar_write_progress: trackProgress && !emptyButLive ? { version: progressVersion, rows: [...progress].map(([id, entry]) => [id, entry.hash, entry.until, entry.conflicts]) } : row.calendar_write_progress ?? null,
-        content_hash: !checkpointSafe ? null : `${checkpointPrefix}${fetched.hash}`,
-        etag: !checkpointSafe ? null : fetched.etag,
-        last_modified: !checkpointSafe ? null : fetched.lastModified,
-        http_status: fetched.status,
-        last_fetched_at: new Date().toISOString(),
-        last_changed_at: new Date().toISOString(),
-        last_error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete_extraction" : emptyButLive
-          ? "empty read of a source with upcoming races"
-          : needsReview
-            ? "low confidence or empty extract"
-            : null,
-        last_extract_status: incomplete ? "needs_review" : offSeasonEmpty
-          ? "off_season"
-          : needsReview
-            ? "needs_review"
-            : "ok",
-        // Stay active — retry later instead of permanent pause
-        status: "active",
-        next_poll_at: pendingOnly ? new Date(Math.min(sourcePollAt(extracted.events).getTime(), ...pending.map(entry => entry.until))).toISOString()
-          : budgetDeferred ? new Date(Date.now() + 2 * 60 * 60_000).toISOString()
-          : identityReview || unsupportedDocument ? reviewPollAt().toISOString()
-          : incomplete ? errorPollAt(1).toISOString() : emptyButLive
-          ? // Soon, the way a fetch error is retried: the page is up, it
-            // just did not render this time.
-            errorPollAt(1).toISOString()
-          : needsReview
-          ? reviewPollAt().toISOString()
-          : extracted.strategy?.includes("fci")
-            ? // Rotate month windows every ~2h until season is filled
-              new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
-            : sourcePollAt(extracted.events).toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", row.id);
+    sourcePatch = {
+      calendar_write_progress: trackProgress && !emptyButLive ? { version: progressVersion, rows: [...progress].map(([id, entry]) => [id, entry.hash, entry.until, entry.conflicts]) } : row.calendar_write_progress ?? null,
+      content_hash: !checkpointSafe ? null : `${checkpointPrefix}${fetched.hash}`,
+      etag: !checkpointSafe ? null : fetched.etag,
+      last_modified: !checkpointSafe ? null : fetched.lastModified,
+      http_status: fetched.status,
+      last_fetched_at: new Date().toISOString(),
+      last_changed_at: new Date().toISOString(),
+      last_error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete_extraction" : emptyButLive
+        ? "empty read of a source with upcoming races"
+        : needsReview
+          ? "low confidence or empty extract"
+          : null,
+      last_extract_status: incomplete ? "needs_review" : offSeasonEmpty
+        ? "off_season"
+        : needsReview
+          ? "needs_review"
+          : "ok",
+      // Stay active — retry later instead of permanent pause
+      status: "active",
+      next_poll_at: pendingOnly ? new Date(Math.min(sourcePollAt(extracted.events).getTime(), ...pending.map(entry => entry.until))).toISOString()
+        : budgetDeferred ? new Date(Date.now() + 2 * 60 * 60_000).toISOString()
+        : identityReview || unsupportedDocument ? reviewPollAt().toISOString()
+        : incomplete ? errorPollAt(1).toISOString() : emptyButLive
+        ? // Soon, the way a fetch error is retried: the page is up, it
+          // just did not render this time.
+          errorPollAt(1).toISOString()
+        : needsReview
+        ? reviewPollAt().toISOString()
+        : extracted.strategy?.includes("fci")
+          ? // Rotate month windows every ~2h until season is filled
+            new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+          : sourcePollAt(extracted.events).toISOString(),
+    };
 
-    if (checkpointError) throw new Error(`Saving calendar progress: ${checkpointError.message}`);
 
     if (extracted.strategy.startsWith("adapter") || extracted.strategy === "jsonld") {
       await bumpExtractionProfile(
@@ -1320,7 +1298,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: failedWrites.length, deferredWrites: deferredCount, complete: !incomplete, deferred: budgetDeferred,
       issues, usage: extracted.usage ?? null, extraction: extracted.diagnostics ?? null };
     console.info("watcher_run_metrics", JSON.stringify(metrics));
-    await recordRun({
+    recordRun({
       metrics,
       ok: !incomplete,
       error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete extraction" : undefined,
@@ -1357,17 +1335,13 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       ? `; TLS certificate verification failed (${causeCode})` : "";
     const message = (e instanceof Error ? e.message : "unknown error") + tlsDetail;
     const priorFail = row.last_extract_status === "error" ? 2 : 1;
-    await supabase
-      .from("watched_urls")
-      .update({
-        last_error: message,
-        last_extract_status: "error",
-        last_fetched_at: new Date().toISOString(),
-        next_poll_at: /source_document_too_large|pdf_has_no_text/.test(message) ? reviewPollAt().toISOString() : errorPollAt(priorFail).toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", row.id);
-    await recordRun({ ok: false, error: message });
+    sourcePatch = {
+      last_error: message,
+      last_extract_status: "error",
+      last_fetched_at: new Date().toISOString(),
+      next_poll_at: /source_document_too_large|pdf_has_no_text/.test(message) ? reviewPollAt().toISOString() : errorPollAt(priorFail).toISOString(),
+    };
+    recordRun({ ok: false, error: message });
     return {
       watchedUrlId: row.id,
       url: row.url,
@@ -1420,37 +1394,6 @@ async function bumpExtractionProfile(host: string, strategy: string) {
       last_success_at: new Date().toISOString(),
     });
   }
-}
-
-async function finishRun(
-  id: string | undefined,
-  opts: {
-    ok: boolean;
-    error?: string;
-    eventsUpserted?: number;
-    linksDiscovered?: number;
-    strategy?: string;
-    httpStatus?: number;
-    metrics?: Json;
-  },
-) {
-  if (!id) return;
-  const supabase = createServerSupabase();
-  const runPayload = {
-      finished_at: new Date().toISOString(),
-      ok: opts.ok,
-      error: opts.error ?? null,
-      events_upserted: opts.eventsUpserted ?? 0,
-      links_discovered: opts.linksDiscovered ?? 0,
-      strategy: opts.strategy ?? null,
-      http_status: opts.httpStatus ?? null,
-      metrics: opts.metrics ?? {},
-  };
-  const { error } = await supabase
-    .from("ingest_runs")
-    .update(runPayload)
-    .eq("id", id);
-  if (error) throw new Error(`Finishing ingest run: ${error.message}`);
 }
 
 function slugifySeries(name: string): string {

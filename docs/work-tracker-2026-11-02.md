@@ -54,4 +54,4 @@ Podrobný výsledek následných oprav: [opravy po večerním review](../reports
 - Další práce: inventura všech položek dodaného seznamu závodů proti aktuální databázi, doplnění skutečně chybějících doložených závodů a nezávislá kontrolní sada.
 - Navazující SEO návrh je uložený v [seo-next-steps-2026-11-02.md](seo-next-steps-2026-11-02.md); návrhy vstupních stránek nejsou označené jako implementované. Zůstává nutná kvalita podkladů a kontrola skutečného indexování.
 
-Navazující konkrétní úkoly k datům a SEO: [stav 3. listopadu](work-tracker-2026-11-03.md).
+Aktuální úkoly k datům a SEO jsou ve [společném seznamu priorit](operations-progress.md).

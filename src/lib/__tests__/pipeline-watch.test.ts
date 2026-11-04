@@ -1,6 +1,13 @@
 import { afterEach, expect, it, vi } from "vitest";
 const state = vi.hoisted(() => ({ known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn() }));
-vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: async (name: string) => ({ data: name === "pipeline_claim_source" ? [{ key: "source:source", token: "test-lease" }] : true, error: null }), from: (table: string) => {
+vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: async (name: string, args: Record<string, unknown>) => {
+  if (name === "pipeline_claim_source_read") return { data: [{ key: "source:source", token: "test-lease", payload: { sourceRevision: "2026-11-04" } }], error: null };
+  if (name === "pipeline_commit_source_read") {
+    state.writes.push({ table: "watched_urls", value: args.p_patch as Record<string, unknown> });
+    state.writes.push({ table: "ingest_runs", value: args.p_run_result as Record<string, unknown> });
+  }
+  return { data: true, error: null };
+}, from: (table: string) => {
   let inserted = false;
   const chain: unknown = new Proxy({}, { get: (_target, key) => {
     if (key === "maybeSingle") return async () => ({ data: null, error: null });

@@ -1497,6 +1497,8 @@ export type Database = {
       pipeline_source_counts:{Args:Record<string,never>;Returns:Json};
       pipeline_answer_owner:{Args:{p_key:string;p_expected:string;p_answer:string};Returns:boolean};
       pipeline_claim_tasks: {Args:{p_kind:string;p_capabilities:string[];p_limit?:number};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
+      pipeline_claim_source_read: {Args:{p_source:string;p_capabilities:string[];p_due_before?:string;p_expected_revision?:string};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
+      pipeline_commit_source_read: {Args:{p_key:string;p_token:string;p_url:string;p_revision:string;p_run:string;p_patch:Json;p_run_result:Json;p_result:Json};Returns:boolean};
       pipeline_claim_source: {Args:{p_source:string;p_capabilities:string[]};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
       pipeline_finish_source: {Args:{p_key:string;p_token:string;p_url:string;p_result:Json};Returns:boolean};
       pipeline_finish_task: {Args:{p_key:string;p_token:string;p_payload:Json;p_result:Json};Returns:boolean};
