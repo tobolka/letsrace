@@ -55,7 +55,7 @@ export function RaceLinkList({
             {list.map((event) => (
               <PlannedRaceRow eventId={event.id} key={event.id} className="race-row">
                 <Link href={eventPagePath(locale, event.slug)} className="race-row-link" data-series-round={seriesSlug}>
-                  <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} factsLabel={showFacts ? [...routeSummary(event, locale), ...(event.ageConfidence === "explicit" ? event.ageCategories.map(age => ageCategoryLabel(age, locale)) : [])].join(" · ") : undefined} compact />
+                  <EventRowBody event={event} locale={locale} seriesRound={Boolean(seriesSlug)} distanceKm={distances?.get(event.id)} factsLabel={showFacts ? [...routeSummary(event, locale), ...(event.ageConfidence === "explicit" ? event.ageCategories.map(age => ageCategoryLabel(age, locale)) : [])].join(" · ") : undefined} compact />
                 </Link>
                 {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}
                 <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="row" />

@@ -27,6 +27,7 @@ export function EventRowBody({
   wrapName = false,
   compact = false,
   factsLabel,
+  seriesRound = false,
 }: {
   event: EventListItem;
   locale: string;
@@ -39,6 +40,7 @@ export function EventRowBody({
    */
   compact?: boolean;
   factsLabel?: string;
+  seriesRound?: boolean;
   /**
    * Up to two lines for the name. The list page has no map rebuilding it
    * under the reader, so a name cut at "Mistrzostwa Polski w konk…" is
@@ -62,7 +64,7 @@ export function EventRowBody({
         <span aria-hidden className="race-row-edge" style={{ background: disciplineColor(event.disciplines) }} />
         <span className="race-row-body">
           <span className="race-row-name">{event.name}</span>
-          <span className="race-row-meta">
+          <span className="race-row-meta" data-series-race={seriesRound ? event.slug : undefined}>
             <time dateTime={event.startDate} className="race-row-date">{dateLabel}</time>
             {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
             <span className="race-row-place" title={metadataLabel}>{metadataLabel}</span>

@@ -61,6 +61,12 @@ try {
  await db.exec("insert into pipeline_task_attempts(token,task_key,kind) select gen_random_uuid(),'publication:expire','public_refresh' from generate_series(1,60)");
  assert.equal(await claimSeries(),undefined,'race and series checks share the daily cap');
  await db.exec(`delete from series where id='${cup}'`);assert.equal((await task(cup)).payload.expected.visibility,'hidden');
+ await db.exec(`update pipeline_tasks set status='done',result='{"verifiedAt":"test","locales":["cs","en"]}' where key='series:${other}';
+   update pipeline_tasks set status='done',result='{"verifiedAt":"test","locales":["cs","en","de","pl","sk"]}' where key='series:${cup}';reset role;`);
+ await db.exec(await readFile('supabase/migrations/20261104151110_verify_every_public_locale.sql','utf8'));
+ await db.exec('set role service_role');
+ assert.equal((await task(other)).status,'pending','partial language coverage is rechecked');
+ assert.equal((await task(cup)).status,'done','complete language verification is retained');
  for(const role of ['anon','authenticated']){await db.exec(`reset role;set role ${role}`);await assert.rejects(db.query('select pipeline_enqueue_series($1)',[{id:cup,slug:'cup'}]),/permission denied/);}
  console.log('PASS: series rename/aliases, inherited race revision, changed rounds and membership, no heartbeat churn, transaction rollback, deletion, private receipts, reopened legacy requests, secondary dates and locations, shared cap and no false HTML verification');
 } finally {await db.close();}

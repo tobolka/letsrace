@@ -1,17 +1,13 @@
+import { checkPublicationLocales, publicationLocaleWaves } from "@/lib/pipeline/publication-locales";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { publicationPayload, publicationLocation, publicationIsVisible, verifyPublicRevision } from "@/lib/pipeline/publication";
-import { getSiteUrl } from "@/lib/seo";
-import { localePath } from "@/lib/localized-paths";
-import { fetchPublic } from "@/lib/http/safe-url";
-import { boundedBody } from "@/lib/watcher/http";
 
 /** Verify ordinary public responses after the matching revision was refreshed. */
 export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs }: { maxChecks: number; deadline: number; timeoutMs: number }) {
   const db = createServerSupabase();
   // SQL reserves at most 60 attempts/day across all workers, including crashes.
-  // Other language pages refresh lazily via the race tag.
   let verified = 0, deferredInBatch = 0, processed = 0;
-  for (let index = 0; index < maxChecks && Date.now() + timeoutMs + 2000 < deadline; index++) {
+  for (let index = 0; index < maxChecks && Date.now() + publicationLocaleWaves.length * timeoutMs + 2000 < deadline; index++) {
     // Claim only when ready to work; queued items must not expire while waiting here.
     const { data: tasks, error } = await db.rpc("pipeline_claim_tasks", { p_kind: "public_refresh", p_capabilities: ["web"], p_limit: 1 });
     if (error) throw error;
@@ -29,13 +25,10 @@ export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs 
       if (currentError) throw currentError;
       if (current.public_revision !== target.revision) throw Error("Race changed while checking publication");
       target = { ...target, expected: { ...target.expected, public_location: publicationLocation(current) } };
-      const checks = await Promise.allSettled((["cs", "en"] as const).map(async locale => {
-        const page = await fetchPublic(`${getSiteUrl()}${localePath(locale, `e/${payload.slug}`)}`, { headers: { "User-Agent": "LetsRace-Publication-Check/1.0" }, signal: AbortSignal.timeout(timeoutMs) });
-        const html = new TextDecoder().decode(await boundedBody(page, 2 * 1024 * 1024));
-        verifyPublicRevision(html, page.status, target, publicationIsVisible(target.expected, current.location?.country_code ?? null));
-      }));
-      for (const check of checks) if (check.status === "rejected") throw check.reason;
-      const { data: finished, error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { verifiedAt: new Date().toISOString(), revision: payload.revision, locales: ["cs", "en"] } });
+      const checkedLocales = await checkPublicationLocales(`e/${payload.slug}`, timeoutMs, (html, status) => {
+        verifyPublicRevision(html, status, target, publicationIsVisible(target.expected, current.location?.country_code ?? null));
+      });
+      const { data: finished, error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { verifiedAt: new Date().toISOString(), revision: payload.revision, locales: checkedLocales } });
       if (error) throw error;
       if (finished) verified++; else deferredInBatch++;
     } catch (error) {

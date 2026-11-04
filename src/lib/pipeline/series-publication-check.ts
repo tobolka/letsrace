@@ -1,18 +1,16 @@
+import type { Locale } from "@/lib/i18n/messages";
+import { checkPublicationLocales, publicationLocaleWaves } from "@/lib/pipeline/publication-locales";
 import { load } from "cheerio";
 import { readPublicSeries } from "@/lib/events";
 import { eventPagePath } from "@/lib/event-url";
-import { fetchPublic } from "@/lib/http/safe-url";
 import { compactRaceDates } from "@/lib/i18n/dates";
-import { localePath } from "@/lib/localized-paths";
 import { publicationPayload } from "@/lib/pipeline/publication";
-import { getSiteUrl } from "@/lib/seo";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { boundedBody } from "@/lib/watcher/http";
 
 type PublicSeries = Awaited<ReturnType<typeof readPublicSeries>>;
 const normalize = (value: string) => value.normalize("NFKC").replace(/\s+/g, " ").trim();
 
-export function verifyPublicSeries(html: string, status: number, expected: PublicSeries, locale: "cs" | "en") {
+export function verifyPublicSeries(html: string, status: number, expected: PublicSeries, locale: Locale) {
   if (!expected) {
     if (status !== 404 && status !== 410) throw Error(`Hidden series still publicly available (HTTP ${status})`);
     return;
@@ -34,11 +32,17 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
   ).toArray();
   const rounds = new Map(rows.map(row => [$(row).attr("href"), $(row)]));
   if (rows.length !== expected.events.length || rounds.size !== rows.length) throw Error("Public series round count does not match the saved series");
+  const metadataRows = $(".race-row-meta[data-series-race]").toArray();
+  const metaBySlug = new Map(metadataRows.map(row => [$(row).attr("data-series-race"), $(row)]));
+  if (metadataRows.length !== expected.events.length || metaBySlug.size !== metadataRows.length) {
+    throw Error("Public series round metadata count does not match the saved series");
+  }
   for (const event of expected.events) {
     const row = rounds.get(eventPagePath(locale, event.slug));
-    const date = row?.find("time");
+    const meta = metaBySlug.get(event.slug);
+    const date = meta?.find("time");
     const place = normalize([event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · "));
-    const metadata = normalize(row?.find(".race-row-place").text() ?? "");
+    const metadata = normalize(meta?.find(".race-row-place").text() ?? "");
     if (!row || normalize(row.find(".race-row-name").text()) !== normalize(event.name)
         || date?.attr("datetime") !== event.startDate || normalize(date.text()) !== normalize(compactRaceDates(event, locale))
         || (metadata !== place && !metadata.startsWith(`${place} · `))) {
@@ -50,7 +54,7 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
 export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutMs }: { maxChecks: number; deadline: number; timeoutMs: number }) {
   const db = createServerSupabase();
   let processed = 0, verified = 0, deferred = 0;
-  for (let index = 0; index < maxChecks && Date.now() + timeoutMs + 2000 < deadline; index++) {
+  for (let index = 0; index < maxChecks && Date.now() + publicationLocaleWaves.length * timeoutMs + 2000 < deadline; index++) {
     const { data: tasks, error } = await db.rpc("pipeline_claim_tasks", { p_kind: "series_refresh", p_capabilities: ["web"], p_limit: 1 });
     if (error) throw error;
     const task = tasks[0];
@@ -62,17 +66,12 @@ export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutM
       if (payload.expected.visibility === "public" ? expected?.series.id !== task.entity_id : expected !== null) {
         throw Error("Series changed while checking publication");
       }
-      const checks = await Promise.allSettled((["cs", "en"] as const).map(async locale => {
-        const page = await fetchPublic(`${getSiteUrl()}${localePath(locale, `series/${payload.slug}`)}`, {
-          headers: { "User-Agent": "LetsRace-Publication-Check/1.0" }, signal: AbortSignal.timeout(timeoutMs),
-        });
-        const html = new TextDecoder().decode(await boundedBody(page, 2 * 1024 * 1024));
-        verifyPublicSeries(html, page.status, expected, locale);
-      }));
-      for (const check of checks) if (check.status === "rejected") throw check.reason;
+      const checkedLocales = await checkPublicationLocales(`series/${payload.slug}`, timeoutMs, (html, status, locale) => {
+        verifyPublicSeries(html, status, expected, locale);
+      });
       const { data: finished, error } = await db.rpc("pipeline_finish_task", {
         p_key: task.key, p_token: task.token!, p_payload: task.payload,
-        p_result: { verified: true, verifiedAt: new Date().toISOString(), revision: payload.revision, locales: ["cs", "en"], rounds: expected?.events.length ?? 0 },
+        p_result: { verified: true, verifiedAt: new Date().toISOString(), revision: payload.revision, locales: checkedLocales, rounds: expected?.events.length ?? 0 },
       });
       if (error) throw error;
       if (finished) verified++; else deferred++;
