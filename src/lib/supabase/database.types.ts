@@ -1466,6 +1466,8 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_merge_duplicate_location: {Args:{p_keep:Json;p_drop:Json};Returns:number|null};
+      pipeline_unpin_country_location: {Args:{p_expected:Json};Returns:boolean};
       pipeline_complete_past_events: {Args:{p_ids:string[];p_today:string};Returns:number};
       pipeline_fill_registration_link: {Args:{p_event:string;p_revision:string;p_link:string;p_source:string;p_quote:string|null};Returns:boolean};
       pipeline_calendar_freshness: {

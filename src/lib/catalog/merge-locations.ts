@@ -172,6 +172,7 @@ export type MergeLocationsResult = {
   unpinned: number;
   /** Points still holding two names that are not variants of one another. */
   ambiguousPoints: number;
+  skipped: number;
   failed: { survivor: string; duplicate: string; error: string }[];
 };
 
@@ -186,15 +187,17 @@ export async function mergeDuplicateLocations(opts?: {
 }): Promise<MergeLocationsResult> {
   const supabase = createServerSupabase();
   const max = opts?.max ?? 200;
+  if (!Number.isInteger(max) || max < 0) throw Error("Invalid location merge limit");
   const dry = opts?.dryRun ?? false;
 
   const rows = await readAllRows<LocationRow>((from, to) =>
     supabase
       .from("locations")
-      .select("id, name, municipality, region, venue, country_code, lat, lng, geocode_status, created_at")
+      .select("id, name, municipality, region, venue, country_code, lat, lng, geocode_status, created_at, updated_at, region_code, timezone, geocode_query")
       .not("lat", "is", null)
       .order("id", { ascending: true })
       .range(from, to),
+    { throwOnError: true },
   );
 
   const result: MergeLocationsResult = {
@@ -204,6 +207,7 @@ export async function mergeDuplicateLocations(opts?: {
     eventsRepointed: 0,
     unpinned: 0,
     ambiguousPoints: 0,
+    skipped: 0,
     failed: [],
   };
 
@@ -212,20 +216,10 @@ export async function mergeDuplicateLocations(opts?: {
   const countryOnly = rows.filter((r) => isCountryOnlyPlace(placeOf(r), r.country_code));
   if (!dry) {
     for (const row of countryOnly) {
-      const { error } = await supabase
-        .from("locations")
-        .update({
-          lat: null,
-          lng: null,
-          geog: null,
-          // Terminal on purpose: re-asking the geocoder returns the centroid
-          // again. Only a better place name from the source can fix this.
-          geocode_status: "skipped",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", row.id);
+      const { data, error } = await supabase.rpc("pipeline_unpin_country_location", { p_expected: row });
       if (error) result.failed.push({ survivor: row.id, duplicate: row.id, error: error.message });
-      else result.unpinned += 1;
+      else if (data === true) result.unpinned += 1;
+      else result.skipped += 1;
     }
   } else {
     result.unpinned = countryOnly.length;
@@ -255,32 +249,17 @@ export async function mergeDuplicateLocations(opts?: {
   for (const group of groups.slice(0, max)) {
     let ok = true;
     for (const duplicate of group.duplicates) {
-      const { data, error } = await supabase
-        .from("events")
-        .update({ location_id: group.survivor.id, updated_at: new Date().toISOString() })
-        .eq("location_id", duplicate.id)
-        .select("id");
+      const { data, error } = await supabase.rpc("pipeline_merge_duplicate_location", {
+        p_keep: group.survivor, p_drop: duplicate,
+      });
       if (error) {
-        result.failed.push({
-          survivor: group.survivor.id,
-          duplicate: duplicate.id,
-          error: error.message,
-        });
+        result.failed.push({ survivor: group.survivor.id, duplicate: duplicate.id, error: error.message });
         ok = false;
-        continue;
-      }
-      result.eventsRepointed += data?.length ?? 0;
-      const { error: deleteError } = await supabase
-        .from("locations")
-        .delete()
-        .eq("id", duplicate.id);
-      if (deleteError) {
-        result.failed.push({
-          survivor: group.survivor.id,
-          duplicate: duplicate.id,
-          error: deleteError.message,
-        });
+      } else if (typeof data !== "number") {
+        result.skipped += 1;
         ok = false;
+      } else {
+        result.eventsRepointed += data;
       }
     }
     if (ok) result.merged += 1;
