@@ -44,5 +44,5 @@ export const GET = withCron(async () => {
       headers: { "Cache-Control": "private, no-store" },
     });
   });
-});
+}, "publication");
 export const POST = GET;

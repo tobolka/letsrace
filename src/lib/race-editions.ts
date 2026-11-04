@@ -7,7 +7,7 @@ import type { EventListItem } from "@/lib/events";
 
 type Edition = EditionIdentity & { slug: string; status: string; visibility: string };
 const editionPool = unstable_cache(async (country: string, year: number) => {
-  const db = createServerSupabase();
+  const db = createServerSupabase("public-web");
   const rows: Edition[] = [];
   let after: string | undefined;
   for (;;) {

@@ -125,7 +125,7 @@ export function isIsoDay(value: string | null | undefined): value is string {
 }
 
 export async function listEvents(filters: EventFilters = {}): Promise<EventListItem[]> {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase("public-web");
 
   const hasBbox =
     filters.west != null &&
@@ -378,7 +378,7 @@ const SERIES_PUBLIC_COLUMNS =
   "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, series_type, level, competition_type, season, organizer_verified_at";
 
 export async function listSeries(filters: EventFilters = {}): Promise<SeriesListItem[]> {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase("public-web");
 
   const { data: series, error } = await supabase
     .from("series")
@@ -463,7 +463,7 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
  * asks this before it streams anything, so a dead address can still answer 404.
  */
 async function readPublicSeriesRow(slug: string) {
-  const { data: row, error } = await createServerSupabase()
+  const { data: row, error } = await createServerSupabase("public-web")
     .from("series")
     .select(SERIES_PUBLIC_COLUMNS)
     .eq("slug", slug)
@@ -480,7 +480,7 @@ export const getPublicSeriesRow = cache((slug: string) => unstable_cache(() => r
 export async function readPublicSeries(slug: string, readRow = readPublicSeriesRow): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
   const row = await readRow(slug);
   if (!row) return null;
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase("public-web");
 
   const { data: eventRows, error: eventError } = await supabase
     .rpc("public_series_round_rows", {
@@ -537,7 +537,7 @@ export async function getEventBySlug(slug: string) {
 async function loadPublicEventBySlug(
   slug: string,
 ): Promise<EventListItem | null> {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase("public-web");
   const { data, error } = await supabase
     .from("events")
     .select(
@@ -596,7 +596,7 @@ export async function findRacesForMissingSlug(
   const { words, date, year } = parseRaceSlug(slug);
   const searchable = words.filter((w) => w.length >= 3 && /^[a-z0-9]+$/.test(w)).slice(0, 6);
   if (!searchable.length) return { match: null, near: [] };
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase("public-web");
   // A known record is not a missing address. Its visibility decision or
   // explicit merge owns the URL; a slug guess must never resurrect/redirect it.
   const { data: known, error: knownError } = await supabase.from("events").select("id").eq("slug", slug).maybeSingle();
@@ -1139,23 +1139,14 @@ export const hostOfUrl = (url: string | null | undefined) => {
 
 /** Hosts we read as calendars, federations or link lists — never an organiser's own site. */
 const listCalendarHosts = unstable_cache(async function listCalendarHosts(): Promise<string[]> {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabase("public-web");
   const { data, error } = await supabase.from("watched_urls").select("url").in("kind", ["aggregator", "calendar", "federation", "outbound"]);
   if (error) throw new Error(error.message);
   return [...new Set((data ?? []).map((row) => hostOfUrl(row.url)).filter((h): h is string => Boolean(h)))];
 }, ["calendar-hosts-v1"], { revalidate: 86_400 });
 
-/**
- * Other upcoming races on the same organiser's website, outside the race's
- * own series (its rounds are listed already). Empty when the website is a
- * calendar, a federation, a ticket platform or simply hosts too many races.
- */
-export async function listOrganiserRaces(event: EventListItem, limit = 6): Promise<EventListItem[]> {
-  const host = hostOfUrl(event.websiteUrl);
-  if (!host || PLATFORM_HOSTS.includes(host)) return [];
-  if ((await listCalendarHosts()).includes(host)) return [];
-  const supabase = createServerSupabase();
-  const today = new Date().toISOString().slice(0, 10);
+const upcomingRacesByOrganiserHost = unstable_cache(async (host: string, today: string) => {
+  const supabase = createServerSupabase("public-web");
   const { data, error } = await supabase
     .from("events")
     .select(
@@ -1171,9 +1162,21 @@ export async function listOrganiserRaces(event: EventListItem, limit = 6): Promi
     .order("start_date")
     .limit(ORGANISER_MAX_RACES + 1);
   if (error) throw new Error(error.message);
-  const rows = (data ?? []).map((row) => mapEventRow(row as unknown as Record<string, unknown>));
-  if (rows.length > ORGANISER_MAX_RACES) return [];
-  return rows
+  if (!data || data.length > ORGANISER_MAX_RACES) return [];
+  return data.map(row => mapEventRow(row as unknown as Record<string, unknown>));
+}, ["public-organiser-races-v1"], { revalidate: 900, tags: [PUBLIC_CATALOGUE_TAG] });
+
+/**
+ * Other upcoming races on the same organiser's website, outside the race's
+ * own series (its rounds are listed already). Empty when the website is a
+ * calendar, a federation, a ticket platform or simply hosts too many races.
+ */
+export async function listOrganiserRaces(event: EventListItem, limit = 6): Promise<EventListItem[]> {
+  const host = hostOfUrl(event.websiteUrl);
+  if (!host || PLATFORM_HOSTS.includes(host)) return [];
+  if ((await listCalendarHosts()).includes(host)) return [];
+  const today = new Date().toISOString().slice(0, 10);
+  return (await upcomingRacesByOrganiserHost(host, today))
     .filter((e) => e.id !== event.id && hostOfUrl(e.websiteUrl) === host && (!event.series || e.series?.id !== event.series.id))
     .slice(0, limit);
 }

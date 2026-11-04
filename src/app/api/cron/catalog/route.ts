@@ -9,6 +9,6 @@ export const GET = withCron(async () => {
   // The database queues affected pages in the same transaction as each write.
   // Leave refreshes to the bounded publication job.
   return NextResponse.json({ ok: true, refreshed: false, ...result });
-});
+}, "catalogue-maintenance");
 
 export const POST = GET;

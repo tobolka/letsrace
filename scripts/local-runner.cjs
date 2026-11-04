@@ -93,6 +93,7 @@ function main() {
  if(previous.childPid && previous.activeTask==='federation')previous.pendingTasks=[...new Set([...(previous.pendingTasks||[]),'federation'])];
  let state={...previous,childPid:null,stage:null,serverRequestRunning:false,interrupted:previous.childPid!=null};
  let child=null, logStream=null, buffer='', stopping=false, system=systemSample(), lastSystem=Date.now(), server=json(path.join(data,'server-status.json'),null), serverChecking=false, serverChecked=0;
+ let reportedPause;
  const interval=Number(process.env.LETSRACE_INTERVAL_MS || 2*60*60_000);
  state.nextRunAt=state.interrupted?Date.now()+15000:Number(state.nextRunAt||Date.now());
  const save=()=>atomic(stateFile,state);
@@ -110,16 +111,19 @@ function main() {
   finally{state.serverRequestRunning=false;serverChecked=0;save();snapshot();void checkServer();}
  }
  async function checkServer() {
-  if(process.env.LETSRACE_NO_SERVER_CHECK === "1" || serverChecking || Date.now()-serverChecked<5*60_000)return;
-  serverChecking=true;serverChecked=Date.now();
+  if(process.env.LETSRACE_NO_SERVER_CHECK === "1" || serverChecking)return;
+  const paused=json(controlFile).paused===true, now=Date.now();
+  // Keep the paused heartbeat within the panel's 15-minute freshness window.
+  if(paused===reportedPause && now-serverChecked<(paused?10:5)*60_000)return;
+  serverChecking=true;serverChecked=now;reportedPause=paused;
   try {
     const {parse}=require('dotenv');
     const env=parse(fs.readFileSync(path.join(root,'.env.local')));
     if(!env.CRON_SECRET)throw Error('Chybí přístup ke stavu serveru');
-    const control=json(controlFile),now=Date.now(),last=normalizeResult(state.lastResult);
+    const last=normalizeResult(state.lastResult);
     const lastResult=last?Object.fromEntries(['at','reads','created','updated','failed','deferred','unreadable'].filter(key=>typeof last[key]==='number').map(key=>[key,last[key]])):null;
     const response=await fetch('https://letsrace.cz/api/ops/pipeline-status',{method:'POST',headers:{Authorization:`Bearer ${env.CRON_SECRET}`,'Content-Type':'application/json'},
-     body:JSON.stringify({status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),paused:control.paused===true,nextRunAt:state.nextRunAt||null,lastResult}),signal:AbortSignal.timeout(15000)});
+     body:JSON.stringify({status:health({active:!!child,paused,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),paused,nextRunAt:state.nextRunAt||null,lastResult}),signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw Error(`Stav serveru není dostupný (HTTP ${response.status})`);
     if(!response.headers.get('content-type')?.includes('application/json'))throw Error('Přehled serveru zatím není dostupný');
     server={...(await response.json()),checkedAt:new Date().toISOString(),error:null};

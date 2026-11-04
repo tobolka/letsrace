@@ -45,6 +45,7 @@ it("forces a read after an extractor upgrade, then uses versioned HTTP checkpoin
   expect(state.fetch).toHaveBeenLastCalledWith("https://club.test/calendar", undefined);
   await watchOne({ id: "source", url: "https://club.test/calendar", content_hash: `${WATCH_READER_VERSION}:hash`, etag: "etag" });
   expect(state.fetch).toHaveBeenLastCalledWith("https://club.test/calendar", { etag: "etag", contentHash: "hash", lastModified: undefined });
+  expect(state.writes.at(-1)?.value.metrics).toMatchObject({ sourceContentUnchanged: true, created: 0, updated: 0 });
 });
 
 it("does not infer removal from an AI omission even after every chunk was read", () => {
@@ -61,6 +62,18 @@ it("preserves certificate failure diagnostics without accepting an unsafe connec
   expect(result.error).toContain("TLS certificate verification failed (UNABLE_TO_GET_ISSUER_CERT_LOCALLY)");
   expect(state.extract).not.toHaveBeenCalled();
   expect(state.hide).not.toHaveBeenCalled();
+});
+
+it("allows a quick first retry and waits a day after a repeated source error", async () => {
+  state.fetch.mockRejectedValue(new Error("fetch failed"));
+  const source = { id: "source", url: "https://club.test/calendar" };
+  await watchOne(source);
+  await watchOne({ ...source, last_extract_status: "error" });
+  const delays = state.writes.filter(write => write.table === "watched_urls").map(({ value }) =>
+    Date.parse(String(value.next_poll_at)) - Date.parse(String(value.last_fetched_at)));
+  expect(delays[0]).toBeGreaterThanOrEqual(2 * 60 * 60_000);
+  expect(delays[0]).toBeLessThan(2 * 60 * 60_000 + 1000);
+  expect(delays[1]).toBe(24 * 60 * 60_000);
 });
 
 it("does not invent next-season sources by changing the year of a calendar address", async () => {

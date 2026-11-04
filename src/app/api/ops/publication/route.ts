@@ -51,4 +51,4 @@ export const POST = withCron(async req => {
     for (const locale of locales) revalidatePath(`/${locale}/e/${slug}`);
   }
   return NextResponse.json({ refreshed: true, revision: payload.revision }, { headers: { "Cache-Control": "private, no-store" } });
-});
+}, "publication");

@@ -30,7 +30,7 @@ import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
 import { preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
 import { calendarRowHash, calendarRowProgress, isEventWriteConflict, MAX_CALENDAR_PROGRESS_ROWS, readCalendarProgress } from "@/lib/watcher/calendar-progress";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
-import { withDatabaseDeadline } from "@/lib/supabase/request-budget";
+import { withDatabaseDeadline, withDatabaseRequestCounts, withDatabaseWorkload } from "@/lib/supabase/request-budget";
 import { countryFromVenue } from "@/lib/geo/country-label";
 import { isArchiveDiscoveryUrl, isAuxiliaryDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 import type { Insert, Update } from "@/lib/supabase/tables";
@@ -170,9 +170,11 @@ type SourceReadInput = {
 };
 export async function watchOne(row: SourceReadInput, opts?: { deadline?: number; dueBefore?: string }): Promise<WatchOutcome> {
   const { withSourceWork } = await import("@/lib/pipeline/source-work");
-  return withSourceWork(row, () => readClaimedSource(row, opts), { dueBefore: opts?.dueBefore });
+  return withDatabaseWorkload("watch", () => withDatabaseRequestCounts(counts =>
+    withSourceWork(row, () => readClaimedSource(row, counts, opts), { dueBefore: opts?.dueBefore })
+  ));
 }
-async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: number }): Promise<WatchOutcome> {
+async function readClaimedSource(row: SourceReadInput, database: { attempts: number; failed: number }, opts?: { deadline?: number }): Promise<WatchOutcome> {
   const supabase = createServerSupabase();
   const runInsert = await supabase
     .from("ingest_runs")
@@ -208,6 +210,8 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
           ...result.metrics,
           timing: "measured",
           elapsedMs: Math.round(performance.now() - startedAt),
+          // Count through staging this receipt. The final commit happens outside the reader.
+          database: { ...database },
           created: createdIds.size,
           updated: updatedIds.size,
           createdIds: [...createdIds],
@@ -295,7 +299,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
         last_extract_status: "unchanged",
         last_error: null,
       };
-      recordRun({ ok: true, httpStatus: fetched.status });
+      recordRun({ ok: true, httpStatus: fetched.status, metrics: { sourceContentUnchanged: true } });
       return {
         watchedUrlId: row.id,
         url: row.url,
@@ -1334,12 +1338,15 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     const tlsDetail = causeCode && /^(UNABLE_TO_|CERT_|ERR_TLS_)/.test(causeCode)
       ? `; TLS certificate verification failed (${causeCode})` : "";
     const message = (e instanceof Error ? e.message : "unknown error") + tlsDetail;
-    const priorFail = row.last_extract_status === "error" ? 2 : 1;
+    const now = Date.now();
+    // Give a transient failure a quick retry. A source that is still failing
+    // should not consume six slots a day while its provider is unavailable.
+    const retryAt = row.last_extract_status === "error" ? new Date(now + 24 * 60 * 60_000) : errorPollAt();
     sourcePatch = {
       last_error: message,
       last_extract_status: "error",
-      last_fetched_at: new Date().toISOString(),
-      next_poll_at: /source_document_too_large|pdf_has_no_text/.test(message) ? reviewPollAt().toISOString() : errorPollAt(priorFail).toISOString(),
+      last_fetched_at: new Date(now).toISOString(),
+      next_poll_at: /source_document_too_large|pdf_has_no_text/.test(message) ? reviewPollAt().toISOString() : retryAt.toISOString(),
     };
     recordRun({ ok: false, error: message });
     return {

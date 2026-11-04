@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth/admin";
 import { requireCronSecret } from "@/lib/cron-auth";
 import { apiError } from "@/lib/api/respond";
+import { withDatabaseWorkload, type DatabaseWorkload } from "@/lib/supabase/request-budget";
 
 type Handler<Ctx> = (req: NextRequest, ctx: Ctx) => Response | Promise<Response>;
 
@@ -26,9 +27,9 @@ export function withAdmin<Ctx = unknown>(
  * Run `handler` for Vercel Cron (or anyone holding `CRON_SECRET`). Export it as
  * both `GET` and `POST`: cron calls GET, and a manual run is easier with POST.
  */
-export function withCron<Ctx = unknown>(handler: Handler<Ctx>): Handler<Ctx> {
+export function withCron<Ctx = unknown>(handler: Handler<Ctx>, workload?: DatabaseWorkload): Handler<Ctx> {
   return (req, ctx) => {
     if (!requireCronSecret(req)) return apiError(401, "Unauthorized");
-    return handler(req, ctx);
+    return workload ? withDatabaseWorkload(workload, () => handler(req, ctx)) : handler(req, ctx);
   };
 }

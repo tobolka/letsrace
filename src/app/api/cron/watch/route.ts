@@ -42,6 +42,6 @@ export const GET = withCron(async (req) => NextResponse.json(await pipelineJob("
   }
 
   return result;
-})));
+})), "watch");
 
 export const POST = GET;

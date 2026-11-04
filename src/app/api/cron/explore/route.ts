@@ -8,6 +8,6 @@ export const maxDuration = 120;
 export const GET = withCron(async () => NextResponse.json(await pipelineJob("server-discovery", async () => {
   const result = await runExplore({ budgetMs: 90_000, maxFetch: 20 });
   return { ok: true, ...result };
-})));
+})), "discovery");
 
 export const POST = GET;

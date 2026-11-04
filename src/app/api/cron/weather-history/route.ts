@@ -7,5 +7,5 @@ export const maxDuration = 60;
 export const GET = withCron(async () => NextResponse.json(await pipelineJob("weather-history", async () => {
   const result = await warmWeatherHistory(new Date().toISOString().slice(0, 10));
   return { ...result, status: result.failed ? "attention" : result.pendingPeriods ? "deferred" : "ok" };
-})));
+})), "weather-history");
 export const POST = GET;
