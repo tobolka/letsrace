@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { NewRaceLocationPlan } from "@/lib/watcher/write-event";
+import type { NewRaceLocationPlan, WatcherSeriesPlan } from "@/lib/watcher/write-event";
 import { overviewIssues, isCountryOnlyPlace } from "@/lib/catalog/overview-quality";
 import { isWholeCalendarHost } from "@/lib/watcher/extractors/adapters";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -1423,7 +1423,7 @@ const SERIES_LEVEL_RANK: Record<string, number> = {
   world_championship: 7,
 };
 
-async function resolveSeriesId(
+async function prepareSeriesPlan(
   supabase: ReturnType<typeof createServerSupabase>,
   ev: ParsedEvent,
   classified: {
@@ -1434,7 +1434,7 @@ async function resolveSeriesId(
     season: string;
   },
   websiteFn: (url?: string | null, fallback?: string | null) => string | null,
-): Promise<string | undefined> {
+): Promise<WatcherSeriesPlan | undefined> {
   const seriesAges = ev.seriesAgeCategories ?? classified.ageCategories;
   if (!ev.seriesName && !ev.seriesSlug) return undefined;
   const { isSiteIdentityName } = await import("@/lib/watcher/extractors/generic");
@@ -1462,9 +1462,8 @@ async function resolveSeriesId(
     slug,
     url: website || ev.seriesWebsite || ev.sourceUrl,
   });
-  const now = new Date().toISOString();
-
-  const { data: existing } = await supabase.from("series").select("*").eq("slug", slug).maybeSingle();
+  const { data: existing, error } = await supabase.from("series").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw Error(`Reading series metadata: ${error.message}`);
 
   if (existing) {
     const disciplines = unionText(existing.disciplines as string[], seriesDisciplines);
@@ -1479,16 +1478,14 @@ async function resolveSeriesId(
         ? String(existing.competition_type)
         : classified.competitionType;
     const patch: Update<"series"> = {
-      last_seen_at: now,
-      updated_at: now,
       name_normalized: existing.name_normalized || normalizeName(name),
       disciplines,
-      age_categories: ageCategories,
       level,
       competition_type: competitionType,
     };
-    if (ageCategories.length) {
-      patch.audience_hint = audienceFromAgeCategories(ageCategories as AgeCategory[]);
+    if (!existing.age_categories_confirmed_at) {
+      patch.age_categories = ageCategories;
+      if (ageCategories.length) patch.audience_hint = audienceFromAgeCategories(ageCategories as AgeCategory[]);
     }
     if (website && !existing.website_url) patch.website_url = website;
     if (country && !existing.country_code) patch.country_code = country;
@@ -1498,24 +1495,17 @@ async function resolveSeriesId(
       patch.source_url = website || ev.sourceUrl;
     }
     if (!existing.source_kind || existing.source_kind === "other") patch.source_kind = sourceKind;
-    const meaningfulChange = Object.entries(patch).some(([key, value]) =>
-      key !== "last_seen_at" && key !== "updated_at" &&
+    const changes = Object.fromEntries(Object.entries(patch).filter(([key, value]) =>
       JSON.stringify(value) !== JSON.stringify(existing[key as keyof typeof existing]),
-    );
-    if (!meaningfulChange) {
-      if (Date.now() - (Date.parse(existing.last_seen_at ?? "") || 0) < 86400_000) return existing.id;
-      const { error: touchError } = await supabase.from("series").update({ last_seen_at: now }).eq("id", existing.id);
-      if (touchError) throw Error(`Updating series freshness: ${touchError.message}`);
-      return existing.id;
-    }
-    const { error: seriesError } = await supabase.from("series").update(patch).eq("id", existing.id);
-    if (seriesError) throw Error(`Updating series metadata: ${seriesError.message}`);
-    return existing.id as string;
+    ));
+    return { id: existing.id, slug, website: existing.website_url ?? website, expected: existing, patch: changes };
   }
 
-  const { data: created, error } = await supabase
-    .from("series")
-    .insert({
+  return {
+    id: randomUUID(),
+    slug,
+    website,
+    create: {
       slug,
       name,
       name_normalized: normalizeName(name),
@@ -1532,18 +1522,8 @@ async function resolveSeriesId(
       season: classified.season || null,
       source_url: website || ev.sourceUrl || null,
       source_kind: sourceKind,
-      last_seen_at: now,
-      updated_at: now,
-    })
-    .select("id")
-    .single();
-  if (created?.id) return created.id as string;
-  // Parallel upserts of the same series race on unique(slug).
-  if (error) {
-    const { data: raced } = await supabase.from("series").select("id").eq("slug", slug).maybeSingle();
-    if (raced?.id) return raced.id as string;
-  }
-  return undefined;
+    },
+  };
 }
 
 /**
@@ -1559,37 +1539,25 @@ async function resolveSeriesId(
  * Only series whose website host is itself an active source are guarded;
  * a series nobody reads officially is still built from whoever lists it.
  */
-const officialHostCache = new Map<string, { host: string | null; at: number }>();
+const officialHostCache = new Map<string, { active: boolean; at: number }>();
 async function seriesAcceptsSource(
   supabase: ReturnType<typeof createServerSupabase>,
-  seriesId: string,
+  website: string | null,
   watchedUrl: string | undefined,
 ): Promise<boolean> {
-  if (!watchedUrl) return true;
-  const cached = officialHostCache.get(seriesId);
-  let official: string | null;
-  if (cached && Date.now() - cached.at < 10 * 60_000) {
-    official = cached.host;
-  } else {
-    const { data: series } = await supabase
-      .from("series")
-      .select("website_url")
-      .eq("id", seriesId)
-      .maybeSingle();
-    const host = hostnameOf((series?.website_url as string | null) ?? "").replace(/^www\./, "");
-    official = null;
-    if (host) {
-      const { count } = await supabase
-        .from("watched_urls")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "active")
-        .ilike("url", `%${host}%`);
-      if (count) official = host;
-    }
-    officialHostCache.set(seriesId, { host: official, at: Date.now() });
-  }
-  if (!official) return true;
-  return hostnameOf(watchedUrl).replace(/^www\./, "") === official;
+  if (!watchedUrl || !website) return true;
+  const host = hostnameOf(website).replace(/^www\./, "");
+  if (host === "unknown" || hostnameOf(watchedUrl).replace(/^www\./, "") === host) return true;
+  const cached = officialHostCache.get(host);
+  if (cached && Date.now() - cached.at < 10 * 60_000) return !cached.active;
+  const { count, error } = await supabase
+    .from("watched_urls")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "active")
+    .ilike("url", `%${host}%`);
+  if (error) throw Error(`Reading official series source: ${error.message}`);
+  officialHostCache.set(host, { active: Boolean(count), at: Date.now() });
+  return !count;
 }
 
 const CC_TLDS = new Set([
@@ -1953,14 +1921,6 @@ async function upsertParsedEvent(
   if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
 
   if (review && (existingId ?? null) !== review.expectedEventId) throw Error("identity_review_required: catalogue changed since the reviewed identity");
-  // Series metadata can revise linked race pages. Prepare it BEFORE reading the
-  // race snapshot and computing its patch; never refresh a revision under an old patch.
-  const preparedMainSeries = ev.seriesName || ev.seriesSlug ? await resolveSeriesId(supabase, ev, classified, publicRaceUrl) : undefined;
-  const preparedExtraSeries: (string | undefined)[] = [];
-  for (const extra of ev.alsoSeries ?? []) {
-    preparedExtraSeries.push(await resolveSeriesId(supabase, { ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug, seriesWebsite: extra.website, seriesAgeCategories: undefined, alsoSeries: undefined }, classified, publicRaceUrl));
-  }
-
   const { data: existingFull } = existingId
     ? await supabase
         .from("events")
@@ -2373,36 +2333,28 @@ async function upsertParsedEvent(
     if (!keepCurrentPlace) payload.location_id = locationId;
   }
 
-  // Attach / create series (Talent Cup, KPŽ, …)
-  let attachedSeriesId: string | undefined;
+  // Prepare memberships without changing series or advancing race revisions.
+  const currentSeriesId = existingFull && "series_id" in existingFull ? existingFull.series_id : null;
+  const seriesPlans = new Map<string, WatcherSeriesPlan>();
   const pendingSeriesIds: string[] = [];
-  if (ev.seriesName || ev.seriesSlug) {
-    const seriesId = preparedMainSeries;
-    if (
-      seriesId &&
-      !lockedFields.includes("series_id") &&
-      (await seriesAcceptsSource(supabase, seriesId, watchedUrl))
-    ) {
-      // Already has another primary → keep it and join as a secondary membership.
-      if (existingId) {
-        const { data: cur, error } = await supabase
-          .from("events")
-          .select("series_id")
-          .eq("id", existingId)
-          .maybeSingle();
-        if (error) throw Error(`Reading primary series: ${error.message}`);
-        if (cur?.series_id && cur.series_id !== seriesId) {
-          pendingSeriesIds.push(seriesId);
-          attachedSeriesId = seriesId;
-        } else {
-          payload.series_id = seriesId;
-          attachedSeriesId = seriesId;
-        }
-      } else {
-        payload.series_id = seriesId;
-        attachedSeriesId = seriesId;
-      }
+  if (!lockedFields.includes("series_id")) {
+    const main = await prepareSeriesPlan(supabase, ev, classified, publicRaceUrl);
+    if (main && await seriesAcceptsSource(supabase, main.website, watchedUrl)) {
+      seriesPlans.set(main.slug, main);
+      if (currentSeriesId && currentSeriesId !== main.id) pendingSeriesIds.push(main.id);
+      else payload.series_id = main.id;
     }
+  }
+  // A locked primary membership can still have additional series.
+  for (const extra of ev.alsoSeries ?? []) {
+    if (lockedFields.includes("series_id") && !currentSeriesId) break;
+    const plan = await prepareSeriesPlan(supabase, {
+      ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug,
+      seriesWebsite: extra.website, seriesAgeCategories: undefined, alsoSeries: undefined,
+    }, classified, publicRaceUrl);
+    if (!plan || seriesPlans.has(plan.slug) || !(await seriesAcceptsSource(supabase, plan.website, watchedUrl))) continue;
+    seriesPlans.set(plan.slug, plan);
+    pendingSeriesIds.push(plan.id);
   }
 
   preserveUnstatedDisciplines(existingFull as unknown as Record<string, unknown> | null, ev, payload as unknown as Record<string, unknown>);
@@ -2434,9 +2386,9 @@ async function upsertParsedEvent(
   const mergedIssues = overviewIssues(effective, today);
   if (mergedIssues.length) throw new Error(`pipeline_data_review_required:${mergedIssues.join(",")}`);
 
-  for (const sid of preparedExtraSeries) {
-    if (sid && sid !== payload.series_id && sid !== attachedSeriesId && await seriesAcceptsSource(supabase, sid, watchedUrl)) pendingSeriesIds.push(sid);
-  }
+  const acceptedSeriesPlans = [...seriesPlans.values()].filter(plan =>
+    plan.id === payload.series_id || pendingSeriesIds.includes(plan.id),
+  );
   const locationPlanId = pendingLocation?.action === "create" ? pendingLocation.row.id : pendingLocation?.id;
   const locationPlan = payload.location_id && payload.location_id === locationPlanId ? pendingLocation : null;
 
@@ -2449,7 +2401,7 @@ async function upsertParsedEvent(
     if (slug) (payload as Record<string, unknown>).slug = slug;
     const result = await publishCandidatePlan(supabase, review.publication, {
       eventId: existingId, revision: existingId ? (existingFull as { public_revision: string }).public_revision : undefined,
-      payload, watchedUrlId, kind: watchedKind ?? "official", event: ev, location: locationPlan, secondarySeries: pendingSeriesIds,
+      payload, watchedUrlId, kind: watchedKind ?? "official", event: ev, location: locationPlan, secondarySeries: pendingSeriesIds, seriesPlans: acceptedSeriesPlans,
     });
     eventId = result.id; created = result.created; changed = result.changed;
   } else if (eventId) {
@@ -2457,7 +2409,7 @@ async function upsertParsedEvent(
     const { retainedKey, changed: fieldsChanged } = await updateEventPreservingKey(supabase, eventId, payload, {
       revision: (existingFull as { public_revision: string }).public_revision,
       sourceUrl: ev.evidence?.sourceUrl ?? ev.sourceUrl, quote: ev.evidence?.quote, model: ev.evidence?.model,
-      location: locationPlan, secondarySeries: pendingSeriesIds, sourceKind: watchedKind,
+      location: locationPlan, secondarySeries: pendingSeriesIds, seriesPlans: acceptedSeriesPlans, sourceKind: watchedKind,
       source: { watchedUrlId, kind: watchedKind ?? "official", event: ev },
     });
     changed = fieldsChanged;
@@ -2465,7 +2417,7 @@ async function upsertParsedEvent(
   } else {
     const slug = await freeEventSlug(supabase, { name: ev.name, startDate: ev.startDate, place: ev.placeText });
     const { createWatcherEvent } = await import("@/lib/watcher/write-event");
-    const create = (slug: string) => createWatcherEvent(supabase, { ...payload, slug }, { watchedUrlId, kind: watchedKind ?? "official", event: ev, reviewed: Boolean(review) }, locationPlan, pendingSeriesIds);
+    const create = (slug: string) => createWatcherEvent(supabase, { ...payload, slug }, { watchedUrlId, kind: watchedKind ?? "official", event: ev, reviewed: Boolean(review) }, locationPlan, pendingSeriesIds, acceptedSeriesPlans);
     let data: { id: string } | null = null;
     let error: { code?: string; message: string } | null = null;
     try { data = await create(slug); }

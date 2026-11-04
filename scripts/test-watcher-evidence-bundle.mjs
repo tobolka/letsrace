@@ -3,12 +3,15 @@ import {readFile,readdir} from 'node:fs/promises';
 import {PGlite} from '../tmp/pipeline-db-test/node_modules/@electric-sql/pglite/dist/index.js';
 const db=new PGlite();
 const id=n=>`00000000-0000-0000-0000-${String(n).padStart(12,'0')}`;
-const watched=id(1),primary=id(2),secondary=id(3),race=id(10),location=id(20);
+const watched=id(1),primary=id(2),secondary=id(3),race=id(10);
 try {
  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
  create table events(id uuid primary key,slug text unique,name text,start_date date,end_date date,status text default 'scheduled',visibility text default 'public',merged_into_id uuid,location_id uuid,series_id uuid,disciplines text[],fingerprint text unique,last_seen_at timestamptz,updated_at timestamptz);
  create table locations(id uuid primary key,name text,municipality text,country_code text,lat float8,lng float8,geocode_query text,geocode_status text,timezone text,geog text,updated_at timestamptz);
- create table series(id uuid primary key,name text,slug text,visibility text default 'public',website_url text,source_url text,age_categories text[],updated_at timestamptz);
+ create table series(id uuid primary key,name text,slug text unique,visibility text default 'public',website_url text,source_url text,
+   age_categories text[],age_categories_confirmed_at timestamptz,updated_at timestamptz,last_seen_at timestamptz,
+   name_normalized text,audience_hint text,country_code text,disciplines text[],series_type text,level text,competition_type text,season text,source_kind text);
+ alter table events add foreign key(series_id) references series(id);
  create table watched_urls(id uuid primary key,url text,kind text,status text,added_by text,next_poll_at timestamptz);
  create table event_overrides(event_id uuid primary key,locked_fields text[]);
  create table event_sources(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),watched_url_id uuid references watched_urls(id),source_url text,external_id text,kind text,is_canonical boolean,unique(watched_url_id,external_id));
@@ -36,10 +39,13 @@ try {
  await db.exec(`reset role;alter table events add column registration_url text;create table event_plan_changes(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),kind text,fingerprint text,payload jsonb,unique(event_id,kind,fingerprint));grant all on event_plan_changes to service_role;`);
  await db.exec(await readFile('supabase/migrations/20261103204237_durable_plan_change_notices.sql','utf8'));
  await db.exec('set role service_role');
+ await db.exec('reset role');
+ await db.exec(await readFile('supabase/migrations/20261104083715_atomic_watcher_series_plans.sql','utf8'));
+ await db.exec('set role service_role');
  const source={watchedUrlId:watched,kind:'federation',event:{externalId:'initial',sourceUrl:'https://fixture.test/race',name:'Race',startDate:'2027-05-01'}};
  await db.query('select pipeline_create_watcher_event($1,$2,$3,$4,$5,false,null,$6,$7,null)',[race,{name:'Race',slug:'race',start_date:'2027-05-01',fingerprint:'race-key',series_id:primary,disciplines:['xco']},source,'a'.repeat(40),`source-evidence-v1:${watched}:initial:${race}`,[{name:'Elite',distance_km:20}],[]]);
  const incoming={...source,event:{...source.event,externalId:'additional',startDate:'2027-06-01'}};
- const tables=['events','event_sources','event_categories','event_facts','page_reads','event_series','pipeline_tasks','pipeline_task_attempts','event_plan_changes'];
+ const tables=['series','events','event_sources','event_categories','event_facts','page_reads','event_series','pipeline_tasks','pipeline_task_attempts','event_plan_changes'];
  const state=async()=>{const out={};for(const t of tables)out[t]=(await db.query(`select to_jsonb(t) r from ${t} t order by to_jsonb(t)::text`)).rows.map(x=>x.r);return out;};
  const revision=async()=>(await db.query('select public_revision from events where id=$1',[race])).rows[0].public_revision;
  const write=async(opts={})=>(await db.query('select pipeline_update_watcher_bundle($1,$2,$3,$4,$5,$6,$7,$8,false) r',[race,opts.revision??await revision(),opts.patch??{start_date:'2027-06-01'},opts.evidence??{sourceUrl:'https://fixture.test/race'},opts.source??incoming,'b'.repeat(40),`source-evidence-v1:${watched}:${(opts.source??incoming).event.externalId}:${race}`,opts.categories??[{name:'Kids',distance_km:.2}]])).rows[0].r;
@@ -73,6 +79,60 @@ try {
  const beforeFinish=await state();await assert.rejects(finish(),/attempt failure/);assert.deepEqual(await state(),beforeFinish);
  await db.exec('reset role;drop trigger fail_attempt on pipeline_task_attempts;drop function fail_attempt();set role service_role');
  assert.equal(await finish(),true);assert.equal(await finish(),false);assert.equal((await db.query('select count(*)::int n from event_plan_changes')).rows[0].n,1);
- for(const role of ['anon','authenticated']) {await db.exec(`reset role;set role ${role}`);await assert.rejects(write(),/permission denied/);}
- console.log('Watcher bundle SQL: rollback of all dependencies and notice work, revision/source ownership/category locks, lost lease, atomic notice completion passed');
+ // New series and their publication tasks roll back if the race write is rejected.
+ const newSeries=id(30), newRace=id(31);
+ const seriesPlan={id:newSeries,slug:'new-series',create:{name:'New Series',age_categories:['elite']}};
+ const newSource={...source,event:{...source.event,externalId:'new-race'}};
+ const seriesWrite=async(operation,args,plans)=>(await db.query(
+   'select pipeline_write_watcher_with_series($1,$2,$3) r',[operation,args,plans],
+ )).rows[0].r;
+ const createArgs={p_event:newRace,p_payload:{name:'New Race',slug:'new-race',start_date:'2027-05-01',fingerprint:'race-key',series_id:newSeries},
+   p_source:newSource,p_hash:'c'.repeat(40),p_reader:`source-evidence-v1:${watched}:new-race:${newRace}`,
+   p_reviewed:false,p_categories:[],p_secondary:[]};
+ const beforeSeries=await state();
+ await assert.rejects(seriesWrite('create',createArgs,[seriesPlan]),/duplicate key/);
+ assert.deepEqual(await state(),beforeSeries);
+ createArgs.p_payload.fingerprint='new-race-key';
+ assert.equal((await seriesWrite('create',createArgs,[seriesPlan])).id,newRace);
+ assert.equal((await db.query('select series_id from events where id=$1',[newRace])).rows[0].series_id,newSeries);
+
+ // A series edit which advances the race revision succeeds after the race CAS.
+ // Confirmed ages, however, survive an inferred age proposal.
+ await db.exec(`update series set age_categories=array['junior'],age_categories_confirmed_at=now() where id='${primary}'`);
+ const currentSeries=async()=>(await db.query('select to_jsonb(s) s from series s where id=$1',[primary])).rows[0].s;
+ const metadata={id:primary,slug:'main',expected:await currentSeries(),patch:{website_url:'https://fixture.test/main',age_categories:['elite']}};
+ const updateArgs={p_event:race,p_revision:await revision(),p_patch:{name:'Updated Race',series_id:primary},
+   p_evidence:{sourceUrl:incoming.event.sourceUrl},p_source:incoming,p_source_hash:'d'.repeat(40),
+   p_reader:`source-evidence-v1:${watched}:additional:${race}`,p_categories:[]};
+ assert.equal((await seriesWrite('update',updateArgs,[metadata])).changed,true);
+ const held=await currentSeries();
+ assert.equal(held.website_url,metadata.patch.website_url);
+ assert.deepEqual(held.age_categories,['junior']);
+ const committed=await state();
+ await assert.rejects(seriesWrite('update',{...updateArgs,p_revision:await revision()},[metadata]),/series changed since planning/);
+ assert.deepEqual(await state(),committed);
+ await assert.rejects(seriesWrite('update',updateArgs,[{...metadata,expected:held,patch:{website_url:'https://fixture.test/stale'}}]),/concurrent_event_update/);
+ assert.deepEqual(await state(),committed);
+
+ // A reviewed creation returns its saved receipt on retry, without creating a series again.
+ const candidate=id(40),token=id(41),candidateRace=id(42),candidateSeries=id(43);
+ const candidateSource={...source,event:{...source.event,externalId:'candidate',evidence:{sourceUrl:source.event.sourceUrl}}};
+ await db.query(`insert into pipeline_candidates(id,candidate_key,evidence_hash,source_url,watched_url_id,season,payload,evidence,reason,
+   status,decision,publish_token,publish_lease_until,publish_error)
+   values($1,'series-candidate','proof',$2,$3,2027,$4,'{}','test','publishing','{"expectedEventId":null}',$5,now()+interval '5 minutes','retry later')`,
+   [candidate,source.event.sourceUrl,watched,candidateSource.event,token]);
+ const publishArgs={p_id:candidate,p_token:token,p_hash:'proof',p_event:candidateRace,p_revision:null,
+   p_payload:{name:'Reviewed Race',slug:'reviewed-race',start_date:'2027-05-01',fingerprint:'reviewed-race-key',series_id:candidateSeries},
+   p_source:candidateSource,p_source_hash:'e'.repeat(40),p_reader:`source-evidence-v1:${watched}:candidate:${candidateRace}`,p_categories:[],p_secondary:[]};
+ const candidatePlans=[{id:candidateSeries,slug:'reviewed-series',create:{name:'Reviewed Series'}}];
+ await assert.rejects(seriesWrite('publish',publishArgs,candidatePlans),/publication lease lost/);
+ assert.deepEqual(await state(),committed);
+ await db.query('update pipeline_candidates set publish_error=null where id=$1',[candidate]);
+ const publication=await seriesWrite('publish',publishArgs,candidatePlans);
+ assert.equal(publication.id,candidateRace);
+ const published=await state();
+ assert.deepEqual(await seriesWrite('publish',{...publishArgs,p_event:id(44)},candidatePlans),publication);
+ assert.deepEqual(await state(),published);
+ for(const role of ['anon','authenticated']) {await db.exec(`reset role;set role ${role}`);await assert.rejects(write(),/permission denied/);await assert.rejects(seriesWrite('create',createArgs,[seriesPlan]),/permission denied/);}
+ console.log('Watcher bundle SQL: rollback of all dependencies and notice work, revision/source ownership/category locks, lost lease, atomic notice completion, series rollback, age protection and publication retry passed');
 }finally{await db.close();}
