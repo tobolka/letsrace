@@ -31,6 +31,7 @@ try {
  await db.exec(await readFile('supabase/migrations/20261025142103_pipeline_candidate_review.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261103202930_atomic_candidate_publication.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261103204138_atomic_watcher_evidence_bundle.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261103212133_fence_deferred_candidate_retries.sql','utf8'));
  await db.exec('set role service_role');
  const candidate=id(100),source={watchedUrlId:watched,kind:'federation',event:{externalId:'reviewed-2027',sourceUrl:'https://fixture.test/race',name:'Reviewed race',startDate:'2027-05-01',evidence:{sourceUrl:'https://fixture.test/'}}};
  const decision={id:candidate,evidenceHash:'proof',action:'publish',reason:'Explicitly checked',expectedEventId:null,authority:'national_federation',checked:{identity:true,date:true,place:true,discipline:true,authority:true}};
@@ -76,6 +77,12 @@ try {
  const waiting=id(103);await db.query(`insert into pipeline_candidates(id,candidate_key,evidence_hash,source_url,season,payload,evidence,reason)values($1,'waiting','proof','https://fixture.test/',2027,$2,'{}','test')`,[waiting,source.event]);
  const fourth=await claim({...decision,id:waiting});
  assert.equal((await db.query('select pipeline_retry_candidate($1,$2,$3) r',[waiting,fourth.token,'read unavailable'])).rows[0].r,true);
+ await assert.rejects(publish(fourth.token,{candidate:waiting}),/lease lost/);
+ await assert.rejects(claim({...decision,id:waiting}),/already running/);
+ const resolved=(await db.query('select pipeline_claim_candidate($1,$2,$3,$4,true) r',[waiting,'proof',(await current(waiting)).updated_at,{...decision,id:waiting}])).rows[0].r;
+ assert.notEqual(resolved.token,fourth.token);
+ await assert.rejects(publish(fourth.token,{candidate:waiting}),/lease lost/);
+ await assert.rejects(db.query('select pipeline_claim_candidate($1,$2,$3,$4,true)',[waiting,'proof',(await current(waiting)).updated_at,{...decision,id:waiting}]),/already running/);
  await db.exec(`update pipeline_candidates set publish_lease_until=now()-interval '1 second' where id='${waiting}'`);
  await assert.rejects(claim({...decision,id:waiting,expectedEventId:race}),/same decision/);
  const fifth=await claim({...decision,id:waiting});assert.notEqual(fifth.token,fourth.token);

@@ -223,6 +223,8 @@ const LEGACY_DISC: Record<string, Discipline> = {
   marathon: "xcm",
   "cross-country marathon": "xcm",
   "cross-country olympic": "xco",
+  "cross-country short circuit": "xcc",
+  "cross-country short track": "xcc",
   "cross-country olympic junior series": "xco",
   maraton: "xcm",
   mtb: "mtb",
@@ -602,7 +604,7 @@ export function inferAgeCategories(
     found.add("youth");
   }
   if (/\bjunior|\bjunioři|\bjuniori|\bjuniors?\b/.test(blob)) found.add("junior");
-  if (/\bu\s*23\b|\bu23\b/.test(blob)) found.add("u23");
+  if (/\bu\s*23\b|\bu23\b|\bunder\s*23\b/.test(blob)) found.add("u23");
   if (/\belite\b|\belita\b/.test(blob)) found.add("elite");
   if (/\bamateur\b|\bhobby\b|\bopen\b|\bjedermann\b|\bgran[\s-]?fondo\b|\bsportive\b/.test(blob)) {
     found.add("amateur");

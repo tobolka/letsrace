@@ -479,21 +479,17 @@ export const getSeriesBySlug = cache((slug: string) => unstable_cache(async func
   const row = await getPublicSeriesRow(slug);
   if (!row) return null;
 
-  const ids = await eventIdsForSeries(supabase, (row as unknown as { id: string }).id);
-  if (!ids.length) return { series: mapSeriesRow(row as unknown as Record<string, unknown>, 0), events: [] };
   const { data: eventRows, error: eventError } = await supabase
-    .from("events")
+    .rpc("public_series_round_rows", {
+      p_series: (row as unknown as { id: string }).id,
+      p_statuses: [...PUBLIC_EVENT_STATUSES], p_countries: [...PUBLIC_COUNTRY_CODES],
+    })
     .select(
       `${EVENT_LIST_COLUMNS},
-       location:locations!inner(id, name, municipality, country_code, lat, lng),
+       location:locations(id, name, municipality, country_code, lat, lng),
        series:series!events_series_id_fkey(id, name, slug, visibility, website_url, age_categories)`,
     )
-    .in("id", ids)
-    .eq("visibility", "public")
-    .in("status", [...PUBLIC_EVENT_STATUSES])
-    .in("location.country_code", [...PUBLIC_COUNTRY_CODES])
-    .order("start_date", { ascending: true })
-    .limit(200);
+    .order("start_date", { ascending: true }).order("id");
   if (eventError) throw new Error(eventError.message);
 
   const events = (eventRows ?? []).map((e) => mapEventRow(e as Record<string, unknown>));
@@ -501,7 +497,7 @@ export const getSeriesBySlug = cache((slug: string) => unstable_cache(async func
     series: mapSeriesRow(row as unknown as Record<string, unknown>, events.length),
     events,
   };
-}, ["public-series-rounds-v4", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
+}, ["public-series-rounds-v5", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();

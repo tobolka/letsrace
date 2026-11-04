@@ -539,7 +539,8 @@ const GAZETTEER: Record<string, { lat: number; lng: number; cc: string }> = {
   "uzovske peklany": { lat: 49.12, lng: 21.05, cc: "SK" },
   "uzovské pekľany": { lat: 49.12, lng: 21.05, cc: "SK" },
   gedern: { lat: 50.425, lng: 9.2, cc: "DE" },
-  obergessertshausen: { lat: 48.35, lng: 10.35, cc: "DE" },
+  // OpenStreetMap village node 451951070, checked 2026-11-03; the old rounded point was 21 km away.
+  obergessertshausen: { lat: 48.2146894, lng: 10.5527877, cc: "DE" },
   "dolni morava": { lat: 50.122, lng: 16.8, cc: "CZ" },
   "dolní morava": { lat: 50.122, lng: 16.8, cc: "CZ" },
   "loucna nad desnou": { lat: 50.072, lng: 17.091, cc: "CZ" },

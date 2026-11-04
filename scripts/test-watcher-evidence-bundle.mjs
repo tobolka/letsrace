@@ -31,6 +31,7 @@ try {
  await db.exec(await readFile('supabase/migrations/20261025142103_pipeline_candidate_review.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261103202930_atomic_candidate_publication.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261103204138_atomic_watcher_evidence_bundle.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261103212133_fence_deferred_candidate_retries.sql','utf8'));
  await db.exec('set role service_role');
  await db.exec(`reset role;alter table events add column registration_url text;create table event_plan_changes(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),kind text,fingerprint text,payload jsonb,unique(event_id,kind,fingerprint));grant all on event_plan_changes to service_role;`);
  await db.exec(await readFile('supabase/migrations/20261103204237_durable_plan_change_notices.sql','utf8'));

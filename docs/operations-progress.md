@@ -1,6 +1,6 @@
 # Zjednodušení provozu LetsRace — stav realizace
 
-Aktualizováno 3. listopadu 2026 podle nasazených oprav doložených níže. **Hotové dílčí úkoly jsou zaškrtnuté; otevřené úkoly zůstávají nezaškrtnuté.** Číslování etap odpovídá původnímu zadání. Původní časové odhady se nepoužívají.
+Aktualizováno 4. listopadu 2026. **Hotové dílčí úkoly jsou zaškrtnuté; otevřené úkoly zůstávají nezaškrtnuté.** Číslování etap odpovídá původnímu zadání. Původní časové odhady se nepoužívají.
 
 ## Přehled sedmi etap
 
@@ -17,6 +17,10 @@ Aktualizováno 3. listopadu 2026 podle nasazených oprav doložených níže. **
 **Žádná celá etapa zatím není dokončená v původním rozsahu.** To ale neznamená, že níže označené dokončené opravy čekají na provedení znovu.
 
 ## Hotovo — nezadávat znovu jako nedokončenou práci
+
+- [x] **Opakování kalendáře po kolizi:** úspěšné nezměněné položky se nepřepisují, odložená práce zůstává u konkrétního řádku. Výpisy seriálu a ročníků mají nové databázové dotazy. [Měření a další ověření](../reports/limits-2026-11-04/RESULT.md).
+- [x] **Fullgaz a Ötztaler:** nový doložený ročník a opravená klasifikace existujícího závodu. [Výsledek](../reports/coverage-recovery-2026-11-03/RESULT.md).
+- [ ] **Spotřeba po obnovení scanů:** dva běžné cykly a denní počty požadavků i objem logů. Scany zůstávají vypnuté do rozhodnutí vlastníka.
 
 - [x] **Nový přehled a panel:** běžné ovládání je oddělené od technických nástrojů; poslední kontrola společného seznamu má samostatný údaj. [Výsledek adminu](../reports/owner-admin-2026-11-02/RESULT.md).
 - [x] **Kontrola podkladu kandidáta i v zapisovači:** nový zápis nespoléhá jen na dřívější náhled; citované části musí odpovídat zdroji. Tvorba celého záznamu kandidáta ještě není jeden společný zápis.

@@ -41,12 +41,15 @@ export function protectSpecificFacts(stored: Record<string, unknown> | null, pro
   for (const field of ["class_label", "uci_class", "formats", "competition_type"]) {
     const old = stored[field], next = proposed[field];
     if (!(field in proposed) || old == null || old === "" || old === "other" || old === "Local" || old === "community" || Array.isArray(old) && !old.length) continue;
-    if (next == null || next === "" || next === "other" || Array.isArray(next) && !next.length) keep(field);
+    if (next == null || next === "" || next === "other" || field === "competition_type" && next === "community" || Array.isArray(next) && !next.length) keep(field);
   }
   const old = stored.disciplines, next = proposed.disciplines;
   if (Array.isArray(old) && old.length && Array.isArray(next)) {
     const families: Record<string, string[]> = { mtb: ["xco", "xcc", "xcm", "dh", "enduro", "four_cross"], road: ["tt", "criterium", "hill_climb", "stage_race"] };
-    if (!next.length || next.every(d => old.includes(d) || families[d]?.some(specific => old.includes(specific)))) keep("disciplines");
+    if (!next.length || next.every(d => old.includes(d) || families[d]?.some(specific => old.includes(specific)))) {
+      keep("disciplines");
+      if (Array.isArray(stored.formats) && stored.formats.length) keep("formats");
+    }
   }
   return kept;
 }

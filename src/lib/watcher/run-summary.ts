@@ -1,7 +1,7 @@
 import type { WatchOutcome } from "@/lib/watcher/run";
 
 export function isBudgetDeferral(message: string): boolean {
-  return /provider_deferred:|LLM budget of|Shared LLM budget|calendar_budget_exhausted|calendar_time_budget_exhausted|write_time_budget_exhausted|time budget exceeded|chunk_limit|source_reader_unavailable_or_running|source_changed_before_read|concurrent_event_update/.test(message);
+  return /provider_deferred:|LLM budget of|Shared LLM budget|calendar_budget_exhausted|calendar_time_budget_exhausted|write_time_budget_exhausted|time budget exceeded|chunk_limit|source_reader_unavailable_or_running|source_changed_before_read|concurrent_event_update|calendar_write_retry_pending/.test(message);
 }
 
 export function isUnreadableSource(message: string): boolean {

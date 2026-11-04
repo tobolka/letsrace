@@ -12,7 +12,7 @@ import {
 import {
   extractEvents,
   canReconcileMissingEvents,
-  WATCH_READER_VERSION,
+  watchReaderVersion,
   fetchPage,
   nextPollAt,
   errorPollAt,
@@ -28,6 +28,7 @@ import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
 import { preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
+import { calendarRowHash, calendarRowProgress, isEventWriteConflict, MAX_CALENDAR_PROGRESS_ROWS, readCalendarProgress } from "@/lib/watcher/calendar-progress";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline } from "@/lib/supabase/request-budget";
 import { countryFromVenue } from "@/lib/geo/country-label";
@@ -175,6 +176,7 @@ type SourceReadInput = {
   content_hash?: string | null;
   kind?: string;
   last_extract_status?: string | null;
+  calendar_write_progress?: Json;
 };
 export async function watchOne(row: SourceReadInput, opts?: { deadline?: number }): Promise<WatchOutcome> {
   const { withSourceWork } = await import("@/lib/pipeline/source-work");
@@ -194,12 +196,15 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     // API, the month and race pages behind a landing page): the watched page
     // staying the same says nothing, and odjazd.pl's home page stayed the same
     // while its races changed every day. Always fetched whole, never skipped.
-    const FANS_OUT = /odjazd\.pl|rideandrest\.net|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com/i.test(row.url);
-    const checkpointPrefix = `${WATCH_READER_VERSION}:`;
+    const FANS_OUT = /odjazd\.pl|rideandrest\.net|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com|fullgazrace\.de/i.test(row.url);
+    const checkpointPrefix = `${watchReaderVersion(row.url)}:`;
+    const progressVersion = `calendar-v1:${checkpointPrefix}${row.kind}:${row.url}`;
+    const priorProgress = readCalendarProgress(row.calendar_write_progress, progressVersion);
+    const hasPendingWrites = [...priorProgress.values()].some(entry => entry.conflicts > 0);
     const currentReader = row.content_hash?.startsWith(checkpointPrefix);
     const fetched = await fetchPage(
       row.url,
-      FANS_OUT || !currentReader || row.last_extract_status === "needs_review" || row.last_extract_status === "error" ? undefined : { etag: row.etag, lastModified: row.last_modified, contentHash: row.content_hash!.slice(checkpointPrefix.length) },
+      FANS_OUT || hasPendingWrites || !currentReader || row.last_extract_status === "needs_review" || row.last_extract_status === "error" ? undefined : { etag: row.etag, lastModified: row.last_modified, contentHash: row.content_hash!.slice(checkpointPrefix.length) },
     );
 
     if (fetched.status === 404) {
@@ -383,9 +388,28 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       }
     }
 
-    const newCandidates = candidates.filter(ev => !ev.externalId || !known.has(ev.externalId));
+    // Compare parsed rows, not just the landing page: an adapter can read
+    // several documents behind an unchanged calendar homepage.
+    const uniqueCandidates = dedupeByExternalId(candidates);
+    const trackProgress = CALENDAR_KINDS.some(kind => kind === row.kind) &&
+      extracted.complete !== false && extracted.strategy.startsWith("adapter:") && !extracted.strategy.includes("llm") &&
+      uniqueCandidates.length <= MAX_CALENDAR_PROGRESS_ROWS;
+    const now = Date.now();
+    const progress = new Map<string, ReturnType<typeof calendarRowProgress>>();
+    const rowHashes = new Map<string, string>();
+    const writableCandidates = trackProgress ? uniqueCandidates.filter(ev => {
+      if (!ev.externalId) return true;
+      const hash = calendarRowHash(ev);
+      rowHashes.set(ev.externalId, hash);
+      const previous = priorProgress.get(ev.externalId);
+      if (previous?.hash !== hash) return true;
+      progress.set(ev.externalId, previous);
+      return previous.until <= now || (!previous.conflicts && !known.has(ev.externalId));
+    }) : candidates;
+    const newCandidates = writableCandidates.filter(ev => !ev.externalId || !known.has(ev.externalId));
     const fresh = newCandidates.sort(forwardFirst).slice(0, maxNew);
-    const writeBacklog = newCandidates.length > fresh.length;
+    const writeBacklog = newCandidates.length > fresh.length ||
+      (trackProgress && writableCandidates.length - newCandidates.length > MAX_REFRESH_PER_RUN);
     /**
      * When the page changed, refresh a sample of known races so updates land.
      *
@@ -396,7 +420,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
      * rotates through the whole list instead — a race just refreshed goes to the
      * back of the queue by definition.
      */
-    const refresh = candidates
+    const refresh = writableCandidates
       .filter((ev) => ev.externalId && known.has(ev.externalId))
       .sort((a, b) => {
         const written =
@@ -413,7 +437,11 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     const upsertResults = await mapPool(toUpsert, 4, async ev => {
       try {
         if (Date.now() > deadline - 5000) throw new Error("write_time_budget_exhausted");
-        return await withDatabaseDeadline(deadline - 5000, () => upsertParsedEvent(ev, row.id, row.kind, row.url));
+        const result = await withDatabaseDeadline(deadline - 5000, () => upsertParsedEvent(ev, row.id, row.kind, row.url));
+        const hash = rowHashes.get(ev.externalId);
+        if (hash && result) progress.set(ev.externalId, calendarRowProgress(hash, now, 0));
+        else progress.delete(ev.externalId);
+        return result;
       }
       catch (error) {
         let message = error instanceof Error ? error.message : String(error);
@@ -426,6 +454,10 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
             if (saved.rejected) return null;
           } catch (queueError) { message += `; review_queue_failed:${queueError instanceof Error ? queueError.message : String(queueError)}`; }
         }
+        const hash = rowHashes.get(ev.externalId);
+        if (hash && isEventWriteConflict(message)) {
+          progress.set(ev.externalId, calendarRowProgress(hash, now, (progress.get(ev.externalId)?.conflicts ?? 0) + 1));
+        } else progress.delete(ev.externalId);
         writeFailures.push({ externalId: ev.externalId, error: message });
         return null;
       }
@@ -1164,11 +1196,16 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       raceSeasonOver ||
       seasonMismatch;
     const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
-    const incomplete = extracted.complete === false || writeBacklog || writeFailures.length > 0;
-    const issues = [...(extracted.issues ?? []), ...(writeBacklog ? ["write_backlog"] : []), ...writeFailures.map(f => `write_failed:${f.externalId}:${f.error}`)];
+    const pending = [...progress.values()].filter(entry => entry.conflicts > 0);
+    const incomplete = extracted.complete === false || writeBacklog || writeFailures.length > 0 || pending.length > 0;
+    const checkpointSafe = extracted.complete !== false && !emptyButLive && !writeBacklog &&
+      writeFailures.every(f => progress.get(f.externalId)?.conflicts) && !extracted.strategy.startsWith("rendered:");
+    const pendingOnly = checkpointSafe && pending.length > 0;
+    const issues = [...(extracted.issues ?? []), ...(writeBacklog ? ["write_backlog"] : []), ...(pending.length ? ["calendar_write_retry_pending"] : []), ...writeFailures.map(f => `write_failed:${f.externalId}:${f.error}`)];
     const deferredWrites = writeFailures.filter(f => isBudgetDeferral(f.error));
+    const deferredCount = pending.length + deferredWrites.filter(f => !progress.get(f.externalId)?.conflicts).length;
     const failedWrites = writeFailures.filter(f => !isBudgetDeferral(f.error));
-    const budgetDeferred = incomplete && !failedWrites.length && issues.some(isBudgetDeferral);
+    const budgetDeferred = incomplete && !failedWrites.length && (pendingOnly || issues.some(isBudgetDeferral));
     const identityReview = writeFailures.some(f => /identity_review_required|pipeline_data_review_required/.test(f.error));
     const unsupportedDocument = issues.some(i => /dynamic_render_unavailable|source_document_too_large|unsupported_or_empty_source/.test(i));
     const needsReview = incomplete ||
@@ -1192,12 +1229,13 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       });
     }
 
-    await supabase
+    const { error: checkpointError } = await supabase
       .from("watched_urls")
       .update({
-        content_hash: incomplete || extracted.strategy.startsWith("rendered:") ? null : `${WATCH_READER_VERSION}:${fetched.hash}`,
-        etag: incomplete || extracted.strategy.startsWith("rendered:") ? null : fetched.etag,
-        last_modified: incomplete || extracted.strategy.startsWith("rendered:") ? null : fetched.lastModified,
+        calendar_write_progress: trackProgress && !emptyButLive ? { version: progressVersion, rows: [...progress].map(([id, entry]) => [id, entry.hash, entry.until, entry.conflicts]) } : row.calendar_write_progress ?? null,
+        content_hash: !checkpointSafe ? null : `${checkpointPrefix}${fetched.hash}`,
+        etag: !checkpointSafe ? null : fetched.etag,
+        last_modified: !checkpointSafe ? null : fetched.lastModified,
         http_status: fetched.status,
         last_fetched_at: new Date().toISOString(),
         last_changed_at: new Date().toISOString(),
@@ -1213,7 +1251,8 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
             : "ok",
         // Stay active — retry later instead of permanent pause
         status: "active",
-        next_poll_at: budgetDeferred ? new Date(Date.now() + 2 * 60 * 60_000).toISOString()
+        next_poll_at: pendingOnly ? new Date(Math.min(sourcePollAt(extracted.events).getTime(), ...pending.map(entry => entry.until))).toISOString()
+          : budgetDeferred ? new Date(Date.now() + 2 * 60 * 60_000).toISOString()
           : identityReview || unsupportedDocument ? reviewPollAt().toISOString()
           : incomplete ? errorPollAt(1).toISOString() : emptyButLive
           ? // Soon, the way a fetch error is retried: the page is up, it
@@ -1229,6 +1268,8 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       })
       .eq("id", row.id);
 
+    if (checkpointError) throw new Error(`Saving calendar progress: ${checkpointError.message}`);
+
     if (extracted.strategy.startsWith("adapter") || extracted.strategy === "jsonld") {
       await bumpExtractionProfile(
         hostnameOf(row.url),
@@ -1237,10 +1278,10 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     }
 
     const metrics = { watchedUrlId: row.id,
-      extracted: extracted.events.length, attempted: toUpsert.length, upserted,
+      extracted: extracted.events.length, attempted: toUpsert.length, upserted, pendingWrites: pending.length, skippedUnchanged: candidates.length - writableCandidates.length,
       created: upsertResults.filter(r => r?.created).length,
       updated: upsertResults.filter(r => r && !r.created && r.changed).length,
-      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: failedWrites.length, deferredWrites: deferredWrites.length, complete: !incomplete, deferred: budgetDeferred,
+      rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: failedWrites.length, deferredWrites: deferredCount, complete: !incomplete, deferred: budgetDeferred,
       issues, usage: extracted.usage ?? null, extraction: extracted.diagnostics ?? null };
     console.info("watcher_run_metrics", JSON.stringify(metrics));
     await finishRun(runInsert.data?.id, {
@@ -1264,7 +1305,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       eventsUpdated: upsertResults.filter(r => r && !r.created && r.changed).length,
       eventsRejected: upsertResults.filter(r => !r).length - writeFailures.length,
       eventsFailed: failedWrites.length,
-      eventsDeferred: deferredWrites.length,
+      eventsDeferred: deferredCount,
       extractionComplete: !incomplete,
       issues,
       usage: extracted.usage,
@@ -1414,24 +1455,27 @@ async function resolveSeriesId(
   },
   websiteFn: (url?: string | null, fallback?: string | null) => string | null,
 ): Promise<string | undefined> {
+  const seriesAges = ev.seriesAgeCategories ?? classified.ageCategories;
   if (!ev.seriesName && !ev.seriesSlug) return undefined;
   const { isSiteIdentityName } = await import("@/lib/watcher/extractors/generic");
   if (ev.seriesName && isSiteIdentityName(ev.seriesName)) return undefined;
 
-  const { inferSeriesType, inferSeriesSourceKind, audienceFromAgeCategories } =
+  const { inferSeriesType, inferSeriesSourceKind, audienceFromAgeCategories, inferDisciplines } =
     await import("@/lib/taxonomy");
   type AgeCategory = import("@/lib/taxonomy").AgeCategory;
 
   const slug = ev.seriesSlug || slugifySeries(ev.seriesName || "series");
   const name = ev.seriesName || slug;
   const website = websiteFn(ev.seriesWebsite);
+  const namedDisciplines = inferDisciplines(`${name} ${slug}`).filter(d => !["mtb", "road", "other"].includes(d));
+  const seriesDisciplines = namedDisciplines.length ? namedDisciplines : classified.disciplines;
   const country =
     ev.countryHint && ev.countryHint.length === 2 ? ev.countryHint.toUpperCase() : null;
   const seriesType = inferSeriesType({
     name,
     slug,
-    disciplines: classified.disciplines,
-    ageCategories: classified.ageCategories,
+    disciplines: seriesDisciplines,
+    ageCategories: seriesAges,
   });
   const sourceKind = inferSeriesSourceKind({
     name,
@@ -1443,8 +1487,8 @@ async function resolveSeriesId(
   const { data: existing } = await supabase.from("series").select("*").eq("slug", slug).maybeSingle();
 
   if (existing) {
-    const disciplines = unionText(existing.disciplines as string[], classified.disciplines);
-    const ageCategories = unionText(existing.age_categories as string[], classified.ageCategories);
+    const disciplines = unionText(existing.disciplines as string[], seriesDisciplines);
+    const ageCategories = unionText(existing.age_categories as string[], seriesAges);
     const existingLevel = String(existing.level ?? "local");
     const level =
       (SERIES_LEVEL_RANK[classified.level] ?? 0) > (SERIES_LEVEL_RANK[existingLevel] ?? 0)
@@ -1474,7 +1518,18 @@ async function resolveSeriesId(
       patch.source_url = website || ev.sourceUrl;
     }
     if (!existing.source_kind || existing.source_kind === "other") patch.source_kind = sourceKind;
-    await supabase.from("series").update(patch).eq("id", existing.id);
+    const meaningfulChange = Object.entries(patch).some(([key, value]) =>
+      key !== "last_seen_at" && key !== "updated_at" &&
+      JSON.stringify(value) !== JSON.stringify(existing[key as keyof typeof existing]),
+    );
+    if (!meaningfulChange) {
+      if (Date.now() - (Date.parse(existing.last_seen_at ?? "") || 0) < 86400_000) return existing.id;
+      const { error: touchError } = await supabase.from("series").update({ last_seen_at: now }).eq("id", existing.id);
+      if (touchError) throw Error(`Updating series freshness: ${touchError.message}`);
+      return existing.id;
+    }
+    const { error: seriesError } = await supabase.from("series").update(patch).eq("id", existing.id);
+    if (seriesError) throw Error(`Updating series metadata: ${seriesError.message}`);
     return existing.id as string;
   }
 
@@ -1485,12 +1540,12 @@ async function resolveSeriesId(
       name,
       name_normalized: normalizeName(name),
       website_url: website,
-      audience_hint: classified.ageCategories.length
-        ? audienceFromAgeCategories(classified.ageCategories as AgeCategory[])
+      audience_hint: seriesAges.length
+        ? audienceFromAgeCategories(seriesAges as AgeCategory[])
         : ev.audience || "mixed",
       country_code: country,
-      disciplines: classified.disciplines,
-      age_categories: classified.ageCategories,
+      disciplines: seriesDisciplines,
+      age_categories: seriesAges,
       series_type: seriesType,
       level: classified.level,
       competition_type: classified.competitionType,
@@ -1590,6 +1645,8 @@ async function upsertParsedEvent(
   const reviewedIdentity = reviewed2027Identity(ev);
   if (reviewedIdentity?.reject) return null;
   if (reviewedIdentity) ev = { ...ev, startDate: reviewedIdentity.startDate, endDate: reviewedIdentity.endDate };
+  const { isOrganisationPlace } = await import("@/lib/catalog/overview-quality");
+  if (isOrganisationPlace(ev.placeText)) throw Error("pipeline_data_review_required:organisation_is_not_a_place");
   const basicIssues = overviewIssues({ name: ev.name, start_date: ev.startDate, end_date: ev.endDate, status: ev.status }, new Date().toISOString().slice(0, 10));
   if (basicIssues.length) throw new Error(`pipeline_data_review_required:${basicIssues.join(",")}`);
 
@@ -1915,6 +1972,15 @@ async function upsertParsedEvent(
 
   if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
 
+  if (review && (existingId ?? null) !== review.expectedEventId) throw Error("identity_review_required: catalogue changed since the reviewed identity");
+  // Series metadata can revise linked race pages. Prepare it BEFORE reading the
+  // race snapshot and computing its patch; never refresh a revision under an old patch.
+  const preparedMainSeries = ev.seriesName || ev.seriesSlug ? await resolveSeriesId(supabase, ev, classified, publicRaceUrl) : undefined;
+  const preparedExtraSeries: (string | undefined)[] = [];
+  for (const extra of ev.alsoSeries ?? []) {
+    preparedExtraSeries.push(await resolveSeriesId(supabase, { ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug, seriesWebsite: extra.website, seriesAgeCategories: undefined, alsoSeries: undefined }, classified, publicRaceUrl));
+  }
+
   const { data: existingFull } = existingId
     ? await supabase
         .from("events")
@@ -2007,15 +2073,15 @@ async function upsertParsedEvent(
     /*
      * Same name is not same place: there are two Všetatys, and a parser pin at
      * one must not be swapped for the other's coordinates just because the
-     * row says "Všetaty" too. With coordinates of our own, share a row only
+     * row says "Všetaty" too. With coordinates from the parser or gazetteer, share a row only
      * when it lies within a few kilometres of them.
      */
-    if (ev.lat != null && ev.lng != null) {
+    if (lat != null && lng != null) {
       reuseQuery = reuseQuery
-        .gte("lat", ev.lat - 0.03)
-        .lte("lat", ev.lat + 0.03)
-        .gte("lng", ev.lng - 0.045)
-        .lte("lng", ev.lng + 0.045);
+        .gte("lat", lat - 0.03)
+        .lte("lat", lat + 0.03)
+        .gte("lng", lng - 0.045)
+        .lte("lng", lng + 0.045);
     }
     const { data: reused, error: reuseError } = await reuseQuery
       .order("updated_at", { ascending: false })
@@ -2331,7 +2397,7 @@ async function upsertParsedEvent(
   let attachedSeriesId: string | undefined;
   const pendingSeriesIds: string[] = [];
   if (ev.seriesName || ev.seriesSlug) {
-    const seriesId = await resolveSeriesId(supabase, ev, classified, publicRaceUrl);
+    const seriesId = preparedMainSeries;
     if (
       seriesId &&
       !lockedFields.includes("series_id") &&
@@ -2388,8 +2454,7 @@ async function upsertParsedEvent(
   const mergedIssues = overviewIssues(effective, today);
   if (mergedIssues.length) throw new Error(`pipeline_data_review_required:${mergedIssues.join(",")}`);
 
-  for (const extra of ev.alsoSeries ?? []) {
-    const sid = await resolveSeriesId(supabase, { ...ev, seriesName: extra.name || extra.slug, seriesSlug: extra.slug, seriesWebsite: extra.website, alsoSeries: undefined }, classified, publicRaceUrl);
+  for (const sid of preparedExtraSeries) {
     if (sid && sid !== payload.series_id && sid !== attachedSeriesId && await seriesAcceptsSource(supabase, sid, watchedUrl)) pendingSeriesIds.push(sid);
   }
   const locationPlanId = pendingLocation?.action === "create" ? pendingLocation.row.id : pendingLocation?.id;

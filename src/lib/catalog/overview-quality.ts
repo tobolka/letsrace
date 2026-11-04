@@ -26,6 +26,11 @@ export function isCountryOnlyPlace(value: string | null | undefined): boolean {
   return Boolean(countryFromLabel(value)) || /^(?:unknown|tba|tbd)$/i.test((value ?? "").trim());
 }
 
+/** A legal association name is not a geocodable town or race venue. */
+export function isOrganisationPlace(value: string): boolean {
+  return /\b(?:e\s*\.\s*v\s*\.|eingetragener verein|cycling federation|radsportverband)\s*$/i.test(value.trim());
+}
+
 /** Listing essentials. A populated field is not a fresh correctness verification. */
 export function missingOverviewFields(event: OverviewRace): string[] {
   return [

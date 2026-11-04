@@ -1,0 +1,53 @@
+{
+  "at": "2026-11-03T21:14:40.854Z",
+  "result": {
+    "watchedUrlId": "2bf7352b-7359-4561-abe1-a5b20d38138b",
+    "url": "https://fullgazrace.de",
+    "ok": true,
+    "eventsUpserted": 1,
+    "eventsExtracted": 1,
+    "eventsCreated": 1,
+    "eventsUpdated": 0,
+    "eventsRejected": 0,
+    "eventsFailed": 0,
+    "eventsDeferred": 0,
+    "extractionComplete": true,
+    "issues": [],
+    "linksDiscovered": 0,
+    "droppedHidden": 0,
+    "strategy": "adapter:fullgaz",
+    "httpStatus": 200,
+    "preview": [
+      {
+        "externalId": "fullgaz-2027",
+        "name": "15. Fullgaz Race 2027",
+        "startDate": "2027-04-03",
+        "endDate": "2027-04-04",
+        "placeText": "Obergessertshausen",
+        "countryHint": "DE",
+        "discipline": [
+          "mtb"
+        ],
+        "sourceUrl": "https://fullgazrace.de/",
+        "websiteUrl": "https://fullgazrace.de/race-2027-03-04-04-2027/",
+        "confidence": 0.98,
+        "fieldEvidence": [
+          {
+            "field": "placeText",
+            "value": "Obergessertshausen",
+            "sourceUrl": "https://fullgazrace.de/race-2027-03-04-04-2027/racetracks/",
+            "quote": "Renngelände Obergessertshausen",
+            "documentHash": "91e2a4b1db5dd9bc532a079ba336a6db33def5f13eb0bb844410f063b532c432"
+          }
+        ],
+        "evidence": {
+          "sourceUrl": "https://fullgazrace.de/",
+          "quote": "15. Fullgaz Race 2027\nRace 2027 (03. & 04.04.2027)",
+          "method": "official_annual_announcement",
+          "version": "fullgaz-v1"
+        },
+        "regulationsUrl": "https://fullgazrace.de/news-1/fullgaz-race-info/"
+      }
+    ]
+  }
+}

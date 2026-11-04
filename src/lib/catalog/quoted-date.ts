@@ -8,7 +8,7 @@ export function quoteStatesDate(quote: string, date: string, options?: { role?: 
   const parsed = new Date(`${date}T00:00:00Z`);
   if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return false;
   const normalized = fold(quote);
-  const numericRange = normalized.match(/\b(\d{1,2})\.\s*(?:(\d{1,2})\.\s*)?[-–]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
+  const numericRange = normalized.match(/\b(\d{1,2})\.\s*(?:(\d{1,2})\.\s*)?[&–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
   const namedRange = normalized.match(/\b(\d{1,2})\.?\s*[-–]\s*(\d{1,2})\.?\s*([a-z]+)\s*(20\d{2})\b/);
   const months = ["leden ledna lednu january januar", "unor unora unoru february februar", "brezen brezna breznu march marec",
     "duben dubna dubnu april", "kveten kvetna kvetnu maj may", "cerven cervna cervnu jun june", "cervenec cervence cervenci jul july",

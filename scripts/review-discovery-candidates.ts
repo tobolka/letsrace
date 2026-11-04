@@ -70,6 +70,7 @@ async function main() {
     if (!apply) { outcomes.push({ id: row.id, action: "publish", applied: false, expectedEventId: decision.expectedEventId }); continue; }
     const { data: claim, error: claimError } = await db.rpc("pipeline_claim_candidate", {
       p_id: row.id, p_hash: row.evidence_hash, p_updated: row.updated_at, p_decision: decision as unknown as Json,
+      p_retry_resolved: !resume && Boolean(row.publish_error),
     });
     if (claimError) throw Error(`Claiming candidate: ${claimError.message}`);
     const receipt = claim as { status?: string; token?: string } | null;

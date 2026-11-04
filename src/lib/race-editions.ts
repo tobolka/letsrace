@@ -1,6 +1,5 @@
 import { unstable_cache } from "next/cache";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { readAllRows } from "@/lib/supabase/read-all";
 import { findNextEdition, findPreviousEdition, type EditionIdentity } from "@/lib/catalog/edition-identity";
 import { PUBLIC_CATALOGUE_TAG } from "@/lib/catalogue-cache";
 import { shouldHideFromMap } from "@/lib/event-visibility";
@@ -9,13 +8,20 @@ import type { EventListItem } from "@/lib/events";
 type Edition = EditionIdentity & { slug: string; status: string; visibility: string };
 const editionPool = unstable_cache(async (country: string, year: number) => {
   const db = createServerSupabase();
-  const rows = await readAllRows<Edition>((from, to) => db.from("events")
-    .select("id,name,slug,start_date,series_id,disciplines,status,visibility,location:locations!inner(lat,lng,country_code,municipality)")
-    .eq("visibility", "public").is("merged_into_id", null).eq("location.country_code", country)
-    .gte("start_date", `${year - 6}-01-01`).lt("start_date", `${year + 6}-01-01`)
-    .order("id").range(from, to), { throwOnError: true });
+  const rows: Edition[] = [];
+  let after: string | undefined;
+  for (;;) {
+    const { data, error } = await db.rpc("public_edition_candidates", {
+      p_country: country, p_from: `${year - 6}-01-01`, p_until: `${year + 6}-01-01`, p_after: after,
+    });
+    if (error) throw new Error(`Reading annual editions: ${error.message}`);
+    const page = (data ?? []) as Edition[];
+    rows.push(...page);
+    if (page.length < 1000) break;
+    after = page.at(-1)!.id;
+  }
   return rows.filter(row => !shouldHideFromMap(row.name, row.status === "cancelled" ? "scheduled" : row.status, row.visibility));
-}, ["race-edition-pool-v2"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] });
+}, ["race-edition-pool-v3"], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG] });
 
 /** Same annual matcher as the pipeline, read-only; ambiguity produces no link. */
 export async function getRaceEditionLinks(event: EventListItem) {

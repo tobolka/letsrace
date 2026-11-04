@@ -5,7 +5,7 @@ import type { ParsedEvent } from "@/lib/domain";
 import { discoveryUrl } from "./plan";
 import { assessCandidate } from "./assessment";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
-import { overviewIssues, isCountryOnlyPlace } from "@/lib/catalog/overview-quality";
+import { overviewIssues, isCountryOnlyPlace, isOrganisationPlace } from "@/lib/catalog/overview-quality";
 
 const digest = (text: string) => createHash("sha256").update(text).digest("hex");
 export type ReviewRow = Database["public"]["Tables"]["pipeline_candidates"]["Row"];
@@ -73,7 +73,7 @@ export function validateReview(row: ReviewRow, decision: ReviewDecision, today: 
   const event = row.payload as unknown as ParsedEvent;
   const assessment = assessCandidate(event, row.country ?? "CZ");
   if (assessment.state === "out_of_scope" || assessment.dateStatus === "tentative") throw new Error("Out-of-scope or tentative candidate cannot be published");
-  if (!event.placeText.trim() || isCountryOnlyPlace(event.placeText) || !event.countryHint || !event.discipline?.length) throw new Error("Missing place, country or discipline");
+  if (!event.placeText.trim() || isCountryOnlyPlace(event.placeText) || isOrganisationPlace(event.placeText) || !event.countryHint || !event.discipline?.length) throw new Error("Missing place, country or discipline");
   if (overviewIssues({ name: event.name, start_date: event.startDate, end_date: event.endDate, status: event.status }, today).length) throw new Error("Basic data conflict requires review");
   if (event.startDate < today || Number(event.startDate.slice(0, 4)) !== row.season) throw new Error("Candidate is outside its reviewed future edition");
   if (!event.evidence?.quote || !quoteStatesDate(event.evidence.quote, event.startDate)) throw new Error("Missing date evidence");

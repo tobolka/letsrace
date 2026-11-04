@@ -57,6 +57,8 @@ export type ParsedEvent = {
    */
   eventType?: import("@/lib/taxonomy").EventType;
   /** Link event into a series (Talent Cup, KPŽ, …) — primary badge. */
+  /** Categories of the linked competition series, which may cover only part of the event. */
+  seriesAgeCategories?: AgeCategory[];
   seriesName?: string;
   seriesSlug?: string;
   seriesWebsite?: string;
@@ -71,6 +73,8 @@ export type ParsedEvent = {
   /** Only when a source explicitly states cancellation for this race. */
   status?: "cancelled";
   childUrls?: string[];
+  /** A field supplied by another explicitly read official document. */
+  fieldEvidence?: { field: "placeText"; value: string; sourceUrl: string; quote: string; documentHash: string }[];
   /** Verified extraction evidence, retained in the source snapshot. */
   evidence?: { quote: string; sourceUrl: string; method: string; version: string; model?: string };
 };

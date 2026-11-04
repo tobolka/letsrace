@@ -1,3 +1,4 @@
+import { raceIdentityName } from "@/lib/race-identity-name";
 import { differentInstalment } from "./merge-duplicates";
 
 /**
@@ -7,7 +8,7 @@ import { differentInstalment } from "./merge-duplicates";
  * koolna 2025" are the same race.
  */
 export function editionKey(name: string): string {
-  return name
+  return raceIdentityName(name)
     .toLowerCase()
     .normalize("NFD")
     .replace(/\p{M}/gu, "")

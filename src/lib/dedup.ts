@@ -1,3 +1,4 @@
+import { raceIdentityName } from "@/lib/race-identity-name";
 import { normalizeName } from "@/lib/domain";
 import { disciplineFamily } from "@/lib/taxonomy";
 import { looksLikeTextFragment } from "@/lib/text";
@@ -292,7 +293,7 @@ export function urlsOverlap(
  * but series + place tokens kept (unlike normalizeName which drops cp/cup/mtb).
  */
 export function canonicalizeForDedup(name: string): string {
-  let s = fold(name);
+  let s = fold(raceIdentityName(name));
   const aliasHits: string[] = [];
   for (const rule of SERIES_ALIAS_RULES) {
     if (rule.re.test(s)) {
@@ -627,6 +628,8 @@ export function hasIdentityConflict(reasons: string[]): boolean {
 }
 
 export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
+  a = { ...a, name: raceIdentityName(a.name) };
+  b = { ...b, name: raceIdentityName(b.name) };
   const reasons: string[] = [];
   let score = 0;
 
@@ -1128,7 +1131,7 @@ export function preferLevel(
   const winner = bIsConfident ? b : ra >= rb ? a : b;
   return {
     level: winner.level || "local",
-    uciClass: a.uciClass || b.uciClass || null,
-    classLabel: a.classLabel || b.classLabel || winner.classLabel || null,
+    uciClass: winner.uciClass || a.uciClass || b.uciClass || null,
+    classLabel: winner.classLabel || a.classLabel || b.classLabel || null,
   };
 }

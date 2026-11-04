@@ -39,13 +39,13 @@ export function parseUciCompetition(url: string, html: string): ParsedEvent[] {
       const uciClass = uciCompetitionClass(String(detail.competitionClass ?? "")) ?? undefined;
       const names = [...new Set<string>(races.map((r: { category?: string }) => r.category).filter((name: unknown): name is string => typeof name === "string" && name.length > 0))];
       return [{ externalId: `uci-MTB-${path[2]}-${path[1]}`, name: detail.name, startDate: dates.start, endDate: dates.end,
-        placeText: detail.venue, countryHint: country, discipline: disciplines, uciClass,
+        placeText: detail.venue, countryHint: country, discipline: disciplines, uciClass, eventType: "race",
         categories: names.map(name => ({ name })), sourceUrl: url,
         websiteUrl: typeof detail.website?.url === "string" && /^https?:\/\//.test(detail.website.url) ? detail.website.url : undefined,
         ...(detail.name.startsWith("4X Pro Tour") ? { seriesName: "4X Pro Tour", seriesSlug: "4x-pro-tour" } : {}),
         ...(/iXS European Downhill Cup/i.test(detail.name) ? { seriesName: "iXS European Downhill Cup", seriesSlug: "ixs-edc" } : {}),
         ...(/^HERO UCI Cross-country Marathon World Cup$/i.test(detail.name) ? { seriesName: "HERO UCI Cross-country Marathon World Cup", seriesSlug: "hero-uci-xcm-world-cup" } : {}),
-        ...(/UCI XCO Junior Series/i.test(detail.name) ? { seriesName: "UCI XCO Junior Series", seriesSlug: "uci-xco-junior-series" } : {}),
+        ...(/UCI XCO Junior Series/i.test(detail.name) ? { seriesName: "UCI XCO Junior Series", seriesSlug: "uci-xco-junior-series", seriesAgeCategories: ["junior" as const] } : {}),
         confidence: 0.98,
         evidence: { quote: JSON.stringify({ competitionDetails: detail, schedule: props.schedule }), sourceUrl: url, method: "uci_competition", version: "uci-competition-v2" },
       }];

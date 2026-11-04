@@ -38,3 +38,16 @@ it("protects an organiser series against an aggregator", () => {
   protectOfficialFields("aggregator", { start_date: "2027-06-01", sources: [{ kind: "series" }] }, proposed);
   expect(proposed.start_date).toBe("2027-06-01");
 });
+
+it("keeps detailed formats when a later official sighting only repeats MTB", () => {
+  const stored = { disciplines: ["xco", "xcc"], formats: ["xco", "xcc"] };
+  const proposed = { disciplines: ["mtb"], formats: ["mtb"] };
+  protectSpecificFacts(stored, proposed);
+  expect(proposed).toEqual(stored);
+});
+
+it("does not demote a documented UCI race when a general organiser announcement supplies no class", () => {
+  const proposed = { competition_type: "community", uci_class: null };
+  protectSpecificFacts({ competition_type: "uci", uci_class: "cs" }, proposed);
+  expect(proposed).toEqual({ competition_type: "uci", uci_class: "cs" });
+});

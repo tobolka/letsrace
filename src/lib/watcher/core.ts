@@ -10,6 +10,11 @@ import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
 
 export { fetchPage, type FetchResult } from "@/lib/watcher/http";
 export const WATCH_READER_VERSION = "pipeline-v8";
+/** Re-read only sources affected by a reader change, including unchanged documents. */
+export function watchReaderVersion(url: string) {
+  return /^(?:www\.)?(?:uci\.org|fullgazrace\.de)$/.test(new URL(url).hostname)
+    ? `${WATCH_READER_VERSION}:official-v3` : WATCH_READER_VERSION;
+}
 
 export type ExtractResult = {
   events: ParsedEvent[];
@@ -25,7 +30,7 @@ export type ExtractResult = {
 
 /** A model's failure to mention a race is not evidence that it was removed. */
 export function canReconcileMissingEvents(result: ExtractResult): boolean {
-  return !["adapter:nakole", "adapter:uci-competition"].includes(result.strategy) && result.complete !== false && !result.strategy.includes("llm") &&
+  return !["adapter:nakole", "adapter:uci-competition", "adapter:fullgaz"].includes(result.strategy) && result.complete !== false && !result.strategy.includes("llm") &&
     (result.strategy.includes("adapter:") || result.strategy.includes("jsonld"));
 }
 

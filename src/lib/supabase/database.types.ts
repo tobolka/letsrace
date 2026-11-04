@@ -1339,6 +1339,7 @@ export type Database = {
         Row: {
           operational_state: string
           added_by: string | null
+          calendar_write_progress: Json | null
           content_hash: string | null
           created_at: string
           etag: string | null
@@ -1360,6 +1361,7 @@ export type Database = {
         }
         Insert: {
           added_by?: string | null
+          calendar_write_progress?: Json | null
           content_hash?: string | null
           created_at?: string
           etag?: string | null
@@ -1381,6 +1383,7 @@ export type Database = {
         }
         Update: {
           added_by?: string | null
+          calendar_write_progress?: Json | null
           content_hash?: string | null
           created_at?: string
           etag?: string | null
@@ -1463,9 +1466,18 @@ export type Database = {
       }
     }
     Functions: {
+      public_edition_candidates: {
+        Args: { p_country: string; p_from: string; p_until: string; p_after?: string }
+        Returns: { id: string; name: string; slug: string; start_date: string; series_id: string | null; disciplines: string[] | null; status: string; visibility: string; location: Json }[]
+      }
+      public_series_round_rows: {
+        Args: { p_series: string; p_statuses: string[]; p_countries: string[] }
+        Returns: Database["public"]["Tables"]["events"]["Row"][]
+        SetofOptions: { from: "*"; to: "events"; isOneToOne: false; isSetofReturn: true }
+      }
       pipeline_finish_plan_changes: { Args: { p_key: string; p_token: string; p_payload: Json; p_changes: Json }; Returns: boolean };
       pipeline_update_watcher_bundle: { Args: { p_event: string; p_revision: string; p_patch: Json; p_evidence: Json; p_source: Json; p_source_hash: string; p_reader: string; p_categories: Json; p_reviewed?: boolean }; Returns: Json };
-      pipeline_claim_candidate: { Args: { p_id: string; p_hash: string; p_updated: string; p_decision: Json }; Returns: Json };
+      pipeline_claim_candidate: { Args: { p_id: string; p_hash: string; p_updated: string; p_decision: Json; p_retry_resolved?: boolean }; Returns: Json };
       pipeline_retry_candidate: { Args: { p_id: string; p_token: string; p_error: string }; Returns: boolean };
       pipeline_publish_candidate: { Args: { p_id: string; p_token: string; p_hash: string; p_event: string; p_revision: string | null; p_payload: Json; p_source: Json; p_source_hash: string; p_reader: string; p_location: Json; p_categories: Json; p_secondary: string[] }; Returns: Json };
       pipeline_create_watcher_event: { Args: { p_event: string; p_payload: Json; p_source: Json; p_hash: string; p_reader: string; p_reviewed: boolean; p_location: Json; p_categories: Json; p_secondary: string[]; p_lease?: Json }; Returns: Json };

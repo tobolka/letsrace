@@ -19,10 +19,20 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-04",
+    items: {
+      cs: [
+        "Fullgaz Race 2027 najdeš v kalendáři s XCO a XCC a Ötztaler Mountainbike Festival má správně uvedenou UCI Continental Series.",
+      ],
+      en: [
+        "Fullgaz Race 2027 joins the calendar with XCO and XCC, and Ötztaler Mountainbike Festival is correctly listed as a UCI Continental Series event.",
+      ],
+    },
+  },
+  {
     date: "2026-11-03",
     items: {
       cs: [
-        "Upozornění na změnu termínu, zrušení nebo otevření přihlášek se po přerušení zpracování dokončí v dalším běhu.",
         "Neznámá délka trasy se nezobrazuje jako závod na 0 km.",
         "U Rohálovské 50ky 2027 najdeš pořadatele a čas hlavního startu podle aktuálních propozic.",
         "Název areálu otevře jeho místo na mapě a podobné závody najdeš až pod zdroji informací o závodu.",
@@ -30,12 +40,10 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Black Forest ULTRA Bike Marathon 2027 má správně označený Světový pohár, v kalendáři přibyl sjezdový pohár ve Szczyrku a závod juniorů v Grazu má doplněné zařazení UCI.",
         "Z měsíčního přehledu kolekce přejdeš přímo na závody vybraného měsíce i na dalších stránkách seznamu.",
         "Při posouvání detailu závodu zůstává hlavička s logem nahoře a zobrazí název závodu.",
-        "Aktualizace závodů se odesílají na web odděleně od následných kontrol jednotlivých stránek.",
         "V kolekcích najdeš celý rok 2027 pro Česko, české MTB a dětské závody, včetně přehledu měsíců, známých vzdáleností, kategorií a seriálů.",
         "U závodů s dostupnými podklady najdeš adresu areálu, program, startovné a varianty tras společně s jejich zdroji.",
       ],
       en: [
-        "Notices about date changes, cancellations or registration opening resume on the next run if processing is interrupted.",
         "An unknown course length no longer appears as a 0 km race.",
         "Rohálovská 50ka 2027 shows the organiser and main start time from the current race regulations.",
         "Venue names open their location on a map, and similar races appear after the race’s sources.",
@@ -43,7 +51,6 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Black Forest ULTRA Bike Marathon 2027 is correctly marked as a World Cup, Szczyrk’s downhill cup joins the calendar, and Graz’s junior race has its UCI series classification.",
         "Collection month links take you straight to that month’s races, including on later list pages.",
         "The logo bar stays at the top as you scroll a race page and shows the race name.",
-        "Race updates reach the web separately from the subsequent checks of individual pages.",
         "Collections cover the full 2027 season for Czech races, Czech MTB and children's races, with monthly counts, known distances, categories and series.",
         "Where sources are available, race pages bring together venue addresses, schedules, entry fees and route options with their sources.",
       ],

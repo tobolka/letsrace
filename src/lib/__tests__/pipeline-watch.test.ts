@@ -1,10 +1,10 @@
 import { afterEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn() }));
+const state = vi.hoisted(() => ({ known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: async (name: string) => ({ data: name === "pipeline_claim_source" ? [{ key: "source:source", token: "test-lease" }] : true, error: null }), from: (table: string) => {
   let inserted = false;
   const chain: unknown = new Proxy({}, { get: (_target, key) => {
     if (key === "maybeSingle") return async () => ({ data: null, error: null });
-    if (key === "then") return (resolve: (value: unknown) => void) => resolve({ data: inserted && table === "ingest_runs" ? { id: "run" } : [], error: null, count: 0 });
+    if (key === "then") return (resolve: (value: unknown) => void) => resolve({ data: inserted && table === "ingest_runs" ? { id: "run" } : table === "event_sources" ? state.known : [], error: null, count: 0 });
     return (...args: unknown[]) => {
       if (key === "insert") { inserted = true; if (table === "watched_urls") state.sourceInserts.push(args[0]); }
       if (key === "update") state.writes.push({ table, value: args[0] as Record<string, unknown> });
@@ -17,7 +17,7 @@ vi.mock("@/lib/watcher/core", async original => ({ ...await original<typeof impo
 vi.mock("@/lib/catalog/freshness", () => ({ hideDroppedCalendarEvents: state.hide, touchLastSeenForWatchedUrl: vi.fn() }));
 import { watchOne } from "@/lib/watcher/run";
 import { WATCH_READER_VERSION, canReconcileMissingEvents } from "@/lib/watcher/core";
-afterEach(() => { state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
+afterEach(() => { state.known.length = 0; state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
 
 it("does not checkpoint or hide missing races after an incomplete read and retries without old HTTP validators", async () => {
   state.fetch.mockResolvedValue({ status: 200, html: "<p>calendar</p>", hash: "new", etag: "new-etag", unchanged: false });
@@ -61,4 +61,40 @@ it("does not invent next-season sources by changing the year of a calendar addre
   state.extract.mockResolvedValue({ events: [], childUrls: [], confidence: 0, strategy: "adapter:test", complete: true });
   await watchOne({ id: "source", url: `https://club.test/calendar-${new Date().getFullYear()}/`, kind: "calendar" });
   expect(state.sourceInserts).toEqual([]);
+});
+
+it("keeps a complete calendar checkpoint while a conflicting row waits and skips successful siblings", async () => {
+  const { calendarRowHash, calendarRowProgress } = await import("@/lib/watcher/calendar-progress");
+  const rows = Array.from({ length: 197 }, (_, i) => ({
+    externalId: String(i), name: `Race ${i}`, startDate: "2027-04-20",
+    sourceUrl: "https://odjazd.pl/", placeText: "Warszawa", confidence: 0.9,
+  }));
+  const now = Date.now();
+  const version = `${WATCH_READER_VERSION}:`;
+  const saved = rows.map((event, i) => {
+    const entry = calendarRowProgress(calendarRowHash(event), now, i === 0 ? 4 : 0);
+    return [event.externalId, entry.hash, entry.until, entry.conflicts];
+  });
+  state.known.push(...rows.map(event => ({ external_id: event.externalId, event: { updated_at: "2026-11-04" } })));
+  state.fetch.mockResolvedValue({ status: 200, html: "<p>calendar</p>", hash: "stable", etag: "stable-etag" });
+  state.extract.mockResolvedValue({ events: rows, childUrls: [], confidence: 0.9, strategy: "adapter:odjazd", complete: true });
+  const source = { id: "source", url: "https://odjazd.pl/", kind: "calendar",
+    calendar_write_progress: { version: `calendar-v1:${version}calendar:https://odjazd.pl/`, rows: saved } };
+  const waiting = await watchOne(source);
+  expect(waiting).toMatchObject({ ok: false, eventsUpserted: 0, eventsFailed: 0, eventsDeferred: 1 });
+  expect(state.hide).not.toHaveBeenCalled();
+  expect(state.writes.find(w => "content_hash" in w.value)?.value).toMatchObject({
+    content_hash: `${version}stable`, etag: "stable-etag", last_extract_status: "needs_review",
+  });
+  expect(state.writes.find(w => w.table === "ingest_runs")?.value.metrics).toMatchObject({
+    attempted: 0, pendingWrites: 1, skippedUnchanged: 197,
+  });
+
+  // A changed fact behind the unchanged landing page bypasses the old row delay.
+  rows[0] = { ...rows[0]!, startDate: "2027-05-20" };
+  state.writes.length = 0;
+  const changed = await watchOne(source, { deadline: Date.now() });
+  expect(changed.issues).toContain("write_failed:0:write_time_budget_exhausted");
+  expect(state.writes.find(w => w.table === "ingest_runs")?.value.metrics).toMatchObject({ attempted: 1, skippedUnchanged: 196 });
+  expect(state.hide).not.toHaveBeenCalled();
 });

@@ -106,6 +106,7 @@ import {
   parseCyclingAustriaCups,
 } from "@/lib/watcher/extractors/cyclingaustria";
 import { parseUciMtbWorldSeries } from "@/lib/watcher/extractors/uciws";
+import { parseFullgazHomepage } from "@/lib/watcher/extractors/fullgaz";
 import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
 import { parseSwissCycling } from "@/lib/watcher/extractors/swisscycling";
 import {
@@ -676,6 +677,9 @@ export async function extractWithAdapter(
   }
   if (host.includes("ucimtbworldseries.com")) {
     return { events: parseUciMtbWorldSeries(url, html), strategy: "adapter:uciws" };
+  }
+  if (host === "fullgazrace.de" && new URL(url).pathname === "/") {
+    return { events: await parseFullgazHomepage(url, html), strategy: "adapter:fullgaz" };
   }
   if (host === "uci.org" && /\/competition-details\/20\d{2}\/MTB\/\d+/i.test(url)) {
     return { events: parseUciCompetition(url, html), strategy: "adapter:uci-competition" };
