@@ -1,3 +1,4 @@
+import { format, parseISO } from "date-fns";
 import { cs } from "date-fns/locale/cs";
 import { enUS } from "date-fns/locale/en-US";
 import { pl } from "date-fns/locale/pl";
@@ -12,3 +13,8 @@ export function dateFnsLocale(locale: string) {
 }
 
 export type DateFnsLocale = (typeof DATE_FNS_LOCALES)[Locale];
+
+export function compactRaceDates(event: { startDate: string; endDate?: string | null }, locale: string) {
+  const date = (value: string) => format(parseISO(value), "d MMM", { locale: dateFnsLocale(locale) });
+  return date(event.startDate) + (event.endDate && event.endDate !== event.startDate ? `–${date(event.endDate)}` : "");
+}

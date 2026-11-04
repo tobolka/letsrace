@@ -21,6 +21,7 @@ export function RaceLinkList({
   distances,
   showFacts = false,
   monthAnchors = false,
+  seriesSlug,
 }: {
   events: EventListItem[];
   locale: Locale;
@@ -30,6 +31,7 @@ export function RaceLinkList({
   distances?: Map<string, number>;
   showFacts?: boolean;
   monthAnchors?: boolean;
+  seriesSlug?: string;
 }) {
   if (!events.length) return null;
   const groups = new Map<string, EventListItem[]>();
@@ -52,7 +54,7 @@ export function RaceLinkList({
           <div role="list" className="race-list">
             {list.map((event) => (
               <PlannedRaceRow eventId={event.id} key={event.id} className="race-row">
-                <Link href={eventPagePath(locale, event.slug)} className="race-row-link">
+                <Link href={eventPagePath(locale, event.slug)} className="race-row-link" data-series-round={seriesSlug}>
                   <EventRowBody event={event} locale={locale} distanceKm={distances?.get(event.id)} factsLabel={showFacts ? [...routeSummary(event, locale), ...(event.ageConfidence === "explicit" ? event.ageCategories.map(age => ageCategoryLabel(age, locale)) : [])].join(" · ") : undefined} compact />
                 </Link>
                 {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}

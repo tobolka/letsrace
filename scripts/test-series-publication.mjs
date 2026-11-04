@@ -6,6 +6,7 @@ const race='00000000-0000-0000-0000-000000000001',cup='00000000-0000-0000-0000-0
 try {
  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
  create table events(id uuid primary key,slug text,name text,start_date date,end_date date,status text default 'scheduled',visibility text default 'public',merged_into_id uuid,location_id uuid,series_id uuid,last_seen_at timestamptz,updated_at timestamptz);
+ create table event_series(event_id uuid,series_id uuid,primary key(event_id,series_id));
  create table locations(id uuid primary key,name text,municipality text,country_code text,lat float,lng float,updated_at timestamptz);
  create table series(id uuid primary key,name text,slug text,visibility text default 'public',website_url text,age_categories text[],last_seen_at timestamptz,updated_at timestamptz);grant usage on schema public to service_role;grant all on all tables in schema public to service_role;`);
  for(const f of ['20261102084307_durable_publication_tasks.sql','20261102201557_aggregate_catalogue_publication.sql','20261103090530_separate_public_refresh_requests.sql','20261103130304_durable_series_publication.sql'])await db.exec(await readFile('supabase/migrations/'+f,'utf8'));
@@ -20,13 +21,46 @@ try {
  await db.exec(`update events set start_date=current_date+21 where id='${race}'`);assert.notEqual((await task(cup)).payload.revision,version);
  const oldCupVersion=(await task(cup)).payload.revision,oldOtherVersion=(await task(other)).payload.revision;
  await db.exec(`update events set series_id='${other}' where id='${race}'`);assert.notEqual((await task(cup)).payload.revision,oldCupVersion);assert.notEqual((await task(other)).payload.revision,oldOtherVersion);
+ await db.exec(`insert into event_series values('${race}','${cup}');`);
+ const secondaryVersion=(await task(cup)).payload.revision;
  const claim=(await db.query("select * from pipeline_claim_tasks('public_expire',array['web'],1)")).rows[0];assert(claim);
  const items=(await db.query('select * from pipeline_expiration_candidates($1)',[claim.token])).rows;assert(items.some(i=>i.key==='series:'+cup));
  await db.query('select pipeline_record_expirations($1,$2)',[claim.token,items.map(i=>({key:i.key,revision:i.payload.revision}))]);
  assert.equal((await task(cup)).status,'done');assert.equal((await task(cup)).result.verified,false);
  assert.equal((await db.query("select status from pipeline_tasks where key=$1",['public:'+race])).rows[0].status,'pending');
  await db.exec(`begin;update series set name='Rolled back' where id='${other}';rollback;`);assert.equal((await task(other)).status,'done');
+ await db.exec('reset role');
+ await db.exec(await readFile('supabase/migrations/20261104142634_verify_public_series_content.sql','utf8'));
+ await db.exec('set role service_role');
+ assert.equal((await task(cup)).status,'pending','receipt-only completion is reopened for HTML verification');
+ const claimSeries=async()=>(await db.query("select * from pipeline_claim_tasks('series_refresh',array['web'],1)")).rows[0];
+ const initial=await claimSeries();
+ assert(initial);
+ const activeTask=(await db.query('select * from pipeline_tasks where key=$1',[initial.key])).rows[0];
+ assert.equal(activeTask.status,'running');
+ const finish=async claimed=>(await db.query('select pipeline_finish_task($1,$2,$3,$4) ok',
+   [claimed.key,claimed.token,claimed.payload,{verified:true,rounds:1}])).rows[0].ok;
+ assert(await finish(initial));
+
+ const priorSeries=(await task(cup)).payload.revision;
+ assert.equal(priorSeries,secondaryVersion);
+ await db.exec(`update events set end_date=current_date+24 where id='${race}';`);
+ assert.notEqual((await task(cup)).payload.revision,priorSeries,'secondary series receives a changed round');
+ assert.equal(await claimSeries(),undefined,'old refresh receipts cannot verify changed series');
+ const point='00000000-0000-0000-0000-000000000004';
+ await db.exec(`insert into locations(id,name) values('${point}','Original place');update events set location_id='${point}' where id='${race}';`);
+ const beforePlace=(await task(cup)).payload.revision;
+ await db.exec(`update locations set name='New place',lat=50,lng=15 where id='${point}';`);
+ assert.notEqual((await task(cup)).payload.revision,beforePlace,'secondary series also receives a changed location');
+ await db.exec("update pipeline_task_attempts set started_at=now()-interval '2 hours' where kind='public_expire'; update pipeline_tasks set lease_until=now()-interval '1 minute' where kind='public_expire'");
+ const fresh=(await db.query("select * from pipeline_claim_tasks('public_expire',array['web'],1)")).rows[0];
+ const refreshed=(await db.query('select * from pipeline_expiration_candidates($1)',[fresh.token])).rows;
+ await db.query('select pipeline_record_expirations($1,$2)',[fresh.token,refreshed.map(t=>({key:t.key,revision:t.payload.revision}))]);
+ assert.equal((await task(cup)).status,'pending','requesting a new series revision does not finish its check');
+ assert(await claimSeries());
+ await db.exec("insert into pipeline_task_attempts(token,task_key,kind) select gen_random_uuid(),'publication:expire','public_refresh' from generate_series(1,60)");
+ assert.equal(await claimSeries(),undefined,'race and series checks share the daily cap');
  await db.exec(`delete from series where id='${cup}'`);assert.equal((await task(cup)).payload.expected.visibility,'hidden');
  for(const role of ['anon','authenticated']){await db.exec(`reset role;set role ${role}`);await assert.rejects(db.query('select pipeline_enqueue_series($1)',[{id:cup,slug:'cup'}]),/permission denied/);}
- console.log('PASS: series rename/aliases, inherited race revision, changed rounds and membership, no heartbeat churn, transaction rollback, deletion, private receipts and no false HTML verification');
+ console.log('PASS: series rename/aliases, inherited race revision, changed rounds and membership, no heartbeat churn, transaction rollback, deletion, private receipts, reopened legacy requests, secondary dates and locations, shared cap and no false HTML verification');
 } finally {await db.close();}

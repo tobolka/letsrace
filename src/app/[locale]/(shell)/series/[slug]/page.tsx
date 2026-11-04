@@ -145,7 +145,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
         {upcoming.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold">{rc.upcoming}</h2>
-            <RaceLinkList events={upcoming} locale={locale} headingLevel="h3" />
+            <RaceLinkList events={upcoming} locale={locale} headingLevel="h3" seriesSlug={slug} />
           </section>
         )}
         <section className="mt-8">
@@ -154,7 +154,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
         {past.length > 0 && (
           <section className="mt-10">
             <h2 className="mb-3 text-lg font-semibold">{rc.pastRounds}</h2>
-            <RaceLinkList events={past} locale={locale} groupByMonth={false} />
+            <RaceLinkList events={past} locale={locale} groupByMonth={false} seriesSlug={slug} />
           </section>
         )}
         {countries.length > 0 && (

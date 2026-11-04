@@ -1,4 +1,3 @@
-import { format, parseISO } from "date-fns";
 import { CircleHelp } from "lucide-react";
 import { ItemContent, ItemTitle } from "@/components/ui/item";
 import type { EventListItem } from "@/lib/events";
@@ -6,7 +5,7 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { UCI_CLASS_LABELS, type UciClass } from "@/lib/taxonomy";
 import { formatDistanceKm } from "@/lib/geo/distance";
-import { dateFnsLocale } from "@/lib/i18n/dates";
+import { compactRaceDates } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
 import { ExplainedHint } from "@/components/explore/explained-badge";
 import { cn } from "@/lib/utils";
@@ -50,12 +49,7 @@ export function EventRowBody({
   const t = messagesFor(locale);
   const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
-  const df = dateFnsLocale(locale);
-  const dateLabel =
-    format(parseISO(event.startDate), "d MMM", { locale: df }) +
-    (event.endDate && event.endDate !== event.startDate
-      ? `–${format(parseISO(event.endDate), "d MMM", { locale: df })}`
-      : "");
+  const dateLabel = compactRaceDates(event, locale);
   const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
   // The UCI class is what a licensed rider looks for first: "C1", "1.2".
   const uciLabel = event.uciClass ? `UCI ${UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}` : null;

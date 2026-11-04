@@ -2,7 +2,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { getPipelineSourceCounts } from "@/lib/pipeline/source-counts";
 import { z } from "zod";
 
-const publicationCounts = z.object({ seriesAwaitingRequest: z.number().int().nonnegative(), awaitingRequest: z.number().int().nonnegative(), requestedAwaitingCheck: z.number().int().nonnegative(), awaitingCheck: z.number().int().nonnegative() });
+const publicationCounts = z.object({ seriesAwaitingRequest: z.number().int().nonnegative(), seriesAwaitingCheck: z.number().int().nonnegative().default(0), awaitingRequest: z.number().int().nonnegative(), requestedAwaitingCheck: z.number().int().nonnegative(), awaitingCheck: z.number().int().nonnegative() });
 const catalogueCheck = z.object({ verifiedAt: z.iso.datetime({ offset: true }), races: z.number().int().nonnegative() });
 
 export type OwnerStateInput = {
@@ -33,7 +33,7 @@ export async function getOwnerOverview(decisionOffset=0) {
     db.from("discovered_links").select("id", { head: true, count: "exact" }).eq("status", "pending"),
     db.from("pipeline_candidates").select("id", { head: true, count: "exact" }).in("status", ["pending", "waiting", "conflict", "publishing"]),
     db.from("pipeline_candidates").select("id", { head: true, count: "exact" }).in("status", ["pending", "waiting", "conflict"]).not("decision->followUp->>nextCheckAt", "is", null),
-    db.from("pipeline_tasks").select("key", { head: true, count: "exact" }).in("kind", ["public_refresh", "catalogue_refresh"]).in("status", ["pending", "running"]),
+    db.from("pipeline_tasks").select("key", { head: true, count: "exact" }).in("kind", ["public_refresh", "catalogue_refresh", "series_refresh"]).in("status", ["pending", "running"]),
     db.from("pipeline_task_attempts").select("token", { head: true, count: "exact" }).eq("kind", "public_refresh").eq("outcome", "done").not("result->>verifiedAt", "is", null).gte("finished_at", new Date(now - 86400000).toISOString()),
     db.from("pipeline_candidates").select("created_at").in("status", ["pending", "waiting", "conflict", "publishing"]).order("created_at").limit(1),
     db.from("pipeline_owner_decisions").select("key,question,reason,recommendation,default_action,options,evidence,updated_at",{count:"exact"}).eq("status","open").order("created_at").order("key").range(decisionOffset,decisionOffset+19),

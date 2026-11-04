@@ -462,9 +462,8 @@ export async function listSeries(filters: EventFilters = {}): Promise<SeriesList
  * Whether a public series has this slug — one row, no rounds. The series page
  * asks this before it streams anything, so a dead address can still answer 404.
  */
-export const getPublicSeriesRow = cache((slug: string) => unstable_cache(async function getPublicSeriesRow() {
-  const supabase = createServerSupabase();
-  const { data: row, error } = await supabase
+async function readPublicSeriesRow(slug: string) {
+  const { data: row, error } = await createServerSupabase()
     .from("series")
     .select(SERIES_PUBLIC_COLUMNS)
     .eq("slug", slug)
@@ -472,12 +471,16 @@ export const getPublicSeriesRow = cache((slug: string) => unstable_cache(async f
     .maybeSingle();
   if (error) throw new Error(error.message);
   return row;
-}, ["public-series-row-v3", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
+}
 
-export const getSeriesBySlug = cache((slug: string) => unstable_cache(async function getSeriesBySlug(): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
-  const supabase = createServerSupabase();
-  const row = await getPublicSeriesRow(slug);
+export const getPublicSeriesRow = cache((slug: string) => unstable_cache(() => readPublicSeriesRow(slug),
+  ["public-series-row-v3", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
+
+/** Use an independent database read when checking what the public page shows. */
+export async function readPublicSeries(slug: string, readRow = readPublicSeriesRow): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
+  const row = await readRow(slug);
   if (!row) return null;
+  const supabase = createServerSupabase();
 
   const { data: eventRows, error: eventError } = await supabase
     .rpc("public_series_round_rows", {
@@ -497,7 +500,10 @@ export const getSeriesBySlug = cache((slug: string) => unstable_cache(async func
     series: mapSeriesRow(row as unknown as Record<string, unknown>, events.length),
     events,
   };
-}, ["public-series-rounds-v5", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
+}
+
+export const getSeriesBySlug = cache((slug: string) => unstable_cache(() => readPublicSeries(slug, getPublicSeriesRow),
+  ["public-series-rounds-v5", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();
