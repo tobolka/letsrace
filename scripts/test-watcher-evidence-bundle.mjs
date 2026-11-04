@@ -6,16 +6,16 @@ const id=n=>`00000000-0000-0000-0000-${String(n).padStart(12,'0')}`;
 const watched=id(1),primary=id(2),secondary=id(3),race=id(10);
 try {
  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
- create table events(id uuid primary key,slug text unique,name text,start_date date,end_date date,status text default 'scheduled',visibility text default 'public',merged_into_id uuid,location_id uuid,series_id uuid,disciplines text[],fingerprint text unique,last_seen_at timestamptz,updated_at timestamptz);
+ create table events(id uuid primary key,slug text unique,name text,start_date date,end_date date,status text default 'scheduled',visibility text default 'public',merged_into_id uuid,location_id uuid,series_id uuid,registration_closes_at timestamptz,regulations_url text,website_url text,age_categories text[],age_confidence text,audience text,event_type text,disciplines text[],fingerprint text unique,last_seen_at timestamptz,updated_at timestamptz);
  create table locations(id uuid primary key,name text,municipality text,country_code text,lat float8,lng float8,geocode_query text,geocode_status text,timezone text,geog text,updated_at timestamptz);
- create table series(id uuid primary key,name text,slug text unique,visibility text default 'public',website_url text,source_url text,
+ create table series(id uuid primary key default gen_random_uuid(),name text,slug text unique,visibility text default 'public',website_url text,source_url text,
    age_categories text[],age_categories_confirmed_at timestamptz,updated_at timestamptz,last_seen_at timestamptz,
    name_normalized text,audience_hint text,country_code text,disciplines text[],series_type text,level text,competition_type text,season text,source_kind text);
  alter table events add foreign key(series_id) references series(id);
- create table watched_urls(id uuid primary key,url text,kind text,status text,added_by text,next_poll_at timestamptz);
+ create table watched_urls(id uuid primary key default gen_random_uuid(),url text unique,kind text,status text,added_by text,next_poll_at timestamptz,notes text,updated_at timestamptz);
  create table event_overrides(event_id uuid primary key,locked_fields text[]);
  create table event_sources(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),watched_url_id uuid references watched_urls(id),source_url text,external_id text,kind text,is_canonical boolean,unique(watched_url_id,external_id));
- create table event_categories(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),name text,distance_km float8,age_min int,age_max int,audience text);
+ create table event_categories(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),name text,distance_km float8,age_min int,age_max int,audience text,gender text);
  create table event_facts(id uuid primary key default gen_random_uuid(),event_id uuid references events(id),field text,value jsonb,previous jsonb,source_url text,quote text,method text,version text,model text);
  create table page_reads(url text,reader text,text_hash text,read_at timestamptz,primary key(url,reader));
  create function set_location_geog(loc_id uuid,lng float8,lat float8)returns void language sql as $$update locations set geog='test-point' where id=loc_id$$;
@@ -29,8 +29,8 @@ try {
  const fence=(await readdir('supabase/migrations')).find(f=>f.endsWith('_watcher_source_kind_fence.sql'));await db.exec(await readFile('supabase/migrations/'+fence,'utf8'));
  await db.exec(await readFile('supabase/migrations/20261103134148_atomic_watcher_update.sql','utf8'));
  const deps=(await readdir('supabase/migrations')).find(f=>f.endsWith('_atomic_existing_race_dependencies.sql'));await db.exec(await readFile('supabase/migrations/'+deps,'utf8'));
- await db.exec(`set role service_role;insert into watched_urls values('${watched}','https://fixture.test/','federation','active',null,now());insert into series(id,name,slug)values('${primary}','Main','main'),('${secondary}','Additional','additional');`);
- await db.exec(`reset role;create table discovered_links(id uuid primary key default gen_random_uuid(),url text,status text);grant all on discovered_links to service_role;`);
+ await db.exec(`set role service_role;insert into watched_urls(id,url,kind,status,added_by,next_poll_at) values('${watched}','https://fixture.test/','federation','active',null,now());insert into series(id,name,slug)values('${primary}','Main','main'),('${secondary}','Additional','additional');`);
+ await db.exec(`reset role;create table discovered_links(id uuid primary key default gen_random_uuid(),url text unique,status text);grant all on discovered_links to service_role;`);
  await db.exec(await readFile('supabase/migrations/20261025142103_pipeline_candidate_review.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261103202930_atomic_candidate_publication.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261103204138_atomic_watcher_evidence_bundle.sql','utf8'));
@@ -41,6 +41,7 @@ try {
  await db.exec('set role service_role');
  await db.exec('reset role');
  await db.exec(await readFile('supabase/migrations/20261104083715_atomic_watcher_series_plans.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261104123050_protect_periodic_catalogue_writers.sql','utf8'));
  await db.exec('set role service_role');
  const source={watchedUrlId:watched,kind:'federation',event:{externalId:'initial',sourceUrl:'https://fixture.test/race',name:'Race',startDate:'2027-05-01'}};
  await db.query('select pipeline_create_watcher_event($1,$2,$3,$4,$5,false,null,$6,$7,null)',[race,{name:'Race',slug:'race',start_date:'2027-05-01',fingerprint:'race-key',series_id:primary,disciplines:['xco']},source,'a'.repeat(40),`source-evidence-v1:${watched}:initial:${race}`,[{name:'Elite',distance_km:20}],[]]);
@@ -133,6 +134,62 @@ try {
  const published=await state();
  assert.deepEqual(await seriesWrite('publish',{...publishArgs,p_event:id(44)},candidatePlans),publication);
  assert.deepEqual(await state(),published);
+ // The periodic reader writes verified fields and evidence with the same revision fence.
+ const runRead=async(rev,patch)=>(await db.query(
+   "select pipeline_apply_periodic_read($1,$2,$3,'llm','enrich-v4',$4) r",
+   [race,rev,patch,{regulations_url:{sourceUrl:'https://fixture.test',quote:'Rules'}}],
+ )).rows[0].r;
+ await db.query("insert into event_overrides values($1,array['registration_url'])",[race]);
+ const readRev=await revision();
+ const readPatch={registration_url:'https://fixture.test/entry',regulations_url:'https://fixture.test/rules'};
+ const failFacts=async()=>db.exec(`reset role;create function fail_fact() returns trigger language plpgsql as $$begin raise exception 'evidence failed';end$$;
+   create trigger fail_fact before insert on event_facts for each row execute function fail_fact();set role service_role`);
+ const allowFacts=async()=>db.exec('reset role;drop trigger fail_fact on event_facts;drop function fail_fact();set role service_role');
+ await failFacts();
+ const beforeRead=await state();
+ await assert.rejects(runRead(readRev,readPatch),/evidence failed/);
+ assert.deepEqual(await state(),beforeRead);
+ await allowFacts();
+ assert.deepEqual(await runRead(readRev,readPatch),['regulations_url']);
+ assert.equal(await runRead(readRev,readPatch),null);
+ const evidence=(await state()).event_facts.find(f=>f.method==='llm');
+ assert.equal(evidence.quote,'Rules');
+ assert.equal(evidence.source_url,'https://fixture.test');
+ await db.exec("delete from event_overrides");
+
+ // A rejected source stays rejected. A paused source is never reactivated.
+ const discovery=async url=>(await db.query("select pipeline_accept_discovered_race($1,'verified lead') r",[url])).rows[0].r;
+ await db.exec("insert into discovered_links(url,status) values('https://example.test/new','pending'),('https://example.test/rejected','rejected'),('https://example.test/paused','pending');insert into watched_urls(url,status) values('https://example.test/paused','paused');");
+ assert.equal(await discovery('https://example.test/rejected'),false);
+ assert.equal(await discovery('https://example.test/paused'),false);
+ assert.equal(await discovery('https://example.test/new'),true);
+ assert.equal(await discovery('https://example.test/new'),false);
+ assert.equal((await db.query("select status from discovered_links where url='https://example.test/new'")).rows[0].status,'accepted');
+
+ const periodicRaces=[id(50),id(51)];
+ await db.query("insert into events(id,name,slug,start_date) values($1,'Race 50','race-50',current_date+2),($2,'Race 51','race-51',current_date+3)",periodicRaces);
+ const periodicRevisions=async()=>(await db.query("select id,public_revision revision from events where id=any($1) order by id",[periodicRaces])).rows;
+ const link=async rows=>(await db.query("select pipeline_apply_series_links(null,'periodic','Periodic','periodic','CZ',$1) r",[rows])).rows[0].r;
+ const revs=await periodicRevisions();
+ assert.deepEqual(await link(revs.slice(0,1)),{linked:0,created:false});
+ await failFacts();
+ const beforeSeriesLink=await state();
+ await assert.rejects(link(revs),/evidence failed/);
+ assert.deepEqual(await state(),beforeSeriesLink);
+ await allowFacts();
+ assert.deepEqual(await link(revs),{linked:2,created:true});
+ const original=(await periodicRevisions())[0];
+ const writeOriginal=async()=>(await db.query(
+   "select pipeline_apply_original_categories($1,$2,$3,'[]',true,'https://fixture.test/rules','proof','test','test') r",
+   [original.id,original.revision,[{name:'Kids',age_min:8,age_max:9,gender:'f'}]],
+ )).rows[0].r;
+ await failFacts();
+ const beforeOriginal=await state();
+ await assert.rejects(writeOriginal(),/evidence failed/);
+ assert.deepEqual(await state(),beforeOriginal);
+ await allowFacts();
+ assert.equal((await writeOriginal()).length,1);
+ assert.equal(await writeOriginal(),null);
  for(const role of ['anon','authenticated']) {await db.exec(`reset role;set role ${role}`);await assert.rejects(write(),/permission denied/);await assert.rejects(seriesWrite('create',createArgs,[seriesPlan]),/permission denied/);}
  console.log('Watcher bundle SQL: rollback of all dependencies and notice work, revision/source ownership/category locks, lost lease, atomic notice completion, series rollback, age protection and publication retry passed');
 }finally{await db.close();}

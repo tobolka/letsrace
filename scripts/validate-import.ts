@@ -21,14 +21,14 @@ const VERSION = "original-categories-v2";
 const arg = (name: string, fallback: string) => process.argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3) ?? fallback;
 const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
 type CategoryRow = { id: string; event_id: string; name: string; age_min: number | null; age_max: number | null; distance_km: number | null; elevation_m: number | null; gender: string | null; audience: string | null };
-type Event = { id: string; name: string; start_date: string; age_categories: string[] | null; age_confidence: string | null; regulations_url: string | null; registration_url: string | null; website_url: string | null; series_id: string | null; location: { municipality: string | null; country_code: string | null } | null; overrides: { locked_fields: string[] | null } | null; categories: CategoryRow[] };
+type Event = { id: string; public_revision: string; name: string; start_date: string; age_categories: string[] | null; age_confidence: string | null; regulations_url: string | null; registration_url: string | null; website_url: string | null; series_id: string | null; location: { municipality: string | null; country_code: string | null } | null; overrides: { locked_fields: string[] | null } | null; categories: CategoryRow[] };
 type Proposal = { event: Event; categories: OriginalCategory[]; complete: boolean; hashes: Record<string, string>; usage: unknown; audit?: { keep: boolean; why: string; usage: unknown } };
 type Plan = { version: string; createdAt: string; baseline: Event[]; queue: unknown[]; proposals: Proposal[]; rejected: unknown[]; costUsd: number; stopped: boolean };
 async function loadEvents() {
   const s = createServerSupabase();
   const rows: Event[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await s.from("events").select("id,name,start_date,age_categories,age_confidence,regulations_url,registration_url,website_url,series_id,location:locations(municipality,country_code),overrides:event_overrides(locked_fields),categories:event_categories(*)")
+    const { data, error } = await s.from("events").select("id,public_revision,name,start_date,age_categories,age_confidence,regulations_url,registration_url,website_url,series_id,location:locations(municipality,country_code),overrides:event_overrides(locked_fields),categories:event_categories(*)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", ["scheduled", "tbc", "confirmed"])
       .gte("start_date", today).lte("start_date", until).order("id").range(from, from + 999);
     if (error) throw error;
@@ -76,18 +76,15 @@ async function main() {
         if (!doc || textHash(normalize(doc.text)) !== proposal.hashes[url]) valid = false;
       }
       if (!valid) { result.stale++; console.log(`STALE ${now.name}`); continue; }
-      // Recheck category absence and human locks immediately before the additive write.
-      const { data: current, error: checkError } = await s.from("events").select("name,start_date,categories:event_categories(id),overrides:event_overrides(locked_fields)").eq("id", now.id).eq("visibility", "public").is("merged_into_id", null).in("status", ["scheduled", "tbc", "confirmed"]).single();
-      if (checkError || !current || current.name !== now.name || current.start_date !== now.start_date || current.categories.length || (current.overrides as unknown as { locked_fields: string[] | null } | null)?.locked_fields?.some((f: string) => ["categories", "event_categories", "age_categories", "age_confidence", "audience"].includes(f))) { result.stale++; continue; }
-      const { data: inserted, error } = await s.from("event_categories").insert(proposal.categories.map(c => ({ event_id: now.id, name: c.name, age_min: c.ageMin, age_max: c.ageMax, gender: c.gender }))).select("*");
-      if (error || !inserted?.length) { result.failed++; console.error(error); continue; }
-      const { error: factError } = await s.from("event_facts").insert({ event_id: now.id, field: "event_categories", value: { rows: inserted, details: proposal.categories, complete: proposal.complete }, previous: [],
-        source_url: proposal.categories[0]!.sourceUrl, quote: proposal.categories.map(c => c.quote).join("\n"), method: "source_categories", model: HAIKU, version: VERSION });
-      if (factError) {
-        const { error: cleanup } = await s.from("event_categories").delete().in("id", inserted.map(c => c.id));
-        if (cleanup) throw new Error(`Evidence failure and cleanup failure: ${factError.message}; ${cleanup.message}`);
-        result.failed++; continue;
-      }
+      const { data, error } = await s.rpc("pipeline_apply_original_categories", {
+        p_event: now.id, p_revision: now.public_revision,
+        p_rows: proposal.categories.map(c => ({ name: c.name, age_min: c.ageMin, age_max: c.ageMax, gender: c.gender })),
+        p_evidence: proposal.categories, p_complete: proposal.complete, p_source: proposal.categories[0]!.sourceUrl,
+        p_quote: proposal.categories.map(c => c.quote).join("\n"), p_model: HAIKU, p_version: VERSION,
+      });
+      if (error) { result.failed++; console.error(error); continue; }
+      const inserted = data as CategoryRow[] | null;
+      if (!inserted?.length) { result.stale++; continue; }
       const { data: saved, error: readError } = await s.from("event_categories").select("id,name,age_min,age_max,gender").eq("event_id", now.id);
       if (readError || !inserted.every(c => saved?.some(r => r.id === c.id && r.name === c.name && r.age_min === c.age_min && r.age_max === c.age_max && r.gender === c.gender))) throw new Error(`Post-write verification failed: ${now.id}`);
       result.events++; result.categories += inserted.length; result.verifiedAfterWrite++;

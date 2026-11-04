@@ -56,11 +56,11 @@ export async function fillCscAgeCategories(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "csc_ages");
 
-  const targets: { id: string; name: string; startDate: string; url: string; needsWindow: boolean; needsWeb: boolean; needsAges: boolean }[] = [];
+  const targets: { id: string; revision: string; name: string; startDate: string; url: string; needsWindow: boolean; needsWeb: boolean; needsAges: boolean }[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
     const { data } = await supabase
       .from("events")
-      .select("id, name, start_date, age_categories, age_confidence, registration_closes_at, website_url, sources:event_sources(source_url)")
+      .select("id, public_revision, name, start_date, age_categories, age_confidence, registration_closes_at, website_url, sources:event_sources(source_url)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -76,7 +76,7 @@ export async function fillCscAgeCategories(opts?: {
       const url = (row.sources ?? []).map((s) => s.source_url ?? "").find((u) => CSC_RACE.test(u));
       if (!url) continue;
       targets.push({
-        id: row.id,
+        id: row.id, revision: row.public_revision,
         name: row.name,
         startDate: row.start_date,
         url: url.match(/^https?:\/\/[^?#]+/)![0],
@@ -140,14 +140,17 @@ export async function fillCscAgeCategories(opts?: {
           result.filled += 1;
           continue;
         }
-        patch.updated_at = new Date().toISOString();
-        const { error } = await supabase.from("events").update(patch).eq("id", target.id);
+        const { data: saved, error } = await supabase.rpc("pipeline_apply_periodic_read", {
+          p_event: target.id, p_revision: target.revision, p_patch: patch,
+          p_method: "csc_race_page", p_version: "atomic-v1", p_source: url,
+          p_quote: detail.categories.join(", ").slice(0, 2000),
+        });
         if (error) {
           result.failed += 1;
           await recordProbe(supabase, target.id, "csc_ages", "failed");
-        } else {
+        } else if (saved?.length) {
           result.filled += 1;
-          if (patch.registration_closes_at) result.entryWindows += 1;
+          if (saved.includes("registration_closes_at")) result.entryWindows += 1;
           await clearProbe(supabase, target.id, "csc_ages");
         }
       }

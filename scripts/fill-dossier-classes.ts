@@ -12,7 +12,7 @@ for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = l
 
 const VERSION = "dossier-classes-v5-all-sources";
 const PROBE = "dossier_classes_v2";
-type Row = { id: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; age_confidence: string | null; age_categories: string[] | null; audience: string | null; overrides: { locked_fields: string[] | null } | null; location: { municipality: string | null; country_code: string | null } | null; sources: { source_url: string | null }[] | null };
+type Row = { id: string; public_revision: string; name: string; start_date: string; website_url: string | null; registration_url: string | null; regulations_url: string | null; age_confidence: string | null; age_categories: string[] | null; audience: string | null; overrides: { locked_fields: string[] | null } | null; location: { municipality: string | null; country_code: string | null } | null; sources: { source_url: string | null }[] | null };
 
 async function main() {
   const apply = process.argv.includes("--apply");
@@ -27,7 +27,7 @@ async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const { gatherEventDossier } = await import("../src/lib/catalog/source-evidence");
   const { classesFromDossier, statable, auditDossierClasses } = await import("../src/lib/catalog/dossier-classes");
-  const { recordFacts, textHash, alreadyRead, markRead } = await import("../src/lib/catalog/facts");
+  const { textHash, alreadyRead, markRead } = await import("../src/lib/catalog/facts");
   const { recentlyProbed, recordProbe } = await import("../src/lib/catalog/probes");
   const { audienceFromAgeCategories } = await import("../src/lib/taxonomy");
   const { mayInheritSeriesAges } = await import("../src/lib/catalog/series-ages");
@@ -39,7 +39,7 @@ async function main() {
   const skip = await recentlyProbed(s, PROBE, { silentDays: 7 });
   const rows: Row[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await s.from("events").select("id, name, start_date, website_url, registration_url, regulations_url, age_confidence, age_categories,audience,overrides:event_overrides(locked_fields), location:locations(municipality, country_code), sources:event_sources(source_url)")
+    const { data, error } = await s.from("events").select("id, public_revision, name, start_date, website_url, registration_url, regulations_url, age_confidence, age_categories,audience,overrides:event_overrides(locked_fields), location:locations(municipality, country_code), sources:event_sources(source_url)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", past ? ["scheduled", "tbc", "confirmed", "completed"] : ["scheduled", "tbc", "confirmed"]).gte("start_date", past ? new Date(Date.now() - 400 * 864e5).toISOString().slice(0, 10) : today).lt("start_date", past ? today : "9999-12-31").order("start_date").order("id").range(from, from + 999);
     if (error) throw error;
     rows.push(...((data ?? []) as unknown as Row[]));
@@ -82,28 +82,22 @@ async function main() {
       console.log(`${apply ? "SET" : "DRY"}  ${r.start_date}  ${r.name}  → ${got.ages.join(",")}  (had ${(r.age_categories ?? []).join(",") || "-"})\n      ${got.lines.slice(0, 4).map((l) => l.line.slice(0, 100)).join(" | ")}\n      ${got.lines[0]?.url}`);
       if (!apply) return;
       const ages = mergeStatedAges(r.age_categories, r.age_confidence, got.ages, []) as typeof got.ages;
-      // Compare with the read snapshot so another collector's new evidence is
-      // never overwritten by a stale dossier; a later pass can retry it.
-      let update = s.from("events").update({ age_categories: ages, age_confidence: "explicit", audience: audienceFromAgeCategories(ages), updated_at: new Date().toISOString() }).eq("id", r.id);
-      update = r.age_confidence == null ? update.is("age_confidence", null) : update.eq("age_confidence", r.age_confidence);
-      update = r.age_categories == null ? update.is("age_categories", null) : update.eq("age_categories", r.age_categories);
-      const { data: saved, error } = await update.select("id");
+      const { data: saved, error } = await s.rpc("pipeline_apply_periodic_read", {
+        p_event: r.id, p_revision: r.public_revision,
+        p_patch: { age_categories: ages, age_confidence: "explicit", audience: audienceFromAgeCategories(ages) },
+        p_source: got.lines[0]?.url, p_quote: got.lines.map(l => l.line).join(" | ").slice(0, 2000),
+        p_method: "llm", p_model: HAIKU, p_version: VERSION,
+      });
       if (error) throw error;
-      if (saved?.length) {
-        result.stated += 1;
-        await recordFacts(s, r.id, [
-          { field: "age_categories", value: ages, previous: r.age_categories, sourceUrl: got.lines[0]?.url, quote: got.lines.map((l) => l.line).join(" | ").slice(0, 2000) },
-          { field: "age_confidence", value: "explicit", previous: r.age_confidence, sourceUrl: got.lines[0]?.url },
-          { field: "audience", value: audienceFromAgeCategories(ages), previous: r.audience, sourceUrl: got.lines[0]?.url },
-        ], { method: "llm", model: HAIKU, version: VERSION });
-      }
-      await remember();
+      if (saved?.length) result.stated += 1;
+      if (saved !== null) await remember();
     } catch (e) {
       result.failed += 1;
       console.log(`FAIL ${r.name}: ${e instanceof Error ? e.message : String(e)}`);
       if (e instanceof LlmUnavailable) stop = true;
     }
   });
+  if (result.failed) process.exitCode = 1;
   console.log({ ...result, costUsd: Number(llmSpent().toFixed(4)), dry: !apply });
 }
 main().catch((e) => { console.error(e); process.exit(1); });

@@ -2,7 +2,6 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { mayInheritSeriesAges } from "@/lib/catalog/series-ages";
-import { recordFacts } from "@/lib/catalog/facts";
 import { raceResultEventId } from "@/lib/watcher/extractors/contest-categories";
 import { htmlRegistrationCategories, partialCategoryPatch, raceResultRegistrationEvidence, registrationEditionMatches } from "@/lib/catalog/registration-categories";
 import { fetchPage } from "@/lib/watcher/http";
@@ -11,11 +10,11 @@ import { fetchPage } from "@/lib/watcher/http";
 export async function fillRegistrationAgeEvidence(opts?: { max?: number; dryRun?: boolean; log?: (line: string) => void }) {
   const supabase = createServerSupabase(), max = opts?.max ?? 400;
   const skip = await recentlyProbed(supabase, "registration_categories_v1", { silentDays: 1 });
-  type Row = { id: string; name: string; start_date: string; registration_url: string | null; website_url: string | null; age_categories: string[] | null; age_confidence: string | null; sources: { source_url: string | null }[]; overrides: { locked_fields: string[] | null } | null };
+  type Row = { id: string; public_revision: string; name: string; start_date: string; registration_url: string | null; website_url: string | null; age_categories: string[] | null; age_confidence: string | null; sources: { source_url: string | null }[]; overrides: { locked_fields: string[] | null } | null };
   const targets: Row[] = [];
   for (let from = 0; targets.length < max; from += 1000) {
     const { data, error } = await supabase.from("events")
-      .select("id,name,start_date,registration_url,website_url,age_categories,age_confidence,sources:event_sources(source_url),overrides:event_overrides(locked_fields)")
+      .select("id,public_revision,name,start_date,registration_url,website_url,age_categories,age_confidence,sources:event_sources(source_url),overrides:event_overrides(locked_fields)")
       .eq("visibility", "public").is("merged_into_id", null).in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", new Date().toISOString().slice(0, 10))
       .or("age_confidence.is.null,age_confidence.neq.explicit,age_categories.is.null,age_categories.eq.{}")
@@ -54,17 +53,14 @@ export async function fillRegistrationAgeEvidence(opts?: { max?: number; dryRun?
         opts.log?.(`DRY partial ${row.name}: ${patch.age_categories.join(",")} ← ${labels.join(" | ")}`);
         result.supplemented++;
       } else {
-        // Compare-and-set avoids clobbering another reader's newly completed programme.
-        let save = supabase.from("events").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", row.id);
-        save = row.age_confidence == null ? save.is("age_confidence", null) : save.eq("age_confidence", row.age_confidence);
-        save = row.age_categories == null ? save.is("age_categories", null) : save.eq("age_categories", row.age_categories);
-        const { data, error } = await save.select("id");
+        const { data, error } = await supabase.rpc("pipeline_apply_periodic_read", {
+          p_event: row.id, p_revision: row.public_revision, p_patch: patch,
+          p_method: "registration_categories", p_version: "registration-categories-v1", p_source: evidence[0]?.sourceUrl,
+          p_quote: `Non-exhaustive positive evidence: ${evidence.map(item => `${item.sourceUrl}: ${item.labels.join(" | ")}`).join("\n")}`,
+        });
         if (error) throw error;
-        if (data?.length) {
-          await recordFacts(supabase, row.id, [
-            { field: "age_categories", value: patch.age_categories, previous: row.age_categories, sourceUrl: evidence[0]?.sourceUrl, quote: `Non-exhaustive positive evidence: ${evidence.map((item) => `${item.sourceUrl}: ${item.labels.join(" | ")}`).join("\n")}` },
-            { field: "age_confidence", value: patch.age_confidence, previous: row.age_confidence, sourceUrl: evidence[0]?.sourceUrl },
-          ], { method: "registration_categories", version: "registration-categories-v1" });
+        if (data === null) continue;
+        if (data.length) {
           result.supplemented++;
           opts?.log?.(`SET partial ${row.name}: ${patch.age_categories.join(",")} ← ${labels.join(" | ")}`);
         }

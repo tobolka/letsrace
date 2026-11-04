@@ -535,25 +535,11 @@ export async function runExplore(opts?: {
     if (!ok) continue;
     known.add(hit.url);
     if (opts?.autoWatch !== false && shouldAutoWatch(hit)) {
-      const { error } = await supabase.from("watched_urls").upsert(
-        {
-          url: hit.url,
-          kind: "race",
-          status: "active",
-          added_by: "explore",
-          notes: `auto ${hit.score.toFixed(2)} ${hit.title ?? ""}`.trim(),
-          next_poll_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "url", ignoreDuplicates: true },
-      );
-      if (!error) {
-        autoWatched += 1;
-        await supabase
-          .from("discovered_links")
-          .update({ status: "accepted" })
-          .eq("url", hit.url);
-      }
+      const { data: accepted, error } = await supabase.rpc("pipeline_accept_discovered_race", {
+        p_url: hit.url, p_notes: `auto ${hit.score.toFixed(2)} ${hit.title ?? ""}`.trim(),
+      });
+      if (error) throw Error(`Saving discovered source: ${error.message}`);
+      if (accepted) autoWatched++;
     }
   }
 

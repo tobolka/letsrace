@@ -16,6 +16,7 @@ try {
  const detail=await readFile('supabase/migrations/20261102140700_reliable_detail_data.sql','utf8');
  await db.exec(detail.slice(detail.indexOf('create function public.pipeline_detail_child_revision()'),detail.indexOf('-- Shared historical weather')));
  await db.exec(await readFile('supabase/migrations/20261103133502_atomic_fact_rollback.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261104123049_restore_recorded_category_sets.sql','utf8'));
  await db.exec(`set role service_role;insert into events(id,name,slug,start_date,status,visibility,disciplines) values('${race}','Race','race',current_date+1,'scheduled','public',array['mtb']);
  insert into event_facts(id,event_id,field,value,previous) values('${fact}','${race}','disciplines','["mtb"]','[]');`);
  const undo=async(dry=false)=>(await db.query('select pipeline_rollback_fact($1,$2) r',[fact,dry])).rows[0].r;
@@ -42,6 +43,24 @@ try {
  await db.query('update event_facts set previous=$1 where id=$2',[{rows:[{name:'Original'}]},fact]);assert.equal((await undo()).reason,'previous_categories_require_restore');
  await db.exec(`update event_facts set previous='[]' where id='${fact}'`);
  assert.equal((await undo()).status,'restored');assert.deepEqual((await state()).cats.map(c=>c.id),[cats[2]],'independently added category survives');
+ const post=(await state()).cats;
+ const prior=[{...post[0],id:cats[0],name:'Original category',distance_km:20,elevation_m:340},{...post[0],name:'Former label'}];
+ await db.query("update event_facts set value=$1,previous=$2,status='active' where id=$3",[{rows:post},{rows:prior},fact]);
+ await db.query("insert into event_categories(id,event_id,name) values($1,$2,'Later addition')",[cats[1],race]);
+ assert.equal((await undo()).reason,'changed_categories');
+ await db.query("delete from event_categories where id=$1",[cats[1]]);
+ await db.query("insert into event_categories(id,event_id,name) values($1,$2,'Other race row')",[cats[0],id(99)]);
+ assert.equal((await undo()).reason,'previous_category_id_in_use');
+ await db.query("delete from event_categories where id=$1",[cats[0]]);
+ const beforeRestore=await state();
+ assert.equal((await undo(true)).status,'restored');
+ assert.deepEqual(await state(),beforeRestore);
+ await db.exec('reset role;create trigger reject_status before update on event_facts for each row execute function reject_status();set role service_role');
+ await assert.rejects(undo(),/forced receipt failure/);
+ assert.deepEqual(await state(),beforeRestore,'replacement, public revision and evidence roll back together');
+ await db.exec('reset role;drop trigger reject_status on event_facts;set role service_role');
+ assert.equal((await undo()).status,'restored');
+ assert.deepEqual((await state()).cats,prior);
  await db.exec(`update event_facts set field='source_evidence',status='active' where id='${fact}'`);assert.equal((await undo()).reason,'unsupported_field');
  await db.exec(`update events set merged_into_id=gen_random_uuid() where id='${race}'`);assert.equal((await undo()).reason,'missing_or_merged_event');
  for(const role of ['anon','authenticated']){await db.exec(`reset role;set role ${role}`);await assert.rejects(undo(),/permission denied/);}

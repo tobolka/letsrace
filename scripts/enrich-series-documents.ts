@@ -15,7 +15,7 @@ async function main() {
   const sourceReader = localSourceReader({ directory: resolve("tmp/source-dossiers/documents"), read: readDocument, maxAgeMs: 24 * 3600000,
     deadline: Number(process.env.SOURCE_RUN_DEADLINE) > 0 ? Number(process.env.SOURCE_RUN_DEADLINE) * 1000 : Infinity, stopped: () => false });
   const { gatherDossier } = await import("../src/lib/catalog/dossier");
-  const { recordFacts, textHash } = await import("../src/lib/catalog/facts");
+  const { textHash } = await import("../src/lib/catalog/facts");
   const { HAIKU, llmSpent, LlmUnavailable } = await import("../src/lib/llm/anthropic");
   const { readSeriesDocument } = await import("../src/lib/catalog/series-document-reader");
   const { audienceFromAgeCategories } = await import("../src/lib/taxonomy");
@@ -34,12 +34,12 @@ async function main() {
         + (g.rounds.some((r) => r.regulationsUrl) ? 6 : 0);
       return benefit(b) - benefit(a);
     }).slice(0, max);
-  type Round = { id: string; name: string; start_date: string; age_categories: string[] | null; age_confidence: string | null; audience: string | null; website_url: string | null; regulations_url: string | null; overrides: { locked_fields: string[] | null } | null };
+  type Round = { id: string; public_revision: string; name: string; start_date: string; age_categories: string[] | null; age_confidence: string | null; audience: string | null; website_url: string | null; regulations_url: string | null; overrides: { locked_fields: string[] | null } | null };
   const result = { series: series.length, documents: 0, modelCalls: 0, cached: 0, categories: 0, regulations: 0, rejected: 0, oversized: 0, failed: 0, stopped: false };
   mkdirSync("tmp/series-document-cache", { recursive: true });
   for (const group of series) {
     try {
-      const { data, error } = await s.from("events").select("id,name,start_date,age_categories,age_confidence,audience,website_url,regulations_url,overrides:event_overrides(locked_fields)")
+      const { data, error } = await s.from("events").select("id,public_revision,name,start_date,age_categories,age_confidence,audience,website_url,regulations_url,overrides:event_overrides(locked_fields)")
         .eq("series_id", group.id).is("merged_into_id", null).eq("visibility", "public").in("status", [...ACTIVE_EVENT_STATUSES]).gte("start_date", new Date().toISOString().slice(0, 10)).order("start_date").limit(500);
       if (error) throw error;
       const rounds = (data ?? []) as unknown as Round[];
@@ -83,18 +83,19 @@ async function main() {
         for (const round of rounds) {
           if (!roundWithinSeriesSeason(round.start_date, evidence)) continue;
           const inherit = evidence.ages.length > 0 && mayInheritSeriesAges({ ...round, locked_fields: round.overrides?.locked_fields });
-          const patch: Record<string, unknown> = inherit ? { age_categories: evidence.ages, age_confidence: "explicit", audience: audienceFromAgeCategories(evidence.ages) } : {};
+          const patch: Record<string, import("../src/lib/supabase/database.types").Json> = inherit ? { age_categories: evidence.ages, age_confidence: "explicit", audience: audienceFromAgeCategories(evidence.ages) } : {};
           if (evidence.rules && !round.regulations_url && !round.overrides?.locked_fields?.includes("regulations_url")) patch.regulations_url = d.url;
           if (!Object.keys(patch).length) continue;
           console.log(`${apply ? "SET" : "DRY"} ${round.id} ${round.name}: ${evidence.ages.join(",")} ← ${d.url}`);
           if (apply) {
-            let q = s.from("events").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", round.id);
-            if (inherit) q = q.or("age_confidence.is.null,age_confidence.neq.explicit,age_categories.is.null,age_categories.eq.{}");
-            if (patch.regulations_url) q = q.is("regulations_url", null);
-            const { data: saved, error } = await q.select("id");
+            const { data: saved, error } = await s.rpc("pipeline_apply_periodic_read", {
+              p_event: round.id, p_revision: round.public_revision, p_patch: patch,
+              p_source: d.url, p_quote: evidence.quote, p_method: "series_document", p_model: HAIKU, p_version: "series-document-v3",
+            });
             if (error) throw error;
-            if (!saved?.length) continue;
-            await recordFacts(s, round.id, Object.entries(patch).map(([field, value]) => ({ field, value, previous: (round as unknown as Record<string, unknown>)[field] ?? null, sourceUrl: d.url, quote: evidence.quote })), { method: "series_document", model: HAIKU, version: "series-document-v3" });
+            if (saved?.includes("age_categories")) result.categories++;
+            if (saved?.includes("regulations_url")) result.regulations++;
+            continue;
           }
           if (inherit) result.categories++;
           if (patch.regulations_url) result.regulations++;

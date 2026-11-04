@@ -1470,6 +1470,19 @@ export type Database = {
         Args: {p_event:string;p_revision:string;p_method:string;p_source:string;p_patch:Json;p_place?:Json;p_quote?:string};
         Returns: string[];
       };
+      pipeline_apply_original_categories: {
+        Args: { p_event: string; p_revision: string; p_rows: Json; p_evidence: Json; p_complete: boolean; p_source: string; p_quote: string; p_model: string; p_version: string };
+        Returns: Json;
+      };
+      pipeline_accept_discovered_race: { Args: { p_url: string; p_notes: string }; Returns: boolean };
+      pipeline_apply_series_links: {
+        Args: { p_series: string | null; p_slug: string; p_name: string; p_normalized: string; p_country: string | null; p_races: Json };
+        Returns: Json;
+      };
+      pipeline_apply_periodic_read: {
+        Args: { p_event: string; p_revision: string; p_patch: Json; p_method: string; p_version: string | null; p_evidence?: Json; p_source?: string | null; p_quote?: string | null; p_model?: string | null };
+        Returns: string[] | null;
+      };
       pipeline_apply_catalogue_age_read: {
         Args: {p_event:string;p_revision:string;p_patch:Json;p_method:string;p_version:string;p_source?:string|null;p_quote?:string;p_series?:string;p_series_updated_at?:string}
         Returns: string|null

@@ -16,13 +16,12 @@ const SYSTEM =
   "When the name alone does not tell (a plain place name, a cup round), answer race. " +
   'Answer JSON only: {"items":[{"n":1,"kind":"race|ride|other"}]}';
 
-type Row = { id: string; name: string; event_type: string | null; disciplines: string[] | null; website_url: string | null; series: { name: string } | null; sources: { source_url: string | null }[] };
+type Row = { id: string; public_revision: string; name: string; event_type: string | null; disciplines: string[] | null; website_url: string | null; series: { name: string } | null; sources: { source_url: string | null }[] };
 
 async function main() {
   const apply = process.argv.includes("--apply");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const { askJson, SONNET, LlmUnavailable } = await import("../src/lib/llm/anthropic");
-  const { recordFacts } = await import("../src/lib/catalog/facts");
   const s = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
   // --since=3: only listings created in the last three days (the daily run).
@@ -30,8 +29,9 @@ async function main() {
   const createdFrom = sinceDays ? new Date(Date.now() - sinceDays * 864e5).toISOString() : "2000-01-01";
   const rows: Row[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data } = await s.from("events").select("id, name, event_type, disciplines, website_url, series:series!events_series_id_fkey(name), sources:event_sources(source_url)")
+    const { data, error } = await s.from("events").select("id, public_revision, name, event_type, disciplines, website_url, series:series!events_series_id_fkey(name), sources:event_sources(source_url)")
       .eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).gte("created_at", createdFrom).neq("event_type", "ride").order("id").range(from, from + 999);
+    if (error) throw error;
     rows.push(...((data ?? []) as unknown as Row[]));
     if (!data || data.length < 1000) break;
   }
@@ -61,13 +61,11 @@ async function main() {
       else continue;
       console.log(`${apply ? "SET" : "DRY"}  ${v.kind.padEnd(5)}  ${r.name}`);
       if (!apply) continue;
-      if (v.kind === "ride") {
-        await s.from("events").update({ event_type: "ride", updated_at: new Date().toISOString() }).eq("id", r.id);
-        await recordFacts(s, r.id, [{ field: "event_type", value: "ride", previous: r.event_type }], { method: "llm", model: SONNET, version: "event-kind-v1" });
-      } else {
-        await s.from("events").update({ visibility: "hidden", updated_at: new Date().toISOString() }).eq("id", r.id);
-        await recordFacts(s, r.id, [{ field: "visibility", value: "hidden", previous: "public" }], { method: "llm", model: SONNET, version: "event-kind-v1" });
-      }
+      const { error } = await s.rpc("pipeline_apply_periodic_read", {
+        p_event: r.id, p_revision: r.public_revision, p_patch: v.kind === "ride" ? { event_type: "ride" } : { visibility: "hidden" },
+        p_method: "llm", p_model: SONNET, p_version: "event-kind-v1",
+      });
+      if (error) throw error;
     }
   }
   console.log({ ...tally, cost: Number(tally.cost.toFixed(3)), dry: !apply });

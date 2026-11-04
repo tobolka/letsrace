@@ -14,7 +14,7 @@ import { isAggregatorUrl, isDumpListingUrl } from "@/lib/watcher/public-url";
 import { relevantWindows, verifiedCategories } from "@/lib/catalog/llm-ages";
 import { askJson, llmSpent, HAIKU, SONNET, LlmUnavailable, type LlmUsage } from "@/lib/llm/anthropic";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
-import { alreadyRead, markRead, recordFacts, textHash, type Fact } from "@/lib/catalog/facts";
+import { alreadyRead, markRead, textHash, type Fact } from "@/lib/catalog/facts";
 import type { Update } from "@/lib/supabase/tables";
 
 /** Bump when the prompt or the checks change: pages are read again, facts carry it. */
@@ -358,14 +358,14 @@ export async function enrichFromPages(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "llm_v4");
   type Target = {
-    id: string; name: string; startDate: string; country: string | null; place: string | null; web: string | null; regs: string | null;
+    id: string; revision: string; name: string; startDate: string; country: string | null; place: string | null; web: string | null; regs: string | null;
     disciplines: string[]; existing: string[]; ageConfidence: string | null; registrationUrl: string | null; regulationsUrl: string | null; closesAt: string | null;
   };
   const targets: Target[] = [];
   for (let from = 0; ; from += PAGE) {
     let q = supabase
       .from("events")
-      .select("id, name, start_date, website_url, registration_url, regulations_url, registration_closes_at, disciplines, age_categories, age_confidence, location:locations(municipality,country_code)")
+      .select("id, public_revision, name, start_date, website_url, registration_url, regulations_url, registration_closes_at, disciplines, age_categories, age_confidence, location:locations(municipality,country_code)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", opts?.past ? [...ACTIVE_EVENT_STATUSES, "completed"] : [...ACTIVE_EVENT_STATUSES])
@@ -390,7 +390,7 @@ export async function enrichFromPages(opts?: {
         : r.age_confidence !== "explicit" || !(r.disciplines ?? []).length || !r.registration_url || !r.regulations_url;
       if (!needs && !opts?.ids?.length) continue;
       targets.push({
-        id: r.id, name: r.name, startDate: r.start_date, country: r.location?.country_code ?? null, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
+        id: r.id, revision: r.public_revision, name: r.name, startDate: r.start_date, country: r.location?.country_code ?? null, place: r.location?.municipality ?? null, web: r.website_url, regs: r.regulations_url,
         disciplines: r.disciplines ?? [], existing: r.age_categories ?? [], ageConfidence: r.age_confidence,
         registrationUrl: r.registration_url, regulationsUrl: r.regulations_url, closesAt: r.registration_closes_at,
       });
@@ -413,6 +413,7 @@ export async function enrichFromPages(opts?: {
   let stop = false;
   const completedReads = new Map<string, { url: string; reader: string; hash: string }>();
   const deadlines = new Map<string, { t: Target; date: string; time: string | null; quote: string }>();
+  const changes = new Map<string, { t: Target; patch: Update<"events">; facts: Fact[] }>();
   const one = async (t: Target) => {
     if (stop) return;
     try {
@@ -620,16 +621,11 @@ export async function enrichFromPages(opts?: {
       }
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}\n      ${notes.join("\n      ")}`);
       if (opts?.dryRun) return;
-      patch.updated_at = new Date().toISOString();
-      const { error } = await supabase.from("events").update(patch).eq("id", t.id);
-      if (!error) await recordFacts(supabase, t.id, facts, { method: "llm", model: HAIKU, version: ENRICH_VERSION });
-      if (error) {
-        completedReads.delete(t.id);
-        result.failed += 1;
-        await recordProbe(supabase, t.id, "llm_v4", "failed");
-      } else await recordProbe(supabase, t.id, "llm_v4", "silent");
+      changes.set(t.id, { t, patch, facts });
     } catch (e) {
       completedReads.delete(t.id);
+      deadlines.delete(t.id);
+      changes.delete(t.id);
       result.failed += 1;
       opts?.log?.(`FAIL ${t.name}: ${e instanceof Error ? e.message : e}`);
       if (e instanceof LlmUnavailable) {
@@ -655,21 +651,36 @@ export async function enrichFromPages(opts?: {
     opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${line}`);
     if (opts?.dryRun) continue;
     const value = `${d.date}T${d.time ?? "00:00"}:00+00:00`;
-    const { data: done, error } = await supabase
-      .from("events")
-      .update({ registration_closes_at: value, updated_at: new Date().toISOString() })
-      .eq("id", d.t.id)
-      .is("registration_closes_at", null)
-      .select("id");
-    if (error) {
-      completedReads.delete(d.t.id);
-      result.failed += 1;
-      continue;
-    }
-    if (done?.length) await recordFacts(supabase, d.t.id, [{ field: "registration_closes_at", value: `${d.date}T${d.time ?? "00:00"}:00+00:00`, previous: null, sourceUrl: d.t.web, quote: d.quote }], { method: "llm", model: HAIKU, version: ENRICH_VERSION });
+    const pending = changes.get(d.t.id) ?? { t: d.t, patch: {}, facts: [] };
+    pending.patch.registration_closes_at = value;
+    pending.facts.push({ field: "registration_closes_at", value, previous: null, sourceUrl: d.t.web, quote: d.quote });
+    changes.set(d.t.id, pending);
   }
-  // Remember only completed decisions, after the auditor and all writes finish.
-  if (!opts?.dryRun) for (const read of completedReads.values()) await markRead(supabase, read.url, read.reader, read.hash);
+  if (!opts?.dryRun) {
+    result.ages = result.disciplinesSet = result.registration = result.regulations = result.deadlines = 0;
+    for (const { t, patch, facts } of changes.values()) {
+      const { data: saved, error } = await supabase.rpc("pipeline_apply_periodic_read", {
+        p_event: t.id, p_revision: t.revision, p_patch: patch, p_method: "llm", p_model: HAIKU, p_version: ENRICH_VERSION,
+        p_source: t.web, p_evidence: Object.fromEntries(facts.map(f => [f.field, { sourceUrl: f.sourceUrl ?? null, quote: f.quote ?? null }])),
+      });
+      if (error || saved === null) {
+        completedReads.delete(t.id);
+        if (error) {
+          result.failed++;
+          opts?.log?.(`FAIL ${t.name}: ${error.message}`);
+        }
+        continue;
+      }
+      if (saved.includes("age_categories")) result.ages++;
+      if (saved.includes("disciplines")) result.disciplinesSet++;
+      if (saved.includes("registration_url")) result.registration++;
+      if (saved.includes("regulations_url")) result.regulations++;
+      if (saved.includes("registration_closes_at")) result.deadlines++;
+      await recordProbe(supabase, t.id, "llm_v4", "silent");
+    }
+    // Remember only completed decisions, after the auditor and all writes finish.
+    for (const read of completedReads.values()) await markRead(supabase, read.url, read.reader, read.hash);
+  }
   if (opts?.reviewFile && review.length > 1) writeFileSync(opts.reviewFile, review.join("\n") + "\n");
   return result;
 }

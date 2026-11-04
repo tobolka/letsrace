@@ -40,7 +40,7 @@ export function seriesPrefix(name: string): string | null {
   return n.length >= 4 ? n : null;
 }
 
-type Race = { id: string; name: string; start_date: string; cc: string | null };
+type Race = { id: string; revision: string; name: string; start_date: string; cc: string | null };
 type Series = { id: string; name: string; slug: string; short_name: string | null; country_code: string | null };
 
 export type SeriesProposal = { key: string; country: string | null; name: string; existing: Series | null; races: Race[] };
@@ -50,9 +50,9 @@ export async function proposeSeriesLinks(opts?: { countries?: string[] }): Promi
   const today = new Date().toISOString().slice(0, 10);
   const races: Race[] = [];
   for (let from = 0; ; from += PAGE) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, location:locations(country_code)")
+      .select("id, public_revision, name, start_date, location:locations(country_code)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .is("series_id", null)
@@ -60,16 +60,18 @@ export async function proposeSeriesLinks(opts?: { countries?: string[] }): Promi
       .gte("start_date", today)
       .order("id")
       .range(from, from + PAGE - 1);
+    if (error) throw error;
     for (const r of data ?? []) {
       const cc = r.location?.country_code ?? null;
       if (opts?.countries?.length && (!cc || !opts.countries.includes(cc))) continue;
-      races.push({ id: r.id, name: r.name, start_date: r.start_date, cc });
+      races.push({ id: r.id, revision: r.public_revision, name: r.name, start_date: r.start_date, cc });
     }
     if (!data || data.length < PAGE) break;
   }
   const series: Series[] = [];
   for (let from = 0; ; from += PAGE) {
-    const { data } = await supabase.from("series").select("id, name, slug, short_name, country_code").eq("visibility", "public").range(from, from + PAGE - 1);
+    const { data, error } = await supabase.from("series").select("id, name, slug, short_name, country_code").eq("visibility", "public").range(from, from + PAGE - 1);
+    if (error) throw error;
     series.push(...((data ?? []) as Series[]));
     if (!data || data.length < PAGE) break;
   }
@@ -141,25 +143,17 @@ export async function applySeriesLinks(proposals: SeriesProposal[], log?: (l: st
   let created = 0;
   for (const g of proposals) {
     if (isSiteIdentityName(g.name)) continue;
-    let id = g.existing?.id ?? null;
-    if (!id) {
-      const slug = slugifySeries(g.name);
-      const { data: same } = await supabase.from("series").select("id").eq("slug", slug).maybeSingle();
-      if (same) id = same.id as string;
-      else {
-        const { data: made } = await supabase
-          .from("series")
-          .insert({ slug, name: g.name, name_normalized: normalizeName(g.name), country_code: g.country, source_kind: "other" })
-          .select("id")
-          .single();
-        if (!made) continue;
-        id = made.id as string;
-        created += 1;
-      }
-    }
-    const ids = g.races.map((r) => r.id);
-    const { data } = await supabase.from("events").update({ series_id: id, updated_at: new Date().toISOString() }).in("id", ids).is("series_id", null).select("id");
-    linked += data?.length ?? 0;
+    const { data, error } = await supabase.rpc("pipeline_apply_series_links", {
+      p_series: g.existing?.id ?? null, p_slug: g.existing?.slug ?? slugifySeries(g.name),
+      p_name: g.name, p_normalized: normalizeName(g.name), p_country: g.country,
+      p_races: g.races.map(r => ({ id: r.id, revision: r.revision })),
+    });
+    if (error) throw error;
+    const receipt = data as { linked: number; created: boolean } | null;
+    if (!receipt || typeof receipt.linked !== "number" || typeof receipt.created !== "boolean") throw Error("Series links were not confirmed");
+    linked += receipt.linked;
+    if (receipt.created) created++;
+    if (!receipt.linked) continue;
     log?.(`LINK ${g.name}${g.existing ? "" : " (new)"} ← ${g.races.map((r) => r.name).slice(0, 4).join(" | ")}${g.races.length > 4 ? ` … +${g.races.length - 4}` : ""}`);
   }
   return { linked, created };

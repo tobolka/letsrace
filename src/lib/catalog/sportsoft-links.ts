@@ -1,6 +1,5 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { recordFacts } from "@/lib/catalog/facts";
 import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
@@ -38,7 +37,7 @@ export async function fillSportsoftLinks(opts?: {
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, registration_url, regulations_url, sources:event_sources(source_url)")
+      .select("id, public_revision, name, start_date, registration_url, regulations_url, sources:event_sources(source_url)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -66,23 +65,27 @@ export async function fillSportsoftLinks(opts?: {
       }
       const found = sportsoftLinksFromPage(html);
       const update: Record<string, string> = {};
-      const facts: { field: string; value: string; previous: null; sourceUrl: string }[] = [];
       if (!row.registration_url && found.registration) {
         update.registration_url = found.registration;
-        facts.push({ field: "registration_url", value: found.registration, previous: null, sourceUrl: page });
       }
       // An uploaded file is linked even before it is there; only a real one is kept.
       if (!row.regulations_url && found.regulations && (await exists(found.regulations))) {
         update.regulations_url = found.regulations;
-        facts.push({ field: "regulations_url", value: found.regulations, previous: null, sourceUrl: page });
       }
-      if (!facts.length) continue;
+      if (!Object.keys(update).length) continue;
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${row.start_date}  ${row.name}  → ${Object.values(update).join("  ")}`);
-      if (update.registration_url) result.registration += 1;
-      if (update.regulations_url) result.regulations += 1;
-      if (opts?.dryRun) continue;
-      await supabase.from("events").update({ ...update, updated_at: new Date().toISOString() }).eq("id", row.id);
-      await recordFacts(supabase, row.id, facts, { method: "parser:sportsoft-race-page" });
+      if (opts?.dryRun) {
+        if (update.registration_url) result.registration += 1;
+        if (update.regulations_url) result.regulations += 1;
+        continue;
+      }
+      const { data: saved, error } = await supabase.rpc("pipeline_apply_periodic_read", {
+        p_event: row.id, p_revision: row.public_revision, p_patch: update,
+        p_source: page, p_method: "parser:sportsoft-race-page", p_version: null,
+      });
+      if (error) throw error;
+      if (saved?.includes("registration_url")) result.registration++;
+      if (saved?.includes("regulations_url")) result.regulations++;
     }
     if (rows.length < PAGE) break;
   }
