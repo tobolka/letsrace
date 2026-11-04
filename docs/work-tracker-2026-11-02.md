@@ -1,8 +1,8 @@
 # LetsRace — rozpracovaná práce z 2. listopadu 2026
 
-Tento přehled zachovává celé zadání, ne jen poslední zprávu. Bez odhadů délky práce. Dokončení jedné opravy neznamená dokončení přestavby systému.
+**Historický záznam z 2. listopadu.** Aktuální úkoly, pořadí a stav jsou ve [společném seznamu priorit](operations-progress.md).
 
-## Aktuální pořadí
+## Stav zaznamenaný 2. a 3. listopadu
 
 | Priorita | Práce | Stav a další konkrétní krok |
 |---|---|---|
