@@ -1,0 +1,385 @@
+{
+  "version": 1,
+  "referenceDate": "2026-11-04",
+  "purpose": "Zmrazená průřezová kontrolní sada před porovnáním s katalogem. Výběr začal u pořadatelů a federací. Sada není reprezentativním odhadem celé sezóny.",
+  "cases": [
+    {
+      "id": "cz-czech-tour",
+      "name": "Czech Tour",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/ROA/80101",
+      "evidenceSummary": "Silniční etapový závod mužů v kalendáři UCI ProSeries. Hodnotí se celý závod, nikoli jednotlivé etapy.",
+      "expected": {
+        "start_date": "2027-08-12",
+        "end_date": "2027-08-15",
+        "country": "CZ",
+        "disciplines": [
+          "road_race"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "czech tour"
+      ]
+    },
+    {
+      "id": "de-rad-am-ring-gravel",
+      "name": "Rad am Ring – Gravel-Race",
+      "sourceUrl": "https://radamring.de/de/disziplinen/gravel-race",
+      "supportingUrls": [
+        "https://radamring.de/de/programm/zeitplan"
+      ],
+      "evidenceSummary": "Samostatný gravelový program v sobotu. Podrobné kategorie a vzdálenosti jsou mimo očekávaná pole.",
+      "expected": {
+        "start_date": "2027-07-24",
+        "end_date": "2027-07-24",
+        "country": "DE",
+        "placeContains": "Nürburgring",
+        "disciplines": [
+          "gravel"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "rad am ring",
+        "gravel-race"
+      ]
+    },
+    {
+      "id": "de-rad-am-ring-24h",
+      "name": "Rad am Ring – 24h-Radrennen",
+      "sourceUrl": "https://radamring.de/de/disziplinen/24h-radrennen",
+      "supportingUrls": [
+        "https://radamring.de/de/programm/zeitplan"
+      ],
+      "evidenceSummary": "Okruh Nürburgring. Sobotní start a nedělní cíl podle harmonogramu. Páteční otevření festivalu není start soutěže.",
+      "expected": {
+        "start_date": "2027-07-24",
+        "end_date": "2027-07-25",
+        "country": "DE",
+        "placeContains": "Nürburgring",
+        "disciplines": [
+          "road"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "rad am ring",
+        "24h-radrennen"
+      ]
+    },
+    {
+      "id": "de-rad-am-ring-kids",
+      "name": "Rad am Ring – Dextro Energy Kids Race",
+      "sourceUrl": "https://radamring.de/de/disziplinen/kids-race",
+      "supportingUrls": [
+        "https://radamring.de/de/programm/zeitplan"
+      ],
+      "evidenceSummary": "Vlastní dětský závod, registrace a vyhlášení. Oficiální stránka neurčuje jednotnou katalogovou disciplínu pro všechny kategorie, pole se nehodnotí.",
+      "expected": {
+        "start_date": "2027-07-24",
+        "end_date": "2027-07-24",
+        "country": "DE",
+        "placeContains": "Nürburgring",
+        "disciplines": []
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "rad am ring",
+        "dextro energy kids"
+      ]
+    },
+    {
+      "id": "at-wachau",
+      "name": "Wachau Radmarathon",
+      "sourceUrl": "https://www.wachau-radmarathon.at/de/",
+      "supportingUrls": [
+        "https://www.wachau-radmarathon.at/en/"
+      ],
+      "evidenceSummary": "Přejmenované Wachauer Radtage. Pořadatel uvádí start v Mautern an der Donau a tři silniční trasy.",
+      "expected": {
+        "start_date": "2027-07-18",
+        "end_date": "2027-07-18",
+        "country": "AT",
+        "placeContains": "Mautern",
+        "disciplines": [
+          "road"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "wachau radmarathon",
+        "wachauer radtage"
+      ]
+    },
+    {
+      "id": "at-kufstein",
+      "name": "Kufsteinerland Radmarathon",
+      "sourceUrl": "https://www.kufsteinerland-radmarathon.at/",
+      "supportingUrls": [
+        "https://arena.kufstein.at/de/kufstein/events/11-kufsteinerland-radmarathon.html"
+      ],
+      "evidenceSummary": "Jedenáctý ročník silničního maratonu, oddělený od souhrnu výsledků 2026 na stejné stránce.",
+      "expected": {
+        "start_date": "2027-08-22",
+        "end_date": "2027-08-22",
+        "country": "AT",
+        "placeContains": "Kufstein",
+        "disciplines": [
+          "road"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "kufsteinerland radmarathon"
+      ]
+    },
+    {
+      "id": "pl-mazowiecki",
+      "name": "Mazowiecki Gravel",
+      "sourceUrl": "https://www.mazowieckigravel.pl/mg/artykuly/zapisy-mg27",
+      "supportingUrls": [
+        "https://www.mazowieckigravel.pl/mg/artykuly/siedlce",
+        "https://www.mazowieckigravel.pl/"
+      ],
+      "evidenceSummary": "Novou základnou jsou Siedlce. Varka je v článku popsána jako místo předchozí edice, říjnové datum patří k registraci.",
+      "expected": {
+        "start_date": "2027-06-19",
+        "end_date": "2027-06-20",
+        "country": "PL",
+        "placeContains": "Siedlce",
+        "disciplines": [
+          "gravel"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "mazowiecki gravel"
+      ]
+    },
+    {
+      "id": "pl-bike-adventure",
+      "name": "Bike Adventure MTB",
+      "sourceUrl": "https://bikeadventure.pl/",
+      "evidenceSummary": "Referenční jednotka je plná čtyřdenní soutěž. Dvoudenní nabídka má odlišný rozsah, navigace stále obsahuje rok 2026.",
+      "expected": {
+        "start_date": "2027-07-08",
+        "end_date": "2027-07-11",
+        "country": "PL",
+        "placeContains": "Szklarska Poręba",
+        "disciplines": [
+          "mtb"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "bike adventure"
+      ]
+    },
+    {
+      "id": "sk-stupava-summer",
+      "name": "BAJKSERVIS Stupava maratón MTB",
+      "sourceUrl": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+      "supportingUrls": [
+        "https://www.stupavskymaraton.sk/"
+      ],
+      "evidenceSummary": "Hodnocena cyklistická soutěž. Pořadatel uvádí místo Stupava a sobotní termín v samostatných propozicích MTB.",
+      "expected": {
+        "start_date": "2027-06-19",
+        "end_date": "2027-06-19",
+        "country": "SK",
+        "placeContains": "Stupava",
+        "disciplines": [
+          "mtb"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "stupava marat",
+        "stupava mtb"
+      ]
+    },
+    {
+      "id": "sk-stupava-winter",
+      "name": "BAJKSERVIS Stupava zimný MTB maratón",
+      "sourceUrl": "https://www.stupavskymaraton.sk/inpage/stupava-winter-maraton-2025/",
+      "supportingUrls": [
+        "https://www.stupavskymaraton.sk/"
+      ],
+      "evidenceSummary": "Obsah uvádí zimní ročník 2027 a lednový termín. Rok 2025 v adrese a ve jménu dynamické sekce neurčuje aktuální termín.",
+      "expected": {
+        "start_date": "2027-01-16",
+        "end_date": "2027-01-16",
+        "country": "SK",
+        "placeContains": "Stupava",
+        "disciplines": [
+          "mtb"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "stupava zimn",
+        "stupava winter"
+      ]
+    },
+    {
+      "id": "ch-octopus",
+      "name": "Octopus Gravel",
+      "sourceUrl": "https://epicos.cc/events/octopus/",
+      "evidenceSummary": "Víkendová nabídka zahrnuje tři měřená stoupání. Očekávanou jednotkou je vypsaná gravelová akce, ne tři nové závody.",
+      "expected": {
+        "start_date": "2027-06-26",
+        "end_date": "2027-06-26",
+        "country": "CH",
+        "placeContains": "Andermatt",
+        "disciplines": [
+          "gravel"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "octopus gravel"
+      ]
+    },
+    {
+      "id": "ch-tour-vaud",
+      "name": "Tour du Pays de Vaud",
+      "sourceUrl": "https://www.uci.org/competition-details/2027/ROA/81146",
+      "supportingUrls": [
+        "https://tpv.ch/"
+      ],
+      "evidenceSummary": "Juniorský etapový závod na silnici. Úvodní stránka pořadatele potvrzuje termín, ale odkazuje i na starou edici. Přesné místo jednotlivých etap se nehodnotí.",
+      "expected": {
+        "start_date": "2027-05-27",
+        "end_date": "2027-05-30",
+        "country": "CH",
+        "disciplines": [
+          "road_race"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "tour du pays de vaud"
+      ]
+    },
+    {
+      "id": "it-strade-bianche-gf",
+      "name": "Gran Fondo Strade Bianche",
+      "sourceUrl": "https://gfstradebianche.it/en/faq-en/",
+      "supportingUrls": [
+        "https://www.rcssportsandevents.it/en/event/gran-fondo-strade-bianche/"
+      ],
+      "evidenceSummary": "Amatérský Gran Fondo a Medio Fondo na stejné akci. Hodnocena amatérská akce v Sieně, bez záměny s profesionálním závodem.",
+      "expected": {
+        "start_date": "2027-03-07",
+        "end_date": "2027-03-07",
+        "country": "IT",
+        "placeContains": "Siena",
+        "disciplines": [
+          "gran_fondo"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "gran fondo strade bianche",
+        "granfondo strade bianche"
+      ]
+    },
+    {
+      "id": "it-verona-bmx",
+      "name": "UEC BMX European Cup – Verona, kola 1 a 2",
+      "sourceUrl": "https://www.uec.ch/en/event/296/2027-uec-bmx-european-cup-rounds-1-2",
+      "supportingUrls": [
+        "https://www.federciclismo.it/comunicati-a/richiesta-iscrizioni-gare-calendario-nazionale-2027/"
+      ],
+      "evidenceSummary": "UEC potvrzuje víkend a dvě kola. Jednotkou tohoto řádku je celý víkend. Kontrolu jednotlivých kol nelze odvodit z tohoto rozsahu.",
+      "expected": {
+        "start_date": "2027-03-05",
+        "end_date": "2027-03-07",
+        "country": "IT",
+        "placeContains": "Verona",
+        "disciplines": [
+          "bmx"
+        ]
+      },
+      "reviewedEventIds": [],
+      "sourceExternalIds": [],
+      "nameAliases": [
+        "bmx european cup verona",
+        "bmx racing european cup - round"
+      ]
+    }
+  ],
+  "separationChecks": [
+    {
+      "id": "rad-am-ring-three-competitions",
+      "caseIds": [
+        "de-rad-am-ring-gravel",
+        "de-rad-am-ring-24h",
+        "de-rad-am-ring-kids"
+      ],
+      "expected": "separate",
+      "reason": "Tři samostatné soutěže u jednoho pořadatele, na stejném okruhu a se stejným dnem startu.",
+      "sourceUrl": "https://radamring.de/de/programm/zeitplan"
+    },
+    {
+      "id": "stupava-winter-and-summer",
+      "caseIds": [
+        "sk-stupava-winter",
+        "sk-stupava-summer"
+      ],
+      "expected": "separate",
+      "reason": "Stejný pořadatel, obec, rok a podobný název, ale samostatná lednová a červnová soutěž.",
+      "sourceUrl": "https://www.stupavskymaraton.sk/"
+    }
+  ],
+  "evidenceLimits": [
+    {
+      "id": "cz-sk-road-tender",
+      "sourceUrl": "https://www.cyklistikaszc.sk/sk/cestna-cyklistika/spravy/vyberove-konanie-na-usporiadanie-spolocnych-majstrovstiev-sr-a-cr-v-cestnej-cyklistike-na-rok-2027",
+      "expected": "Z výběrového řízení samotného nepotvrzovat hostitele, obec ani místo startu. Uvedený interval je v tomto dokumentu podmíněný."
+    },
+    {
+      "id": "pl-bike-maraton-2027-pending",
+      "sourceUrl": "https://bikemaraton.com.pl/",
+      "expected": "Při oznámení, že kalendář 2027 teprve vyjde, nepřepisovat vypsané termíny ročníku 2026 na rok 2027."
+    },
+    {
+      "id": "at-mondsee-kids-activity",
+      "sourceUrl": "https://mondsee-radmarathon.com/kids/teilnehmerinfo.html",
+      "expected": "Dětský den 19. června 2027 má termín, ale propozice jej popisují jako aktivitu zaměřenou na pohyb místo soutěže. Z tohoto podkladu nevytvářet soutěžní závod ani nepřebírat jeho program do silničního maratonu."
+    },
+    {
+      "id": "de-berlin-track-date-role",
+      "sourceUrl": "https://www.uec.ch/en/event/295/2027-uec-track-elite-european-championships",
+      "supportingUrls": [
+        "https://www.uec.ch/en/actu/372/berlin-will-host-the-2027-uec-track-elite-euro-champs",
+        "https://www.trackcycling-berlin.com/en/news/2026/the-road-to-la28-begins-in-shanghai-and-leads-through-berlin/"
+      ],
+      "expected": "Kalendář UEC uvádí 9.–14. února, pořadatel a oznámení UEC 10.–14. února. Před vyhodnocením začátku sportovního programu ověřit roli 9. února v rozpisu."
+    },
+    {
+      "id": "pl-bike-adventure-archived-programme",
+      "sourceUrl": "https://bikeadventure.pl/",
+      "expected": "Oznámení celé soutěže potvrzuje termín 2027. Starý odkaz na program či propozice 2026 nepotvrzuje jednotlivé starty ani podmínky pro 2027."
+    }
+  ],
+  "notMeasured": [
+    "celé pokrytí katalogu",
+    "výsledek pilotu",
+    "náklady a čas vlastníka"
+  ],
+  "futureUse": "Používat po zmrazení jako kontrolu. Pokud případ poslouží k ladění, vyřadit jej z nezávislého vyhodnocení a v další verzi doplnit nedotčený případ."
+}

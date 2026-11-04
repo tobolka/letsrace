@@ -10,7 +10,7 @@ Stav k 4. listopadu 2026. Tento soubor je jediný aktuální seznam. Každý ř�
 | **ČEKÁ** | K uzavření je potřeba doběh, měření nebo předchozí krok. |
 | **BLOKOVÁNO** | Chybí přístup nebo souhlas k živému běhu. |
 
-**Co následuje.** Při pauze připravit oddělenou kontrolní sadu pro P1.4a. Po celých 24 hodinách od nasazení úspor vyhodnotit P0.4a. Při překročení rozpočtu pokračovat P0.4b. Před pilotem musí být ověřené zveřejňování a rozpočet. Scany Macu i serveru jsou pozastavené.
+**Co následuje.** Při pauze rozšířit zmrazenou kontrolní sadu pro širší pilot v P1.4d. Po celých 24 hodinách od nasazení úspor vyhodnotit P0.4a. Při překročení rozpočtu pokračovat P0.4b. Před pilotem musí být ověřené zveřejňování a rozpočet. Scany Macu i serveru jsou pozastavené.
 
 ## Otevřené úkoly P0 · bezpečný provoz
 
@@ -29,7 +29,7 @@ Stav k 4. listopadu 2026. Tento soubor je jediný aktuální seznam. Každý ř�
 
 | ID | Stav | Co se udělá | Hotovo, až |
 | --- | --- | --- | --- |
-| P1.4a | **DALŠÍ** | Doplnit oddělenou kontrolní sadu z více zemí a disciplín. Přidat i stejnojmenné závody, různé soutěže jednoho víkendu a neúplná oznámení. | Sada má uložené zdroje a očekávané výsledky, je zmrazená před porovnáním a případy použité k ladění jsou vedené jako regrese. |
+| P1.4d | **DALŠÍ** | Rozšířit první zmrazenou kontrolní sadu pro širší pilot. Doplňovat hlavně menší závody a chybějící disciplíny. | Původní cíl pilotu je 20 nedotčených ročníků na zemi, celkem 140. Zdroje a očekávané výsledky jsou zmrazené před měřením. [První průřez](quality/reference-2026-11-04.md) |
 | P1.1a | **OTEVŘENO** | Sjednotit podmínky shody hlavního importu, importu kandidátů a následné kontroly duplicit. | Stejné dvojice zkoušek procházejí všemi cestami. Rozpor disciplíny, kola, ročníku nebo samostatné soutěže nezpůsobí automatické spojení. |
 | P1.1b | **OTEVŘENO** | U nejasných shod uložit podklady a výsledek rozhodnutí. Zohlednit dřívější rozhodnutí při dalším importu. | Opakovaný import nepřidá už sloučený závod a znovu neotevře rozhodnutou dvojici bez nového podkladu. |
 | P1.1c | **OTEVŘENO** | Doložit bezpečný návrat sloučení celého závodu. | Zkouška vrátí obě identity, adresy, zdroje, kategorie, seriály a uživatelské plány. Pozdější změny se nepřepíšou naslepo. |
@@ -68,6 +68,7 @@ Stav k 4. listopadu 2026. Tento soubor je jediný aktuální seznam. Každý ř�
 | P1.2e | **HOTOVO** | Srovnání Crawl4AI a Scrapling na 11 adresách je v `main`. Na tomto vzorku nepřineslo další kandidáty vůči stávajícím čtečkám. [Výsledky zkoušky](../reports/crawler-comparison-2026-11-04/RESULT.md) |
 | P1.3c | **HOTOVO** | Strukturované praktické údaje mají zdroj, ruční zámky a transakční zápis. Tabulky i výslovně označené řádky textu procházejí kontrolou závodu a termínu. Nasazeno `8a88fb05`, 1 514 testů prošlo. Na veřejné Rohálovské ověřen pořadatel a start ve 12:30. [Praktické údaje a příklady](../reports/practical-reader-v3-2026-11-03/RESULT.md) |
 | P1.3d | **HOTOVO** | U čtených cen se ověřuje částka společně s měnou a zachovávají se desetinná místa. Datum začátku platnosti se nevydává za uzávěrku. Ověřeno regresními testy ve vydání `8a88fb05`. |
+| P1.4a | **HOTOVO** | Zmrazený první průřez obsahuje 14 ročníků ze sedmi zemí, dvě kontroly neslučování a pět kontrol hranic podkladů. Zdroje a očekávané výsledky jsou uložené před porovnáním s katalogem. Formát a otisk ověřeny lokálně. [Kontrolní sada](quality/reference-2026-11-04.md) |
 | P1.4c | **HOTOVO** | První oddělený výchozí vzorek má tři doložené případy ze dvou zemí. Fullgaz a Ötztaler po cílených opravách patří mezi regresní příklady. [Výchozí vzorek](../reports/independent-baseline-2026-11-03/RESULT.md) · [Provedené opravy](../reports/coverage-recovery-2026-11-03/RESULT.md) |
 | P2.1c | **HOTOVO** | Jednoduchý admin a panel jsou nasazené. Technické nástroje jsou v `/admin/tools`, stav veřejného seznamu má vlastní údaj a schránka chrání před zastaralou odpovědí. Ověřeno po přihlášení. [Ověření](../reports/owner-admin-2026-11-02/RESULT.md) |
 | P2.2a | **HOTOVO** | Detail má odkazy na předchozí i další ročníky, trvalou hlavičku, praktické údaje a odkazy na areál. Okolní závody jsou za zdroji. Vedlejší kola jsou dohledatelná. Michaelis-Schanze přestal zobrazovat trasu 0 km. [Oprava délky](../reports/zero-distance-2026-11-03/RESULT.md) |
