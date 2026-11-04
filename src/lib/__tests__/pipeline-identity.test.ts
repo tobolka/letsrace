@@ -45,6 +45,23 @@ describe("additive extraction", () => {
     expect(combineExtractedEvents([primary], [enriched])).toHaveLength(1);
     expect(combineExtractedEvents([primary], [enriched])[0]?.externalId).toBe(primary.externalId);
   });
+  it("keeps separate road and gravel races listed under one name on the same page", () => {
+    const road: ParsedEvent = { ...a, name: "Perl Cycling Festival", discipline: ["road"] };
+    const gravel: ParsedEvent = { ...road, externalId: "gravel", discipline: ["gravel"],
+      evidence: { method: "llm_calendar", version: "calendar-v2", sourceUrl: road.sourceUrl, quote: "Perl Cycling Festival · Gravel · 11. 10. 2026" } };
+    expect(combineExtractedEvents([road], [gravel])).toEqual([road, gravel]);
+  });
+  it("does not identify different races by their shared calendar URL and day", () => {
+    const other = { ...a, name: "Moselwald Challenge", externalId: "moselwald" };
+    expect(combineExtractedEvents([a], [other])).toEqual([a, other]);
+    expect(combineExtractedEvents([a], [{ ...a, externalId: "mirror" }])).toHaveLength(1);
+  });
+  it("keeps adjacent rounds separate when the AI quote includes both names", () => {
+    const first = { ...a, name: "Perlcross Round 1" };
+    const second: ParsedEvent = { ...first, name: "Perlcross Round 2", externalId: "round-2",
+      evidence: { method: "llm_calendar", version: "calendar-v2", sourceUrl: a.sourceUrl, quote: "Perlcross Round 1 · Perlcross Round 2 · 11. 10. 2026" } };
+    expect(combineExtractedEvents([first], [second])).toEqual([first, second]);
+  });
   it("keeps an opening-day proof separate from a parser's overlapping closing-day assertion", () => {
     const primary = { ...a, name: "Gracia Orlová", startDate: "2027-05-02" };
     const verified = { ...primary, externalId: "ai-gracia", startDate: "2027-04-29", endDate: "2027-05-02",

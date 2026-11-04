@@ -1,0 +1,581 @@
+{
+  "versions": {
+    "crawl4ai": "0.9.5",
+    "scrapling": "0.5"
+  },
+  "samples": [
+    {
+      "id": "csc",
+      "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+      "group": "dynamic"
+    },
+    {
+      "id": "400ultra",
+      "url": "https://www.400ultra.cz/",
+      "group": "reported unreadable"
+    },
+    {
+      "id": "dzkol-map",
+      "url": "https://dzkol.pl/wyscigi-dzkol/gpdb-memorial-grundmanna-i-wizowskiego/mapy-barycz-2026/",
+      "group": "reported unreadable"
+    },
+    {
+      "id": "zlmtb",
+      "url": "https://zlmtb.com/aktualnosci/pzu-zachodnia-liga-mtb-wielen-06092026",
+      "group": "reported unreadable"
+    },
+    {
+      "id": "horni-halze",
+      "url": "https://www.kolokolemkomina.cz/zavody/casovka-horni-halze",
+      "group": "reported unreadable"
+    },
+    {
+      "id": "bahenni-kral",
+      "url": "http://bikeri.cz/serial/bahenni-kral",
+      "group": "reported unreadable"
+    },
+    {
+      "id": "junior-spac",
+      "url": "https://spac-os.cz/junior-spac-2024/",
+      "group": "archive control"
+    },
+    {
+      "id": "rohalovska",
+      "url": "https://www.vesani.cz/propozice/",
+      "group": "practical control"
+    },
+    {
+      "id": "jbc",
+      "url": "https://www.jbc4xrevelations.com/",
+      "group": "edition control"
+    },
+    {
+      "id": "chotebuz",
+      "url": "https://www.tjsokolchotebuz.cz/index.php?Itemid=36&id=17&option=com_content&view=article",
+      "group": "TLS control"
+    },
+    {
+      "id": "eventiv",
+      "url": "https://eventivsport.com/map",
+      "group": "access control"
+    }
+  ],
+  "methods": {
+    "http": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 142,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "400ultra",
+        "status": 200,
+        "ms": 1673,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "dzkol-map",
+        "status": 200,
+        "ms": 669,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "zlmtb",
+        "status": 200,
+        "ms": 436,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "horni-halze",
+        "status": 200,
+        "ms": 1524,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "bahenni-kral",
+        "status": 200,
+        "ms": 851,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "junior-spac",
+        "status": 200,
+        "ms": 82,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "rohalovska",
+        "status": 200,
+        "ms": 482,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [
+          "organizer",
+          "schedule"
+        ],
+        "error": null
+      },
+      {
+        "id": "jbc",
+        "status": 200,
+        "ms": 290,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "chotebuz",
+        "status": 200,
+        "ms": 860,
+        "gridRows": null,
+        "eventCandidates": 1,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "eventiv",
+        "status": 200,
+        "ms": 262,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "native": [
+      {
+        "id": "csc",
+        "status": null,
+        "ms": 14171,
+        "gridRows": null,
+        "eventCandidates": 423,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "400ultra",
+        "status": null,
+        "ms": 4930,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "dzkol-map",
+        "status": null,
+        "ms": 4674,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "zlmtb",
+        "status": null,
+        "ms": 12642,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "horni-halze",
+        "status": null,
+        "ms": 4445,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "bahenni-kral",
+        "status": null,
+        "ms": 4506,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "crawl": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 18759,
+        "gridRows": 25,
+        "eventCandidates": 7,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "400ultra",
+        "status": 302,
+        "ms": 3804,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "dzkol-map",
+        "status": 200,
+        "ms": 2238,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "zlmtb",
+        "status": 200,
+        "ms": 1863,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "horni-halze",
+        "status": 301,
+        "ms": 4010,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "bahenni-kral",
+        "status": 307,
+        "ms": 3061,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "junior-spac",
+        "status": 200,
+        "ms": 1762,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "rohalovska",
+        "status": 200,
+        "ms": 3648,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [
+          "organizer",
+          "schedule"
+        ],
+        "error": null
+      },
+      {
+        "id": "jbc",
+        "status": 302,
+        "ms": 1810,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "chotebuz",
+        "status": 200,
+        "ms": 1887,
+        "gridRows": null,
+        "eventCandidates": 1,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "eventiv",
+        "status": 200,
+        "ms": 1835,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "scrap-http": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 190,
+        "gridRows": 0,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "400ultra",
+        "status": 200,
+        "ms": 1430,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "dzkol-map",
+        "status": 200,
+        "ms": 457,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "zlmtb",
+        "status": 200,
+        "ms": 384,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "horni-halze",
+        "status": 200,
+        "ms": 974,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "bahenni-kral",
+        "status": 200,
+        "ms": 809,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "junior-spac",
+        "status": 200,
+        "ms": 70,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "rohalovska",
+        "status": 200,
+        "ms": 285,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [
+          "organizer",
+          "schedule"
+        ],
+        "error": null
+      },
+      {
+        "id": "jbc",
+        "status": 200,
+        "ms": 327,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "chotebuz",
+        "status": null,
+        "ms": 104,
+        "gridRows": null,
+        "eventCandidates": null,
+        "practicalFields": [],
+        "error": "Failed to perform, curl: (60) SSL certificate OpenSSL verify result: unable to get local issuer certificate (20). See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+      },
+      {
+        "id": "eventiv",
+        "status": 200,
+        "ms": 198,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "scrap-browser": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 9702,
+        "gridRows": 25,
+        "eventCandidates": 7,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "400ultra",
+        "status": 200,
+        "ms": 4854,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "dzkol-map",
+        "status": 200,
+        "ms": 4343,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "zlmtb",
+        "status": 200,
+        "ms": 2449,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "horni-halze",
+        "status": 200,
+        "ms": 2126,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "bahenni-kral",
+        "status": 200,
+        "ms": 1996,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "junior-spac",
+        "status": 200,
+        "ms": 1498,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "rohalovska",
+        "status": 200,
+        "ms": 2507,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [
+          "organizer",
+          "schedule"
+        ],
+        "error": null
+      },
+      {
+        "id": "jbc",
+        "status": 200,
+        "ms": 2548,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "chotebuz",
+        "status": 200,
+        "ms": 1785,
+        "gridRows": null,
+        "eventCandidates": 1,
+        "practicalFields": [],
+        "error": null
+      },
+      {
+        "id": "eventiv",
+        "status": 200,
+        "ms": 1817,
+        "gridRows": null,
+        "eventCandidates": 0,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "crawl-csc": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 9265,
+        "gridRows": 479,
+        "eventCandidates": 423,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "crawl-repeat": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 16468,
+        "gridRows": 479,
+        "eventCandidates": 423,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "scrap-csc": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 10946,
+        "gridRows": 479,
+        "eventCandidates": 423,
+        "practicalFields": [],
+        "error": null
+      }
+    ],
+    "scrap-csc-first": [
+      {
+        "id": "csc",
+        "status": 200,
+        "ms": 10767,
+        "gridRows": 479,
+        "eventCandidates": 423,
+        "practicalFields": [],
+        "error": null
+      }
+    ]
+  }
+}

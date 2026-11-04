@@ -27,6 +27,8 @@ Výstupy jsou v datovaném adresáři `reports/next-edition-websites-*`: souhrn 
 
 Kontrola nepoužívá placenou AI, nic nezapisuje do katalogu a nezapíná novou pravidelnou úlohu.
 
+Existující audit lze přepočítat bez databáze i bez stahování stránek pomocí `node scripts/with-node.cjs tsx scripts/audit-next-edition-websites.ts --replay=CESTA_K_ARCHIVU`. Vstup tvoří snímek `races.json`, záznamy `pages.jsonl` a uložené texty `pages/`. Výsledky se ukládají do podadresáře `replay/`. Zachycený rozsah, například „19–20. června 2027“, zůstává v přehledu celý. Datum z neúspěšného požadavku se mezi kandidáty nedostane. U krátkých stránek vyžadujících další kontrolu zůstává nalezený text viditelný s příslušným označením.
+
 ## Ověřený příklad: Rožmitálský cyklokros
 
 Dne 30. 10. 2026 pořadatel na https://rozmitalskycyklokros.cz/ oznamuje 16. 10. 2027. Založen samostatný veřejný ročník `rozmitalsky-cyklokros-2027`, s místem a disciplínou z roku 2026 a kategoriemi označenými jako převzaté. Registrace a propozice pro 2026 nejsou vydávány za platné pro 2027. Oficiální web je přidaný ke sledování. Historie a zdroje jsou v `event_facts`; provedený zápis je v `reports/rozmital-next-edition-2026-10-30/apply.sql`.

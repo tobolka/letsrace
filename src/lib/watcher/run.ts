@@ -1749,7 +1749,7 @@ async function upsertParsedEvent(
   };
   const { data: knownSource, error: sourceError } = await supabase
     .from("event_sources")
-    .select("event:events(id,name,start_date,end_date,merged_into_id,website_url,registration_url,location:locations(lat,lng,name,municipality,country_code))")
+    .select("event:events(id,name,start_date,end_date,disciplines,merged_into_id,website_url,registration_url,location:locations(lat,lng,name,municipality,country_code))")
     .eq("watched_url_id", watchedUrlId)
     .eq("external_id", ev.externalId)
     .maybeSingle();

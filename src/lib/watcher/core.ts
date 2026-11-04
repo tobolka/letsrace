@@ -4,7 +4,7 @@ import { extractJsonLdEvents } from "@/lib/watcher/extractors/jsonld";
 import { extractWithAdapter } from "@/lib/watcher/extractors/adapters";
 import { extractGeneric } from "@/lib/watcher/extractors/generic";
 import { attachRegulationsUrl } from "@/lib/watcher/regulations-url";
-import { scoreDuplicate, datesCompatible, DEDUP_THRESHOLD } from "@/lib/dedup";
+import { scoreDuplicate, datesCompatible, DEDUP_THRESHOLD, hasIdentityConflict } from "@/lib/dedup";
 import type { LlmUsage } from "@/lib/llm/anthropic";
 import { skeleton } from "@/lib/watcher/extractors/llm-calendar";
 
@@ -40,11 +40,18 @@ export function combineExtractedEvents(parsed: ParsedEvent[], ai: ParsedEvent[])
   for (const event of ai) {
     // Overlapping ranges can identify the same edition, but cannot transfer a
     // proof of its opening day onto a parser's different (often closing) day.
-    const matches = out.map((held, index) => ({ held, index })).filter(({ held }) => held.startDate === event.startDate && datesCompatible(held, event, 0) && (held.externalId === event.externalId ||
-      (held.startDate === event.startDate && event.evidence?.method === "llm_calendar" && skeleton(held.name).length >= 6 && skeleton(event.evidence.quote).includes(skeleton(held.name))) || scoreDuplicate(
-      { ...held, urls: [held.sourceUrl], countryCode: held.countryHint },
-      { ...event, urls: [event.sourceUrl], countryCode: event.countryHint },
-    ).score >= DEDUP_THRESHOLD));
+    const matches = out.map((held, index) => ({ held, index })).filter(({ held }) => {
+      if (held.startDate !== event.startDate || !datesCompatible(held, event, 0)) return false;
+      // The downloaded page can list several races on the same day.
+      const { score, reasons } = scoreDuplicate(
+        { ...held, disciplines: held.discipline, countryCode: held.countryHint },
+        { ...event, disciplines: event.discipline, countryCode: event.countryHint },
+      );
+      if (hasIdentityConflict(reasons) || reasons.includes("series_conflict")) return false;
+      const heldName = skeleton(held.name);
+      return held.externalId === event.externalId || score >= DEDUP_THRESHOLD ||
+        (event.evidence?.method === "llm_calendar" && heldName.length >= 6 && skeleton(event.evidence.quote).includes(heldName));
+    });
     if (matches.length !== 1) { out.push(event); continue; }
     const { held, index } = matches[0]!;
     // Both assertions came from this same downloaded document. Supplement
