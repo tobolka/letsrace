@@ -1,7 +1,7 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { distanceKm, isGarbagePlace, scoreDuplicate, hasIdentityConflict } from "@/lib/dedup";
-import { mergeEventPair, mergeKeeper, asDedup, type MergeDuplicateRow } from "@/lib/catalog/merge-duplicates";
+import { isSeparateRace, mergeEventPair, mergeKeeper, asDedup, type MergeDuplicateRow } from "@/lib/catalog/merge-duplicates";
 import { canonicalizeDisciplines, disciplineFamily } from "@/lib/taxonomy";
 import { askJson, LlmUnavailable, LlmResponseError, addUsage, NO_USAGE, SONNET, type LlmUsage } from "@/lib/llm/anthropic";
 import { cachedExtraction } from "@/lib/llm/extraction-cache";
@@ -11,10 +11,10 @@ const PAGE = 1000;
 const BATCH = 15;
 const SURE = 0.9;
 
-type Row = MergeDuplicateRow & { age_categories: string[] | null };
+type Row = MergeDuplicateRow & { age_categories: string[] | null; created_at?: string | null };
 
 const SELECT =
-  "id, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, age_categories, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id, source_url), overrides:event_overrides(locked_fields)";
+  "id, created_at, name, start_date, end_date, website_url, registration_url, series_id, fingerprint, disciplines, age_categories, location:locations(lat, lng, name, municipality, country_code), series:series!events_series_id_fkey(name), sources:event_sources(id, watched_url_id, external_id, source_url), overrides:event_overrides(locked_fields)";
 
 const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 const STOP = new Set(["race", "rennen", "zavod", "cup", "pohar", "serie", "series", "the", "and", "und", "del", "della", "di", "der", "die", "das", "mtb", "cross", "gravel", "road", "2026", "2027", "edition", "trophy", "trofeo", "memorial", "grand", "prix", "gran", "premio"]);
@@ -160,6 +160,32 @@ export async function modelEvidence(a: Row, b: Row, docs: Map<string, string>, s
   return { ev: url ? { how: "model, quoted", url, text: quote } : null, usage };
 }
 
+const coreTokens = (name: string) => fold(name)
+  .replace(/\b(?:rr|rm|tt|itt)\s+\d+(?:[.,]\d+)?\s*km\b/g, " ")
+  .replace(/\b\d+(?:[.,]\d+)?\s*km\b/g, " ")
+  .replace(/\b20\d{2}\b/g, " ")
+  .split(/[^a-z0-9]+/)
+  .filter(Boolean);
+const siteOf = (url: string | null | undefined) => {
+  try { return new URL(url ?? "").hostname.replace(/^www\./, ""); } catch { return ""; }
+};
+
+/**
+ * Most duplicates come from a calendar and the organiser, and no page says the two are one race.
+ * The model's opinion counts here only with an independent signal in the names themselves.
+ */
+export function namesSupportMerge(a: Pick<Row, "name" | "website_url">, b: Pick<Row, "name" | "website_url">, confidence: number): boolean {
+  const distance = (name: string) => fold(name).match(/\d+(?:[.,]\d+)?\s*km\b/)?.[0]?.replace(/\s/g, "");
+  const da = distance(a.name), db = distance(b.name);
+  if (da && db && da !== db) return false;
+  const left = coreTokens(a.name), right = coreTokens(b.name);
+  if (!left.length || !right.length || isSeparateRace(left.join(" "), right.join(" "))) return false;
+  if (left.join(" ") === right.join(" ")) return confidence >= 0.7;
+  const [short, long] = left.length <= right.length ? [left, right] : [right, left];
+  const site = siteOf(a.website_url);
+  return short.length >= 2 && short.every(token => long.includes(token)) && Boolean(site) && site === siteOf(b.website_url) && confidence >= 0.85;
+}
+
 const SYSTEM =
   "You de-duplicate a catalogue of cycling races collected from many calendars. For each numbered pair, decide whether A and B are the SAME event (one race listed twice: by two sources, in two languages, once by its own name and once as a series round, with or without the venue) or DIFFERENT events (even at one venue on one day: a kids' race beside the main race, an e-bike or hobby heat, a different discipline, a ride next to a race, two rounds of different cups, a festival vs one race within it). " +
   "Two distances or age starts within the SAME race can be one event; a festival and one race within it are not interchangeable. A series round listed twice under its own name and the series name can be the SAME event, with source evidence. " +
@@ -188,6 +214,8 @@ export type DuplicateJudgeResult = {
 export async function judgeDuplicates(opts?: {
   maxPairs?: number;
   dryRun?: boolean;
+  /** Only pairs with a race created this recently: cheap enough for every cycle. */
+  newerThanHours?: number;
   log?: (line: string) => void;
 }): Promise<DuplicateJudgeResult> {
   const supabase = createServerSupabase();
@@ -214,7 +242,9 @@ export async function judgeDuplicates(opts?: {
     for (const r of data ?? []) known.add(`${r.left_id}|${r.right_id}`);
     if (!data || data.length < PAGE) break;
   }
-  const pairs = candidatePairs(rows, known).slice(0, opts?.maxPairs ?? 400);
+  const recentFrom = opts?.newerThanHours ? Date.now() - opts.newerThanHours * 3_600_000 : null;
+  const isRecent = (row: Row) => recentFrom == null || Date.parse(row.created_at ?? "") >= recentFrom;
+  const pairs = candidatePairs(rows, known).filter(([a, b]) => isRecent(a) || isRecent(b)).slice(0, opts?.maxPairs ?? 400);
   // How many races each page belongs to: a page shared by several proves nothing.
   const shared = new Map<string, number>();
   for (const r of rows) {
@@ -262,7 +292,11 @@ export async function judgeDuplicates(opts?: {
       if (v.verdict === "same" && disjoint) {
         result.unsure += 1;
         opts?.log?.(`UNSURE  ${line}  — disciplines differ (${da.join(",")} / ${db.join(",")})`);
-      } else if (v.verdict === "same" || v.verdict === "unsure" || (v.verdict === "different" && conf < SURE)) {
+      } else if (v.verdict === "unsure" || (v.verdict === "different" && conf < SURE)) {
+        // A page quote cannot overrule a model that does not call them one race.
+        result.unsure += 1;
+        opts?.log?.(`UNSURE  ${line}  — not called one race`);
+      } else if (v.verdict === "same") {
         // Names and places only make a pair worth checking; the pages decide —
         // unless the two titles are the same words (one race typed twice).
         if (gone.has(a.id) || gone.has(b.id)) continue;
@@ -278,6 +312,7 @@ export async function judgeDuplicates(opts?: {
           result.usage = addUsage(result.usage, m.usage);
           ev = m.ev;
         }
+        if (!ev && v.verdict === "same" && namesSupportMerge(a, b, conf)) ev = { how: "model and matching names", url: a.website_url ?? b.website_url ?? "", text: `${a.name} = ${b.name}` };
         if (!ev) {
           result.unsure += 1;
           opts?.log?.(`UNSURE  ${line}  — no page says they are one race`);

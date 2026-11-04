@@ -62,6 +62,10 @@ Náhled bez zápisu:
 node scripts/with-node.cjs tsx scripts/check-next-editions.ts --country=CZ
 ```
 
+## Duplicity
+
+Každý místní cyklus sloučí jisté duplicity podle pravidel a nové závody z posledních 12 hodin posoudí AI, nejvýše za 0,10 USD. Jednou denně AI projde všechny budoucí závody. Sloučit lze jen dvojici, kterou AI označí jako stejný závod a potvrdí ji stránka nebo shoda názvů. Přepínač `CATALOG_REVIEW_MERGES=1` vrací režim bez zápisu. Chybné sloučení se vrací příkazem `scripts/restore-event-merge.ts --history=<id> --apply`.
+
 ## Jediné místní spuštění
 
 Aktivní LaunchAgenty:

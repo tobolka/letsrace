@@ -1,8 +1,10 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { getPipelineSourceCounts } from "@/lib/pipeline/source-counts";
 import { z } from "zod";
 
 const publicationCounts = z.object({ seriesAwaitingRequest: z.number().int().nonnegative(), seriesAwaitingCheck: z.number().int().nonnegative().default(0), awaitingRequest: z.number().int().nonnegative(), requestedAwaitingCheck: z.number().int().nonnegative(), awaitingCheck: z.number().int().nonnegative() });
+const editionSummary = z.object({ season: z.number().int(), races: z.number().int().nonnegative(), counts: z.record(z.string(), z.number().int().nonnegative()), askedAi: z.number().nonnegative(), aiUsd: z.number().nonnegative(), at: z.iso.datetime({ offset: true }) });
 const catalogueCheck = z.object({ verifiedAt: z.iso.datetime({ offset: true }), races: z.number().int().nonnegative() });
 
 export type OwnerStateInput = {
@@ -47,9 +49,18 @@ export async function getOwnerOverview(decisionOffset=0) {
     serverAt: server.data?.finished_at ?? null,serverStatus:server.data?.status, broken: sources.broken, unreadable: sources.unreadable, candidates: candidates.count ?? 0, publicationPending: publication.count ?? 0,
     newSourceLeads:links.count??0,sourceReview:sources.review,sourceDeferred:sources.deferred,overdueSources:sources.overdue };
   const lastCatalogueCheck = catalogueCheck.safeParse(catalogue.data?.result);
+  const [editionJob, merges] = await Promise.all([
+    db.from("pipeline_jobs").select("summary").eq("key", "next-editions-cz").maybeSingle(),
+    // Private recovery table, deliberately outside the generated catalogue types.
+    (db as SupabaseClient).from("pipeline_merge_history").select("id", { head: true, count: "exact" }).is("restored_at", null).gte("created_at", new Date(now - 7 * 86_400_000).toISOString()),
+  ]);
+  if (editionJob.error) throw editionJob.error;
+  if (merges.error) throw merges.error;
+  const editions = editionSummary.safeParse(editionJob.data?.summary);
   return { ...input, state: ownerState(input), activeSources: sources.sources, newSourcesWaiting: links.count ?? 0, candidatesScheduled: scheduled.count ?? 0,
     publicationCounts: publicationCounts.parse(refreshCounts.data),
     catalogueCheck: lastCatalogueCheck.success ? lastCatalogueCheck.data : null,
+    editions: editions.success ? editions.data : null, merges7d: merges.count ?? 0,
     publicChecks24h: checked.count ?? 0, oldestCandidate: oldest.data?.[0]?.created_at ?? null, mac: mac.data, server: server.data,
     questions:questions.data??[],questionCount:questions.count??0,answersWaiting:answered.count??0,decisionOffset };
 }

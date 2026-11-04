@@ -13,7 +13,8 @@ async function main() {
   const { judgeDuplicates } = await import("../src/lib/catalog/llm-duplicates");
   const apply = process.argv.includes("--apply");
   const max = Number(process.argv.find((a) => a.startsWith("--max="))?.slice(6) ?? 400);
-  const r = await judgeDuplicates({ maxPairs: max, dryRun: !apply, log: console.log });
+  const newerThanHours = Number(process.argv.find((a) => a.startsWith("--newer-than-hours="))?.slice(19) ?? 0) || undefined;
+  const r = await judgeDuplicates({ maxPairs: max, dryRun: !apply, newerThanHours, log: console.log });
   console.log({ ...r, costUsd: Number(r.usage.costUsd.toFixed(3)), dry: !apply });
 }
 main().catch((e) => { console.error(e); process.exit(1); });

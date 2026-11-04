@@ -89,10 +89,12 @@ daily_step "Free discovery of new source links" scripts/explore-sources.ts
 # Calendar fallbacks must leave room for completing already discovered races.
 LLM_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-1.25}" LLM_CALENDAR_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-1.25}" step "Due calendars and sources" scripts/reload-calendars.ts
 LLM_BUDGET_USD="${DUE_AI_BUDGET_USD:-1.00}" LLM_CALENDAR_BUDGET_USD="${DUE_AI_BUDGET_USD:-1.00}" step "Everything else that is due" scripts/drain-due-watches.ts 40
-if [ "${CATALOG_REVIEW_MERGES:-1}" = "1" ]; then
+# Merges are audited and restorable; new races are judged every cycle so a duplicate lives a few hours at most.
+if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
   step "Duplicates (review only)"          scripts/merge-duplicates.ts --dry
 else
   step "Duplicates"                       scripts/merge-duplicates.ts
+  LLM_BUDGET_USD=0.10 step "Duplicates among new races" scripts/judge-duplicates.ts --max=30 --newer-than-hours=12 --apply
 fi
 if [ "${CATALOG_DETAIL_ENRICHMENT:-0}" = "1" ]; then
 step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
@@ -138,7 +140,7 @@ if [ "${LLM_DAILY:-0}" = "1" ]; then
     LLM_BUDGET_USD=0.50 daily_step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
   fi
   LLM_BUDGET_USD=0.15 daily_step "Races linked to their series"    scripts/link-series.ts --apply
-  if [ "${CATALOG_REVIEW_MERGES:-1}" = "1" ]; then
+  if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
     LLM_BUDGET_USD=0.50 daily_step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
   else
     LLM_BUDGET_USD=0.50 daily_step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply

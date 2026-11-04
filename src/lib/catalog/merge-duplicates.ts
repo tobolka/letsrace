@@ -239,7 +239,11 @@ function distinctSuffixAfterSharedPrefix(a: string, b: string): boolean {
 const CHAMPIONSHIP =
   /\bmistrovstv|majstrovstv[aá]|\bm[cč]r\b|\bmsr\b|national\s+champ|championship|meisterschaft|campionato\s+italiano|mistrzostwa/i;
 
+/** "Půl Paradise" beside "Bike Paradise": a shorter race of its own, not another listing. */
+const SHORTER_RACE = /\b(?:pul|half|mini|maly|mala|kurz)\b/;
+
 export function isSeparateRace(a: string, b: string): boolean {
+  if (SHORTER_RACE.test(foldName(a)) !== SHORTER_RACE.test(foldName(b))) return true;
   // A kids' race shares the venue and the day with the adult one it runs
   // alongside — that is the whole point of a family event.
   if (KIDS_RACE.test(a) !== KIDS_RACE.test(b)) return true;
