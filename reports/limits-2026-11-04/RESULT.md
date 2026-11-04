@@ -7,3 +7,7 @@
 - Veřejné ročníky používají přímý databázový spoj a stránkování podle ID. Produkční porovnání pro DE (2021–2032): prvních 1 000 řádků shodných do posledního pole, dalších 455 bez překryvu. Jeden vzorek odezvy přes databázové rozhraní: 335 ms původní, 139 ms nový. Není to SLA ani důkaz zániku všech timeoutů.
 - Výpis seriálu vybírá veřejné hlavní i vedlejší vazby jedním čtením. Nová produkční funkce včetně vztahů vrátila obě kola UCI XCO Junior Series (Fullgaz a Graz). Obě veřejné funkce jsou dostupné jen serverové roli.
 - Po případném obnovení sběru zbývá porovnat dvě normální čtení problémových zdrojů a trend edge logů. Cíl pod 16 000 požadavků za den zatím není potvrzen; veřejná čtení a ostatní práce se do něj počítají také.
+
+## Zátěž při vypnutých scanech
+
+V edge logu od 02:00 českého času do přibližně 08:10 bylo u `events` 1 755 dotazů podle slugu a 1 530 dotazů s geografickým a časovým omezením. Příslušnost ke crawlerům nebyla ověřena. Okolní závody na detailu nyní používají společnou uloženou sadu nadcházejících závodů z mapy a kalendáře, se stejným výběrem podle souřadnic, data a disciplíny. Změna odstraňuje samostatné čtení okolí pro každý detail; naměřené celkové úspory a počet timeoutů po vydání zatím neznáme. Zůstává samostatné čtení vlastního detailu podle slugu.

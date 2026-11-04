@@ -8,8 +8,9 @@ import { BadgeCheck, Bike, CalendarHeart, ChartNoAxesColumnIncreasing, ExternalL
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, hostOfUrl, listEvents, listOrganiserRaces, type EventListItem } from "@/lib/events";
-import { boxAround, NEARBY_RADIUS_KM, pickNearbyRaces } from "@/lib/nearby-races";
+import { findRacesForMissingSlug, getPublicEventBySlug, getSeriesBySlug, hostOfUrl, listOrganiserRaces, type EventListItem } from "@/lib/events";
+import { pickNearbyRaces } from "@/lib/nearby-races";
+import { upcomingCatalogue } from "@/lib/upcoming-catalogue";
 import { RaceWeather, RaceWeatherSection } from "@/components/race/race-weather";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import { roundOf } from "@/lib/series-rounds";
@@ -174,7 +175,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     hubCountry ? listQualifyingHubs([hubCountry]).catch(() => []) : Promise.resolve([]),
     // A race already run still points on to the next ones like it.
     here?.lat != null && here.lng != null
-      ? listEvents({ ...boxAround(here.lat, here.lng, NEARBY_RADIUS_KM), dateFrom: today }).catch(() => [])
+      ? upcomingCatalogue().catch(() => [])
       : Promise.resolve([]),
     getRaceEditionLinks(event).catch(() => ({ previous: [], next: [] })),
     listOrganiserRaces(event).catch(() => []),

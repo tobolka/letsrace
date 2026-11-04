@@ -2,7 +2,7 @@ import type { EventListItem } from "@/lib/events";
 import { distanceKm } from "@/lib/dedup";
 import { AGE_BAND_PARENT, eventDisciplineFamily, type AgeCategory } from "@/lib/taxonomy";
 
-/** How far a rider goes for another start; a box this size is asked of the database. */
+/** How far a rider goes for another start. */
 export const NEARBY_RADIUS_KM = 75;
 export const NEARBY_LIMIT = 6;
 /** Fewer races of the same kind than this, and other kinds nearby fill the list. */
@@ -43,12 +43,14 @@ export function pickNearbyRaces(
   const here = race.location;
   if (here?.lat == null || here.lng == null) return [];
   const family = eventDisciplineFamily(race.disciplines);
+  const bounds = boxAround(here.lat, here.lng, NEARBY_RADIUS_KM);
 
   const near = candidates.flatMap((e) => {
     if (e.id === race.id || (race.series && e.series?.id === race.series.id)) return [];
-    if ((e.endDate ?? e.startDate) < today || ["cancelled", "postponed"].includes(e.status)) return [];
+    if (e.startDate < today || ["cancelled", "postponed"].includes(e.status)) return [];
     const at = e.location;
-    if (at?.lat == null || at.lng == null) return [];
+    if (at?.lat == null || at.lng == null ||
+      at.lat < bounds.south || at.lat > bounds.north || at.lng < bounds.west || at.lng > bounds.east) return [];
     const km = distanceKm({ lat: here.lat!, lng: here.lng! }, { lat: at.lat, lng: at.lng });
     if (km > NEARBY_RADIUS_KM) return [];
     const sameKind = family !== "other" && eventDisciplineFamily(e.disciplines) === family;
