@@ -7,7 +7,7 @@ import {
   resolveCoveragePlace,
 } from "@/lib/coverage";
 import { EUROPE_COUNTRY_CODES, isInEuropeMap, isOmittedMapCountry } from "@/lib/geo/europe";
-import type { Update } from "@/lib/supabase/tables";
+import type { Row } from "@/lib/supabase/tables";
 
 export type GeocodeResult = {
   lat: number;
@@ -1846,99 +1846,86 @@ export type GeocodeBatchResult = {
   skipped: number;
 };
 
-/** Instant pass: fill all pending locations that match the built-in town list. */
+const geocodeSnapshotColumns = "id,name,municipality,venue,country_code,lng,geocode_query,geocode_status,updated_at";
+type GeocodeSnapshot = Pick<Row<"locations">, "id" | "name" | "municipality" | "venue" | "country_code" | "lng" | "geocode_query" | "geocode_status" | "updated_at">;
+
+async function saveGeocoding(
+  db: ReturnType<typeof createServerSupabase>,
+  rows: GeocodeSnapshot[],
+  outcome: { status: "ok"; geo: GeocodeResult; query?: string; rename?: string } | { status: "failed" | "skipped" },
+): Promise<number> {
+  let saved = 0;
+  for (let i = 0; i < rows.length; i += 100) {
+    const { data, error } = await db.rpc("pipeline_apply_geocoding", {
+      p_expected: rows.slice(i, i + 100).map(row => ({
+        id: row.id, name: row.name, municipality: row.municipality, venue: row.venue, country_code: row.country_code,
+        lng: row.lng, geocode_query: row.geocode_query, geocode_status: row.geocode_status, updated_at: row.updated_at,
+      })),
+      p_status: outcome.status,
+      ...(outcome.status === "ok" ? {
+        p_lat: outcome.geo.lat, p_lng: outcome.geo.lng, p_country: outcome.geo.countryCode,
+        p_query: outcome.query, p_rename: outcome.rename,
+      } : {}),
+    });
+    if (error) throw Error(`Saving geocoding result: ${error.message}`);
+    saved += data.length;
+  }
+  return saved;
+}
+
+/** Instant pass: fill pending locations that match the built-in town list. */
 export async function geocodePendingFromGazetteer(): Promise<GeocodeBatchResult> {
   const supabase = createServerSupabase();
-  // `.limit(2000)` reads a thousand rows and says nothing about the rest.
-  const rows = await readAllRows<{
-    id: string;
-    name: string | null;
-    municipality: string | null;
-    country_code: string | null;
-    geocode_query: string | null;
-  }>((from, to) =>
+  const rows = await readAllRows<GeocodeSnapshot>((from, to) =>
     supabase
       .from("locations")
-      .select("id, name, municipality, country_code, geocode_query")
+      .select(geocodeSnapshotColumns)
       .is("lat", null)
+      .is("geog", null)
+      .or("geocode_status.is.null,geocode_status.neq.skipped")
       .order("id", { ascending: true })
       .range(from, to),
   );
 
-  const result: GeocodeBatchResult = { attempted: 0, updated: 0, failed: 0, skipped: 0 };
-  const byQuery = new Map<string, { geo: GeocodeResult; ids: string[] }>();
-
+  const result: GeocodeBatchResult = { attempted: rows.length, updated: 0, failed: 0, skipped: 0 };
+  const byPoint = new Map<string, { geo: GeocodeResult; rows: GeocodeSnapshot[] }>();
+  const leftover: GeocodeSnapshot[] = [];
+  const skipped: GeocodeSnapshot[] = [];
   const { shouldIngestByCountry } = await import("@/lib/geo/europe");
 
   for (const row of rows) {
-    result.attempted += 1;
     if (!shouldIngestByCountry(row.country_code)) {
-      await supabase
-        .from("locations")
-        .update({ geocode_status: "skipped", updated_at: new Date().toISOString() })
-        .eq("id", row.id);
-      result.skipped += 1;
+      skipped.push(row);
       continue;
     }
     const raw = (row.geocode_query || row.municipality || row.name || "").trim();
     const geo = geocodeFromGazetteer(raw, row.country_code);
-    if (!geo) continue;
-    const key = `${fold(cleanGeocodeQuery(raw, row.country_code).query)}|${geo.lat}|${geo.lng}`;
-    const bucket = byQuery.get(key) ?? { geo, ids: [] };
-    bucket.ids.push(row.id);
-    byQuery.set(key, bucket);
+    if (!geo) {
+      leftover.push(row);
+      continue;
+    }
+    const key = `${geo.lat}|${geo.lng}|${geo.countryCode ?? ""}`;
+    const bucket = byPoint.get(key) ?? { geo, rows: [] };
+    bucket.rows.push(row);
+    byPoint.set(key, bucket);
   }
 
-  const pinned = new Set<string>();
-
-  async function pinLocations(
-    ids: string[],
-    geo: GeocodeResult,
-    rename?: string,
-  ) {
-    const payload: Update<"locations"> = {
-      lat: geo.lat,
-      lng: geo.lng,
-      country_code: geo.countryCode || "CZ",
-      geocode_status: "ok",
-      updated_at: new Date().toISOString(),
-    };
-    if (rename) {
-      payload.name = rename;
-      payload.municipality = rename;
-      payload.geocode_query = rename;
-    }
-    const { data } = await supabase.from("locations").update(payload).in("id", ids).select("id");
-    result.updated += data?.length ?? 0;
-    for (const id of ids) {
-      pinned.add(id);
-      try {
-        await supabase.rpc("set_location_geog", {
-          loc_id: id,
-          lng: geo.lng,
-          lat: geo.lat,
-        });
-      } catch {
-        /* optional */
-      }
-    }
-  }
-
-  for (const { geo, ids } of byQuery.values()) {
-    await pinLocations(ids, geo);
+  result.skipped = await saveGeocoding(supabase, skipped, { status: "skipped" });
+  for (const { geo, rows } of byPoint.values()) {
+    result.updated += await saveGeocoding(supabase, rows, { status: "ok", geo });
   }
 
   // Venue fields like "UCI C1" / "Unknown" — the town is in the race title.
-  const leftover = (rows ?? []).filter((r) => !pinned.has(r.id));
   if (leftover.length) {
     const byLoc = new Map<string, string[]>();
     for (let i = 0; i < leftover.length; i += 200) {
       const chunk = leftover.slice(i, i + 200).map((r) => r.id);
-      const { data: evs } = await supabase
+      const { data: evs, error } = await supabase
         .from("events")
         .select("name, location_id")
         .in("location_id", chunk)
         .eq("visibility", "public");
+      if (error) throw Error(`Reading names for geocoding: ${error.message}`);
       for (const ev of evs ?? []) {
         const id = ev.location_id as string;
         const list = byLoc.get(id) ?? [];
@@ -1960,7 +1947,7 @@ export async function geocodePendingFromGazetteer(): Promise<GeocodeBatchResult>
       }
       if (!hit) continue;
       const garbage = /^(uci\s*(c[123]|cn)|unknown|silnice)$/i.test((row.name || "").trim());
-      await pinLocations([row.id], hit, garbage ? label : undefined);
+      result.updated += await saveGeocoding(supabase, [row], { status: "ok", geo: hit, rename: garbage && !row.venue ? label : undefined });
     }
   }
 
@@ -1985,9 +1972,10 @@ export async function geocodePendingLocations(
     supabase
       .from("locations")
       .select(
-        "id, name, municipality, country_code, geocode_query, geocode_status, events!inner(id, visibility, start_date)",
+        `${geocodeSnapshotColumns},events!inner(id,visibility,start_date)`,
       )
       .is("lat", null)
+      .is("geog", null)
       // A row can carry `geocode_status = "ok"` and still have no coordinates —
       // a later cleanup nulls the point without touching the status. Trust the
       // missing coordinate, not the label, or such a row is never retried.
@@ -2024,21 +2012,13 @@ export async function geocodePendingLocations(
   for (const row of uniqueRows) {
     if (nominatimCalls >= nominatimBudget) break;
     if (!shouldIngestByCountry(row.country_code)) {
-      await supabase
-        .from("locations")
-        .update({ geocode_status: "skipped", updated_at: new Date().toISOString() })
-        .eq("id", row.id);
-      result.skipped += 1;
+      result.skipped += await saveGeocoding(supabase, [row], { status: "skipped" });
       continue;
     }
     const raw = (row.geocode_query || row.municipality || row.name || "").trim();
     const { query, countryCode } = cleanGeocodeQuery(raw, row.country_code);
     if (!query) {
-      await supabase
-        .from("locations")
-        .update({ geocode_status: "skipped", updated_at: new Date().toISOString() })
-        .eq("id", row.id);
-      result.skipped += 1;
+      result.skipped += await saveGeocoding(supabase, [row], { status: "skipped" });
       continue;
     }
 
@@ -2081,6 +2061,7 @@ export async function geocodePendingLocations(
         if (retry === undefined) {
           retry = gazetteerIn(simple, countryCode);
           if (!retry) {
+            if (nominatimCalls >= nominatimBudget) break;
             if (nominatimCalls > 0) await new Promise((r) => setTimeout(r, 1100));
             try {
               retry = await nominatimSearch(simple, countryCode);
@@ -2100,54 +2081,13 @@ export async function geocodePendingLocations(
     }
 
     if (!geo) {
-      await supabase
-        .from("locations")
-        .update({ geocode_status: "failed", updated_at: new Date().toISOString() })
-        .eq("id", row.id);
-      result.failed += 1;
+      result.failed += await saveGeocoding(supabase, [row], { status: "failed" });
       continue;
     }
-
-    await supabase
-      .from("locations")
-      .update({
-        lat: geo.lat,
-        lng: geo.lng,
-        country_code: geo.countryCode || countryCode,
-        geocode_status: "ok",
-        geocode_query: query,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", row.id);
-    result.updated += 1;
-
-    if (row.municipality) {
-      const { data: twins } = await supabase
-        .from("locations")
-        .update({
-          lat: geo.lat,
-          lng: geo.lng,
-          country_code: geo.countryCode || countryCode,
-          geocode_status: "ok",
-          geocode_query: query,
-          updated_at: new Date().toISOString(),
-        })
-        .is("lat", null)
-        .neq("id", row.id)
-        .eq("municipality", row.municipality)
-        .select("id");
-      if (twins?.length) result.updated += twins.length;
-    }
-
-    try {
-      await supabase.rpc("set_location_geog", {
-        loc_id: row.id,
-        lng: geo.lng,
-        lat: geo.lat,
-      });
-    } catch {
-      /* optional RPC */
-    }
+    // A same-named municipality is not evidence of the same venue or country.
+    result.updated += await saveGeocoding(supabase, [row], {
+      status: "ok", geo: { ...geo, countryCode: geo.countryCode || countryCode }, query,
+    });
   }
 
   return result;

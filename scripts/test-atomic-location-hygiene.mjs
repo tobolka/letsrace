@@ -8,14 +8,17 @@ try {
   await db.exec(`
     create role anon; create role authenticated; create role service_role bypassrls;
     create table locations(id uuid primary key, name text, municipality text, venue text, region text, region_code text,
-      timezone text, country_code text, lat float8, lng float8, geog text, geocode_status text, updated_at timestamptz);
+      timezone text, country_code text, lat float8, lng float8, geog text, geocode_status text, geocode_query text, updated_at timestamptz);
+    create domain geography as text;
+    create function st_makepoint(lng float8, lat float8) returns text language sql as $$ select lng::text||','||lat::text $$;
+    create function st_setsrid(point text, srid int) returns text language sql as $$ select srid::text||':'||point $$;
     create table events(id uuid primary key, slug text, name text, status text, visibility text, start_date date, end_date date,
       merged_into_id uuid, location_id uuid references locations on delete set null, updated_at timestamptz);
     create table event_overrides(event_id uuid references events, locked_fields text[]);
     create table event_facts(event_id uuid, field text, value jsonb, previous jsonb, quote text, method text, version text);
     grant all on all tables in schema public to service_role;
   `);
-  for (const file of ["20261102084307_durable_publication_tasks.sql", "20261104080121_atomic_location_hygiene.sql"]) {
+  for (const file of ["20261102084307_durable_publication_tasks.sql", "20261104080121_atomic_location_hygiene.sql", "20261104122611_atomic_scheduled_geocoding.sql"]) {
     await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
   }
   await db.exec("set role service_role");
@@ -52,10 +55,44 @@ try {
   assert.equal(await unpin(country),true);
   assert.equal(await unpin(country),false, "stale pin");
   assert.equal((await db.query("select count(*)::int as n from event_facts")).rows[0].n,2);
+  const geocode = async (expected, status = "ok") => (await db.query(
+    "select pipeline_apply_geocoding($1,$2,$3,$4) as ids",
+    [expected, status, status === "ok" ? 49.2 : null, status === "ok" ? 16.6 : null],
+  )).rows[0].ids;
+  const geocodeOld = await snapshot(3);
+  assert.deepEqual(await geocode([geocodeOld]), [], "intentional skip remains skipped");
+
+  await db.query("insert into locations(id,name,country_code,geocode_status) values ($1,'Brno','CZ','pending'),($2,'Brno','CZ','pending')", [id(6),id(7)]);
+  await db.query("insert into events(id,slug,name,status,visibility,start_date,location_id) values($1,'new-race','New race','scheduled','public',current_date+1,$2)", [id(8),id(6)]);
+  const stalePlace = await snapshot(6);
+  await db.query("update locations set venue='Reviewed venue' where id=$1", [id(6)]);
+  assert.deepEqual(await geocode([stalePlace], "failed"), [], "old status must not overwrite a manual edit");
+  const freshPlace = await snapshot(6), otherPlace = await snapshot(7);
+  await db.query("insert into event_overrides values($1,array['lat'])", [id(8)]);
+  assert.deepEqual(await geocode([freshPlace]), [], "existing coordinate lock");
+  await db.exec("delete from event_overrides");
+  const queued = await tasks();
+  await db.exec(`reset role; create function block_point() returns trigger language plpgsql as $$begin
+    if new.id='${id(7)}' and new.geog is not null then raise exception 'map point failed'; end if; return new; end$$;
+    create trigger block_point before update on locations for each row execute function block_point(); set role service_role;`);
+  await assert.rejects(geocode([freshPlace,otherPlace]), /map point failed/);
+  assert.deepEqual(await snapshot(6), freshPlace);
+  assert.deepEqual(await tasks(), queued);
+  await db.exec("reset role; drop trigger block_point on locations; set role service_role");
+  assert.deepEqual(await geocode([freshPlace]), [id(6)]);
+  const pinned = await snapshot(6);
+  assert.equal(pinned.lat,49.2);
+  assert.equal(pinned.lng,16.6);
+  assert.equal(pinned.geog,"4326:16.6,49.2");
+  assert.equal(pinned.venue,"Reviewed venue");
+  assert.notDeepEqual(await tasks(), queued, "successful pin queues public update");
+  assert.deepEqual(await snapshot(7), otherPlace, "same municipality is not an automatic match");
+  assert.deepEqual(await geocode([freshPlace]), [], "no change on retry");
   await db.exec("reset role; set role anon");
   await assert.rejects(merge(keep,old),/permission denied/);
   await assert.rejects(unpin(country),/permission denied/);
-  console.log("PASS: locks, revision, venue, exact move, delete rollback with public tasks, history, repeat and private RPCs");
+  await assert.rejects(geocode([freshPlace]),/permission denied/);
+  console.log("PASS: locks, revision, venue, exact move, delete rollback with public tasks, history, repeat, geocoding transaction and private RPCs");
 } finally {
   await db.close();
 }

@@ -1475,6 +1475,10 @@ export type Database = {
         Returns: string|null
       };
       pipeline_merge_duplicate_location: {Args:{p_keep:Json;p_drop:Json};Returns:number|null};
+      pipeline_apply_geocoding: {
+        Args: { p_expected: Json; p_status: string; p_lat?: number; p_lng?: number; p_country?: string; p_query?: string; p_rename?: string };
+        Returns: string[];
+      };
       pipeline_unpin_country_location: {Args:{p_expected:Json};Returns:boolean};
       pipeline_complete_past_events: {Args:{p_ids:string[];p_today:string};Returns:number};
       pipeline_fill_registration_link: {Args:{p_event:string;p_revision:string;p_link:string;p_source:string;p_quote:string|null};Returns:boolean};
