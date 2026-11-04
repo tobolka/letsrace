@@ -74,16 +74,33 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
 
 const dateTokens = (text: string) => [...text.matchAll(/\b(?:20\d{2}-\d{2}-\d{2}|\d{1,2}\.\s*\d{1,2}\.\s*20\d{2})\b/g)];
 export function quoteContainsDate(text: string, day: string) { return dateTokens(text).some(match => quoteStatesDate(match[0], day)) || quoteStatesDate(text, day); }
+const currencyToken = "(?:CZK|EUR|PLN|CHF|GBP|Kč|zł|€)";
+const currencyAliases: Record<string, string> = { "KČ": "CZK", "ZŁ": "PLN", "€": "EUR" };
+const currencyIn = new RegExp(currencyToken, "iu");
+const priceNumber = String.raw`(?:\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+)(?:[,.]\d{1,2})?`;
+const priceTokens = new RegExp(String.raw`(?<![\p{L}\p{N}.,])(?:(?<value>${priceNumber})(?:[,.]-)?\s*(?<unit>${currencyToken})(?!\p{L})|(?<prefix>${currencyToken})\s*(?<prefixedValue>${priceNumber})(?![\p{L}\p{N}]|[.,]\d))`, "giu");
+export function entryPrices(text: string): { amount: number; currency: string; index: number }[] {
+  return [...text.matchAll(priceTokens)].map(({ groups, index }) => {
+    const { value, unit, prefix, prefixedValue } = groups!;
+    const code = (unit ?? prefix).toUpperCase();
+    return { amount: Number((value ?? prefixedValue).replace(/\s/g, "").replace(",", ".")), currency: currencyAliases[code] ?? code, index };
+  });
+}
+
 export function feeQuoteSupports(text: string, amount: number, currency: string, until?: string) {
-  const money = (q: string) => (amount === 0 ? /zdarma|free|gratis|kostenlos|bezplat/i.test(q) : numberIn(q, amount)) && (contains(q, currency) || currency === "CZK" && /Kč/.test(q) || currency === "EUR" && /€/.test(q));
+  const money = (q: string) => amount === 0
+    ? /zdarma|free|gratis|kostenlos|bezplat/i.test(q) && (contains(q, currency) || Object.entries(currencyAliases).some(([unit, code]) => code === currency && contains(q, unit)))
+    : entryPrices(q).some(price => price.currency === currency && price.amount === amount);
   if (!until) return money(text);
   const dates = dateTokens(text);
   for (let index = 0; index < dates.length; index++) {
     const token = dates[index];
     if (!quoteStatesDate(token[0], until)) continue;
+    const before = text.slice(index ? dates[index - 1].index + dates[index - 1][0].length : 0, token.index);
+    if (/\b(?:od|from|ab)\s*$/i.test(before)) continue;
     const after = text.slice(token.index + token[0].length, dates[index + 1]?.index ?? text.length);
-    if (/Kč|CZK|EUR|€/.test(after)) return money(after);
-    return money(text.slice(index ? dates[index - 1].index + dates[index - 1][0].length : 0, token.index));
+    if (currencyIn.test(after)) return money(after);
+    return money(before);
   }
   return false;
 }

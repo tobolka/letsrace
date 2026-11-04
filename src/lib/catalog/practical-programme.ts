@@ -1,4 +1,4 @@
-import { quoteContainsDate, verifyPracticalExtraction, type PracticalDocument } from "./practical-extraction";
+import { entryPrices, quoteContainsDate, verifyPracticalExtraction, type PracticalDocument } from "./practical-extraction";
 import { mergePracticalDetails, practicalValueSchemas, type PracticalDetails } from "@/lib/practical-details";
 
 /** Public per-race programme tables: row-bound facts, without paying a model to copy them. */
@@ -27,7 +27,14 @@ function programmeRows(doc: PracticalDocument, context: ProgrammeContext): Pract
     const [label, rawTime, prices] = cells;
     const evidence = { sourceQuote: line, sourceUrl: doc.url };
     if (!context.endDate || context.endDate === context.startDate) starts.push({ label, date: context.startDate, time: rawTime.replace("~", "").padStart(rawTime.includes(":", rawTime.indexOf(":") + 1) ? 8 : 5, "0"), approximate: rawTime.startsWith("~"), ...evidence });
-    for (const match of prices.matchAll(/(\d{1,2}\.\d{1,2}\.20\d{2})\s+([\d \u00a0]+)(?:[,.]-?)?\s*(Kč|CZK|EUR|€)/g)) fees.push({ label, amount: Number(match[2].replace(/\s/g, "")), currency: /Kč|CZK/.test(match[3]) ? "CZK" : "EUR", validUntil: iso(match[1]), ...evidence });
+    const tiers = [...prices.matchAll(/\b\d{1,2}\.\d{1,2}\.20\d{2}\b/g)];
+    for (const [index, tier] of tiers.entries()) {
+      const after = prices.slice(tier.index + tier[0].length, tiers[index + 1]?.index);
+      const entries = entryPrices(after);
+      if (entries.length !== 1) continue;
+      const { amount, currency, index: amountIndex } = entries[0];
+      if (amount > 0 && !after.slice(0, amountIndex).trim()) fees.push({ label, amount, currency, validUntil: iso(tier[0]), ...evidence });
+    }
     const distance = label.match(/\b(\d+(?:[,.]\d+)?)\s*km\b/i);
     if (distance) routes.push({ name: label, distanceKm: Number(distance[1].replace(",", ".")), ...evidence });
   }
@@ -41,27 +48,30 @@ function programmeRows(doc: PracticalDocument, context: ProgrammeContext): Pract
   return verifyPracticalExtraction({ facts: fields }, { ...context, documents: [doc] }).details;
 }
 
-/** Label/value tables need an explicit race row and nearby edition date.
+/** Label/value tables and text need an explicit race line and nearby edition date.
  * A footer date, unrelated event, office address or children's start is not enough.
  */
 function keyValueProgramme(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
   const lines = doc.text.split("\n").map(line => line.trim()).filter(Boolean);
-  const identityIndex = lines.findIndex(line => /^(?:Závod|Zavod|Race|Event|Veranstaltung)\s*\|/i.test(line));
+  const identityLabel = /^(?:Závod|Zavod|Race|Event|Veranstaltung)\s*[|:]/i;
+  const organizerLabel = /^(?:Pořadatel|Poradatel|Organiser|Organizer|Veranstalter)\s*[|:]\s*/i;
+  const startLabel = /^(?:Start|Štart)\s*[|:]\s*/i;
+  const identityIndex = lines.findIndex(line => identityLabel.test(line));
   if (identityIndex < 0) return {};
-  const nextIdentity = lines.slice(identityIndex + 1).findIndex(line => /^(?:Závod|Zavod|Race|Event|Veranstaltung)\s*\|/i.test(line));
+  const nextIdentity = lines.slice(identityIndex + 1).findIndex(line => identityLabel.test(line));
   const block = lines.slice(identityIndex, nextIdentity >= 0 ? identityIndex + 1 + nextIdentity : identityIndex + 45);
-  const dateIndex = block.findIndex(line => /^(?:Termín|Termin|Date|Datum)\s*\|/i.test(line) && quoteContainsDate(line, context.startDate));
+  const dateIndex = block.findIndex(line => /^(?:Termín|Termin|Date|Datum)\s*[|:]/i.test(line) && quoteContainsDate(line, context.startDate));
   if (dateIndex < 1 || dateIndex > 6) return {};
   const identity = block[0], edition = block.slice(0, dateIndex + 1).join("\n");
   const facts: Record<string, unknown> = {};
   const evidence = (value: unknown, quote: string) => ({ value, quote, source_url: doc.url, identity_quote: identity, edition_quote: edition, status: "current" });
-  const organizer = block.find(line => /^(?:Pořadatel|Poradatel|Organiser|Organizer|Veranstalter)\s*\|/i.test(line));
+  const organizer = block.find(line => organizerLabel.test(line));
   if (organizer) {
-    const name = organizer.split("|").slice(1).join("|").trim();
+    const name = organizer.replace(organizerLabel, "").trim();
     if (name.length <= 200 && name.length > 1) facts.organizer = evidence({ name }, organizer);
   }
-  const starts = block.filter(line => /^(?:Start|Štart)\s*\|/i.test(line)).flatMap(line => {
-    const value = line.split("|").slice(1).join("|").trim();
+  const starts = block.filter(line => startLabel.test(line)).flatMap(line => {
+    const value = line.replace(startLabel, "").trim();
     const time = /\b(?:[01]?\d|2[0-3]):[0-5]\d(?::[0-5]\d)?\b/.exec(value);
     if (!time) return [];
     const beforeTime = value.slice(0, time.index);

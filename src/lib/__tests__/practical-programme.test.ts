@@ -16,6 +16,20 @@ it("does not associate a real fee with the wrong deadline in the same row", () =
   const quote = "27.02.2027 600,- Kč online 29.06.2027 750,- Kč online";
   expect(feeQuoteSupports(quote, 750, "CZK", "2027-06-29")).toBe(true);
   expect(feeQuoteSupports(quote, 750, "CZK", "2027-02-27")).toBe(false);
+  expect(feeQuoteSupports("od 29.06.2027 750,- Kč online", 750, "CZK", "2027-06-29")).toBe(false);
+});
+it("retains decimal prices and does not pair one amount with a different currency", () => {
+  const quote = "1200 Kč tandem, 25,50 EUR pro zahraniční účastníky";
+  expect(feeQuoteSupports(quote, 25.5, "EUR")).toBe(true);
+  expect(feeQuoteSupports(quote, 25, "EUR")).toBe(false);
+  expect(feeQuoteSupports(quote, 1200, "EUR")).toBe(false);
+  expect(feeQuoteSupports("120\u202fzł", 120, "PLN")).toBe(true);
+  expect(feeQuoteSupports("900.50 CHF", 900.5, "CHF")).toBe(true);
+  expect(feeQuoteSupports("£25 / €25.50", 25.5, "EUR")).toBe(true);
+  const priced = { ...doc, text: doc.text.replace("750,- Kč", "1\u202f250,50 Kč") };
+  expect(practicalProgramme(priced, context).fees?.value).toContainEqual(expect.objectContaining({ amount: 1250.5, currency: "CZK", validUntil: "2027-06-29" }));
+  const ambiguous = { ...doc, text: doc.text.replace("750,- Kč online", "750,- Kč členové, 850,- Kč ostatní") };
+  expect(practicalProgramme(ambiguous, context).fees?.value.some(fee => fee.validUntil === "2027-06-29")).toBe(false);
 });
 it("does not interpret last year's table or a multi-day event as a known single-day programme", () => {
   expect(practicalProgramme({ ...doc, url: doc.url.replace("2027", "2026") }, context)).toEqual({});
@@ -46,6 +60,13 @@ it("reads an edition-bound label/value table at a year-neutral URL", () => {
   expect(details.schedule?.value).toHaveLength(1);
   expect(details.fees).toBeUndefined();
   expect(details.venue).toBeUndefined();
+});
+it("keeps verbatim evidence for labelled prose without taking the children's time", () => {
+  const plain = { ...keyValueDoc, text: keyValueDoc.text.replaceAll(" | ", ": ") };
+  const details = practicalProgramme(plain, keyValueContext);
+  expect(details.organizer?.value.name).toBe("Sportovní klub Vesani.cz, z.s.");
+  expect(details.schedule?.value).toMatchObject([{ time: "12:30", sourceQuote: expect.stringMatching(/^Start: /) }]);
+  expect(practicalProgramme({ ...plain, text: plain.text.replaceAll("2027", "2026") + "\n© 2027" }, keyValueContext)).toEqual({});
 });
 it("does not confirm an old table using a footer year or a nearby second race", () => {
   expect(practicalProgramme({ ...keyValueDoc, text: keyValueDoc.text.replaceAll("2027", "2026") + "\n© 2027" }, keyValueContext)).toEqual({});
