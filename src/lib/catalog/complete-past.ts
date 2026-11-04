@@ -60,6 +60,7 @@ export async function completePastEvents(opts?: {
   const supabase = createServerSupabase();
   const today = opts?.today ?? new Date().toISOString().slice(0, 10);
   const max = opts?.max ?? 2000;
+  if (!Number.isInteger(max) || max < 0) throw Error("Invalid completion limit");
 
   const rows = await readAllRows<
     CompletableEvent & { overrides: OverridesEmbed }
@@ -68,9 +69,11 @@ export async function completePastEvents(opts?: {
       .from("events")
       .select("id, status, start_date, end_date, overrides:event_overrides(locked_fields)")
       .in("status", [...RUNS_ON_ITS_DATE])
+      .is("merged_into_id", null)
       .lt("start_date", today)
       .order("id", { ascending: true })
       .range(from, to),
+    { throwOnError: true },
   );
 
   const result: CompletePastResult = {
@@ -95,15 +98,14 @@ export async function completePastEvents(opts?: {
     return result;
   }
 
-  // In batches: a single `.in()` of two thousand ids is a URL no gateway wants.
-  for (let i = 0; i < Math.min(due.length, max); i += 100) {
-    const batch = due.slice(i, i + 100);
-    const { error } = await supabase
-      .from("events")
-      .update({ status: "completed", updated_at: new Date().toISOString() })
-      .in("id", batch);
-    if (error) result.failed += batch.length;
-    else result.completed += batch.length;
+  const selected = due.slice(0, max);
+  for (let i = 0; i < selected.length; i += 100) {
+    const batch = selected.slice(i, i + 100);
+    const { data, error } = await supabase.rpc("pipeline_complete_past_events", {
+      p_ids: batch, p_today: today,
+    });
+    if (error || typeof data !== "number") result.failed += batch.length;
+    else result.completed += data;
   }
   return result;
 }

@@ -2,7 +2,6 @@ import * as cheerio from "cheerio";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { recordFacts } from "@/lib/catalog/facts";
 import {
   isAccountOrNewsletterUrl,
   isRegistrationPlatformUrl,
@@ -103,13 +102,14 @@ export async function fillRegistrationLinks(opts?: {
     startDate: string;
     website: string;
     municipality: string | null;
+    revision: string;
     shared?: boolean;
   };
   const targets: Target[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
     const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, website_url, location:locations(municipality), overrides:event_overrides(locked_fields)")
+      .select("id, name, start_date, website_url, public_revision, location:locations(municipality), overrides:event_overrides(locked_fields)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -128,6 +128,7 @@ export async function fillRegistrationLinks(opts?: {
         name: row.name,
         startDate: row.start_date,
         website: row.website_url,
+        revision: row.public_revision,
         municipality: row.location?.municipality ?? null,
       });
       if (targets.length >= max) break;
@@ -199,26 +200,11 @@ export async function fillRegistrationLinks(opts?: {
       }
       result.proposed += 1;
       if (opts?.dryRun) { opts?.log?.(`DRY  ${t.startDate}  ${t.name}  → ${link}`); return; }
-      const { data: current, error: check } = await supabase.from("events")
-        .select("name,start_date,overrides:event_overrides(locked_fields)").eq("id", t.id)
-        .eq("visibility", "public").is("merged_into_id", null).single();
-      if (check) throw check;
-      const overrides = current?.overrides;
-      if (!current || current.name !== t.name || current.start_date !== t.startDate || overrides?.locked_fields?.includes("registration_url")) return;
-      const { data: changed, error: writeError } = await supabase.from("events")
-        .update({ registration_url: link, updated_at: new Date().toISOString() })
-        .eq("id", t.id).is("registration_url", null).select("id");
+      const { data: changed, error: writeError } = await supabase.rpc("pipeline_fill_registration_link", {
+        p_event: t.id, p_revision: t.revision, p_link: link, p_source: sourceUrl, p_quote: quote,
+      });
       if (writeError) throw writeError;
-      if (!changed?.length) return;
-      try {
-        await recordFacts(supabase, t.id, [{ field: "registration_url", value: link, previous: null, sourceUrl, quote }], { method: "registration_links", version: "links-v2" });
-      } catch (error) {
-        const { error: cleanup } = await supabase.from("events").update({ registration_url: null }).eq("id", t.id).eq("registration_url", link);
-        if (cleanup) throw cleanup;
-        throw error;
-      }
-      const { data: saved, error: readError } = await supabase.from("events").select("registration_url").eq("id", t.id).single();
-      if (readError || saved?.registration_url !== link) throw new Error("Registration readback failed");
+      if (changed !== true) return;
       result.filled += 1;
       opts?.log?.(`SET  ${t.startDate}  ${t.name}  → ${link}`);
       await clearProbe(supabase, t.id, "reg_links");
