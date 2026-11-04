@@ -10,13 +10,15 @@ Stav k 4. listopadu 2026. Tento soubor je jediný aktuální seznam. Každý ř�
 | **ČEKÁ** | K uzavření je potřeba doběh, měření nebo předchozí krok. |
 | **BLOKOVÁNO** | Chybí přístup nebo souhlas k živému běhu. |
 
-**Co následuje.** Nejdřív rozhodnout o zbývajících kontrolách v P0.3a. Po celých 24 hodinách od nasazení úspor vyhodnotit P0.4a. Potom rozšířit kontrolní sadu v P1.4d. Při překročení rozpočtu pokračovat P0.4b. Před pilotem musí být ověřené zveřejňování a rozpočet. Scany Macu i serveru jsou pozastavené.
+**Rozhodnutí vlastníka 4. listopadu.** Priorita je pokrytí a aktuálnost, začíná se Českem. Na zkoušku AI je 8 USD. Vlastník nechce rozhodovat jednotlivé případy, stačí neoficiální zdroj s dostatkem údajů a duplicity se mají řešit do několika hodin. Balast je vypnutý a kontroly omezené. [Výsledek úklidu](../reports/source-cleanup-2026-11-04/RESULT.md)
+
+**Co následuje.** Před obnovením scanů přidat automatické pozastavení stránek bez závodu. Po celých 24 hodinách od nasazení úspor vyhodnotit P0.4a. Potom rozšířit kontrolní sadu v P1.4d. Při překročení rozpočtu pokračovat P0.4b. Před pilotem musí být ověřené zveřejňování a rozpočet. Scany Macu i serveru jsou pozastavené.
 
 ## Otevřené úkoly P0 · bezpečný provoz
 
 | ID | Stav | Co se udělá | Hotovo, až |
 | --- | --- | --- | --- |
-| P0.3a | **ČEKÁ** | Fronta měla 4. listopadu 1 104 závodů a 87 seriálů při limitu 60 kontrol denně. Dříve ověřené nezměněné záznamy se kontrolují na 10% vzorku a nové změny mají přednost. Zbývajících 1 084 položek, které nová kontrola ještě nepotvrdila, a 16 položek vzorku by trvalo 18 dní, vlastník rozhodne, zda je potřeba kontrolovat všechny. Rozebrat položky, které se opakovaně vracejí. | Staré úlohy jsou potvrzené nebo jednotlivě vysvětlené a novější změny nezůstávají čekat přes další běžný cyklus. Požadavky na obnovu a ověřené výsledky mají oddělená čísla. |
+| P0.3a | **ČEKÁ** | Fronta měla 4. listopadu 1 104 závodů a 87 seriálů při limitu 60 kontrol denně. Dříve ověřené nezměněné záznamy se kontrolují na 10% vzorku a nové změny mají přednost. Vlastník rozhodl, že všechny kontrolovat netřeba: 830 neověřených starých úloh se žádostí o obnovu je uzavřených mimo vzorek a zůstává 261 závodů a 20 seriálů. Rozebrat položky, které se opakovaně vracejí. | Staré úlohy jsou potvrzené nebo jednotlivě vysvětlené a novější změny nezůstávají čekat přes další běžný cyklus. Požadavky na obnovu a ověřené výsledky mají oddělená čísla. |
 | P0.4a | **ČEKÁ** | Vyhodnotit celý den s pozastavenými scany po nasazení úspor. Rozdělit provoz na veřejný web, zveřejnění, monitor, počasí a ostatní. | Je uložený přesný interval, počet požadavků podle činnosti a dostupný údaj o skutečném objemu logů. Podmínkou pro pilot je celkový provoz pod 16 000 požadavky za den a prostor v rozpočtu logů. |
 | P0.4f | **OTEVŘENO** | Zjistit, proč obnova ročníků a kol seriálů na pozadí hlásí 20s timeout. 4. listopadu bylo ve Vercelu asi 140 chyb, ale Supabase nezaznamenal dotaz nad 3,5 s a všech 26 kontrolovaných detailů mělo odkazy na ročníky. | Je doložená příčina na straně funkce a chyby klesly. Selhání odkazů na ročníky je nově v logu, takže lze vyhodnotit, zda se projevuje návštěvníkům. |
 | P0.4b | **ČEKÁ** | Pokud rozpočet nevychází, opravit největší změřený zdroj provozu nebo timeoutů a zopakovat měření. | Celodenní měření prokáže pokles. Detail, seznam, mapa a kalendář při běžných změnách zůstávají aktuální. Při splnění rozpočtu v P0.4a se tento krok uzavře jako nepotřebný. |

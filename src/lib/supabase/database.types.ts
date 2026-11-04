@@ -1534,6 +1534,7 @@ export type Database = {
       pipeline_finish_task: {Args:{p_key:string;p_token:string;p_payload:Json;p_result:Json};Returns:boolean};
       pipeline_retry_publication_check: { Args: { p_key: string; p_token: string; p_revision: string; p_error: string; p_delay_seconds: number; p_stale: boolean }; Returns: boolean };
       pipeline_retry_task: {Args:{p_key:string;p_token:string;p_error:string;p_delay_seconds?:number};Returns:boolean};
+      pipeline_pause_fruitless_sources: { Args: { p_min_reads?: number; p_limit?: number }; Returns: number };
       pipeline_health: {Args:Record<string,never>;Returns:Json};
       pipeline_begin: {Args:{p_key:string;p_run:string};Returns:boolean};
       app_carry_previous_edition: { Args: { target_id: string; previous_id: string; expected: Json; patch: Json }; Returns: boolean }

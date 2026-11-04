@@ -32,9 +32,11 @@ const retryErrors = args.includes("--retry-errors");
 if (replay && retryErrors) throw new Error("Retry requires a live audit");
 const deferHost = process.argv.find(arg => arg.startsWith("--defer-host="))?.split("=")[1];
 const pausedHosts = new Set(deferHost ? [deferHost] : []);
+const country = args.find(arg => arg.startsWith("--country="))?.slice("--country=".length).toUpperCase();
+if (country && (replay || !/^[A-Z]{2}$/.test(country))) throw new Error("Use --country=CC with a live audit");
 const rateLimitStreaks = new Map<string, number>();
 const runDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-const archive = replayDir ?? `reports/next-edition-websites-${year}-to-${target}-${runDay}`;
+const archive = replayDir ?? `reports/next-edition-websites-${year}-to-${target}-${runDay}${country ? `-${country.toLowerCase()}` : ""}`;
 const directory = replay ? join(archive, "replay") : archive;
 mkdirSync(replay ? directory : join(directory, "pages"), { recursive: true });
 type Page = Job & { at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean };
@@ -187,7 +189,7 @@ async function main() {
   if (replay) {
     ({ old, existing } = replay);
   } else {
-    old = await readRaces(`${year}-01-01`, `${target}-01-01`);
+    old = (await readRaces(`${year}-01-01`, `${target}-01-01`)).filter(race => !country || race.location?.country_code === country);
     existing = await readRaces(`${target}-01-01`, `${target + 1}-01-01`);
     writeFileSync(join(directory, "races.json"), JSON.stringify({ year, target, old, existing }, null, 2));
   }

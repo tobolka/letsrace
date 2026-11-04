@@ -1,0 +1,5021 @@
+[
+ {
+  "id": "bdc3c560-9f25-439f-8a84-b8354f99a0a1",
+  "url": "http://bikeri.cz/zavod/vylet-dylen",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4d563bd3-fd95-4514-9cad-7e9e33d5cef4",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2014",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7f7aecbd-71d3-4e72-8873-a7a6c8784cd5",
+  "url": "http://www.mazurymtb.pl/aktualnosci",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a6379c6a-a7dc-4a65-aaa1-4d7600ff91a0",
+  "url": "http://bikeri.cz/pohary/chebsky-pohar",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1cbb6006-ecb7-481c-8e90-e6bfeaf8e771",
+  "url": "https://www.amaterskaliga.cz/vysledky/105",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "77dd9c8c-042f-4d7a-b3a6-de65c190b6d9",
+  "url": "https://www.lrv-noe.at/media/doc/fa8407241e7b390286d6a5750a636595/noe-rad-nachwuchscup-2028.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "25e100c3-95d0-4fad-9a3a-9b7c2772feda",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/babi2.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "de8eb562-3494-48fd-b6d3-7cbc386081ba",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/132",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6512b216-5717-41b1-8bad-08d3f84728b1",
+  "url": "https://www.edieteam.cz/mtb-mladeze/registrace-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "88fe9c05-80b6-41db-b9b1-b168dbc41420",
+  "url": "https://dzkol.pl/download/20260516-miedzywojewodzkie-mistrzostwa-mlodziczek-i-mlodzikow-w-kolarstwie-mtb-nedzerzew-wyniki/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fc82ad16-7fd7-499d-b68f-85c86f1a9b6d",
+  "url": "https://lausitzcup.de/index.php/spremberg/ausschreibung-spremberg",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "15c7737d-a2c2-4d7c-b807-fb36c985dafa",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt/vysledky-novy/pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "096491cd-55fe-480d-8f06-cb8928253cb4",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2015",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c17dac71-9e37-4360-9c13-4adb7eb2596a",
+  "url": "https://www.maratony.eu/pridaj-nove-podujatie/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8d0d986a-93ed-4ce2-a411-e6e47e08345f",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2013",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c721cb3b-8e7d-453f-9689-7115a8089703",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=279",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f372c3e6-ab92-4f26-8dd7-eed38dd13f1d",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=prohl%C3%ADdka+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ae6463f6-f3b0-4917-bdde-d5221052586f",
+  "url": "https://www.cfc-kladno.cz/akce.php?id=808&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e7cfbcb1-ea5c-4513-a731-63f267d5b7b1",
+  "url": "http://cfc-kladno.cz/akce.php?id=827&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "97017170-3542-4d48-b627-9d921920b4fb",
+  "url": "https://www.cfc-kladno.cz/bodovani.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ade95dcd-fef6-4b70-8cf9-659ed1278a7a",
+  "url": "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-uz-tuto-sobotu-troufnes-si-na-tuhle-vyzvu/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e8698b95-38e5-4976-a7a3-900b3a143012",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=213",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "470eca22-4b05-4ee2-8f9d-d71c535b7b12",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2013",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c0bc04c3-6364-47e9-8467-3e6c2dbdbe34",
+  "url": "https://www.gravelseries.cz/novinky/decathlon-gravel-series-miri-do-znojma-ceka-vas-rychla-jizda-mezi-vinicemi",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "1086aea5-7244-468c-a35b-7397aab70f3e",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2011",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b9cc538c-09fc-4cb5-a459-3b4613b6e7ea",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=mapa+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "617eeab2-5017-4aa7-922d-3983556c3366",
+  "url": "https://cyclocrosscup.de/2026/09/alle-infos-cyclocross-brumath/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e3742a7f-5598-4f85-b7ae-6b67965deccb",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Bike-Day_Einladung_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7dceadd5-1478-4690-9740-7547a61a65b8",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=460",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8ec1e285-cb9a-42d7-8ff7-12482dedf299",
+  "url": "https://spac-os.cz/junior-spac-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2b215d16-85e1-4d04-a4ca-c952d296dfd7",
+  "url": "http://bikeri.cz/serial/giro-chodov",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "60463873-b76d-4df4-b4c7-6b867316a6bb",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2026-06-14_RTF_100km_1200HM.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "65e8da33-b8a7-40a2-b517-6f87e0c88e12",
+  "url": "https://cfc-kladno.cz/bodovani.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "70cd7e6f-4e1b-43fe-b0f8-7ab8b911496c",
+  "url": "https://www.vychodroadliga.sk/files/layout/img/cyklopreteky-vychod-road-liga/preteky/vychod-road-liga/Preteky%20Gravel/NyNa%20Gravel%20Gajary/Kone%C4%8Dn%C3%A9%20poradie.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ced4850b-573e-43a0-abb2-e62f628f32c2",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=272",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7cc5e3e7-6d3b-47f0-afc3-57006a9d232e",
+  "url": "https://cykloman.cz/vitezove",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "442d74c0-9ade-486a-a5f2-1fb9458ec9df",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "225fc797-8d76-433b-a00c-0be84f95c2c0",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_Kidscup_Heimenkirch_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ef7e82bb-3181-42d9-b813-d487abf20de4",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2012",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "cc9a1bcc-f89c-491e-8b6f-50aa6d9f2d8c",
+  "url": "https://www.dsergebnis.de/dienstleistungen/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8a49a522-9847-4519-805d-3aa8f564dbcb",
+  "url": "https://dzkol.pl/download/mtb_challenge-20261-xlsx/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4478dcc3-fe86-4f58-888e-ecce56012a45",
+  "url": "https://www.buckligeweltcup.at/rennen/2026-04-18-kinder-mtb-rennen-in-hollenthon",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b55022df-9053-45cf-a631-a140241e6990",
+  "url": "https://cfc-kladno.cz/index.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "42a6b73a-8210-4f5e-a383-24524ed81839",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=%C4%8Dast%C3%A9+dotazy#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fc80f538-131b-44e1-a837-8f3c60ecf577",
+  "url": "http://cfc-kladno.cz/diskuse.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0d93eda0-df63-4c69-b612-a07ad095abf1",
+  "url": "https://www.dsergebnis.de/archiv/cyclo-cross-bundesliga-presented-by-bikebeat-1/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a1e3e511-336a-479d-a2ab-76176143eea9",
+  "url": "https://www.edieteam.cz/mtb-mladeze/208-propozice-prihlasky-a-harmonogram-zavodu-block-valassky-pohar-mtb-xc",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3be7182a-9b4c-46ec-ab05-b36f87436d07",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=282",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "bd265016-8e20-473b-8d82-1bbba1838142",
+  "url": "https://lausitzcup.de/index.php/peitz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4cffa6d4-a9e8-47cc-b13b-6e94800b4500",
+  "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=%C4%8Dast%C3%A9+dotazy#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7cbfe88a-de1b-40aa-ab21-29e5f0b1b8dd",
+  "url": "https://cfc-kladno.cz/kalendar.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ae87cfd0-ca55-44a7-aa03-6bd2a2a36837",
+  "url": "https://www.lrv-noe.at/media/doc/a3ac759dc37f54f5a694646af1e45f12/noe-rad-nachwuchscup-2028-.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7a3faff8-7590-41a9-9a99-3a395ca1bbb2",
+  "url": "https://www.jihoceskymtbpohar.cz/cup/jihocesky-mtb-pohar-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0f368b7e-4a28-467b-a948-005187db5234",
+  "url": "https://lausitzcup.de/images/2026/Ausschreibung%20Groditz%20Jedermann%202026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "33bc0139-c228-48a8-83dc-d1cab36488ec",
+  "url": "https://www.lrv-noe.at/media/doc/83448ff742ef67264026d8a0b3f17db8/noe-rad-nachwuchscup-2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5b708334-6efe-4c05-b706-09de961cc2de",
+  "url": "https://zavodnicasomira.cz/zavody/dobry-beh/2027",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "512cf33b-5f61-43f6-93ab-5b09f41e2ea1",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=361",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "66ef893d-3049-4d62-8c93-495c3f8f550d",
+  "url": "https://www.amaterskaliga.cz/zavody/2025/2-peklo-severu-road-hobby-no-1-velka-cena-nobilis-tilia",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9343f426-c12b-4dcb-bb34-32f25f660917",
+  "url": "https://dzkol.pl/download/2026-kalendarz-imprez-dzkol/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4c0d2151-cac2-428e-ab95-717be2fd7029",
+  "url": "https://www.dsergebnis.de/archiv/ergebnisse-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5338e5d2-ef1b-498e-ab79-79f6c7170767",
+  "url": "https://www.dsergebnis.de/deutsche-meisterschaft-2026-genthin/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "16895d33-fc8d-48f6-a103-f3bd12fc58ee",
+  "url": "https://www.amaterskaliga.cz/vysledky/41",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b4e2e671-2e69-41af-9194-b8b9f8885b74",
+  "url": "https://www.kuklikxco.cz/kuklikxco2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "efad31e2-894b-4e28-9982-28702beb1371",
+  "url": "https://www.kolokolemkomina.cz/zavody/cejkovicka-pohodovka/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6fd6d503-8fb4-4d86-9418-4a84c1a27244",
+  "url": "https://www.amaterskaliga.cz/zavody/2025",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9071dac4-a0ad-4810-bfeb-95e03186e767",
+  "url": "https://www.dsergebnis.de/archiv/ergebnisse-2023/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "89682e33-0e9e-4e32-89fd-74f9c3d872c6",
+  "url": "https://www.amaterskaliga.cz/vysledky/6",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "32dc6c58-8d61-47c5-b581-8540e87fd2d7",
+  "url": "https://www.dsergebnis.de/archiv/international-cyclo-cross-bad-salzdetfurth/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2238c546-1761-4cd7-a16a-953ab963c1f1",
+  "url": "https://www.amaterskaliga.cz/zavody/2025/13-casovka-jednotlivcu-mistrovstvi-sal-2025-horni-halze",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f57b1e3f-b8c9-4108-a152-16252650174d",
+  "url": "https://cfc-kladno.cz/klikace25_2.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bd897260-6bdb-4477-8872-aa75481351e2",
+  "url": "https://cfc-kladno.cz/posazavi21_3.php?#navigace_p21_3",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2adb5fa9-72e5-4413-880b-3a0e70c80b58",
+  "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b27961db-3ac4-46af-8fb6-912401877892",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Niederstaufen_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "16e70bce-5f3b-42d8-b3cc-df64433498c9",
+  "url": "http://cfc-kladno.cz/klikace16.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a8efde0f-8d8f-4365-b7e8-b022738a6d10",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2019",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1359ac21-76f4-4da9-8e91-c58a6bf85b8f",
+  "url": "https://www.amaterskaliga.cz/vysledky/118",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "306ecb3c-adb8-43fb-8437-2f2e06c84b6a",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=263",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "115daa95-9275-4c4c-a11e-ed81308d2a24",
+  "url": "https://www.maratony.eu/vysledky/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a0bc2fea-2ba0-461e-97eb-0da74cb6ec6d",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/309-zavod-valasskeho-poharu-mtb-xc-na-pustevnach-bude-zaroven-krajskym-preborem-zlinskeho-kraje-v-mtb-xc",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bb0fdfe6-2004-48cf-ad20-40f440dc3e46",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_Harter_MTB-Kreiscup_Lindenberg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9313a183-3032-4bcd-a71d-e316c61c0cb7",
+  "url": "http://cfc-kladno.cz/rfc_registrace.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "975b965c-de7b-4504-86e6-ac956876af76",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=273",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "81491535-6176-4861-a6f1-cc0a092f2117",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=276",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "20323ede-6467-4705-a4d4-86172b965ab6",
+  "url": "https://www.roadcycling.cz/roadcup/rocnik-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "77f161e3-68c6-4b37-8580-79fa95d41912",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=221",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "60ae39dc-fa5c-43c1-b2aa-3c90a5241b4a",
+  "url": "https://www.mtb-isarcup.de/index.php/192-naechster-halt-im-isar-cup-irschenberg-am-19-09-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a47e05ae-2834-460f-b2f2-879acf795741",
+  "url": "https://radsport-thueringen.de/thueringer-enduro-landesmeisterschaft-2026-in-saalfeld/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "db9a9f70-889e-4514-97fd-1cd2a27300a6",
+  "url": "https://dzkol.pl/download/20260927-gorskie-szosowe-mistrzostwa-polski-tandemow-sluzb-mundurowych-i-amatorow-leszczyna-wyniki/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "650dc9c9-21f6-4f10-a989-d94e6594910a",
+  "url": "https://www.dsergebnis.de/archiv/30-gro%C3%9Fer-preis-von-buchholz/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7d2a37f9-84a7-40ac-a52c-bf6ab7295f3a",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=279",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "21e6cca1-31ed-4e82-ad22-055898f9f84b",
+  "url": "https://mtbkreiscup.lima-city.de/Ergebnisse_gesamt.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d207c3dc-05e1-4806-9331-34dce920a86e",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=263",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5d1a7554-4ca2-400e-98cc-48a6eb4fdff9",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-prolog/vysledky-novy/pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0b7e7656-b672-495f-8ab7-4ce1c1874db4",
+  "url": "http://www.mtbkreiscup.lima-city.de/Termine.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f553e351-c116-4a69-a923-71d3ee9bddd9",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2015",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "76bf3c41-b477-410b-88c8-c399421afc01",
+  "url": "http://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-ryn-2026-spektakularna-walka-o-zwyciestwo-i-emocje-do-ostatnich-metrow",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "82d7cd3c-33b2-4546-bc62-28815e7590c1",
+  "url": "https://www.dsergebnis.de/referenzen/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "16f6363b-8ddc-42ae-a9e6-7b490acb0a9f",
+  "url": "http://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-etap-2-ryn-wyscig-o-jelenie-rogi-juz-10-maja",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "38ffbcf0-ff51-48ff-abc3-7d4e743d7051",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/11-tour-de-zelenak-54-106-km",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "cee2d1ea-10c8-4b77-9c03-7ddf8bd78fe5",
+  "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "275d521b-2dd4-4703-afc5-f06e9985040d",
+  "url": "https://vychodroadliga.sk/files/layout/img/cyklopreteky-vychod-road-liga/vysledky/mtb/SARISSKA_MINI_MTB_LIGA_VRL_2024_celkove_poradie.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a2baa40d-6338-4caa-a274-875534657694",
+  "url": "https://www.kolarna.eu/hanacky-duatlon/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3e459aec-a924-4518-acc9-e580efe548b1",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1994",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7bbca54f-651e-4179-9dd2-fe4545c49bcd",
+  "url": "https://lausitzcup.de/index.php/wittichenau",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0278a42e-5f50-40a4-92f3-2d2cf3017de4",
+  "url": "https://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-sorkwity-2026-poznaj-trase-wyscigu-przez-jary-lampasza",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "18121151-f514-44fb-8604-bee70697c1b0",
+  "url": "https://www.amaterskaliga.cz/vysledky/111",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "998ae5d7-6ed9-4e6b-b4d0-c06d77ae7f00",
+  "url": "https://spac-os.cz/sezona-2024/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "dd06f191-2ffd-4400-bd6a-7ef3d1e4500b",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b90daf7d-02d3-4739-92d4-04de9e4cc191",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2014",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "05bf7fad-0bdf-4973-91e9-05b6bed54fc6",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/paperman-triatlon/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "65c4e34e-318d-4d56-9e00-cc2bf654463a",
+  "url": "https://www.edieteam.cz/9-aktuality/302-ostravsky-mtb-pohar-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bdd299a6-7efc-4acc-91ab-49bb9702e550",
+  "url": "https://www.german-pumptrack-series.de/termine/immelborn",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9f71830d-1b80-4b29-9db2-b2747e539d40",
+  "url": "https://www.edieteam.cz/9-aktuality/307-mxm-mtb-cup-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "16dc6bbd-6486-490a-97df-450c1310024d",
+  "url": "https://www.dsergebnis.de/archiv/gr-preis-der-suedlichen-weinstrasse-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d3b93f38-4016-4136-8acc-f29a018c1387",
+  "url": "https://www.cfc-kladno.cz/posazavi26_2.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6cb964b0-d9ae-4ed1-81a2-894359e373d5",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2026_Auba_20261018.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8df52d54-63cf-4106-95bd-0f57103c810a",
+  "url": "https://www.german-pumptrack-series.de/termine/saal",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5ceca881-9b82-44c8-95d9-65e7e741dfde",
+  "url": "https://cfc-kladno.cz/akce.php?id=827&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2c805a1e-f8c3-4d9d-9ad8-a899509818d1",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2025/09/Zkracena_trat_nove_WH_2025_final.zip",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6d35d11b-143f-420c-90a0-8cf36bc74920",
+  "url": "http://bikeri.cz/serial/chbz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "56c93781-abfa-4b43-877d-3baa838ac1e9",
+  "url": "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events&page=4",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "06aab6f6-390d-46fb-95d5-584074d6c1c3",
+  "url": "https://spac-os.cz/wp-content/uploads/2023/06/10_11-MCR_SAC-Suchdol.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "51437e55-5823-403e-8b8d-26f3b7094623",
+  "url": "https://dzkol.pl/download/20260516-liga-mtb-xc-aglomeracji-walbrzyskiej-dobromierz-wyniki/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fd08a5b0-10d8-4c37-9ef1-5c5f7f5efd17",
+  "url": "https://cyclingaustria.at/kalender?disziplinen=cyclocross&view=events&page=3",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "47f07e51-884b-451c-8ca2-6803cb2042b8",
+  "url": "http://bikeri.cz/zavod/na-kafe-s-honzou-kubickem-aneb-zazitky-z-havaje",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b4d25a41-f61e-4971-b21b-5d92005360b9",
+  "url": "https://www.mazurymtb.pl/aktualnosci/prognozowane-upaly-wyscig-laciate-mazury-mtb-w-mikolajkach-przelozony-na-5-wrzesnia",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c3c859fe-cee4-44e8-94c0-4cfefb5b4a02",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=368",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2d63ac1f-f01c-4395-ae14-228c46cded03",
+  "url": "https://www.cyklomaratontour.cz/clanky/decathlon-cyklomaraton-hradec-kralove-695.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ce4efcbd-d956-49cd-b002-aa33d2068f0b",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2009",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c7a373cb-07eb-4288-ba85-2057ae183a55",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/gesamtwertung/gesamtwertung-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "80a760b7-2a77-4609-921e-09267eb60472",
+  "url": "https://www.cyklomaratontour.cz/partneri.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b3356bfc-2b38-4cea-92af-a3b15dd1dc17",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/10/potoky-2026-vysledky.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a4a5e9a5-ca49-4c0f-b470-cd1da725be99",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=474",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f4f91585-d677-470f-aff1-6d82e0a25eae",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2010",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "762f06f3-56f1-4f62-95e0-1974c712c415",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2010",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8eb5ff3b-dc9d-4e3e-8383-9407ed7ae6ab",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=335",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "53795b96-8f1d-4f7e-a726-da241a3b163c",
+  "url": "https://radsportverband-nrw.de/wp-content/uploads/2026/07/Endstand_ARAG_Schueler_Cup_2023.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "928be315-dbf7-4469-a0a8-7dfd9bc730bb",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=%C4%8Dast%C3%A9+dotazy#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "5228b4ac-2439-42dd-9990-fdfec8e9c714",
+  "url": "https://dzkol.pl/download/mtb-challenge-dzkol-31-08-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "29f42c84-1ef2-4de9-9434-6c7db545e516",
+  "url": "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-uz-tuto-sobotu-troufnes-si-na-tuhle-vyzvu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f90f0699-467d-49e6-8afa-afb421067e54",
+  "url": "http://www.mazurymtb.pl/aktualnosci/ilawa-ponownie-na-sportowej-mapie-polski-26-kwietnia-startuje-11-edycja-laciate-mazury-mtb",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5d3040dc-154e-4cc7-bbd1-587adc8a23c7",
+  "url": "https://www.amaterskaliga.cz/vysledky/47",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "38ebffe4-ac13-4eb8-818d-6cf23d707d54",
+  "url": "https://pruhonaci.cz/terminovka/#ws-block-cover-with-centered-features-bg-image-jSmDfEzK",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "decfe19e-2438-4176-9564-38dbea94cef0",
+  "url": "https://lausitzcup.de/index.php/wittichenau/ausschreibung-wittichenau",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7cf8768e-6767-4a51-9681-80b978bbf4e2",
+  "url": "https://www.amaterskaliga.cz/vysledky/50",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "531bc7ec-dec2-4110-8943-e4ded26fd60e",
+  "url": "https://www.german-pumptrack-series.de/termine/eppelborn",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e0e6d148-d83d-4736-acfe-d841a22b97c6",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0ffeef22-7904-4a5e-9ce7-4e8a6b3c4aee",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/08/Propozice_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4210823b-b936-4972-8197-2b9214f6c2d1",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/05/26-P05-Bohumin_ITT.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5474defe-f14b-4d0d-8041-63eb44922dd4",
+  "url": "https://www.amaterskaliga.cz/vysledky/13",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "31d69f6c-566f-4c56-b163-9eebcc31477e",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky-novy/2842",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9d521e1e-43b7-4a93-99ab-bfa925c4eb0a",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2010",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f03bb92c-3544-4999-9a58-18e795200743",
+  "url": "https://www.amaterskaliga.cz/vysledky/33",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e7b74e56-9309-4f20-af6e-acd4e017f8cf",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=45",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "007cde00-ff30-4b50-a65d-a7fb34eb2801",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_Harter_MTB-Kreiscup_Lindenberg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4562bac1-97e0-4a68-9e0b-651dcfe6fb1c",
+  "url": "https://dzkol.pl/polanica-zdroj-w-wersji-ultra-bike-maraton-2026/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a49e28e3-7eac-4458-a14e-9bb2bc341820",
+  "url": "https://www.amaterskaliga.cz/vysledky/77",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7eda0ae5-c598-4b3d-9081-2e59f4a1a6db",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?celkem=41&od=41#aktuality",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f5cc2aa1-b217-4b16-a263-f02de9b640de",
+  "url": "https://dzkol.pl/download/20260920-grand-prix-strzelina-miedzynarodowe-kryterium-kolarskie-eliminacje-mistrzostw-polski-w-kryterium-strzelin-regulamin/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d8c44449-481e-4714-849e-2b37c2a49b92",
+  "url": "https://www.mazurymtb.pl/aktualnosci/wielki-final-laciate-mazury-mtb-w-gizycku-bitwa-o-twierdze-boyen-wystartuje-z-nowego-miejsca",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "313bf963-9aed-48c8-80e8-bbdd7a439cba",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2016",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "37b4f4dd-1e81-4152-ba9a-08c4dfa73c0f",
+  "url": "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events&page=2",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d924b1ec-b311-41db-ab0c-ebeb4dbadd33",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/superbike-terenni-casovka/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a1be7445-f745-4fb5-a0f8-cf1d461b9a44",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2025/09/Nove_WH_2025_trasa_hlavniho_zavodu_final.zip",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "836fdb1b-bd48-4cc4-99ac-3de8655179f2",
+  "url": "https://www.dsergebnis.de/archiv/cyclo-cross-bundesliga-2025-26/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e8972c5a-e8a0-4360-99c7-940fb6c63372",
+  "url": "https://www.mtb-isarcup.de/index.php/194-isar-cup-2028-saisonabschluss-und-siegerehrung",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c19222bd-e173-4fe7-8188-61c9df210a52",
+  "url": "https://dzkol.pl/download/szosa-challenge-dzkol-31-08-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e2cf9a21-14cc-4c4b-aefa-bb31c8efd6bd",
+  "url": "http://bikeri.cz/zavod/chodovsky-duatlon",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "78f54271-b446-45ec-8797-23b2f652b5f7",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/305-terminy-206",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "53e01253-4e3d-4a63-b4f7-e9efa0a916ae",
+  "url": "https://cfc-kladno.cz/akce.php?id=808&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "47c24683-5df3-41ca-82a1-8801cd6b30b0",
+  "url": "https://www.cfc-kladno.cz/posazavi26_1.php?#navigace_p26_1",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ab2064f8-fe65-4e0e-b5b7-7366ae10db05",
+  "url": "https://www.radclub-moedling.at/wp-content/uploads/2026/06/2026-TRC-Gesamtwertung.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4dc53b67-0c97-4e4b-bc78-e1adbd0a6e10",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/05/kotvina_26_vysledky.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3f190ebc-eb5f-4852-9b12-0891dbb0bd6b",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2016",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a28007af-4728-4c6d-81cb-140380436f36",
+  "url": "https://cyclocrosscup.de/2026/10/cyclocross-is-here-und-zwar-wie/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4634b769-6245-4c74-b693-7769eb0a5b22",
+  "url": "http://www.mazurymtb.pl/aktualnosci/debiut-laciate-mazury-mtb-w-rybnie-23-sierpnia-kolarze-zmierza-sie-w-zarybinek-mtb-classic-im-waclawa-wasieli",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "367de17c-a2bb-462b-9cf1-a2ecf553377a",
+  "url": "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events&page=3",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "353fd388-362a-4433-9cff-fe853a4c7f82",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/zavod-do-vrchu/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "afd10825-4c9f-4ae1-acc2-2884c7487d76",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Heimenkirch_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fbaccb12-3440-4cb3-a0c2-ef600c7e116d",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2025_Siegerehrung.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "beb4d5a4-053e-4896-a652-265c86ab6de5",
+  "url": "https://www.amaterskaliga.cz/vysledky/4",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b8174ba2-cc46-49a5-9b54-61fd21c813b4",
+  "url": "https://dzkol.pl/download/2026-kalendarz-imprez-dzkol-excel/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1baea145-846f-4e50-8fd9-0fdb2fa7c5af",
+  "url": "https://spac-os.cz/wp-content/uploads/2025/08/casovka_spac_propozice_25.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fa63bb88-125a-48e6-894e-2151535acdd6",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a0086e26-0233-4611-85bd-07cc11e9a79b",
+  "url": "https://www.dsergebnis.de/archiv/32-grosser-preis-von-buchholz/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e1022a86-3342-4796-884b-55c56018e23c",
+  "url": "https://spac-os.cz/wp-content/uploads/2025/08/25-P13-Pustevny.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9a58ffdb-560b-4bac-8650-18f523d91487",
+  "url": "https://www.edieteam.cz/9-aktuality/302-ostravsky-mtb-pohar-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "395c1a2b-699a-40c4-8e94-9c23efb0d9d5",
+  "url": "http://bikeri.cz/serial/re-pump-cz-2024",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5bfa5110-a011-4aaa-873f-ed5f8f45e7f4",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2002",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2b2afbd1-d26e-418a-9528-f58c94c60fce",
+  "url": "https://www.amaterskaliga.cz/vysledky/25",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f098b64d-64de-4835-85f1-fb09cc2295b1",
+  "url": "https://dzkol.pl/download/2026-challenge-dzkol-regulamin-i-wykaz-punktowanych-wyscigow/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6d1b640f-f0ac-45f4-a6cb-e1fcd3b61a60",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1995",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8749fc5f-248a-43c3-8085-52c23a3b0d9b",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2018",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6e0027b9-0769-4ff8-8aa2-5b22783a7236",
+  "url": "https://www.kolarna.eu/wp-content/uploads/2026/09/Zadlovice_19.9.2026.xlsx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "01a7d6fc-56c8-4704-9246-068b4be6797a",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=48",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ead034af-d043-461b-be8e-053c593242d0",
+  "url": "https://dzkol.pl/download/szosa-challenge-dzkol-31-07-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4fcc72a0-e974-4865-b39a-338d9921c5f1",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/304-propozice-valassky-pohar-mtb-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ef0213f9-32ac-4752-9515-fdb69ea6c025",
+  "url": "https://www.lrv-noe.at/media/doc/a3ac759dc37f54f5a694646af1e45f12/noe-rad-nachwuchscup-2025-.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "12d4e903-d4fb-43e1-bec0-ac21d471254d",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=248",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c61f3cce-0e64-42de-bf50-d18f6c404a23",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/303-zavod-valasskeho-poharu-mtb-1-5-2028-ve-vesele-je-zruseny",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2ff3f4df-87fe-4546-a5dc-a646f9b83755",
+  "url": "https://zapadoceskaamaterskaliga.cz/kalendare/zal-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a05173e8-d6d9-4c96-ab3b-94d65ccc9161",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2000",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "96fce12d-b7c9-472a-a2c6-d3b0df45e1bb",
+  "url": "https://mtbkreiscup.lima-city.de/Termine.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ca1958b6-8dbf-43ac-a669-bbc46e0ae9b1",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/uvod.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "66b7dd0b-b8ba-40ef-b8f3-0c988eb3c808",
+  "url": "https://www.maratony.eu/letak-casovka-chocholna-kykula-3/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d142ee54-eccc-4581-990e-2c24a9a5bec0",
+  "url": "https://www.amaterskaliga.cz/vysledky/38",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "56fc683c-5c81-436a-bfc1-d8d8b7eba068",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2011",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ef6d79bb-e14e-4b2d-8989-1c9676d6aacb",
+  "url": "https://cfc-kladno.cz/klikace26_4.php?#navigace_k26_4",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8f997d8b-3020-4ddc-bd08-fce3b59eedb2",
+  "url": "https://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-etap-2-ryn-wyscig-o-jelenie-rogi-juz-10-maja",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3a9a438b-921a-483d-a8dc-554569e956cb",
+  "url": "https://www.amaterskaliga.cz/vysledky/7",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "12d848d0-c6a7-4a6d-b881-348458b9d228",
+  "url": "https://www.cfc-kladno.cz/akce.php?id=820&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c5356e37-b256-421b-9623-55cfe6d1c250",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Strecken_Kreiscup-Lindenberg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b50a0154-582d-41c2-bd69-fdb24d9689c6",
+  "url": "https://www.roadcycling.cz/shared/clanky/40047/Zavody_bodovani_ELITE-1.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "69b86c14-2378-4aaf-a1a6-4960ab683a33",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/casovka.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "269179a3-8d7b-4576-9a7e-c62f8f98cca7",
+  "url": "https://dzkol.pl/download/szosa-challenge-dzkol-30-09-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6923ecd2-f776-4c01-83a3-6aee743619c1",
+  "url": "https://www.kolokolemkomina.cz/zavody/casovka-horni-halze",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "23da8d52-931f-49eb-b7e2-bc07c7e61051",
+  "url": "https://www.lrv-noe.at/media/doc/0b5aa7f1bc4080c97aaaadd4b29ad2a3/arboe-bmx-nachwuchscup-2026.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "89cbb10a-dc0e-48ae-89c4-9fede8f1d52f",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2001",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "68e87332-c803-4914-8942-ee4d7a8ba6d2",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=propozice#obsah",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "409208db-b75e-45ad-8678-0041ebb0b8c1",
+  "url": "http://bikeri.cz/zavod/kv-downtown",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "29b9a6c8-61a4-4582-8944-d461d0b86960",
+  "url": "http://cfc-kladno.cz/akce.php?id=820&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "33794398-dcfe-4465-bad5-5b1207e033e0",
+  "url": "https://www.kolokolemkomina.cz/zavody/kotvinske-pedaly/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "59ae49db-92a6-46db-8c33-b3f4f10b4b8c",
+  "url": "https://www.amaterskaliga.cz/zavody/2025/14-tour-de-zelenak-54-106-km",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "65d9540f-10ae-4ee9-985d-ae8c2a0ea3cc",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2006",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4158f603-3acc-4e26-b4d1-8101fa4f9ec2",
+  "url": "https://www.amaterskaliga.cz/vysledky/22",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9c2f89c8-5700-448e-94d5-acdcf18d090d",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2013",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "09a0d346-5551-422e-8b65-364d5189dc0a",
+  "url": "http://www.mazurymtb.pl/aktualnosci/wielki-final-laciate-mazury-mtb-w-gizycku-bitwa-o-twierdze-boyen-wystartuje-z-nowego-miejsca",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b470e5a9-a332-4544-8c1d-76c2b0cea539",
+  "url": "https://www.lrv-noe.at/media/doc/fa8407241e7b390286d6a5750a636595/noe-rad-nachwuchscup-2024.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f6859423-d370-495c-ac52-5b6170cf0ead",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=260",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "dc0334ab-1b80-4794-a2c6-46486a6f2407",
+  "url": "http://www.mazurymtb.pl/aktualnosci/kolarze-opanuja-mikolajki-laciate-mazury-mtb-wraca-do-zeglarskiej-stolicy-polski",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7396459b-12db-43bb-9936-f9eeb67e4403",
+  "url": "https://www.cfc-kladno.cz/kolem_posazavi.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a21d4801-36f8-449d-a951-7b7e05af04f7",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Simmerberg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ea54ece4-8fa3-4fe5-a7da-0ebc8f0d4505",
+  "url": "https://www.sloxcup.com/dirke-2028/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "814e90d8-6e72-4480-a797-b566d1b951e0",
+  "url": "https://www.roadcycling.cz/shared/clanky/40047/Zavody_bodovani_Hobby.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6dbd1c8d-dfbe-4f3e-9708-268252bebf72",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=266",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "638587e3-8a0b-4358-89f8-3257965c3573",
+  "url": "http://bikeri.cz/zavod/qary-dual-speed-cross",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "193ca29a-4f51-4996-95ae-b5b112da6dd3",
+  "url": "https://www.gravelseries.cz/novinky/znojmo-uz-tento-tyden",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "1e5e0ffd-1aaa-4102-92d5-8d85f63aac09",
+  "url": "http://bikeri.cz/pohary/chebska-bezecka-zima",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0657a416-b66b-48ad-aa19-3d53086ff00b",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=283",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e6d454f2-3e14-4e36-887c-051a8a831136",
+  "url": "https://spac-os.cz/wp-content/uploads/2025/08/25-P16-Krnov_kriterium.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2f6f803c-f58a-445b-bd35-384a373922ca",
+  "url": "https://www.edieteam.cz/nejblizsi-akce",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "56446e33-e14d-4e66-906a-2031ebfa607b",
+  "url": "https://www.buckligeweltcup.at/news",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e45d0a23-c9f9-4990-8ea1-6cbb9ba9d5ac",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=489",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9b26d5ab-8b19-4fdf-9381-1063f17803e3",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/10/Cestou-peti-potoku-2026-vysledkova-listina.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5e73b236-5346-4837-9951-302380e9ef8a",
+  "url": "http://www.cfc-kladno.cz/texty/UKV13_propozice.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "60abeddc-65d5-49d6-badd-ee6261531654",
+  "url": "https://radsportverband-nrw.de/wp-content/uploads/2026/04/GA-NRW-Schuelercup-Stand-2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0196c606-accd-4906-9dab-4cf0b8ea3a45",
+  "url": "https://dzkol.pl/marcin-wlodarski-triumfowal-w-grand-prix-doliny-baryczy/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "80008671-b9d0-431d-8f7f-483aa7d0c5b0",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2009",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "daa0f38f-9436-485e-be78-5bfbf476326c",
+  "url": "https://www.gravelseries.cz/novinky/mb-gravel-ride-2026-sotolina-pot-a-par-ztracenych-dusi",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ce5f4932-116e-483a-9751-1481cb1149b5",
+  "url": "https://cykloman.cz/rozpis-terenni-casovka-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "51bff4cc-d9d3-46fc-9a48-7d7135c145b6",
+  "url": "https://www.gravelseries.cz/novinky/znojmo-jiz-tuto-sobotu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4fe8238c-ef23-484e-9936-5e8104c50300",
+  "url": "https://www.amaterskaliga.cz/vysledky/21",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b7381e8c-da03-4dbe-a279-4b9424e253bc",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=280",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c6d5734f-469e-43e9-a537-4ba0ee125e5a",
+  "url": "https://www.amaterskaliga.cz/odkazy",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "373109d9-7c3b-4cf2-81b3-9ba37ce92d75",
+  "url": "https://www.mazurymtb.pl/aktualnosci/cztery-wieze-nad-kalwa-laciate-mazury-mtb-wraca-do-pasymia",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "cd6201ea-642f-476d-8091-02c4b312d334",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2017",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e5a0ce72-326d-4738-beb7-89168c401553",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/tour-de-zelenak-54-106-km",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7b67b251-a48d-4e76-8459-0fbf80ac9e59",
+  "url": "https://dzkol.pl/author/gosia/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "71b47d06-2f6a-44bc-91d4-9775cf7094c7",
+  "url": "https://www.vychodroadliga.sk/files/layout/img/cyklopreteky-vychod-road-liga/dokumenty/vrl/Fina%C4%8Dn%C3%A9%20n%C3%A1le%C5%BEitosti%202026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5c034718-e0f4-40ee-829c-b39bfae2eb86",
+  "url": "http://bikeri.cz/serial/detsky-kv-triatlon",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "56ee57e0-210c-4add-9cd1-c21c71c0c7d3",
+  "url": "https://cykloman.cz/zavodnici",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8b374f83-1d58-43b4-9727-c3e26a2f6656",
+  "url": "http://cfc-kladno.cz/posazavi17_1.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7961866b-dbe4-4d02-9ab1-adfd5fb37930",
+  "url": "https://lausitzcup.de/index.php/kamenz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "26e6d3ed-6f95-4689-9993-75068e69e1a9",
+  "url": "https://cyclingaustria.at/kalender?disziplinen=cyclocross&view=events&page=2",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "dbe8e05b-db54-4f63-ac6a-8216644b5a15",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/2-peklo-severu-road-n-1-velka-cena-nobilis-tilia-o-putovni-pohar-starosty-mesta-krasna-lipa-jana-kolare",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bc560fec-02c7-40f3-bb3d-a02b0221749d",
+  "url": "https://www.cfc-kladno.cz/akce.php?id=827&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "36b86e99-ee15-41ee-8c80-13d929685cd3",
+  "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=propozice#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4f2ce19b-9614-4950-8a04-6460409d9347",
+  "url": "https://cyclingaustria.at/kalender?disziplinen=cyclocross&view=events&page=4",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "df353f75-d725-47b8-ab62-38e4362c2145",
+  "url": "https://www.amaterskaliga.cz/o-sal/zavody",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "11b8aef6-45c5-4a73-84ca-994cc256b96b",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/4-krupka-komari-vizka",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d747cbbf-b61f-4019-bebf-afa5d4c365a5",
+  "url": "https://cyclocrosscup.de/2026/10/mehr-schweisstropfen-als-regentropfen-in-baiersbronn/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9fb7b396-d0c5-411a-98f6-c1f7cb4dcf95",
+  "url": "https://dzkol.pl/download/20260928-czasowka-gorzanowicka-pogwizdow-wyniki/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a0d84054-75ed-43d9-bdd5-eda97025ebd3",
+  "url": "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events&page=5",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6878bc5a-1bad-4483-b126-c56020044d27",
+  "url": "https://www.amaterskaliga.cz/vysledky/35",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8ac485da-edf8-4b1b-9200-33f48b0d6702",
+  "url": "https://dzkol.pl/download/mtb-challenge-dzkol-30-09-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "1c78683c-34c7-496e-94fa-397d624677ba",
+  "url": "https://www.mazurymtb.pl/zawody/rejestracja",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f468e5ff-1d9c-4eb3-baec-bb7741658e8e",
+  "url": "https://dzkol.pl/download/mtb-challenge-dzkol-31-07-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8543c457-a86c-4169-935c-8692aec94c44",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0e47353b-0e4c-4e31-a1a3-1e64a0232799",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Simmerberg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "de5a7a89-9d00-4995-b77f-f3c8c29752b3",
+  "url": "https://www.gravelseries.cz/novinky/alsko-gravel-ride-posledni-zastavka-decathlon-gravel-series-uz-tuto-sobotu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c9dffaf6-aff6-462f-931a-8c54037e4465",
+  "url": "https://www.mazurymtb.pl/aktualnosci/w-krainie-sielawowego-krola-5-wrzesnia-scigamy-sie-w-mikolajkach",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9333daa8-633c-41f8-9b1e-92ec299885d9",
+  "url": "https://dzkol.pl/download/20250920-grand-prix-strzelina-miedzynarodowe-kryterium-kolarskie-eliminacje-mistrzostw-polski-w-kryterium-strzelin-regulamin/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "63060556-f137-4d13-ac29-cd11bb3aafac",
+  "url": "https://www.amaterskaliga.cz/o-sal/severoceska-amaterska-liga",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ab50e596-b4e4-45a1-9ae0-4266dff95d90",
+  "url": "https://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-wraca-do-pisza-przed-nami-kolarskie-swieto-na-plazy-miejskiej",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c328e282-e9d9-4452-8095-5d8870d31030",
+  "url": "https://dzkol.pl/download/szosa-challenge-dzkol-30-09-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d616d174-2182-407a-8029-99327b8ba85e",
+  "url": "https://www.amaterskaliga.cz/vysledky/80",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d545773e-b092-42e9-9cfe-a284fcaf8ff1",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=272",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "adb70e18-ceae-4f7b-a092-c63ecac944bb",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2018",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "5dcfdedf-063d-4ffa-8980-e2f6c40758c4",
+  "url": "https://radsportverband-nrw.de/wp-content/uploads/2026/07/Endstand_ARAG_Schueler_Cup_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "eaab944a-703c-4bd5-aa59-a2194100dd61",
+  "url": "https://www.roadstage.cz/partnerske-slevy",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a398b9b1-fa62-41d0-87f7-e8b6e30e3914",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=prohl%C3%ADdka+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6a388d57-d121-4c02-b424-47022087cd9c",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2007",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bb33f581-233a-48b6-a9bf-d4f6f78b1eda",
+  "url": "http://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-sorkwity-2026-poznaj-trase-wyscigu-przez-jary-lampasza",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4ced28cc-bcc9-49af-947a-4842eed85f14",
+  "url": "https://www.roadstage.cz/ambasadori#osobnosti",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8e45cb8f-86d9-470a-b0ca-192f060316fb",
+  "url": "https://www.lrv-noe.at/media/doc/0b5aa7f1bc4080c97aaaadd4b29ad2a3/arboe-bmx-nachwuchscup-2025.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0b7dbe3e-8eca-42c3-a150-cafd233c84ae",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=266",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5b9867c3-d910-46bc-8687-3c41c976de44",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0cf16961-59d3-42c5-a3bb-f0af3be76a0f",
+  "url": "https://www.edieteam.cz/mtb-mladeze/terminy-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "aaced036-ed63-4921-88a9-840c92e13ec2",
+  "url": "https://www.kolokolemkomina.cz/wembloudovy-hrby/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1e9ac798-dc72-4822-bea2-8a33ca480c34",
+  "url": "https://www.amaterskaliga.cz/vysledky/64",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "34847196-6760-452b-82f5-2de20ba7c63c",
+  "url": "https://lausitzcup.de/index.php/klettwitz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7a75713f-72a8-4676-9f3f-29b83a2f20af",
+  "url": "https://dzkol.pl/sowiogorski-tour-2026-siodma-edycja-cztery-etapy-i-coraz-mocniejsza-miedzynarodowa-stawka/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "77b546ac-8d66-4ebd-845a-66186addbda3",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=279",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "1fdfcc6c-6ca3-4ff5-9124-ebaf1821cd48",
+  "url": "https://www.cykloman.cz/sponzorstvi",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "07ee7a45-c2be-4c43-824d-cb28be1b563c",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/5-praha-doksy",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "72486b6c-0800-4195-871d-f9e1b0c95a75",
+  "url": "https://radsportverband-nrw.de/wp-content/uploads/2025/03/Endstand_ARAG_Schueler_Cup_2024.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "1f33c59e-0320-424b-bbc4-621a9226cabe",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=340",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d869af99-0812-4b07-9ab9-48150b144b97",
+  "url": "https://www.vychodroadliga.sk/detska-liga-adriana-babica",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "766703cd-6da0-434d-a5d4-c821345ac704",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/05/26-P04-Zaben_ITT.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "858b513e-369e-4178-a679-269f7e015d49",
+  "url": "https://www.cykloman.cz/vitezove",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f46a9d7e-575d-44ee-be05-48ef4892d3ff",
+  "url": "https://pucharmazowsza.pl/category/terminarz/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fa08fb60-2dbe-46d3-9a2e-ea682010cd92",
+  "url": "https://dzkol.pl/download/dolnoslaska-rekomendacja-treningowa-mtb-dla-dzieci-i-mlodziezy/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c3dc188c-62b1-415a-9925-0afebba584ae",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2016",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9ee3bf45-e0e9-4161-9e29-986cd10daadb",
+  "url": "https://www.cykloman.cz/rozpis-terenni-casovka-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8d1b5614-e08e-44f9-8366-ba09779086ee",
+  "url": "https://www.edieteam.cz/mtb-mladeze/registrace-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "59925fb8-0616-4266-a640-7c548eb352fc",
+  "url": "https://cfc-kladno.cz/rfc.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "422c7e10-3845-4136-8150-cc51305ee309",
+  "url": "https://www.amaterskaliga.cz/vysledky/14",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3a2a1fb6-4c1d-47a4-8834-5a2505cb3a10",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/gesamtwertung/gesamtwertung-2026/gesamtwertung-lausitzcup-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b2130f9f-2706-4a1d-a7b9-a9a8b564d7c8",
+  "url": "https://www.amaterskaliga.cz/vysledky/23",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "25d7925c-3ad9-497e-828b-7d9a9b48eef9",
+  "url": "https://cyclocrosscup.de/2026/10/vorschau-rund-ums-waldstadion-herxheim/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "863cdc42-2f5a-41f5-9aab-39b4df002ac4",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/2026%20MTB_Burg_Streckenplaene.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "25d25af2-c3e9-4f69-8337-38e5cd3a0bd1",
+  "url": "https://lausitzcup.de/images/2026/flat%20%20fast%20-%20reworked.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b325be49-1a2e-4245-bbef-dc152b196fa4",
+  "url": "https://rsv-bad-hersfeld.de/index.php/events/bergkoenig",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "75f6755d-5207-4c2f-8dbe-02f8ffb32068",
+  "url": "https://dzkol.pl/download/mtb-challenge-dzkol-30-09-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ecdea1d6-ef15-48b7-8672-8afb57d9b429",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/gesamtwertung",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d11475d0-1f2f-4e34-b5d5-1d32a88d8958",
+  "url": "https://www.dsergebnis.de/archiv/33-grosser-preis-von-buchholz/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bd5e70c1-7b5f-42cf-8dd6-caa18ad6d322",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-casovka-jednotlivcu/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7862d74b-dbcd-4ae9-aa05-b495fef34e04",
+  "url": "https://dzkol.pl/download/tor-challenge-dzkol-12-10-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "737ad0c8-355a-4afa-a978-40355eceecb8",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "de2e73d4-4380-4cbe-93ba-29f0000e0dae",
+  "url": "https://www.amaterskaliga.cz/vysledky/113",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a76b7b8c-77fb-41e1-b41d-d9781cd45b13",
+  "url": "https://www.mazurymtb.pl/aktualnosci/ilawa-ponownie-na-sportowej-mapie-polski-26-kwietnia-startuje-11-edycja-laciate-mazury-mtb",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "325453a5-f741-464d-b1ce-b53c443862ab",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Strecken_Kreiscup-Lindenberg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0401bfc6-44bf-4646-b574-4b850ac7520b",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2019",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6829b1f9-3bbe-4912-a017-be2d74181dfb",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=%C3%BAvodn%C3%AD+strana#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "11e885f1-7d82-4085-a197-8bf6bc174e6a",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt/vysledky-novy/1691",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fb308fa8-107b-4533-ae07-fa83f61f79a6",
+  "url": "http://www.mazurymtb.pl/aktualnosci/warminskie-sciezki-wracaja-13-wrzesnia-laciate-mazury-mtb-opanuje-olsztyn",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4cd79fd1-439f-4bbc-badf-b865f964f4b2",
+  "url": "https://www.dsergebnis.de/deutsche-meisterschaft-ezf-und-strasse2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ba1756ec-effd-4d42-b252-458aeed2e53b",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Auschreibung_MTB_Kreiscup_Scheidegg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7ed3ead2-30ba-468e-974d-10b8561f8bd0",
+  "url": "https://www.vychodroadliga.sk/files/layout/img/cyklopreteky-vychod-road-liga/dokumenty/vrl/Pravidla_VRL%202026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e88c1032-09f5-4073-9305-37e368db7f61",
+  "url": "https://spac-os.cz/junior-spac-2023/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "57e8cff5-0fdf-4b59-ad88-6c4cd4165fde",
+  "url": "https://www.cfc-kladno.cz/diskuse.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "16184b5e-b4a3-496b-a157-83f415f16450",
+  "url": "https://www.cykloman.cz/zavodnici/2026/3489",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "132632ec-4f50-4858-a3b7-d986d48014ef",
+  "url": "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-2025",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "034c8d10-c1f1-4d79-9bc6-bdb2950fadfc",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Auschreibung_MTB_Kreiscup_Scheidegg_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "384c50d8-9637-4ea8-8d85-26b80837145e",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2014",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "55b6b002-63f0-4ca5-85a8-6aa76b7a05d9",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/paperman-triatlon/vysledky-novy/3475",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "145c31da-7db2-4cdf-9aba-ee358ac30d0e",
+  "url": "http://bikeri.cz/zavod/jarni-chebska-cyklojizda",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3fb4a020-a556-4191-ac07-1eef493de68c",
+  "url": "https://cfc-kladno.cz/klikace26_1.php?#navigace_k26_1",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "385fecf7-3024-4802-9fa3-7683a646afbd",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/zavod-do-vrchu/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "43f44d7f-e9b9-4405-88e0-b68c2f4c3448",
+  "url": "https://dzkol.pl/download/szosa-challenge-dzkol-31-08-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "87af5fbe-f304-42ad-be23-daef55108e3f",
+  "url": "https://www.kolarna.eu/hanacke-gravel/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "93fb4427-68b8-4d48-a096-4e9f9b07417d",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=273",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3bfe4a44-7578-43f2-8963-8f9ed61af87b",
+  "url": "https://www.amaterskaliga.cz/vysledky/12",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "cde3b0c6-869a-4fd3-a8c2-cec69a243cbe",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2012",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e989cb65-5474-4e7c-b47a-9e1b4655bd52",
+  "url": "https://www.mtb-isarcup.de/index.php/192-naechster-halt-im-isar-cup-irschenberg-am-19-09-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c691958f-4e8b-4cec-ade8-ebbaa5c757bd",
+  "url": "http://www.rsv-bad-hersfeld.de/images/content/2026/Startzeiten2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "095fde25-7401-4cd1-9877-5a098b57be69",
+  "url": "http://www.mazurymtb.pl/aktualnosci/cztery-wieze-nad-kalwa-laciate-mazury-mtb-wraca-do-pasymia",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "da86200c-d772-4f54-9195-3525c88d11bf",
+  "url": "https://www.amaterskaliga.cz/zavody/2025/16-maraton-ceska-lipa-memorial-josefa-vlasaka",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "537a8ec2-7aae-47ac-b139-9d70bf9f207a",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/tuchorice",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "26d9e7d0-59e9-429f-8e8a-16954b595162",
+  "url": "https://www.amaterskaliga.cz/zavody/2024",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b5f9733d-209f-46b2-b32e-da6c09d6b2bb",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/1-bilinska-casovka-1",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c9a9227e-db7b-404e-8de3-21b78a4992b6",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/zavod-do-vrchu/vysledky-novy/2842",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ac448c2b-f130-4564-a777-8949dc3152a5",
+  "url": "https://www.cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=prohl%C3%ADdka+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "566c5bab-120e-42e7-bfbe-38b7efb38529",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt/vysledky-novy/pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fa64ef68-5b41-4686-858a-959a76956842",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d91eec74-6314-4f5d-9e95-0630e64864c4",
+  "url": "https://www.edieteam.cz/mtb-mladeze/terminy-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bf2dc7c9-4b62-4251-9855-266d5103136e",
+  "url": "https://www.cyklomaratontour.cz/clanky/detske-zavody-nn-kids-race-696.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0ef8ddec-00bb-423c-aeaf-54e310b440fd",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=355",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5b5e78e9-63d8-4531-8b9c-231aafb91365",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/133",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "1cc96fac-f1c8-4737-aabd-cff53779bc43",
+  "url": "https://radsportverband-nrw.de/wp-content/uploads/2022/03/Empfehlung-Nachwuchsrennen-Hobbyrennen-U11_U13_U15-2022.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "99c1e22f-7832-4816-9b0b-a15275132dc0",
+  "url": "https://cfc-kladno.cz/texty/Kolem_Pos%C3%A1zav%C3%AD_2026_veter%C3%A1ni.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fe015d53-cebe-4339-bd03-7e29f62f234b",
+  "url": "https://www.amaterskaliga.cz/vysledky/18",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "72529cc8-609f-4751-9139-c0b56227f2af",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2010",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "06fde645-e624-4240-a7b9-a90f954dd259",
+  "url": "https://www.lrv-noe.at/media/doc/a3ac759dc37f54f5a694646af1e45f12/noe-rad-nachwuchscup-2026-.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "efa62cf6-6a97-49db-ad11-f3d846211106",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=245",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0c559f6f-bddc-43c0-8b89-05721085e906",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/babi.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d4596846-2b92-459c-afdf-5fe20057d442",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/silnice.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "595cd88e-ddf8-418e-b588-3835a3da7fe8",
+  "url": "https://www.cykloman.cz/?_akce2026_06=duatlon-powerman-kuncina",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "817815d8-6de4-4b17-9df7-2a798ea55bce",
+  "url": "https://www.mazurymtb.pl/aktualnosci/final-cariboo-kids-race-w-gizycku-rowerki-biegowe-czekaja-na-najmlodszych",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6fe0c662-2dbd-4f64-bc7d-47b7974d25ac",
+  "url": "https://lausitzcup.de/index.php/ponickau",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "63368897-19cf-46ad-8e61-6b17c276496a",
+  "url": "https://cfc-kladno.cz/rfc_registrace.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "be86a28f-17b0-479e-a3e4-ed8dd7ac091b",
+  "url": "https://www.amaterskaliga.cz/vysledky/112",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "39b24417-2969-4776-8769-a20da2d91b25",
+  "url": "https://zlmtb.com/aktualnosci/pzu-zachodnia-liga-mtb-wielen-06092026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f166f964-60aa-451f-9812-26386efa695b",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/129",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a2f892aa-f397-4a46-9325-c847542a85d7",
+  "url": "https://www.dsergebnis.de/deutsche-meisterschaft-ezf-und-strasse2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c7ed486a-1fd6-45f7-a80d-9562faec5beb",
+  "url": "https://www.cyklomaratontour.cz/clanky.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e94a0e1f-b77b-4896-8f14-86543ebb267c",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/127",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "37f8d822-cd9c-4c6b-bef4-33b1031b0b39",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=248",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "110bb7b7-b598-469e-8d56-d4ba0ebf1fe1",
+  "url": "https://pruhonaci.cz/terminovka/#ws-block-cover-with-centered-features-bg-image-ImlLBrWR",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "bec05a12-15d0-4c40-8d40-119a395081f7",
+  "url": "https://dzkol.pl/sowiogorski-tour-2026-szczesna-wygrala-wszystkie-etapy-w-dzierzoniowie-zwyciestwo-lokalnego-juniora/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e7702d74-68c2-4e04-93ba-9c03a06e7edd",
+  "url": "https://www.german-pumptrack-series.de/presse/pr-00-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c9d09ed2-943e-4a30-a611-e2823f6d134c",
+  "url": "https://www.kolarna.eu/wp-content/uploads/2026/08/XC_Hyncice_22.8.2026_vysledky-1.xlsx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "22e9899e-4876-4c15-a412-156cfcff2cc0",
+  "url": "http://bikeri.cz/clanek/ostrovska-100-se-vraci",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "dee5e31b-18c5-4ef9-95d7-e19884a0f540",
+  "url": "https://www.amaterskaliga.cz/vysledky/32",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6b08ad37-72e0-47fa-bcdd-6ab4d8abf835",
+  "url": "https://www.cykloman.cz/rozpis-mcc-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "56265808-972d-4652-a6b1-db87a42daf3d",
+  "url": "https://spac-os.cz/junior-spac-2025/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c26ff65a-58ea-49dc-92e5-1ae5bb712033",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=260",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5ac2444a-0606-4416-bf50-5594d7997262",
+  "url": "https://www.amaterskaliga.cz/vysledky/20",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "51ad839c-c88d-4bc2-b2f9-f95558a7b2c8",
+  "url": "https://www.amaterskaliga.cz/vysledky/3",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4047c378-f7ba-4013-b333-3253b5de3f9f",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1988",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c51de34a-6f5f-4b92-90bb-8318050abc33",
+  "url": "https://www.amaterskaliga.cz/vysledky/10",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "de0faec3-fbae-492d-8231-0b8668e347ed",
+  "url": "http://bikeri.cz/pohary/giro-chodov",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "cbd5563b-2dde-4bda-bc44-3345a597d209",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1998",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fe9e11ae-b6df-4c59-a270-51fd665ea11e",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/o-radovesickou-kostku-2024",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "cd799d98-720e-4542-a1da-eae5bf05073b",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#obsah",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "515663c9-37c8-43cc-b680-1e1481d67f0c",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2008",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4397d86f-fef3-4c4c-a681-261b42eb2a07",
+  "url": "https://www.kolarna.eu/15-rocnik-kolarna-odersky-pohar/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "36a59333-897e-43f3-afab-28b56b67dece",
+  "url": "https://lausitzcup.de/index.php/peitz/ausschreibung-peitz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bc599a3e-3c4a-462e-b1d7-9c5ed7fdbeb6",
+  "url": "https://www.mazurymtb.pl/aktualnosci/debiut-laciate-mazury-mtb-w-rybnie-23-sierpnia-kolarze-zmierza-sie-w-zarybinek-mtb-classic-im-waclawa-wasieli",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9c797d65-c963-4b4e-ad81-3f477fbe92b0",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2019",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a51a2e30-f5e5-4d48-a0fe-a3579c965ad4",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Heimenkirch_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5841c663-fb0b-44a0-bf91-0bdd80ba8a5e",
+  "url": "http://bikeri.cz/zavod/dragoun-cup",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d1362f06-273a-4fb5-bb24-e6ebda6938c2",
+  "url": "https://radsport-thueringen.de/%f0%9f%9a%b4%e2%99%82%ef%b8%8f-lvm-500m-zeitfahren-bahnfinale-thueringen-2026-in-gera%f0%9f%8f%86/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9c1fe5ea-8c56-422c-a560-9283da875299",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/rubena.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "10ff5f31-d1a9-435a-849e-5deebd7b78f0",
+  "url": "https://dzkol.pl/download/20260719-bike-maraton-polanica-zdroj-wyniki/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f925a77d-c2b6-499f-8c6e-91664a3ba7e6",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-cyklisticky-zavod-k-70-vyroci-tj-slovan-mt/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "47a5566b-97d8-46b2-babd-4088b6998a68",
+  "url": "https://www.gravelseries.cz/novinky/decathlon-gravel-series-miri-do-znojma-ceka-vas-rychla-jizda-mezi-vinicemi/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f99dcf73-ace6-4751-8700-96d89d24ef90",
+  "url": "https://www.vicc.racing/event-details/vienna-radsport-party-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ba08f0c3-70a2-4074-8d69-6e64ab63361a",
+  "url": "https://www.maratony.eu/letak-casovka-chocholna-kykula/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "edef8761-c447-4f75-8327-05b34676a128",
+  "url": "https://cfc-kladno.cz/akce.php?id=828&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "152dd331-2407-404b-9920-d2c5cfbe7180",
+  "url": "https://dzkol.pl/download/2028-challenge-dzkol-regulamin-i-wykaz-punktowanych-wyscigow/?wpdmdl=7073&refresh=6a9e949971bc41788777625",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "56e04e6e-db52-4504-b080-f2a68c6dcb12",
+  "url": "https://www.amaterskaliga.cz/vysledky/8",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c4adbea0-7eb7-47c7-a2e1-c9e1eef596cd",
+  "url": "http://www.mtbkreiscup.lima-city.de/Andere_Termine.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4f20b0f1-23b7-4981-8d37-f38d34d96cb9",
+  "url": "https://www.roadcycling.cz/shared/clanky/40047/Propozice_RCup_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "872988f4-8ee6-4031-a4ff-d4e0f42e348f",
+  "url": "https://www.mtb-isarcup.de/index.php/termine",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "56d19f29-74f0-41c6-890d-700533753e1d",
+  "url": "https://www.amaterskaliga.cz/zavody/2025/8-kriterium-v-zone-verne-klasterec-n-o",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e0f869fc-bf79-4497-97c1-464d301e8538",
+  "url": "https://www.roadstage.cz/gpx/RSHK83.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "32f814ea-a6bc-4b0c-b68a-cde534824316",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2013",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7446b4e5-cb7c-4659-8094-5ac948fcb9c7",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/05/26-P07-Krnov-kriterium.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3255b52b-1c8e-4942-a93b-bae1110dc5ae",
+  "url": "https://www.roadstage.cz/gpx/RSHK134.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2107d83d-4e63-48d6-ad6d-2e1adbe9a53f",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=mapa+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "cb30439c-11ae-42f0-a81d-844db7af4254",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2016",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2959ee8d-dfdf-4c0a-a5c3-2560deda7da1",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/05/Informacni-letak-2.jpg",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ea7f9b18-1102-4781-a5ed-cddb7554d8fb",
+  "url": "http://www.mazurymtb.pl/p/o-nas",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "46f6ecb9-8d63-4489-895f-99447005eca7",
+  "url": "https://rsv-bad-hersfeld.de/images/content/2026/Gesamtwertung.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "31b21523-d588-47d4-a273-6d244575db3f",
+  "url": "http://bikeri.cz/zavod/cp-xco-teplice",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f803bf67-014c-4326-9dfd-b4c68f73b596",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=propozice#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d6ea67ad-815e-4b44-b6d6-3b02b8011cc7",
+  "url": "https://cfc-kladno.cz/texty/Kolem_Pos%C3%A1zav%C3%AD_2026.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d4904822-f7e2-42ce-a949-608f749e9a66",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2009",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "440a9e61-5ac6-4bc5-a97d-17703a340afe",
+  "url": "https://radsport-thueringen.de/rennsteig-gravel-oberhof-2026/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "72bc247c-0021-46b2-9b7d-4bf20b7e2f37",
+  "url": "http://www.mtbkreiscup.lima-city.de/Punktewertung_Altersklassen.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c2051734-669b-4a2a-9b99-2abbd4717783",
+  "url": "https://www.lrv-noe.at/media/doc/83448ff742ef67264026d8a0b3f17db8/noe-rad-nachwuchscup-2028.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e6e9bdf9-9a80-451f-a7fc-3a6c8d4408fb",
+  "url": "http://bikeri.cz/wp-content/uploads/2026/09/Duatlon-Bublava-2026-vysledky.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "63b10a8c-cdfd-45e4-b476-f70b682a8872",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2015",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6289b8a2-8659-45b0-89bc-99735d6ce8be",
+  "url": "https://lausitzcup.de/index.php/lampertswalde",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "063826ba-7d8f-4a2f-baa6-eff324bc00cf",
+  "url": "https://www.gravelseries.cz/novinky/prvni-zavod-serie-decathlon-gravel-series-se-nezadrzitelne-blizi",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "837e9489-c8ac-4a5f-b97b-1fb13ec67c01",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/peklo-severu-road-hobby-n-2-ceska-kamenice",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b66a2890-920f-48d0-ab0b-c402dc04f566",
+  "url": "https://www.kolarna.eu/bohunovicke-okruhy/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "31e5b09f-8f2a-4513-bcb5-a4c336a53e45",
+  "url": "https://www.amaterskaliga.cz/zavody",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "375b8d95-9720-4011-abdc-91ece7664f08",
+  "url": "https://www.dsergebnis.de/archiv/gr-preis-der-suedlichen-weinstrasse-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "88179a19-87bd-4c02-b045-49ba591d5086",
+  "url": "https://www.amaterskaliga.cz/vysledky/24",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fb9d14e4-9824-4f7f-9e63-433c2d300292",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=471",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "dc8d0b36-99b3-461c-aea2-ddbb7fa66ea9",
+  "url": "https://rsv-bad-hersfeld.de/index.php/events/rtf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3e757a52-58c9-4812-bab7-1586bc4c0a46",
+  "url": "https://www.lrv-noe.at/media/doc/fa8407241e7b390286d6a5750a636595/noe-rad-nachwuchscup-2025.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8d175e7b-fb5c-4547-be84-ac9af2272943",
+  "url": "https://www.mtb-isarcup.de/index.php/194-isar-cup-2026-saisonabschluss-und-siegerehrung",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "209c6168-2a1c-48ee-b793-6efdf4569c89",
+  "url": "https://dzkol.pl/download/szosa-challenge-dzkol-31-07-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fdcb3cda-b7b0-40eb-b67a-a7355f153ced",
+  "url": "https://www.cykloman.cz/rozpis-powerman-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "70f7abfc-525b-4bd7-9747-a60afbbfbb23",
+  "url": "https://lausitzcup.de/index.php/spremberg",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ee7c76a3-af1b-4a00-938c-859be3ec3933",
+  "url": "https://www.cfc-kladno.cz/klikovy_vrchy.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "80d3e0f3-539b-41bb-907e-384aae232afd",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-casovka-jednotlivcu/vysledky-novy/1691",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "790c4aaf-b4be-48d6-afcd-1d08957c41e8",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=mapa+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c09120a2-aef3-491c-8692-cbff11b82318",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/6-tuchorice",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b802cbaf-b66d-4d2d-8d63-f010ec1e420c",
+  "url": "https://cykloman.cz/dokumenty/sjezdovka.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "08986928-001c-45fa-a4b3-47bccab298eb",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/memorial-zd-bambaska-mist-sal-casovka-jedn",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "5b6a9b3b-5076-480c-8687-c303208674ca",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/10-svincice-mistrovstvi-sal-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8d3dac4d-78a5-4d58-84b8-423321cb2e70",
+  "url": "https://www.amaterskaliga.cz/vysledky/34",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5322b000-ace5-4bf0-bec2-7e7485f279f3",
+  "url": "https://pruhonaci.cz/terminovka/#ws-block-cover-with-centered-features-bg-image-To9IGUwD",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6ad116a4-7661-4adf-b240-62d72a8cb99d",
+  "url": "http://bikeri.cz/zavod/chebska-bezecka-zima-44",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4a80c17c-ad95-4717-b793-78ebbf991962",
+  "url": "https://www.amaterskaliga.cz/vysledky/26",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3fcf8f45-83a3-48aa-ac1f-46d393dae974",
+  "url": "https://www.kolarna.eu/vysledky/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d7b40eb8-848a-4da8-a48c-ae77b5ae0aa3",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=%C3%BAvodn%C3%AD+strana#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ee22857f-c585-40e0-9843-82662f97b15a",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=prohl%C3%ADdka+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "35a2e1c7-6693-4a23-92fb-f4dae4d229ed",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "bc55e676-5d94-4fa9-938e-59cfc661b741",
+  "url": "https://www.vychodroadliga.sk/ostatne-preteky-2",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2494c85f-0e98-45b2-94f4-a65cf4ba8969",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/7-velka-cena-biliny-o-radovesickou-kostku",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5b0e7a6e-f7c4-43f2-9154-f3c7c892b161",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/2026%20MTB_Burg_Streckenplaene.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "be01cf8e-7a47-4736-9977-4e52bb0fb8f8",
+  "url": "https://www.dsergebnis.de/archiv/cyclingworld-cyclocross-race-powered-by-hobel-und-fidlock-1/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fb54dc93-c879-4cb2-a638-ad5826498383",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=467",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "82bb1cfd-0f2c-4a37-8725-b4f0a4717b9a",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "766cd042-87dd-4bfd-8be5-a013ec0f632f",
+  "url": "http://cfc-kladno.cz/bodovani.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ab098a39-92af-4fe6-ba5e-2df08ff45828",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2017",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2a527433-f07b-4a8b-86b0-a725ce41957a",
+  "url": "https://www.dsergebnis.de/archiv/grosser-preis-der-gemeinde-rheinzabern-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ac69c8f4-c24a-4441-9be7-d317ae001c0c",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=367",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "40e4fe72-6847-4871-9a80-ca394ee8e74a",
+  "url": "https://www.dsergebnis.de/archiv/nievenheimer-ortsschildsprint-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1b0c6c3e-65ec-468b-98a4-5879a17c0e1a",
+  "url": "https://dzkol.pl/wyscigi-dzkol/gpdb-memorial-grundmanna-i-wizowskiego/mapy-barycz-2026/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "39511301-c492-4b86-8b63-ae679e310aa0",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=507",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b84592b8-ce98-4873-a859-532a1033d841",
+  "url": "https://spac-os.cz/junior-spac-2024/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2c18f35c-bfd1-4685-a9a9-8bda72846e39",
+  "url": "https://dzkol.pl/download/20250920-gorale-na-start-puchar-polski-mtb-xco-mistrzostwa-dolnego-slaska-boguszow-gorce-regulamin/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9e226781-a42f-4033-a6c8-62aa1f1cc564",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/06/Vysledky-pohodovka-2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "879b40dd-6666-435c-b07b-7884b11a553b",
+  "url": "http://bikeri.cz/serial/chebsky-pohar",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ec24697a-52ca-4420-9841-20990eafaeba",
+  "url": "https://www.mazurymtb.pl/p/o-nas",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c8cc7d8a-9d8f-42b0-bedb-2a1689093060",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/04/2026-01-Orlova.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "5ea0adfd-9d71-497c-96e3-f2535b62c565",
+  "url": "https://www.vychodroadliga.sk/historia",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fc25dcf6-760c-43af-a5c9-ffb31302b6cc",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina/vysledky-novy/pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4b2af11b-145e-4f8c-b5fc-23c63a04fefe",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/304-propozice-valassky-pohar-mtb-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d6815b67-2630-4c68-b5ad-59652bd61ea3",
+  "url": "https://www.amaterskaliga.cz/vysledky/40",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0253a57b-efbf-401e-b94a-69046383275b",
+  "url": "https://www.vychodroadliga.sk/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "85e21044-f727-4fe4-9515-3d9c525baf5f",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f1eb851f-aaf1-44f1-8d91-02e088c756e6",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f11d7a47-4959-4183-bc37-6d8defefb70c",
+  "url": "http://cfc-kladno.cz/rfc.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f45caa61-9506-48fc-b4a1-fbb3f45b4e51",
+  "url": "https://www.kolokolemkomina.cz/zavody/mytinka-cup-2026",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3376b062-bfe7-472e-8213-46d39e01091e",
+  "url": "http://bikeri.cz/zavod/hornoslavkovsky-hrdina",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d1abdf42-0b1b-44cf-99e9-485ff243bc92",
+  "url": "https://www.dsergebnis.de/dm-cyclo-cross-2026-bensheim/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2f0db26b-aaa0-413f-99f2-c2e5bdd0bff0",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/vysledky/souboj?a=3489",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "44139059-43a5-46c8-8d59-7b9beb6d99d5",
+  "url": "http://cfc-kladno.cz/akce.php?id=808&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f977ef53-ebd9-4289-a948-5c816d2a6a80",
+  "url": "https://www.buckligeweltcup.at/rennen/2026-08-29-bike-the-bugles-junior-race-in-krumbach",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8282b109-ddfa-4893-bf9b-dd22236be259",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2003",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f5ef78b9-d894-4869-ac67-d44e663584f5",
+  "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c82da31f-a814-498d-bd21-3b20e1931137",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/130",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ab497c9e-a28f-49cb-89c1-f6b4522ad017",
+  "url": "https://www.edieteam.cz/akce/eventlist/archive",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bb03193b-928c-4383-9088-e45b1095dc7c",
+  "url": "https://cfc-kladno.cz/klikace26_2.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "02596de0-6738-4f2d-8d57-9e600eb77604",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2011",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "db4ac3ec-f621-4656-aee5-7bb56629eedd",
+  "url": "http://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=propozice#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "770c2cba-efa6-4525-9ac9-8e9a85910ad9",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c9801002-57b4-41af-b14f-c12d79586e89",
+  "url": "https://lausitzcup.de/index.php/goerlitz/ausschreibung-goerlitz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7365be13-d406-4ecc-b07a-18959a44c089",
+  "url": "https://www.amaterskaliga.cz/vysledky/78",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "72022044-2dd3-4b79-a20b-c58305c19204",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2023_Gesamtwertung_Siegerehrung.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c52f9d5a-aa3a-4a76-8287-6158024ddeee",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=213",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e1bdca39-dd74-4b9e-9f62-7fc53e39879a",
+  "url": "http://www.mazurymtb.pl/aktualnosci/laciate-mazury-mtb-wraca-do-pisza-przed-nami-kolarskie-swieto-na-plazy-miejskiej",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "47f457ba-db38-4585-a276-dd416c18937a",
+  "url": "https://www.mazurymtb.pl/aktualnosci",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e6304c7d-b4da-497d-a1cd-34aa11cbfa8a",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/03/Kotvina_Propozice2026-1.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0287a177-6fcd-4ab5-ae50-f36425d3f21e",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=304",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "bb7c5815-1dc4-41e3-9c46-3219f7f01e8f",
+  "url": "https://www.mtb-isarcup.de/index.php/192-naechster-halt-im-isar-cup-irschenberg-am-19-09-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "095f4dc5-1d1d-47a0-9b81-f3be997fc4fd",
+  "url": "https://spac-os.cz/poradi-spac-2026/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "53ae8002-2aa2-4341-a4fd-648b7f7833fd",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/superbike-terenni-casovka/vysledky-novy/pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "becb27d6-dc1d-44d3-ae23-b70c5a5523d6",
+  "url": "http://www.mazurymtb.pl/aktualnosci/w-krainie-sielawowego-krola-5-wrzesnia-scigamy-sie-w-mikolajkach",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "676dc20c-cfa2-4457-a798-997619be45c8",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2026-06-14_RTF_40km_300HM.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "719514d5-88b9-43e6-8e75-cf427cb07bac",
+  "url": "https://www.gravelseries.cz/novinky/mb-gravel-ride-2028-sotolina-pot-a-par-ztracenych-dusi",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "696f8f0c-18ba-491a-83af-bc849b7dfed3",
+  "url": "https://www.dsergebnis.de/archiv/nrw-cross-cup-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ba542d9b-127b-4e81-8e3c-3ffb1a2d8d46",
+  "url": "https://www.buckligeweltcup.at/rennen/2026-08-22-radwandertag-in-kirchschlag",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "01973ba1-f9d9-499b-a8cb-078fe0507ea0",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2009",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c287fc83-6b2e-4336-85e8-69acb90b03e5",
+  "url": "https://www.gravelseries.cz/novinky/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "258b5c6e-5010-49f1-b993-9160c1ed3d8a",
+  "url": "https://dzkol.pl/download/mtb-challenge-dzkol-31-07-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "846c3bfc-d606-4ffa-9560-964116510ae8",
+  "url": "https://www.cfc-kladno.cz/kalendar.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f8b79d88-04d2-4dca-826c-5cfb2e87868a",
+  "url": "http://bikeri.cz/zavod/casovka-dvojic-sokolov",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "50b6b9f8-f5f1-401a-bca4-5a6e540db536",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/einzelwertung",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "58019cc8-d83e-4ba0-9087-4f69cb14c2a8",
+  "url": "https://www.amaterskaliga.cz/vysledky/5",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8405c5d7-f7eb-4f69-8208-088633ae024f",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=341",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "de869eb5-acbd-445c-9748-a76b83c45407",
+  "url": "https://www.gravelseries.cz/novinky/alsko-gravel-ride-posledni-zastavka-decathlon-gravel-series-uz-tuto-sobotu/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4c85b9ce-a52d-40ad-9f75-5fd79ffd7263",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=283",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "07853ac1-29f3-4946-b6ed-ab38808d9166",
+  "url": "http://www.mazurymtb.pl/galeria",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2fc30e77-87ea-4700-85c9-27427bf2f58f",
+  "url": "https://rsv-bad-hersfeld.de/index.php/events/regelmaessige-termine",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "413ac7d3-6089-4616-ba1e-16524bca8efc",
+  "url": "https://www.vychodroadliga.sk/files/layout/img/cyklopreteky-vychod-road-liga/preteky/detska-liga-a-babica_2026/Kone%C4%8Dn%C3%A9%20%20poradie%202026/konecne_celkove_poradie_DVRL_2026_zverejnenie.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "eac22b8f-2efe-427c-9bc9-773fa38c2c16",
+  "url": "https://www.bawue-schueler-cup.de/wir-haben-eine-loesung-bahntermin-findet-statt/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "dc4c974c-7dfe-4336-9487-df6d1343c18b",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=%C3%BAvodn%C3%AD+strana#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "862d3251-a29d-4c8c-bbee-bcd34024cc0d",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/128",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e6e0ba98-8b0d-4c2c-91df-141b9598814c",
+  "url": "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-2026",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fe365c62-3aa0-4ba3-a895-4b27c1ae00fa",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/07/26-P15_Do_vrchu_Pusteven_ver.02.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f7a8fe4c-56cb-4646-96c8-b70d635bd14c",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/orient.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "77b772c9-a69b-4e7c-9a4b-a8dd8e3f94ef",
+  "url": "http://bikeri.cz/serial/pohar-kvsc-mtb",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f3327364-9809-491b-b655-927135e923b8",
+  "url": "https://www.amaterskaliga.cz/zavody/2025/1-bilinska-casovka",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "74d836f8-7346-4e78-8c3b-4baf96f72846",
+  "url": "https://www.german-pumptrack-series.de/termine/buedelsdorf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "59c4745e-b323-4d41-9278-6050fbc1dabf",
+  "url": "https://www.edieteam.cz/9-aktuality/307-mxm-mtb-cup-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3e3a91d9-320e-4511-8462-249dcfacfec1",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2022_final_20221110_Sieger.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "de94b010-40d6-4610-9229-aa8fde44c9ee",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9145ebc3-c059-416c-b1c2-9445a81cda7f",
+  "url": "https://radsport-thueringen.de/bundessichtungsrennen-u17-w-m-am-13-september-2026-in-nordhausen/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "db63e701-b927-4908-8d48-da392ebbe7c8",
+  "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_MTB-Kreiscup_Niederstaufen_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d4a71383-51ec-41af-93c6-1fdfa60133be",
+  "url": "https://cyclocrosscup.de/2026/08/beginners-guide-fuer-cyclocross/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "276c9b0e-7bab-4088-922c-4b23d9f87471",
+  "url": "http://bikeri.cz/fotky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9b4721ef-4ce8-4bdc-b543-e3ca2ffb5430",
+  "url": "https://www.amaterskaliga.cz/vysledky/9",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "043b97ff-dd1c-498f-8e30-68c9ac5accb8",
+  "url": "https://www.dsergebnis.de/archiv/4bikesfestival-ggew-grand-prix-1/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "524973b0-6726-4e21-a8fd-f18181dfff36",
+  "url": "https://www.cyklomaratontour.cz/clanky/zaregistruj-se-hned-ted-kazdy-zavodnik-v-cili-dostava-krasnou-medaili-697.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bb1639df-62e7-4722-8532-90d8425ba569",
+  "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2025/03/mapa_hlavni-zavod.jpg",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "69b53b97-9ec9-4ccb-801f-d0bda5b2a923",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/136",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f5e673ef-a920-40a9-8f29-25289c04384d",
+  "url": "https://pruhonaci.cz/terminovka/#ws-block-cover-with-centered-features-bg-image-yAbZPAnc",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "cc4f49c0-0b9e-4642-899d-c00c685f4c65",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1990",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "42b4e562-e96f-41dc-91c4-0d852101b6de",
+  "url": "https://www.mazurymtb.pl/aktualnosci/warminskie-sciezki-wracaja-13-wrzesnia-laciate-mazury-mtb-opanuje-olsztyn",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "29f8e6a5-e6b4-48c8-8892-e42cfd114e4a",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/einzelwertung/einzelergebnisse-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "eab7c2de-586e-47f6-93da-be1a1d3df49d",
+  "url": "https://dzkol.pl/download/mtb-challenge-dzkol-31-08-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "518c587c-c0f8-41b0-b97d-a060a000c684",
+  "url": "https://www.cfc-kladno.cz/prohlidka.php?nadpis_l=Kolem+Pos%C3%A1zav%C3%AD+26&obr=start&pocet=146#obsah",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e39018c4-b528-40a3-a29e-5979d827919f",
+  "url": "https://cfc-kladno.cz/akce.php?id=820&rezim=3&session=0",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ce3c7041-8b61-410c-a05d-2342283e4abd",
+  "url": "https://www.edieteam.cz/mtb-mladeze/terminy-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d3cdc569-4157-4ddd-946d-ff6676ae4b0b",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1997",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9e0a71bc-d852-4621-a68d-d851f75d91e1",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/prehled",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9fb5d1f2-05e4-442e-9b87-890fa08c3dc7",
+  "url": "https://cykloman.cz/rozpis-babi-leto-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0dde7327-7c53-47f0-881a-3a7393bdf85f",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=propozice#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "55cfb4a8-6c39-4fb1-a2bb-56bf5f122a23",
+  "url": "https://dzkol.pl/dolnoslaski-zwiazek-kolarski-partnerem-akcji-szacuneknadrodze-wspolnie-walczymy-o-nasze-bezpieczenstwo/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "16397db9-9eef-444e-9ca8-1f62169c2974",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/05/26-P06-MAD.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "8d5383b6-de40-4299-800b-f5a54b7869bb",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=282",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "02de8c47-7155-4e1e-a8c1-223b18924fe8",
+  "url": "https://www.buckligeweltcup.at/rennen/2026-05-16-kinder-radrennen-im-stadtpark-neunkirchen",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "05df3a13-b414-4e5c-8254-eda56fdf9c9f",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamtsiegerehrung_20241114.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "145fd157-971e-4bd8-8f9d-470869c12470",
+  "url": "https://www.amaterskaliga.cz/vysledky/79",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ec7084eb-47d0-4618-90e4-b89cd92d3236",
+  "url": "https://www.amaterskaliga.cz/vysledky/103",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d65c2937-cdb3-40ff-ba02-0393b270b931",
+  "url": "https://www.edieteam.cz/9-aktuality/307-mxm-mtb-cup-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "cd0eb965-7d80-4915-9edc-802b60ba5f29",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/peklo-severu-road-hobby-n-1-krasna-lipa",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "986c5515-ab5f-4007-8039-7545b125b626",
+  "url": "https://www.amaterskaliga.cz/vysledky/94",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9477dd23-da99-4163-9b4f-1c58e381e3ae",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/silnicni-kriterium",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6fc73e90-9a6f-4f87-971e-a507a7f543d5",
+  "url": "https://www.bawue-schueler-cup.de/etappe-1-in-kirrlach/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "ea020e5c-5900-4f79-a6a0-422a0da9dbd1",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2026_Siegerehrung.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6deb5217-901e-4dc0-9ecd-485418714294",
+  "url": "https://www.amaterskaliga.cz/vysledky/110",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "28c73f7d-76a3-4020-a7b8-0f660357a5b5",
+  "url": "https://radsport-thueringen.de/wp-content/uploads/2026/10/Ausschreibung_Athletikueberpruefung_112026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e595c8ef-24cd-4bee-a111-ad90ee1a2b59",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=277",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "086a15c6-db2d-4c6e-9867-3d600b33316f",
+  "url": "https://dzkol.pl/dolina-baryczy-stolica-kolarstwa-juz-21-czerwca-wielkie-sciganie-zawodowcow-i-amatorow/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fcf4529b-3b66-4bc0-88f9-b061107b668d",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/prehled",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1451c649-537f-467a-9f2e-377b4ad88899",
+  "url": "https://www.gravelseries.cz/propozice-trasy/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "6f739734-f6c0-4730-b64c-c1d82337548c",
+  "url": "https://cfc-kladno.cz/clenove_cfc.php#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "33d3517d-b2fd-4979-b496-dbdbcb298422",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/mistrovstvi-cr-a-sr-masters-mistrovstvi-s-a-c-silnicni-zavod-jednotlivcu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "89322988-00de-4924-8ccd-d7d1111fb7c6",
+  "url": "https://cfc-kladno.cz/texty/Klikovy_vrchy_2026.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3a263545-f86c-40af-a87f-8aa0e39952ba",
+  "url": "https://www.cykloman.cz/kontakty",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "856caa3f-9f66-4662-a38c-fb03ecb2bdb6",
+  "url": "http://bikeri.cz/zavod/ostrovska-100",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c88cf40f-15e5-4793-8353-bf061fefd8dc",
+  "url": "http://www.mtbkreiscup.lima-city.de/Ausschreibung/2026/Bike-Day_Einladung_2026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ef277cbd-3824-42ae-80f3-f0b8d23e068d",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=propozice#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "76f8749d-cca8-4eaf-ae45-d1e1365a26a3",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/zavody",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "953ae9c0-8b1e-4d34-995a-c12bee485652",
+  "url": "https://www.mtb-isarcup.de/images/Downloads/Listen/Isar_Kids_Cup_Gesamt_2026_Gesamt_20261018xlsm__-__Gruppe.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7ad718af-45ad-47ee-85c4-cc0c6cfcd354",
+  "url": "https://www.amaterskaliga.cz/vysledky/49",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "ff557d49-35b4-4a32-918a-2cb5a34c0ff8",
+  "url": "https://www.amaterskaliga.cz/vysledky/65",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4cd6a163-c6f2-470d-a352-eb835da19a2c",
+  "url": "https://cfc-kladno.cz/posazavi24_2.php?#navigace_p24_2",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "030ea7bc-fbe7-4a40-8d22-f75d0050f6ec",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=255",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7f5243a5-bb0f-43d7-ae1d-c60f4210771b",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/superbike-terenni-casovka/vysledky-novy/3490",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b241c543-07aa-466f-a7e7-904afd2ffa87",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1989",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "1b4f8dec-5258-4126-ac65-633b240bdbdd",
+  "url": "https://www.buckligeweltcup.at/rennen/2026-07-12-schlossberg-xc-in-kirchschlag",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0ea9d761-9f43-4ffc-ae49-e7fa3ef0bcfa",
+  "url": "https://cykloman.cz/rozpis-bredy-maraton-cyklomanek",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "49f18563-0bf6-4a0e-835b-0a9e7ac97a04",
+  "url": "https://www.maratony.eu/letak-leitha-berg-radmarathon-2/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "0edab891-e1c3-4131-b679-a56fd20697fa",
+  "url": "https://www.kolarna.eu/kolarna-force-odersky-pohar/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "e8552267-89da-452d-89c5-019ea93562a0",
+  "url": "https://www.mazurymtb.pl/galeria",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "bc2d2dc0-dee3-420e-ba71-2b55fdb0ad82",
+  "url": "https://www.maratony.eu/kral-casoviek/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "769e2ef2-d578-4272-b9bb-8f609ce0b99a",
+  "url": "https://www.cykloman.cz/dokumenty/sjezdovka.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b0101686-9b11-4c5b-b265-5a775c5b93b5",
+  "url": "https://cfc-kladno.cz/kalendar.php?mesic=12&rok=2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "088330ff-a7b0-464b-8644-c3fb83b19b94",
+  "url": "https://www.kolarna.eu/zveme-vas-na-zavod-okolo-malina/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "575775e8-463d-4ada-8fe5-279b39d34b4a",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/3-peklo-severu-road-n-2-ceska-kamenice-pod-zastitou-starosty-mesta-jana-papajanovskeho",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "af8f4398-e001-4f67-b5d6-41f547935cfe",
+  "url": "https://www.vychodroadliga.sk/informacie",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "5eea09d0-0b3d-4e8c-9130-d5060943bef6",
+  "url": "https://cykloman.cz/?_news510=cyklomanek-2025",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c2cd21a4-6917-47cf-9818-3aa9c2022bea",
+  "url": "https://www.amaterskaliga.cz/storage/document/?id=370",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "88197bbe-1e91-4964-a64b-8c0cb170fb22",
+  "url": "https://www.mazurymtb.pl/zawody/wyniki/134",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f74795e2-e83e-4d88-baf4-7d1a0702a891",
+  "url": "https://www.amaterskaliga.cz/vysledky/11",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "22475827-c4c1-4236-8db2-458be21c4d2d",
+  "url": "https://www.kolarna.eu/xc-hyncice-2026-souboj-s-aprilovym-pocasim-i-traily-pod-kralickym-sneznikem/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d42a4fb7-5aa5-42c1-ab6a-47330a2c4813",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2e85a468-2754-4304-8f49-2c36073fdadc",
+  "url": "https://cfc-kladno.cz/rfc_vysledky.php?%20event_id=245",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "09f03d57-dd76-4d8b-abf9-27ca321db661",
+  "url": "https://www.vychodroadliga.sk/vychod-road-liga-cestna-cyklistika#preteky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "94e6bd28-15ac-475f-bf56-db1a5a9a1b8d",
+  "url": "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "55084ac1-0ad2-4fa8-9dcb-d65af640bada",
+  "url": "https://www.roadstage.cz/ambasadori",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "89dda756-2652-4f50-a9d0-6c42987e1b13",
+  "url": "https://www.edieteam.cz/mtb-mladeze/registrace-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a49aadd8-c463-4731-a0ab-2bc08331898f",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "de3baac8-8dd2-4c31-b2cc-eb9a112afd64",
+  "url": "https://radsportverband-nrw.de/wp-content/uploads/2025/11/Endstand_ARAG_Schueler_Cup_2025.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "cedddad9-3217-4a46-ab91-ce29ff949921",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/cyklomaraton-hrebecske-dulni-stezky/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3cb00725-24c1-4437-95ff-f4d9012942ca",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2015",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "9fcd4df1-ee4d-4c12-b14b-5cdc8eb1aa94",
+  "url": "https://www.kolarna.eu/xc-hyncice-pod-susinou/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "a7972f77-ee08-428e-8454-c3444e4b52cd",
+  "url": "https://www.mtb-isarcup.de/index.php/194-isar-cup-2027-saisonabschluss-und-siegerehrung",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fc82bcc1-1d12-4d8d-85ae-00362fea048f",
+  "url": "https://rsv-bad-hersfeld.de/images/gpxtracks/2026-06-14_RTF_70km_800HM.gpx",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2244f82d-4d34-4f5f-84aa-e510719c39f5",
+  "url": "https://spac-os.cz/wp-content/uploads/2026/05/26-P03_VC_Racingu_Olesna.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e2c00f02-77f4-49b7-8af2-50989a47e2f7",
+  "url": "https://dzkol.pl/download/20260920-gorale-na-start-puchar-polski-mtb-xco-mistrzostwa-dolnego-slaska-boguszow-gorce-regulamin/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "f8998a71-a4cb-4c48-8bb2-a87079f34cdc",
+  "url": "https://www.dsergebnis.de/archiv/nrw-cross-cup-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "dd8354a0-4dd1-439c-832e-a7aa52361377",
+  "url": "https://spac-os.cz/sezona-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "eff53b10-5e08-44ec-90c2-3ef477978988",
+  "url": "https://lausitzcup.de/index.php/goerlitz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "233e1629-635d-462b-b2da-843b425efd9a",
+  "url": "http://www.mazurymtb.pl/aktualnosci/final-cariboo-kids-race-w-gizycku-rowerki-biegowe-czekaja-na-najmlodszych",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0b59651b-7327-4be0-928e-b5894adffb59",
+  "url": "https://cykloman.cz/rozpis-mcc-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "12b4bd4e-93c0-400b-9a08-b511f0d8297f",
+  "url": "http://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2014",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d372b9bf-b388-4a11-8c74-7ccce144e151",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2004",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7a5d1a3d-0561-42b2-a328-c21e19b501b1",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/303-zavod-valasskeho-poharu-mtb-1-5-2026-ve-vesele-je-zruseny",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c671609d-b680-4634-9d01-e3c37e7495db",
+  "url": "https://www.dsergebnis.de/archiv/ergebnisse-2024/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "48802487-1f9b-41a6-bf68-4f21678fb6d2",
+  "url": "https://www.cyklomaratontour.cz/post.html",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "75fa24d8-45c9-49ac-8cfe-d94febdb5354",
+  "url": "https://www.dsergebnis.de/archiv/grosser-preis-der-gemeinde-rheinzabern-2025/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "41b4ad04-5ee9-4a6e-a874-5383252cb268",
+  "url": "https://spac-os.cz/sezona-2023/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "48225574-5069-4273-8ba7-3ddd976f6524",
+  "url": "https://radsport-thueringen.de/save-the-date-herbstklausur-rennsport-strasse-bahn/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "60b28cbd-f7f3-4aa8-8693-ced05a2aff78",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=280",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "63a61783-2f21-46c7-af5e-69d0a340ba57",
+  "url": "https://lausitzcup.de/index.php/lausitzcup/generalauschreibung",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "73cc5288-cebf-419d-a017-9c662e3499f0",
+  "url": "https://www.dsergebnis.de/archiv/nievenheimer-ortsschildsprint-2026/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d4e49295-a525-4599-b64c-b504e95f237a",
+  "url": "https://radsport-thueringen.de/%f0%9f%9a%b4%e2%99%80%ef%b8%8f%f0%9f%8f%86-rennsport-action-in-gera-%f0%9f%8f%86%f0%9f%9a%b4%e2%99%82%ef%b8%8f/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "3942a0db-fc3f-49a6-b58c-bbf4611a3fad",
+  "url": "https://www.amaterskaliga.cz/vysledky/46",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "fb73f2e7-6073-4341-a325-00da884ef191",
+  "url": "https://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "a9ab17b3-76cf-455a-9d86-a9630dcce361",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/maraton-ceska-lipa",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f17a2475-7db6-4db6-9405-661a14266468",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina/vysledky-novy/2842",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "693b7220-4a84-4187-898b-3b04c423e221",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/strmak.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "3bc197ce-85ed-487f-a083-a37d0ede9ee0",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/orient.html#pokyny",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "125745ff-445c-4298-95bf-535be0b193fb",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=276",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "515e8172-6d27-41f9-952a-6bd954ca1ff9",
+  "url": "https://dzkol.pl/download/2025-challenge-dzkol-regulamin-i-wykaz-punktowanych-wyscigow/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "eae7677a-6abc-4441-89ec-4720f50d0167",
+  "url": "https://spac-os.cz/wp-content/uploads/2023/06/06_GPF_2023.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7561f526-75be-4301-b8d5-1efcdee0a47b",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2005",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "90618d82-f586-473b-b9d0-0ebcc4a1f509",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=255",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "75973ec4-003f-4076-9b26-4ae25d8c2c4e",
+  "url": "https://www.dsergebnis.de/archiv/cyclo-cross-bundesliga-2026-26/",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0df8ff64-d58b-4dac-92cd-2a6cd8c41ebf",
+  "url": "https://www.edieteam.cz/akce",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "2efc0420-cafc-4f2c-be8d-7414f8973712",
+  "url": "https://cfc-kladno.cz/diskuse.php",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7623f136-29ab-4213-8695-6e3ec60dbd34",
+  "url": "https://www.vychodroadliga.sk/vychod-road-liga-cestna-cyklistika",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6efea2f0-7c15-4769-a9c8-8a0d82545da3",
+  "url": "https://www.kolarna.eu/cyklokros-zadlovice-2/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "027829c9-0f3c-49b2-843b-7c8339a24e29",
+  "url": "https://zavodnicasomira.cz/zavody/beh-mezi-mosty/2027",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "8ef78efa-58d1-4226-9ba9-7c167e16cd9a",
+  "url": "https://www.cykloman.cz/?_news510=cyklomanek-2025",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4934cd71-95c0-4c77-b952-b130bc2f5e8d",
+  "url": "https://www.roadcycling.cz/shared/clanky/40047/bodovani%20RC%202026.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "310c3959-93c8-4796-aeab-7ea8a9afcc0c",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/304-propozice-valassky-pohar-mtb-2027",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f8695ccd-d81d-443f-a170-24bdd2f58985",
+  "url": "https://dzkol.pl/download/20260516-miedzywojewodzkie-mistrzostwa-mlodziczek-i-mlodzikow-w-kolarstwie-mtb-nedzerzew-regulamin/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "62870355-3589-45a1-abbc-748ebc46c255",
+  "url": "https://www.edieteam.cz/mtb-mladeze/propozice-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7597695e-dfec-4e00-8336-053f4aba23cd",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/duatlon-powerman-kuncina",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0640dda9-5817-4358-9f4d-310060f707b9",
+  "url": "https://www.german-pumptrack-series.de/presse",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "2bcf8fd8-430d-4221-b603-ce14177baa51",
+  "url": "https://cfc-kladno.cz/kalendar.php?mesic=10&rok=2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "5777b992-f66a-4d37-bf46-029f3b0d11d6",
+  "url": "https://www.lrv-noe.at/media/doc/0b5aa7f1bc4080c97aaaadd4b29ad2a3/arboe-bmx-nachwuchscup-2028.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c7d7533c-3a42-40f4-bd36-e11a7ae62511",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2012",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "57723fce-4e30-448b-aec1-4f9daf1c0783",
+  "url": "https://radsport-thueringen.de/raul-esch-ist-weltmeister-im-scratch/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6900c1ba-bd58-425e-93fe-10e5da0ef81b",
+  "url": "https://www.amaterskaliga.cz/zavody/zavody",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6b4ae46e-6cb3-4d6c-9702-bb0520d915d7",
+  "url": "https://www.kolarna.eu/kolarna-ridelli-crosscoutry/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "6335b73d-634a-4786-abb0-d5a7d6affc1b",
+  "url": "https://www.jihoceskymtbpohar.cz/cup/stevens-jihocesky-mtb-pohar-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "c8282e04-0c6c-4dc9-9f32-93bdd5d4a218",
+  "url": "https://cfc-kladno.cz/posazavi25_2.php?#navigace_p25_2",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "62428e12-6cc2-4dc2-9ff0-d2c59a65eb1b",
+  "url": "https://www.amaterskaliga.cz/vysledky/19",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "4ba2402d-8f7c-4be6-85d2-0ccf4c8e893c",
+  "url": "https://dzkol.pl/download/szosa_challenge-2026-xlsx/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f9387106-30f1-4f8e-8249-c48eb14156dc",
+  "url": "https://www.lrv-noe.at/media/doc/fa8407241e7b390286d6a5750a636595/noe-rad-nachwuchscup-2026.pdf",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "caa980c6-2ef6-4f78-ac4d-fcc5082ded91",
+  "url": "https://cyclingaustria.at/kalender?disziplinen=cyclocross&view=events&page=5",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "d1db1f16-8ecd-48ba-9f3e-7eb71ca0068f",
+  "url": "https://www.amaterskaliga.cz/vysledky/39",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b1793f1c-a47a-48aa-9b82-abe4e6c799a9",
+  "url": "https://www.mtb-isarcup.de/index.php/17-startseite/28-was-ist-der-mtb-isarcup",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "37df98fb-cfee-418b-9fba-3f6f01cd92f9",
+  "url": "https://www.cykloman.cz/rozpis-papirak-cyklomanek-2026",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "7dfd5728-fe88-4c70-be81-0ca473df6a08",
+  "url": "https://www.edieteam.cz/16-valassky-pohar-mtb-xc/303-zavod-valasskeho-poharu-mtb-1-5-2027-ve-vesele-je-zruseny",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d95d2ee3-8d18-4a94-b693-e425d627fec1",
+  "url": "https://www.amaterskaliga.cz/zavody/2026/8-kolem-posazavi",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c2bd763b-e057-4bca-91ba-739cd2f8bb5f",
+  "url": "https://rsv-bad-hersfeld.de/index.php/events/kalender",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d3f761d5-66ce-4571-9ce3-a6da9c39d071",
+  "url": "https://cfc-kladno.cz/kolem_posazavi.php?nazev_stranky=v%C3%BDsledky&rok=2012",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "b5db1df3-4696-42e6-9853-c486fd85ff8a",
+  "url": "https://www.buckligeweltcup.at/rennen/2026-05-02-junior-lake-attack-krumbach",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "9ee0c54e-1e4b-45ec-9615-cdb65507e26f",
+  "url": "https://lausitzcup.de/index.php/klettwitz/ausschreibung-klettwitz",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "611bc8c7-03e0-4e8b-a7f5-2b5efb5baa63",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=prohl%C3%ADdka+trati#menu",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "f99fab75-4cfb-4ca5-bf8e-74becd82f9c6",
+  "url": "https://www.amaterskaliga.cz/zavody/2024/svincice-mistrovstvi-sal-2024",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fd017b4f-bad9-410d-a56c-09c2fbea5f11",
+  "url": "https://cykloman.cz/zavody-a-akce/2026/silnicni-casovka-jednotlivcu/vysledky-novy/pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "c0619344-9d42-42f8-98a3-50328a2a6fe1",
+  "url": "https://www.mazurymtb.pl/aktualnosci/kolarze-opanuja-mikolajki-laciate-mazury-mtb-wraca-do-zeglarskiej-stolicy-polski",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "32a8583e-5567-4225-b4a5-4a96c107ae7b",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1996",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "4f04067d-a18c-49ab-88a8-a2359d58b29b",
+  "url": "https://www.radclub-moedling.at/wp-content/uploads/2026/01/RCM_TC-2026_Ausschreibung.pdf",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "7cea43ca-82a0-4767-8937-6d451a4b1bdd",
+  "url": "http://cfc-kladno.cz/rfc_vysledky.php?%20event_id=277",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "e284ecf1-490f-4db8-9b76-1e9eb118e544",
+  "url": "https://www.cykloman.cz/zavody-a-akce/2026/paperman-triatlon/vysledky",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "056f62e8-425a-461c-8f56-45eb887b6ee8",
+  "url": "https://radsport-thueringen.de/%f0%9f%8f%86%f0%9f%9a%b4%e2%99%80%ef%b8%8f-finale-des-jugend-foerdercups-thueringen-der-sv-sparkassenversicherung-2026%f0%9f%9a%b4%e2%99%82%ef%b8%8f/",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "fd8d588a-8b61-413d-a0b8-ddf02323e62d",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=2011",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "bd26d1a3-c0d2-48c7-917e-8035445ca8cc",
+  "url": "https://www.mazurymtb.pl/p/cariboo-kids-race",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "b8060c3b-3a9d-4a8b-a283-f41f8e1d3394",
+  "url": "https://www.edieteam.cz/9-aktuality/302-ostravsky-mtb-pohar-2028",
+  "added_by": "season-successor",
+  "kind": "series",
+  "operational_state": "unreadable"
+ },
+ {
+  "id": "d816d9f2-5542-43f5-b70a-eefd8d252a8c",
+  "url": "https://www.cykloman.cz/cykloman-archiv/r2002/orient.html#propozice",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "ok"
+ },
+ {
+  "id": "0d618afe-1ac1-4262-adf2-1c0cd2214999",
+  "url": "https://cfc-kladno.cz/klikovy_vrchy.php?nazev_stranky=v%C3%BDsledky&rok=1999",
+  "added_by": "auto-same-domain",
+  "kind": "series",
+  "operational_state": "unreadable"
+ }
+]

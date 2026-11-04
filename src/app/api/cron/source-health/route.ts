@@ -5,6 +5,7 @@ import { parseQuery } from "@/lib/api/validate";
 import { withCron } from "@/lib/api/guards";
 import { getSourceHealth, verifyStalledSources, losingRaces } from "@/lib/admin/source-health";
 import { sendOpsAlert } from "@/lib/ops/alerts";
+import { createServerSupabase } from "@/lib/supabase/server";
 
 /**
  * Watch the watchers.
@@ -26,6 +27,10 @@ export const GET = withCron(async (req: NextRequest) => {
   if (!parsed.ok) return parsed.response;
   const { limit } = parsed.data;
 
+  const paused = await createServerSupabase().rpc("pipeline_pause_fruitless_sources");
+  // Housekeeping must not stop the health report below.
+  if (paused.error) console.error("Pausing fruitless sources failed", paused.error.message);
+
   const report = await getSourceHealth();
   const verified = await verifyStalledSources(report.stalled, { limit });
   const losing = losingRaces(verified);
@@ -44,6 +49,7 @@ export const GET = withCron(async (req: NextRequest) => {
 
   return NextResponse.json({
     ok: true,
+    pausedFruitlessSources: paused.data,
     activeCalendars: report.activeCalendars,
     stalled: report.stalled.length,
     verified: verified.length,

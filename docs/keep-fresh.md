@@ -50,6 +50,18 @@ Splatnost se respektuje: 1 564 aktivních zdrojů neznamená 1 564 nových závo
 
 Reálné skeny ČSC během úpravy přečetly 419 záznamů a provedly 248 zápisů; nešlo o 248 nových závodů. Tehdy dva záznamy zůstaly k ověření. Chybný konec před začátkem byl následně opraven 1. listopadu; aktuální stav ukazuje poslední skutečný sken. Chybné datum ani sloučení se nehádají.
 
+## Týdenní kontrola nových ročníků
+
+Místní cyklus jednou týdně spustí `scripts/check-next-editions.ts --country=CZ --apply`. Přečte weby závodů z minulé sezóny a u každého určí stav: nalezeno, zveřejněno, čeká s důvodem, zatím neoznámeno, jen zmíněný rok, nečitelné, nebo bez webu. AI jen navrhuje. Závod se založí, když citace s celým datem doslova stojí na webu téhož závodu, nejde o uzávěrku ani předběžný termín a stejný den není v katalogu podobný závod ze stejného místa nebo webu. Sporné případy zůstávají nezveřejněné a zkusí se další týden, vlastník je nerozhoduje.
+
+Výsledek je v `edition-status.json` v denním adresáři `reports/next-edition-websites-*` a souhrn v `pipeline_jobs` pod klíčem `next-editions-cz`. Limit AI je 1 USD na běh a 8 USD měsíčně (`EDITION_AI_BUDGET_USD`, `EDITION_AI_MONTHLY_USD`). Pozastavení sběru na Macu zastaví i tuto kontrolu.
+
+Náhled bez zápisu:
+
+```bash
+node scripts/with-node.cjs tsx scripts/check-next-editions.ts --country=CZ
+```
+
 ## Jediné místní spuštění
 
 Aktivní LaunchAgenty:

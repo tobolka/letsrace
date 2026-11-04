@@ -63,6 +63,18 @@ weekly_browser_step() {
   echo "$week" > "$stamp"
 }
 
+# Announced next-season editions: one bounded pass a week, own budget, resumes next cycle after a failure.
+weekly_editions_step() {
+  local week=$(TZ=Europe/Prague date +%G-%V)
+  local stamp="tmp/.next-editions-week"
+  if [ "$(cat "$stamp" 2>/dev/null)" = "$week" ]; then return 0; fi
+  if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then DEFERRED=$((DEFERRED + 1)); return 0; fi
+  local before="$FAILURES:$DEFERRED"
+  LLM_BUDGET_USD="${EDITION_AI_BUDGET_USD:-1.00}" LLM_DAILY_BUDGET_USD="${EDITION_AI_BUDGET_USD:-1.00}" LLM_MONTHLY_BUDGET_USD="${EDITION_AI_MONTHLY_USD:-8.00}" \
+    step "Announced next-season editions, Czechia" scripts/check-next-editions.ts --country=CZ --apply
+  if [ "$FAILURES:$DEFERRED" = "$before" ]; then echo "$week" > "$stamp"; fi
+}
+
 step "Coverage before"                     scripts/audit-catalogue-overview.ts
 step "Complete saved race-change notices" scripts/complete-plan-changes.ts
 step "Request changed race pages" scripts/request-public-refreshes.ts
@@ -71,6 +83,7 @@ step "Structured calendars, no model or search cost" scripts/check-free-calendar
 step "Resume previously approved interrupted publications" scripts/review-discovery-candidates.ts --resume --apply
 step "Follow up waiting race evidence, no publication" scripts/recheck-discovery-candidates.ts --max=20 --apply
 weekly_browser_step
+weekly_editions_step
 daily_step "Free discovery of new source links" scripts/explore-sources.ts
 # Standalone discovery remains a manual tool; regular source finding is free.
 # Calendar fallbacks must leave room for completing already discovered races.
