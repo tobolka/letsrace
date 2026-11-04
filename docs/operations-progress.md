@@ -2,6 +2,10 @@
 
 Aktualizováno 4. listopadu 2026. **Hotové dílčí úkoly jsou zaškrtnuté; otevřené úkoly zůstávají nezaškrtnuté.** Číslování etap odpovídá původnímu zadání. Původní časové odhady se nepoužívají.
 
+## Aktuální pořadí práce
+
+Prioritu mají bezpečné zápisy, spotřeba a měřitelný přínos. Původních sedm etap níže zůstává evidencí rozsahu. [Nové priority a sedmidenní měření](../reports/pipeline-yield-2026-11-04/RESULT.md).
+
 ## Přehled sedmi etap
 
 | Etapa | Stav | Co je hotové | Co ještě není hotové |

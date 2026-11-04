@@ -88,10 +88,12 @@ export async function runDueWatches(
   // beyond both that budget and the local browser-rendered federation scan.
   const abandonedBefore = new Date(Date.now() - 30 * 60_000).toISOString();
   const { error: abandonedError } = await supabase.from("ingest_runs")
-    .update({ finished_at: nowIso, ok: false, error: "Abandoned: scan did not finish within 30 minutes" })
+    .update({ finished_at: nowIso, ok: false, error: "Abandoned: scan did not finish within 30 minutes", metrics: { timing: "unknown", abandoned: true } })
     .is("finished_at", null)
     .lt("started_at", abandonedBefore);
   if (abandonedError) console.error("Could not close abandoned ingest runs", abandonedError);
+
+  const selectedByHost = new Map<string, number>();
 
   async function claimDue(kinds: readonly string[], take: number) {
     if (take <= 0) return [];
@@ -113,9 +115,14 @@ export async function runDueWatches(
     );
     const rest = eligible.filter((row) => !dumpHost.test(row.url as string));
     const dumps = eligible.filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
-    const ranked = [...rest, ...dumps].slice(0, take);
+    // A host with many detail URLs must not consume every slot in a batch.
+    // Use the same normalized host as the request gate, including www aliases.
     const claimed: NonNullable<typeof due> = [];
-    for (const row of ranked) {
+    for (const row of [...rest, ...dumps]) {
+      if (claimed.length >= take) break;
+      const host = hostnameOf(row.url);
+      const selected = selectedByHost.get(host) ?? 0;
+      if (selected >= 2) continue;
       const { data: won } = await supabase
         .from("watched_urls")
         .update({
@@ -127,7 +134,10 @@ export async function runDueWatches(
         .lte("next_poll_at", nowIso)
         .select("id")
         .maybeSingle();
-      if (won?.id) claimed.push(row);
+      if (won?.id) {
+        claimed.push(row);
+        selectedByHost.set(host, selected + 1);
+      }
     }
     return claimed;
   }
@@ -191,6 +201,27 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     .single();
   if (runInsert.error) throw new Error(`Starting ingest run: ${runInsert.error.message}`);
 
+  const startedAt = performance.now();
+  const createdIds = new Set<string>();
+  const updatedIds = new Set<string>();
+  let committedWrites = 0;
+  let hidden = 0;
+  const recordRun = (result: Omit<Parameters<typeof finishRun>[1], "metrics" | "eventsUpserted"> & { metrics?: Record<string, Json | undefined> }) =>
+    finishRun(runInsert.data?.id, {
+      ...result,
+      eventsUpserted: committedWrites,
+      metrics: {
+        ...result.metrics,
+        timing: "measured",
+        elapsedMs: Math.round(performance.now() - startedAt),
+        created: createdIds.size,
+        updated: updatedIds.size,
+        createdIds: [...createdIds],
+        updatedIds: [...updatedIds],
+        droppedHidden: hidden,
+      },
+    });
+
   try {
     // Sources whose adapter reads other pages than the one we watch (a JSON
     // API, the month and race pages behind a landing page): the watched page
@@ -222,7 +253,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
             updated_at: new Date().toISOString(),
           })
           .eq("id", row.id);
-        await finishRun(runInsert.data?.id, {
+        await recordRun({
           ok: true,
           error: "404 pending season",
           httpStatus: 404,
@@ -250,7 +281,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
           updated_at: new Date().toISOString(),
         })
         .eq("id", row.id);
-      await finishRun(runInsert.data?.id, {
+      await recordRun({
         ok: false,
         error: "404",
         httpStatus: 404,
@@ -281,7 +312,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
         })
         .eq("id", row.id);
       if (error) throw Error(`Saving unchanged source: ${error.message}`);
-      await finishRun(runInsert.data?.id, { ok: true, httpStatus: fetched.status });
+      await recordRun({ ok: true, httpStatus: fetched.status });
       return {
         watchedUrlId: row.id,
         url: row.url,
@@ -440,6 +471,11 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
         if (Date.now() > deadline - 5000) throw new Error("write_time_budget_exhausted");
         const result = await withDatabaseDeadline(deadline - 5000, () => upsertParsedEvent(ev, row.id, row.kind, row.url));
         const hash = rowHashes.get(ev.externalId);
+        if (result) {
+          committedWrites++;
+          if (result.created) createdIds.add(result.id);
+          else if (result.changed) updatedIds.add(result.id);
+        }
         if (hash && result) progress.set(ev.externalId, calendarRowProgress(hash, now, 0));
         else progress.delete(ev.externalId);
         return result;
@@ -1212,7 +1248,6 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     const needsReview = incomplete ||
       (!offSeasonEmpty && (extracted.events.length === 0 || extracted.confidence < 0.4));
 
-    let droppedHidden = 0;
     if (calendarKind && !needsReview && !offSeasonEmpty && canReconcileMissingEvents(extracted)) {
       const { hideDroppedCalendarEvents } = await import("@/lib/catalog/freshness");
       const extractedIds = new Set(
@@ -1221,7 +1256,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
           .filter((id): id is string => Boolean(id)),
       );
       const dates = candidates.map((ev) => ev.startDate).filter(Boolean).sort();
-      droppedHidden = await hideDroppedCalendarEvents({
+      hidden = await hideDroppedCalendarEvents({
         watchedUrlId: row.id,
         extractedExternalIds: extractedIds,
         extractedCount: candidates.length,
@@ -1280,16 +1315,15 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
 
     const metrics = { watchedUrlId: row.id,
       extracted: extracted.events.length, attempted: toUpsert.length, upserted, pendingWrites: pending.length, skippedUnchanged: candidates.length - writableCandidates.length,
-      created: upsertResults.filter(r => r?.created).length,
-      updated: upsertResults.filter(r => r && !r.created && r.changed).length,
+      created: createdIds.size,
+      updated: updatedIds.size,
       rejected: upsertResults.filter(r => !r).length - writeFailures.length, failed: failedWrites.length, deferredWrites: deferredCount, complete: !incomplete, deferred: budgetDeferred,
       issues, usage: extracted.usage ?? null, extraction: extracted.diagnostics ?? null };
     console.info("watcher_run_metrics", JSON.stringify(metrics));
-    await finishRun(runInsert.data?.id, {
+    await recordRun({
       metrics,
       ok: !incomplete,
       error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete extraction" : undefined,
-      eventsUpserted: upserted,
       linksDiscovered,
       strategy: extracted.strategy,
       httpStatus: fetched.status,
@@ -1302,8 +1336,8 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete extraction" : undefined,
       eventsUpserted: upserted,
       eventsExtracted: extracted.events.length,
-      eventsCreated: upsertResults.filter(r => r?.created).length,
-      eventsUpdated: upsertResults.filter(r => r && !r.created && r.changed).length,
+      eventsCreated: createdIds.size,
+      eventsUpdated: updatedIds.size,
       eventsRejected: upsertResults.filter(r => !r).length - writeFailures.length,
       eventsFailed: failedWrites.length,
       eventsDeferred: deferredCount,
@@ -1311,7 +1345,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
       issues,
       usage: extracted.usage,
       linksDiscovered,
-      droppedHidden,
+      droppedHidden: hidden,
       strategy: extracted.strategy,
       httpStatus: fetched.status,
       preview: extracted.events.slice(0, 5),
@@ -1333,12 +1367,14 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
         updated_at: new Date().toISOString(),
       })
       .eq("id", row.id);
-    await finishRun(runInsert.data?.id, { ok: false, error: message });
+    await recordRun({ ok: false, error: message });
     return {
       watchedUrlId: row.id,
       url: row.url,
       ok: false,
-      eventsUpserted: 0,
+      eventsUpserted: committedWrites,
+      eventsCreated: createdIds.size,
+      eventsUpdated: updatedIds.size,
       linksDiscovered: 0,
       error: message,
     };

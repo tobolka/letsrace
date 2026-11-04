@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { withCron } from "@/lib/api/guards";
 import { runDueWatches } from "@/lib/watcher/run";
 import { watchBatchResult } from "@/lib/watcher/run-summary";
-import { geocodePendingLocations } from "@/lib/geocode";
 import { sendOpsAlert } from "@/lib/ops/alerts";
 
 export const maxDuration = 300;
@@ -26,13 +25,6 @@ export const GET = withCron(async (req) => NextResponse.json(await pipelineJob("
   // Free-tier Supabase egress + log ingestion were already over quota from
   // catalogue traffic alone. Prefer a slower poll cycle over blowing the plan.
   const outcomes = await runDueWatches(60, { concurrency: 6, budgetMs: 200_000 });
-  let geocode = null;
-  try {
-    geocode = await geocodePendingLocations(40);
-  } catch (e) {
-    console.error("geocode after watch failed", e);
-  }
-
   // Rows land in the DB; public pages pick them up on their weekly ISR window.
   // A full-tag revalidate here rewrote every race/hub cache entry and blew the
   // Hobby ISR write + Origin Transfer budgets when crawlers rewarmed.
@@ -45,14 +37,11 @@ export const GET = withCron(async (req) => NextResponse.json(await pipelineJob("
       body: `${result.failed}/${result.count} watches failed in this cron run.`,
       meta: {
         failRate: Number(failRate.toFixed(2)),
-        geocoded: geocode && typeof geocode === "object" && "updated" in geocode
-          ? Number((geocode as { updated?: number }).updated ?? 0)
-          : null,
       },
     });
   }
 
-  return { ...result, geocode };
+  return result;
 })));
 
 export const POST = GET;
