@@ -74,11 +74,11 @@ export async function fillFciWebsites(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "fci_website");
 
-  const targets: { id: string; name: string; startDate: string; url: string }[] = [];
+  const targets: { id: string; revision: string; name: string; startDate: string; url: string }[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("events")
-      .select("id, name, start_date, sources:event_sources(source_url)")
+      .select("id, public_revision, name, start_date, sources:event_sources(source_url)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -87,6 +87,7 @@ export async function fillFciWebsites(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
+    if (error) throw error;
     const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
@@ -94,7 +95,7 @@ export async function fillFciWebsites(opts?: {
         .map((s) => s.source_url ?? "")
         .find((u) => /members\.federciclismo\.it\/race\/detail\/\d+/.test(u));
       if (!url) continue;
-      targets.push({ id: row.id, name: row.name, startDate: row.start_date, url });
+      targets.push({ id: row.id, revision: row.public_revision, name: row.name, startDate: row.start_date, url });
       if (targets.length >= max) break;
     }
     if (rows.length < PAGE) break;
@@ -116,14 +117,19 @@ export async function fillFciWebsites(opts?: {
         if (!opts?.dryRun) await recordProbe(supabase, target.id, "fci_website", "silent");
         continue;
       }
-      result.filled += 1;
-      opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${target.startDate}  ${target.name}  → ${site}`);
-      if (!opts?.dryRun) {
-        await supabase
-          .from("events")
-          .update({ website_url: site, updated_at: new Date().toISOString() })
-          .eq("id", target.id)
-          .is("website_url", null);
+      if (opts?.dryRun) {
+        result.filled += 1;
+        opts.log?.(`DRY  ${target.startDate}  ${target.name}  → ${site}`);
+      } else {
+        const { data: changed, error } = await supabase.rpc("pipeline_apply_catalogue_detail", {
+          p_event: target.id, p_revision: target.revision, p_method: "fci_website", p_source: target.url,
+          p_patch: { website_url: site },
+        });
+        if (error) throw error;
+        if (changed?.includes("website_url")) {
+          result.filled += 1;
+          opts?.log?.(`SET  ${target.startDate}  ${target.name}  → ${site}`);
+        }
       }
     } catch {
       result.failed += 1;

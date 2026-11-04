@@ -16,17 +16,20 @@ export async function fillRideAndRestLinks(opts?: {
   const supabase = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10);
   const result = { attempted: 0, filled: 0 };
-  for (let from = 0; ; from += PAGE) {
-    const { data, error } = await supabase
+  let after: string | undefined;
+  for (;;) {
+    let query = supabase
       .from("events")
-      .select("id, name, start_date, sources:event_sources(source_url)")
+      .select("id, public_revision, name, start_date, sources:event_sources(source_url)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
       .is("website_url", null)
       .order("id", { ascending: true })
-      .range(from, from + PAGE - 1);
+      .limit(PAGE);
+    if (after) query = query.gt("id", after);
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
     const rows = data ?? [];
     for (const row of rows) {
@@ -37,15 +40,15 @@ export async function fillRideAndRestLinks(opts?: {
       result.attempted += 1;
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${row.start_date}  ${row.name}  → ${url}`);
       if (opts?.dryRun) continue;
-      const { data: done } = await supabase
-        .from("events")
-        .update({ website_url: url, updated_at: new Date().toISOString() })
-        .eq("id", row.id)
-        .is("website_url", null)
-        .select("id");
-      result.filled += done?.length ?? 0;
+      const { data: done, error } = await supabase.rpc("pipeline_apply_catalogue_detail", {
+        p_event: row.id, p_revision: row.public_revision, p_method: "rideandrest_website",
+        p_source: url, p_patch: { website_url: url },
+      });
+      if (error) throw error;
+      if (done?.includes("website_url")) result.filled += 1;
     }
     if (rows.length < PAGE) break;
+    after = rows.at(-1)!.id;
   }
   return result;
 }

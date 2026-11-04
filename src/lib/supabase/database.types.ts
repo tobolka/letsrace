@@ -1466,6 +1466,10 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_apply_catalogue_detail: {
+        Args: {p_event:string;p_revision:string;p_method:string;p_source:string;p_patch:Json;p_place?:Json;p_quote?:string};
+        Returns: string[];
+      };
       pipeline_apply_catalogue_age_read: {
         Args: {p_event:string;p_revision:string;p_patch:Json;p_method:string;p_version:string;p_source?:string|null;p_quote?:string;p_series?:string;p_series_updated_at?:string}
         Returns: string|null

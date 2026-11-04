@@ -5,7 +5,7 @@ import { ageCategoriesFromList } from "@/lib/age-bands";
 import { audienceFromAgeCategories } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { geocodePlace } from "@/lib/geocode";
-import type { Insert, Update } from "@/lib/supabase/tables";
+import type { Update } from "@/lib/supabase/tables";
 import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
@@ -85,20 +85,21 @@ export async function fillCyclingAustriaDetails(opts?: {
 
   type Target = {
     id: string;
+    revision: string;
     name: string;
     startDate: string;
     url: string;
     municipality: string | null;
+    venue: string | null;
     ageConfidence: string | null;
-    ages: string[];
     website: string | null;
   };
   const targets: Target[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .select(
-        "id, name, start_date, age_categories, age_confidence, website_url, location:locations(municipality), sources:event_sources(source_url)",
+        "id, public_revision, name, start_date, age_categories, age_confidence, website_url, location:locations(municipality,venue), sources:event_sources(source_url)",
       )
       .eq("visibility", "public")
       .is("merged_into_id", null)
@@ -107,24 +108,26 @@ export async function fillCyclingAustriaDetails(opts?: {
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
+    if (error) throw error;
     const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       const url = (row.sources ?? []).map((s) => s.source_url ?? "").find((u) => CA_EVENT.test(u));
       if (!url) continue;
-      const needsPlace = !row.location?.municipality || REGION_ONLY.test(row.location.municipality.trim());
+      const needsPlace = !row.location?.venue?.trim() && (!row.location?.municipality || REGION_ONLY.test(row.location.municipality.trim()));
       const needsAges = !(row.age_categories ?? []).length || row.age_confidence !== "explicit";
       const needsWeb = !row.website_url || /cyclingaustria\.at/i.test(row.website_url);
       if (!needsPlace && !needsAges && !needsWeb) continue;
       targets.push({
         id: row.id,
+        revision: row.public_revision,
         name: row.name,
         startDate: row.start_date,
         // The page itself, without the calendar's paging state.
         url: `https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=${url.match(CA_EVENT)![1]}`,
         municipality: row.location?.municipality ?? null,
+        venue: row.location?.venue ?? null,
         ageConfidence: row.age_confidence,
-        ages: row.age_categories ?? [],
         website: row.website_url,
       });
       if (targets.length >= max) break;
@@ -161,24 +164,10 @@ export async function fillCyclingAustriaDetails(opts?: {
         patch.website_url = detail.website;
         notes.push(`web ${detail.website}`);
       }
-      let newLocation: Insert<"locations"> | null = null;
-      if (detail.town && (!t.municipality || REGION_ONLY.test(t.municipality.trim()))) {
-        let geo: Awaited<ReturnType<typeof geocodePlace>> = null;
-        try {
-          geo = await geocodePlace(`${detail.town}, AT`, "AT");
-        } catch {
-          geo = null;
-        }
-        newLocation = {
-          name: detail.town,
-          municipality: detail.town,
-          country_code: "AT",
-          geocode_query: `${detail.town}, AT`,
-          geocode_status: geo ? "ok" : "pending",
-          lat: geo?.lat ?? null,
-          lng: geo?.lng ?? null,
-          timezone: "Europe/Vienna",
-        };
+      let newLocation: { town: string; lat: number | null; lng: number | null } | undefined;
+      if (detail.town && !t.venue?.trim() && !REGION_ONLY.test(detail.town) && (!t.municipality || REGION_ONLY.test(t.municipality.trim()))) {
+        const geo = opts?.dryRun ? null : await geocodePlace(`${detail.town}, AT`, "AT").catch(() => null);
+        newLocation = { town: detail.town, lat: geo?.lat ?? null, lng: geo?.lng ?? null };
         notes.push(`place ${detail.town}${geo ? "" : " (to geocode)"}`);
       }
 
@@ -188,27 +177,23 @@ export async function fillCyclingAustriaDetails(opts?: {
         continue;
       }
       opts?.log?.(`${opts?.dryRun ? "DRY" : "SET"}  ${t.startDate}  ${t.name}  → ${notes.join("; ")}`);
-      if (patch.age_categories) result.ages += 1;
-      if (patch.website_url) result.websites += 1;
-      if (newLocation) result.places += 1;
-      if (opts?.dryRun) continue;
-
-      if (newLocation) {
-        const { data: loc } = await supabase.from("locations").insert(newLocation).select("id").single();
-        if (loc?.id) {
-          patch.location_id = loc.id;
-          if (newLocation.lat != null) {
-            await supabase.rpc("set_location_geog", {
-              loc_id: loc.id,
-              lat: newLocation.lat,
-              lng: Number(newLocation.lng),
-            });
-          }
-        }
+      if (opts?.dryRun) {
+        if (patch.age_categories) result.ages += 1;
+        if (patch.website_url) result.websites += 1;
+        if (newLocation) result.places += 1;
+        continue;
       }
-      patch.updated_at = new Date().toISOString();
-      await supabase.from("events").update(patch).eq("id", t.id);
-      await clearProbe(supabase, t.id, "ca_details");
+
+      const { data: changed, error } = await supabase.rpc("pipeline_apply_catalogue_detail", {
+        p_event: t.id, p_revision: t.revision, p_method: "cycling_austria_detail", p_source: t.url,
+        p_patch: patch, p_place: newLocation,
+        p_quote: [detail.town, ...detail.classes, detail.website].filter(Boolean).join(" | "),
+      });
+      if (error) throw error;
+      if (changed?.includes("age_categories")) result.ages += 1;
+      if (changed?.includes("website_url")) result.websites += 1;
+      if (changed?.includes("location_id")) result.places += 1;
+      if (changed?.length) await clearProbe(supabase, t.id, "ca_details");
     } catch {
       result.failed += 1;
     }
