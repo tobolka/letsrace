@@ -1466,6 +1466,10 @@ export type Database = {
       }
     }
     Functions: {
+      pipeline_apply_catalogue_age_read: {
+        Args: {p_event:string;p_revision:string;p_patch:Json;p_method:string;p_version:string;p_source?:string|null;p_quote?:string;p_series?:string;p_series_updated_at?:string}
+        Returns: string|null
+      };
       pipeline_merge_duplicate_location: {Args:{p_keep:Json;p_drop:Json};Returns:number|null};
       pipeline_unpin_country_location: {Args:{p_expected:Json};Returns:boolean};
       pipeline_complete_past_events: {Args:{p_ids:string[];p_today:string};Returns:number};

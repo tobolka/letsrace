@@ -308,6 +308,7 @@ export async function fillRegulationAgeCategories(opts?: {
 
   type Target = {
     id: string;
+    revision: string;
     name: string;
     startDate: string;
     regulationsUrl: string | null;
@@ -319,7 +320,7 @@ export async function fillRegulationAgeCategories(opts?: {
   for (let from = 0; targets.length < max; from += PAGE) {
     let query = supabase
       .from("events")
-      .select("id, name, start_date, regulations_url, website_url, age_categories, location:locations!inner(country_code, municipality)")
+      .select("id, public_revision, name, start_date, regulations_url, website_url, age_categories, location:locations!inner(country_code, municipality)")
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -331,7 +332,8 @@ export async function fillRegulationAgeCategories(opts?: {
       .range(from, from + PAGE - 1);
     if (opts?.countries?.length) query = query.in("location.country_code", opts.countries);
     if (opts?.ids?.length) query = query.in("id", opts.ids);
-    const { data } = await query;
+    const { data, error } = await query;
+    if (error) throw error;
     const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id) && !opts?.ids?.length) continue;
@@ -340,6 +342,7 @@ export async function fillRegulationAgeCategories(opts?: {
       if (CHAMPIONSHIP.test(row.name)) continue;
       targets.push({
         id: row.id,
+        revision: row.public_revision,
         name: row.name,
         startDate: row.start_date,
         regulationsUrl: isRegulationsUrl(row.regulations_url) ? row.regulations_url : null,
@@ -425,19 +428,15 @@ export async function fillRegulationAgeCategories(opts?: {
       result.filled += 1;
       return;
     }
-    const { error } = await supabase
-      .from("events")
-      .update({
-        age_categories: found.ages,
-        age_confidence: "explicit",
-        audience: audienceFromAgeCategories(found.ages),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", target.id);
+    const { data: saved, error } = await supabase.rpc("pipeline_apply_catalogue_age_read", {
+      p_event: target.id, p_revision: target.revision,
+      p_patch: { age_categories: found.ages, age_confidence: "explicit", audience: audienceFromAgeCategories(found.ages) },
+      p_method: "regulation_ages", p_version: "atomic-v1", p_source: found.from, p_quote: found.quote,
+    });
     if (error) {
       result.failed += 1;
       await recordProbe(supabase, target.id, "regs_ages", "failed");
-    } else {
+    } else if (saved) {
       result.filled += 1;
       await clearProbe(supabase, target.id, "regs_ages");
     }

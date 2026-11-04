@@ -3,6 +3,7 @@ import { recentlyProbed, recordProbe } from "@/lib/catalog/probes";
 import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import {
   fciAdmittedText,
+  fciFields,
   fciRegistrationWindow,
   parseFciCategories,
 } from "@/lib/watcher/extractors/fci-categories";
@@ -51,12 +52,12 @@ export async function fillFciAgeCategories(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "fci_ages");
 
-  const targets: { id: string; url: string; needsAges: boolean; needsWindow: boolean }[] = [];
+  const targets: { id: string; revision: string; url: string; needsAges: boolean; needsWindow: boolean; needsOpening: boolean }[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .select(
-        "id, age_categories, registration_closes_at, sources:event_sources(source_url)",
+        "id, public_revision, age_categories, registration_opens_at, registration_closes_at, sources:event_sources(source_url)",
       )
       .eq("visibility", "public")
       .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -66,6 +67,7 @@ export async function fillFciAgeCategories(opts?: {
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
 
+    if (error) throw error;
     const rows = data ?? [];
     for (const row of rows) {
       if (skip.has(row.id)) continue;
@@ -75,9 +77,11 @@ export async function fillFciAgeCategories(opts?: {
       if (url) {
         targets.push({
           id: row.id,
+          revision: row.public_revision,
           url,
           needsAges: (row.age_categories ?? []).length === 0,
           needsWindow: row.registration_closes_at == null,
+          needsOpening: row.registration_opens_at == null,
         });
       }
       if (targets.length >= max) break;
@@ -117,7 +121,7 @@ export async function fillFciAgeCategories(opts?: {
       if (target.needsWindow) {
         const window = fciRegistrationWindow(html);
         if (window.closesAt) patch.registration_closes_at = window.closesAt;
-        if (window.opensAt) patch.registration_opens_at = window.opensAt;
+        if (window.opensAt && target.needsOpening) patch.registration_opens_at = window.opensAt;
       }
 
       if (Object.keys(patch).length === 0) {
@@ -126,12 +130,18 @@ export async function fillFciAgeCategories(opts?: {
         continue;
       }
 
-      patch.updated_at = new Date().toISOString();
-      const { error } = await supabase.from("events").update(patch).eq("id", target.id);
+      const { data: saved, error } = await supabase.rpc("pipeline_apply_catalogue_age_read", {
+        p_event: target.id, p_revision: target.revision, p_patch: patch,
+        p_method: "fci_ages", p_version: "atomic-v1", p_source: target.url,
+        p_quote: [
+          patch.age_categories ? fciAdmittedText(html) : null,
+          patch.registration_opens_at || patch.registration_closes_at ? fciFields(html)["iscrizioni"] : null,
+        ].filter(Boolean).join(" | ") || undefined,
+      });
       if (error) {
         result.failed += 1;
         await recordProbe(supabase, target.id, "fci_ages", "failed");
-      } else {
+      } else if (saved) {
         result.filled += 1;
         if (patch.age_categories) result.ages += 1;
         if (patch.registration_closes_at) result.entryWindows += 1;

@@ -11,6 +11,8 @@ function todayIso(now = new Date()): string {
 }
 
 type SeriesInfo = {
+  id: string;
+  updated_at: string;
   name: string | null;
   slug: string | null;
   age_categories?: string[] | null;
@@ -48,13 +50,14 @@ export async function fillEmptyAgeCategories(opts?: {
   const upcomingOnly = opts?.upcomingOnly ?? true;
   const now = new Date().toISOString();
 
-  const { data: seriesRows } = await supabase
+  const { data: seriesRows, error: seriesError } = await supabase
     .from("series")
-    .select("id, name, slug, age_categories, audience_hint, level")
+    .select("id, name, slug, age_categories, audience_hint, level, updated_at")
     .eq("visibility", "public")
     .or("age_categories.is.null,age_categories.eq.{}")
     .limit(400);
 
+  if (seriesError) throw seriesError;
   let seriesFilled = 0;
   for (const s of seriesRows ?? []) {
     if (!emptyAges(s.age_categories as string[] | null)) continue;
@@ -66,21 +69,23 @@ export async function fillEmptyAgeCategories(opts?: {
       existingAudience: s.audience_hint as string | null,
     });
     if (!classified.ageCategories.length) continue;
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from("series")
       .update({
         age_categories: classified.ageCategories,
         audience_hint: classified.audience,
         updated_at: now,
       })
-      .eq("id", s.id);
-    if (!error) seriesFilled += 1;
+      .eq("id", s.id).eq("updated_at", s.updated_at).eq("visibility", "public")
+      .or("age_categories.is.null,age_categories.eq.{}").is("age_categories_confirmed_at", null).select("id");
+    if (error) throw error;
+    if (updated?.length) seriesFilled += 1;
   }
 
   let query = supabase
     .from("events")
     .select(
-      "id, name, start_date, audience, age_categories, level, class_label, disciplines, series:series!events_series_id_fkey(name, slug, age_categories, audience_hint)",
+      "id, public_revision, name, start_date, audience, age_categories, level, class_label, disciplines, series:series!events_series_id_fkey(id, updated_at, name, slug, age_categories, audience_hint)",
     )
     .eq("visibility", "public")
     .in("status", [...ACTIVE_EVENT_STATUSES])
@@ -94,6 +99,8 @@ export async function fillEmptyAgeCategories(opts?: {
 
   const patches: {
     id: string;
+    revision: string;
+    series: SeriesInfo | null;
     age_categories: string[];
     audience: string;
     age_confidence: "explicit" | "default";
@@ -107,6 +114,8 @@ export async function fillEmptyAgeCategories(opts?: {
     if (seriesAges.length) {
       patches.push({
         id: row.id,
+        revision: row.public_revision,
+        series,
         age_categories: seriesAges,
         audience:
           series?.audience_hint ||
@@ -133,6 +142,8 @@ export async function fillEmptyAgeCategories(opts?: {
     }
     patches.push({
       id: row.id,
+      revision: row.public_revision,
+      series,
       age_categories: classified.ageCategories,
       audience: classified.audience,
       age_confidence: classified.ageConfidence === "explicit" ? "explicit" : "default",
@@ -141,16 +152,14 @@ export async function fillEmptyAgeCategories(opts?: {
 
   const { mapPool } = await import("@/lib/watcher/pool");
   const results = await mapPool(patches, 8, async (patch) => {
-    const { error: upErr } = await supabase
-      .from("events")
-      .update({
-        age_categories: patch.age_categories,
-        audience: patch.audience,
-        age_confidence: patch.age_confidence,
-        updated_at: now,
-      })
-      .eq("id", patch.id);
-    return !upErr;
+    const { data, error } = await supabase.rpc("pipeline_apply_catalogue_age_read", {
+      p_event: patch.id, p_revision: patch.revision,
+      p_patch: { age_categories: patch.age_categories, audience: patch.audience, age_confidence: patch.age_confidence },
+      p_method: "catalogue_age_inference", p_version: "atomic-v1",
+      p_quote: patch.series ? "Inferred from the race and its primary series metadata." : "Inferred from catalogue race metadata.",
+      p_series: patch.series?.id, p_series_updated_at: patch.series?.updated_at,
+    });
+    return !error && Boolean(data);
   });
   const eventsFilled = results.filter(Boolean).length;
   stillUnknown += results.length - eventsFilled;

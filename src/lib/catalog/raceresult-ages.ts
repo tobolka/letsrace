@@ -9,7 +9,6 @@ import {
 } from "@/lib/watcher/extractors/contest-categories";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { mayInheritSeriesAges } from "@/lib/catalog/series-ages";
-import { recordFacts } from "@/lib/catalog/facts";
 import { corroborateRaceResultDate, nearbyEditionDate } from "@/lib/catalog/raceresult-date";
 import { preferDeeperOfficialUrl } from "@/lib/watcher/public-url";
 import type { Update } from "@/lib/supabase/tables";
@@ -42,11 +41,11 @@ export async function fillRaceResultAgeCategories(opts?: {
   const today = new Date().toISOString().slice(0, 10);
   const skip = await recentlyProbed(supabase, "raceresult_ages_v5", { silentDays: 7 });
 
-  const targets: { id: string; eventId: string; name: string; startDate: string; endDate: string | null; website: string | null; regulations: string | null; locked: string[]; previous: string[] | null; confidence: string | null; audience: string | null }[] = [];
+  const targets: { id: string; revision: string; eventId: string; name: string; startDate: string; endDate: string | null; website: string | null; regulations: string | null; locked: string[] }[] = [];
   for (let from = 0; targets.length < max; from += PAGE) {
     const { data, error } = await supabase
       .from("events")
-      .select("id,name,start_date,end_date,regulations_url,age_categories,age_confidence,audience,website_url,registration_url,sources:event_sources(source_url),overrides:event_overrides(locked_fields)")
+      .select("id,public_revision,name,start_date,end_date,regulations_url,age_categories,age_confidence,audience,website_url,registration_url,sources:event_sources(source_url),overrides:event_overrides(locked_fields)")
       .eq("visibility", "public")
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", today)
@@ -69,7 +68,7 @@ export async function fillRaceResultAgeCategories(opts?: {
       ]
         .map((u) => raceResultEventId(u))
         .find((v): v is string => Boolean(v));
-      if (eventId) targets.push({ id: row.id, eventId, name: row.name, startDate: row.start_date, endDate: row.end_date, website: row.website_url, regulations: row.regulations_url, locked: row.overrides?.locked_fields ?? [], previous: row.age_categories, confidence: row.age_confidence, audience: row.audience });
+      if (eventId) targets.push({ id: row.id, revision: row.public_revision, eventId, name: row.name, startDate: row.start_date, endDate: row.end_date, website: row.website_url, regulations: row.regulations_url, locked: row.overrides?.locked_fields ?? [] });
       if (targets.length >= max) break;
     }
     if (rows.length < PAGE) break;
@@ -87,13 +86,17 @@ export async function fillRaceResultAgeCategories(opts?: {
         if (proof) {
           opts?.log?.(`${opts.dryRun ? "DRY" : "DATE"} ${target.name}: ${target.startDate} → ${programme.startDate} ← ${proof.sourceUrl}`);
           if (!opts?.dryRun) {
-            const patch: Update<"events"> = { start_date: programme.startDate, end_date: programme.endDate, updated_at: new Date().toISOString() };
+            const patch: Update<"events"> = { start_date: programme.startDate, end_date: programme.endDate };
             if (!target.locked.includes("website_url") && proof.websiteUrl) patch.website_url = preferDeeperOfficialUrl(proof.websiteUrl, target.website);
             if (!target.locked.includes("regulations_url") && !target.regulations) patch.regulations_url = proof.sourceUrl;
-            const { data, error } = await supabase.from("events").update(patch).eq("id", target.id).eq("start_date", target.startDate).select("id");
+            const { data, error } = await supabase.rpc("pipeline_apply_catalogue_age_read", {
+              p_event: target.id, p_revision: target.revision, p_patch: patch,
+              p_method: "raceresult_official_date", p_version: "raceresult-date-v1",
+              p_source: proof.sourceUrl, p_quote: proof.quote,
+            });
             if (error) throw error;
-            if (!data?.length) continue;
-            await recordFacts(supabase, target.id, Object.entries(patch).filter(([field]) => field !== "updated_at").map(([field, value]) => ({ field, value, previous: field === "start_date" ? target.startDate : field === "end_date" ? target.endDate : field === "website_url" ? target.website : target.regulations, sourceUrl: proof.sourceUrl, quote: proof.quote })), { method: "raceresult_official_date", version: "raceresult-date-v1" });
+            if (!data) continue;
+            target.revision = data;
           }
           target.startDate = programme.startDate;
         }
@@ -109,31 +112,15 @@ export async function fillRaceResultAgeCategories(opts?: {
       }
       opts?.log?.(`${opts.dryRun ? "DRY" : "SET"} ${target.name}: ${ages.join(",")} ← ${names.join(" | ")}`);
       if (opts?.dryRun) { result.filled++; continue; }
-      const { data: saved, error } = await supabase
-        .from("events")
-        .update({
-          age_categories: ages,
-          // Read off the source's own category list.
-          age_confidence: "explicit",
-          audience: audienceFromAgeCategories(ages as AgeCategory[]),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", target.id)
-        .or("age_confidence.is.null,age_confidence.neq.explicit,age_categories.is.null,age_categories.eq.{}")
-        .select("id");
-      if (error) {
-        result.failed += 1;
-        await recordProbe(supabase, target.id, "raceresult_ages_v5", "failed");
-      } else {
-        if (!saved?.length) continue;
-        const sourceUrl = `https://my.raceresult.com/${target.eventId}/`;
-        await recordFacts(supabase, target.id, [
-          { field: "age_categories", value: ages, previous: target.previous, sourceUrl, quote: programme.admissions.map((contest) => `${contest.name} (DOB ${contest.birthFrom ?? "?"} to ${contest.birthTo ?? "?"})`).join(" | ") },
-          { field: "age_confidence", value: "explicit", previous: target.confidence, sourceUrl },
-          { field: "audience", value: audienceFromAgeCategories(ages), previous: target.audience, sourceUrl },
-        ], { method: "raceresult_contests", version: "contest-categories-v5" });
-        result.filled += 1;
-      }
+      const { data: saved, error } = await supabase.rpc("pipeline_apply_catalogue_age_read", {
+        p_event: target.id, p_revision: target.revision,
+        p_patch: { age_categories: ages, age_confidence: "explicit", audience: audienceFromAgeCategories(ages as AgeCategory[]) },
+        p_method: "raceresult_contests", p_version: "contest-categories-v5",
+        p_source: `https://my.raceresult.com/${target.eventId}/`,
+        p_quote: programme.admissions.map(contest => `${contest.name} (DOB ${contest.birthFrom ?? "?"} to ${contest.birthTo ?? "?"})`).join(" | "),
+      });
+      if (error) throw error;
+      if (saved) result.filled += 1;
     } catch {
       result.failed += 1;
       if (!opts?.dryRun) await recordProbe(supabase, target.id, "raceresult_ages_v5", "failed");
