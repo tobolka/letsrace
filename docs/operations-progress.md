@@ -20,7 +20,8 @@ Aktualizováno 4. listopadu 2026. **Hotové dílčí úkoly jsou zaškrtnuté; o
 
 - [x] **Opakování kalendáře po kolizi:** úspěšné nezměněné položky se nepřepisují, odložená práce zůstává u konkrétního řádku. Výpisy seriálu a ročníků mají nové databázové dotazy. [Měření a další ověření](../reports/limits-2026-11-04/RESULT.md).
 - [x] **Fullgaz a Ötztaler:** nový doložený ročník a opravená klasifikace existujícího závodu. [Výsledek](../reports/coverage-recovery-2026-11-03/RESULT.md).
-- [ ] **Spotřeba po obnovení scanů:** dva běžné cykly a denní počty požadavků i objem logů. Scany zůstávají vypnuté do rozhodnutí vlastníka.
+- [x] **Ochrana při obnově kalendáře:** potvrzení nezměněného zdroje je jeden databázový požadavek. Skrytí závodu vyžaduje platné převzetí práce, dostatečný překryv, chybějící položku ve skutečně přečteném rozsahu, žádný další zdroj a žádný ruční zámek. Změna a její historie vznikají společně.
+- [ ] **Podmínky pro obnovení scanů:** nejdřív změřit celý den veřejného provozu po nasazení. Se souhlasem vlastníka potom ověřit malou pevně omezenou dávku na Macu, stejný vzorek zopakovat na serveru a prověřit souběh na jednom zdroji. Zaznamenat pokusy o zápis, změny, odklady, počty požadavků a objem logů. Dva běžné cykly musí potvrdit funkční opakování a denní spotřeba se musí vejít pod 16 000 požadavků i do skutečného rozpočtu logů. Scany do té doby zůstávají vypnuté.
 
 - [x] **Nový přehled a panel:** běžné ovládání je oddělené od technických nástrojů; poslední kontrola společného seznamu má samostatný údaj. [Výsledek adminu](../reports/owner-admin-2026-11-02/RESULT.md).
 - [x] **Kontrola podkladu kandidáta i v zapisovači:** nový zápis nespoléhá jen na dřívější náhled; citované části musí odpovídat zdroji. Tvorba celého záznamu kandidáta ještě není jeden společný zápis.

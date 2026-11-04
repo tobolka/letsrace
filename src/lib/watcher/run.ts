@@ -267,7 +267,9 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
     }
 
     if (fetched.unchanged || fetched.status === 304) {
-      await supabase
+      const { touchLastSeenForWatchedUrl } = await import("@/lib/catalog/freshness");
+      await touchLastSeenForWatchedUrl(row.id);
+      const { error } = await supabase
         .from("watched_urls")
         .update({
           last_fetched_at: new Date().toISOString(),
@@ -278,8 +280,7 @@ async function readClaimedSource(row: SourceReadInput, opts?: { deadline?: numbe
           updated_at: new Date().toISOString(),
         })
         .eq("id", row.id);
-      const { touchLastSeenForWatchedUrl } = await import("@/lib/catalog/freshness");
-      await touchLastSeenForWatchedUrl(row.id);
+      if (error) throw Error(`Saving unchanged source: ${error.message}`);
       await finishRun(runInsert.data?.id, { ok: true, httpStatus: fetched.status });
       return {
         watchedUrlId: row.id,
