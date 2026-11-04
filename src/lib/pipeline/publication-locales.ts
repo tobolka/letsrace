@@ -1,3 +1,4 @@
+import { StalePublication } from "@/lib/pipeline/publication";
 import { fetchPublic } from "@/lib/http/safe-url";
 import { locales, type Locale } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
@@ -24,7 +25,9 @@ export async function checkPublicationLocales(
         }
         verify(html, page.status, locale);
       } catch (error) {
-        throw Error(`${locale}: ${error instanceof Error ? error.message : String(error)}`);
+        const message = `${locale}: ${error instanceof Error ? error.message : String(error)}`;
+        if (error instanceof StalePublication) throw new StalePublication(message);
+        throw Error(message);
       }
     }));
     for (const check of checks) if (check.status === "rejected") throw check.reason;

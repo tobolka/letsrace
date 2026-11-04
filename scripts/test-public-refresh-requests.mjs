@@ -11,6 +11,7 @@ try {
  await db.exec(await readFile('supabase/migrations/20261102201557_aggregate_catalogue_publication.sql','utf8').then(s=>s.slice(0,s.indexOf('create function public.pipeline_enqueue_catalogue'))));
  await db.exec(await readFile('supabase/migrations/20261103090530_separate_public_refresh_requests.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261104123851_check_only_requested_race_revisions.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261104183754_reissue_stale_publication_once.sql','utf8'));
  await db.exec(`set role service_role;insert into events(id,name,slug,start_date) select gen_random_uuid(),'Race '||n,'race-'||n,current_date+30 from generate_series(1,205) n;`);
  const claim=async kind=>(await db.query('select * from pipeline_claim_tasks($1,array[\'web\'],1)',[kind])).rows[0];
  assert.equal(await claim('public_refresh'),undefined,'unrequested revisions cannot consume the daily check budget');
@@ -36,6 +37,25 @@ try {
  assert.equal((await db.query('select pipeline_record_expirations($1,$2) n',[task.token,[{key:last.key,revision:last.payload.revision}]])).rows[0].n,0);
  assert.equal((await db.query('select pipeline_finish_task($1,$2,$3,$4) ok',[task.key,task.token,task.payload,{}])).rows[0].ok,false);
  await assert.rejects(candidates(task.token),/expired/);
+ const key=nextCheck.key, revision=nextCheck.payload.revision;
+ const receipt=async()=>(await db.query('select revision from pipeline_refresh_receipts where task_key=$1',[key])).rows[0]?.revision;
+ const retryCheck=async (claim, stale)=>(await db.query('select pipeline_retry_publication_check($1,$2,$3,$4,60,$5) ok',
+   [key,claim.token,revision,'test failure',stale])).rows[0].ok;
+ const makeDue=()=>db.query('update pipeline_tasks set available_at=now(),priority=20000 where key=$1',[key]);
+ assert(await retryCheck(nextCheck,true));
+ assert.equal(await receipt(),revision,'a fresh refresh receipt is left time to propagate');
+ await db.query("update pipeline_refresh_receipts set requested_at=now()-interval '11 minutes' where task_key=$1",[key]);
+ await makeDue();const transient=await claim('public_refresh');assert.equal(transient.key,key);
+ assert(await retryCheck(transient,false));
+ assert.equal(await receipt(),revision,'timeouts do not invalidate a receipt');
+ await makeDue();const stale=await claim('public_refresh');assert.equal(stale.key,key);
+ assert(await retryCheck(stale,true));
+ assert.equal(await receipt(),undefined);
+ assert.equal(await retryCheck(stale,true),false,'the original token cannot reissue again');
+ await db.query("insert into pipeline_refresh_receipts values($1,$2,now()-interval '11 minutes')",[key,revision]);
+ await makeDue();const afterRenewal=await claim('public_refresh');assert.equal(afterRenewal.key,key);
+ assert(await retryCheck(afterRenewal,true));
+ assert.equal(await receipt(),revision,'at most one renewal per revision');
  // Existing 60/day detail verification cap is unchanged.
  await db.exec("insert into pipeline_task_attempts(token,task_key,kind) select gen_random_uuid(),'publication:expire','public_refresh' from generate_series(1,60)");
  assert.equal(await claim('public_refresh'),undefined);

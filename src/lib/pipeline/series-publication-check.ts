@@ -4,7 +4,7 @@ import { load } from "cheerio";
 import { readPublicSeries } from "@/lib/events";
 import { eventPagePath } from "@/lib/event-url";
 import { compactRaceDates } from "@/lib/i18n/dates";
-import { publicationPayload } from "@/lib/pipeline/publication";
+import { StalePublication, publicationPayload } from "@/lib/pipeline/publication";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 type PublicSeries = Awaited<ReturnType<typeof readPublicSeries>>;
@@ -12,18 +12,20 @@ const normalize = (value: string) => value.normalize("NFKC").replace(/\s+/g, " "
 
 export function verifyPublicSeries(html: string, status: number, expected: PublicSeries, locale: Locale) {
   if (!expected) {
-    if (status !== 404 && status !== 410) throw Error(`Hidden series still publicly available (HTTP ${status})`);
+    if (status === 200) throw new StalePublication("Hidden series still publicly available (HTTP 200)");
+    if (status !== 404 && status !== 410) throw Error(`Series page returned HTTP ${status}`);
     return;
   }
+  if (status === 404 || status === 410) throw new StalePublication(`Series page returned HTTP ${status}`);
   if (status !== 200) throw Error(`Series page returned HTTP ${status}`);
   const $ = load(html);
   const article = $("article").filter((_, el) => $(el).find(".browse-intro h1[data-page-title]").length > 0);
   if (article.length !== 1 || normalize(article.find("h1[data-page-title]").text()) !== normalize(expected.series.name)) {
-    throw Error("Public series name does not match the saved series");
+    throw new StalePublication("Public series name does not match the saved series");
   }
   if (locale === "cs" && expected.series.description?.trim()
       && normalize(article.find(".browse-intro p").first().text()) !== normalize(expected.series.description)) {
-    throw Error("Public series description does not match the saved series");
+    throw new StalePublication("Public series description does not match the saved series");
   }
   // React can stream the round rows separately from the article. The link
   // identifies its owning series in the HTML without interpreting scripts.
@@ -31,14 +33,14 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
     $(row).attr("data-series-round") === expected.series.slug,
   ).toArray();
   const rounds = new Map(rows.map(row => [$(row).attr("href"), $(row)]));
-  if (rows.length !== expected.events.length || rounds.size !== rows.length) throw Error("Public series round count does not match the saved series");
+  if (rows.length !== expected.events.length || rounds.size !== rows.length) throw new StalePublication("Public series round count does not match the saved series");
   const names = $(".race-row-name[data-series-race]").toArray();
   const nameBySlug = new Map(names.map(row => [$(row).attr("data-series-race"), $(row).text()]));
   const metadataRows = $(".race-row-meta[data-series-race]").toArray();
   const metaBySlug = new Map(metadataRows.map(row => [$(row).attr("data-series-race"), $(row)]));
   if (names.length !== expected.events.length || nameBySlug.size !== names.length
       || metadataRows.length !== expected.events.length || metaBySlug.size !== metadataRows.length) {
-    throw Error("Public series round metadata count does not match the saved series");
+    throw new StalePublication("Public series round metadata count does not match the saved series");
   }
   for (const event of expected.events) {
     const row = rounds.get(eventPagePath(locale, event.slug));
@@ -49,7 +51,7 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
     if (!row || normalize(nameBySlug.get(event.slug) ?? "") !== normalize(event.name)
         || date?.attr("datetime") !== event.startDate || normalize(date.text()) !== normalize(compactRaceDates(event, locale))
         || (metadata !== place && !metadata.startsWith(`${place} · `))) {
-      throw Error(`Public series round does not match the saved race: ${event.slug}`);
+      throw new StalePublication(`Public series round does not match the saved race: ${event.slug}`);
     }
   }
 }
@@ -63,8 +65,10 @@ export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutM
     const task = tasks[0];
     if (!task) break;
     processed++;
+    let revision = "";
     try {
       const payload = publicationPayload(task.payload);
+      revision = payload.revision;
       const expected = await readPublicSeries(payload.slug);
       if (payload.expected.visibility === "public" ? expected?.series.id !== task.entity_id : expected !== null) {
         throw Error("Series changed while checking publication");
@@ -79,8 +83,9 @@ export async function checkPublicSeriesRevisions({ maxChecks, deadline, timeoutM
       if (error) throw error;
       if (finished) verified++; else deferred++;
     } catch (error) {
-      const retry = await db.rpc("pipeline_retry_task", {
-        p_key: task.key, p_token: task.token!, p_error: error instanceof Error ? error.message : "Series publication check failed",
+      const retry = await db.rpc("pipeline_retry_publication_check", {
+        p_key: task.key, p_token: task.token!, p_revision: revision, p_stale: error instanceof StalePublication,
+        p_error: error instanceof Error ? error.message : "Series publication check failed",
         p_delay_seconds: Math.min(86400, 300 * 2 ** Math.min(task.attempts, 8)),
       });
       if (retry.error) throw retry.error;

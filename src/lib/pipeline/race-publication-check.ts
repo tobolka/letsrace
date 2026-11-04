@@ -1,6 +1,6 @@
 import { checkPublicationLocales, publicationLocaleWaves } from "@/lib/pipeline/publication-locales";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { publicationPayload, publicationLocation, publicationIsVisible, verifyPublicRevision } from "@/lib/pipeline/publication";
+import { StalePublication, publicationPayload, publicationLocation, publicationIsVisible, verifyPublicRevision } from "@/lib/pipeline/publication";
 
 /** Verify ordinary public responses after the matching revision was refreshed. */
 export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs }: { maxChecks: number; deadline: number; timeoutMs: number }) {
@@ -13,8 +13,10 @@ export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs 
     if (error) throw error;
     const task = tasks[0]; if (!task) break;
     processed++;
+    let revision = "";
     try {
       const payload = publicationPayload(task.payload), expected = payload.expected;
+      revision = payload.revision;
       let target = payload;
       if (expected.merged_into_id) {
         const { data: canonical, error } = await db.from("events").select("slug,public_revision,name,start_date,end_date,status,visibility,registration_url,id").eq("id", String(expected.merged_into_id)).single();
@@ -32,7 +34,11 @@ export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs 
       if (error) throw error;
       if (finished) verified++; else deferredInBatch++;
     } catch (error) {
-      const { error: retryError } = await db.rpc("pipeline_retry_task", { p_key: task.key, p_token: task.token!, p_error: error instanceof Error ? error.message : "Publication check failed", p_delay_seconds: Math.min(86400, 300 * 2 ** Math.min(task.attempts, 8)) });
+      const { error: retryError } = await db.rpc("pipeline_retry_publication_check", {
+        p_key: task.key, p_token: task.token!, p_revision: revision, p_stale: error instanceof StalePublication,
+        p_error: error instanceof Error ? error.message : "Publication check failed",
+        p_delay_seconds: Math.min(86400, 300 * 2 ** Math.min(task.attempts, 8)),
+      });
       if (retryError) throw retryError;
       deferredInBatch++;
     }

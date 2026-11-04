@@ -7,6 +7,8 @@ import { racePlace } from "@/lib/race-place";
 import { formatPlaceName, joinPlace, splitPlace } from "@/lib/places";
 import { repairText } from "@/lib/text";
 
+export class StalePublication extends Error {}
+
 export type Publication = { revision: string; slug: string; previousSlugs?: string[]; expected: Record<string, Json | undefined> };
 export function publicationPayload(value: Json): Publication {
   if (!value || typeof value !== "object" || Array.isArray(value) || typeof value.revision !== "string" || typeof value.slug !== "string" || !value.expected || typeof value.expected !== "object" || Array.isArray(value.expected)) throw Error("Invalid publication payload");
@@ -16,12 +18,14 @@ export function publicationPayload(value: Json): Publication {
 /** A current database row is not proof that the public page carries its revision. */
 export function verifyPublicRevision(html: string, status: number, publication: Publication, expectedVisible: boolean) {
   if (!expectedVisible) {
-    if (status !== 404 && status !== 410) throw Error(`Hidden race still publicly available (HTTP ${status})`);
+    if (status === 200) throw new StalePublication("Hidden race still publicly available (HTTP 200)");
+    if (status !== 404 && status !== 410) throw Error(`Race page returned HTTP ${status}`);
     return;
   }
+  if (status === 404 || status === 410) throw new StalePublication(`Race page returned HTTP ${status}`);
   if (status !== 200) throw Error(`Race page returned HTTP ${status}`);
   const $ = load(html), article = $("article[data-race-revision]").first();
-  if (article.attr("data-race-revision") !== publication.revision || article.attr("data-race-id") !== publication.expected.id) throw Error("Public race revision does not match the saved change");
+  if (article.attr("data-race-revision") !== publication.revision || article.attr("data-race-id") !== publication.expected.id) throw new StalePublication("Public race revision does not match the saved change");
   const events: Record<string, unknown>[] = [];
   function collect(value: unknown) {
     if (Array.isArray(value)) { value.forEach(collect); return; }
@@ -35,23 +39,23 @@ export function verifyPublicRevision(html: string, status: number, publication: 
   });
   const expected = publication.expected;
   const actual = events.find(event => event.name === repairText(String(expected.name)));
-  if (!actual || actual.startDate !== expected.start_date || actual.endDate !== (expected.end_date ?? expected.start_date)) throw Error("Public race name or dates do not match the saved change");
+  if (!actual || actual.startDate !== expected.start_date || actual.endDate !== (expected.end_date ?? expected.start_date)) throw new StalePublication("Public race name or dates do not match the saved change");
   const schemaStatus = expected.status === "cancelled" ? "EventCancelled" : expected.status === "postponed" ? "EventPostponed" : "EventScheduled";
-  if (actual.eventStatus !== `https://schema.org/${schemaStatus}`) throw Error("Public race status does not match the saved change");
+  if (actual.eventStatus !== `https://schema.org/${schemaStatus}`) throw new StalePublication("Public race status does not match the saved change");
   const wantedPlace = expected.public_location;
   if (wantedPlace && typeof wantedPlace === "object" && !Array.isArray(wantedPlace)) {
     const actualPlace = actual.location as Record<string, unknown> | undefined;
     const address = actualPlace?.address as Record<string, unknown> | undefined;
     const normalize = (value: unknown) => String(value ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
-    if (normalize(actualPlace?.name) !== normalize(wantedPlace.name)) throw Error("Public race location does not match the saved change");
-    for (const key of ["streetAddress", "postalCode"]) if (wantedPlace[key] && normalize(address?.[key]) !== normalize(wantedPlace[key])) throw Error("Public race address does not match the saved change");
+    if (normalize(actualPlace?.name) !== normalize(wantedPlace.name)) throw new StalePublication("Public race location does not match the saved change");
+    for (const key of ["streetAddress", "postalCode"]) if (wantedPlace[key] && normalize(address?.[key]) !== normalize(wantedPlace[key])) throw new StalePublication("Public race address does not match the saved change");
     const geo = actualPlace?.geo as Record<string, unknown> | undefined;
-    if (wantedPlace.lat != null && (Number(geo?.latitude) !== Number(wantedPlace.lat) || Number(geo?.longitude) !== Number(wantedPlace.lng))) throw Error("Public race coordinates do not match the saved change");
+    if (wantedPlace.lat != null && (Number(geo?.latitude) !== Number(wantedPlace.lat) || Number(geo?.longitude) !== Number(wantedPlace.lng))) throw new StalePublication("Public race coordinates do not match the saved change");
     const visible = $.root().clone(); visible.find("script,style").remove();
     const text = normalize(visible.text());
-    for (const key of ["name", "streetAddress", "postalCode"]) if (wantedPlace[key] && !text.includes(normalize(wantedPlace[key]))) throw Error("Saved race location is missing from the visible page");
+    for (const key of ["name", "streetAddress", "postalCode"]) if (wantedPlace[key] && !text.includes(normalize(wantedPlace[key]))) throw new StalePublication("Saved race location is missing from the visible page");
   }
-  if (expected.registration_url && !$('a[href]').toArray().some(link => $(link).attr('href') === expected.registration_url)) throw Error("Saved registration link is missing from the public page");
+  if (expected.registration_url && !$('a[href]').toArray().some(link => $(link).attr('href') === expected.registration_url)) throw new StalePublication("Saved registration link is missing from the public page");
 }
 
 /** Independent current-row snapshot, fetched with the task revision before checking HTML. */

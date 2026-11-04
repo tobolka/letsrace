@@ -1532,6 +1532,7 @@ export type Database = {
       pipeline_claim_source: {Args:{p_source:string;p_capabilities:string[]};Returns:Database['public']['Tables']['pipeline_tasks']['Row'][]};
       pipeline_finish_source: {Args:{p_key:string;p_token:string;p_url:string;p_result:Json};Returns:boolean};
       pipeline_finish_task: {Args:{p_key:string;p_token:string;p_payload:Json;p_result:Json};Returns:boolean};
+      pipeline_retry_publication_check: { Args: { p_key: string; p_token: string; p_revision: string; p_error: string; p_delay_seconds: number; p_stale: boolean }; Returns: boolean };
       pipeline_retry_task: {Args:{p_key:string;p_token:string;p_error:string;p_delay_seconds?:number};Returns:boolean};
       pipeline_health: {Args:Record<string,never>;Returns:Json};
       pipeline_begin: {Args:{p_key:string;p_run:string};Returns:boolean};
