@@ -32,9 +32,12 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
   ).toArray();
   const rounds = new Map(rows.map(row => [$(row).attr("href"), $(row)]));
   if (rows.length !== expected.events.length || rounds.size !== rows.length) throw Error("Public series round count does not match the saved series");
+  const names = $(".race-row-name[data-series-race]").toArray();
+  const nameBySlug = new Map(names.map(row => [$(row).attr("data-series-race"), $(row).text()]));
   const metadataRows = $(".race-row-meta[data-series-race]").toArray();
   const metaBySlug = new Map(metadataRows.map(row => [$(row).attr("data-series-race"), $(row)]));
-  if (metadataRows.length !== expected.events.length || metaBySlug.size !== metadataRows.length) {
+  if (names.length !== expected.events.length || nameBySlug.size !== names.length
+      || metadataRows.length !== expected.events.length || metaBySlug.size !== metadataRows.length) {
     throw Error("Public series round metadata count does not match the saved series");
   }
   for (const event of expected.events) {
@@ -43,7 +46,7 @@ export function verifyPublicSeries(html: string, status: number, expected: Publi
     const date = meta?.find("time");
     const place = normalize([event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · "));
     const metadata = normalize(meta?.find(".race-row-place").text() ?? "");
-    if (!row || normalize(row.find(".race-row-name").text()) !== normalize(event.name)
+    if (!row || normalize(nameBySlug.get(event.slug) ?? "") !== normalize(event.name)
         || date?.attr("datetime") !== event.startDate || normalize(date.text()) !== normalize(compactRaceDates(event, locale))
         || (metadata !== place && !metadata.startsWith(`${place} · `))) {
       throw Error(`Public series round does not match the saved race: ${event.slug}`);

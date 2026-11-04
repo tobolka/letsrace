@@ -6,8 +6,7 @@ import { eventPagePath } from "@/lib/event-url";
 const race = { name: "Race", slug: "race", startDate: "2027-06-03", endDate: "2027-06-05", location: { municipality: "Brno", countryCode: "CZ" } };
 const series = { series: { name: "Cup", slug: "cup", description: "Ročník 2027" }, events: [race] } as NonNullable<Parameters<typeof verifyPublicSeries>[2]>;
 const page = `<article><div class="browse-intro"><h1 data-page-title>Cup</h1><p>Ročník 2027</p></div></article>
-  <div hidden><a class="race-row-link" data-series-round="cup" href="${eventPagePath("cs", "race")}"><span class="race-row-name">Race</span>
-  </a></div><div hidden><span class="race-row-meta" data-series-race="race"><time datetime="2027-06-03">${compactRaceDates(race, "cs")}</time><span class="race-row-place">Brno · CZ · XCO</span></span></div>`;
+  <div hidden><a class="race-row-link" data-series-round="cup" href="${eventPagePath("cs", "race")}"></a></div><div hidden><span class="race-row-name" data-series-race="race">Race</span></div><div hidden><span class="race-row-meta" data-series-race="race"><time datetime="2027-06-03">${compactRaceDates(race, "cs")}</time><span class="race-row-place">Brno · CZ · XCO</span></span></div>`;
 
 describe("series publication", () => {
   it("checks actual round content in the series article", () => {

@@ -63,7 +63,7 @@ export function EventRowBody({
       <>
         <span aria-hidden className="race-row-edge" style={{ background: disciplineColor(event.disciplines) }} />
         <span className="race-row-body">
-          <span className="race-row-name">{event.name}</span>
+          <span className="race-row-name" data-series-race={seriesRound ? event.slug : undefined}>{event.name}</span>
           <span className="race-row-meta" data-series-race={seriesRound ? event.slug : undefined}>
             <time dateTime={event.startDate} className="race-row-date">{dateLabel}</time>
             {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
