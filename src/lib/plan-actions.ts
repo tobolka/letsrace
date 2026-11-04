@@ -39,6 +39,11 @@ export function daysUntil(iso: string, today = todayIso()): number {
   return Math.round(ms / 86_400_000);
 }
 
+/** The plan keeps the whole season. A badge or an email interrupts only for what is near. */
+export function isDueSoon(startDate: string, today = todayIso()): boolean {
+  return daysUntil(startDate, today) <= DECIDE_WITHIN_DAYS;
+}
+
 /**
  * The one thing this race is waiting for, or null when it is waiting for
  * nothing. Later steps win: a race where one rider has paid and another has

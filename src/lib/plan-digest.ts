@@ -1,4 +1,5 @@
 import { nextWeekendRange, thisWeekendRange, todayIso } from "@/lib/date-presets";
+import { isDueSoon } from "@/lib/plan-actions";
 import { isBusyIsoDate } from "@/lib/plan-prefs";
 import {
   planNeedsAction,
@@ -82,7 +83,8 @@ export function buildWeeklyDigest(opts: {
     // Telling someone their weekend is free when they have already said it is
     // taken is the fastest way to make the whole mail untrustworthy.
     thisWeekendFree: thisWeekend.length === 0 && !weekendTaken(weekend),
-    needsAction: opts.plans.filter((p) => planNeedsAction(p, today)),
+    // A race next autumn is not this Wednesday's job. The plan still lists it.
+    needsAction: opts.plans.filter((p) => planNeedsAction(p, today) && isDueSoon(p.event.startDate, today)),
     nextWeekendFree: nextWeekend.length === 0 && !nextBusy && !weekendTaken(next),
     nearby: opts.nearby ?? null,
   };
@@ -90,11 +92,6 @@ export function buildWeeklyDigest(opts: {
 
 export function digestHasContent(digest: WeeklyDigest, hasUpcomingPlan: boolean): boolean {
   if (!hasUpcomingPlan && !digest.nearby) return false;
-  return (
-    digest.thisWeekend.length > 0 ||
-    digest.thisWeekendFree ||
-    digest.needsAction.length > 0 ||
-    digest.nextWeekendFree ||
-    Boolean(digest.nearby)
-  );
+  // A free weekend can sit in a mail that has news. It is not news by itself.
+  return digest.thisWeekend.length > 0 || digest.needsAction.length > 0 || Boolean(digest.nearby);
 }

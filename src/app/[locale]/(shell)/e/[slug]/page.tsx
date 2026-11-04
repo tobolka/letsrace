@@ -177,7 +177,10 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     here?.lat != null && here.lng != null
       ? upcomingCatalogue().catch(() => [])
       : Promise.resolve([]),
-    getRaceEditionLinks(event).catch(() => ({ previous: [], next: [] })),
+    getRaceEditionLinks(event).catch((error: unknown) => {
+      console.error("race_edition_links_failed", event.slug, error);
+      return { previous: [], next: [] };
+    }),
     listOrganiserRaces(event).catch(() => []),
     isPast
       ? Promise.resolve([] as string[])

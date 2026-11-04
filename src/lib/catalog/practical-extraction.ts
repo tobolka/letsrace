@@ -74,15 +74,15 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
 
 const dateTokens = (text: string) => [...text.matchAll(/\b(?:20\d{2}-\d{2}-\d{2}|\d{1,2}\.\s*\d{1,2}\.\s*20\d{2})\b/g)];
 export function quoteContainsDate(text: string, day: string) { return dateTokens(text).some(match => quoteStatesDate(match[0], day)) || quoteStatesDate(text, day); }
-const currencyToken = "(?:CZK|EUR|PLN|CHF|GBP|Kč|zł|€)";
-const currencyAliases: Record<string, string> = { "KČ": "CZK", "ZŁ": "PLN", "€": "EUR" };
+const currencyToken = String.raw`(?:CZK|EURO|EUR|PLN|CHF|GBP|Kč|Kc|zł|zl|SFr\.?|Fr\.|€)`;
+const currencyAliases: Record<string, string> = { "KČ": "CZK", "KC": "CZK", "ZŁ": "PLN", "ZL": "PLN", "EURO": "EUR", "SFR": "CHF", "FR": "CHF", "€": "EUR" };
 const currencyIn = new RegExp(currencyToken, "iu");
 const priceNumber = String.raw`(?:\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+)(?:[,.]\d{1,2})?`;
 const priceTokens = new RegExp(String.raw`(?<![\p{L}\p{N}.,])(?:(?<value>${priceNumber})(?:[,.]-)?\s*(?<unit>${currencyToken})(?!\p{L})|(?<prefix>${currencyToken})\s*(?<prefixedValue>${priceNumber})(?![\p{L}\p{N}]|[.,]\d))`, "giu");
 export function entryPrices(text: string): { amount: number; currency: string; index: number }[] {
   return [...text.matchAll(priceTokens)].map(({ groups, index }) => {
     const { value, unit, prefix, prefixedValue } = groups!;
-    const code = (unit ?? prefix).toUpperCase();
+    const code = (unit ?? prefix).toUpperCase().replace(".", "");
     return { amount: Number((value ?? prefixedValue).replace(/\s/g, "").replace(",", ".")), currency: currencyAliases[code] ?? code, index };
   });
 }

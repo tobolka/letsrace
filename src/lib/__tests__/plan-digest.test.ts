@@ -71,7 +71,28 @@ describe("digestHasContent", () => {
   it("skips people with no plan and no nearby race", () => {
     const empty = buildWeeklyDigest({ plans: [], now: new Date("2026-08-19T06:00:00+02:00") });
     expect(digestHasContent(empty, false)).toBe(false);
-    expect(digestHasContent({ ...empty, thisWeekendFree: true }, true)).toBe(true);
+    expect(digestHasContent({ ...empty, thisWeekendFree: true, nextWeekendFree: true }, true)).toBe(false);
+  });
+
+  it("sends a mail for a race this weekend, a near job or a new race nearby", () => {
+    const now = new Date("2026-08-19T06:00:00+02:00");
+    const near = plan({ event: event({ id: "near", name: "Near", startDate: "2026-09-10" }) });
+    expect(digestHasContent(buildWeeklyDigest({ plans: [near], now }), true)).toBe(true);
+    const nearby = { id: "n", name: "New", slug: "n", startDate: "2027-05-01", km: 10, place: "Praha" };
+    expect(digestHasContent(buildWeeklyDigest({ plans: [], nearby, now }), false)).toBe(true);
+  });
+});
+
+describe("a planned race far away", () => {
+  const now = new Date("2026-11-04T06:00:00+01:00");
+
+  it("waits in the plan without reaching the mail until four weeks before", () => {
+    const far = plan({ event: event({ id: "far", name: "Far", startDate: "2027-03-26" }) });
+    const digest = buildWeeklyDigest({ plans: [far], now });
+    expect(digest.needsAction).toEqual([]);
+    expect(digestHasContent(digest, true)).toBe(false);
+    expect(buildWeeklyDigest({ plans: [far], now: new Date("2027-02-26T06:00:00+01:00") }).needsAction).toEqual([far]);
+    expect(buildWeeklyDigest({ plans: [far], now: new Date("2027-02-24T06:00:00+01:00") }).needsAction).toEqual([]);
   });
 });
 

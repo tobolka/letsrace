@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { combinePracticalFindings, practicalProgramme } from "@/lib/catalog/practical-programme";
-import { feeQuoteSupports } from "@/lib/catalog/practical-extraction";
+import { entryPrices, feeQuoteSupports } from "@/lib/catalog/practical-extraction";
 import { mergePracticalDetails, type PracticalDetails } from "@/lib/practical-details";
 const doc = { url: "https://club.test/race/2027/propozice", links: [] as string[], text: "Alfa Grand Prix 2027\n31.07.2027 Town\ntrať | start | startovné | ročníky narození\n50 km MTB | ~09:30:18 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online | 2014 a starší\n20 km MTB | ~10:15:00 | 350,- Kč online termín cena splatnost 27.02.2027 350,- Kč online | 2017 a starší" };
 const context = { name: "Alfa Grand Prix", startDate: "2027-07-31" };
@@ -84,4 +84,13 @@ it("keeps fields and route variants across independently read documents", () => 
   expect(combined.venue).toEqual(venue.venue);
   const additional: PracticalDetails = { routes: { ...programme.routes!, value: [{ name: "Short", distanceKm: 10 }] } };
   expect(combinePracticalFindings(combined, additional).routes?.value.map(row => row.distanceKm)).toEqual([50, 20, 10]);
+});
+
+it("reads the currency spellings organisers write in full or without diacritics", () => {
+  for (const [quote, amount, currency] of [["Startgeld 25 Euro", 25, "EUR"], ["Startgeld: 25,- Euro", 25, "EUR"], ["500 Kc", 500, "CZK"], ["60 zl", 60, "PLN"], ["Fr. 40", 40, "CHF"], ["40 SFr.", 40, "CHF"]] as const) {
+    expect(entryPrices(quote).map(({ amount, currency }) => ({ amount, currency }))).toEqual([{ amount, currency }]);
+    expect(feeQuoteSupports(quote, amount, currency)).toBe(true);
+  }
+  expect(feeQuoteSupports("Startgeld 25 Euro", 25, "CHF")).toBe(false);
+  expect(entryPrices("Europa 25 Europameister 3 Frauen 40 Fr")).toEqual([]);
 });

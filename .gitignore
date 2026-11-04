@@ -48,3 +48,8 @@ link-backup-*.json
 
 # scratch for one-off probes and downloads
 scripts/.tmp/
+
+# local working files of one-off runs and archived source pages
+/tmp/
+/reports/*/sources/
+/reports/*/pages/

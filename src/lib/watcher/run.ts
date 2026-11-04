@@ -1251,6 +1251,11 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
         extractedUntil: dates.at(-1),
       });
     }
+    // A row skipped as unchanged was still seen on this page, so it stays checked.
+    if (trackProgress && writableCandidates.length < uniqueCandidates.length) {
+      const { touchLastSeenForWatchedUrl } = await import("@/lib/catalog/freshness");
+      await touchLastSeenForWatchedUrl(row.id);
+    }
 
     sourcePatch = {
       calendar_write_progress: trackProgress && !emptyButLive ? { version: progressVersion, rows: [...progress].map(([id, entry]) => [id, entry.hash, entry.until, entry.conflicts]) } : row.calendar_write_progress ?? null,

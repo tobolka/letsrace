@@ -3,7 +3,8 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { todayIso } from "@/lib/date-presets";
-import { isDiscoverPath, markDiscoverSeen, readDiscoverSeen, subscribeDiscoverSeen, unseenDiscoverCount, type DiscoverHit } from "@/lib/discover-seen";
+import { isDueSoon } from "@/lib/plan-actions";
+import { isDiscoverPath, markDiscoverSeen,readDiscoverSeen, subscribeDiscoverSeen, unseenDiscoverCount, type DiscoverHit } from "@/lib/discover-seen";
 
 export type NavCounts = { action: number; alerts: number };
 
@@ -55,7 +56,7 @@ export function useNavCounts(refreshKey: string | null, authed: boolean | null):
       const unsettled = new Set<string>();
       for (const row of atts ?? []) {
         const ev = Array.isArray(row.event) ? row.event[0] : row.event;
-        if (!ev || ev.start_date < today) continue;
+        if (!ev || ev.start_date < today || !isDueSoon(ev.start_date, today)) continue;
         if (row.status !== "none" && !row.paid) unsettled.add(row.event_id);
       }
 

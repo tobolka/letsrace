@@ -22,9 +22,11 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-04",
     items: {
       cs: [
+        "Odznak u tvého plánu a středeční e-mail připomínají přihlášení a platbu až čtyři týdny před závodem, a když se nic neděje, e-mail nepřijde.",
         "Fullgaz Race 2027 najdeš v kalendáři s XCO a XCC a Ötztaler Mountainbike Festival má správně uvedenou UCI Continental Series.",
       ],
       en: [
+        "The badge on your plan and the Wednesday email remind you to enter and pay only in the last four weeks before a race, and no email comes when nothing is happening.",
         "Fullgaz Race 2027 joins the calendar with XCO and XCC, and Ötztaler Mountainbike Festival is correctly listed as a UCI Continental Series event.",
       ],
     },
