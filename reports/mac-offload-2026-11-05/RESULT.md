@@ -41,14 +41,24 @@ Odesílá se pole, které je na serveru prázdné a bylo prázdné i v kopii (ne
 
 ## Serverové úlohy
 
-Připraveno, **nenasazeno**: z `vercel.json` zmizí `watch`, `explore`, `source-health`, `geocode`; `catalog` přestane číst weby závodů. Historie počasí záměrně zůstává (60 s denně, ukládá na server, sdílený rozpočet). Do nasazení běží čtení údajů dvakrát; plnění prázdných polí se tím nepřepisuje, jen se plýtvá.
+Nasazeno (`03f379a5`): z `vercel.json` zmizely `watch`, `explore`, `source-health`, `geocode`; `catalog` nečte weby závodů. Ověřeno: na Vercelu zbylo 5 cronů. Historie počasí záměrně zůstává (60 s denně, ukládá na server, sdílený rozpočet).
 
-Úsporu na Vercelu a Supabase nelze doložit, dokud se to nenasadí a nezměří. Rozpad Vercel CPU podle tras vyžaduje placený doplněk, ten se nekupoval.
+Úsporu na Vercelu a Supabase zatím doložit nelze, potřebuje pár dní provozu. Rozpad Vercel CPU podle tras vyžaduje placený doplněk, ten se nekupoval.
+
+## Ruční čtení čekajících závodů
+
+Přečetl jsem 201 čekajících závodů (Claude v této relaci, bez placeného volání AI). U 42 byl termín jasný a patřil danému závodu. Rozhodnutí jsou v soukromém `organiser-check-2027/reviewed-answers.json` a prošla stejnými kontrolami: 6 nových je na webu, další 4 zastavila kontrola duplicit, protože na serveru už byly. Většina ostatních v katalogu už byla se stejným datem. Zbylých 159 nemá na stránce termín tohoto závodu: je tam soustředění, jiný závod, jiné kolo nebo společný kalendář.
+
+## Nezávislá kontrola
+
+- Doslovné čtení proti závodům, které do katalogu přišly jinudy: 22 shod, 2 rozdíly. Knappenman byla chyba čtení (datum začátku přihlášek), opraveno a v testech. Góry 400 má na stránce 5. 6., katalog 3. 7. spojil jiné kolo.
+- Ruční čtení proti katalogu: 23 shod. Saint Gravel: stránka uvádí „Sonntag, 11. September“, 11. září 2027 je sobota, katalog má 12. 9.; nerozhodnuto.
+- Omezení: není to náhodný vzorek, katalog sám může být špatně a nikdo to neověřil u pořadatelů.
 
 ## Co není hotové
 
-- Nasazení serverové části a měření spotřeby po něm.
-- 212 čekajících závodů: většinou kalendáře s více daty nebo číslovaná kola seriálů. Rozhodl by je model; placená AI je v místním režimu vypnutá.
+- Měření spotřeby po přesunu.
+- Asi 180 čekajících závodů, které ani čtením nejdou rozhodnout, a nové nálezy z dalších průchodů. Placená AI v cyklu neběží.
 - Změny již vyplněných hodnot; Wels, Perun, Lakeland, GR8; 43 podezřelých spojení; řádky `identity_review_required`.
 - 19 zdrojů z týdenní kontroly hlásí chybu, ale stále uvádí závody; většinou stránky cyclingaustria.at a portál ČSC (`source-health-latest.json`). Neřešeno.
 - Dvě úplná čtení a nezávislá kontrola správnosti.

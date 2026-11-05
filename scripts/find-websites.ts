@@ -2,6 +2,7 @@
  * Races with no website and no registration link: search for them, and keep a
  * page only if it names the race and its season.
  *   node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs scripts/find-websites.ts [--max=300] [--apply]
+ * --from=YYYY-MM-DD also covers past races, --prefer=CZ,SK takes those countries first.
  * Only sure finds are written (every distinctive word of the name on the page
  * and in its address, the town on it, a front page or one level in); likely
  * ones go to tmp/web-finder-review-<date>.tsv to look at. About ten seconds a
@@ -12,7 +13,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 for (const line of readFileSync(resolve(".env.local"), "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-  if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, "");
+  // Unset only: a local pass blanks server and AI credentials on purpose.
+  if (m && process.env[m[1]!] === undefined) process.env[m[1]!] = m[2]!.replace(/^["']|["']$/g, "");
 }
 
 async function main() {
@@ -23,15 +25,25 @@ async function main() {
   mkdirSync("tmp", { recursive: true });
   const review = `tmp/web-finder-review-${new Date().toISOString().slice(0, 10)}.tsv`;
   const countries = process.argv.find((a) => a.startsWith("--countries="))?.slice(12).split(",");
-  const result = await findWebsites({
-    max,
-    countries,
+  const prefer = process.argv.find((a) => a.startsWith("--prefer="))?.slice(9).split(",");
+  const from = process.argv.find((a) => a.startsWith("--from="))?.slice(7);
+  const search = (limit: number, within?: string[]) => findWebsites({
+    max: limit,
+    countries: within,
+    from,
     dryRun: !apply,
     log: console.log,
     // Likely but not sure: a person's call. One line each: id, date, race, link.
     onReview: (s) => appendFileSync(review, `${s.id}\t${s.startDate}\t${s.name}\t${s.kind}\t${s.url}\n`),
   });
+  // Preferred countries use the whole allowance while they have races left to try.
+  const result = await search(max, prefer ?? countries);
+  if (prefer && result.attempted < max) {
+    const more = await search(max - result.attempted, countries);
+    for (const key of ["attempted", "found", "reviewed", "registration", "silent", "failed"] as const) result[key] += more[key];
+  }
   console.log({ ...result, dry: !apply, review: result.reviewed ? review : null });
+  process.exit(0);
 }
 
 main().catch((e) => {

@@ -7,7 +7,9 @@
  * On the Mac, inside scripts/local-run.sh, the same gates judge what the regular reading
  * already saved. No page is read for the assessment, no model is asked and only the local
  * copy is written; sending what passed is a separate, reviewed step.
- *   ... check-next-editions.ts --archive=DIR --countries=CZ,SK,DE --literal --apply [--max-apply=30] [--seconds=240]
+ *   ... check-next-editions.ts --archive=DIR --countries=CZ,SK,DE --literal --apply [--max-apply=30] [--seconds=240] [--max-ai=40]
+ * With --max-ai the pages plain reading cannot settle go to the model, under the shared budget;
+ * that also needs LOCAL_ALLOW_AI=1, and the shared gates then judge its answer the same way.
  */
 import { spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
@@ -29,6 +31,9 @@ const literal = process.argv.includes("--literal");
 const maxApply = Number(arg("max-apply") ?? 100000), seconds = Number(arg("seconds") ?? 3600);
 const deadline = Date.now() + seconds * 1000;
 const apply = process.argv.includes("--apply");
+const maxAiGiven = arg("max-ai") !== undefined;
+/** Announcements someone read and settled: { "<race id>": { url, startDate, endDate?, quote } }. */
+const answersFile = arg("answers");
 const maxAi = Number(arg("max-ai") ?? 300);
 const season = Number(arg("season") ?? defaultEditionSeason()), target = season + 1;
 /** Dry-run recall test: behave as if these existing editions were missing. */
@@ -48,7 +53,7 @@ async function main() {
   if (countries?.some(code => !/^[A-Z]{2}$/.test(code)) || !Number.isInteger(maxApply) || maxApply < 0 || !(seconds > 0)) throw Error("Invalid countries or limits");
   if (shared && (!countries || !literal)) throw Error("A saved reading is assessed for --countries with --literal");
   for (const [key, value] of Object.entries(parse(readFileSync(".env.local")))) process.env[key] ??= value;
-  const [{ createServerSupabase }, { askJson, llmSpent, LlmUnavailable, HAIKU }, next, identity, { saveCandidate, candidateAssertion }, { validateReviewSource }, { ingestReviewedCandidate }, { fetchPage }, { pageAsText }, { catalogueWindow }, { sendOpsAlert }, { literalEditionAnswer }] = await Promise.all([
+  const [{ createServerSupabase }, { askJson, llmSpent, LlmUnavailable, HAIKU }, next, identity, { saveCandidate, candidateAssertion }, { validateReviewSource }, { ingestReviewedCandidate }, { fetchPage }, { pageAsText }, { catalogueWindow }, { sendOpsAlert }, { literalEditionAnswer, modelCanSettle, modelAnswerPlausible }] = await Promise.all([
     import("../src/lib/supabase/server"), import("../src/lib/llm/anthropic"), import("../src/lib/catalog/next-edition"), import("../src/lib/catalog/edition-identity"),
     import("../src/lib/discovery/review"), import("../src/lib/discovery/review-source"), import("../src/lib/watcher/run"), import("../src/lib/watcher/http"),
     import("../src/lib/watcher/extractors/llm-calendar"), import("../src/lib/catalog/overview-quality"), import("../src/lib/ops/alerts"), import("../src/lib/catalog/next-edition-literal"),
@@ -96,8 +101,9 @@ async function main() {
     return file ? readFileSync(join(archive, "pages", file), "utf8") : "";
   };
 
+  const reviewed = (answersFile ? JSON.parse(readFileSync(answersFile, "utf8")) : {}) as Record<string, { url: string; startDate: string; endDate?: string | null; quote: string }>;
   const rows: Row[] = [];
-  const proposals: { row: Row; event: import("../src/lib/domain").ParsedEvent; answer: import("../src/lib/catalog/next-edition").EditionAnswer; candidate: import("../src/lib/catalog/next-edition").EditionRace; pageInput: import("../src/lib/catalog/next-edition").EditionPage; raceName: string; raceId: string; sharedHost: boolean; country: string }[] = [];
+  const proposals: { row: Row; event: import("../src/lib/domain").ParsedEvent; answer: import("../src/lib/catalog/next-edition").EditionAnswer; candidate: import("../src/lib/catalog/next-edition").EditionRace; pageInput: import("../src/lib/catalog/next-edition").EditionPage; raceName: string; raceId: string; sharedHost: boolean; country: string; readerSettled: boolean }[] = [];
   let asked = 0, aiStopped = false;
   for (const review of reviews) {
     const race = previous.get(review.id);
@@ -110,6 +116,7 @@ async function main() {
     if (next_) { rows.push({ ...base, state: next_.visibility === "public" ? "found" : "waiting", reason: next_.visibility === "public" ? undefined : "next_edition_is_hidden", eventId: next_.id, date: next_.start_date }); continue; }
     if (review.reviewStatus === "no_website") { rows.push({ ...base, state: "no_website" }); continue; }
     if (review.reviewStatus === "unreadable") { rows.push({ ...base, state: "unreadable" }); continue; }
+    if (review.reviewStatus === "platform_page_only") { rows.push({ ...base, state: "platform_page_only" }); continue; }
     if (review.reviewStatus === "year_mentioned_without_full_date") { rows.push({ ...base, state: "year_only" }); continue; }
     const pages = (review.candidatePages ?? []).filter(page => hostOf(page.url) === hostOf(review.website_url)).slice(0, 3);
     if (!pages.length) { rows.push({ ...base, state: review.candidatePages?.length ? "waiting" : "not_announced", reason: review.candidatePages?.length ? "date_only_on_another_site" : undefined }); continue; }
@@ -120,15 +127,21 @@ async function main() {
       const text = pageText(page.url);
       if (!text) continue;
       const pageInput = { url: page.url, title: page.title, text };
-      const sharedHost = isShared(page.url, review);
+      let sharedHost = isShared(page.url, review);
       const prompt = next.editionPrompt(candidate, pageInput, target);
       const key = hash(`${next.NEXT_EDITION_VERSION}:${race.id}:${prompt.user}`);
-      if (literal) {
+      let answer: import("../src/lib/catalog/next-edition").EditionAnswer | undefined;
+      const settled = reviewed[review.id];
+      if (settled && settled.url !== page.url) continue;
+      if (settled) answer = { sameRace: true, cycling: true, announced: true, startDate: settled.startDate, endDate: settled.endDate ?? null, quote: settled.quote, newPlace: null };
+      else if (literal) {
         // The saved file opens with its address and title, which are not page text.
         const read = literalEditionAnswer({ race: { ...candidate, end_date: race.end_date }, page: { ...pageInput, text: text.split("\n").slice(3).join("\n") }, year: target, ownPage: isOwnPage(page.url, review) });
-        if (read.state === "wait") { outcome ??= { ...base, state: read.reason === "literal_no_race_date_on_page" ? "not_announced" : "waiting", reason: read.reason, url: page.url }; continue; }
-        cache[key] = read.answer;
-      } else if (!cache[key]) {
+        if (read.state === "answer") answer = read.answer;
+        // What plain reading cannot settle goes to the model only when one was allowed for this pass.
+        else if (!maxAiGiven || !modelCanSettle(read.reason)) { outcome ??= { ...base, state: read.reason === "literal_no_race_date_on_page" ? "not_announced" : "waiting", reason: read.reason, url: page.url }; continue; }
+      }
+      if (!answer && !cache[key]) {
         if (asked >= maxAi || aiStopped) { outcome = { ...base, state: "waiting", reason: "ai_limit", url: page.url }; break; }
         try {
           asked += 1;
@@ -143,7 +156,12 @@ async function main() {
           break;
         }
       }
-      const decision = next.decideEdition({ race: candidate, page: pageInput, answer: cache[key]!, year: target, today, sharedHost });
+      const fromModel = !answer;
+      answer ??= cache[key]!;
+      if (literal && fromModel && answer.announced === true && !modelAnswerPlausible(candidate, answer, target)) { outcome ??= { ...base, state: "waiting", reason: "model_date_not_plausible", url: page.url }; continue; }
+      // A reader settled which race this is, which is what the shared-site check stands in for.
+      if (settled) sharedHost = false;
+      const decision = next.decideEdition({ race: candidate, page: pageInput, answer, year: target, today, sharedHost, readerSettled: Boolean(settled) });
       if (decision.state === "wait") { outcome ??= { ...base, state: decision.reason === "not_announced_on_page" ? "not_announced" : "waiting", reason: decision.reason, url: page.url }; continue; }
       const existing = next.matchAnnouncedEdition(decision.event, upcoming);
       if (existing.state === "ambiguous") { outcome = { ...base, state: "waiting", reason: "next_edition_identity_ambiguous", url: page.url, date: decision.event.startDate }; break; }
@@ -152,7 +170,7 @@ async function main() {
         outcome = { ...base, state: matched.visibility === "public" ? "found" : "waiting", reason: matched.visibility === "public" ? "matched_announcement_identity" : "next_edition_is_hidden", url: page.url, date: decision.event.startDate, eventId: matched.id }; break;
       }
       outcome = { ...base, state: "waiting", reason: "would_publish", url: page.url, date: decision.event.startDate };
-      proposals.push({ row: outcome, event: decision.event, answer: cache[key]!, candidate, pageInput, raceName: race.name, raceId: race.id, sharedHost, country: raceCountry });
+      proposals.push({ row: outcome, event: decision.event, answer, candidate, pageInput, raceName: race.name, raceId: race.id, sharedHost, country: raceCountry, readerSettled: Boolean(settled) });
       break;
     }
     rows.push(outcome ?? { ...base, state: "not_announced" });
@@ -163,7 +181,7 @@ async function main() {
   for (const { event } of proposals) claims.set(`${event.sourceUrl}|${event.startDate}`, (claims.get(`${event.sourceUrl}|${event.startDate}`) ?? 0) + 1);
   let attempted = 0;
   for (const proposal of proposals) {
-    const { row: outcome, event, answer, candidate, pageInput, raceName, raceId, sharedHost, country: raceCountry } = proposal;
+    const { row: outcome, event, answer, candidate, pageInput, raceName, raceId, sharedHost, country: raceCountry, readerSettled } = proposal;
     if (claims.get(`${event.sourceUrl}|${event.startDate}`)! > 1) { outcome.reason = "several_races_claim_page"; continue; }
     // Bounded per pass; what is left stays proposed and the next pass continues.
     if (attempted >= maxApply || Date.now() >= deadline) { outcome.reason = "pass_limit"; continue; }
@@ -185,8 +203,8 @@ async function main() {
       const source = await fetchPage(url, { fresh: true });
       const fresh = pageAsText(source.html, url).text;
       // A quote from a saved reading is checked against the same text that reading saw.
-      const stillThere = literal ? `${fresh}\n${readerText(source.html)}` : fresh;
-      if (source.status !== 200 || next.decideEdition({ race: candidate, page: { ...pageInput, text: stillThere }, answer, year: target, today, sharedHost }).state !== "publish") throw Error("Announcement is no longer on the page");
+      const stillThere = literal || readerSettled ? `${fresh}\n${readerText(source.html)}` : fresh;
+      if (source.status !== 200 || next.decideEdition({ race: candidate, page: { ...pageInput, text: stillThere }, answer, year: target, today, sharedHost, readerSettled }).state !== "publish") throw Error("Announcement is no longer on the page");
       const saved = await saveCandidate(db, event, { sourceUrl: url, documentHash: hash(source.html), textHash: hash(fresh), reason: `Announced ${target} edition of ${raceName}`, country: raceCountry });
       if (saved.rejected) throw Error("Candidate was already rejected");
       const { data: row, error } = await db.from("pipeline_candidates").select("*").eq("candidate_key", saved.candidate_key).eq("evidence_hash", saved.evidence_hash).single();
@@ -214,7 +232,7 @@ async function main() {
   for (const row of rows) counts[row.state] = (counts[row.state] ?? 0) + 1;
   const reasons: Record<string, number> = {};
   for (const row of rows) if (row.state === "waiting" && row.reason) reasons[row.reason.split(":")[0]!] = (reasons[row.reason.split(":")[0]!] ?? 0) + 1;
-  const summary = { status: aiStopped || rows.some(row => row.reason === "pass_limit") ? "deferred" : "ok", country: shared ? countries!.join(",") : country, season: target, mode: apply ? "apply" : "dry-run", races: rows.length, counts, waiting: reasons, askedAi: asked, aiUsd: Number(llmSpent().toFixed(4)), at: new Date().toISOString() };
+  const summary = { status: aiStopped || rows.some(row => row.reason === "pass_limit" || row.reason === "ai_limit") ? "deferred" : "ok", country: shared ? countries!.join(",") : country, season: target, mode: apply ? "apply" : "dry-run", races: rows.length, counts, waiting: reasons, askedAi: asked, aiUsd: Number(llmSpent().toFixed(4)), at: new Date().toISOString() };
   writeFileSync(join(archive, "edition-status.json"), JSON.stringify({ summary, rows }, null, 2));
   console.log(JSON.stringify(summary, null, 2));
   console.log(`organiser_assessment ${JSON.stringify(summary)}`);

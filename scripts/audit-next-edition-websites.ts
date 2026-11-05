@@ -10,6 +10,7 @@ import { createServerSupabase } from "../src/lib/supabase/server";
 import { fetchPage } from "../src/lib/watcher/http";
 import { extractJsonLdEvents } from "../src/lib/watcher/extractors/jsonld";
 import { hostnameOf, sleep } from "../src/lib/watcher/pool";
+import { renderPagesHtml } from "../src/lib/watcher/extractors/csc-render";
 import { editionKey } from "../src/lib/catalog/previous-edition";
 import { defaultEditionSeason } from "../src/lib/catalog/edition-season";
 import { isDumpListingUrl } from "../src/lib/watcher/public-url";
@@ -48,10 +49,13 @@ const runDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", yea
 const archive = replayDir ?? option("out") ?? `reports/next-edition-websites-${year}-to-${target}-${runDay}${country ? `-${country.toLowerCase()}` : ""}`;
 const directory = replay ? join(archive, "replay") : archive;
 mkdirSync(replay ? directory : join(directory, "pages"), { recursive: true });
-type Page = Job & { at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean };
+type Page = Job & { at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean; rendered?: boolean };
 const canonical = (raw: string): string | null => {
   try { const u = new URL(raw); if (!/^https?:$/.test(u.protocol)) return null; u.hash = ""; return u.href; } catch { return null; }
 };
+/** One event's page on a timing or listing platform: next year's event gets a new page there. */
+const PLATFORM_ONLY = /(?:^|\.)(?:my\.raceresult\.com|odjazd\.pl|dostartu\.pl)$/i;
+const isPlatformOnly = (url: string | null) => { try { return PLATFORM_ONLY.test(new URL(url ?? "").hostname); } catch { return false; } };
 const keyOf = (url: string) => createHash("sha256").update(url).digest("hex").slice(0, 20);
 /** Written before a request. If this stays the last line for a page, reading it killed the pass. */
 const READING = "read_interrupted: the pass stopped while reading this page";
@@ -63,6 +67,9 @@ const activeHosts = new Map<string, number>();
 const hostStarts = new Map<string, number>();
 const ledger = join(archive, "pages.jsonl");
 if (replay && !existsSync(ledger)) throw new Error("Replay archive is missing pages.jsonl");
+const browserOff = args.includes("--no-browser");
+const BROWSER_READS_PER_PASS = 40;
+let browserReads = 0;
 const failures = new Map<string, number>();
 if (existsSync(ledger)) for (const line of readFileSync(ledger, "utf8").trim().split("\n").filter(Boolean)) {
   // A pass killed mid-line must not cost the whole record.
@@ -78,7 +85,7 @@ const HOUR = 3600_000, DAY = 24 * HOUR;
 function rereadAt(page: Page): number {
   const at = Date.parse(page.at);
   if (page.requestAttempted === false) return at + 7 * DAY; // The site itself asked us to stop.
-  if (page.needsBrowser && !page.error) return at + 14 * DAY; // Reading it again here would see the same.
+  if (page.needsBrowser && !page.error) return page.rendered ? at + 14 * DAY : at; // Seen through a browser, or not yet.
   if (isFailure(page)) return at + Math.min(14 * DAY, 6 * HOUR * 2 ** Math.max(0, (failures.get(page.url) ?? 1) - 1));
   return at + 14 * DAY;
 }
@@ -88,7 +95,7 @@ for (const page of pages.values()) {
   else attempted.add(page.url);
 }
 function enqueue(raw: string, via: string, purpose: string) {
-  const url = canonical(raw); if (!url) return;
+  const url = canonical(raw); if (!url || isPlatformOnly(url)) return;
   const held = jobs.get(url);
   if (held) { if (!held.via.includes(via)) held.via.push(via); return; }
   jobs.set(url, { url, via: [via], purpose });
@@ -132,11 +139,16 @@ const requestFailed = (page: Page) => Boolean(page.error || page.requestAttempte
 const unreadable = (page: Page) => requestFailed(page) || Boolean(page.needsBrowser);
 const hasDate = (page: Page) => !requestFailed(page) && Boolean(page.dateSignals?.length || page.structuredEvents?.length);
 const reportTextPath = (file: string | undefined) => replay && file ? `../${file}` : file;
-async function inspect(job: Job): Promise<Page> {
+async function inspect(job: Job, viaBrowser = false): Promise<Page> {
   const base = { ...job, at: new Date().toISOString() };
   if (pausedHosts.has(hostnameOf(job.url))) return { ...base, requestAttempted: false, error: "deferred_rate_limit: source host repeatedly returned HTTP 429 after cooldowns; this URL was not requested" };
   try {
-    const response = await fetchPage(job.url, { timeoutMs: retryErrors ? 25_000 : 15_000, retries: 0, skipGate: true, fresh: true });
+    let response: { html: string; status: number; finalUrl?: string };
+    if (viaBrowser) {
+      const html = (await renderPagesHtml([job.url], { settleMs: 2500, budgetMs: 30_000 })).get(job.url);
+      if (!html) return { ...base, rendered: true, needsBrowser: true, error: "browser_render_empty" };
+      response = { html, status: 200, finalUrl: job.url };
+    } else response = await fetchPage(job.url, { timeoutMs: retryErrors ? 25_000 : 15_000, retries: 0, skipGate: true, fresh: true });
     const $ = cheerio.load(response.html);
     const title = $("title").text().replace(/\s+/g, " ").trim();
     const follow: { url: string; score: number }[] = [];
@@ -158,7 +170,7 @@ async function inspect(job: Job): Promise<Page> {
     writeFileSync(join(directory, textFile), `${response.finalUrl ?? job.url}\n${title}\n\n${text}`);
     return { ...base, status: response.status, finalUrl: response.finalUrl, title, textLength: flat.length, textFile,
       snippets: yearSnippets(flat), dateSignals: dateSignals(flat), structuredEvents,
-      needsBrowser: flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)|just a moment|checking your browser/i.test(flat),
+      rendered: viaBrowser, needsBrowser: flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)|just a moment|checking your browser/i.test(flat),
       follow: [...new Set(follow.sort((a, b) => b.score - a.score).map(x => x.url))].slice(0, 3) };
   } catch (error) { return { ...base, error: error instanceof Error ? error.message : String(error) }; }
 }
@@ -206,7 +218,7 @@ function saveRaceReview() {
     const key = editionKey(race.name);
     const known = key.length >= 5 ? existingByKey.get(`${race.location?.country_code ?? ""}:${key}`) ?? [] : [];
     const unresolved = checked.filter(unreadable);
-    const status = !race.website_url ? "no_website" : !canonical(race.website_url) ? "invalid_website" : !checked.length ? "not_checked" : candidates.length ? `page_has_${target}_dates_needs_identity_review` : unresolved.length === checked.length ? "unreadable" : checked.some(p => !unreadable(p) && p.snippets?.length) ? "year_mentioned_without_full_date" : "no_date_signal_detected";
+    const status = !race.website_url ? "no_website" : !canonical(race.website_url) ? "invalid_website" : isPlatformOnly(race.website_url) ? "platform_page_only" : !checked.length ? "not_checked" : candidates.length ? `page_has_${target}_dates_needs_identity_review` : unresolved.length === checked.length ? "unreadable" : checked.some(p => !unreadable(p) && p.snippets?.length) ? "year_mentioned_without_full_date" : "no_date_signal_detected";
     return { ...race, reviewStatus: status, existingNameMatches: known, nameMatchIsHeuristic: true, checkedUrls: checked.map(p => p.url), unresolvedUrls: unresolved.map(p => p.url), candidatePages: candidates.map(p => ({ url: p.url, title: p.title, dates: p.dateSignals, structuredEvents: p.structuredEvents, snippets: p.snippets, needsBrowser: p.needsBrowser, textFile: reportTextPath(p.textFile) })) };
   });
   writeFileSync(join(directory, "race-review.json"), JSON.stringify(review, null, 2));
@@ -262,7 +274,7 @@ async function main() {
           appendFileSync(ledger, JSON.stringify({ ...job, at: new Date().toISOString(), error: READING }) + "\n");
           // The request has its own limit, but parsing and redirects do not. One page must not hold the pass.
           let watchdog: NodeJS.Timeout | undefined;
-          const page = await Promise.race([inspect(job), new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 60 s" }), 60_000); })]);
+          const page = await Promise.race([inspect(job).then(first => first.needsBrowser && !first.error && !browserOff && browserReads++ < BROWSER_READS_PER_PASS ? inspect(job, true) : first), new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 90 s" }), 90_000); })]);
           clearTimeout(watchdog);
           pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
           if (isFailure(page)) failures.set(job.url, (failures.get(job.url) ?? 0) + 1); else failures.delete(job.url);

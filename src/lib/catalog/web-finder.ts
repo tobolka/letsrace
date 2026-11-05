@@ -228,6 +228,8 @@ export async function findWebsites(opts?: {
   dryRun?: boolean;
   delayMs?: number;
   log?: (line: string) => void;
+  /** Also past races from this day on: their site is where next year's date gets announced. */
+  from?: string;
   /** Where the not-quite-sure finds go for a person to look at. */
   onReview?: (site: FoundSite) => void;
 }): Promise<{ attempted: number; found: number; reviewed: number; registration: number; silent: number; failed: number }> {
@@ -244,7 +246,7 @@ export async function findWebsites(opts?: {
       .eq("visibility", "public")
       .is("merged_into_id", null)
       .in("status", [...ACTIVE_EVENT_STATUSES])
-      .gte("start_date", today)
+      .gte("start_date", opts?.from ?? today)
       // No site of its own: none, or only a calendar's page for it.
       .or("website_url.is.null,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*")
       .order("start_date", { ascending: true })

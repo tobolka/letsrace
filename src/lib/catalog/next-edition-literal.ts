@@ -36,6 +36,7 @@ const ANOTHER_ORGANISER = /poradaji?\b|poradat?el|spolupor|partner|veranstaltet|
 /** A sentence pointing at the next edition, which may leave the name to the page around it. */
 const POINTS_AT_EDITION = /rocnik|edycj|ausgabe|edizione|edition|save the date|termin|dalsi|pristi|nachst|next|tesime|wiedersehen|sehen uns|widzimy|appuntamento|konat|uskutecn|startuje|odbedzie|findet/;
 const SHORT_LINE = 60;
+const BARE_DATE_LINE = 24;
 /** A numbered round says which one it is; the organiser's other rounds share the whole site. */
 const ROUND_OF_SERIES = /#\s*\d|\b\d+\.?\s*(?:kolo|lauf|round|stage|etap)|\b(?:kolo|lauf|round|stage|etap[ae]?|wyscig|rennen|race)\s*\d|\bc\d\b/;
 /** Forums quote dates of anything; a two-letter domain abroad means the record's country is in doubt. */
@@ -127,12 +128,14 @@ export function literalEditionAnswer(input: { race: EditionRace & { end_date?: s
 
   type Line = { text: string; date: Found };
   const lines: Line[] = [];
-  for (const raw of page.text.split("\n")) {
-    const text = raw.replace(/\s+/g, " ").trim();
+  const rawLines = page.text.split("\n").map(raw => raw.replace(/\s+/g, " ").trim()).filter(Boolean);
+  for (const [index, text] of rawLines.entries()) {
     if (text.length > USABLE_LINE || !text.includes(String(year))) continue;
     const folded = fold(text);
+    // A date alone on its line takes its meaning from what stands around it.
+    const around = text.length <= BARE_DATE_LINE ? fold(`${rawLines[index - 1] ?? ""} ${rawLines[index + 1] ?? ""}`) : "";
     for (const date of datesInLine(folded, year)) {
-      if (NOT_THE_RACE.test(folded) || BOUNDARY_BEFORE.test(folded.slice(0, date.at))) continue;
+      if (NOT_THE_RACE.test(folded) || NOT_THE_RACE.test(around) || BOUNDARY_BEFORE.test(folded.slice(0, date.at))) continue;
       lines.push({ text, date });
     }
   }
@@ -172,4 +175,20 @@ export function literalEditionAnswer(input: { race: EditionRace & { end_date?: s
   if (chosen.text.length > SHORT_LINE && !named(words, line) && (ANOTHER_ORGANISER.test(line) || !POINTS_AT_EDITION.test(line))) return { state: "wait", reason: "literal_sentence_about_something_else" };
 
   return { state: "answer", answer: { sameRace: true, cycling: true, announced: true, startDate: chosen.date.start, endDate: chosen.date.end ?? null, quote: quoteFrom(chosen.text, year), newPlace: null } };
+}
+
+/** What only a reader of the whole page can settle. Anything else stays out of reach of a model too. */
+const A_MODEL_CAN_SETTLE = new Set(["literal_several_dates_on_page", "literal_round_of_a_series", "literal_date_far_from_last_edition", "literal_race_not_named_on_page", "literal_sentence_about_something_else", "literal_range_longer_than_the_race", "literal_name_says_too_little"]);
+export const modelCanSettle = (reason: string) => A_MODEL_CAN_SETTLE.has(reason);
+
+/**
+ * A model may pick the right line from a calendar, but it has no business moving a race by months
+ * on a quote that does not name it. Asked after decideEdition's own checks, which it does not replace.
+ */
+export function modelAnswerPlausible(race: EditionRace, answer: EditionAnswer, year: number): boolean {
+  if (typeof answer.startDate !== "string" || typeof answer.quote !== "string") return false;
+  const words = identityWords(race);
+  if (words.length && named(words, fold(answer.quote))) return true;
+  const anniversary = new Date(`${race.start_date}T00:00:00Z`); anniversary.setUTCFullYear(year);
+  return Math.abs(Date.parse(`${answer.startDate}T00:00:00Z`) - anniversary.getTime()) / 86_400_000 <= MAX_DRIFT_DAYS;
 }

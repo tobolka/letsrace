@@ -47,6 +47,7 @@ describe("reading an announcement without a model", () => {
   it.each([
     ["registration date", "Registrace od 1.3.2027", "literal_no_race_date_on_page"],
     ["deadline after a preposition", "Cena platí do 21.8.2027", "literal_no_race_date_on_page"],
+    ["a bare date beside the opening of entries", "Anmeldung 2027\n21.8.2027\n+++ONLINE-ANMELDESTART+++", "literal_no_race_date_on_page"],
     ["afterparty", "Termín pro afterparty 2027 je 21.8.2027", "literal_no_race_date_on_page"],
     ["a date marked as expected", "Termin 2027: voraussichtlich 21.08.2027", "literal_no_race_date_on_page"],
     ["a calendar that does not say which date is this race's", "5.6.2027 Závod A\n21.8.2027 Závod B", "literal_several_dates_on_page"],

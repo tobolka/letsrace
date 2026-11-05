@@ -21,6 +21,8 @@ const TARGET_MIN_GAP_MS=3*HOUR;
 const SITE_DETAILS_EVERY_MS=6*HOUR;
 const GEOCODE_EVERY_MS=12*HOUR;
 const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
+/** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
+const WEBSITE_SEARCH_EVERY_MS=4*HOUR;
 /** Every filled race queues a public page check, of which the server does 60 a day. */
 const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=60;
 /** An operator's pause reaches the reader without a whole catalogue dump. */
@@ -130,7 +132,7 @@ async function main(){
    stage('Posuzuji termíny z webů pořadatelů');
    try{
     await node('./node_modules/tsx/dist/cli.mjs',['scripts/audit-next-edition-websites.ts',`--replay=${archive}`],{timeout:5*60_000});
-    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=30','--seconds=240'],{allowedCodes:[0,2],timeout:8*60_000});
+    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=30','--seconds=240',...(fs.existsSync(path.join(archive,'reviewed-answers.json'))?[`--answers=${path.join(archive,'reviewed-answers.json')}`]:[])],{allowedCodes:[0,2],timeout:8*60_000});
     const line=assessed.output.split('\n').find(text=>text.startsWith('organiser_assessment '));
     const summary=line?JSON.parse(line.slice(21)):null;
     if(summary){organiser.assessment=summary;organiser.published=summary.counts?.published??0;organiser.deferred=summary.status==='deferred';organiser.attempted=organiser.published+(summary.waiting?.publish_failed??0);organiser.proposed=summary.waiting?.pass_limit??0;}
@@ -150,6 +152,7 @@ async function main(){
    }catch(e){if(interrupted)throw e;(report.upkeep??={})[name]=`failed: ${e.message}`;console.warn(`Údržba ${name} se nepovedla: ${e.message}`);}
   };
   await upkeep('siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS,'Doplňuji údaje z webů závodů',['scripts/local-catalog-fills.ts'],480);
+  await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480);
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
   save();

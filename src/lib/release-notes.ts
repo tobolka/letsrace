@@ -3,10 +3,10 @@ import type { Locale } from "@/lib/i18n/messages";
 /**
  * What changed, for the people who ride — newest first, by day.
  *
- * Written for a rider or a parent, not for a developer: what you can now do,
- * what is easier or what stopped being wrong. Only changes someone would
- * notice or care about belong here; speed-ups nobody can feel, clean-ups and
- * security hardening do not. (The rule for whoever adds an entry is in
+ * About the app, not the catalogue: what you can now do, what is easier or what
+ * stopped being wrong in the app itself. Individual races, added races and
+ * corrected race data never belong here, and neither do speed-ups nobody can
+ * feel, clean-ups and security hardening. (The rule for whoever adds an entry is in
  * CLAUDE.md.) Czech and English are written by hand; the other languages show
  * the English until they are translated.
  */
@@ -19,40 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
-    date: "2026-11-05",
-    items: {
-      cs: [
-        "V kalendáři najdeš další závody v Česku, Polsku, Německu, Itálii a Švýcarsku včetně dětských soutěží.",
-        "Když pořadatel na svém webu oznámí termín na rok 2027, závod se objeví v kalendáři bez čekání na propozice.",
-        "U JANEV CUPu v Jičíně najdeš areál, pořadatele a časy jednotlivých startů podle propozic.",
-        "Lakeland GRVL 2027 je v kalendáři jen jednou a správně v Mikołajkách, Hardy Gravel Perun začíná 17. července a GR8 Lakes GRVL vede rovnou na přihlášku.",
-      ],
-      en: [
-        "The calendar includes more races in Czechia, Poland, Germany, Italy and Switzerland, including children’s events.",
-        "When an organiser announces a 2027 date on their website, the race appears in the calendar without waiting for the full regulations.",
-        "The JANEV CUP race in Jičín shows its venue, organiser and individual start times from the race guide.",
-        "Lakeland GRVL 2027 appears once in the calendar and correctly in Mikołajki, Hardy Gravel Perun starts on 17 July and GR8 Lakes GRVL links straight to registration.",
-      ],
-    },
-  },
-  {
     date: "2026-11-04",
     items: {
       cs: [
         "Odznak u tvého plánu a středeční e-mail připomínají přihlášení a platbu až čtyři týdny před závodem, a když se nic neděje, e-mail nepřijde.",
-        "Fullgaz Race 2027 najdeš v kalendáři s XCO a XCC a Ötztaler Mountainbike Festival má správně uvedenou UCI Continental Series.",
-        "V kalendáři 2027 přibyly tři stupavské závody: MTB maratón, dětský cyklomaratónik a časovka na Biely kríž.",
-        "Ostalb Gravel a Good Times Gravel najdeš mezi závody, Dirndltal Race má dětské kategorie U7 až U15 a tři edice Szutry Premium, Ostalb Gravel i Cyklomaraton v Hradci Králové vedou k přihlášce.",
-        "Stejný závod se v kalendáři 2027 ukazuje méně často dvakrát, například Gravel Epic, LAWI Tour nebo Most - Lesná.",
-        "Road Stage má tři závody pod jedním seriálem a se správnými názvy, L'Etape Czech Republic je jeden seriál a Peklo Severu Road 2027 najdeš 25. dubna u České Kamenice.",
       ],
       en: [
         "The badge on your plan and the Wednesday email remind you to enter and pay only in the last four weeks before a race, and no email comes when nothing is happening.",
-        "Fullgaz Race 2027 joins the calendar with XCO and XCC, and Ötztaler Mountainbike Festival is correctly listed as a UCI Continental Series event.",
-        "Three Stupava races join the 2027 calendar: the MTB marathon, the children's race and the Biely kríž time trial.",
-        "Ostalb Gravel and Good Times Gravel now appear among the races, Dirndltal Race lists its U7 to U15 children's categories, and all three Szutry Premium editions, Ostalb Gravel and the Hradec Králové Cyklomaraton lead to their entry pages.",
-        "The same race shows up twice less often in the 2027 calendar, for example Gravel Epic, LAWI Tour and Most - Lesná.",
-        "Road Stage shows its three races under one series with the right names, L'Etape Czech Republic is one series, and Peklo Severu Road 2027 is listed on 25 April near Česká Kamenice.",
       ],
     },
   },
@@ -61,10 +34,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       cs: [
         "Neznámá délka trasy se nezobrazuje jako závod na 0 km.",
-        "U Rohálovské 50ky 2027 najdeš pořadatele a čas hlavního startu podle aktuálních propozic.",
         "Název areálu otevře jeho místo na mapě a podobné závody najdeš až pod zdroji informací o závodu.",
         "V přehledu seriálu najdeš i závody, které současně patří do dalšího seriálu.",
-        "Black Forest ULTRA Bike Marathon 2027 má správně označený Světový pohár, v kalendáři přibyl sjezdový pohár ve Szczyrku a závod juniorů v Grazu má doplněné zařazení UCI.",
         "Z měsíčního přehledu kolekce přejdeš přímo na závody vybraného měsíce i na dalších stránkách seznamu.",
         "Při posouvání detailu závodu zůstává hlavička s logem nahoře a zobrazí název závodu.",
         "V kolekcích najdeš celý rok 2027 pro Česko, české MTB a dětské závody, včetně přehledu měsíců, známých vzdáleností, kategorií a seriálů.",
@@ -72,10 +43,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       ],
       en: [
         "An unknown course length no longer appears as a 0 km race.",
-        "Rohálovská 50ka 2027 shows the organiser and main start time from the current race regulations.",
         "Venue names open their location on a map, and similar races appear after the race’s sources.",
         "A series overview also includes races that belong to another series at the same time.",
-        "Black Forest ULTRA Bike Marathon 2027 is correctly marked as a World Cup, Szczyrk’s downhill cup joins the calendar, and Graz’s junior race has its UCI series classification.",
         "Collection month links take you straight to that month’s races, including on later list pages.",
         "The logo bar stays at the top as you scroll a race page and shows the race name.",
         "Collections cover the full 2027 season for Czech races, Czech MTB and children's races, with monthly counts, known distances, categories and series.",
@@ -97,7 +66,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Switching races no longer leaves the previous race's round number in the tooltip.",
         "A race page lists the organiser's other upcoming races.",
         "A race page says when the date is a public holiday, a long weekend or in the Czech and Slovak summer holidays.",
-        "Four-cross races have their own 4X filter, and Road Stage Orlické hory 2027 appears in Deštné with distances of 69–138 km.",
+        "Four-cross races have their own 4X filter.",
         "A cancelled race keeps its page and says so clearly, and names written in capitals no longer shout.",
         "Links to withdrawn races no longer lead to a different race with a similar name.",
       ],
@@ -112,22 +81,9 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Při přepínání závodů už v nápovědě nezůstává číslo kola předchozího závodu.",
         "Na stránce závodu najdeš další nadcházející závody stejného pořadatele.",
         "Stránka závodu upozorní, když termín připadá na státní svátek, prodloužený víkend nebo letní prázdniny.",
-        "Fourcrossové závody mají vlastní filtr 4X a Road Stage Orlické hory 2027 se zobrazuje v Deštném se vzdálenostmi 69–138 km.",
+        "Fourcrossové závody mají vlastní filtr 4X.",
         "Zrušený závod si nechá svou stránku s jasnou informací o zrušení a názvy psané velkými písmeny už nekřičí.",
         "Odkazy na stažené závody už nevedou na jiný závod s podobným názvem.",
-      ],
-    },
-  },
-  {
-    date: "2026-11-01",
-    items: {
-      en: [
-        "More 2027 races have their date, routes and registration link together in one place.",
-        "More reviewed duplicate races appear once, including the NRW Cross Cup rounds.",
-      ],
-      cs: [
-        "U dalších závodů 2027 najdeš termín, trasy i odkaz na přihlášky pohromadě.",
-        "Další ověřené duplicity se zobrazují jen jednou, včetně kol NRW Cross Cupu.",
       ],
     },
   },
@@ -135,18 +91,10 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-31",
     items: {
       en: [
-        "The 2027 calendar has many more races, including whole cups and series.",
         "You can filter mountain bike orienteering races by MTBO.",
-        "More duplicate races appear once, while separate races held on the same day stay separate.",
-        "More 2027 races have verified venues, route options and clearer registration information.",
-        "A few races moved to the right place on the map or show the right race day.",
       ],
       cs: [
-        "V kalendáři 2027 přibylo mnoho dalších závodů, včetně celých pohárů a seriálů.",
         "Orientační závody na horských kolech si vyfiltruješ jako MTBO.",
-        "Další duplicitní závody se zobrazují jednou a samostatné závody ve stejný den zůstávají oddělené.",
-        "Další závody 2027 mají ověřená místa, varianty tras a srozumitelnější informace o přihláškách.",
-        "Několik závodů je na mapě na správném místě nebo má správný závodní den.",
       ],
     },
   },
@@ -154,16 +102,10 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-10-30",
     items: {
       en: [
-        "The 2026 archive has a few more cycling races, without rides and other non-racing events.",
         "You can switch races with the arrow keys on the map and in the list, move between calendar days with the keyboard, and close race details with Escape.",
-        "The 2027 Mountain Bike World Cup rounds are in the calendar.",
-        "More 2027 races have their announced date, with age categories marked as based on last year's edition.",
       ],
       cs: [
-        "V archivu roku 2026 je pár dalších cyklistických závodů, bez vyjížděk a dalších nezávodních akcí.",
         "Na mapě a v seznamu přepínáš závody šipkami, mezi dny v kalendáři se pohybuješ klávesnicí a detail závodu zavřeš klávesou Escape.",
-        "V kalendáři jsou závody Světového poháru horských kol 2027.",
-        "Další závody 2027 mají oznámený termín a věkové kategorie označené podle minulého ročníku.",
       ],
     },
   },
@@ -191,19 +133,10 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       en: [
         "More races fit on a phone screen, with the filters in one row.",
-        "A race listed on several websites is shown once.",
       ],
       cs: [
         "Na telefonu se vejde víc závodů a filtry jsou v jednom řádku.",
-        "Závod, který je na více webech, vidíš jen jednou.",
       ],
-    },
-  },
-  {
-    date: "2026-10-21",
-    items: {
-      en: ["Races from Sumator are placed where the start really is."],
-      cs: ["Závody ze Sumatoru jsou na mapě tam, kde je opravdu start."],
     },
   },
   {
@@ -277,19 +210,6 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       cs: [
         "Němčina je pátým jazykem.",
         "Úvodní stránka nabízí i země, disciplíny a poháry, takže se dá procházet i bez mapy.",
-      ],
-    },
-  },
-  {
-    date: "2026-10-02",
-    items: {
-      en: [
-        "Many more races have their entry link, regulations and age classes.",
-        "Rides and courses that are not races stay out of the lists.",
-      ],
-      cs: [
-        "U mnohem víc závodů je odkaz na přihlášku, propozice a věkové kategorie.",
-        "Vyjížďky a kurzy, které nejsou závody, se v seznamech nezobrazují.",
       ],
     },
   },
@@ -385,11 +305,9 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-08-31",
     items: {
       en: [
-        "Czech races that were missing are in.",
         "Every country, and every discipline in a country, has its own page.",
       ],
       cs: [
-        "České závody, které chyběly, jsou v katalogu.",
         "Každá země a každá disciplína v zemi má vlastní stránku.",
       ],
     },
@@ -413,11 +331,9 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       en: [
         "The plan, the alerts and Google sign-in arrived: you see who is going and hear when a race changes.",
-        "Many official calendars from Austria, Germany, Slovakia, Poland and the Czech Republic.",
       ],
       cs: [
         "Přišel plán, upozornění a přihlášení přes Google: vidíš, kdo jede, a dozvíš se, když se závod změní.",
-        "Spousta oficiálních kalendářů z Rakouska, Německa, Slovenska, Polska i Česka.",
       ],
     },
   },

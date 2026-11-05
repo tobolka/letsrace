@@ -10,15 +10,15 @@ To ještě nemáme hotové. Opravené části nejsou důkazem, že dobře funguj
 
 ## Co teď běží kde
 
-Ověřeno 5. listopadu 2026 večer. **Jeden společný kód; rozdílné místo spouštění.** Část vpravo se změní až po nasazení; změna je připravená, nenasazená.
+Ověřeno 5. listopadu 2026 večer. **Jeden společný kód; rozdílné místo spouštění.** Serverová část je nasazená.
 
 | Činnost | Mac | Server |
 | --- | --- | --- |
-| Sběr ze známých zdrojů | **Průběžně.** Je-li co dělat, navazuje do 30 s; jinak čeká na další splatnou práci, nejdéle 6 hodin. | `watch` a `explore` blokované firewallem; **po nasazení zrušené** |
+| Sběr ze známých zdrojů | **Průběžně.** Je-li co dělat, navazuje do 30 s; jinak čeká na další splatnou práci, nejdéle 6 hodin. | Zrušené |
 | Weby pořadatelů | **Zapojené do každého průchodu.** Pokračuje v uloženém čtení a zakládá oznámené ročníky. | Nic |
-| Údaje z webů závodů (kategorie, přihlášky, odkazy) | **Každých 6 hodin**, do místní kopie | **Po nasazení přestane číst weby.** Do té doby běží obojí; plní se jen prázdná pole, takže se nepřepisují. |
-| Geokódování | **Každých 12 hodin**, 120 míst | **Po nasazení zrušené** |
-| Kontrola zmlklých zdrojů | **Jednou týdně**, výsledek v soukromých datech | **Po nasazení zrušená** |
+| Údaje z webů závodů (kategorie, přihlášky, odkazy) | **Každých 6 hodin**, do místní kopie | Weby už nečte |
+| Geokódování | **Každých 12 hodin**, 120 míst | Zrušené |
+| Kontrola zmlklých zdrojů | **Jednou týdně**, výsledek v soukromých datech | Zrušená |
 | Údržba bez čtení webů (slučování, přenos z minulého ročníku, dokončené závody) | Nic | Zůstává |
 | Historie počasí | Nic | **Zůstává záměrně:** 60 s denně, ukládá na server a sdílí rozpočet poskytovatele. Přesun by serveru neulevil. |
 | Zveřejnění, upozornění, přehled | Nic | Zůstávají; server smí ověřit 60 stránek denně |
@@ -31,13 +31,15 @@ Ověřeno 5. listopadu 2026 večer. **Jeden společný kód; rozdílné místo s
 
 | Pořadí | Co zbývá dokončit | Stav |
 | --- | --- | --- |
-| **1** | Přesunout náročnou práci ze serveru na Mac. | **MAC HOTOVO, SERVER ČEKÁ NA NASAZENÍ.** Na Macu běží vše výše. Odstranění čtyř serverových úloh a čtení webů z `catalog` je připravené, ale nenasazené. |
-| **2** | Mac průběžně dokončuje práci, nečeká 12 hodin. | **HOTOVO a ověřeno:** po práci navazuje, bez práce čeká a nesahá na server. Snímek serveru se stahuje nejvýše jednou za 3 hodiny a je o více než polovinu menší. |
-| **3** | Weby pořadatelů a jejich nálezy v automatickém ukládání. | **HOTOVO a ověřeno:** prvních 12 ročníků 2027 je na webu. Čeká 212 závodů, které doslovné čtení nerozhodne; 604 nečitelných; 975 bez webu. |
-| **4** | Bezpečně odesílat doložená doplnění existujících závodů. | **ČÁSTEČNĚ:** odesílá se jen to, co je na serveru prázdné a bylo prázdné i v kopii. První dávka 24 závodů a 3 místa bez konfliktu. Změny už vyplněných hodnot, dat a míst dál čekají (2 717 závodů má v kopii nějaký rozdíl, většinou jen čas posledního čtení). |
-| **5** | Dotáhnout veřejné změny a staré odkazy. | **ČÁSTEČNĚ.** Sloučený Wels: stará adresa při kontrole dál vrací 200, nepřesměrovává. Na serveru čeká 292 kontrol stránek při 60 denně. Perun/Lakeland/GR8 neověřeno. |
-| **6** | Chybně spojené závody a opakované chyby zápisu. | **ČÁSTEČNĚ.** Hlavní příčina opakovaných chyb opravena (ověřeno na 3 dříve padajících zdrojích). Řádky `identity_review_required` a původních 43 podezřelých spojení zbývají. |
-| **7** | Dvě úplná čtení, nezávislá kvalita, skutečná spotřeba po přesunu. | **ZBÝVÁ.** Spotřebu lze změřit až po nasazení. |
+| **1** | Přesunout náročnou práci ze serveru na Mac. | **HOTOVO a nasazené** (`03f379a5`). Na Vercelu zbylo 5 cronů: `alerts`, `catalog` bez čtení webů, `digest`, `publication`, `weather-history`. Úsporu lze změřit až za pár dní provozu. |
+| **2** | Mac průběžně dokončuje práci, nečeká 12 hodin. | **HOTOVO a ověřeno.** Po práci navazuje, bez práce čeká a nesahá na server. Snímek serveru nejvýše po 3 hodinách. |
+| **3** | Weby pořadatelů a jejich nálezy v automatickém ukládání. | **HOTOVO a ověřeno.** Prvních 18 ročníků 2027 je na webu. Placená AI v cyklu neběží. Co doslovné čtení nerozhodne, čeká; 201 případů jsem přečetl ručně, 42 mělo jasný termín a většina z nich už v katalogu byla. |
+| **4** | Správnost nálezů. | **PRVNÍ MĚŘENÍ.** Doslovné čtení proti katalogu: 22 shod a 2 rozdíly ze 24. Jeden rozdíl byla skutečná chyba čtení (začátek přihlášek), opraveno; druhý je chyba spojení v katalogu (Góry 400). Ruční čtení se s katalogem shodlo ve 23 případech, u jednoho si stránka sama odporuje. Není to náhodný vzorek ani kontrola proti pořadatelům. |
+| **5** | Pokrytí: závody bez výsledku čtení. | **ČÁSTEČNĚ.** Z 629 „nečitelných“ zbývá 71: 616 má jen stránku platformy (RaceResult, odjazd.pl, dostartu.pl), kde nový termín nebývá, a část přečetl Chrome (40 stránek za průchod). **Hledání webů běží po 4 hodinách, ale ve zkoušce našlo 0 jistých z 12.** Závodů bez webu je 974; většina pochází z federačních kalendářů, které ročník 2027 teprve zveřejní. |
+| **6** | Doplňování existujících závodů. | **ČÁSTEČNĚ:** jen pole prázdná na obou stranách, nejvýš 60 závodů denně. Změny vyplněných hodnot, dat a míst dál čekají. |
+| **7** | Veřejné změny a staré odkazy. | **ČEKÁ NA ZÍTŘEJŠÍ BĚH.** Přesměrování sloučeného Welsu je v kódu, úloha čeká s nejvyšší prioritou na běh v 5:40 UTC; ověřit. Fronta 302 kontrol: důležité jdou první, 221 má nízkou prioritu. Limit 60 denně se nezvyšoval kvůli spotřebě Vercelu. Perun/Lakeland/GR8 neověřeno. |
+| **8** | Chybně spojené závody a opakované chyby zápisu. | **PŘEMĚŘENO, NEROZDĚLENO.** Veřejných budoucích záznamů s více daty ve zdrojích je podle faktů 15 (dříve se uvádělo 43 jinou metodou); 9 jsou brevety, 10 má typ vyjížďka. Hlavní příčina opakovaných chyb zápisu opravena. Na rozhodnutí čeká 82 řádků „jiný termín než propojený závod“. |
+| **9** | Dvě úplná čtení, kontrola spotřeby po přesunu. | **ZBÝVÁ.** |
 
 ### Co zůstává skutečně hotové
 
