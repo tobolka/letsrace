@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sourceEditionId } from "@/lib/watcher/source-identity";
+import { settledSourceRow, sourceEditionId } from "@/lib/watcher/source-identity";
 
 describe("durable source identity", () => {
   it("keeps a renamed or rescheduled race in the same season", () => {
@@ -20,5 +20,18 @@ describe("durable source identity", () => {
   });
   it("falls back to matching for a new source", () => {
     expect(sourceEditionId("2026-09-13", null)).toBeUndefined();
+  });
+});
+
+describe("a row the source already filed", () => {
+  const filed = { id: "race", start_date: "2026-11-21", merged_into_id: null };
+  it("settles on its race when only a corrected detail disagrees that day", () => {
+    expect(settledSourceRow("2026-11-21", filed, undefined)).toBe("race");
+    expect(settledSourceRow("2026-11-21", { ...filed, merged_into_id: "keeper" }, undefined)).toBe("keeper");
+  });
+  it("does not interfere with a normal match, a moved date or a row never filed", () => {
+    expect(settledSourceRow("2026-11-21", filed, "race")).toBeUndefined();
+    expect(settledSourceRow("2026-11-28", filed, undefined)).toBeUndefined();
+    expect(settledSourceRow("2026-11-21", null, undefined)).toBeUndefined();
   });
 });

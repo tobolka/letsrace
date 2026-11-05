@@ -1,14 +1,31 @@
-/** One managed cycle: durable local work, fresh target catalogue, reviewed new races.
- * No collector receives production credentials. Existing-event edits stay in review.
- * The working copy is never reset by this command; source hashes and pending work survive.
+/** One managed cycle: durable local work, then, only when it has something to offer, a fresh
+ * target catalogue and the reviewed new races. No collector receives production credentials.
+ * Existing-event edits stay in review. The working copy is never reset by this command; source
+ * hashes and pending work survive. A cycle with nothing due does not touch the server at all.
  */
 const fs=require('node:fs');const path=require('node:path');const os=require('node:os');
 const cp=require('node:child_process');
 const {plan,assertReviewed}=require('./local-sync.cjs');
 const {COPY,serverEnvironment}=require('./local-pull.cjs');
+const {fillPlan}=require('./local-fills.cjs');
 const BIN=process.env.LOCAL_PG_BIN||'/opt/homebrew/opt/postgresql@17/bin';
 const data=process.env.LETSRACE_DATA_DIR||path.join(os.homedir(),'Library/Application Support/LetsRace/data');
 const root=path.resolve(__dirname,'..');const env={...process.env,LC_ALL:'en_US.UTF-8',PGTZ:'UTC'};
+const COUNTRIES='CZ,SK,DE,AT,PL,CH,IT';
+const HOUR=3_600_000;
+/** How stale the target copy may get while nothing here needs it: held races and operator locks. */
+const TARGET_MAX_AGE_MS=12*HOUR;
+/** New work may want the target sooner, but never a copy more than this often. */
+const TARGET_MIN_GAP_MS=3*HOUR;
+/** Reading races' own sites for details, which the server used to do once a day. */
+const SITE_DETAILS_EVERY_MS=6*HOUR;
+const GEOCODE_EVERY_MS=12*HOUR;
+const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
+/** Every filled race queues a public page check, of which the server does 60 a day. */
+const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=60;
+/** An operator's pause reaches the reader without a whole catalogue dump. */
+const PAUSE_SYNC_MS=HOUR/2;
+const ASSESS_AT_LEAST_EVERY_MS=24*HOUR;
 const json=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch(e){if(e.code==='ENOENT')return fallback;throw e;}};
 const atomic=(file,value)=>{const p=`${file}.${process.pid}.tmp`;fs.writeFileSync(p,JSON.stringify(value,null,2),{mode:0o600});fs.renameSync(p,file);};
 const sql=(db,query)=>cp.execFileSync(`${BIN}/psql`,['-h','127.0.0.1','-p','54329','-U','postgres','-d',db,'-qAt','-v','ON_ERROR_STOP=1','-c',query],{encoding:'utf8',maxBuffer:2**29,env:{...env,NODE_OPTIONS:''}});
@@ -18,80 +35,213 @@ function acquireLock(file){
  catch(e){if(e.code!=='EEXIST')throw e;const old=json(file);if(!old?.pid)throw Error('Nečitelný zámek místního běhu');let alive=true;try{process.kill(old.pid,0);}catch(x){if(x.code==='ESRCH')alive=false;else throw x;}if(alive)throw Error('Místní průchod už běží');fs.unlinkSync(file);return acquireLock(file);}
  return ()=>{if(json(file)?.pid===process.pid)fs.unlinkSync(file);};
 }
-function run(command,args,{allowSourceFailures=false,timeout=120000}={}){
+function run(command,args,{allowedCodes=[0],timeout=120000}={}){
  return new Promise((resolve,reject)=>{
   if(interrupted)return reject(Error('Běh byl zastaven; uložená práce zůstává na příště'));
   const child=cp.spawn(command,args,{cwd:root,env,stdio:['ignore','pipe','pipe']});let output='';let timedOut=false;
   let killTimer;const stop=()=>{child.kill('SIGTERM');killTimer=setTimeout(()=>child.kill('SIGKILL'),15000);killTimer.unref();};
   const timer=setTimeout(()=>{timedOut=true;stop();},timeout);const abort=()=>{interrupted=true;stop();};process.once('SIGTERM',abort);process.once('SIGINT',abort);
   child.stdout.on('data',b=>{process.stdout.write(b);output=(output+b).slice(-(2**22));});child.stderr.on('data',b=>process.stderr.write(b));
-  child.once('error',reject);child.once('close',(code,signal)=>{clearTimeout(timer);clearTimeout(killTimer);process.removeListener('SIGTERM',abort);process.removeListener('SIGINT',abort);if(!interrupted&&!timedOut&&!signal&&(code===0||allowSourceFailures&&[1,2].includes(code)))resolve({code,output});else reject(Error(`${path.basename(args[0]||command)}: ${interrupted?'běh zastaven':timedOut?'časový limit':signal||code}`));});
+  child.once('error',reject);child.once('close',(code,signal)=>{clearTimeout(timer);clearTimeout(killTimer);process.removeListener('SIGTERM',abort);process.removeListener('SIGINT',abort);if(!interrupted&&!timedOut&&!signal&&allowedCodes.includes(code))resolve({code,output});else reject(Error(`${path.basename(args.find(a=>/^scripts\//.test(a))||args[0]||command)}: ${interrupted?'běh zastaven':timedOut?'časový limit':signal||code}`));});
  });
+}
+/** The past season whose next editions are looked for; see src/lib/catalog/edition-season.ts. */
+function editionSeason(now=new Date()){
+ const part=type=>Number(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'numeric'}).formatToParts(now).find(p=>p.type===type)?.value);
+ return part('month')>=10?part('year'):part('year')-1;
+}
+/** Does the organiser reading have anything to do, by what it saved last time? */
+function organiserDue(coverage,now=Date.now()){
+ if(!coverage||coverage.unreadPages==null||coverage.unreadPages>0)return true;
+ return Boolean(coverage.nextDueAt)&&Date.parse(coverage.nextDueAt)<=now;
+}
+/** Is a look at the target needed now? Each reason is one that sending could actually act on. */
+function targetWanted(state,eventsNow,now=Date.now()){
+ if(!state.targetCheckedAt||state.sendFailed||state.deferredNewRaces>0||state.fillsWaiting>0)return true;
+ if(state.eventsAtLastPlan!==eventsNow)return true;
+ return now-Date.parse(state.targetCheckedAt)>=TARGET_MAX_AGE_MS;
+}
+function targetNeeded(state,eventsNow,now=Date.now()){
+ if(!targetWanted(state,eventsNow,now))return false;
+ return !state.targetCheckedAt||now-Date.parse(state.targetCheckedAt)>=TARGET_MIN_GAP_MS;
+}
+const dueEvery=(at,every,now=Date.now())=>!at||now-Date.parse(at)>=every;
+function syncPauses(state){
+ const disabled=cp.execFileSync(`${BIN}/psql`,['-qAt','-v','ON_ERROR_STOP=1','-c',"select coalesce(json_agg(id),'[]') from public.watched_urls where status<>'active'"],{encoding:'utf8',timeout:30_000,maxBuffer:2**26,env:{...serverEnvironment(),NODE_OPTIONS:''}});
+ applyPauses(JSON.parse(disabled));state.pausesSyncedAt=new Date().toISOString();
+}
+function applyPauses(ids){
+ const valid=ids.filter(id=>/^[-a-f0-9]{36}$/.test(id));
+ if(valid.length)sql('letsrace',`update public.watched_urls set status='paused' where status='active' and id in (${valid.map(id=>`'${id}'::uuid`).join(',')})`);
 }
 async function main(){
  fs.mkdirSync(data,{recursive:true,mode:0o700});const release=acquireLock(path.join(data,'local-cycle.lock'));
  const started=Date.now(),runId=new Date().toISOString().replace(/[:.]/g,'-'),directory=path.join(data,'local-cycles',runId);fs.mkdirSync(directory,{recursive:true,mode:0o700});
- const report={version:1,id:runId,startedAt:new Date().toISOString(),state:'running',stage:'Příprava',publishedNewRaces:0,updatedRaces:0,heldRaces:0,readSources:0,publicChecks:[],sourceFailures:0,aiCostUsd:0};
+ const report={version:2,id:runId,startedAt:new Date().toISOString(),state:'running',stage:'Příprava',publishedNewRaces:0,updatedRaces:0,heldRaces:0,readSources:0,readAttempts:0,localDatabaseRequests:0,publicChecks:[],sourceFailures:0,aiCostUsd:0,deferredNewRaces:0,problems:[],targetRead:false,moreWork:false,nextWorkAt:null};
  const save=()=>{atomic(path.join(directory,'result.json'),report);atomic(path.join(data,'local-cycle-latest.json'),report);};
  const stage=text=>{report.stage=text;save();console.log(`=== ${text} (${new Date().toISOString()})`);};
  const node=(file,args=[],options)=>run(process.execPath,['scripts/with-node.cjs',file,...args],options);
- let remote;
+ const local=(args,options)=>run('/bin/bash',['scripts/local-run.sh',process.execPath,...args],options);
+ const stateFile=path.join(data,'local-cycle-state.json');const state=json(stateFile,{});const saveState=()=>atomic(stateFile,state);
+ const season=editionSeason(),archive=path.join(data,`organiser-check-${season+1}`);const organiser={read:0,attempted:0,proposed:0,published:0,deferred:false};report.organiser=organiser;
+ let remote,failed=null;
+ const note=e=>{failed??=e.message;console.error(`!!! ${e.message}`);};
  try{
-  stage('Načítám aktuální katalog ze serveru');
-  await run(process.execPath,['scripts/local-pull.cjs'],{timeout:120000});
+  stage('Zjišťuji, co je potřeba udělat');
   await run('/bin/bash',['scripts/local-db.sh','start']);
   if(sql('postgres',"select count(*) from pg_database where datname in ('letsrace','letsrace_baseline')").trim()!=='2')throw Error('Chybí první připravená místní kopie katalogu');
-  remote=`letsrace_auto_${process.pid}_${Date.now()}`;
-  sql('postgres',`create database ${remote} template letsrace_baseline`);
-  // This disposable target is the only database cleared here. The working
-  // catalogue, baseline and previous pass snapshots are never deleted.
-  sql(remote,`truncate ${COPY.map(t=>`public.${t}`).join(',')} restart identity cascade`);
-  await run(`${BIN}/pg_restore`,['-h','127.0.0.1','-p','54329','-U','postgres','-d',remote,'--data-only','--disable-triggers','--no-owner',path.join(data,'local-copy/catalogue-baseline.dump')],{timeout:120000});
-  // An operator's server-side source pause must also stop this local collector.
-  const disabled=JSON.parse(sql(remote,"select coalesce(json_agg(id),'[]') from public.watched_urls where status<>'active'"));
-  if(disabled.length)sql('letsrace',`update public.watched_urls set status='paused' where status='active' and id in (${disabled.map(id=>`'${id}'::uuid`).join(',')})`);
-  stage('Čtu splatné zdroje na Macu');
-  await run('/bin/bash',['scripts/local-run.sh',process.execPath,'scripts/local-parallel.cjs','--workers=4','--limit=24','--seconds=90','--max-minutes=15'],{allowSourceFailures:true,timeout:17*60_000});
-  const sourceReport=path.join(directory,'sources.json');await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-report.ts',`--out=${sourceReport}`,`--since=${report.startedAt}`]);
-  report.sourceReport=sourceReport;
-  const summary=json(sourceReport);report.readSources=summary.overall.sourcesRead;report.sourceFailures=summary.overall.failed;report.unreadableSources=summary.overall.unreadable;report.deferredSources=summary.overall.deferred;report.unfinishedSources=summary.overall.unfinished;report.problems=summary.problems;
-  const attempts=JSON.parse(sql('letsrace', `select json_build_object('reads',count(*),'databaseRequests',coalesce(sum((metrics#>>'{database,attempts}')::int),0)) from public.ingest_runs where started_at >= '${report.startedAt}'`));
-  report.readAttempts=attempts.reads;report.localDatabaseRequests=attempts.databaseRequests;
-  stage('Kontroluji nové závody proti aktuálnímu katalogu');
-  const planDir=path.join(directory,'plan');plan(planDir,'letsrace',remote);
-  await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races','--max-new=20'],{timeout:12*60_000});
-  const reviewed=json(path.join(planDir,'plan.json'));
-  report.heldRaces=reviewed.newRaces.held.length;report.deferredNewRaces=reviewed.newRaces.deferredByBatchLimit;
-  if(reviewed.rows){
-   const file=path.join(planDir,'changes.ndjson'),sha=assertReviewed(file);
-   stage('Zkouším bezpečné uložení výsledků');
-   const dry=await run(process.execPath,['scripts/local-sync.cjs','send',`--changes=${file}`,`--confirm=${sha}`,'--dry-run']);
-   const predicted=JSON.parse(dry.output);atomic(path.join(directory,'dry-run.json'),predicted);
-   if(predicted.totals.failed||predicted.totals.conflict||predicted.totals.pending||predicted.totals.group_held)throw Error('Odeslání narazilo na konflikt; původní údaje zůstávají beze změny');
-   stage('Odesílám zkontrolované nové závody');
-   const sent=await run(process.execPath,['scripts/local-sync.cjs','send',`--changes=${file}`,`--confirm=${sha}`]);
-   const result=JSON.parse(sent.output);atomic(path.join(directory,'sent.json'),result);
-   report.publishedNewRaces=result.byTable['public.events']?.applied||0;save();
-   if(result.totals.failed||result.totals.conflict||result.totals.pending||result.totals.group_held)throw Error('Část odeslání čeká na nové posouzení; potvrzení je v databázi');
-   stage('Kontroluji potvrzení veřejných stránek');
-   const rows=fs.readFileSync(file,'utf8').split('\n').filter(Boolean).map(JSON.parse).filter(r=>r.tab==='public.events');
-   // The existing publication worker checks content, revisions and all locales
-   // under the shared 60/day budget. Do not add an unmetered parallel checker.
-   if(rows.some(r=>!/^[-a-f0-9]{36}$/.test(r.pk.id)))throw Error('Neplatný identifikátor závodu');
-   const statuses=JSON.parse(cp.execFileSync(`${BIN}/psql`,['-qAt','-v','ON_ERROR_STOP=1','-c',`select coalesce(json_agg(json_build_object('id',event_id,'verified',status='done' and result ? 'verifiedAt')),'[]') from public.pipeline_tasks where kind='public_refresh' and event_id in (${rows.map(r=>`'${r.pk.id}'::uuid`).join(',')})`],{encoding:'utf8',env:{...serverEnvironment(),NODE_OPTIONS:''}}));
-   for(const row of rows)report.publicChecks.push({id:row.pk.id,slug:row.after.slug,verified:statuses.find(s=>s.id===row.pk.id)?.verified===true});
-   save();
+  const dueNow="select count(*) from public.watched_urls where status='active' and next_poll_at<=now() and url not ilike '%portal.czechcyclingfederation.com/Races%'";
+  const due=Number(sql('letsrace',dueNow).trim());report.dueSources=due;
+
+  // Part 1: reading, all of it here. Nothing below needs the server.
+  if(due>0){
+   // An operator's source pause on the server must also stop this collector.
+   if(!state.pausesSyncedAt||Date.now()-Date.parse(state.pausesSyncedAt)>=PAUSE_SYNC_MS){
+    try{syncPauses(state);saveState();}catch(e){console.warn(`Stav pozastavení zdrojů nezjištěn: ${String(e.message).split('\n')[0].slice(0,160)}`);}
+   }
+   stage('Čtu splatné zdroje na Macu');
+   // 2 is a stopped or time-limited pass. Anything else means the reader itself did not work,
+   // which must never read as "nothing was due".
+   try{
+    await local(['scripts/local-parallel.cjs','--workers=4','--limit=24','--seconds=90','--max-minutes=15'],{allowedCodes:[0,2],timeout:17*60_000});
+    const sourceReport=path.join(directory,'sources.json');await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-report.ts',`--out=${sourceReport}`,`--since=${report.startedAt}`]);
+    report.sourceReport=sourceReport;
+    const summary=json(sourceReport);report.readSources=summary.overall.sourcesRead;report.sourceFailures=summary.overall.failed;report.unreadableSources=summary.overall.unreadable;report.deferredSources=summary.overall.deferred;report.unfinishedSources=summary.overall.unfinished;report.problems=summary.problems;
+    const attempts=JSON.parse(sql('letsrace', `select json_build_object('reads',count(*),'databaseRequests',coalesce(sum((metrics#>>'{database,attempts}')::int),0)) from public.ingest_runs where started_at >= '${report.startedAt}'`));
+    report.readAttempts=attempts.reads;report.localDatabaseRequests=attempts.databaseRequests;
+   }catch(e){if(interrupted)throw e;note(e);}
   }
+  save();
+
+  // Part 2: organisers' own websites, for the coming season's announced dates.
+  const ledger=path.join(archive,'pages.jsonl');const ledgerSize=()=>{try{return fs.statSync(ledger).size;}catch{return 0;}};
+  const sizeBefore=ledgerSize();const coverageBefore=json(path.join(archive,'coverage.json'));
+  if(organiserDue(coverageBefore)){
+   stage('Čtu weby pořadatelů');
+   try{
+    const bounded=['scripts/bounded-pipeline-step.cjs','600',process.execPath,'scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/audit-next-edition-websites.ts',String(season),`--countries=${COUNTRIES}`,`--out=${archive}`,'--seconds=480','--limit=250'];
+    await local(bounded,{allowedCodes:[0,2],timeout:11*60_000});
+   }catch(e){if(interrupted)throw e;note(e);}
+  }
+  const sizeNow=ledgerSize();const coverage=json(path.join(archive,'coverage.json'));organiser.read=sizeNow>sizeBefore?Math.max(1,(coverage?.attemptedPages??0)-(coverageBefore?.attemptedPages??0)):0;organiser.unread=coverage?.unreadPages??null;organiser.nextDueAt=coverage?.nextDueAt??null;
+  // Judged from the saved text. What passes goes to the local copy as a new reviewed race;
+  // only the step below may send it anywhere.
+  if(sizeNow>0&&(sizeNow!==state.assessedLedgerSize||state.assessmentDeferred||!state.assessedAt||Date.now()-Date.parse(state.assessedAt)>=ASSESS_AT_LEAST_EVERY_MS)){
+   stage('Posuzuji termíny z webů pořadatelů');
+   try{
+    await node('./node_modules/tsx/dist/cli.mjs',['scripts/audit-next-edition-websites.ts',`--replay=${archive}`],{timeout:5*60_000});
+    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=30','--seconds=240'],{allowedCodes:[0,2],timeout:8*60_000});
+    const line=assessed.output.split('\n').find(text=>text.startsWith('organiser_assessment '));
+    const summary=line?JSON.parse(line.slice(21)):null;
+    if(summary){organiser.assessment=summary;organiser.published=summary.counts?.published??0;organiser.deferred=summary.status==='deferred';organiser.attempted=organiser.published+(summary.waiting?.publish_failed??0);organiser.proposed=summary.waiting?.pass_limit??0;}
+    state.assessedLedgerSize=sizeNow;state.assessedAt=new Date().toISOString();state.assessmentDeferred=organiser.deferred;saveState();
+   }catch(e){if(interrupted)throw e;note(e);}
+  }
+  save();
+
+  // Part 3: the rest of the upkeep that only needs other people's websites and the copy here.
+  const tsx='./node_modules/tsx/dist/cli.mjs';
+  const upkeep=async(name,key,every,text,args,seconds)=>{
+   if(!dueEvery(state[key],every))return;
+   stage(text);
+   try{
+    const done=await local(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000});
+    state[key]=new Date().toISOString();saveState();(report.upkeep??={})[name]=done.code===2?'deferred':'done';
+   }catch(e){if(interrupted)throw e;(report.upkeep??={})[name]=`failed: ${e.message}`;console.warn(`Údržba ${name} se nepovedla: ${e.message}`);}
+  };
+  await upkeep('siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS,'Doplňuji údaje z webů závodů',['scripts/local-catalog-fills.ts'],480);
+  await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
+  await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
+  save();
+
+  // Part 4: the target copy, only when sending could act on it.
+  const eventsNow=sql('letsrace',`select (select count(*)||':'||coalesce(max(created_at)::text,'') from public.events)||'|'||(select count(*) from public.event_facts)||'|'||(select count(*) from public.event_categories)||'|'||(select count(*) from public.locations where lat is not null)`).trim();
+  if(targetNeeded(state,eventsNow)){
+   try{
+    stage('Načítám aktuální katalog ze serveru');report.targetRead=true;
+    await run(process.execPath,['scripts/local-pull.cjs','--target-only'],{timeout:120000});
+    remote=`letsrace_auto_${process.pid}_${Date.now()}`;
+    sql('postgres',`create database ${remote} template letsrace_baseline`);
+    // This disposable target is the only database cleared here. The working
+    // catalogue, baseline and previous pass snapshots are never deleted.
+    sql(remote,`truncate ${COPY.map(t=>`public.${t}`).join(',')} restart identity cascade`);
+    await run(`${BIN}/pg_restore`,['-h','127.0.0.1','-p','54329','-U','postgres','-d',remote,'--data-only','--disable-triggers','--no-owner',path.join(data,'local-copy/target.dump')],{timeout:120000});
+    applyPauses(JSON.parse(sql(remote,"select coalesce(json_agg(id),'[]') from public.watched_urls where status<>'active'")));
+    state.pausesSyncedAt=new Date().toISOString();
+    stage('Kontroluji nové závody proti aktuálnímu katalogu');
+    const planDir=path.join(directory,'plan');plan(planDir,'letsrace',remote,{onlyFactsOfNewRaces:true});
+    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races','--max-new=20'],{timeout:12*60_000});
+    const reviewed=json(path.join(planDir,'plan.json'));
+    report.heldRaces=reviewed.newRaces.held.length;report.deferredNewRaces=reviewed.newRaces.deferredByBatchLimit;
+    // A rehearsal stops here, with the plan on disk and nothing sent.
+    if(process.argv.includes('--no-send')){report.rehearsal=true;save();}
+    else if(reviewed.rows){
+     const file=path.join(planDir,'changes.ndjson'),sha=assertReviewed(file);
+     stage('Zkouším bezpečné uložení výsledků');
+     const dry=await run(process.execPath,['scripts/local-sync.cjs','send',`--changes=${file}`,`--confirm=${sha}`,'--dry-run']);
+     const predicted=JSON.parse(dry.output);atomic(path.join(directory,'dry-run.json'),predicted);
+     if(predicted.totals.failed||predicted.totals.conflict||predicted.totals.pending||predicted.totals.group_held)throw Error('Odeslání narazilo na konflikt; původní údaje zůstávají beze změny');
+     stage('Odesílám zkontrolované nové závody');
+     const sent=await run(process.execPath,['scripts/local-sync.cjs','send',`--changes=${file}`,`--confirm=${sha}`]);
+     const result=JSON.parse(sent.output);atomic(path.join(directory,'sent.json'),result);
+     report.publishedNewRaces=result.byTable['public.events']?.applied||0;save();
+     if(result.totals.failed||result.totals.conflict||result.totals.pending||result.totals.group_held)throw Error('Část odeslání čeká na nové posouzení; potvrzení je v databázi');
+     stage('Kontroluji potvrzení veřejných stránek');
+     const rows=fs.readFileSync(file,'utf8').split('\n').filter(Boolean).map(JSON.parse).filter(r=>r.tab==='public.events');
+     // The existing publication worker checks content, revisions and all locales
+     // under the shared 60/day budget. Do not add an unmetered parallel checker.
+     if(rows.some(r=>!/^[-a-f0-9]{36}$/.test(r.pk.id)))throw Error('Neplatný identifikátor závodu');
+     // The races are saved by now; not knowing whether their pages are checked yet is no failure.
+     let statuses=[];
+     try{statuses=JSON.parse(cp.execFileSync(`${BIN}/psql`,['-qAt','-v','ON_ERROR_STOP=1','-c',`select coalesce(json_agg(json_build_object('id',entity_id,'verified',status='done' and result ? 'verifiedAt')),'[]') from public.pipeline_tasks where kind='public_refresh' and entity_id in (${rows.map(r=>`'${r.pk.id}'`).join(',')})`],{encoding:'utf8',timeout:30_000,env:{...serverEnvironment(),NODE_OPTIONS:''}}));}
+     catch(e){report.publicCheckError=String(e.message).split('\n').at(-2)?.slice(0,200)??'neznámá chyba';console.warn(`Stav veřejných stránek nezjištěn: ${report.publicCheckError}`);}
+     for(const row of rows)report.publicChecks.push({id:row.pk.id,slug:row.after.slug,verified:statuses.find(s=>s.id===row.pk.id)?.verified===true});
+     save();
+    }
+    // Details for races already on the server. A conflict here only means someone got there
+    // first, so it is noted and never stops anything; the field just stays as it is.
+    const today=new Date().toISOString().slice(0,10);if(state.fillDay?.date!==today)state.fillDay={date:today,races:0};
+    const allowance=Math.min(FILLED_RACES_PER_CYCLE,FILLED_RACES_PER_DAY-state.fillDay.races);
+    const fills=fillPlan(path.join(directory,'fills'),{target:remote,maxRaces:Math.max(0,allowance)});
+    report.fills={races:fills.races,places:fills.places,waiting:fills.waiting};state.fillsWaiting=allowance>0?fills.waiting:0;
+    if(fills.rows&&!report.rehearsal){
+     stage('Odesílám doplněné údaje');
+     const sentFills=await run(process.execPath,['scripts/local-sync.cjs','send',`--changes=${fills.file}`,`--confirm=${fills.sha256}`,`--problems=${path.join(directory,'fills','problems.json')}`]);
+     const result=JSON.parse(sentFills.output);atomic(path.join(directory,'fills','sent.json'),result);
+     report.updatedRaces=result.byTable['public.events']?.applied||0;report.filledPlaces=result.byTable['public.locations']?.applied||0;report.fills.conflicts=result.totals.conflict+result.totals.failed;
+     state.fillDay.races+=report.updatedRaces;save();
+    }
+    if(!report.rehearsal){state.targetCheckedAt=new Date().toISOString();state.eventsAtLastPlan=eventsNow;state.deferredNewRaces=report.deferredNewRaces;state.sendFailed=false;saveState();}
+   }catch(e){if(interrupted)throw e;state.sendFailed=true;saveState();note(e);}
+  }else report.heldRaces=state.heldRaces??0;
+  if(report.targetRead&&!failed){state.heldRaces=report.heldRaces;saveState();}
+
+  // What the runner needs to decide when to come back.
+  const dueAfter=Number(sql('letsrace',dueNow).trim());report.dueSourcesAfter=dueAfter;
+  const progressed=report.readAttempts>0||organiser.read>0||organiser.attempted>0||report.publishedNewRaces>0||report.updatedRaces>0;
+  report.progressed=progressed;
+  // Due rows a reader keeps passing over (helper pages, leases) are not work left: only a cycle
+  // that moved something may ask to go straight on.
+  report.moreWork=progressed&&(dueAfter>0||Boolean(organiser.unread)||organiser.deferred);
+  const nextPoll=sql('letsrace',"select coalesce(min(next_poll_at),now()+interval '6 hours') from public.watched_urls where status='active' and next_poll_at>now()").trim();
+  const moments=[Date.parse(nextPoll.replace(' ','T').replace(/([+-]\d\d)$/,'$1:00'))];
+  if(organiser.nextDueAt)moments.push(Date.parse(organiser.nextDueAt));
+  if(state.targetCheckedAt)moments.push(Date.parse(state.targetCheckedAt)+(targetWanted(state,eventsNow,Date.parse(state.targetCheckedAt))?TARGET_MIN_GAP_MS:TARGET_MAX_AGE_MS));
+  if(state.siteDetailsAt)moments.push(Date.parse(state.siteDetailsAt)+SITE_DETAILS_EVERY_MS);
+  report.nextWorkAt=new Date(Math.min(...moments.filter(Number.isFinite),Date.now()+6*HOUR)).toISOString();
+  if(failed)throw Error(failed);
   // The raw report stays available; a checked public race is distinct from an extracted row.
   report.state=report.publicChecks.some(c=>!c.verified)?'publication_pending':report.unfinishedSources?'attention':'finished';report.stage=report.state==='finished'?'Hotovo':report.state==='attention'?'Část práce nemá dokončený výsledek':'Čekám na zobrazení na webu';
   if(report.state==='attention')process.exitCode=1;
- }catch(e){report.state='attention';report.error=e.message;console.error(`!!! ${e.message}`);process.exitCode=1;}
+ }catch(e){report.state='attention';report.error=e.message;if(!failed)console.error(`!!! ${e.message}`);process.exitCode=1;}
  finally{
   report.finishedAt=new Date().toISOString();report.seconds=Math.round((Date.now()-started)/1000);save();
   if(remote)try{sql('postgres',`drop database ${remote}`);}catch{console.warn('Dočasný porovnávací katalog zůstal zachovaný.');}
+  // A cycle that found nothing to do leaves its result in local-cycle-latest.json and no folder behind.
+  if(report.state==='finished'&&!report.progressed&&!report.targetRead&&!report.upkeep)fs.rmSync(directory,{recursive:true,force:true});
   release();console.log('local_cycle_result '+JSON.stringify(report));
   console.log(`=== done ${report.finishedAt}\n=== failed steps: ${report.state==='attention'?1:0}\n=== deferred steps: ${report.state==='publication_pending'?1:0}`);
   if(report.state==='publication_pending')process.exitCode=2;
  }
 }
-module.exports={acquireLock,run};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
+module.exports={acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

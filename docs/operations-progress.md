@@ -1,6 +1,6 @@
 # LetsRace: co teď děláme
 
-Aktualizováno 5. listopadu 2026. Toto je hlavní seznam práce.
+Aktualizováno 5. listopadu 2026 večer. Toto je hlavní seznam práce.
 
 ## Čeho chceme dosáhnout
 
@@ -10,38 +10,38 @@ To ještě nemáme hotové. Opravené části nejsou důkazem, že dobře funguj
 
 ## Co teď běží kde
 
-Ověřeno 5. listopadu 2026 odpoledne. **Jeden společný kód; rozdílné místo spouštění.** Místní sběr není nová náhrada původního cíle.
+Ověřeno 5. listopadu 2026 večer. **Jeden společný kód; rozdílné místo spouštění.** Část vpravo se změní až po nasazení; změna je připravená, nenasazená.
 
 | Činnost | Mac | Server |
 | --- | --- | --- |
-| Pravidelný sběr a hledání zdrojů | **Nový režim zapnutý:** splatné známé zdroje každých 12 hodin; hledání nových webů zatím neběží | `watch` a `explore` dál blokované |
-| Nový průchod | Čte weby a trvale ukládá práci místně | Dostává prověřené nové závody; celkem 20 nových záznamů po opravě jedné duplicity |
-| Geokódování | Při čtení používá známá místa; celý samostatný krok není v paralelním průchodu | Samostatná naplánovaná úloha zůstává |
-| Historie počasí | Není součástí nového paralelního průchodu | Dnešní běh dokončen 5:11 bez chyby |
-| Aktuální předpověď | Není závislá na zapnutém Macu | Zůstává službou veřejného webu |
-| Zveřejnění, údržba katalogu a upozornění | Nástroje mohou vyžádat kontrolované zveřejnění | Zůstávají samostatné serverové úlohy |
+| Sběr ze známých zdrojů | **Průběžně.** Je-li co dělat, navazuje do 30 s; jinak čeká na další splatnou práci, nejdéle 6 hodin. | `watch` a `explore` blokované firewallem; **po nasazení zrušené** |
+| Weby pořadatelů | **Zapojené do každého průchodu.** Pokračuje v uloženém čtení a zakládá oznámené ročníky. | Nic |
+| Údaje z webů závodů (kategorie, přihlášky, odkazy) | **Každých 6 hodin**, do místní kopie | **Po nasazení přestane číst weby.** Do té doby běží obojí; plní se jen prázdná pole, takže se nepřepisují. |
+| Geokódování | **Každých 12 hodin**, 120 míst | **Po nasazení zrušené** |
+| Kontrola zmlklých zdrojů | **Jednou týdně**, výsledek v soukromých datech | **Po nasazení zrušená** |
+| Údržba bez čtení webů (slučování, přenos z minulého ročníku, dokončené závody) | Nic | Zůstává |
+| Historie počasí | Nic | **Zůstává záměrně:** 60 s denně, ukládá na server a sdílí rozpočet poskytovatele. Přesun by serveru neulevil. |
+| Zveřejnění, upozornění, přehled | Nic | Zůstávají; server smí ověřit 60 stránek denně |
 
-**Původní zadání dál platí:** pokrytí závodů, správné a bohaté údaje, minimum duplicit, aktuální veřejný web, srozumitelný přehled a hlídané náklady. Přesun náročné práce na Mac řeší část nákladů; ostatní body tím nejsou dokončené.
+**Původní zadání dál platí:** pokrytí závodů, správné a bohaté údaje, minimum duplicit, aktuální veřejný web, srozumitelný přehled a hlídané náklady.
 
-## Aktuální priorita a předání Claudovi
+## Aktuální priorita
 
-**Nový pokyn vlastníka: přesunout maximum sběru a zpracování na Mac, aby tento měsíc ulevilo Supabase a Vercelu.** Dvanáctihodinové čekání není pro místní zpracování odůvodněné limity těchto služeb. Vlastník kvůli kreditům předává další práci Claudovi.
+Úplné předání a podklady: [předání od Codexu](../reports/codex-handoff-2026-11-05/HANDOFF-CLAUDE.md), [výsledek přesunu na Mac](../reports/mac-offload-2026-11-05/RESULT.md).
 
-**[Úplné nové předání pro Clauda](../reports/codex-handoff-2026-11-05/HANDOFF-CLAUDE.md)** obsahuje hotové změny, všechny rozpracované části, podklady, přesné provozní omezení a postup pokračování. Má přednost před starším popisem, co se právě dělá.
-
-| Pořadí | Co zbývá dokončit | Stav při předání |
+| Pořadí | Co zbývá dokončit | Stav |
 | --- | --- | --- |
-| **1** | Přesunout i zbývající náročný sběr a doplňování ze serveru na Mac. | **ZBÝVÁ.** Watch/explore jsou blokované, ale serverový catalog stále čte FCI, RaceResult, propozice, Rakousko a registrace. Source-health, geokódování a historie počasí také nejsou přesunuté. |
-| **2** | Mac má průběžně dokončovat práci; nemá čekat 12 hodin, když je co dělat. | **ZBÝVÁ.** Dosud nastaveno 12 hodin. Při zrychlení odstranit i zbytečné opakované stahování celého serverového snapshotu. |
-| **3** | Zapojit weby pořadatelů a jejich nálezy do automatického ukládání. | **ROZPRACOVANÉ.** Ručně přečtené podklady pro 2027 jsou uložené místně; nejsou v pravidelném průchodu a z této poslední dávky nic nešlo do produkce. Přehled pokrývá 3 758 závodů 2026, 980 nemá web. Z 2 385 původních adres se zkusilo načíst 1 999. |
-| **4** | Bezpečně odesílat také doložená doplnění existujících závodů. | **ZBÝVÁ.** Nový režim posílá jen nové závody. Starší změny se drží místně, nejsou ztracené. Vyřešit i vazbu evidence-only zdrojů nových webů na cílový katalog. |
-| **5** | Dotáhnout veřejné změny a staré odkazy. | **ČÁSTEČNĚ.** Iaccobike veřejně ukazuje správnou obec. Obnovu staré adresy sloučeného Welsu je ještě třeba potvrdit. Ověřit také předchozí Perun/Lakeland/GR8 opravy. |
-| **6** | Rozdělit chybně spojené závody, vyřešit zadržené změny a opakované chyby zápisu. | **ZBÝVÁ.** Původní podklady: 43 podezřele spojených záznamů a 26 zadržených aktualizací; přeměřit současný stav. 13 nových nálezů z posledního běhu zůstává oddělených. |
-| **7** | Dvě úplná čtení, nezávislá kvalita a skutečná spotřeba po přesunu. | **ZBÝVÁ.** Rychlé opakování bez nové práce funguje, ale neprokazuje správnost všech údajů ani pokrytí katalogu. Rozpad Vercel CPU podle tras připojený účet podmiňuje placenou službou; žádný upgrade neproběhl. |
+| **1** | Přesunout náročnou práci ze serveru na Mac. | **MAC HOTOVO, SERVER ČEKÁ NA NASAZENÍ.** Na Macu běží vše výše. Odstranění čtyř serverových úloh a čtení webů z `catalog` je připravené, ale nenasazené. |
+| **2** | Mac průběžně dokončuje práci, nečeká 12 hodin. | **HOTOVO a ověřeno:** po práci navazuje, bez práce čeká a nesahá na server. Snímek serveru se stahuje nejvýše jednou za 3 hodiny a je o více než polovinu menší. |
+| **3** | Weby pořadatelů a jejich nálezy v automatickém ukládání. | **HOTOVO a ověřeno:** prvních 12 ročníků 2027 je na webu. Čeká 212 závodů, které doslovné čtení nerozhodne; 604 nečitelných; 975 bez webu. |
+| **4** | Bezpečně odesílat doložená doplnění existujících závodů. | **ČÁSTEČNĚ:** odesílá se jen to, co je na serveru prázdné a bylo prázdné i v kopii. První dávka 24 závodů a 3 místa bez konfliktu. Změny už vyplněných hodnot, dat a míst dál čekají (2 717 závodů má v kopii nějaký rozdíl, většinou jen čas posledního čtení). |
+| **5** | Dotáhnout veřejné změny a staré odkazy. | **ČÁSTEČNĚ.** Sloučený Wels: stará adresa při kontrole dál vrací 200, nepřesměrovává. Na serveru čeká 292 kontrol stránek při 60 denně. Perun/Lakeland/GR8 neověřeno. |
+| **6** | Chybně spojené závody a opakované chyby zápisu. | **ČÁSTEČNĚ.** Hlavní příčina opakovaných chyb opravena (ověřeno na 3 dříve padajících zdrojích). Řádky `identity_review_required` a původních 43 podezřelých spojení zbývají. |
+| **7** | Dvě úplná čtení, nezávislá kvalita, skutečná spotřeba po přesunu. | **ZBÝVÁ.** Spotřebu lze změřit až po nasazení. |
 
 ### Co zůstává skutečně hotové
 
-- Nový automatický režim Macu je nainstalovaný a zapnutý; první automatický běh dokončen za 24 s. Starý serverový watch/explore se nepovoloval. Další naplánovaný čas při předání: **6. 11. 03:29 CET**.
+- Nový automatický režim Macu je nainstalovaný a zapnutý. **Oprava dřívějšího tvrzení:** „první automatický běh za 24 s, 0 splatných čtení“ nebyl prázdný běh. Čtečka v plánovači padala na mezeře v cestě a průchod to hlásil jako hotovo; to je opravené a nově to skončí jako chyba.
 - První větší průchod: 377 zdrojů za 10 min 27 s, po opravě jedné duplicity 17 nových závodů; spolu se třemi dříve odeslanými celkem 20. Opakování 29 s bez opakovaného čtení a zápisu. [Výsledek a jeho omezení](../reports/local-release-2026-11-05/RESULT.md).
 - Pracovní databáze se zachovává, zapisuje se odděleně s potvrzením, funguje zámek souběhu a zastavení před odesláním. Panel odděluje nové skutečně odeslané výsledky od starých místních počtů.
 - Poslední ruční průchod webů pořadatelů je zastavený a podklady uložené. 314 stránek se zmínkou termínu **není 314 nových závodů**. U my.raceresult.com je 385 adres odložených kvůli odmítání požadavků; to je omezení cizího webu, ne Supabase/Vercelu.

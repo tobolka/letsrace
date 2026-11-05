@@ -68,5 +68,7 @@ export LETSRACE_LOCAL_PASS=1
 # The same switches as the Mac's normal cycle (refresh-data.sh), so results are comparable.
 export CATALOG_OVERVIEW_ONLY="${CATALOG_OVERVIEW_ONLY:-1}" PIPELINE_REVIEW_QUEUE="${PIPELINE_REVIEW_QUEUE:-1}"
 export CATALOG_COUNTRIES="${PIPELINE_TARGET_COUNTRIES:-CZ,SK,AT,DE,PL,CH,IT}"
-export NODE_OPTIONS="--require $PWD/scripts/local-guard.cjs ${NODE_OPTIONS:-}"
+# Quoted: the managed copy lives under "Application Support", and an unquoted path with
+# a space stops every Node process here before it reads a single source.
+export NODE_OPTIONS="--require \"$PWD/scripts/local-guard.cjs\" ${NODE_OPTIONS:-}"
 exec "$@"

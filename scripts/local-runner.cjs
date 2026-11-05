@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
 const { spawn, execFileSync } = require('node:child_process');
+const { nextRunAt, cycleFailed } = require('./local-schedule.cjs');
 
 function atomic(file, value) { const temp = `${file}.${process.pid}.tmp`; fs.writeFileSync(temp, JSON.stringify(value, null, 2), { mode: 0o600 }); fs.renameSync(temp, file); }
 function json(file, fallback = {}) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; } }
@@ -105,7 +106,14 @@ function main() {
  let state={...previous,childPid:null,stage:null,serverRequestRunning:false,interrupted:previous.childPid!=null};
  let child=null, logStream=null, buffer='', stopping=false, system=systemSample(), lastSystem=Date.now(), server=json(path.join(data,'server-status.json'),null), serverChecking=false, serverChecked=0;
  let reportedPause;
- const interval=Number(process.env.LETSRACE_INTERVAL_MS || 12*60*60_000);
+ // A managed cycle says when it has work again; only a custom test command keeps a fixed pace.
+ const interval=Number(process.env.LETSRACE_INTERVAL_MS || 60*60_000);
+ const scheduleAfter=(code,cycle)=>{
+  const now=Date.now();
+  if(process.env.LETSRACE_RUN_COMMAND)return now+interval;
+  state.consecutiveFailures=cycleFailed(cycle,code)?Number(state.consecutiveFailures||0)+1:0;
+  return nextRunAt({now,result:cycle,exitCode:code,failures:state.consecutiveFailures});
+ };
  state.nextRunAt=state.interrupted?Date.now()+15000:Number(state.nextRunAt||Date.now());
  const save=()=>atomic(stateFile,state);
  async function runServer() {
@@ -156,7 +164,7 @@ function main() {
   // no legacy federation or paid task that can accidentally write to production.
   if(!process.env.LETSRACE_RUN_COMMAND){task='refresh';state.pendingTasks=[];}
   const stamp=new Date().toISOString().replace(/[:.]/g,'-');
-  state={...state,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,deferredOnly:false,runTail:'',counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
+  state={...state,cycleResult:process.env.LETSRACE_RUN_COMMAND?state.cycleResult:null,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,deferredOnly:false,runTail:'',counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
   logStream=fs.createWriteStream(state.logPath,{flags:'a',mode:0o600});buffer='';
   const command=managedCommand(root,process.env.LETSRACE_RUN_COMMAND);
   child=spawn('/usr/bin/caffeinate',['-i','/bin/bash',command],{cwd:root,env:{...process.env,LETSRACE_MANAGED:"1",...(task==='ai'?{PIPELINE_AI_MODE:'ai'}:task==='federation'?{PIPELINE_AI_MODE:'free'}:{}),LLM_LEDGER_PATH:path.join(data,'llm-budget.json')},detached:true,stdio:['ignore','pipe','pipe']});
@@ -179,9 +187,13 @@ function main() {
   child.on('error',e=>{state.lastError=e.message;});
   child.on('close',(code,signal)=>{
    state.deferredOnly=isDeferredExit(code,state.runTail);
-   child=null;state.childPid=null;state.durations={...state.durations,[task]:[...(state.durations?.[task]||[]),Date.now()-state.startedAt].slice(-5)};state.lastExitCode=code??1;state.lastFinishedAt=Date.now();if(state.aiDetected)state.lastAiFinishedAt=state.lastFinishedAt;if(task!=='federation')state.nextRunAt=Date.now()+interval;
+   child=null;state.childPid=null;state.durations={...state.durations,[task]:[...(state.durations?.[task]||[]),Date.now()-state.startedAt].slice(-5)};state.lastExitCode=code??1;state.lastFinishedAt=Date.now();if(state.aiDetected)state.lastAiFinishedAt=state.lastFinishedAt;if(task!=='federation')state.nextRunAt=scheduleAfter(state.lastExitCode,state.cycleResult);
    if(signal)state.lastError=`Běh ukončen (${signal}); další pokus naváže na uložená data.`;
-   if(task!=='federation')rememberResult(state,{...state.counters,problems:state.problems||[],at:state.lastFinishedAt,exitCode:state.lastExitCode,logPath:state.logPath});state.activeTask=null;state.stage=null;logStream?.end();logStream=null;save();snapshot();if(stopping)finish();
+   // A cycle that had nothing to do is the normal state of a finished queue, not a run to list.
+   const idle=!process.env.LETSRACE_RUN_COMMAND&&state.cycleResult&&state.cycleResult.state==='finished'&&!state.cycleResult.progressed&&!state.cycleResult.targetRead&&!state.cycleResult.upkeep;
+   if(idle){try{logStream?.end();fs.unlinkSync(state.logPath);}catch{}state.logPath=null;}
+   else if(task!=='federation')rememberResult(state,{...state.counters,problems:state.problems||[],at:state.lastFinishedAt,exitCode:state.lastExitCode,logPath:state.logPath});
+   state.activeTask=null;state.stage=null;logStream?.end();logStream=null;save();snapshot();if(stopping)finish();
   });
  }
  function tick(){

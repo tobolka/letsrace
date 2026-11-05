@@ -5,7 +5,8 @@ import { runCatalogHygiene } from "@/lib/catalog/hygiene";
 export const maxDuration = 180;
 
 export const GET = withCron(async () => {
-  const result = await runCatalogHygiene({ maxAgeFills: 400, maxMerges: 40 });
+  // Reading races' own websites moved to the Mac (scripts/local-catalog-fills.ts).
+  const result = await runCatalogHygiene({ maxAgeFills: 400, maxMerges: 40, siteReading: "mac" });
   // The database queues affected pages in the same transaction as each write.
   // Leave refreshes to the bounded publication job.
   return NextResponse.json({ ok: true, refreshed: false, ...result });

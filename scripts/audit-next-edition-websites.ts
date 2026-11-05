@@ -11,6 +11,7 @@ import { fetchPage } from "../src/lib/watcher/http";
 import { extractJsonLdEvents } from "../src/lib/watcher/extractors/jsonld";
 import { hostnameOf, sleep } from "../src/lib/watcher/pool";
 import { editionKey } from "../src/lib/catalog/previous-edition";
+import { defaultEditionSeason } from "../src/lib/catalog/edition-season";
 import { isDumpListingUrl } from "../src/lib/watcher/public-url";
 import { isRegistrationPlatformUrl } from "../src/lib/watcher/registration-url";
 
@@ -22,7 +23,7 @@ const replayDir = args.find(arg => arg.startsWith("--replay="))?.slice("--replay
 if (args.some(arg => arg.startsWith("--replay")) && !replayDir) throw new Error("Use --replay=ARCHIVE_DIR");
 const replay = replayDir ? JSON.parse(readFileSync(join(replayDir, "races.json"), "utf8")) as RaceSnapshot : undefined;
 if (!replay) for (const [key, value] of Object.entries(parse(readFileSync(".env.local")))) process.env[key] ??= value;
-const year = Number(args.find(arg => !arg.startsWith("--")) ?? replay?.year ?? 2026);
+const year = Number(args.find(arg => !arg.startsWith("--")) ?? replay?.year ?? defaultEditionSeason());
 if (!Number.isInteger(year) || year < 2020 || year > 2090) throw new Error("Invalid season");
 const target = year + 1;
 if (replay && (year !== replay.year || target !== replay.target || !Array.isArray(replay.old) || !Array.isArray(replay.existing))) {
@@ -52,6 +53,9 @@ const canonical = (raw: string): string | null => {
   try { const u = new URL(raw); if (!/^https?:$/.test(u.protocol)) return null; u.hash = ""; return u.href; } catch { return null; }
 };
 const keyOf = (url: string) => createHash("sha256").update(url).digest("hex").slice(0, 20);
+/** Written before a request. If this stays the last line for a page, reading it killed the pass. */
+const READING = "read_interrupted: the pass stopped while reading this page";
+const isFailure = (page: Page) => Boolean(page.error || (page.status ?? 0) >= 400);
 const pages = new Map<string, Page>();
 const jobs = new Map<string, Job>();
 const attempted = new Set<string>();
@@ -59,11 +63,27 @@ const activeHosts = new Map<string, number>();
 const hostStarts = new Map<string, number>();
 const ledger = join(archive, "pages.jsonl");
 if (replay && !existsSync(ledger)) throw new Error("Replay archive is missing pages.jsonl");
+const failures = new Map<string, number>();
 if (existsSync(ledger)) for (const line of readFileSync(ledger, "utf8").trim().split("\n").filter(Boolean)) {
-  const page = JSON.parse(line) as Page; pages.set(page.url, page);
+  // A pass killed mid-line must not cost the whole record.
+  let page: Page; try { page = JSON.parse(line) as Page; } catch { continue; }
+  // An interrupted read counts once its outcome is known: the next line, or none.
+  if (pages.get(page.url)?.error === READING && page.error === READING) failures.set(page.url, (failures.get(page.url) ?? 0) + 1);
+  pages.set(page.url, page);
+  if (page.error !== READING) failures.set(page.url, isFailure(page) ? (failures.get(page.url) ?? 0) + 1 : 0);
+}
+for (const page of pages.values()) if (page.error === READING) failures.set(page.url, (failures.get(page.url) ?? 0) + 1);
+const HOUR = 3600_000, DAY = 24 * HOUR;
+/** When this page is worth reading again: a site that keeps failing is asked ever more rarely. */
+function rereadAt(page: Page): number {
+  const at = Date.parse(page.at);
+  if (page.requestAttempted === false) return at + 7 * DAY; // The site itself asked us to stop.
+  if (page.needsBrowser && !page.error) return at + 14 * DAY; // Reading it again here would see the same.
+  if (isFailure(page)) return at + Math.min(14 * DAY, 6 * HOUR * 2 ** Math.max(0, (failures.get(page.url) ?? 1) - 1));
+  return at + 14 * DAY;
 }
 for (const page of pages.values()) {
-  const stale = option("out") && Date.now()-Date.parse(page.at) > (page.error || page.needsBrowser || (page.status ?? 0)>=400 || page.requestAttempted===false ? 6*3600_000:14*86400_000);
+  const stale = option("out") && Date.now() >= rereadAt(page);
   if (stale || retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500)) pages.delete(page.url);
   else attempted.add(page.url);
 }
@@ -149,7 +169,10 @@ function save() {
   const linked = old.filter(r => r.website_url && canonical(r.website_url));
   const candidates = all.filter(hasDate).map(p => ({ ...p, via: jobs.get(p.url)?.via ?? p.via, textFile: reportTextPath(p.textFile) }));
   const unresolved = all.filter(unreadable).map(p => ({ ...p, textFile: reportTextPath(p.textFile) }));
-  const coverage = { at: new Date().toISOString(), startedAt, year, target, mode: replay ? "offline replay of archived results; no database or website requests" : "read-only; literal signals are leads, not confirmed event dates", totalRaces: old.length, racesWithWebsite: old.filter(r => r.website_url).length, racesWithValidWebsite: linked.length,
+  // The saved reading says when it next has work, so a cycle need not start it to find out.
+  const unread = [...jobs.values()].filter(job => !pages.has(job.url)).length;
+  const nextDueAt = !replay && !unread && all.length ? new Date(Math.min(...all.map(rereadAt))).toISOString() : null;
+  const coverage = { at: new Date().toISOString(), startedAt, year, target, unreadPages: unread, nextDueAt, mode: replay ? "offline replay of archived results; no database or website requests" : "read-only; literal signals are leads, not confirmed event dates", totalRaces: old.length, racesWithWebsite: old.filter(r => r.website_url).length, racesWithValidWebsite: linked.length,
     originalWebsites: new Set(linked.map(r => canonical(r.website_url!))).size,
     originalWebsitesAttempted: [...new Set(linked.map(r => canonical(r.website_url!)))].filter(u => u && pages.has(u) && pages.get(u)?.requestAttempted !== false).length,
     queuedPages: jobs.size, processedPages: all.length, archivedOutsidePlan: all.filter(p => !jobs.has(p.url)).length, attemptedPages: all.filter(p => p.requestAttempted !== false).length, deferredPages: all.filter(p => p.requestAttempted === false).length, successfulPages: all.filter(p => !unreadable(p)).length,
@@ -236,7 +259,13 @@ async function main() {
         attempted.add(job.url); requestsThisPass++; const host = hostnameOf(job.url);
         activeHosts.set(host, (activeHosts.get(host) ?? 0) + 1); hostStarts.set(host, Date.now());
         try {
-          const page = await inspect(job); pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
+          appendFileSync(ledger, JSON.stringify({ ...job, at: new Date().toISOString(), error: READING }) + "\n");
+          // The request has its own limit, but parsing and redirects do not. One page must not hold the pass.
+          let watchdog: NodeJS.Timeout | undefined;
+          const page = await Promise.race([inspect(job), new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 60 s" }), 60_000); })]);
+          clearTimeout(watchdog);
+          pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
+          if (isFailure(page)) failures.set(job.url, (failures.get(job.url) ?? 0) + 1); else failures.delete(job.url);
           if (page.status === 429) {
             const streak = (rateLimitStreaks.get(host) ?? 0) + 1; rateLimitStreaks.set(host, streak);
             if (streak >= 3) pausedHosts.add(host);
@@ -251,7 +280,8 @@ async function main() {
     clearInterval(timer);
     const coverage=save();console.log(JSON.stringify(coverage));saveRaceReview();
     // A bounded or stopped pass has saved its progress, not finished its queue.
-    if(!coverage.complete || stopping)process.exitCode=2;
+    // Exit outright: a request stuck past its limit must not keep a finished pass alive.
+    process.exit(!coverage.complete || stopping ? 2 : 0);
   }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

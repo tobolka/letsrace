@@ -74,18 +74,21 @@ const runFile = (database, file) => database === SERVER
   ? execFileSync(`${BIN}/psql`, ['-qAt', '-v', 'ON_ERROR_STOP=1', '-f', file], { encoding: 'utf8', maxBuffer: 2 ** 31 - 1, env: serverEnvironment() })
   : execFileSync(`${BIN}/psql`, ['-h', '127.0.0.1', '-p', '54329', '-U', 'postgres', '-d', database, '-qAt', '-v', 'ON_ERROR_STOP=1', '-f', file], { encoding: 'utf8', maxBuffer: 2 ** 31 - 1, env: ENV });
 
-function plan(outDirectory, work = 'letsrace', base = 'letsrace_baseline') {
+function plan(outDirectory, work = 'letsrace', base = 'letsrace_baseline', { onlyFactsOfNewRaces = false } = {}) {
   mkdirSync(outDirectory, { recursive: true });
   const changes = [], summary = {};
   for (const table of TABLES) {
     const name = `public.${table}`;
+    // A target copied without its evidence table: only new races' evidence can be planned.
+    const newRaces = table === 'event_facts' && onlyFactsOfNewRaces ? changes.filter(c => c.tab === 'public.events' && c.op === 'insert').map(c => `'${c.pk.id}'::uuid`) : null;
+    if (newRaces && !newRaces.length) continue;
     const { key, generated } = JSON.parse(psql(work, `select json_build_object(
       'key', (select json_agg(a.attname order by k.ord) from pg_index i cross join lateral unnest(i.indkey) with ordinality k(attnum, ord)
         join pg_attribute a on a.attrelid = i.indrelid and a.attnum = k.attnum where i.indrelid = '${name}'::regclass and i.indisprimary),
       'generated', coalesce((select json_agg(attname) from pg_attribute where attrelid = '${name}'::regclass and attgenerated <> ''), '[]'))`));
     const skip = new Set([...DERIVED, ...generated]);
     const id = key.map(column => `t."${column}"::text`).join(` || chr(31) || `);
-    const read = database => JSON.parse(psql(database, `select coalesce(json_object_agg(${id}, to_jsonb(t)), '{}') from ${name} t`));
+    const read = database => JSON.parse(psql(database, `select coalesce(json_object_agg(${id}, to_jsonb(t)), '{}') from ${name} t${newRaces ? ` where t.event_id in (${newRaces.join(',')})` : ''}`));
     const before = read(base), after = read(work);
     const count = { insert: 0, update: 0, delete: 0, columns: {} };
     const pkOf = row => Object.fromEntries(key.map(column => [column, row[column]]));

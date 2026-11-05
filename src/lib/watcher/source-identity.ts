@@ -14,6 +14,21 @@ export function sourceEditionId(
   return source.merged_into_id ?? source.id;
 }
 
+/**
+ * This source already filed this row, for this very day, but its race now disagrees: most often
+ * someone corrected the discipline or country the source gets wrong. A source can file a row only
+ * once, so a second race could never be created from it, and that attempt failed on every read.
+ * Leave the corrected record as it is.
+ */
+export function settledSourceRow(
+  startDate: string,
+  source: { id: string; start_date: string; merged_into_id?: string | null } | null | undefined,
+  matchedId: string | undefined,
+): string | undefined {
+  if (matchedId || !source || source.start_date !== startDate) return undefined;
+  return source.merged_into_id ?? source.id;
+}
+
 /** A dated AI calendar row is not evidence that another round moved dates. */
 export function calendarRowCandidates<T extends { event: { startDate: string } }>(incomingDate: string, sharedCalendar: boolean, candidates: T[]): T[] {
   return sharedCalendar ? candidates.filter(c => c.event.startDate === incomingDate) : candidates;

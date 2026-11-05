@@ -19,13 +19,15 @@ Při kontrole sezóny projdi weby všech veřejných nesloučených závodů min
 
 Tento krok sám nezakládá nové ročníky a nedokládá, že prošel všechny weby minulého roku. Obecné pokyny výše platí i při ruční kontrole a při dalších úpravách sběru; nejsou tvrzením, že všechny kroky už běží automaticky.
 
+Nové ročníky z webů pořadatelů zakládá pravidelný průchod na Macu (`scripts/local-cycle.cjs`). Pokračuje v uloženém čtení (`organiser-check-<rok>` v soukromých datech), posoudí uložený text bez AI (`src/lib/catalog/next-edition-literal.ts`) a stejnými branami jako dřív (`decideEdition`, `validateReviewSource`, `ingestReviewedCandidate`) zapíše jen do místní kopie. Na server jde závod až po kontrole proti čerstvému katalogu včetně skrytých a sloučených záznamů. Doslovné čtení je úmyslně užší než model: chce jedno datum závodu nebo řádek, který závod jmenuje, dostatečnou shodu názvu a datum blízko loňského. Co nesplní, čeká a nic neztrácí; placená AI v tomto kroku neběží.
+
 ## Jednorázová kontrola webů minulé sezóny
 
 `node scripts/with-node.cjs tsx scripts/audit-next-edition-websites.ts 2026` projde webové odkazy všech veřejných nesloučených závodů 2026. Adresy sjednotí, u pořadatelů doplní hlavní stránku a následuje nejvýše tři výslovné odkazy na nový rok z každé výchozí stránky. Respektuje omezení požadavků na stejný web. Po třech po sobě jdoucích odmítnutích kvůli počtu požadavků, oddělených minutovými pauzami, zbylé adresy daného webu odloží a výslovně je označí jako nenačtené. Pokračování používá uložené výsledky; `--retry-errors` znovu zkusí síťová selhání, omezení požadavků a chyby serveru. Již potvrzenou blokaci lze při pokračování respektovat pomocí `--defer-host=my.raceresult.com`.
 
 Výstupy jsou v datovaném adresáři `reports/next-edition-websites-*`: souhrn pokrytí, texty zdrojů, historie pokusů, nálezy a seznam jednotlivých závodů v JSON/CSV. Záznam „stránka obsahuje datum 2027“ je podnět k ověření totožnosti závodu, nikoli potvrzený termín. Podobnost názvu s existujícím ročníkem je jen pomůcka. Nečitelný web je uveden zvlášť a absence zachyceného data není důkazem, že pořadatel nic neoznámil. Data v obrázcích a obsah vyžadující prohlížeč potřebují další kontrolu.
 
-Kontrola nepoužívá placenou AI, nic nezapisuje do katalogu a nezapíná novou pravidelnou úlohu.
+Samotné čtení nepoužívá placenou AI a nic nezapisuje do katalogu; to dělá až posouzení popsané výše.
 
 Existující audit lze přepočítat bez databáze i bez stahování stránek pomocí `node scripts/with-node.cjs tsx scripts/audit-next-edition-websites.ts --replay=CESTA_K_ARCHIVU`. Vstup tvoří snímek `races.json`, záznamy `pages.jsonl` a uložené texty `pages/`. Výsledky se ukládají do podadresáře `replay/`. Zachycený rozsah, například „19–20. června 2027“, zůstává v přehledu celý. Datum z neúspěšného požadavku se mezi kandidáty nedostane. U krátkých stránek vyžadujících další kontrolu zůstává nalezený text viditelný s příslušným označením.
 

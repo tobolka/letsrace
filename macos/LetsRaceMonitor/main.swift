@@ -107,7 +107,7 @@ struct MonitorOverview: Codable {
             } else if (snapshot.cycleResult?.sourceFailures ?? 0) > 0 || (snapshot.cycleResult?.unreadableSources ?? 0) > 0 {
                 state = State(title: "Průchod doběhl s omezením", detail: "Některé zdroje se nepodařilo přečíst. Nové závody a čekající nálezy jsou uvedené zvlášť.", tone: "warning")
             } else {
-                state = State(title: "Další kontrola je naplánovaná", detail: "Nové závody kontroluji na Macu každých 12 hodin. Mac musí být zapnutý a přihlášený; po návratu navážu.", tone: "good")
+                state = State(title: "Další kontrola je naplánovaná", detail: "Na Macu pracuji průběžně: je-li co dělat, navazuji hned, jinak čekám na další splatnou práci. Mac musí být zapnutý a přihlášený; po návratu navážu.", tone: "good")
             }
         } else if server?.brokenSources == nil || server?.unreadableSources == nil || server?.reviewCandidates == nil {
             state = State(title: "Přehled sběru není úplný", detail: "Server odpovídá, ale část stavu není potvrzená. Chybějící počty se nepovažují za nulu.", tone: "warning")
@@ -383,7 +383,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         text("Čtyři činnosti, jeden katalog. Tady je jejich nastavený režim; aktuální stav sběru je v přehledu.", color: .secondaryLabelColor, to: stack)
         if snapshot?.pipelineMode == "local-new-races" {
             section("1. Nové weby", "Zatím pozastavené", "Automatické rozšiřování seznamu zdrojů teď neběží. Nalezený web sám o sobě není nový závod.")
-            section("2. Nové závody ze známých webů", "Na Macu každých 12 hodin", "Čte jen splatné zdroje. Nálezy porovná s čerstvým katalogem včetně skrytých a sloučených záznamů. Prověřené nové závody odešle; nejisté nechá k posouzení.")
+            section("2. Nové závody ze známých webů", "Na Macu průběžně", "Čte splatné zdroje a weby pořadatelů. Nálezy porovná s čerstvým katalogem včetně skrytých a sloučených záznamů. Prověřené nové závody odešle; nejisté nechá k posouzení.")
             section("3. Změny existujících závodů", "Uložené místně, čekají na posouzení", "Tento první automatický režim změny existujících závodů neodesílá. Počasí, samostatné geokódování a zveřejnění dál zajišťuje server.")
             section("4. Sporné nálezy", "Samostatné posouzení ještě zbývá", "Nálezy nezmizí po ukončení ani restartu. Zadržený nález není zamítnutý závod a automaticky neznamená otázku pro tebe. Placená AI v tomto režimu neběží.")
         } else {
@@ -649,7 +649,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func showHelp() {
         let a = NSAlert(); a.messageText = "Sběr se o sebe stará sám"
         if snapshot?.pipelineMode == "local-new-races" {
-            a.informativeText = "Po přihlášení se spustí panel a plánovač. Nový průchod na Macu kontroluje splatné zdroje každých 12 hodin. Práci si pamatuje a nepřečítá vše od začátku. Při vypnutém Macu se zdroje nečtou; po zapnutí a přihlášení naváže.\n\nPrvní automatický režim posílá jen prověřené nové závody. Změny existujících závodů a nejasné nálezy zůstávají uložené k posouzení. Placená AI teď neběží. Starý serverový sběr je vypnutý; počasí, geokódování a zveřejnění na serveru zůstávají.\n\nPočet přečtených stránek není počet nových závodů. Panel ukazuje skutečně uložené výsledky a dobu průchodu. Nepodporované čtení není automaticky porucha. Zavření panelu nezastaví plánovač."
+            a.informativeText = "Po přihlášení se spustí panel a plánovač. Nový průchod na Macu pracuje průběžně: má-li co dělat, navazuje hned, jinak čeká na další splatnou práci. Práci si pamatuje a nepřečítá vše od začátku. Při vypnutém Macu se zdroje nečtou; po zapnutí a přihlášení naváže.\n\nPrvní automatický režim posílá jen prověřené nové závody. Změny existujících závodů a nejasné nálezy zůstávají uložené k posouzení. Placená AI teď neběží. Starý serverový sběr je vypnutý; počasí, geokódování a zveřejnění na serveru zůstávají.\n\nPočet přečtených stránek není počet nových závodů. Panel ukazuje skutečně uložené výsledky a dobu průchodu. Nepodporované čtení není automaticky porucha. Zavření panelu nezastaví plánovač."
             a.runModal(); return
         }
         a.informativeText = "Procenta ukazují podíl uložených závodů s vyplněným názvem, termínem, místem, zemí, disciplínou a zdrojem. Nejsou důkazem správnosti a neříkají, kolik všech existujících závodů jsme našli. Změněné závody znamenají skutečnou změnu uloženého údaje; samy o sobě neprokazují, že je celý závod správný.\n\nPanel ukazuje skutečný stav a dobu běhu, bez odpočtu do dokončení.\n\nPo přihlášení se automaticky spustí panel i sběrač. Bezplatný sběr kontroluje zdroje každé dvě hodiny, Chrome se použije podle potřeby. AI kontrola běží na Macu v úterý a pátek ve společném limitu 5 USD za měsíc.\n\nZelená: běží nebo čeká na další spuštění. Oranžová: dlouho bez výstupu nebo výsledek k ověření. Červená: chybí čerstvé hlášení.\n\nZavření panelu nezastaví sběr. Při vypnutém Macu pokračuje server zdarma; místní sběr naváže po zapnutí a přihlášení."

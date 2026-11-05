@@ -1756,7 +1756,7 @@ async function upsertParsedEvent(
   // "nogps" variant, which only count once the scorer confirms them.
   // Source identity is stronger than a display name. After a reviewed merge,
   // the source belongs to the keeper and must never create its old race again.
-  const { sourceEditionId, calendarRowCandidates } = await import("@/lib/watcher/source-identity");
+  const { sourceEditionId, calendarRowCandidates, settledSourceRow } = await import("@/lib/watcher/source-identity");
   let ambiguousIdentity = false;
   const pickIncomingDuplicate: typeof pickBestDuplicate = (incoming, candidates) => {
     const eligible = calendarRowCandidates(ev.startDate, sharedCalendar, candidates);
@@ -1779,6 +1779,8 @@ async function upsertParsedEvent(
   );
   // Matched by this very source's own record of the race, not by resemblance.
   if (sharedCalendar && sourceEvent?.start_date !== ev.startDate) existingId = undefined;
+  const settled = review ? undefined : settledSourceRow(ev.startDate, sourceEvent, existingId);
+  if (settled) return { id: settled, created: false, changed: false };
   const matchedBySource = existingId != null;
   const fpCols =
     "id, name, start_date, end_date, disciplines, fingerprint, status, visibility, website_url, registration_url, location:locations(lat, lng, name, municipality, country_code), overrides:event_overrides(locked_fields)";

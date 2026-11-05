@@ -61,6 +61,8 @@ function launch(worker) {
     // A run may stop early on deferred work. Its share of the queue goes on until a run
     // reads nothing, or until what remains keeps coming back (a backlog, not new work).
     } else if (!worker.reads || worker.runs >= MAX_RUNS) worker.done = true;
+    // Every worker crashing over and over is a broken reader, never "nothing to read".
+    if (workers.every(w => w.restarts >= MAX_RESTARTS)) process.exitCode = 1;
   });
 }
 

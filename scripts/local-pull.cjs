@@ -18,6 +18,13 @@ const LEAVE_OUT = ['profiles', 'family_members', 'admin_users', 'admin_notificat
   'race_alerts', 'race_alert_deliveries', 'event_favorites', 'event_attendance', 'event_plan_changes', 'plan_change_deliveries', 'plan_digest_deliveries', 'blocked_days', 'blocked_weekends',
   'pipeline_merge_history', 'pipeline_owner_decisions', 'pipeline_sync_batches', 'weather_history', 'weather_history_attempts', 'weather_provider_requests', 'weather_provider_usage', 'weather_provider_backoff', 'spatial_ref_sys'];
 
+/**
+ * What sending compares against. event_facts is the largest table here and is append-only, so a
+ * re-sent fact just finds itself on arrival; run logs, reads and queues say nothing about races.
+ * This is about a third of the whole copy.
+ */
+const TARGET = ['events', 'locations', 'series', 'event_sources', 'event_series', 'event_categories', 'event_overrides', 'watched_urls'];
+
 const BIN = process.env.LOCAL_PG_BIN ?? '/opt/homebrew/opt/postgresql@17/bin';
 const directory = process.env.LOCAL_COPY_DIR ?? join(homedir(), 'Library', 'Application Support', 'LetsRace', 'data', 'local-copy');
 
@@ -34,14 +41,27 @@ function run(tool, args, env) {
   catch (error) { throw Error(`${tool} failed: ${String(error.stderr ?? error.message).replaceAll(env.PGPASSWORD, '***').slice(0, 400)}`); }
 }
 
-function copyCatalogue() {
+function copyTarget() {
 const env = serverEnvironment();
+checkTables(env);
+mkdirSync(directory, { recursive: true });
+chmodSync(directory, 0o700);
+run('pg_dump', ['--data-only', '--format=custom', ...TARGET.map(table => `--table=public.${table}`), '-f', join(directory, 'target.dump.tmp')], env);
+renameSync(join(directory, 'target.dump.tmp'), join(directory, 'target.dump'));
+console.log(`Copied ${TARGET.length} tables of the target catalogue to ${join(directory, 'target.dump')}.`);
+}
+
+function checkTables(env) {
 const tables = run('psql', ['-qAt', '-c', "select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where c.relkind = 'r' and n.nspname in ('public', 'pipeline_private') order by 1"], env).split('\n').filter(Boolean);
 const unknown = tables.filter(table => !COPY.includes(table) && !LEAVE_OUT.includes(table));
 if (unknown.length) throw Error(`Decide whether these tables may be copied, then list them in local-pull.cjs: ${unknown.join(', ')}`);
 const missing = COPY.filter(table => !tables.includes(table));
 if (missing.length) throw Error(`Allowed tables no longer exist: ${missing.join(', ')}`);
+}
 
+function copyCatalogue() {
+const env = serverEnvironment();
+checkTables(env);
 mkdirSync(directory, { recursive: true });
 chmodSync(directory, 0o700);
 run('pg_dump', ['--schema-only', '--no-owner', '--schema=public', '--schema=pipeline_private', '-f', join(directory, 'schema.sql.tmp')], env);
@@ -51,5 +71,5 @@ renameSync(join(directory, 'catalogue-baseline.dump.tmp'), join(directory, 'cata
 console.log(`Copied structure and ${COPY.length} tables to ${directory}; ${LEAVE_OUT.length} tables left out.`);
 
 }
-module.exports = {COPY,LEAVE_OUT,serverEnvironment,copyCatalogue};
-if(require.main===module)copyCatalogue();
+module.exports = {COPY,LEAVE_OUT,TARGET,serverEnvironment,copyCatalogue,copyTarget};
+if(require.main===module)(process.argv.includes('--target-only')?copyTarget:copyCatalogue)();

@@ -23,9 +23,9 @@ export type EditionRace = {
 export type EditionPage = { url: string; title?: string; text: string };
 export type EditionDecision = { state: "publish"; event: ParsedEvent } | { state: "wait"; reason: string };
 
-const SHARED_SITES = /(?:^|\.)(?:sumator\.cz|winspace\.cz|nazavody\.cz|sportchallenge\.cz|sportsoft\.cz|raceresult\.com|kalendarzrowerowy\.pl|facebook\.com|instagram\.com|cyklokros\.cz|bikeri\.cz|cykloman\.cz)$/i;
+const SHARED_SITES = /(?:^|\.)(?:bikeboard\.at|sumator\.cz|winspace\.cz|nazavody\.cz|sportchallenge\.cz|sportsoft\.cz|raceresult\.com|kalendarzrowerowy\.pl|facebook\.com|instagram\.com|cyklokros\.cz|bikeri\.cz|cykloman\.cz)$/i;
 const NOT_THE_RACE_DATE = /registrac|registration|anmeld|iscrizion|inscription|prihlas|uzaverk|startovn|deadline|entry fee|payment|platba|sleva/;
-const TENTATIVE = /predbez|tbc|planovan|pripravuj|upresn|provisional|tentative/;
+const TENTATIVE = /predbez|tbc|planovan|pripravuj|upresn|provisional|tentative|voraussichtlich/;
 const MULTISPORT = /triatlon|triathlon|duatlon|duathlon|\bbeh\s*[·,/–-]|[·,/–-]\s*beh\b|\bvoda\s*[·,/–-]|[·,/–-]\s*voda\b/;
 
 const hostOf = (url: string | null | undefined) => {
@@ -129,7 +129,7 @@ export function decideEdition(input: { race: EditionRace; page: EditionPage; ans
     const seen = fold(`${page.title ?? ""} ${quote} ${decodeURIComponent(new URL(page.url).pathname)}`);
     if (!tokens.length || tokens.filter(token => seen.includes(token)).length * 2 < tokens.length) return wait("shared_site_name_not_confirmed");
   }
-  if (MULTISPORT.test(fold(`${race.name} ${page.title ?? ""} ${page.text.slice(0, 1_500)}`))) return wait("possibly_multisport");
+  if (MULTISPORT.test(fold(`${race.name} ${page.title ?? ""} ${pageHost} ${page.text.slice(0, 1_500)}`))) return wait("possibly_multisport");
 
   const discipline = (race.disciplines ?? []).filter(value => value !== "other") as Discipline[];
   if (!discipline.length) return wait("discipline_unknown");

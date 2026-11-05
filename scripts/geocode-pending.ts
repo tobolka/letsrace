@@ -12,7 +12,8 @@ try {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (!m) continue;
     const val = m[2]!.replace(/^["']|["']$/g, "");
-    if (!process.env[m[1]!]) process.env[m[1]!] = val;
+    // Unset only: a local pass blanks server credentials on purpose.
+    if (process.env[m[1]!] === undefined) process.env[m[1]!] = val;
   }
 } catch {
   /* ignore */

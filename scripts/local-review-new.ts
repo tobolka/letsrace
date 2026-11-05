@@ -44,7 +44,26 @@ const live = target ? JSON.parse(execFileSync(PSQL, ["-h","127.0.0.1","-p","5432
 // A hidden or unpublished record still represents an existing race. Publishing
 // a second ID would bypass the operator's earlier decision about that record.
 const known = [...new Map([...catalogue,...live].map(row=>[row.id,row])).values()];
-const targetSources = target ? new Map<string,string>(JSON.parse(execFileSync(PSQL,["-h","127.0.0.1","-p","54329","-U","postgres","-d",target,"-qAt","-c","select coalesce(json_agg(json_build_array(id,status)),'[]') from public.watched_urls"],{encoding:"utf8",env:{...process.env,NODE_OPTIONS:""}}))) : null;
+type SourceRow = { id: string; url: string; kind: string; status: string; added_by: string | null; notes: string | null };
+const readSources = (database: string, where = "true") => JSON.parse(execFileSync(PSQL, ["-h", "127.0.0.1", "-p", "54329", "-U", "postgres", "-d", database, "-qAt", "-c", `select coalesce(json_agg(json_build_object('id',id,'url',url,'kind',kind,'status',status,'added_by',added_by,'notes',notes)),'[]') from public.watched_urls where ${where}`], { encoding: "utf8", maxBuffer: 2 ** 30, env: { ...process.env, NODE_OPTIONS: "" } })) as SourceRow[];
+const onTarget = target ? new Map(readSources(target).map(row => [row.id, row])) : null;
+const onTargetByUrl = new Map([...(onTarget?.values() ?? [])].map(row => [row.url, row]));
+const here = new Map(readSources(process.argv.find(value => value.startsWith("--work="))?.slice(7) ?? "letsrace", "added_by = 'pipeline_review' and status = 'paused'").map(row => [row.id, row]));
+/**
+ * How a race's source gets to the target, or why it cannot. A source found by a reviewed
+ * announcement is evidence, never something to poll: it travels as its bare configuration,
+ * paused, with none of the Mac's reading state. Anything else must already be there.
+ */
+function sourcePath(id: string): { problem: string } | { use: string; carry?: SourceRow } {
+  const there = onTarget?.get(id);
+  const evidenceOnly = (row: SourceRow) => row.added_by === "pipeline_review";
+  if (there) return there.status === "active" || evidenceOnly(there) ? { use: id } : { problem: "source_paused_on_server" };
+  const local = here.get(id);
+  if (!local) return { problem: "source_not_in_target_catalogue" };
+  const sameUrl = onTargetByUrl.get(local.url);
+  if (!sameUrl) return { use: id, carry: local };
+  return sameUrl.status === "active" || evidenceOnly(sameUrl) ? { use: sameUrl.id } : { problem: "source_paused_on_server" };
+}
 const sourced = new Set(changes.filter(change => change.tab === "public.event_sources" && change.op === "insert").map(change => change.owner ?? change.after?.event_id));
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Prague" });
 
@@ -84,10 +103,13 @@ for (const change of changes) {
   const problems = race.visibility === "public" ? newRaceProblems(race, place, known, today) : [];
   // A race must come with the source row that states it, whatever else looks right.
   if (race.visibility === "public" && !sourced.has(race.id)) problems.push("no_source_read_in_this_pass");
-  if (race.visibility === "public" && targetSources) {
+  if (race.visibility === "public" && onTarget) {
     const links = changes.filter(c=>c.tab==="public.event_sources" && (c.owner ?? c.after?.event_id)===race.id);
-    if(links.some(c=>c.after?.watched_url_id && !targetSources.has(String(c.after.watched_url_id)))) problems.push("source_not_in_target_catalogue");
-    if(links.some(c=>c.after?.watched_url_id && targetSources.has(String(c.after.watched_url_id)) && targetSources.get(String(c.after.watched_url_id))!=="active")) problems.push("source_paused_on_server");
+    for (const link of links) {
+      if (!link.after?.watched_url_id) continue;
+      const path = sourcePath(String(link.after.watched_url_id));
+      if ("problem" in path) problems.push(path.problem);
+    }
   }
   const dateSeen = race.visibility === "public" && !problems.length ? await dateIsOnSource(sourceUrls.get(race.id)!, race.start_date) : null;
   if(rideSources.has(sourceUrls.get(race.id) ?? ""))problems.push("listed_as_a_ride");
@@ -116,12 +138,23 @@ for (const change of changes) {
   if (problems) held.push({ ...change, heldBecause: problems });
   else if (!onlyNew || readyIds.has(eventOf(change) ?? "") && change.op === "insert" || change.tab === "public.locations" && change.op === "insert" && readyPlaces.has(change.pk.id ?? null) || onlyNew && change.tab === "public.series" && change.op === "insert" && readySeries.has(change.pk.id)) send.push(change);
 }
+// Sources first, so their races find them in the same send.
+const carried = new Map<string, SourceRow>();
+for (const change of send) {
+  if (change.tab !== "public.event_sources" || !change.after?.watched_url_id || !onTarget) continue;
+  const path = sourcePath(String(change.after.watched_url_id));
+  if ("problem" in path) continue;
+  change.after.watched_url_id = path.use;
+  if (path.carry) carried.set(path.use, path.carry);
+}
+const sources: Change[] = [...carried.values()].map(row => ({ tab: "public.watched_urls", op: "insert", pk: { id: row.id }, after: { id: row.id, url: row.url, kind: row.kind, status: "paused", added_by: "pipeline_review", notes: row.notes } }));
+send.unshift(...sources);
 const body = send.map(change => JSON.stringify(change)).join("\n");
 writeFileSync(join(directory, "changes.ndjson"), body);
 if (held.length) appendFileSync(join(directory, "held-for-review.ndjson"), `\n${held.map(change => JSON.stringify(change)).join("\n")}`);
 const planFile = join(directory, "plan.json");
 const plan = JSON.parse(readFileSync(planFile, "utf8")) as Record<string, unknown>;
-writeFileSync(planFile, JSON.stringify({ ...plan, rows: send.length, sha256: createHash("sha256").update(body).digest("hex"), reviewedAt: new Date().toISOString(), newRaces: { ready: selected, held: heldRaces, reasons: summary, deferredByBatchLimit: kept.length-selected.length } }, null, 2));
+writeFileSync(planFile, JSON.stringify({ ...plan, rows: send.length, sha256: createHash("sha256").update(body).digest("hex"), reviewedAt: new Date().toISOString(), evidenceSources: sources.length, newRaces: { ready: selected, held: heldRaces, reasons: summary, deferredByBatchLimit: kept.length-selected.length } }, null, 2));
 console.log(JSON.stringify({ newRacesReady: selected.length, newRacesHeld: heldRaces.length, reasons: summary, rowsToSend: send.length }));
 }
 main().then(() => process.exit(0)).catch(error => { console.error(error); process.exit(1); });
