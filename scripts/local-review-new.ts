@@ -17,6 +17,7 @@ import { join } from "node:path";
 import { radsportEventToParsed } from "../src/lib/watcher/extractors/radsport";
 import { load } from "cheerio";
 import { fetchPage } from "../src/lib/watcher/http";
+import { mapPool } from "../src/lib/watcher/pool";
 import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 import { quoteStatesDate } from "../src/lib/catalog/quoted-date";
 import { newRaceProblems, type KnownRace, type NewRace, type Place } from "../src/lib/local-pass/new-race-check";
@@ -97,6 +98,9 @@ const sourceUrls = new Map(changes.filter(change => change.tab === "public.event
 async function main() {
 const reasons = new Map<string | undefined, string[]>();
 const summary: Record<string, number> = {}, kept: { name: string; date: string; place: string | null; country: string | null; source: string | null; dateSeenOnSource: boolean | null; id: string; location: string | null }[] = [], heldRaces: { name: string; date: string; because: string[] }[] = [];
+// Everything that needs no network first, so a big calendar's races are not re-read one by one.
+type Checked = { race: NewRace; place: Place | null | undefined; problems: string[] };
+const checked: Checked[] = [];
 for (const change of changes) {
   if (change.tab !== "public.events" || change.op !== "insert") continue;
   const race = change.after as unknown as NewRace;
@@ -113,7 +117,14 @@ for (const change of changes) {
       if ("problem" in path) problems.push(path.problem);
     }
   }
-  const dateSeen = race.visibility === "public" && !problems.length ? await dateIsOnSource(sourceUrls.get(race.id)!, race.start_date) : null;
+  checked.push({ race, place, problems });
+}
+const dateSeenOn = new Map<string, boolean>();
+await mapPool(checked.filter(item => item.race.visibility === "public" && !item.problems.length), 8, async ({ race }) => {
+  dateSeenOn.set(race.id, await dateIsOnSource(sourceUrls.get(race.id)!, race.start_date));
+});
+for (const { race, place, problems } of checked) {
+  const dateSeen = dateSeenOn.get(race.id) ?? null;
   if(rideSources.has(sourceUrls.get(race.id) ?? ""))problems.push("listed_as_a_ride");
   if (problems.length) {
     reasons.set(race.id, problems);

@@ -39,8 +39,9 @@ Ověřeno 5. listopadu 2026 večer. **Jeden společný kód; rozdílné místo s
 | **6** | Doplňování existujících závodů. | **ČÁSTEČNĚ:** jen pole prázdná na obou stranách, nejvýš 60 závodů denně. Změny vyplněných hodnot, dat a míst dál čekají. |
 | **7** | Veřejné změny a staré odkazy. | **ČEKÁ NA ZÍTŘEJŠÍ BĚH.** Přesměrování sloučeného Welsu je v kódu, úloha čeká s nejvyšší prioritou na běh v 5:40 UTC; ověřit. Fronta 302 kontrol: důležité jdou první, 221 má nízkou prioritu. Limit 60 denně se nezvyšoval kvůli spotřebě Vercelu. Perun/Lakeland/GR8 neověřeno. |
 | **8** | Chybně spojené závody a opakované chyby zápisu. | **ROZDĚLENO.** 15 záznamů opraveno na Macu i serveru, záznam původních hodnot je v `reports/mac-offload-2026-11-05/split-journal-*.json`. Riva sloučena do správného záznamu. Stejná chyba by se už opakovat neměla: řádky jednoho kalendáře s různými ID a daty zůstávají oddělené. Ride&Rest čte správně akce přes přelom měsíce. 3 brevety vedené jako závod jsou přetypované na vyjížďku. |
-| **9** | Treviso MTB. | **SLEDUJE SE NA MACU.** Přečteno 86 závodů, z toho 14 budoucích. Na server přibyl 1 nový, ostatní budoucí už v katalogu byly nebo čekají na kontrolu. Minulé závody zůstávají na Macu kvůli hledání dalších ročníků. Na rok 2027 web zatím uvádí jediný závod. |
+| **9** | Treviso MTB. | **SLEDUJE SE NA MACU.** Přečteno 86 závodů, z toho 14 budoucích. Na server přibyl 1 nový; ostatní budoucí už na serveru jsou. Tři z nich byly skryté, jsou zveřejněné. Minulé závody zůstávají na Macu kvůli hledání dalších ročníků. Na rok 2027 web zatím uvádí jediný závod. |
 | **10** | Dvě úplná čtení, kontrola spotřeby po přesunu. | **ZBÝVÁ.** |
+| **11** | Skryté skutečné závody. | **OPRAVENO.** Z 78 skrytých budoucích závodů v našich zemích bylo 6 skutečných (Turin, Brenta, Ponte, Bari, Cross del Sile, Granfondo Sanremo) a jsou zveřejněné. Zbytek jsou duplikáty, rozbité názvy, akce mimo závody nebo závody s jediným zdrojem. 11 závodů federace s datem 31. 12. zůstává skrytých: federace jím označuje nezadané datum. |
 
 ## Přehodnocené pořadí (5. 11. večer)
 

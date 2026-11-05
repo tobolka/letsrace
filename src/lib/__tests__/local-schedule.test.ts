@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const require = createRequire(import.meta.url);
 const { nextRunAt, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS } = require("../../../scripts/local-schedule.cjs");
-const { organiserDue, targetNeeded } = require("../../../scripts/local-cycle.cjs");
+const { organiserDue, targetNeeded, coverageFrom } = require("../../../scripts/local-cycle.cjs");
 const { eventFills, locationFill } = require("../../../scripts/local-fills.cjs");
 const now = Date.parse("2026-11-05T12:00:00Z");
 const at = (ms: number) => new Date(now + ms).toISOString();
@@ -80,6 +80,10 @@ describe("what a cycle needs from elsewhere", () => {
   it("copies the target at most every three hours, whatever is waiting", () => {
     expect(targetNeeded({ ...fresh, targetCheckedAt: at(-3_600_000) }, "11:y", now)).toBe(false);
     expect(targetNeeded({ ...fresh, targetCheckedAt: at(-3_600_000), sendFailed: true }, "10:x", now)).toBe(false);
+  });
+  it("counts last year's races that have their next edition, by country", () => {
+    const result = coverageFrom({ summary: { season: 2027 }, rows: [{ race: "a", state: "found" }, { race: "b", state: "published" }, { race: "c", state: "waiting" }] }, [{ id: "a", location: { country_code: "CZ" } }, { id: "b", location: { country_code: "CZ" } }, { id: "c", location: { country_code: "IT" } }]);
+    expect(result).toEqual({ season: 2027, races: 3, withEdition: 2, byCountry: { CZ: { races: 2, withEdition: 2 }, IT: { races: 1, withEdition: 0 } } });
   });
   it("starts the organiser reading only when it left something or a page fell due", () => {
     expect(organiserDue(null, now)).toBe(true);

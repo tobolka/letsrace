@@ -1,0 +1,110 @@
+{
+ "at": "2026-11-05T19:29:20.993Z",
+ "rows": [
+  {
+   "id": "3fd52625-d43d-416e-8c31-816b5ba0137d",
+   "name": "Termine 2027 — Herforder Frühjahrspreis",
+   "name_normalized": "termine herforder fruhjahrspreis",
+   "fingerprint": "2027-03-14:u1q0m:termine herforder fruhjahrspreis",
+   "start_date": "2027-03-14"
+  },
+  {
+   "id": "0b21206b-5bb9-4c68-92fb-b2d836e36be4",
+   "name": "Termine 2027 — Großer Preis der Sparkasse Neuss",
+   "name_normalized": "termine gro er preis der sparkasse neuss",
+   "fingerprint": "2027-05-01:u1hg0:termine gro er preis der sparkasse neuss",
+   "start_date": "2027-05-01"
+  },
+  {
+   "id": "f1faca79-2023-4d97-95c6-dd5c9ca4913f",
+   "name": "Termine 2027 — 43. Überherrner Straßenrennen auf dem Wallerfanger Saargau",
+   "name_normalized": "termine 43 uberherrner stra enrennen auf dem wallerfanger saargau",
+   "fingerprint": "2027-04-25:u0ub0:termine 43 uberherrner stra enrennen auf dem wallerfanger saargau",
+   "start_date": "2027-04-25"
+  },
+  {
+   "id": "16e92f07-b4c8-40ae-ade1-9953ed6a68a9",
+   "name": "Termine 2027 — Nievenheimer Ortsschildsprint",
+   "name_normalized": "termine nievenheimer ortsschildsprint",
+   "fingerprint": "2027-06-20:u1hff:termine nievenheimer ortsschildsprint",
+   "start_date": "2027-06-20"
+  },
+  {
+   "id": "d80c5f42-8727-424d-ac63-e697f09987f0",
+   "name": "Termine 2027 — 35. GP von Buchholz",
+   "name_normalized": "termine 35 gp von buchholz",
+   "fingerprint": "2027-05-06:u32zp:termine 35 gp von buchholz",
+   "start_date": "2027-05-06"
+  },
+  {
+   "id": "73257f28-6683-463c-98ea-01733c590eaa",
+   "name": "Termine 2027 — Gr. Preis der Stadt Troisdorf",
+   "name_normalized": "termine gr preis der stadt troisdorf",
+   "fingerprint": "2027-07-10:u1j14:termine gr preis der stadt troisdorf",
+   "start_date": "2027-07-10"
+  },
+  {
+   "id": "ce306049-004c-4e75-9c82-cd3aee5866ac",
+   "name": "Termine 2027 — 7. GP von Trier",
+   "name_normalized": "termine 7 gp von trier",
+   "fingerprint": "2027-06-06:u0uep:termine 7 gp von trier",
+   "start_date": "2027-06-06"
+  },
+  {
+   "id": "58b23752-6a93-4fad-86c7-54533f2cb9db",
+   "name": "Termine 2027 — Gr. Preis der Südlichen Weinstrasse",
+   "name_normalized": "termine gr preis der sudlichen weinstrasse",
+   "fingerprint": "2027-04-10:nogps:termine gr preis der sudlichen weinstrasse",
+   "start_date": "2027-04-10"
+  },
+  {
+   "id": "d4172053-ee4c-43a1-b60a-3865da61e0b0",
+   "name": "Termine 2027 — 36. Spee-Cup in Genthin",
+   "name_normalized": "termine 36 spee in genthin",
+   "fingerprint": "2027-08-29:u32dh:termine 36 spee in genthin",
+   "start_date": "2027-08-29"
+  },
+  {
+   "id": "1d4a1f19-8660-4521-82d3-68fbbba079e2",
+   "name": "Termine 2027 — 38. Main-Spessart Rundfahrt",
+   "name_normalized": "termine 38 main spessart rundfahrt",
+   "fingerprint": "2027-05-30:nogps:termine 38 main spessart rundfahrt",
+   "start_date": "2027-05-30"
+  },
+  {
+   "id": "cbf906db-f807-4136-82de-3590e2f9579c",
+   "name": "Termine 2027 — Radrennen in Offenbach",
+   "name_normalized": "termine radrennen in offenbach",
+   "fingerprint": "2027-07-31:u0yjp:termine radrennen in offenbach",
+   "start_date": "2027-07-31"
+  },
+  {
+   "id": "57314920-9c36-48de-8499-3a5c63c88224",
+   "name": "Termine 2027 — 47. Erzgebirgs-Rundfahrt 2027 - Radsportklassiker",
+   "name_normalized": "termine 47 erzgebirgs rundfahrt radsportklassiker",
+   "fingerprint": "2027-05-23:nogps:termine 47 erzgebirgs rundfahrt radsportklassiker",
+   "start_date": "2027-05-23"
+  },
+  {
+   "id": "22a43516-1475-4d18-943a-4d79789a9d89",
+   "name": "Termine 2027 — Kometen Schmitter Nacht",
+   "name_normalized": "termine kometen schmitter nacht",
+   "fingerprint": "2027-07-30:nogps:termine kometen schmitter nacht",
+   "start_date": "2027-07-30"
+  },
+  {
+   "id": "3f8a0665-4f25-49a2-b9be-022f4d9b0585",
+   "name": "Termine 2027 — DM EZF U17 und EZF unterm Bremer Stern",
+   "name_normalized": "termine dm ezf u17 und ezf unterm bremer stern",
+   "fingerprint": "2027-06-12:nogps:termine dm ezf u17 und ezf unterm bremer stern",
+   "start_date": "2027-06-12"
+  },
+  {
+   "id": "429d7535-2953-4223-b01d-9e73211f269d",
+   "name": "Termine 2027 — Bremer Stern mit Sichtung U17",
+   "name_normalized": "termine bremer stern mit sichtung u17",
+   "fingerprint": "2027-06-13:nogps:termine bremer stern mit sichtung u17",
+   "start_date": "2027-06-13"
+  }
+ ]
+}

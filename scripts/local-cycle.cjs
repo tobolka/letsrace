@@ -17,6 +17,7 @@ const HOUR=3_600_000;
 const TARGET_MAX_AGE_MS=12*HOUR;
 /** New work may want the target sooner, but never a copy more than this often. */
 const TARGET_MIN_GAP_MS=3*HOUR;
+const NEW_RACES_PER_SEND=100;
 /** Reading races' own sites for details, which the server used to do once a day. */
 const SITE_DETAILS_EVERY_MS=6*HOUR;
 const GEOCODE_EVERY_MS=12*HOUR;
@@ -75,6 +76,22 @@ function syncPauses(state){
 function applyPauses(ids){
  const valid=ids.filter(id=>/^[-a-f0-9]{36}$/.test(id));
  if(valid.length)sql('letsrace',`update public.watched_urls set status='paused' where status='active' and id in (${valid.map(id=>`'${id}'::uuid`).join(',')})`);
+}
+/** How many of last year's races have their next edition, by country, with one reading a day kept. */
+function coverageFrom(status,reviews){
+ const country=new Map(reviews.map(r=>[r.id,r.location?.country_code??'?']));const byCountry={};
+ for(const row of status.rows){const c=country.get(row.race)??'?';const held=byCountry[c]??={races:0,withEdition:0};held.races++;if(row.state==='found'||row.state==='published')held.withEdition++;}
+ const races=status.rows.length,withEdition=Object.values(byCountry).reduce((sum,c)=>sum+c.withEdition,0);
+ return {season:status.summary.season,races,withEdition,byCountry};
+}
+function writeCoverage(archive,directory){
+ const status=json(path.join(archive,'edition-status.json'));const reviews=json(path.join(archive,'replay','race-review.json'));
+ if(!status||!reviews)return null;
+ const now=coverageFrom(status,reviews),file=path.join(directory,'edition-coverage.json');const old=json(file,{history:[]});
+ const day=new Date().toISOString().slice(0,10);
+ const history=[...old.history.filter(h=>h.day!==day),{day,races:now.races,withEdition:now.withEdition}].slice(-120);
+ const result={at:new Date().toISOString(),...now,history};atomic(file,result);
+ return {season:now.season,races:now.races,withEdition:now.withEdition};
 }
 async function main(){
  fs.mkdirSync(data,{recursive:true,mode:0o700});const release=acquireLock(path.join(data,'local-cycle.lock'));
@@ -139,6 +156,7 @@ async function main(){
     state.assessedLedgerSize=sizeNow;state.assessedAt=new Date().toISOString();state.assessmentDeferred=organiser.deferred;saveState();
    }catch(e){if(interrupted)throw e;note(e);}
   }
+  try{report.coverage=writeCoverage(archive,data);}catch(e){console.warn(`Pokrytí nespočítáno: ${e.message}`);}
   save();
 
   // Part 3: the rest of the upkeep that only needs other people's websites and the copy here.
@@ -173,7 +191,7 @@ async function main(){
     state.pausesSyncedAt=new Date().toISOString();
     stage('Kontroluji nové závody proti aktuálnímu katalogu');
     const planDir=path.join(directory,'plan');plan(planDir,'letsrace',remote,{onlyFactsOfNewRaces:true});
-    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races','--max-new=20'],{timeout:12*60_000});
+    await node('./node_modules/tsx/dist/cli.mjs',['scripts/local-review-new.ts',`--plan=${planDir}`,`--catalogue=${remote}`,'--only-new-races',`--max-new=${NEW_RACES_PER_SEND}`],{timeout:12*60_000});
     const reviewed=json(path.join(planDir,'plan.json'));
     report.heldRaces=reviewed.newRaces.held.length;report.deferredNewRaces=reviewed.newRaces.deferredByBatchLimit;
     // A rehearsal stops here, with the plan on disk and nothing sent.
@@ -247,4 +265,4 @@ async function main(){
   if(report.state==='publication_pending')process.exitCode=2;
  }
 }
-module.exports={acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
+module.exports={acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason,coverageFrom};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

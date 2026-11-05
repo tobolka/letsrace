@@ -26,12 +26,16 @@ describe("durable source identity", () => {
 describe("a row the source already filed", () => {
   const filed = { id: "race", start_date: "2026-11-21", merged_into_id: null };
   it("settles on its race when only a corrected detail disagrees that day", () => {
-    expect(settledSourceRow("2026-11-21", filed, undefined)).toBe("race");
-    expect(settledSourceRow("2026-11-21", { ...filed, merged_into_id: "keeper" }, undefined)).toBe("keeper");
+    expect(settledSourceRow("radsport-1-2026-11-21", "2026-11-21", filed, undefined)).toBe("race");
+    expect(settledSourceRow("radsport-1-2026-11-21", "2026-11-21", { ...filed, merged_into_id: "keeper" }, undefined)).toBe("keeper");
   });
   it("does not interfere with a normal match, a moved date or a row never filed", () => {
-    expect(settledSourceRow("2026-11-21", filed, "race")).toBeUndefined();
-    expect(settledSourceRow("2026-11-28", filed, undefined)).toBeUndefined();
-    expect(settledSourceRow("2026-11-21", null, undefined)).toBeUndefined();
+    expect(settledSourceRow("radsport-1-2026-11-21", "2026-11-21", filed, "race")).toBeUndefined();
+    expect(settledSourceRow("radsport-1-2026-11-28", "2026-11-28", filed, undefined)).toBeUndefined();
+    expect(settledSourceRow("radsport-1-2026-11-21", "2026-11-21", null, undefined)).toBeUndefined();
+  });
+  it("settles a renumbered round under a federation's undated id, within the season only", () => {
+    expect(settledSourceRow("csc-1414", "2026-10-13", filed, undefined)).toBe("race");
+    expect(settledSourceRow("csc-1414", "2027-10-13", filed, undefined)).toBeUndefined();
   });
 });

@@ -1,0 +1,53 @@
+{
+ "at": "2026-11-05T20:12:20.236Z",
+ "before": [
+  {
+   "id": "8d0474c7-e294-4a70-ab02-3beb0819a13b",
+   "slug": "abbinata-naz-11-ciclocross-del-brenta-2026",
+   "name": "11° CICLOCROSS DEL BRENTA - TROFEO MORBIATO",
+   "start_date": "2026-12-06",
+   "status": "scheduled",
+   "visibility": "hidden"
+  },
+  {
+   "id": "d0982144-2903-44ab-8cc1-34a69ae49268",
+   "slug": "ciclocross-del-ponte-internazionale-cx-2026",
+   "name": "24° CICLOCROSS DEL PONTE - ABBINATA NAZ.",
+   "start_date": "2026-12-08",
+   "status": "scheduled",
+   "visibility": "hidden"
+  },
+  {
+   "id": "7e29e0a8-da33-4ad4-8867-6c5c9715f7f3",
+   "slug": "5-cross-del-sile-2026",
+   "name": "5° CROSS DEL SILE",
+   "start_date": "2026-12-31",
+   "status": "hidden",
+   "visibility": "hidden"
+  },
+  {
+   "id": "51651484-cf12-4720-bebc-f2f134222bcd",
+   "slug": "abbinata-naz-turin-international-cyclocross-2026",
+   "name": "ABBINATA NAZ.TURIN INTERNATIONAL CYCLOCROSS",
+   "start_date": "2026-11-15",
+   "status": "scheduled",
+   "visibility": "hidden"
+  },
+  {
+   "id": "7eb5e8a5-6a23-42b4-b977-67f232d32b13",
+   "slug": "internazionale-ciclocross-3-cx-la-montagnetta-bari-2026",
+   "name": "INTERNAZIONALE CICLOCROSS 3° CX LA MONTAGNETTA - BARI",
+   "start_date": "2026-12-13",
+   "status": "scheduled",
+   "visibility": "hidden"
+  },
+  {
+   "id": "1cbb6702-aa49-40e8-989e-bb1c5cb1481b",
+   "slug": "granfondo-sanremo-sanremo-2027",
+   "name": "Granfondo Sanremo Sanremo",
+   "start_date": "2027-03-21",
+   "status": "scheduled",
+   "visibility": "hidden"
+  }
+ ]
+}

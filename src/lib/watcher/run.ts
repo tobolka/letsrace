@@ -1779,7 +1779,7 @@ async function upsertParsedEvent(
   );
   // Matched by this very source's own record of the race, not by resemblance.
   if (sharedCalendar && sourceEvent?.start_date !== ev.startDate) existingId = undefined;
-  const settled = review ? undefined : settledSourceRow(ev.startDate, sourceEvent, existingId);
+  const settled = review ? undefined : settledSourceRow(ev.externalId, ev.startDate, sourceEvent, existingId);
   if (settled) return { id: settled, created: false, changed: false };
   const matchedBySource = existingId != null;
   const fpCols =

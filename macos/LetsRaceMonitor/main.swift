@@ -26,7 +26,8 @@ struct MonitorSnapshot: Decodable {
         let cpuPercent: Int?; let memoryFreePercent: Int?; let processes: [RunningProcess]
     }
     let at: String; let pid: Int; let root: String; let data: String
-    let pipelineMode: String?; let cycleResult: Cycle?
+    struct EditionCoverage: Decodable { let season: Int?; let races: Int; let withEdition: Int }
+    let pipelineMode: String?; let cycleResult: Cycle?; let editionCoverage: EditionCoverage?
     let status: String; let paused: Bool; let childPid: Int?
     let stage: String?; let startedAt: Double?; let lastOutputAt: Double?
     let lastFinishedAt: Double?; let lastExitCode: Int?; let nextRunAt: Double
@@ -74,7 +75,7 @@ struct MonitorOverview: Codable {
         lastRun = runs.max { $0.at < $1.at }
         if snapshot?.pipelineMode == "local-new-races" {
             reviewTitle = "Nové závody automaticky, sporné nálezy zvlášť"
-            reviewDetail = snapshot?.cycleResult.map { "\($0.heldRaces) nálezů zůstává k posouzení. Nejsou to automaticky otázky pro tebe. Změny existujících závodů se zatím neodesílají." } ?? "První výsledek se doplní po dokončení nového průchodu. Změny existujících závodů se zatím neodesílají."
+            reviewDetail = snapshot?.cycleResult.map { "\($0.heldRaces) nálezů zůstává jen na Macu: proběhlé závody, vyjížďky a možné duplicity. Není to nic, co bys měl řešit. U existujících závodů se doplňují jen prázdné údaje." } ?? "První výsledek se doplní po dokončení nového průchodu. Změny existujících závodů se zatím neodesílají."
         } else if serverFresh, let waiting = server?.reviewCandidates {
             reviewTitle = waiting > 0 ? "Podklady čekají na ověření" : "Není připravená žádná otázka pro tebe"
             let pending = waiting == 1 ? "1 podklad čeká na kontrolu." : (2...4).contains(waiting) ? "\(waiting) podklady čekají na kontrolu." : "\(waiting) podkladů čeká na kontrolu."
@@ -333,6 +334,10 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             if let seconds = snapshot?.cycleResult?.seconds {
                 add("Doba průchodu: \(seconds / 60) min \(seconds % 60) s", size: 12, color: .secondaryLabelColor, to: result)
             }
+            if let coverage = snapshot?.editionCoverage, coverage.races > 0 {
+                let percent = Int((100 * Double(coverage.withEdition) / Double(coverage.races)).rounded())
+                add("Ročník \(coverage.season.map(String.init) ?? "příští"): \(coverage.withEdition) z \(coverage.races) loňských závodů (\(percent) %)", size: 12, color: .secondaryLabelColor, to: result)
+            }
         } else {
             add("Zatím bez výsledku", size: 13, to: result)
         }
@@ -384,7 +389,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if snapshot?.pipelineMode == "local-new-races" {
             section("1. Nové weby", "Zatím pozastavené", "Automatické rozšiřování seznamu zdrojů teď neběží. Nalezený web sám o sobě není nový závod.")
             section("2. Nové závody ze známých webů", "Na Macu průběžně", "Čte splatné zdroje a weby pořadatelů. Nálezy porovná s čerstvým katalogem včetně skrytých a sloučených záznamů. Prověřené nové závody odešle; nejisté nechá k posouzení.")
-            section("3. Změny existujících závodů", "Uložené místně, čekají na posouzení", "Tento první automatický režim změny existujících závodů neodesílá. Počasí, samostatné geokódování a zveřejnění dál zajišťuje server.")
+            section("3. Změny existujících závodů", "Prázdné údaje se doplňují, ostatní změny zůstávají na Macu", "Tento první automatický režim změny existujících závodů neodesílá. Počasí, samostatné geokódování a zveřejnění dál zajišťuje server.")
             section("4. Sporné nálezy", "Samostatné posouzení ještě zbývá", "Nálezy nezmizí po ukončení ani restartu. Zadržený nález není zamítnutý závod a automaticky neznamená otázku pro tebe. Placená AI v tomto režimu neběží.")
         } else {
         section("1. Hledání nových webů", "Hledání automaticky · přijetí zdrojů čeká", "Hledá dosud neznámé pořadatele a kalendáře. Nalezený web je návrh zdroje, ještě ne nový závod. Jeho přijetí není plně automatické.")
@@ -459,7 +464,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if (r?.unreadable ?? 0) > 0 { localLines += " · \(r?.unreadable ?? 0) potřebuje jinou čtečku" }
         if (r?.deferred ?? 0) > 0 { localLines += " · \(r?.deferred ?? 0) odloženo" }
         if r?.reads == 0 { localLines += "\nŽádný zdroj nebyl splatný; tento běh nic nepřidal." }
-        if let cycle = snapshot?.cycleResult { localLines += "\n\(cycle.heldRaces) nálezů čeká k posouzení; změny existujících závodů se neodesílají." }
+        if let cycle = snapshot?.cycleResult { localLines += "\n\(cycle.heldRaces) nálezů zůstává jen na Macu; u existujících závodů se doplňují jen prázdné údaje." }
         if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) chyb · \(recent.unreadable ?? 0) čtení potřebuje jinou čtečku" }
         if localRunning { localLines += "\n\(translatedStage(snapshot?.stage)) · \(eta(snapshot?.activeTask ?? "refresh", started: snapshot?.startedAt))" }
         else if localBusy { localLines += "\nTeď běží federace; běžný sběr můžeš zařadit za ni." }
