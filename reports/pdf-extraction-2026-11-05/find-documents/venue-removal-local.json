@@ -1,0 +1,157 @@
+{
+ "at": "2026-11-05T23:09:25.434Z",
+ "before": [
+  {
+   "id": "4d220c62-c3ea-4257-a6df-a662a0f58cab",
+   "name": "Afeno Quer und Bike Cup #5",
+   "practical_details": {
+    "fees": {
+     "quote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen\n90.00 CHF Anfänger, Schüler\npro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby\n20.00 CHF Junioren, Damen\n15.00 CHF Anfänger, Schüler",
+     "value": [
+      {
+       "label": "Elite, Amateure, Master, Hobby",
+       "amount": 150,
+       "currency": "CHF",
+       "checkedAt": "2026-11-05T23:05:48.351Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "validUntil": "2026-09-26",
+       "sourceQuote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby"
+      },
+      {
+       "label": "Junioren, Damen",
+       "amount": 120,
+       "currency": "CHF",
+       "checkedAt": "2026-11-05T23:05:48.351Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "validUntil": "2026-09-26",
+       "sourceQuote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen"
+      },
+      {
+       "label": "Anfänger, Schüler",
+       "amount": 90,
+       "currency": "CHF",
+       "checkedAt": "2026-11-05T23:05:48.351Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "validUntil": "2026-09-26",
+       "sourceQuote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen\n90.00 CHF Anfänger, Schüler"
+      },
+      {
+       "label": "Elite, Amateure, Master, Hobby pro Rennen",
+       "amount": 25,
+       "currency": "CHF",
+       "checkedAt": "2026-11-05T23:05:48.351Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "sourceQuote": "pro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby"
+      },
+      {
+       "label": "Junioren, Damen pro Rennen",
+       "amount": 20,
+       "currency": "CHF",
+       "checkedAt": "2026-11-05T23:05:48.351Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "sourceQuote": "pro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby\n20.00 CHF Junioren, Damen"
+      },
+      {
+       "label": "Anfänger, Schüler pro Rennen",
+       "amount": 15,
+       "currency": "CHF",
+       "checkedAt": "2026-11-05T23:05:48.351Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "sourceQuote": "pro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby\n20.00 CHF Junioren, Damen\n15.00 CHF Anfänger, Schüler"
+      }
+     ],
+     "status": "current",
+     "checkedAt": "2026-11-05T23:05:48.351Z",
+     "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+     "editionYear": 2026
+    },
+    "venue": {
+     "quote": "RENNDATEN\n4132 Muttenz BL 14.11.2026",
+     "value": {
+      "name": "Muttenz BL",
+      "locality": "Muttenz",
+      "precision": "municipality",
+      "postalCode": "4132",
+      "countryCode": "CH"
+     },
+     "status": "current",
+     "checkedAt": "2026-11-05T23:05:48.345Z",
+     "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+     "editionYear": 2026
+    },
+    "schedule": {
+     "quote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer\nGruppe B: 12.45 Uhr / ca. 40 Min. Renndauer\nKidsrace ca. 14.00 Uhr / ca. 3-8min je nach Runde (verkürzte Runde im Zielbereich)\nGruppe C: 15.00 Uhr / ca. 25 Min. Renndauer\nGruppe D: 15.45 Uhr / ca. 40 Min. Renndauer",
+     "value": [
+      {
+       "date": "2026-11-07",
+       "time": "12:00",
+       "label": "Gruppe A",
+       "checkedAt": "2026-11-05T23:05:48.348Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "approximate": true,
+       "sourceQuote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer"
+      },
+      {
+       "date": "2026-11-07",
+       "time": "12:45",
+       "label": "Gruppe B",
+       "checkedAt": "2026-11-05T23:05:48.348Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "approximate": true,
+       "sourceQuote": "Gruppe B: 12.45 Uhr / ca. 40 Min. Renndauer"
+      },
+      {
+       "date": "2026-11-07",
+       "time": "14:00",
+       "label": "Kidsrace",
+       "checkedAt": "2026-11-05T23:05:48.349Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "approximate": true,
+       "sourceQuote": "Kidsrace ca. 14.00 Uhr / ca. 3-8min je nach Runde (verkürzte Runde im Zielbereich)"
+      },
+      {
+       "date": "2026-11-07",
+       "time": "15:00",
+       "label": "Gruppe C",
+       "checkedAt": "2026-11-05T23:05:48.349Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "approximate": true,
+       "sourceQuote": "Gruppe C: 15.00 Uhr / ca. 25 Min. Renndauer"
+      },
+      {
+       "date": "2026-11-07",
+       "time": "15:45",
+       "label": "Gruppe D",
+       "checkedAt": "2026-11-05T23:05:48.349Z",
+       "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+       "approximate": true,
+       "sourceQuote": "Gruppe D: 15.45 Uhr / ca. 40 Min. Renndauer"
+      }
+     ],
+     "status": "current",
+     "checkedAt": "2026-11-05T23:05:48.349Z",
+     "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+     "editionYear": 2026
+    }
+   }
+  },
+  {
+   "id": "475a8fae-cc3e-4305-b41a-fa3fc8261aa5",
+   "name": "Rowerowy Rajd Niepodległości",
+   "practical_details": {
+    "venue": {
+     "quote": "Rajd Niepodległości z ChTMR „Cyklista” 11 listopada 20265 r. Chojnickie Towarzystwo Miłośników Roweru „Cyklista” wraz ze Starostwem Powiatowym w Chojnicach serdecznie zapraszają na kolejną już ósmą edycję rajdu rowerowego z okazji Narodowego Święta Niepodległości! Miejsce zbiórki: Plac przed Chojnickim Centrum Kultury Godzina zbiórki: 11:00 Podczas uroczystości delegacja cyklistów złoży kwiaty przed pomnikiem Orła Białego. Następnie wyruszymy wspólnie trasą: Chojnice – Lichnowy – Ostrowite – Ciechocin (drobny poczęstunek) - Silno Na zakończeniu radu dla 70 uczestników mamy: Pamiątkowy medal Ciepły posiłek Koszt udziału: 20 zł Do zobaczenia na trasie!\n\nInformacje ogólne\n\nMiejsce: [Chojnice](https://elektronicznezapisy.pl/m/chojnice)",
+     "value": {
+      "name": "Plac przed Chojnickim Centrum Kultury",
+      "locality": "Chojnice",
+      "precision": "venue"
+     },
+     "status": "year_neutral",
+     "checkedAt": "2026-11-05T23:05:56.985Z",
+     "sourceUrl": "https://elektronicznezapisy.pl/event/16213.html",
+     "editionYear": 2026
+    }
+   }
+  }
+ ]
+}

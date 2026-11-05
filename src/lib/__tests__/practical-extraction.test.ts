@@ -199,4 +199,13 @@ describe("what an independent read of real regulations caught", () => {
     for (const label of ["3 Rosen Cross-Lauf: Erwachsene", "42,195 km Marathonlauf", "Burger Nachtlauf 5 km", "Trasa Nordic Walking", "Trasa biegu", "Skate-Marathon 42 km"]) expect(isNotCycling(label), label).toBe(true);
     for (const label of ["Radtour 150 km", "2. Lauf Elite", "pojedynczy bieg/marsz/rowerowanie", "U23 m / Elite m", "Zeitlicher Ablauf", "CTF 35 km", "Gravel 70 km"]) expect(isNotCycling(label), label).toBe(false);
   });
+  it("does not take a venue from another round's row or a document about another town", () => {
+    const cup = { url: "https://x.ch/afeno.pdf", links: [], text: "AFENO Cup 2026\nRENNDATEN\n4132 Muttenz BL 14.11.2026\n4313 Möhlin AG 07.11.2026\nGruppe A: 12.00 Uhr" };
+    const context3 = { name: "Afeno Cup #5", startDate: "2026-11-07", municipality: "Möhlin", ownUrls: [cup.url], documents: [cup] };
+    const venue = (name: string, quote: string) => ({ value: { name, precision: "municipality", locality: name }, quote, source_url: cup.url, identity_quote: "AFENO Cup 2026", edition_quote: "AFENO Cup 2026", status: "current" });
+    expect(verifyPracticalExtraction({ facts: { venue: venue("Muttenz", "RENNDATEN\n4132 Muttenz BL 14.11.2026") } }, context3).details.venue).toBeUndefined();
+    expect(verifyPracticalExtraction({ facts: { venue: venue("Möhlin", "4313 Möhlin AG 07.11.2026") } }, context3).details.venue?.value.name).toBe("Möhlin");
+    const other = { url: "https://x.pl/e.html", links: [], text: "Rajd Niepodległości 2026 Chojnice\nMiejsce zbiórki: Plac przed Centrum Kultury" };
+    expect(verifyPracticalExtraction({ facts: { venue: { value: { name: "Plac przed Centrum Kultury", precision: "venue" }, quote: "Miejsce zbiórki: Plac przed Centrum Kultury", source_url: other.url, identity_quote: "Rajd Niepodległości 2026", edition_quote: "Rajd Niepodległości 2026", status: "year_neutral" } } }, { name: "Rajd Niepodległości", startDate: "2026-11-07", municipality: "Świecie", documents: [other] }).details.venue).toBeUndefined();
+  });
 });

@@ -29,3 +29,12 @@ Krok „Čtu propozice“ běží v cyklu Macu po 6 hodinách, nejvýš 30 závo
 
 ## Zkušební dávka před nasazením
 30 závodů v pořadí, v jakém je vezme cyklus: 15 s údaji (13× místo, 11× pořadatel, 9× program, 9× startovné, 4× trasy). Prošel jsem je a zjevnou chybu nenašel, proti dokumentům jsem ale nekontroloval každý řádek.
+
+## První ostrá dávka (6. 11. v noci)
+Na server odešlo 20 závodů, u 15 z nich údaje z propozic: 79 změn, 0 konfliktů, necelých 2 s. Přečetl jsem všechny odeslané údaje proti citacím a **našel 2 chyby, oba místo závodu z jiné akce**:
+- Afeno Quer und Bike Cup #5 (Möhlin, 7. 11.): „Muttenz“ je řádek kola ze 14. 11. ve stejném dokumentu.
+- Rowerowy Rajd Niepodległości (Świecie, 7. 11.): místo je z jiné akce v Chojnicích, přišlo přes odkaz vedoucí na jiný závod.
+
+Oba údaje jsou odstraněné ze serveru i z Macu (`remove-wrong-venues.cjs`, předchozí stav v `venue-removal-*.json`). Kontrola nově odmítá místo nebo pořadatele citované u jiného data a jakýkoli údaj z dokumentu, který nezná město závodu. Přehrání uložených dávek ukázalo jedinou ztrátu správného údaje: startovné Säntis-Classic z registrační stránky, která město neuvádí. Selce přišly o místo kvůli rozporu data: dokument 6. 12., katalog 5. 12.
+
+Odeslaný údaj se tedy mýlil u 2 z 15 závodů první dávky. Další dávky jsou po zpřísnění, ale jejich přesnost zatím změřená není.
