@@ -38,12 +38,25 @@ export function databaseFetch(defaultWorkload?: DatabaseWorkload): typeof fetch 
     }
     const counts = requestCounts.getStore();
     if (counts) counts.attempts++;
+    const started = performance.now();
     try {
       const response = await fetch(input, { ...init, signal: original ? AbortSignal.any([original, timeout]) : timeout });
       if (counts && !response.ok) counts.failed++;
       return response;
     } catch (error) {
       if (counts) counts.failed++;
+      if (workload === "public-web") {
+        let resource = "unknown";
+        try {
+          const path = new URL(input instanceof Request ? input.url : String(input)).pathname;
+          if (/^\/rest\/v1\/(?:rpc\/)?[a-z0-9_]+$/i.test(path)) resource = path;
+        } catch { /* The failing URL is never copied into a log. */ }
+        console.warn("public_database_request_failed", {
+          resource, elapsedMs: Math.round(performance.now() - started),
+          timeoutAborted: timeout.aborted, callerAborted: original?.aborted ?? false,
+          errorName: error instanceof Error ? error.name : "unknown",
+        });
+      }
       throw error;
     }
   };

@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://letsrace.cz/cs/zavod/road-stage-orlicke-hory-2027",
+    "status": 200,
+    "title": "Road Stage Orlické hory",
+    "expectedTitle": true
+  },
+  {
+    "url": "https://letsrace.cz/cs/zavod/peklo-severu-road-n-2-2027",
+    "status": 200,
+    "title": "Peklo Severu Road N°2",
+    "expectedTitle": true
+  },
+  {
+    "url": "https://letsrace.cz/cs/zavod/jbc-4x-revelations-2027",
+    "status": 200,
+    "title": "4X Pro Tour - JBC 4X Revelations",
+    "expectedTitle": true
+  }
+]

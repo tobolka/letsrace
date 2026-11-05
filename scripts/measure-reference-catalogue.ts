@@ -8,7 +8,7 @@ import { nameSimilarity } from "../src/lib/discovery/report";
 
 type Row = { id: string; name: string; start_date: string; end_date: string | null; visibility: string; merged_into_id: string | null; disciplines: string[]; level: string; uci_class: string | null;
   location: { name: string; municipality: string | null; country_code: string } | null; sources: { external_id: string; source_url: string }[] };
-type Case = { id: string; name: string; sourceUrl: string; expected: { start_date: string; end_date: string; country: string; placeContains?: string; disciplines: string[]; level?: string; uci_class?: string }; reviewedEventIds: string[]; sourceExternalIds: string[]; nameAliases: string[] };
+type Case = { id: string; name: string; sourceUrl: string; sourceUrlScope?: "event" | "calendar"; expected: { start_date: string; end_date: string; country: string; placeContains?: string; disciplines: string[]; level?: string; uci_class?: string }; reviewedEventIds: string[]; sourceExternalIds: string[]; nameAliases: string[] };
 type SeparationCheck = { id: string; caseIds: string[]; expected: "separate"; sourceUrl: string };
 type EvidenceLimit = { id: string; sourceUrl: string; expected: string };
 type Reference = { version: number; referenceDate: string; cases: Case[]; separationChecks?: SeparationCheck[]; evidenceLimits?: EvidenceLimit[] };
@@ -30,6 +30,10 @@ function validateReference(reference: Reference) {
     if (!validDay(expected.start_date) || !validDay(expected.end_date) || expected.start_date > expected.end_date || !/^[A-Z]{2}$/.test(expected.country)) {
       throw Error(`Invalid date or country for ${id}`);
     }
+  }
+  const casesByUrl = Map.groupBy(reference.cases, c => c.sourceUrl);
+  for (const [url, cases] of casesByUrl) {
+    if (cases.length > 1 && cases.some(c => c.sourceUrlScope !== "calendar")) throw Error(`Shared source must be labelled as a calendar: ${url}`);
   }
   const caseIds = new Set(reference.cases.map(c => c.id));
   for (const check of checks) {
@@ -60,7 +64,8 @@ async function main() {
     catalog.push(...data as Row[]); if (data.length < 500) break;
   }
   const rows = reference.cases.map(c => {
-    const matches = catalog.filter(e => c.reviewedEventIds.includes(e.id) || e.start_date.startsWith(c.expected.start_date.slice(0, 4)) && e.sources.some(s => c.sourceExternalIds.includes(s.external_id) || s.source_url === c.sourceUrl));
+    const matches = catalog.filter(e => c.reviewedEventIds.includes(e.id) || e.start_date.startsWith(c.expected.start_date.slice(0, 4)) &&
+      e.sources.some(s => c.sourceExternalIds.includes(s.external_id) || c.sourceUrlScope !== "calendar" && s.source_url === c.sourceUrl));
     const publicMatches = matches.filter(e => e.visibility === "public" && !e.merged_into_id);
     // Multiple records for a weekend may be legitimate; report ambiguity instead of guessing a merge.
     const chosen = publicMatches.length === 1 ? publicMatches[0] : null;

@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { boundedDatabaseFetch, databaseFetch, withDatabaseDeadline, withDatabaseRequestCounts, withDatabaseWorkload } from "@/lib/supabase/request-budget";
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 it("aborts in-flight database work at the shared deadline and does not send work after it", async () => {
   const sent = vi.fn((_url: unknown, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
     init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
@@ -9,6 +9,20 @@ it("aborts in-flight database work at the shared deadline and does not send work
   await expect(withDatabaseDeadline(Date.now() + 20, () => boundedDatabaseFetch("https://db.test"))).rejects.toThrow();
   await expect(withDatabaseDeadline(Date.now() - 1, () => boundedDatabaseFetch("https://db.test"))).rejects.toThrow("write_time_budget_exhausted");
   expect(sent).toHaveBeenCalledOnce();
+});
+
+it("logs safe timing for a failed public read without credentials, filters or the response", async () => {
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("secret response"); }));
+  const read = databaseFetch("public-web");
+  await expect(read("https://db.test/rest/v1/rpc/public_edition_candidates?secret=filter", { headers: { authorization: "Bearer secret-key" } })).rejects.toThrow();
+  expect(warn).toHaveBeenCalledWith("public_database_request_failed", {
+    resource: "/rest/v1/rpc/public_edition_candidates", elapsedMs: expect.any(Number),
+    timeoutAborted: false, callerAborted: false, errorName: "Error",
+  });
+  expect(JSON.stringify(warn.mock.calls)).not.toContain("secret");
+  await expect(boundedDatabaseFetch("https://db.test/rest/v1/events")).rejects.toThrow();
+  expect(warn).toHaveBeenCalledOnce();
 });
 it("honours caller cancellation as well as the deadline", async () => {
   const controller = new AbortController(); controller.abort();

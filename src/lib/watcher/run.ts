@@ -1253,8 +1253,11 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
     }
     // A row skipped as unchanged was still seen on this page, so it stays checked.
     if (trackProgress && writableCandidates.length < uniqueCandidates.length) {
-      const { touchLastSeenForWatchedUrl } = await import("@/lib/catalog/freshness");
-      await touchLastSeenForWatchedUrl(row.id);
+      const { touchListedEvents } = await import("@/lib/catalog/freshness");
+      const writable = new Set(writableCandidates);
+      await touchListedEvents(row.id, uniqueCandidates
+        .filter(event => !writable.has(event) && event.externalId && !progress.get(event.externalId)?.conflicts)
+        .map(event => event.externalId!));
     }
 
     sourcePatch = {

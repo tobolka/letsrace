@@ -18,14 +18,14 @@ const arg = (name: string) => process.argv.find(value => value.startsWith(`--${n
 const country = (arg("country") ?? "CZ").toUpperCase();
 const apply = process.argv.includes("--apply");
 const maxAi = Number(arg("max-ai") ?? 300);
-const season = Number(arg("season") ?? 2026), target = season + 1;
+const season = Number(arg("season") ?? new Date().getFullYear()), target = season + 1;
 /** Dry-run recall test: behave as if these existing editions were missing. */
 const ignored = new Set((arg("ignore-event") ?? "").split(",").filter(Boolean));
 if (apply && ignored.size) throw Error("--ignore-event is for dry runs only");
 const hash = (text: string) => createHash("sha256").update(text).digest("hex");
 
 async function main() {
-  if (!/^[A-Z]{2}$/.test(country) || !Number.isInteger(maxAi) || maxAi < 0) throw Error("Invalid country or AI limit");
+  if (!/^[A-Z]{2}$/.test(country) || !Number.isInteger(maxAi) || maxAi < 0 || !Number.isInteger(season) || season < 2020 || season > 2100) throw Error("Invalid country, season or AI limit");
   for (const [key, value] of Object.entries(parse(readFileSync(".env.local")))) process.env[key] ??= value;
   const [{ createServerSupabase }, { askJson, llmSpent, LlmUnavailable, HAIKU }, next, identity, { saveCandidate, candidateAssertion }, { validateReviewSource }, { ingestReviewedCandidate }, { fetchPage }, { pageAsText }, { catalogueWindow }, { sendOpsAlert }] = await Promise.all([
     import("../src/lib/supabase/server"), import("../src/lib/llm/anthropic"), import("../src/lib/catalog/next-edition"), import("../src/lib/catalog/edition-identity"),
@@ -44,7 +44,7 @@ async function main() {
   const readEvents = async (from: string, until: string) => {
     const rows = [];
     for (let offset = 0; ; offset += 1000) {
-      const { data, error } = await db.from("events").select("id,name,start_date,visibility,series_id,disciplines,event_type,website_url,location:locations(lat,lng,municipality,country_code)")
+      const { data, error } = await db.from("events").select("id,name,start_date,end_date,visibility,series_id,disciplines,event_type,website_url,location:locations(lat,lng,municipality,country_code)")
         .is("merged_into_id", null).gte("start_date", from).lt("start_date", until).order("id").range(offset, offset + 999);
       if (error) throw error;
       rows.push(...data);
@@ -53,11 +53,6 @@ async function main() {
   };
   const previous = new Map((await readEvents(`${season}-01-01`, `${target}-01-01`)).map(row => [row.id, row]));
   const upcoming = (await readEvents(`${target}-01-01`, `${target + 1}-01-01`)).filter(row => !ignored.has(row.id));
-  const byKey = new Map<string, typeof upcoming>();
-  for (const row of upcoming) {
-    const key = identity.editionKey(row.name);
-    byKey.set(key, [...(byKey.get(key) ?? []), row]);
-  }
   const hostOf = (url: string | null) => { try { return new URL(url ?? "").hostname.replace(/^www\./, ""); } catch { return ""; } };
   const racesPerHost = new Map<string, number>();
   for (const review of reviews) racesPerHost.set(hostOf(review.website_url), (racesPerHost.get(hostOf(review.website_url)) ?? 0) + 1);
@@ -79,8 +74,7 @@ async function main() {
     if (!race) continue;
     const base = { race: review.id, name: review.name };
     const here = { id: race.id, name: race.name, start_date: race.start_date, series_id: race.series_id, disciplines: race.disciplines, location: race.location };
-    const known = byKey.get(identity.editionKey(race.name)) ?? [];
-    const next_ = identity.findNextEdition(here, upcoming) ?? known[0];
+    const next_ = identity.findNextEdition(here, upcoming);
     if (next_) { rows.push({ ...base, state: next_.visibility === "public" ? "found" : "waiting", reason: next_.visibility === "public" ? undefined : "next_edition_is_hidden", eventId: next_.id, date: next_.start_date }); continue; }
     if (review.reviewStatus === "no_website") { rows.push({ ...base, state: "no_website" }); continue; }
     if (review.reviewStatus === "unreadable") { rows.push({ ...base, state: "unreadable" }); continue; }
@@ -111,10 +105,14 @@ async function main() {
           break;
         }
       }
-      const decision = next.decideEdition({ race: candidate, page: pageInput, answer: cache[key]!, year: target, today, sharedHost: (racesPerHost.get(hostOf(page.url)) ?? 0) >= 3 });
+      const decision = next.decideEdition({ race: candidate, page: pageInput, answer: cache[key]!, year: target, today, sharedHost: (racesPerHost.get(hostOf(page.url)) ?? 0) >= 2 });
       if (decision.state === "wait") { outcome ??= { ...base, state: decision.reason === "not_announced_on_page" ? "not_announced" : "waiting", reason: decision.reason, url: page.url }; continue; }
-      const sameDay = upcoming.find(row => row.start_date === decision.event.startDate && (row.location?.municipality === race.location?.municipality || hostOf(row.website_url) === hostOf(page.url)));
-      if (sameDay) { outcome = { ...base, state: sameDay.visibility === "public" ? "found" : "waiting", reason: sameDay.visibility === "public" ? "matched_by_date_and_place" : "next_edition_is_hidden", url: page.url, date: decision.event.startDate, eventId: sameDay.id }; break; }
+      const existing = next.matchAnnouncedEdition(decision.event, upcoming);
+      if (existing.state === "ambiguous") { outcome = { ...base, state: "waiting", reason: "next_edition_identity_ambiguous", url: page.url, date: decision.event.startDate }; break; }
+      if (existing.state === "found") {
+        const matched = existing.event;
+        outcome = { ...base, state: matched.visibility === "public" ? "found" : "waiting", reason: matched.visibility === "public" ? "matched_announcement_identity" : "next_edition_is_hidden", url: page.url, date: decision.event.startDate, eventId: matched.id }; break;
+      }
       outcome = { ...base, state: "waiting", reason: "would_publish", url: page.url, date: decision.event.startDate };
       proposals.push({ row: outcome, event: decision.event, answer: cache[key]!, candidate, pageInput, raceName: race.name, raceId: race.id });
       break;
@@ -144,7 +142,7 @@ async function main() {
     try {
       const source = await fetchPage(url, { fresh: true });
       const fresh = pageAsText(source.html, url).text;
-      const shared = (racesPerHost.get(hostOf(url)) ?? 0) >= 3;
+      const shared = (racesPerHost.get(hostOf(url)) ?? 0) >= 2;
       if (source.status !== 200 || next.decideEdition({ race: candidate, page: { ...pageInput, text: fresh }, answer, year: target, today, sharedHost: shared }).state !== "publish") throw Error("Announcement is no longer on the page");
       const saved = await saveCandidate(db, event, { sourceUrl: url, documentHash: hash(source.html), textHash: hash(fresh), reason: `Announced ${target} edition of ${raceName}`, country });
       if (saved.rejected) throw Error("Candidate was already rejected");

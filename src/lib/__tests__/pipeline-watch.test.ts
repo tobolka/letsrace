@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn() }));
+const state = vi.hoisted(() => ({ known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn(), touch: vi.fn(), touchAll: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: async (name: string, args: Record<string, unknown>) => {
   if (name === "pipeline_claim_source_read") return { data: [{ key: "source:source", token: "test-lease", payload: { sourceRevision: "2026-11-04" } }], error: null };
   if (name === "pipeline_commit_source_read") {
@@ -21,7 +21,7 @@ vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: as
   return chain;
 } }) }));
 vi.mock("@/lib/watcher/core", async original => ({ ...await original<typeof import("@/lib/watcher/core")>(), fetchPage: state.fetch, extractEvents: state.extract }));
-vi.mock("@/lib/catalog/freshness", () => ({ hideDroppedCalendarEvents: state.hide, touchLastSeenForWatchedUrl: vi.fn() }));
+vi.mock("@/lib/catalog/freshness", () => ({ hideDroppedCalendarEvents: state.hide, touchLastSeenForWatchedUrl: state.touchAll, touchListedEvents: state.touch }));
 import { watchOne } from "@/lib/watcher/run";
 import { WATCH_READER_VERSION, canReconcileMissingEvents } from "@/lib/watcher/core";
 afterEach(() => { state.known.length = 0; state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
@@ -109,6 +109,8 @@ it("keeps a complete calendar checkpoint while a conflicting row waits and skips
   expect(state.writes.find(w => w.table === "ingest_runs")?.value.metrics).toMatchObject({
     attempted: 0, pendingWrites: 1, skippedUnchanged: 197,
   });
+  expect(state.touchAll).not.toHaveBeenCalled();
+  expect(state.touch).toHaveBeenLastCalledWith("source", rows.slice(1).map(event => event.externalId));
 
   // A changed fact behind the unchanged landing page bypasses the old row delay.
   rows[0] = { ...rows[0]!, startDate: "2027-05-20" };
@@ -117,4 +119,17 @@ it("keeps a complete calendar checkpoint while a conflicting row waits and skips
   expect(changed.issues).toContain("write_failed:0:write_time_budget_exhausted");
   expect(state.writes.find(w => w.table === "ingest_runs")?.value.metrics).toMatchObject({ attempted: 1, skippedUnchanged: 196 });
   expect(state.hide).not.toHaveBeenCalled();
+});
+
+it("only refreshes listed unchanged rows when a source has other linked races", async () => {
+  const { calendarRowHash, calendarRowProgress } = await import("@/lib/watcher/calendar-progress");
+  const row = { externalId: "listed", name: "Observed race", startDate: "2027-04-20", sourceUrl: "https://club.test/", placeText: "Praha", confidence: 0.9 };
+  state.known.push(...["listed", "absent"].map(external_id => ({ external_id, event: { updated_at: "2026-11-04" } })));
+  const entry = calendarRowProgress(calendarRowHash(row), Date.now(), 0);
+  state.fetch.mockResolvedValue({ status: 200, html: "<p>calendar</p>", hash: "stable" });
+  state.extract.mockResolvedValue({ events: [row], childUrls: [], confidence: 0.9, strategy: "adapter:test", complete: true });
+  await watchOne({ id: "source", url: "https://club.test/calendar", kind: "calendar",
+    calendar_write_progress: { version: `calendar-v1:${WATCH_READER_VERSION}:calendar:https://club.test/calendar`, rows: [["listed", entry.hash, entry.until, 0]] } });
+  expect(state.touch).toHaveBeenCalledWith("source", ["listed"]);
+  expect(state.touchAll).not.toHaveBeenCalled();
 });

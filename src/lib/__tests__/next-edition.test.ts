@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { decideEdition, editionNeutralName, editionWindows, type EditionAnswer, type EditionRace } from "@/lib/catalog/next-edition";
+import { decideEdition, editionNeutralName, editionWindows, matchAnnouncedEdition, type EditionAnswer, type EditionRace } from "@/lib/catalog/next-edition";
+import { findNextEdition, type EditionIdentity } from "@/lib/catalog/edition-identity";
 
 const race: EditionRace = {
   id: "a4639a53-0e95-4bed-a234-efe70a9ad186", name: "HSF System Bike Čeladná 2026", start_date: "2026-08-22",
@@ -33,6 +34,15 @@ describe("next edition decision", () => {
   it("does not take a registration deadline for the race day", () => {
     const text = "Uzávěrka přihlášek 7.8.2027 ve 12:00.";
     expect(decide({ startDate: "2027-08-07", quote: "Uzávěrka přihlášek 7.8.2027 ve 12:00." }, { page: { ...page, text } })).toEqual({ state: "wait", reason: "date_may_be_a_deadline" });
+  });
+
+  it.each(["Uzávěrka přihlášek závodu 21.8.2027.", "Registrace na další ročník končí 21.8.2027.", "Race registration deadline: 21.8.2027."])("rejects a deadline even when it mentions the race: %s", text => {
+    expect(decide({ quote: text }, { page: { ...page, text } })).toEqual({ state: "wait", reason: "date_may_be_a_deadline" });
+  });
+
+  it("accepts an independently stated race date beside a registration announcement", () => {
+    const text = "Závod se koná 21.8.2027, registrace se brzy otevřou.";
+    expect(decide({ quote: text }, { page: { ...page, text } }).state).toBe("publish");
   });
 
   it("does not accept a provisional date", () => {
@@ -73,6 +83,48 @@ describe("next edition decision", () => {
 
   it("holds races whose discipline is not known", () => {
     expect(decide({}, { race: { ...race, disciplines: ["other"] } })).toEqual({ state: "wait", reason: "discipline_unknown" });
+  });
+});
+
+describe("existing edition identity", () => {
+  const old: EditionIdentity = { id: "previous", name: race.name, start_date: race.start_date, series_id: null, disciplines: race.disciplines,
+    location: { country_code: "CZ", municipality: "Čeladná", lat: 49.55, lng: 18.34 } };
+  const current = { ...old, id: "current", name: "HSF System Bike Čeladná 2027", start_date: "2027-08-21", end_date: null };
+  const announced = () => {
+    const result = decide();
+    if (result.state !== "publish") throw Error("Expected an announcement");
+    return result.event;
+  };
+
+  it("does not call a same-name race abroad the next edition", () => {
+    const abroad = { ...current, location: { ...current.location!, country_code: "PL" } };
+    expect(findNextEdition(old, [abroad])).toBeNull();
+    expect(matchAnnouncedEdition(announced(), [abroad]).state).toBe("missing");
+  });
+
+  it("does not match an unrelated race on the same day in the same town", () => {
+    expect(matchAnnouncedEdition(announced(), [{ ...current, name: "Beskydský okruh" }]).state).toBe("missing");
+  });
+
+  it("matches an announcement with the same race and preserves ambiguity", () => {
+    expect(matchAnnouncedEdition(announced(), [current])).toEqual({ state: "found", event: current });
+    const duplicate = { ...current, id: "second" };
+    expect(findNextEdition(old, [current, duplicate])).toBeNull();
+    expect(matchAnnouncedEdition(announced(), [current, duplicate]).state).toBe("ambiguous");
+  });
+
+  it("holds a same-name edition whose date, venue or duration disagrees", () => {
+    for (const changed of [
+      { ...current, start_date: "2027-08-22" },
+      { ...current, end_date: "2027-08-22" },
+      { ...current, location: { ...current.location!, lat: 50.1, lng: 14.4, municipality: "Praha" } },
+    ]) expect(matchAnnouncedEdition(announced(), [changed]).state).toBe("ambiguous");
+  });
+
+  it("does not match another round whose normalised annual name is identical", () => {
+    const first = { ...old, name: "Beskydský pohár — 1. kolo" };
+    const second = { ...current, name: "Beskydský pohár — 2. kolo" };
+    expect(findNextEdition(first, [second])).toBeNull();
   });
 });
 

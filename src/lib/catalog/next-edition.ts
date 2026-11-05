@@ -1,6 +1,7 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
-import { editionKey } from "@/lib/catalog/edition-identity";
+import { editionKey, type EditionIdentity } from "@/lib/catalog/edition-identity";
+import { assessDuplicate, type DedupEvent } from "@/lib/dedup";
 import { isDumpListingUrl } from "@/lib/watcher/public-url";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { fold } from "@/lib/text-match";
@@ -23,8 +24,7 @@ export type EditionPage = { url: string; title?: string; text: string };
 export type EditionDecision = { state: "publish"; event: ParsedEvent } | { state: "wait"; reason: string };
 
 const SHARED_SITES = /(?:^|\.)(?:sumator\.cz|winspace\.cz|nazavody\.cz|sportchallenge\.cz|sportsoft\.cz|raceresult\.com|kalendarzrowerowy\.pl|facebook\.com|instagram\.com|cyklokros\.cz|bikeri\.cz|cykloman\.cz)$/i;
-const NOT_THE_RACE_DATE = /registrac|prihlas|uzaverk|startovn|deadline|platba|sleva/;
-const STATES_THE_RACE = /rocnik|kona|uskutec|termin|datum|start|zavod/;
+const NOT_THE_RACE_DATE = /registrac|registration|anmeld|iscrizion|inscription|prihlas|uzaverk|startovn|deadline|entry fee|payment|platba|sleva/;
 const TENTATIVE = /predbez|tbc|planovan|pripravuj|upresn|provisional|tentative/;
 const MULTISPORT = /triatlon|triathlon|duatlon|duathlon|\bbeh\s*[·,/–-]|[·,/–-]\s*beh\b|\bvoda\s*[·,/–-]|[·,/–-]\s*voda\b/;
 
@@ -32,6 +32,33 @@ const hostOf = (url: string | null | undefined) => {
   try { return new URL(url ?? "").hostname.toLowerCase().replace(/^www\./, ""); } catch { return ""; }
 };
 const literal = (text: string) => fold(text).replace(/\s+/g, " ").trim();
+
+/** A town or organiser's shared website cannot identify which race was announced. */
+export function matchAnnouncedEdition<T extends EditionIdentity & { end_date?: string | null }>(
+  event: ParsedEvent, candidates: T[],
+): { state: "found"; event: T } | { state: "ambiguous" } | { state: "missing" } {
+  const incoming: DedupEvent = {
+    name: event.name, startDate: event.startDate, endDate: event.endDate,
+    countryCode: event.countryHint, placeText: event.placeText,
+    lat: event.lat, lng: event.lng, disciplines: event.discipline,
+  };
+  const matches = candidates.filter(row => {
+    if (row.start_date !== event.startDate || (row.end_date ?? row.start_date) !== (event.endDate ?? event.startDate)) return false;
+    return assessDuplicate(incoming, {
+      name: row.name, startDate: row.start_date, endDate: row.end_date,
+      countryCode: row.location?.country_code, placeText: row.location?.municipality,
+      lat: row.location?.lat, lng: row.location?.lng, disciplines: row.disciplines,
+      // Calendar roots and shared organiser sites are deliberately not identity signals.
+    }).decision === "match";
+  });
+  if (matches.length === 1) return { state: "found", event: matches[0]! };
+  if (matches.length > 1) return { state: "ambiguous" };
+  // An existing same-name record with an uncertain date/place needs reconciliation,
+  // rather than a second copy or an arbitrary first match.
+  if (candidates.some(row => row.start_date.slice(0, 4) === event.startDate.slice(0, 4) &&
+    row.location?.country_code === event.countryHint && editionKey(row.name) === editionKey(event.name))) return { state: "ambiguous" };
+  return { state: "missing" };
+}
 
 /** An annual name without its year or edition number; sponsors stay as the organiser uses them. */
 export function editionNeutralName(name: string): string {
@@ -89,7 +116,8 @@ export function decideEdition(input: { race: EditionRace; page: EditionPage; ans
   if (end && (end <= start || !quoteStatesDate(quote, end, { role: "end" }))) return wait("quote_does_not_state_end");
   const folded = fold(quote);
   if (TENTATIVE.test(folded)) return wait("tentative_date");
-  if (NOT_THE_RACE_DATE.test(folded) && !STATES_THE_RACE.test(folded)) return wait("date_may_be_a_deadline");
+  if (NOT_THE_RACE_DATE.test(folded) && !quote.split(/[,;!?\n]/).some(part =>
+    !NOT_THE_RACE_DATE.test(fold(part)) && part.includes(String(year)) && quoteStatesDate(part, start))) return wait("date_may_be_a_deadline");
 
   const pageHost = hostOf(page.url), raceHost = hostOf(race.website_url);
   if (!pageHost || isDumpListingUrl(page.url) || isRegistrationPlatformUrl(page.url) || SHARED_SITES.test(pageHost)) return wait("shared_site");

@@ -18,6 +18,17 @@ export function touchLastSeenForWatchedUrl(watchedUrlId: string) {
   return updateFreshness(watchedUrlId);
 }
 
+export async function touchListedEvents(watchedUrlId: string, externalIds: string[]) {
+  if (!externalIds.length) return 0;
+  const lease = currentSourceLease();
+  if (!lease) throw Error("source_reader_unavailable_or_running: calendar freshness requires a source lease");
+  const { data, error } = await createServerSupabase().rpc("pipeline_touch_listed_events", {
+    p_source: watchedUrlId, p_key: lease.key, p_token: lease.token, p_url: lease.url, p_ids: externalIds,
+  });
+  if (error) throw Error(error.message);
+  return data;
+}
+
 export function hideDroppedCalendarEvents(opts: {
   watchedUrlId: string;
   extractedExternalIds: Set<string>;

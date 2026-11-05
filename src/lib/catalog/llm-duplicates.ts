@@ -1,6 +1,6 @@
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
-import { distanceKm, isGarbagePlace, scoreDuplicate, hasIdentityConflict } from "@/lib/dedup";
+import { DEDUP_THRESHOLD, distanceKm, isGarbagePlace, scoreDuplicate, hasIdentityConflict, placesNearby, sharesDisciplineFamily } from "@/lib/dedup";
 import { isSeparateRace, mergeEventPair, mergeKeeper, asDedup, type MergeDuplicateRow } from "@/lib/catalog/merge-duplicates";
 import { canonicalizeDisciplines, disciplineFamily } from "@/lib/taxonomy";
 import { askJson, LlmUnavailable, LlmResponseError, addUsage, NO_USAGE, SONNET, type LlmUsage } from "@/lib/llm/anthropic";
@@ -186,6 +186,19 @@ export function namesSupportMerge(a: Pick<Row, "name" | "website_url">, b: Pick<
   return short.length >= 2 && short.every(token => long.includes(token)) && Boolean(site) && site === siteOf(b.website_url) && confidence >= 0.85;
 }
 
+/** Name-based evidence is enough only when the other recorded facts also agree. */
+export function recordsSupportNameMerge(a: MergeDuplicateRow, b: MergeDuplicateRow, confidence: number): boolean {
+  if (!namesSupportMerge(a, b, confidence) || a.start_date !== b.start_date ||
+    (a.end_date ?? a.start_date) !== (b.end_date ?? b.start_date)) return false;
+  const left = asDedup(a), right = asDedup(b);
+  if (!left.countryCode || left.countryCode !== right.countryCode ||
+    !sharesDisciplineFamily(left.disciplines, right.disciplines)) return false;
+  // A shared organiser's host and a model's confidence cannot substitute for a venue.
+  if (!placesNearby(left, right, 15)) return false;
+  const { score, reasons } = scoreDuplicate({ ...left, urls: [], fingerprint: undefined }, { ...right, urls: [], fingerprint: undefined });
+  return score >= DEDUP_THRESHOLD && !hasIdentityConflict(reasons) && !reasons.includes("series_conflict");
+}
+
 const SYSTEM =
   "You de-duplicate a catalogue of cycling races collected from many calendars. For each numbered pair, decide whether A and B are the SAME event (one race listed twice: by two sources, in two languages, once by its own name and once as a series round, with or without the venue) or DIFFERENT events (even at one venue on one day: a kids' race beside the main race, an e-bike or hobby heat, a different discipline, a ride next to a race, two rounds of different cups, a festival vs one race within it). " +
   "Two distances or age starts within the SAME race can be one event; a festival and one race within it are not interchangeable. A series round listed twice under its own name and the series name can be the SAME event, with source evidence. " +
@@ -312,7 +325,7 @@ export async function judgeDuplicates(opts?: {
           result.usage = addUsage(result.usage, m.usage);
           ev = m.ev;
         }
-        if (!ev && v.verdict === "same" && namesSupportMerge(a, b, conf)) ev = { how: "model and matching names", url: a.website_url ?? b.website_url ?? "", text: `${a.name} = ${b.name}` };
+        if (!ev && recordsSupportNameMerge(a, b, conf)) ev = { how: "model and matching name, date, venue and discipline", url: a.website_url ?? b.website_url ?? "", text: `${a.name} = ${b.name}` };
         if (!ev) {
           result.unsure += 1;
           opts?.log?.(`UNSURE  ${line}  — no page says they are one race`);

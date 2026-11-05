@@ -1499,6 +1499,10 @@ export type Database = {
         Args: { p_source: string; p_key: string; p_token: string; p_url: string; p_ids?: string[]; p_count?: number; p_from?: string; p_until?: string }
         Returns: number
       }
+      pipeline_touch_listed_events: {
+        Args: { p_source: string; p_key: string; p_token: string; p_url: string; p_ids: string[] }
+        Returns: number
+      }
       public_edition_candidates: {
         Args: { p_country: string; p_from: string; p_until: string; p_after?: string }
         Returns: { id: string; name: string; slug: string; start_date: string; series_id: string | null; disciplines: string[] | null; status: string; visibility: string; location: Json }[]

@@ -19,6 +19,7 @@ try {
     insert into pipeline_tasks values ('source','${id(100)}','source_read','running','${id(101)}',now()+interval '1 hour');
   `);
   await db.exec(await readFile("supabase/migrations/20261104071531_fence_calendar_freshness.sql", "utf8"));
+  await db.exec(await readFile("supabase/migrations/20261105070202_scope_calendar_observations_to_listed_rows.sql", "utf8"));
   for (let n = 1; n <= 9; n++) {
     await db.query("insert into events(id,start_date,status,visibility) values ($1,current_date+$2::integer,'scheduled','public')", [id(n), n]);
     await db.query("insert into event_sources values ($1,$2,$3)", [id(n), id(100), String(n)]);
@@ -30,6 +31,16 @@ try {
     [id(100), "source", token, url, ids ?? null, count ?? null],
   )).rows[0].count;
   await db.exec("set role service_role");
+  const touch = async (ids, token = id(101)) => (await db.query(
+    "select pipeline_touch_listed_events($1,$2,$3,$4,$5) as count", [id(100), "source", token, url, ids],
+  )).rows[0].count;
+  await assert.rejects(touch(["1"], id(102)), /source lease lost/);
+  assert.equal(await touch(["1", "alias"]), 2, "only listed IDs are observed; aliases retain identity");
+  assert.equal((await db.query("select count(*)::int n from events where last_seen_at is not null")).rows[0].n, 2);
+  assert.equal((await db.query("select count(*)::int n from events where status='hidden'")).rows[0].n, 0, "touch never hides missing events");
+  assert.equal(await touch([]), 0);
+  assert.equal(await touch(["unknown"]), 0);
+  await db.exec("reset role; update events set last_seen_at=null; set role service_role");
   await assert.rejects(run(["1","2","3","4","5"], 5, id(102)), /source lease lost/);
   assert.equal(await run(["1","2"], 2), 0, "tiny read");
   assert.equal(await run(["new","ids","here"]), 0, "rewritten IDs");
@@ -45,8 +56,10 @@ try {
   ]);
   await db.exec("reset role; update watched_urls set status='paused'; set role service_role");
   await assert.rejects(run(), /source changed/);
+  await assert.rejects(touch(["1"]), /source changed/);
   await db.exec("reset role; set role anon");
   await assert.rejects(run(), /permission denied/);
+  await assert.rejects(touch(["1"]), /permission denied/);
   console.log("PASS: lease, source pause, bulk freshness, overlap, aliases, alternative evidence, locks, date window, audit and restricted access");
 } finally {
   await db.close();
