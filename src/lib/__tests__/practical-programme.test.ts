@@ -94,3 +94,48 @@ it("reads the currency spellings organisers write in full or without diacritics"
   expect(feeQuoteSupports("Startgeld 25 Euro", 25, "CHF")).toBe(false);
   expect(entryPrices("Europa 25 Europameister 3 Frauen 40 Fr")).toEqual([]);
 });
+
+const jicinGuide = { url: "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf", links: [], text: `ROZPIS ZÁVODU
+5. závod JANEV CUP 2026
+Mezinárodní závod UCI C2 pro kategorie Muži ELITE+U23, ŽENY ELITE, junioři
+Jičín - sobota 14.11.2026
+Pořadatel: CYKLOKLUB Jičín z.s.
+Místo konání: Jičín -Šibeňák
+Termín konání: sobota 14.11.2026
+Program: V pátek 13.11.2026:
+15:00 Výdej čísel
+V sobotu 14.11.2026:
+08:30 – 9:00 oficiální trénink
+09:10 KADETKY, STARŠÍ ŽÁKYNĚ a MLADŠÍ ŽÁKYNĚ (společný start)
+Žákyně: zvláštní hodnocení
+10:15 STARŠÍ ŽÁCI a MLADŠÍ ŽÁCI (společný start)
+11:00 KADETI (samostatný start)
+Ceny: dle rozpisu soutěže
+16:00 Výdej cen` };
+const jicin = { name: "JANEV CUP 2026 / UCI C2 - Jičín", startDate: "2026-11-14" };
+it("extracts a headed PDF guide with the organiser, explicit venue and race-day programme", () => {
+  const details = practicalProgramme(jicinGuide,jicin);
+  expect(details.organizer?.value.name).toBe("CYKLOKLUB Jičín z.s.");
+  expect(details.venue?.value).toEqual({ name: "Jičín -Šibeňák", precision: "venue" });
+  expect(details.schedule?.value.map(row=>[row.time,row.label])).toEqual([
+    ["09:10","KADETKY, STARŠÍ ŽÁKYNĚ a MLADŠÍ ŽÁKYNĚ"],
+    ["10:15","STARŠÍ ŽÁCI a MLADŠÍ ŽÁCI"], ["11:00","KADETI"],
+  ]);
+  expect(details.schedule?.value.every(row=>row.date==="2026-11-14")).toBe(true);
+  expect(details.fees).toBeUndefined();
+});
+it("does not reuse the guide for another race or edition, or turn its office into a venue", () => {
+  expect(practicalProgramme(jicinGuide,{...jicin,startDate:"2027-11-14"})).toEqual({});
+  expect(practicalProgramme(jicinGuide,{...jicin,name:"Other completely different race"})).toEqual({});
+  const office = {...jicinGuide,text:jicinGuide.text.replace("Místo konání:","Adresa kanceláře:")};
+  expect(practicalProgramme(office,jicin).venue).toBeUndefined();
+});
+it("keeps one complete programme when official Czech and English guides give the same starts", () => {
+  const original=practicalProgramme(jicinGuide,jicin);
+  const translated=structuredClone(original);
+  translated.schedule!.sourceUrl="https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf";
+  translated.schedule!.value.forEach((row,index)=>row.label=["WOMEN CADET","MEN BEGINNER","MEN CADET"][index]);
+  expect(combinePracticalFindings(original,translated).schedule?.value).toHaveLength(3);
+  translated.schedule!.value[2].time="11:20";
+  expect(combinePracticalFindings(original,translated).schedule?.value).toHaveLength(6);
+});

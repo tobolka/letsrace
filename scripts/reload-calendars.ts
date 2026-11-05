@@ -22,6 +22,9 @@ try {
 }
 
 async function main() {
+  const arg = (key: string, fallback: number) => Number(process.argv.find(value => value.startsWith(`--${key}=`))?.split("=")[1] ?? fallback);
+  const rounds = arg("rounds", 5), limit = arg("limit", 60), seconds = arg("seconds", 170);
+  if (![rounds, limit, seconds].every(Number.isInteger) || rounds < 1 || rounds > 40 || limit < 1 || limit > 120 || seconds < 15 || seconds > 260) throw Error("Invalid source batch limits");
   const supabase = createServerSupabase();
   const now = new Date().toISOString();
 
@@ -45,8 +48,8 @@ async function main() {
   let failed = 0;
   const fails: { url: string; error?: string }[] = [];
 
-  for (let round = 1; round <= 5; round++) {
-    const outcomes = await runDueWatches(60, { concurrency: 4, budgetMs: 170_000 });
+  for (let round = 1; round <= rounds; round++) {
+    const outcomes = await runDueWatches(limit, { concurrency: 4, budgetMs: seconds * 1000 });
     reportWatchBatch(outcomes);
     for (const outcome of outcomes) latest.set(outcome.watchedUrlId, outcome);
     if (!outcomes.length) {

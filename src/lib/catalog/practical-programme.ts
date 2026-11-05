@@ -5,11 +5,69 @@ import { mergePracticalDetails, practicalValueSchemas, type PracticalDetails } f
 type ProgrammeContext = { name: string; startDate: string; endDate?: string | null; knownVenue?: string };
 
 export function practicalProgramme(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
-  return combinePracticalFindings(programmeRows(doc, context), keyValueProgramme(doc, context));
+  return combinePracticalFindings(combinePracticalFindings(programmeRows(doc, context), keyValueProgramme(doc, context)), headedProgramme(doc, context));
+}
+
+/** Race-specific PDF guides often have a title, not a "Race:" table cell. */
+function headedProgramme(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
+  const lines = doc.text.split("\n").map(line => line.trim()).filter(Boolean);
+  const head = lines.slice(0, 18).join("\n").slice(0, 500);
+  if (!head.includes(context.startDate.slice(0, 4)) || !quoteContainsDate(head, context.startDate)) return {};
+  const facts: Record<string, unknown> = {};
+  const evidence = (value: unknown, quote: string) => ({ value, quote, source_url: doc.url, identity_quote: head, edition_quote: head, status: "current" });
+  const organizer = lines.find(line => /^(?:Pořadatel|Poradatel|Organiser|Organizer|Veranstalter)\s*:\s*/i.test(line));
+  if (organizer) {
+    const name = organizer.replace(/^[^:]+:\s*/, "").trim();
+    if (name.length > 1 && name.length <= 200) facts.organizer = evidence({ name }, organizer);
+  }
+  const venue = lines.find(line => /^(?:Místo konání|Miesto konania|Areál|Race venue|Veranstaltungsort)\s*:\s*/i.test(line));
+  if (venue) {
+    const name = venue.replace(/^[^:]+:\s*/, "").trim();
+    if (name.length > 1 && name.length <= 200) facts.venue = evidence({ name, precision: "venue" }, venue);
+  }
+  const starts: { label: string; date: string; time: string; sourceQuote: string; sourceUrl: string }[] = [];
+  let inProgramme = false, dayHeader = -1;
+  for (const [index, line] of lines.entries()) {
+    if (/^(?:Program|Harmonogram|Schedule|Zeitplan)\b/i.test(line)) inProgramme = true;
+    if (!inProgramme) continue;
+    const dateHeader = /^(?:Program|Harmonogram|Schedule|Zeitplan|V\s|On\s|Am\s|Saturday|Sunday|Friday|Samstag|Sonntag|Freitag)/i.test(line);
+    if (dateHeader && /20\d{2}/.test(line)) {
+      dayHeader = quoteContainsDate(line, context.startDate) ? index : -1;
+      continue;
+    }
+    if (/^(?:Podmínky|Pravidla|Ceny|Prizes|Startovné|Racing fee|Vyhlášení výsledků|Zdravotní|Antidoping)[^:]{0,35}:\s/i.test(line)) { inProgramme = false; dayHeader = -1; continue; }
+    if (dayHeader < 0) continue;
+    const row = /^([01]?\d|2[0-3])[:.]([0-5]\d)\s+(.{3,200})$/.exec(line);
+    if (!row) continue;
+    if (/^[–-]\s*\d/.test(row[3])) continue; // A time range needs its own representation.
+    const sourceQuote = !context.endDate || context.endDate === context.startDate ? line : lines.slice(dayHeader, index + 1).join("\n");
+    if (sourceQuote.length > 1500) continue;
+    starts.push({ label: row[3].split(/\s*\(/)[0].trim(), date: context.startDate, time: `${row[1].padStart(2, "0")}:${row[2]}`, sourceQuote, sourceUrl: doc.url });
+  }
+  if (starts.length) facts.schedule = evidence(starts, starts[0].sourceQuote);
+  return verifyPracticalExtraction({ facts }, { ...context, documents: [doc] }).details;
 }
 
 /** Keep independent fields and route variants from every document. */
 export function combinePracticalFindings(previous: PracticalDetails, incoming: PracticalDetails): PracticalDetails {
+  const a = previous.schedule, b = incoming.schedule;
+  if (a && b && a.value.length >= 3 && a.value.length === b.value.length) {
+    const language = (rows: typeof a.value) => {
+      const labels = rows.map(row => row.label).join(" ");
+      if (/\b(?:WOMEN|MEN|CADET|JUNIOR)\b/.test(labels) && !/ŽÁ|MUŽ|ŽENY|JUNIOŘ/i.test(labels)) return "en";
+      if (/ŽÁ|MUŽ|ŽENY|JUNIOŘ|KADETKY|KADETI/i.test(labels)) return "cs";
+      return null;
+    };
+    const left = language(a.value), right = language(b.value);
+    const frame = (rows: typeof a.value) => rows.map(row => `${row.date}|${row.time}`).sort().join("\n");
+    // Complete translated programmes must not double every start. A new time,
+    // same-language heats or an unknown language still retain separate evidence.
+    if (left && right && left !== right && new URL(a.sourceUrl).hostname === new URL(b.sourceUrl).hostname && frame(a.value) === frame(b.value)) {
+      const other = { ...incoming };
+      delete other.schedule;
+      incoming = other;
+    }
+  }
   return { ...previous, ...mergePracticalDetails(previous, incoming) };
 }
 

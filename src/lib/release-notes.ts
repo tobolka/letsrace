@@ -19,6 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-05",
+    items: {
+      cs: ["U JANEV CUPu v Jičíně najdeš areál, pořadatele a časy jednotlivých startů podle propozic."],
+      en: ["The JANEV CUP race in Jičín shows its venue, organiser and individual start times from the race guide."],
+    },
+  },
+  {
     date: "2026-11-04",
     items: {
       cs: [

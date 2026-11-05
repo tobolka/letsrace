@@ -1,88 +1,87 @@
-# LetsRace · hlavní seznam práce
+# LetsRace: co teď děláme
 
-Stav k 5. listopadu 2026. Tento soubor je jediný aktuální seznam. Každý řádek má vlastní výsledek. Jakmile projde jeho kontrola, přesune se do **Hotovo** pod stejným ID.
+Aktualizováno 5. listopadu 2026. Toto je hlavní seznam práce.
 
-| Stav | Význam |
-| --- | --- |
-| **HOTOVO** | Uvedený výsledek má konkrétní ověření. Sloupec s důkazem říká, zda jde o test, nasazení, živou kontrolu nebo měření. |
-| **DALŠÍ** | Nejbližší práce, kterou lze udělat. |
-| **OTEVŘENO** | Konkrétní práce ve frontě. |
-| **ČEKÁ** | K uzavření je potřeba doběh, měření nebo předchozí krok. |
-| **BLOKOVÁNO** | Chybí přístup nebo souhlas k živému běhu. |
+## Čeho chceme dosáhnout
 
-**Rozhodnutí vlastníka 4. listopadu.** Priorita je pokrytí a aktuálnost, začíná se Českem. Na zkoušku AI je 8 USD. Vlastník nechce rozhodovat jednotlivé případy, stačí neoficiální zdroj s dostatkem údajů a duplicity se mají řešit do několika hodin. Balast je vypnutý a kontroly omezené. [Výsledek úklidu](../reports/source-cleanup-2026-11-04/RESULT.md)
+**Pomocník sám najde závody, doplní správné informace a ukáže je lidem na webu. Stejný závod tam nebude dvakrát. Ty ho nemusíš hlídat.**
 
-**Co následuje.** Převzetí změn druhé AI a pět oprav ochrany dat jsou dokončené a ověřené testy; [přesný rozsah a nasazení](../reports/takeover-review-2026-11-05/RESULT.md). Automatické pozastavení již vyžaduje tři po sobě jdoucí úspěšná úplná čtení bez závodu, dalších odkazů a otevřené práce. **Další priorita je P0.4f: čerstvé produkční logy stále obsahují timeouty ročníků.** Odstraňování příčiny je otevřené; nově měříme konkrétní požadavek, dobu a důvod přerušení. P0.4a lze uzavřít až po celých 24 hodinách od nasazení úspor. Scany Macu i serveru zůstávají pozastavené.
+To ještě nemáme hotové. Opravené části nejsou důkazem, že dobře funguje celý pomocník.
 
-## Otevřené úkoly P0 · bezpečný provoz
+## Co dělám právě teď
 
-| ID | Stav | Co se udělá | Hotovo, až |
-| --- | --- | --- | --- |
-| P0.3a | **ČEKÁ** | Fronta měla 4. listopadu 1 104 závodů a 87 seriálů při limitu 60 kontrol denně. Dříve ověřené nezměněné záznamy se kontrolují na 10% vzorku a nové změny mají přednost. Vlastník rozhodl, že všechny kontrolovat netřeba: 830 neověřených starých úloh se žádostí o obnovu je uzavřených mimo vzorek a zůstává 261 závodů a 20 seriálů. Rozebrat položky, které se opakovaně vracejí. | Staré úlohy jsou potvrzené nebo jednotlivě vysvětlené a novější změny nezůstávají čekat přes další běžný cyklus. Požadavky na obnovu a ověřené výsledky mají oddělená čísla. |
-| P0.4a | **ČEKÁ** | Vyhodnotit celý den s pozastavenými scany po nasazení úspor. Rozdělit provoz na veřejný web, zveřejnění, monitor, počasí a ostatní. | Je uložený přesný interval, počet požadavků podle činnosti a dostupný údaj o skutečném objemu logů. Podmínkou pro pilot je celkový provoz pod 16 000 požadavky za den a prostor v rozpočtu logů. |
-| P0.4f | **OTEVŘENO** | Zjistit, proč obnova ročníků a kol seriálů na pozadí hlásí 20s timeout. Čerstvé logy 5. listopadu potvrzují výskyty i ve vydání `c4260fda`; instrumentace již zaznamenává dobu, cílovou tabulku/funkci a stav přerušení bez klíčů a parametrů. Samotná příčina ještě není prokázaná. 4. listopadu bylo ve Vercelu asi 140 chyb, ale Supabase nezaznamenal dotaz nad 3,5 s a všech 26 kontrolovaných detailů mělo odkazy na ročníky. | Je doložená příčina na straně funkce a chyby klesly. Selhání odkazů na ročníky je nově v logu, takže lze vyhodnotit, zda se projevuje návštěvníkům. |
-| P0.4b | **ČEKÁ** | Pokud rozpočet nevychází, opravit největší změřený zdroj provozu nebo timeoutů a zopakovat měření. | Celodenní měření prokáže pokles. Detail, seznam, mapa a kalendář při běžných změnách zůstávají aktuální. Při splnění rozpočtu v P0.4a se tento krok uzavře jako nepotřebný. |
-| P0.5a | **BLOKOVÁNO** | Po ověření rozpočtu a fronty získat souhlas s omezeným pilotem. Zkusit dvě převzetí stejného zdroje, přerušení běhu a pokračování při vypnutém Macu. | Pilot má pevný rozsah a limity. Výsledek dokládá, že souběh ani pád neztratí práci a nevytvoří druhý závod. |
-| P0.5b | **ČEKÁ** | Vyhodnotit dva běžné cykly před postupným obnovením automatického sběru. | Jsou doložené náklady, stabilita veřejného webu, návrat po chybě a přínos obou běhů. Po obnovení funguje stejná možnost okamžité pauzy. |
-| P0.4c | **ČEKÁ** | Z pilotu spočítat přínos podle zdroje a druhu práce a podle něj upravit pořadí. | Přehled zvlášť uvádí skutečně nové závody, unikátní změněné závody, doložená doplnění, kontroly bez změny, čas, požadavky a dostupné náklady AI. Změny priorit mají oporu v těchto datech. |
+**Nové omezení, přímo ověřené ve Vercelu:** za zobrazených posledních 30 dní je využito 9 hodin 28 minut CPU proti limitu 4 hodin. Samotný LetsRace tvoří 9 hodin 1 minutu (95,3 %). Je potřeba zjistit podíl veřejného webu a sběru a omezit největší příčinu. Další velké běhy se zatím nepouštějí; první malá zkouška už skončila.
 
-**Dosavadní čísla.** Dne 4. listopadu mezi 01:10 a 20:00 prošlo Supabase 16 035 požadavků bez zaznamenaného běhu hlavního sběrače. Jde o výchozí interval před úsporami. Od 28. října do 3. listopadu proběhlo 2 326 zaznamenaných čtení. Součet časů zdrojů je 11 h 36 min, doba s alespoň jedním aktivním čtením je 4 h 11 min. U 76 % čtení s podrobnými počítadly se nevykázal nový ani změněný záznam. Historie neurčuje počet správně doplněných závodů. [Spotřeba](../reports/pipeline-traffic-2026-11-04/RESULT.md) · [Přínos sběru](../reports/pipeline-yield-2026-11-04/RESULT.md)
+**Opravuju, jak si pomocník rozděluje práci. Našel jsem i zbytečné výpočty při zobrazování ročníků. Místní porovnání na stejných datech zrychlilo tuto část ze 4,7 sekundy na 0,064 sekundy a vrátilo stejné odkazy. Úsporu celého Vercelu ještě nemáme změřenou.**
 
-## Otevřené úkoly P1 · správnost dat a pokrytí
+Dnes může dlouho hledat a opakovaně číst stejné stránky. Doplnění informací a jejich zobrazení na webu přijde na řadu až pozdě. Chci, aby vždy udělal menší kus práce celý: našel → doplnil → ukázal.
 
-| ID | Stav | Co se udělá | Hotovo, až |
-| --- | --- | --- | --- |
-| P1.4d | **DALŠÍ** | Rozšířit první zmrazenou kontrolní sadu pro širší pilot. Doplňovat hlavně menší závody a chybějící disciplíny. | Původní cíl pilotu je 20 nedotčených ročníků na zemi, celkem 140. Zdroje a očekávané výsledky jsou zmrazené před měřením. [První průřez](quality/reference-2026-11-04.md) |
-| P1.1a | **OTEVŘENO** | Sjednotit podmínky shody hlavního importu, importu kandidátů a následné kontroly duplicit. | Stejné dvojice zkoušek procházejí všemi cestami. Rozpor disciplíny, kola, ročníku nebo samostatné soutěže nezpůsobí automatické spojení. |
-| P1.1b | **OTEVŘENO** | U nejasných shod uložit podklady a výsledek rozhodnutí. Zohlednit dřívější rozhodnutí při dalším importu. | Opakovaný import nepřidá už sloučený závod a znovu neotevře rozhodnutou dvojici bez nového podkladu. |
-| P1.1c | **OTEVŘENO** | Doložit bezpečný návrat sloučení celého závodu. | Zkouška vrátí obě identity, adresy, zdroje, kategorie, seriály a uživatelské plány. Pozdější změny se nepřepíšou naslepo. |
-| P1.2a | **OTEVŘENO** | Dokončit provozní ověření pravidelného výběru chybějících ročníků. Týdenní český průchod již existuje; opraveny záměny podle názvu, společného místa/webu, uzávěrky a nejasných shod. Testy prošly, celý cyklus po těchto opravách v pauze neběžel. | Sdílený web se čte jednou. Výstup rozliší novou doloženou edici, existující záznam, rozpor, nedostupný zdroj a chybějící oznámení. Nový termín má výslovný podklad pro nový rok. |
-| P1.2b | **OTEVŘENO** | Vyzkoušet cílené hledání nových závodů podle mezer v zemích a disciplínách. | Výsledek odděluje nové zdroje, kandidáty, duplicity a skutečné nové závody s ověřitelným podkladem. U každé části je rozsah, přínos a spotřeba. |
-| P1.3a | **OTEVŘENO** | Rozšířit čtení volného textu a složitějších podmínek startovného. | Kontrolní příklady pokrývají věkové a trasové varianty, cenová období a měny. Každá uložená cena má vlastní zdrojovou citaci a správnou podmínku. |
-| P1.3e | **OTEVŘENO** | Upravit ochranu osmi přihlášek Dětského MTB Cupu tak, aby nevracela rok 2026, ale umožnila doloženou novou přihlášku 2027. Druhá AI zámkem opravila chybný odkaz, současně tím blokovala budoucí automatické doplnění. | Starý ročník zůstane odmítnutý a nový doložený odkaz se bezpečně uloží bez zásahu vlastníka. |
-| P1.3b | **OTEVŘENO** | Ověřit přínos čtečky praktických údajů na širším vzorku skutečných propozic. | Porovnání ukáže správná doplnění i chyby u areálu, startu, pořadatele, cen a tras. Výsledky z archivních podkladů a skutečné změny katalogu se vykazují zvlášť. |
-| P1.4b | **ČEKÁ** | Porovnat výsledek pipeline se zmrazenou kontrolní sadou a pilotem. | Jsou uvedené správnost termínu, místa a disciplíny, pokrytí, duplicity, chybná sloučení, náklady a počet a čas rozhodnutí vlastníka. |
-| P1.5 | **BLOKOVÁNO** | Obnovit čtení Eventivu po vyřešení přístupu u poskytovatele. | Povolený přístup vrátí obsah závodů a test ověří, že výsledek zachovává dříve uložené závody. Aktuální doložený stav je HTTP 401. [Ověření](../reports/source-recovery-2026-11-02/RESULT.md) |
-
-## Otevřené úkoly P2 · obsluha a veřejný web
-
-| ID | Stav | Co se udělá | Hotovo, až |
-| --- | --- | --- | --- |
-| P2.1a | **OTEVŘENO** | Připojit konkrétní typ rozhodnutí ke schránce vlastníka. | Jeden skutečný případ vytvoří jedinou srozumitelnou otázku, odpověď se dohledatelně a bezpečně provede a bez odpovědi se úloha odloží. |
-| P2.1b | **OTEVŘENO** | Prověřit rozdělení práce mezi serverem a Macem i mimo hlavní sběrač. V přehledu oddělit hledání zdrojů, hledání závodů ve známých zdrojích, doplňování a řešení rozporů. | Každá ze čtyř činností má srozumitelný výsledek a dohledatelné pokračování po pádu. Provozní chyby a otázky pro vlastníka jsou vidět odděleně. |
-| P2.2 | **OTEVŘENO** | Doplnit srovnání kol seriálu a pravidla sezóny z doložených zdrojů. | Veřejný detail seriálu ukáže srovnatelné údaje a odkaz na platná pravidla, pokud pro danou sezónu existují. [Návrh detailů](race-series-next-content-2026-11-03.md) |
-| P2.3 | **ČEKÁ** | Doplnit spolehlivé kraje a vybrat regionální kolekce s dostatkem dat. | Každá zveřejněná kolekce má smysluplný výběr závodů a funkční regionální přiřazení. |
-| P2.4 | **ČEKÁ** | Nechat doběhnout úvodní doplnění historie počasí. | Čekající místa jsou doplněná nebo vysvětlená po jednotlivých příčinách. Spotřeba zůstává v nastaveném rozpočtu. |
-| P2.5b | **OTEVŘENO** | Zachovat staré adresy seriálů Road Stage a L’Etape po jejich sjednocení druhou AI. | Staré veřejné adresy vedou trvalým přesměrováním na správný seriál ve všech jazycích, bez smyček a ztráty členství. |
-| P2.5 | **OTEVŘENO** | Ověřit skutečné indexování a technické SEO reprezentativních detailů, seriálů a kolekcí. | Výsledek zvlášť uvádí správnost canonical, jazykových alternativ, sitemap a strukturovaných dat i stav indexování. [SEO podklady](seo-next-steps-2026-11-02.md) |
-
-## Hotovo · konkrétní výsledky
-
-| ID | Stav | Výsledek a důkaz |
+| Pořadí | Úkol | Stav |
 | --- | --- | --- |
-| P0.1 | **HOTOVO** | Hlavní sběrač má trvalé převzetí zdroje a společné potvrzení výsledku, stavu a termínu. Databázové zkoušky pokryly expiraci, druhé převzetí, pozdní výsledek a ruční pauzu. Živý souběh je P0.5a. |
-| P0.2a | **HOTOVO** | Pravidelné zapisovače místa, termínu, registrace, disciplíny a kategorií respektují revize a ruční zámky. Souřadnice a bod pro mapu se ukládají spolu. V produkci se ze stávajících souřadnic doplnilo 204 bodů. Databázové zkoušky a vratná zkouška prošly. [Zápisy a návrat](../reports/atomic-catalog-writes-2026-11-03/RESULT.md) |
-| P0.2b | **HOTOVO** | Nové i existující závody se ukládají se zdroji, kategoriemi, místem a vazbami. Schválení kandidáta má dohledatelný výsledek a přerušený zápis pokračuje. Jednotlivá doložená změna a celá sada kategorií mají chráněnou obnovu. [Zápis](../reports/watcher-evidence-bundle-2026-11-03/RESULT.md) · [Kandidáti](../reports/candidate-publication-2026-11-03/RESULT.md) · [Vazby](../reports/atomic-series-membership-2026-11-03/RESULT.md) |
-| P0.3b | **HOTOVO** | Požadavek na obnovu a kontrola výsledku jsou oddělené. Detail závodu i seriálu se kontroluje v češtině, angličtině, němčině, polštině a slovenštině. První živá kontrola seznamu, mapy a kalendáře porovnala 1 006 závodů. Ověřovací limit je 60 denně, obnova nejvýše čtyři dávky po 200 za 24 hodin. Doběh je P0.3a. [Společný seznam](../reports/aggregate-publication-2026-11-02/RESULT.md) |
-| P0.4d | **HOTOVO** | Kolize zápisu opakuje jen dotčené řádky a další pokus má odklad. Nezměněný kalendář lze potvrdit jedním databázovým požadavkem. Odstranění závodu kontroluje rozsah čtení, jiné zdroje a ruční zámky. Čtení ročníků a kol je jednodušší. [Opravy spotřeby](../reports/limits-2026-11-04/RESULT.md) |
-| P0.4e | **HOTOVO** | Měření času, ID vytvořených a změněných závodů a počtu databázových požadavků je nasazené. Produkční logy potvrdily rozlišení webu a monitoru. Opakovaná chyba zdroje má denní odklad, Mac v pauze hlásí stav méně často a pořadatelské dotazy sdílejí výsledek. Úspora se měří v P0.4a. [Výchozí měření](../reports/pipeline-traffic-2026-11-04/RESULT.md) |
-| P0.4g | **HOTOVO** | Automatické pozastavení zdrojů rozlišuje neproduktivní úspěšné čtení od chyby, odkladu, čekání na sezónu a otevřeného kandidáta. Databázová migrace aplikovaná, lokální databázové zkoušky prošly. Žádný další zdroj se při kontrole nevypnul. [Ověření převzetí](../reports/takeover-review-2026-11-05/RESULT.md) |
-| P0.4h | **HOTOVO** | Přeskočené nezměněné řádky obnovují datum pozorování pouze u skutečně načtených ID. Nepřečtené a kolizní položky se tím nepotvrzují. Migrace, zkouška skutečné databázové funkce a test hlavního sběrače prošly. |
-| P1.1f | **HOTOVO** | Slučování podle názvů bez zdrojové citace navíc vyžaduje shodu dne a délky akce, konkrétního místa, země a rodiny disciplíny; respektuje konflikty kol a seriálů. Ověřeny pozitivní i negativní případy. Nejde o dokončení celého P1.1a ani o živě změřenou správnost sloučení. |
-| P1.2f | **HOTOVO** | Kontrola ročníků nepovažuje první podobný název ani jiný závod ve stejné obci/na webu za existující ročník. Nejasné shody čekají, uzávěrka nepřebije den závodu a sdílený web se kontroluje už u dvou závodů. Regresní příklady prošly; provozní ověření je P1.2a. |
-| P1.1d | **HOTOVO** | Čtečka a AI zachovají různé závody ze stejného kalendáře a zohlední disciplínu i kolo. Sběrač při opakovaném použití ID zdroje kontroluje uloženou disciplínu. Regresní testy, `main` a nasazení `8ee4adf2`. |
-| P1.1e | **HOTOVO** | Duplicita Die Mauer von Kendenich byla opravena se zachováním vazeb. Chotěbuz se opakovaně zpracovala bez vytvoření dalšího závodu. [Chotěbuz](../reports/source-recovery-2026-11-02/RESULT.md) |
-| P1.2c | **HOTOVO** | Audit z archivu zachovává vícedenní termín a odděluje chyby čtení od vodítek. Ověřeno na snímku 4 685 závodů a na zkoušce ročníku 2028. Změna je v `main`. [Použití](annual-editions.md) |
-| P1.2d | **HOTOVO** | Dávka českých závodů zpracována. JBC 4X zveřejněn, místo Road Stage Orlické hory opraveno v existujícím záznamu. Z UCI dávky přidán Szczyrk a doplněny Graz a Black Forest. Lost Ride je skrytý provizorní záznam, Oremon rekreační jízda. [Česká dávka](../reports/cz-2027-import-2026-10-31/REPORT.md) · [UCI dávka](../reports/uci-import-2026-11-03/RESULT.md) |
-| P1.2e | **HOTOVO** | Srovnání Crawl4AI a Scrapling na 11 adresách je v `main`. Na tomto vzorku nepřineslo další kandidáty vůči stávajícím čtečkám. [Výsledky zkoušky](../reports/crawler-comparison-2026-11-04/RESULT.md) |
-| P1.3c | **HOTOVO** | Strukturované praktické údaje mají zdroj, ruční zámky a transakční zápis. Tabulky i výslovně označené řádky textu procházejí kontrolou závodu a termínu. Nasazeno `8a88fb05`, 1 514 testů prošlo. Na veřejné Rohálovské ověřen pořadatel a start ve 12:30. [Praktické údaje a příklady](../reports/practical-reader-v3-2026-11-03/RESULT.md) |
-| P1.3d | **HOTOVO** | U čtených cen se ověřuje částka společně s měnou a zachovávají se desetinná místa. Datum začátku platnosti se nevydává za uzávěrku. Ověřeno regresními testy ve vydání `8a88fb05`. Dodatečně se čte Euro, Kc, zl, Fr. a SFr. |
-| P1.4a | **HOTOVO** | Zmrazený první průřez obsahuje 14 ročníků ze sedmi zemí, dvě kontroly neslučování a pět kontrol hranic podkladů. Zdroje a očekávané výsledky jsou uložené před porovnáním s katalogem. Formát a otisk ověřeny lokálně. [Kontrolní sada](quality/reference-2026-11-04.md) |
-| P1.4c | **HOTOVO** | První oddělený výchozí vzorek má tři doložené případy ze dvou zemí. Fullgaz a Ötztaler po cílených opravách patří mezi regresní příklady. [Výchozí vzorek](../reports/independent-baseline-2026-11-03/RESULT.md) · [Provedené opravy](../reports/coverage-recovery-2026-11-03/RESULT.md) |
-| P2.1c | **HOTOVO** | Jednoduchý admin a panel jsou nasazené. Technické nástroje jsou v `/admin/tools`, stav veřejného seznamu má vlastní údaj a schránka chrání před zastaralou odpovědí. Ověřeno po přihlášení. [Ověření](../reports/owner-admin-2026-11-02/RESULT.md) |
-| P2.2a | **HOTOVO** | Detail má odkazy na předchozí i další ročníky, trvalou hlavičku, praktické údaje a odkazy na areál. Okolní závody jsou za zdroji. Vedlejší kola jsou dohledatelná. Michaelis-Schanze přestal zobrazovat trasu 0 km. [Oprava délky](../reports/zero-distance-2026-11-03/RESULT.md) |
-| P2.3a | **HOTOVO** | Tři kolekce pro Česko, MTB a děti pokrývají celý rok 2027. Měsíce vedou na odpovídající část seznamu, nadbytečné souhrny jsou odstraněné. Veřejné stránky ověřeny. |
-| P2.4a | **HOTOVO** | Historie počasí má trvalé úložiště, serverové doplňování a společné limity. Předpověď má krátkou platnost. Doběh úvodního plnění je P2.4. |
-| P2.5a | **HOTOVO** | Doložený areál, adresa a pořadatel jsou ve viditelném detailu i ve strukturovaných datech. Nasazení a veřejná kontrola proběhly. Skutečné indexování je samostatně P2.5. |
+| **1** | Dlouhé hledání musí skončit včas. Doplnění údajů a zobrazení na webu dostane vlastní čas. Stejná stránka se v jednom průchodu nebude stahovat znovu pro každý závod. | **HOTOVÉ A OTESTOVANÉ.** Malý běh doběhl. Právě posílám ověřené změny do hlavní větve a na server; velké pravidelné běhy ještě nepouštím. |
+| **2** | Pustit malý skutečný běh a zkontrolovat, co přinesl. | **PRVNÍ BĚH DOBĚHL za 39 sekund.** Čtyři zdroje, sedm přečtených detailů, 18 stažených dokumentů. Žádný nový závod ani užitečné doplnění, bez placené AI. Samotná nula není chyba; u části načtených propozic ale pořadatel i program existují a čtečka je nezískala. |
+| **3** | Když něco nedotáhne, opravit příčinu a zkusit to znovu. | **OPRAVENO A NA JIČÍNĚ ŽIVĚ OVĚŘENO.** Výběr vynechává automaticky přidané stránky výsledků a slavnostního vyhlášení. Čtečka nově rozumí běžným propozicím v PDF: v Jičíně uložila pořadatele, areál a šest startů. Na veřejném detailu jsou tyto údaje vidět. Teď dokončuju kontrolu a nasazení změněného programu. |
+| **4** | Zapnout pravidelné běhy v ověřeném rozsahu. | **ČEKÁ na výsledek.** Velké automatické scany jsou zatím pozastavené. |
 
-Finanční limity platí dál. Trialové závody, nový koncept ověřovacích statusů a veřejné editační formuláře jsou mimo aktuální rozsah. [Provozní návod](keep-fresh.md) · [Historický plán sedmi etap](operations-autonomy-plan-2026-11-01.md)
+Tyto kroky mají značky P0.6a–c. Původní číslování není pořadí práce.
+
+## Co ti musí ukázat skutečný běh
+
+- Jak dlouho běžel.
+- Kolik našel nových skutečných závodů.
+- Kolika závodům doplnil správné užitečné údaje a které to byly.
+- Co se opravdu objevilo na veřejném webu.
+- Co nešlo dokončit a proč.
+- Kolik stál.
+
+**Když nic nového není, nic nepřidáváme. To je správně.** Výsledek má rozlišit „přečteno a beze změny“, „nové údaje jsme získali“ a „nepodařilo se zkontrolovat“. Nezměněné stránky se mají číst méně často.
+
+**Počet přečtených stránek není počet nalezených závodů. Vyplněné políčko ještě nemusí být správně.**
+
+**Důkazy dnešního průchodu a opakování:** [stručný výsledek](../reports/productive-cycle-2026-11-05/RESULT.md). Všechny testy nyní: 1 567 prošlo. To není důkaz správnosti celého katalogu.
+
+## Co už je dnes opravené
+
+Tyto opravy jsou v hlavní větvi a na serveru; kopie na Macu je také aktualizovaná:
+
+- Stejný název nebo společné město nestačí k záměně dvou závodů.
+- Uzávěrka přihlášek se nesmí vydávat za den závodu.
+- Pomocník nesmí spojit dva závody jen proto, že si to AI myslí.
+- Dočasně nefunkční stránka se nesmí automaticky označit jako zbytečná.
+- Závod, který pomocník na stránce neviděl, se nesmí označit jako znovu zkontrolovaný.
+
+Kontroly těchto oprav prošly. **Jejich přínos pro celý katalog teprve změří skutečný běh.** [Podklady a provedené změny](../reports/takeover-review-2026-11-05/RESULT.md).
+
+## Proč to ještě nestačí
+
+Při dnešní kontrole jsme v sedmi podporovaných zemích našli **947 veřejných závodů pro rok 2027**. Jen **14** má vyplněný nový blok praktických informací. Některé údaje jsou uložené i jinde; tato čísla neříkají, že ostatní detaily jsou úplně prázdné ani že těch 14 je všechno správně.
+
+Sledujeme **736 aktivních zdrojů**. Na rozhodnutí čeká **30 nalezených záznamů**: 11 nových a 19 odložených. Není tedy doložené, že máme tisíce hotových závodů, které stačí zveřejnit.
+
+Dřívější měření ukázalo, že **76 % čtení s dostupnými počítadly nepřineslo nový ani změněný záznam**. Potřebujeme lépe vybírat, co číst, a dokončovat získané informace. [Dřívější měření](../reports/pipeline-yield-2026-11-04/RESULT.md).
+
+## Co dál zbývá
+
+| Oblast | Co ještě chybí | Stav / značka |
+| --- | --- | --- |
+| Nové závody | Pravidelně najít chybějící ročníky a závody, které vůbec neznáme. Změřit, kolik jich to skutečně přidává. | **ČÁSTEČNĚ.** Hledání ročníků existuje, celý nový průchod není ověřený. P1.2a, P1.2b. |
+| Bohatší údaje | U většího počtu závodů získat místo startu, trasy, kategorie, časy, ceny a přihlášky. Uchovat, odkud informace pochází. | **ČÁSTEČNĚ.** Ukládání a první čtečky fungují, plošný výsledek chybí. P1.3a, P1.3b. |
+| Správné přihlášky | Staré přihlášky Dětského MTB Cupu byly odstraněny, ochrana ale blokuje i doplnění budoucích správných přihlášek. | **ZBÝVÁ OPRAVIT.** P1.3e. |
+| Duplicity | Poznat stejný závod ve všech cestách sběru, pamatovat si rozhodnutí a umět bezpečně vrátit chybné spojení. | **ČÁSTEČNĚ.** Konkrétní opravy a ochrany existují; celý postup není doložený. P1.1a–c. |
+| Aktuální veřejný web | Dotáhnout čekající změny a opravit přetrvávající selhání načítání ročníků. | **ČÁSTEČNĚ.** P0.3a, P0.4f. |
+| Čas a spotřeba | Zjistit přínos každého druhu práce a hlídat celkovou spotřebu. | **ČÁSTEČNĚ.** První čísla máme; porovnání celého dne po úsporách a výsledků nových běhů chybí. P0.4a–c. |
+| Spolehlivost po pádu | Na malém běhu ověřit souběh, přerušení a pokračování bez ztráty práce nebo druhé kopie závodu. | **ZBÝVÁ ŽIVÁ ZKOUŠKA.** Souhlas jsi dnes dal. P0.5a–b. |
+| Nezávislá kontrola | Porovnat katalog s předem připravenými skutečnými závody. Výsledek nesmí záviset jen na příkladech, podle kterých se systém opravoval. | **ZAČATO.** První sada má 14 závodů, původní širší cíl je 140. P1.4b, P1.4d. |
+| Jednoduchý přehled pro tebe | Ukázat, co přibylo, co čeká a kdy je opravdu nutná tvoje odpověď. | **ROZHRANÍ HOTOVÉ, automatické rozhodování částečné.** P2.1a–b. |
+| Seriály a kraje | Doplnit srovnání kol, pravidla seriálů a spolehlivé přiřazení ke krajům. | **ČÁSTEČNĚ.** P2.2, P2.3. |
+| Počasí | Dokončit první doplnění historických údajů. | **DOBÍHÁ.** P2.4. |
+| Vyhledávání a staré odkazy | Ověřit indexaci a zachovat staré adresy sloučených seriálů. | **ZBÝVÁ OVĚŘIT / OPRAVIT.** P2.5, P2.5b. |
+| Eventiv | Získat povolený přístup k obsahu, který nyní odmítá čtení. | **BLOKUJE POSKYTOVATEL.** P1.5. |
+
+## Co z dřívější práce zůstává hotové
+
+Ukládání se zdroji a ochranou ručních oprav, pokračování části přerušené práce, jednoduchý admin a Mac panel, tři celoroční kolekce 2027, odkazy na předchozí i další ročníky, doplněné místo pro vyhledávače a konkrétní dodané importy. Duplicita Die Mauer von Kendenich byla vyřešená. Tyto jednotlivé výsledky se nemají dělat znovu.
+
+[Historický podrobný záznam před tímto zjednodušením](../reports/takeover-review-2026-11-05/tracker-before-simplification.md) slouží pouze k dohledání starých značek a důkazů. Tento soubor je jediný aktuální plán.
+
+**Hotovo bude tehdy, když opakované skutečné běhy přidávají správné závody a informace, změny jsou na webu a ty nemusíš pomocníka hlídat. Dnes to ještě tvrdit nemůžeme.**

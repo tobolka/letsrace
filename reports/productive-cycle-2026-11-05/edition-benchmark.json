@@ -1,0 +1,11 @@
+{
+  "kind": "offline comparison on a current public German catalogue snapshot",
+  "rows": 1455,
+  "sampleRaces": 30,
+  "forwardYearChecks": 150,
+  "beforeMs": 4716,
+  "afterMs": 64,
+  "sameResults": true,
+  "links": 3,
+  "limits": "One country and one sample; this is not billed Vercel CPU or a measured site-wide saving."
+}

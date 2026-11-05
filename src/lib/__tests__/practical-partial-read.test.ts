@@ -1,9 +1,9 @@
 import { expect, it, vi } from "vitest";
 import { enrichPracticalDetails } from "@/lib/catalog/practical-enrichment";
 
-const mocks = vi.hoisted(() => ({ from: vi.fn(), rpc: vi.fn(), read: vi.fn(), mark: vi.fn(), checkpoint: vi.fn(), ask: vi.fn() }));
+const mocks = vi.hoisted(() => ({ from: vi.fn(), rpc: vi.fn(), read: vi.fn(), mark: vi.fn(), checkpoint: vi.fn(), ask: vi.fn(), secondRace: false }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ from: mocks.from, rpc: mocks.rpc }) }));
-vi.mock("@/lib/supabase/read-all", () => ({ readAllRows: async (query: (from: number, to: number) => { table: string }) => query(0, 999).table === "events" ? [{ id: "race", name: "Fixture race", start_date: "2027-05-01", public_revision: "revision", practical_details: {}, website_url: "https://club.test/", location: { country_code: "CZ" } }] : [] }));
+vi.mock("@/lib/supabase/read-all", () => ({ readAllRows: async (query: (from: number, to: number) => { table: string }) => query(0, 999).table === "events" ? (mocks.secondRace ? ["race", "second"] : ["race"]).map(id => ({ id, name: "Fixture race", start_date: "2027-05-01", public_revision: "revision", practical_details: {}, website_url: "https://club.test/", location: { country_code: "CZ" } })) : [] }));
 vi.mock("@/lib/catalog/regulation-ages", () => ({ readDocument: mocks.read }));
 vi.mock("@/lib/catalog/facts", () => ({ alreadyRead: async () => false, markRead: mocks.mark }));
 vi.mock("@/lib/llm/anthropic", async original => ({ ...await original<object>(), askJson: mocks.ask }));
@@ -23,4 +23,15 @@ it("saves useful work but leaves a capped document walk retryable rather than st
   expect(mocks.mark).not.toHaveBeenCalled();
   expect(mocks.ask).not.toHaveBeenCalled();
   expect(mocks.checkpoint).toHaveBeenCalledWith(expect.objectContaining({ event_id: "race", outcome: "failed", attempts: 1 }), { onConflict: "event_id,probe" });
+});
+
+it("reads a shared document once for two races while assessing their facts separately", async () => {
+  mocks.secondRace = true;
+  mocks.read.mockClear();
+  mocks.read.mockResolvedValue({ url: "https://club.test/", text: "Fixture race, 1. 5. 2027", html: null, thin: false });
+  try {
+    const result = await enrichPracticalDetails({ max: 2, structuredOnly: true });
+    expect(result).toMatchObject({ read: 2, downloadedDocuments: 1, reusedDocuments: 1, failed: 0 });
+    expect(mocks.read).toHaveBeenCalledOnce();
+  } finally { mocks.secondRace = false; }
 });

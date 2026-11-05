@@ -7,6 +7,7 @@ export function isAuxiliaryDiscoveryUrl(raw: string): boolean {
     // Match whole path segments, not race names such as Tour de Zeleňák.
     if (/(?:^|\/)(?:vysledky|ergebnisse|results|startovni-listina|startovni-listiny|startlist|startliste|meldeliste|galerie|fotogalerie|historie|archiv|archive|sponzoring|sponzorsky-program|podminky|kontakt|contact|impressum|datenschutz|o-nas|team)(?:[\/._-]|$)/.test(path)) return true;
     if (/informace-o-zpracovani-osobnich-udaju/.test(path)) return true;
+    if (/(?:^|\/)(?:galavecer|vyhlaseni-vysledku|slavnostni-vyhlaseni)(?:[\/._-]|$)/.test(path)) return true;
     // Explicit entry/list endpoints, rather than generic race entry hubs which
     // sometimes contain the only regulations and dates (e.g. /zapisy).
     if (/\/(?:startlist|registration)\.aspx$|\/(?:reg_form|list_reg)[\w-]*\.php$|\/(?:anmeldung|rfc_registrace)\.php$|\/prihlaseni-na-zavod\//.test(path)) return true;

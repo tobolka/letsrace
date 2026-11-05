@@ -13,6 +13,8 @@ import { fairCatalogueBatch } from "./overview-quality";
 import { combinePracticalFindings, practicalProgramme } from "./practical-programme";
 import { publicLink } from "@/lib/practical-details";
 import type { Json } from "@/lib/supabase/database.types";
+import { localSourceReader } from "./local-source-cache";
+import { resolve } from "node:path";
 
 export function practicalWindows(text: string, max = 6000) {
   const spans: [number, number][] = [[0, Math.min(1200, text.length)]];
@@ -46,7 +48,7 @@ export async function savePracticalDetails(eventId: string, revision: string, de
 /** Follow actual official links; no search charges, constructed URLs or new race writes. */
 export async function enrichPracticalDetails(options: { max?: number; ids?: string[]; apply?: boolean; structuredOnly?: boolean; deadline?: number; log?: (line: string) => void; audit?: (value: unknown) => void | Promise<void> } = {}) {
   const db = createServerSupabase(), deadline = options.deadline ?? Date.now() + 8 * 60_000;
-  const probe = `${PRACTICAL_READER_VERSION}${options.structuredOnly ? ":structured" : ""}`;
+  const probe = `${PRACTICAL_READER_VERSION}${options.structuredOnly ? ":structured-v2" : ""}`;
   const probes = await readAllRows((from, to) => db.from("catalog_probes").select("event_id,outcome,last_attempt_at,attempts").eq("probe", probe).order("event_id").range(from, to));
   const history = new Map(probes.map(p => [p.event_id, p]));
   const today = new Date().toISOString().slice(0, 10);
@@ -63,7 +65,19 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     return Boolean(options.ids?.length || !previous || Date.now() - Date.parse(previous.last_attempt_at) > days * 86400000);
   }).sort((a, b) => Object.keys(readPracticalDetails(a.practical_details)).length - Object.keys(readPracticalDetails(b.practical_details)).length);
   const batch = fairCatalogueBatch(targets, options.max ?? 12, row => row.location?.country_code ?? "unknown");
-  const result = { considered: batch.length, read: 0, changedFacts: 0, changedRaces: 0, skippedLocked: 0, unchanged: 0, partialReads: 0, deferred: 0, failed: 0, costUsd: 0 };
+  const result = { eligible: targets.length, considered: batch.length, read: 0, changedFacts: 0, changedRaces: 0, skippedLocked: 0, unchanged: 0, partialReads: 0, deferred: 0, failed: 0, costUsd: 0, downloadedDocuments: 0, reusedDocuments: 0 };
+  const shared = process.env.SOURCE_DOCUMENT_CACHE_DIR ? localSourceReader({
+    directory: resolve(process.env.SOURCE_DOCUMENT_CACHE_DIR, "practical-v1"), maxAgeMs: 15 * 60_000,
+    deadline, stopped: () => false, read: url => readDocument(url, { maxBytes: 4 * 1024 * 1024 }),
+  }) : null;
+  const documentsByUrl = new Map<string, ReturnType<typeof readDocument>>();
+  const readOnce = (raw: string) => {
+    const url = raw.replace(/#.*$/, "");
+    if (documentsByUrl.has(url)) { result.reusedDocuments++; return documentsByUrl.get(url)!; }
+    const request = shared ? shared.read(url) : readDocument(url, { maxBytes: 4 * 1024 * 1024 }).then(doc => { if (doc) result.downloadedDocuments++; return doc; });
+    documentsByUrl.set(url, request);
+    return request;
+  };
   for (const row of batch) {
     let deferred = false;
     const defer = () => { if (!deferred) { result.deferred++; deferred = true; } };
@@ -77,7 +91,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         const url = queue.shift()!;
         if (seen.has(url) || isAggregatorUrl(url)) continue;
         seen.add(url);
-        const doc = await readDocument(url, { maxBytes: 4 * 1024 * 1024 }).catch(() => null);
+        const doc = await readOnce(url).catch(() => null);
         if (!doc?.text.trim()) { unreadable++; continue; }
         const source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
         documents.push({ url, text: source.text, links: [...source.links] });
@@ -145,5 +159,6 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
       }
     }
   }
+  if (shared) { result.downloadedDocuments = shared.stats().downloaded; result.reusedDocuments += shared.stats().cached; }
   return result;
 }

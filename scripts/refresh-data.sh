@@ -1,5 +1,5 @@
 #!/bin/bash
-# Full data refresh, meant to run on a machine with Chrome.
+# A bounded cycle: due sources, practical information and public results first.
 #
 #   bash scripts/refresh-data.sh 2>&1 | tee tmp/refresh-$(date +%F).log
 #
@@ -22,6 +22,11 @@ export CATALOG_OVERVIEW_ONLY="${CATALOG_OVERVIEW_ONLY:-1}"
 export SOURCE_DOCUMENT_CACHE_DIR="${SOURCE_DOCUMENT_CACHE_DIR:-$PWD/tmp/source-documents}"
 FAILURES=0
 DEFERRED=0
+# Every normal cycle has an end; individual lanes have their own smaller limit.
+CYCLE_SECONDS="${PIPELINE_CYCLE_SECONDS:-900}"
+if ! [[ "$CYCLE_SECONDS" =~ ^[0-9]+$ ]] || [ "$CYCLE_SECONDS" -lt 60 ] || [ "$CYCLE_SECONDS" -gt 3600 ]; then echo 'Invalid cycle duration'; exit 1; fi
+CYCLE_END=$(( $(date +%s) + CYCLE_SECONDS ))
+if [ "${SOURCE_RUN_DEADLINE:-0}" -le 0 ] || [ "$SOURCE_RUN_DEADLINE" -gt "$CYCLE_END" ]; then export SOURCE_RUN_DEADLINE="$CYCLE_END"; fi
 
 step() {
   local title="$1"; shift
@@ -29,7 +34,13 @@ step() {
   echo
   echo "=== $title  ($(date '+%H:%M:%S'))"
   local result=0
-  node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@" || result=$?
+  local started=$(date +%s)
+  local remaining=$((SOURCE_RUN_DEADLINE - started))
+  local cap="${PIPELINE_STEP_SECONDS:-180}"
+  if [ "$remaining" -lt "$cap" ]; then cap="$remaining"; fi
+  # The child has its own safe process group; a late request cannot consume the next lane.
+  node scripts/with-node.cjs scripts/bounded-pipeline-step.cjs "$cap" "${PIPELINE_NODE_BINARY:-node}" scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@" || result=$?
+  echo "pipeline_phase {\"script\":\"$1\",\"elapsedSeconds\":$(( $(date +%s) - started )),\"exitCode\":$result}"
   if [ "$result" -eq 2 ]; then echo "... $title has deferred work"; DEFERRED=$((DEFERRED + 1));
   elif [ "$result" -ne 0 ]; then echo "!!! $title failed"; FAILURES=$((FAILURES + 1)); fi
 }
@@ -65,36 +76,43 @@ weekly_browser_step() {
 
 # Announced next-season editions: one bounded pass a week, own budget, resumes next cycle after a failure.
 weekly_editions_step() {
+  if [ "${PIPELINE_MODE:-free}" = "free" ]; then return 0; fi
   local week=$(TZ=Europe/Prague date +%G-%V)
   local stamp="tmp/.next-editions-week"
   if [ "$(cat "$stamp" 2>/dev/null)" = "$week" ]; then return 0; fi
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ] && [ "$(date +%s)" -ge "$SOURCE_RUN_DEADLINE" ]; then DEFERRED=$((DEFERRED + 1)); return 0; fi
   local before="$FAILURES:$DEFERRED"
-  LLM_BUDGET_USD="${EDITION_AI_BUDGET_USD:-1.00}" LLM_DAILY_BUDGET_USD="${EDITION_AI_BUDGET_USD:-1.00}" LLM_MONTHLY_BUDGET_USD="${EDITION_AI_MONTHLY_USD:-8.00}" \
+  LLM_BUDGET_USD="${EDITION_AI_BUDGET_USD:-$LLM_BUDGET_USD}" \
     step "Announced next-season editions, Czechia" scripts/check-next-editions.ts --country=CZ --apply
   if [ "$FAILURES:$DEFERRED" = "$before" ]; then echo "$week" > "$stamp"; fi
 }
 
-step "Coverage before"                     scripts/audit-catalogue-overview.ts
-step "Complete saved race-change notices" scripts/complete-plan-changes.ts
-step "Request changed race pages" scripts/request-public-refreshes.ts
-step "Publish saved changes in the shared map and calendar" scripts/publish-catalogue-views.ts
-step "Structured calendars, no model or search cost" scripts/check-free-calendars.ts
-step "Resume previously approved interrupted publications" scripts/review-discovery-candidates.ts --resume --apply
-step "Follow up waiting race evidence, no publication" scripts/recheck-discovery-candidates.ts --max=20 --apply
+# Main bounded cycle. Maintenance cannot consume the time needed for these lanes.
+PIPELINE_STEP_SECONDS=30 daily_step "Coverage before" scripts/audit-catalogue-overview.ts
+PIPELINE_STEP_SECONDS=30 step "Complete saved race-change notices" scripts/complete-plan-changes.ts
+PIPELINE_STEP_SECONDS=30 step "Request changed race pages" scripts/request-public-refreshes.ts
+PIPELINE_STEP_SECONDS=45 step "Publish saved changes in the shared map and calendar" scripts/publish-catalogue-views.ts
+PIPELINE_STEP_SECONDS=30 daily_step "Structured calendars, no model or search cost" scripts/check-free-calendars.ts
+PIPELINE_STEP_SECONDS=30 step "Resume previously approved interrupted publications" scripts/review-discovery-candidates.ts --resume --apply
+LLM_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-0}" LLM_CALENDAR_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-0}" \
+  PIPELINE_STEP_SECONDS=200 step "Due sources, one bounded batch" scripts/reload-calendars.ts --rounds=1 --limit="${PIPELINE_SOURCE_LIMIT:-30}" --seconds="${PIPELINE_SOURCE_SECONDS:-170}"
+PIPELINE_STEP_SECONDS=270 step "Programme, fees and routes, shared documents without AI cost" scripts/enrich-practical-details.ts --max="${PIPELINE_PRACTICAL_LIMIT:-20}" --minutes="${PIPELINE_PRACTICAL_MINUTES:-4}" --structured-only --apply
+# Publish useful work before any large catalogue maintenance.
+PIPELINE_STEP_SECONDS=60 step "Request newly changed race pages" scripts/request-public-refreshes.ts
+PIPELINE_STEP_SECONDS=60 step "Publish changes in the map and calendar" scripts/publish-catalogue-views.ts
+PIPELINE_STEP_SECONDS=60 step "Check newly changed public race pages" scripts/publish-catalogue-changes.ts
+
+if [ "${PIPELINE_SKIP_MAINTENANCE:-0}" != "1" ]; then
+# A daily/weekly maintenance pass uses only time remaining after the productive lanes.
+daily_step "Follow up waiting race evidence" scripts/recheck-discovery-candidates.ts --max=20 --apply
 weekly_browser_step
 weekly_editions_step
 daily_step "Free discovery of new source links" scripts/explore-sources.ts
-# Standalone discovery remains a manual tool; regular source finding is free.
-# Calendar fallbacks must leave room for completing already discovered races.
-LLM_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-1.25}" LLM_CALENDAR_BUDGET_USD="${CALENDAR_AI_BUDGET_USD:-1.25}" step "Due calendars and sources" scripts/reload-calendars.ts
-LLM_BUDGET_USD="${DUE_AI_BUDGET_USD:-1.00}" LLM_CALENDAR_BUDGET_USD="${DUE_AI_BUDGET_USD:-1.00}" step "Everything else that is due" scripts/drain-due-watches.ts 40
-# Merges are audited and restorable; new races are judged every cycle so a duplicate lives a few hours at most.
 if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
-  step "Duplicates (review only)"          scripts/merge-duplicates.ts --dry
+  daily_step "Duplicates (review only)" scripts/merge-duplicates.ts --dry
 else
-  step "Duplicates"                       scripts/merge-duplicates.ts
-  LLM_BUDGET_USD=0.10 step "Duplicates among new races" scripts/judge-duplicates.ts --max=30 --newer-than-hours=12 --apply
+  daily_step "Duplicates" scripts/merge-duplicates.ts
+  LLM_BUDGET_USD=0.10 daily_step "Duplicates among new races" scripts/judge-duplicates.ts --max=30 --newer-than-hours=12 --apply
 fi
 if [ "${CATALOG_DETAIL_ENRICHMENT:-0}" = "1" ]; then
 step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
@@ -104,10 +122,9 @@ step "RaceResult, FCI, defaults"           scripts/fill-source-ages.ts
 step "Confirmed series categories"         scripts/apply-series-ages.ts
 step "Verified series documents, no model cost" scripts/enrich-series-documents.ts --max=500 --cached-only --apply
 fi
-step "Entry links from race pages" scripts/fill-registration-links.ts --max=1500 --apply
-step "Programme tables, fees and routes without AI cost" scripts/enrich-practical-details.ts --max=6 --minutes=2 --structured-only --apply
-step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
-step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --apply
+daily_step "Entry links from race pages" scripts/fill-registration-links.ts --max=1500 --apply
+daily_step "Italian organisers' websites"        scripts/fill-fci-websites.ts --max=600 --apply
+daily_step "Sportsoft race pages: entry, PDF"    scripts/fill-sportsoft-links.ts --apply
 if [ "${SOURCE_DEEP:-0}" = "1" ]; then
   DEEP_HOURS="${SOURCE_DEEP_HOURS:-4}"
   if [ "${SOURCE_RUN_DEADLINE:-0}" -gt 0 ]; then
@@ -148,13 +165,14 @@ if [ "${LLM_DAILY:-0}" = "1" ]; then
   LLM_BUDGET_USD=0.50 daily_step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
   daily_step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
 fi
-step "Last year's editions"                scripts/carry-forward-editions.ts --apply
-step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30
+daily_step "Last year's editions"                scripts/carry-forward-editions.ts --apply
+daily_step "Places (slow geocoding)"             scripts/geocode-slowly.ts 30
 step "Publish saved changes and check public pages" scripts/publish-catalogue-changes.ts
-SOURCE_RUN_DEADLINE=0 step "Coverage after" scripts/audit-catalogue-overview.ts
+step "Coverage after" scripts/audit-catalogue-overview.ts
 if [ "${CATALOG_DETAIL_ENRICHMENT:-0}" = "1" ]; then
-  SOURCE_RUN_DEADLINE=0 step "Detailed category diagnostics" scripts/audit-data-goal.ts
+  step "Detailed category diagnostics" scripts/audit-data-goal.ts
 fi
+fi # optional maintenance
 echo
 echo "=== done $(date '+%H:%M:%S')"
 echo "=== failed steps: $FAILURES"

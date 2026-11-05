@@ -91,6 +91,7 @@ export async function runDueWatches(
   if (abandonedError) console.error("Could not close abandoned ingest runs", abandonedError);
 
   const selectedByHost = new Map<string, number>();
+  const selectedIds = new Set<string>();
 
   async function claimDue(kinds: readonly string[], take: number) {
     if (take <= 0) return [];
@@ -108,7 +109,8 @@ export async function runDueWatches(
     // render it; claiming it here only overwrites a successful local scan with
     // a known error and makes the health signal misleading.
     const eligible = (due ?? []).filter((row) =>
-      !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races(?:\/|$)/i.test(row.url as string))
+      !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races(?:\/|$)/i.test(row.url as string)) &&
+      !(row.added_by === "auto-same-domain" && isAuxiliaryDiscoveryUrl(row.url))
     );
     const rest = eligible.filter((row) => !dumpHost.test(row.url as string));
     const dumps = eligible.filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
@@ -117,10 +119,12 @@ export async function runDueWatches(
     const claimed: NonNullable<typeof due> = [];
     for (const row of [...rest, ...dumps]) {
       if (claimed.length >= take) break;
+      if (selectedIds.has(row.id)) continue;
       const host = hostnameOf(row.url);
       const selected = selectedByHost.get(host) ?? 0;
       if (selected >= 2) continue;
       claimed.push(row);
+      selectedIds.add(row.id);
       selectedByHost.set(host, selected + 1);
     }
     return claimed;
@@ -132,11 +136,13 @@ export async function runDueWatches(
   // one organiser's own site. It was in neither list, so fifteen sources the
   // admin had accepted — eight of them never fetched at all — sat active and
   // due and were never once claimed.
-  const calendars = await claimDue(CALENDAR_KINDS, limit);
+  // Broad calendars get most slots; detail/organiser pages must still make progress.
+  const calendars = await claimDue(CALENDAR_KINDS, Math.max(1, Math.ceil(limit * 2 / 3)));
   const claimed = [
     ...calendars,
     ...(await claimDue(["race", "outbound"], limit - calendars.length)),
   ];
+  if (claimed.length < limit) claimed.push(...await claimDue(CALENDAR_KINDS, limit - claimed.length));
 
   const deadline = Date.now() + (opts?.budgetMs ?? DEFAULT_BUDGET_MS);
   const concurrency = opts?.concurrency ?? DEFAULT_CONCURRENCY;

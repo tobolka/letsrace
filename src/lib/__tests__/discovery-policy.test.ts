@@ -18,6 +18,8 @@ describe("discovery noise found during the 207-link review", () => {
     "https://race.cz/startovn%C3%AD-listina/2027",
     "https://race.cz/trasy/zavod.gpx",
     "https://race.cz/informace-o-zpracovani-osobnich-udaju",
+    "https://www.cykloman.cz/galavecer-cyklomanek-vyhlaseni-vysledku",
+    "https://www.roadstage.cz/vysledky-a-media",
   ];
   it.each(auxiliary)("keeps supporting material out of independent discovery: %s", url => {
     expect(isAuxiliaryDiscoveryUrl(url)).toBe(true);

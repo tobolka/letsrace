@@ -39,3 +39,9 @@ Dnešní kontrola nevytvořila závody, neslučovala produkční záznamy, nespu
 ### Možnost návratu
 
 Vrátit konkrétní aplikační commit; nová databázová funkce je přídavná a starým kódem se nepoužije. Při potřebě odstavit automatický úklid zdrojů použít dočasnou funkci bez změn, ne obnovit nebezpečné počítání chyb jako prázdných čtení. Databázové definice i izolované zkoušky jsou ve verzovaných migracích. Před návratem ponechat scany v pauze.
+
+## Nasazení ochranných oprav
+
+Commit `c83578b4c2abef64f26530dfe273c0a59f159df6` je v `origin/main`. Produkční vydání `dpl_9w6osxU4vLTJ5R4APg5Eaa2UxnEe` přešlo do READY. Nový hlavní průchod P0.6 se po požadavku vlastníka řeší samostatně; není tímto vydáním vydáván za hotový.
+
+Doplňující kontrola timeoutů v Supabase ve stejném časovém úseku `06:57–07:01 UTC`: dva požadavky `public_edition_candidates` a čtyři `public_series_round_rows` skončily stavem 200; nejvyšší zaznamenané `response.origin_time` je 368, respektive 96. Odpověď na hraně Supabase tak v tomto úseku nevykazuje 20sekundové čekání. Bez propojení konkrétního požadavku se tím příčina Vercel timeoutu neprokazuje.

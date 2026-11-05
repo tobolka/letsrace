@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn(), touch: vi.fn(), touchAll: vi.fn() }));
+const state = vi.hoisted(() => ({ due: [] as { id: string; url: string; kind: string; added_by?: string }[], known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn(), touch: vi.fn(), touchAll: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: async (name: string, args: Record<string, unknown>) => {
   if (name === "pipeline_claim_source_read") return { data: [{ key: "source:source", token: "test-lease", payload: { sourceRevision: "2026-11-04" } }], error: null };
   if (name === "pipeline_commit_source_read") {
@@ -9,10 +9,12 @@ vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: as
   return { data: true, error: null };
 }, from: (table: string) => {
   let inserted = false;
+  let kinds: string[] | null = null;
   const chain: unknown = new Proxy({}, { get: (_target, key) => {
     if (key === "maybeSingle") return async () => ({ data: null, error: null });
-    if (key === "then") return (resolve: (value: unknown) => void) => resolve({ data: inserted && table === "ingest_runs" ? { id: "run" } : table === "event_sources" ? state.known : [], error: null, count: 0 });
+    if (key === "then") return (resolve: (value: unknown) => void) => resolve({ data: table === "watched_urls" ? state.due.filter(row => !kinds || kinds.includes(row.kind)) : inserted && table === "ingest_runs" ? { id: "run" } : table === "event_sources" ? state.known : [], error: null, count: 0 });
     return (...args: unknown[]) => {
+      if (key === "in" && args[0] === "kind") kinds = args[1] as string[];
       if (key === "insert") { inserted = true; if (table === "watched_urls") state.sourceInserts.push(args[0]); }
       if (key === "update") state.writes.push({ table, value: args[0] as Record<string, unknown> });
       return chain;
@@ -22,9 +24,34 @@ vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: as
 } }) }));
 vi.mock("@/lib/watcher/core", async original => ({ ...await original<typeof import("@/lib/watcher/core")>(), fetchPage: state.fetch, extractEvents: state.extract }));
 vi.mock("@/lib/catalog/freshness", () => ({ hideDroppedCalendarEvents: state.hide, touchLastSeenForWatchedUrl: state.touchAll, touchListedEvents: state.touch }));
-import { watchOne } from "@/lib/watcher/run";
+import { watchOne, runDueWatches } from "@/lib/watcher/run";
 import { WATCH_READER_VERSION, canReconcileMissingEvents } from "@/lib/watcher/core";
-afterEach(() => { state.known.length = 0; state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
+afterEach(() => { state.due.length = 0; state.known.length = 0; state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
+
+it("reserves part of a batch for race pages even when many calendars are due", async () => {
+  state.due.push(...Array.from({ length: 8 }, (_, i) => ({ id: `calendar-${i}`, url: `https://calendar-${i}.test/`, kind: "calendar" })),
+    { id: "detail", url: "https://race.test/", kind: "race" });
+  state.fetch.mockResolvedValue({ status: 304, unchanged: true, html: "", hash: "stable" });
+  const outcomes = await runDueWatches(4, { concurrency: 1 });
+  expect(outcomes).toHaveLength(4);
+  expect(outcomes.some(row => row.watchedUrlId === "detail")).toBe(true);
+  expect(new Set(outcomes.map(row => row.watchedUrlId)).size).toBe(4);
+});
+
+it("fills unused detail slots with other calendars without claiming a source twice", async () => {
+  state.due.push(...Array.from({ length: 4 }, (_, i) => ({ id: `calendar-${i}`, url: `https://calendar-${i}.test/`, kind: "calendar" })));
+  state.fetch.mockResolvedValue({ status: 304, unchanged: true, html: "", hash: "stable" });
+  const outcomes = await runDueWatches(4, { concurrency: 1 });
+  expect(new Set(outcomes.map(row => row.watchedUrlId)).size).toBe(4);
+});
+
+it("does not re-read automatically discovered results and award pages as calendars", async () => {
+  state.due.push({ id: "awards", url: "https://club.test/galavecer-2026", kind: "series", added_by: "auto-same-domain" },
+    { id: "results", url: "https://club.test/vysledky-a-media", kind: "series", added_by: "auto-same-domain" },
+    { id: "calendar", url: "https://other.test/kalendar", kind: "calendar" });
+  state.fetch.mockResolvedValue({ status: 304, unchanged: true, html: "", hash: "stable" });
+  expect((await runDueWatches(4)).map(row => row.watchedUrlId)).toEqual(["calendar"]);
+});
 
 it("does not checkpoint or hide missing races after an incomplete read and retries without old HTTP validators", async () => {
   state.fetch.mockResolvedValue({ status: 200, html: "<p>calendar</p>", hash: "new", etag: "new-etag", unchanged: false });

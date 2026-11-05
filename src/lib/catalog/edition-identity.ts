@@ -65,10 +65,15 @@ export function findPreviousEdition<T extends EditionIdentity>(event: EditionIde
 export function findNextEdition<T extends EditionIdentity>(event: EditionIdentity, candidates: T[], yearsAhead = 1): T | null {
   const pool: EditionIdentity[] = candidates.some(row => row.id === event.id) ? candidates : [...candidates, event];
   const offset = 365 * (yearsAhead - 1);
+  const key = editionKey(event.name);
   const matches = candidates.filter(candidate => {
     const days = (Date.parse(candidate.start_date) - Date.parse(event.start_date)) / 86400_000;
-    return days >= 300 + offset && days <= 430 + offset &&
-      findPreviousEdition(candidate, pool, yearsAhead)?.id === event.id;
+    if (days < 300 + offset || days > 430 + offset) return false;
+    // The reverse matcher can select this race only by name or by series.
+    // Reject unrelated candidates before each of them scans the entire pool.
+    const candidateKey = editionKey(candidate.name);
+    if (!(candidateKey.length >= 5 && candidateKey === key) && !(candidate.series_id && candidate.series_id === event.series_id)) return false;
+    return findPreviousEdition(candidate, pool, yearsAhead)?.id === event.id;
   });
   return matches.length === 1 ? matches[0] : null;
 }
