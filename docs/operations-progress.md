@@ -8,7 +8,45 @@ Aktualizováno 5. listopadu 2026. Toto je hlavní seznam práce.
 
 To ještě nemáme hotové. Opravené části nejsou důkazem, že dobře funguje celý pomocník.
 
+## Co teď běží kde
+
+Ověřeno 5. listopadu 2026 odpoledne. **Jeden společný kód; rozdílné místo spouštění.** Místní sběr není nová náhrada původního cíle.
+
+| Činnost | Mac | Server |
+| --- | --- | --- |
+| Pravidelný sběr a hledání zdrojů | **Nový režim zapnutý:** splatné známé zdroje každých 12 hodin; hledání nových webů zatím neběží | `watch` a `explore` dál blokované |
+| Nový průchod | Čte weby a trvale ukládá práci místně | Dostává prověřené nové závody; celkem 20 nových záznamů po opravě jedné duplicity |
+| Geokódování | Při čtení používá známá místa; celý samostatný krok není v paralelním průchodu | Samostatná naplánovaná úloha zůstává |
+| Historie počasí | Není součástí nového paralelního průchodu | Dnešní běh dokončen 5:11 bez chyby |
+| Aktuální předpověď | Není závislá na zapnutém Macu | Zůstává službou veřejného webu |
+| Zveřejnění, údržba katalogu a upozornění | Nástroje mohou vyžádat kontrolované zveřejnění | Zůstávají samostatné serverové úlohy |
+
+**Původní zadání dál platí:** pokrytí závodů, správné a bohaté údaje, minimum duplicit, aktuální veřejný web, srozumitelný přehled a hlídané náklady. Přesun náročné práce na Mac řeší část nákladů; ostatní body tím nejsou dokončené.
+
 ## Co dělám právě teď
+
+**Automatické spouštění nové pipeline na Macu je zapnuté v prvním vymezeném rozsahu.** První běh spuštěný plánovačem sám doběhl v 15:29; další je naplánovaný na 6. 11. ve 3:29. Čte splatné známé zdroje, porovnává výsledky s čerstvým katalogem a odesílá prověřené nové závody. Starý serverový sběr zůstává vypnutý. Neznamená to dokončení všech původních etap.
+
+### Co ještě chybí k zapnutí na Macu
+
+| Krok | Stav |
+| --- | --- |
+| Jeden celý průchod: místní čtení → kontrola → bezpečné odeslání → veřejný detail | **DOKONČENO A ŽIVĚ VYZKOUŠENO.** První průchod 10 min 27 s, 377 zdrojů. Po opravě jedné duplicity přibylo 17 nových závodů; dříve odeslané tři jsou zvlášť. Jejich detaily byly dostupné. Původní kontrola dostupnosti sama nezachytila chybu v údajích; náprava a důkazy jsou ve výsledku. |
+| Automatické spouštění bez staré serverové zapisovací cesty | **NAINSTALOVÁNO A ZAPNUTO.** Jeden průchod najednou, interval 12 hodin. Ověřeno pozastavení, zastavení před odesíláním a restart bez souběžné práce. Panel popisuje nový skutečný režim. |
+| Druhý průchod: nepřidá stejné závody znovu a nebude zbytečně číst vše od začátku | **DOKONČENO.** Druhý průchod 29 s, žádné opakované čtení, žádný nový zápis; porovnání všech 9 658 místních závodů nenašlo změnu. |
+| Uložit obě sady změn odděleně, nainstalovat a sledovat skutečné automatické spuštění | **DOKONČENO NA MACU.** První plánovačem spuštěný průchod 24 s, bez nového čtení a zápisů. Další termín je uložený. Změny Clauda a navazující opravy jsou v samostatných commitech; zveřejnění hlavní větve je dokončováno. |
+
+**První zapínaný rozsah:** nové závody. Změny existujících závodů zůstávají uložené k posouzení; toto není tvrzení, že je celá původní pipeline hotová. Počasí, geokódování a zveřejnění dál zajišťují dosavadní serverové služby.
+
+| Pořadí | Co dokončím | Stav |
+| --- | --- | --- |
+| 1 | Nové závody s názvem, termínem a místem; projít také zbytečně zadržené záznamy. | **PRVNÍ DÁVKA DOKONČENÁ.** Celkem 20 nových záznamů po opravě jedné duplicity. 13 nálezů zůstává oddělených; vyjížďky se nepřidávají mezi závody. [Výsledek a omezení](../reports/local-release-2026-11-05/RESULT.md). |
+| 2 | Uložit změny do hlavní větve, nasadit a aktualizovat kopii na Macu. | **MAC AKTUALIZOVANÝ.** Automatický běh dokončen; změny do hlavní větve a nasazení dokončuji. |
+| 3 | Dvě úplná čtení stejných zdrojů a porovnání, zda se údaje nepřetahují sem a tam. | **ZBÝVÁ V TOMTO ROZSAHU.** Běžné opakování už ověřené: nic znovu nečetlo a všechny místní záznamy zůstaly stejné. To nenahrazuje dvě vynucená úplná čtení. |
+| 4 | Rozdělit chybně spojené závody, vyřešit zadržené změny a chyby čteček; zapojit weby pořadatelů. | **ZBÝVÁ.** Konkrétní podklady jsou v novém předání. |
+| 5 | Ověřit skutečnou spotřebu a aktuálnost veřejného webu. | **ZBÝVÁ.** Místní sběr sám neřeší zátěž veřejných stránek. |
+
+Podklad: [PREDANI-CODEX.md](../reports/claude-review-2026-11-05/PREDANI-CODEX.md). Starší kontrola zůstává záznamem nálezů tehdejší verze, nikoliv aktuálním tvrzením, že všechny opravy stále chybí.
 
 **Nové omezení, přímo ověřené ve Vercelu:** za zobrazených posledních 30 dní je využito 9 hodin 28 minut CPU proti limitu 4 hodin. Samotný LetsRace tvoří 9 hodin 1 minutu (95,3 %). Je potřeba zjistit podíl veřejného webu a sběru a omezit největší příčinu. Další velké běhy se zatím nepouštějí; první malá zkouška už skončila.
 
@@ -21,7 +59,7 @@ Dosavadní průchod mohl dlouho hledat a opakovaně číst stejné stránky. Dop
 | **1** | Dlouhé hledání musí skončit včas. Doplnění údajů a zobrazení na webu dostane vlastní čas. Stejná stránka se v jednom průchodu nebude stahovat znovu pro každý závod. | **HOTOVÉ A OTESTOVANÉ.** Malý běh doběhl. Nasazeno v hlavní větvi i na serveru (`1ba374af`). Kopie na Macu je aktualizovaná; velké pravidelné běhy ještě nepouštím. |
 | **2** | Pustit malý skutečný běh a zkontrolovat, co přinesl. | **PRVNÍ BĚH DOBĚHL za 39 sekund.** Čtyři zdroje, sedm přečtených detailů, 18 stažených dokumentů. Žádný nový závod ani užitečné doplnění, bez placené AI. Samotná nula není chyba; u části načtených propozic ale pořadatel i program existují a čtečka je nezískala. |
 | **3** | Když něco nedotáhne, opravit příčinu a zkusit to znovu. | **OPRAVENO A NA JIČÍNĚ ŽIVĚ OVĚŘENO.** Výběr vynechává automaticky přidané stránky výsledků a slavnostního vyhlášení. Čtečka nově rozumí běžným propozicím v PDF: v Jičíně uložila pořadatele, areál a šest startů. Na veřejném detailu jsou tyto údaje vidět. Oprava programu je nasazená. Další dosud nepoužité propozice se teprve musí ověřit. |
-| **4** | Zapnout pravidelné běhy v ověřeném rozsahu. | **ČEKÁ na ověření spotřeby a širšího vzorku.** Velké automatické scany jsou zatím pozastavené. |
+| **4** | Zapnout pravidelné běhy v ověřeném rozsahu. | **NOVÝ REŽIM NA MACU ZAPNUTÝ.** Rozsah, první řízený běh a omezení jsou výše. Starý serverový sběr zůstává vypnutý; úplná původní pipeline tím hotová není. |
 
 Tyto kroky mají značky P0.6a–c. Původní číslování není pořadí práce.
 

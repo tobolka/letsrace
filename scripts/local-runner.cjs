@@ -53,6 +53,7 @@ function systemSample() {
  }catch{ /* optional */ }
  return out;
 }
+function managedCommand(root, override) { return override || path.join(root,'scripts/local-cycle.sh'); }
 function main() {
  const root = path.resolve(__dirname, '..');
  const data = process.env.LETSRACE_DATA_DIR || path.join(os.homedir(),'Library/Application Support/LetsRace/data');
@@ -94,21 +95,13 @@ function main() {
  let state={...previous,childPid:null,stage:null,serverRequestRunning:false,interrupted:previous.childPid!=null};
  let child=null, logStream=null, buffer='', stopping=false, system=systemSample(), lastSystem=Date.now(), server=json(path.join(data,'server-status.json'),null), serverChecking=false, serverChecked=0;
  let reportedPause;
- const interval=Number(process.env.LETSRACE_INTERVAL_MS || 2*60*60_000);
+ const interval=Number(process.env.LETSRACE_INTERVAL_MS || 12*60*60_000);
  state.nextRunAt=state.interrupted?Date.now()+15000:Number(state.nextRunAt||Date.now());
  const save=()=>atomic(stateFile,state);
  async function runServer() {
-  if(state.serverRequestRunning)return;
-  state.serverRequestRunning=true;state.serverRequestError=null;save();snapshot();
-  try{
-   const {parse}=require('dotenv');const env=parse(fs.readFileSync(path.join(root,'.env.local')));
-   if(!env.CRON_SECRET)throw Error('Chybí přístup ke spuštění serveru');
-   const response=await fetch('https://letsrace.cz/api/cron/watch',{method:'POST',headers:{Authorization:`Bearer ${env.CRON_SECRET}`,'x-letsrace-monitor':'1'},signal:AbortSignal.timeout(310000)});
-   if(!response.ok)throw Error(`Server neodpověděl úspěšně (HTTP ${response.status})`);
-   if(!response.headers.get('content-type')?.includes('application/json'))throw Error('Server nevrátil výsledek sběru');
-   await response.json();
-  }catch(e){state.serverRequestError=e.message;}
-  finally{state.serverRequestRunning=false;serverChecked=0;save();snapshot();void checkServer();}
+  state.serverRequestRunning=false;
+  state.serverRequestError='Sběr teď probíhá na Macu; staré serverové spouštění je vypnuté.';
+  save();snapshot();
  }
  async function checkServer() {
   if(process.env.LETSRACE_NO_SERVER_CHECK === "1" || serverChecking)return;
@@ -143,16 +136,19 @@ function main() {
    status:health({active:!!child,paused:control.paused===true,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),
    activeTask:state.activeTask||null,pendingTasks:state.pendingTasks||[],paused:control.paused===true,childPid:child?.pid||null,stage:state.stage,startedAt:state.startedAt||null,lastOutputAt:state.lastOutputAt||null,
    lastFinishedAt:state.lastFinishedAt||null,lastExitCode:state.lastExitCode??null,nextRunAt:state.nextRunAt,
-   server,serverRequestRunning:state.serverRequestRunning===true,serverRequestError:state.serverRequestError||null,estimates:state.durations||{},catalogueAt:overview?.at||null,lastResult:normalizeResult(state.lastResult)||null,lastActivityResult:normalizeResult(state.lastActivityResult)||null,recent:recentResults(state.history),logPath:state.logPath||null,lastError:state.lastError||null,counters:state.counters||{},browser,totals,
+   pipelineMode:"local-new-races",cycleResult:state.cycleResult||null,server,serverRequestRunning:state.serverRequestRunning===true,serverRequestError:state.serverRequestError||null,estimates:state.durations||{},catalogueAt:overview?.at||null,lastResult:normalizeResult(state.lastResult)||null,lastActivityResult:normalizeResult(state.lastActivityResult)||null,recent:recentResults(state.history),logPath:state.logPath||null,lastError:state.lastError||null,counters:state.counters||{},browser,totals,
    ai:{lastRunAt:state.lastAiFinishedAt||null,month,spentUsd:ledger.months?.[month]??0,monthCapUsd:5,dayCapUsd:0.5,schedule:'Mac · úterý a pátek'},
    system,countries:['CZ','SK','DE','AT','CH','IT','PL'],interrupted:state.interrupted===true});
  }
  function start(task="refresh") {
   if(child||stopping)return;
+  // Every native-panel action uses the same isolated local cycle. There is
+  // no legacy federation or paid task that can accidentally write to production.
+  if(!process.env.LETSRACE_RUN_COMMAND){task='refresh';state.pendingTasks=[];}
   const stamp=new Date().toISOString().replace(/[:.]/g,'-');
   state={...state,activeTask:task,aiDetected:task==='ai',problems:[],stage:task==='federation'?'Sken federace ČSC přes Chrome':'Příprava sběru',startedAt:Date.now(),lastOutputAt:Date.now(),lastError:null,interrupted:false,deferredOnly:false,runTail:'',counters:{reads:0,created:0,updated:0,failed:0,deferred:0,unreadable:0,unchanged:0,leads:0,queued:0},logPath:path.join(data,`refresh-${stamp}.log`)};
   logStream=fs.createWriteStream(state.logPath,{flags:'a',mode:0o600});buffer='';
-  const command=process.env.LETSRACE_RUN_COMMAND||path.join(root,task==='federation'?'scripts/ingest-csc.sh':'scripts/refresh-data.sh');
+  const command=managedCommand(root,process.env.LETSRACE_RUN_COMMAND);
   child=spawn('/usr/bin/caffeinate',['-i','/bin/bash',command],{cwd:root,env:{...process.env,LETSRACE_MANAGED:"1",...(task==='ai'?{PIPELINE_AI_MODE:'ai'}:task==='federation'?{PIPELINE_AI_MODE:'free'}:{}),LLM_LEDGER_PATH:path.join(data,'llm-budget.json')},detached:true,stdio:['ignore','pipe','pipe']});
   state.childPid=child.pid;save();snapshot();
   const record=chunk=>{
@@ -162,6 +158,7 @@ function main() {
     if(line.startsWith('Pipeline mode: ai;'))state.aiDetected=true;
     const stage=line.match(/^=== (.+?)\s+\(\d/);if(stage)state.stage=stage[1];
     if(line.startsWith('pipeline_batch ')){try{const m=JSON.parse(line.slice(15));for(const k of ['reads','created','updated','failed','deferred','unreadable','unchanged'])state.counters[k]+=Number(m[k]||0);state.problems.push(...(m.problems||[]));}catch{}}
+    if(line.startsWith('local_cycle_result ')){try{const m=JSON.parse(line.slice(19));state.counters.created=Number(m.publishedNewRaces||0);state.counters.updated=Number(m.updatedRaces||0);state.counters.reads=Number(m.readSources||0);state.counters.failed=Number(m.sourceFailures||0)+(m.state==='attention'?1:0);state.counters.unreadable=Number(m.unreadableSources||0);state.counters.deferred=Number(m.deferredSources||0);state.counters.queued=Number(m.heldRaces||0);state.problems=m.problems||[];state.cycleResult=m;}catch{}}
     if(line.startsWith('pipeline_discovery ')){try{state.counters.leads+=Number(JSON.parse(line.slice(19)).leads||0);}catch{}}
     if(line.startsWith('pipeline_federation ')){try{const m=JSON.parse(line.slice(20)),old=json(path.join(data,'pipeline-browser-status.json'));atomic(path.join(data,'pipeline-browser-status.json'),{...m,at:new Date().toISOString(),log:state.logPath,lastReadAt:m.read>0?new Date().toISOString():old.lastReadAt,lastReadCount:m.read>0?m.read:old.lastReadCount});if(task==='federation'){state.counters.reads++;state.counters.created+=Number(m.created||0);state.counters.updated+=Number(m.updated||0);}}catch{}}
     if(line.startsWith('pipeline_candidates ')){try{state.counters.queued+=Number(JSON.parse(line.slice(20)).queued||0);}catch{}}
@@ -198,5 +195,5 @@ function main() {
  process.on('SIGTERM',shutdown);process.on('SIGINT',shutdown);
  save();tick();setInterval(tick,10000);
 }
-module.exports={health,isDeferredExit,alive,json,atomic,rememberResult,recentResults,normalizeResult};
+module.exports={managedCommand,health,isDeferredExit,alive,json,atomic,rememberResult,recentResults,normalizeResult};
 if(require.main===module)main();

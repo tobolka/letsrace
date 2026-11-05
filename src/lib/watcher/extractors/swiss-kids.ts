@@ -187,18 +187,20 @@ export function parseSwissBikeCupStage(
   const intro = $p("p.text-size-large").first().text().replace(/\s+/g, " ").trim();
   const timetable = $p("#zeitplan, .section-zeitplan").first().text();
 
+  const excluded = new RegExp(`${dates.start.slice(0,4)}[^.]{0,40}nicht[^.]{0,100}Gesamtklassement`, "i").test($p("body").text());
+  // GP Osterhas is an event name, not a municipality. Its official stage page
+  // explicitly names Affoltern am Albis; the old gazetteer pin was unrelated.
+  const venue = place === "Osterhas" && /Affoltern am Albis/.test(intro) ? "Affoltern am Albis" : place;
   return {
     externalId: `swiss-bike-cup-${dates.start}-${normalizeName(place)}`,
-    name: `Škoda Swiss Bike Cup — ${place}`,
+    name: excluded ? heading.replace(/,\s*[A-Z]{2}$/, "").trim() : `Škoda Swiss Bike Cup — ${place}`,
     startDate: dates.start,
     endDate: dates.end,
-    placeText: place,
+    placeText: venue,
     countryHint: "CH",
     discipline: sbcDiscipline(label),
     audience: sbcAudience(intro, timetable),
-    seriesName: "Škoda Swiss Bike Cup",
-    seriesSlug: "skoda-swiss-bike-cup",
-    seriesWebsite: "https://www.swissbikecup.ch/",
+    ...(excluded ? {} : { seriesName: "Škoda Swiss Bike Cup", seriesSlug: "skoda-swiss-bike-cup", seriesWebsite: "https://www.swissbikecup.ch/" }),
     sourceUrl: seriesUrl.split("?")[0]!,
     websiteUrl: href,
     confidence: 0.9,

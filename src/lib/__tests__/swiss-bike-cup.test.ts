@@ -101,3 +101,11 @@ describe("parseSwissBikeCupStage", () => {
     ).toBeNull();
   });
 });
+
+it("uses Osterhas's real town and does not attach a 2027 event excluded from cup standings", () => {
+  const html=stage({heading:"GP Osterhas, ZH",label:"Radkriterium",dates:"March 27, 2027 – March 27, 2027",intro:"Der GP Osterhas ist ein Radkriterium in Affoltern am Albis."}) + "<p>Der GP Osterhas wird 2027 nicht im Gesamtklassement des Swiss Bike Cup gewertet.</p>";
+  const race=parseSwissBikeCupStage(series,"https://www.swissbikecup.ch/etappe/gp-osterhas",html);
+  expect(race).toMatchObject({name:"GP Osterhas",startDate:"2027-03-27",placeText:"Affoltern am Albis",discipline:["criterium"]});
+  expect(race?.seriesSlug).toBeUndefined();
+  expect(race?.externalId).toBe("swiss-bike-cup-2027-03-27-osterhas");
+});

@@ -68,6 +68,7 @@ const RIDE_EVENT_TYPES = new Set([
   "RTF",
   "CTF",
   "GRAVEL_TOUR",
+  "GRAVEL_RIDE",
   "TOUR",
   "AUSFAHRT",
   "RADTOURISTIK",

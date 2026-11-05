@@ -42,3 +42,7 @@ describe("radsport age categories", () => {
     expect(parsed?.ageCategories).toEqual(["amateur"]);
   });
 });
+
+it("keeps the source's explicit GRAVEL_RIDE out of competitive race imports", () => {
+  expect(radsportEventToParsed(ev({title:"Ronde von Rheinhessen",eventType:"GRAVEL_RIDE",eventDate:"2027-03-27"}))?.eventType).toBe("ride");
+});

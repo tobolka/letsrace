@@ -19,6 +19,10 @@ try{
  d=describe(s=>{s.childPid=123;s.status='running';});assert.equal(d.state.tone,'busy');assert.doesNotMatch(d.state.detail,/odhad|zbývá/);
  d=describe(s=>{s.status='attention';s.lastExitCode=1;});assert.match(d.state.title,/nedoběhl/);
  d=describe(s=>{s.server.jobs[0].status='running';s.server.jobs[0].started_at=iso(now-901000);delete s.server.jobs[0].finished_at;});assert.match(d.state.title,/nedokončila/);
+ d=describe(s=>{s.pipelineMode='local-new-races';s.cycleResult={state:'finished',heldRaces:13,sourceFailures:0,seconds:29};s.server.jobs=[];});assert.equal(d.state.tone,'good');assert.equal(d.lastRun.created,99);assert.match(d.reviewDetail,/13 nálezů/);assert.match(d.state.detail,/12 hodin/);
+ d=describe(s=>{s.pipelineMode='local-new-races';s.cycleResult={state:'finished',heldRaces:2,sourceFailures:30};});assert.equal(d.state.tone,'warning');assert.match(d.state.title,/omezením/);
+ d=describe(s=>{s.pipelineMode='local-new-races';s.cycleResult={state:'publication_pending',heldRaces:0,sourceFailures:0};});assert.match(d.state.title,/zobrazení čeká/);
+ d=describe(s=>{s.pipelineMode='local-new-races';s.childPid=123;s.stage='Kontroluji nové závody';});assert.equal(d.state.tone,'busy');assert.equal(d.state.detail,'Kontroluji nové závody');
  d=JSON.parse(execFileSync(binary,['--describe-snapshot','-',String(now/1000)],{encoding:'utf8'}));assert.equal(d.state.tone,'warning');assert.equal(d.lastRun,undefined);
  console.log('PASS: 14 owner overview scenarios, latest result without double counting, honest waiting and unavailable states, local pause and real failures');
 }finally{fs.rmSync(folder,{recursive:true,force:true});}

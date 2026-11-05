@@ -1,0 +1,1194 @@
+{
+  "at": "2026-11-05T14:23:01.725Z",
+  "since": "2026-11-05T14:05:57.515Z",
+  "target": 2027,
+  "countries": [
+    {
+      "country": "CZ",
+      "lastYearRaces": 945,
+      "withEditionBefore": 27,
+      "withEditionNow": 27,
+      "percentNow": 2.9,
+      "hiddenEdition": 0,
+      "noEditionButSourceChecked": 245,
+      "noEditionAndNotChecked": 673,
+      "newRecords": 2,
+      "sourcesRead": 139,
+      "sourcesOk": 102,
+      "silentSources": 18,
+      "rowsReadFromSources": 1943
+    },
+    {
+      "country": "SK",
+      "lastYearRaces": 226,
+      "withEditionBefore": 4,
+      "withEditionNow": 4,
+      "percentNow": 1.8,
+      "hiddenEdition": 0,
+      "noEditionButSourceChecked": 0,
+      "noEditionAndNotChecked": 222,
+      "newRecords": 1,
+      "sourcesRead": 7,
+      "sourcesOk": 3,
+      "silentSources": 1,
+      "rowsReadFromSources": 582
+    },
+    {
+      "country": "AT",
+      "lastYearRaces": 451,
+      "withEditionBefore": 48,
+      "withEditionNow": 46,
+      "percentNow": 10.2,
+      "hiddenEdition": 0,
+      "noEditionButSourceChecked": 31,
+      "noEditionAndNotChecked": 374,
+      "newRecords": 1,
+      "sourcesRead": 42,
+      "sourcesOk": 19,
+      "silentSources": 17,
+      "rowsReadFromSources": 699
+    },
+    {
+      "country": "DE",
+      "lastYearRaces": 777,
+      "withEditionBefore": 34,
+      "withEditionNow": 34,
+      "percentNow": 4.4,
+      "hiddenEdition": 2,
+      "noEditionButSourceChecked": 59,
+      "noEditionAndNotChecked": 682,
+      "newRecords": 4,
+      "sourcesRead": 41,
+      "sourcesOk": 25,
+      "silentSources": 9,
+      "rowsReadFromSources": 1362
+    },
+    {
+      "country": "PL",
+      "lastYearRaces": 504,
+      "withEditionBefore": 20,
+      "withEditionNow": 20,
+      "percentNow": 4,
+      "hiddenEdition": 0,
+      "noEditionButSourceChecked": 183,
+      "noEditionAndNotChecked": 301,
+      "newRecords": 6,
+      "sourcesRead": 19,
+      "sourcesOk": 7,
+      "silentSources": 5,
+      "rowsReadFromSources": 1001
+    },
+    {
+      "country": "CH",
+      "lastYearRaces": 188,
+      "withEditionBefore": 9,
+      "withEditionNow": 12,
+      "percentNow": 6.4,
+      "hiddenEdition": 0,
+      "noEditionButSourceChecked": 18,
+      "noEditionAndNotChecked": 158,
+      "newRecords": 3,
+      "sourcesRead": 15,
+      "sourcesOk": 10,
+      "silentSources": 3,
+      "rowsReadFromSources": 787
+    },
+    {
+      "country": "IT",
+      "lastYearRaces": 651,
+      "withEditionBefore": 6,
+      "withEditionNow": 6,
+      "percentNow": 0.9,
+      "hiddenEdition": 0,
+      "noEditionButSourceChecked": 15,
+      "noEditionAndNotChecked": 630,
+      "newRecords": 6,
+      "sourcesRead": 9,
+      "sourcesOk": 5,
+      "silentSources": 1,
+      "rowsReadFromSources": 315
+    }
+  ],
+  "overall": {
+    "sourcesRead": 377,
+    "ok": 241,
+    "failed": 30,
+    "unreadable": 102,
+    "deferred": 4,
+    "unfinished": 0,
+    "silent": 48,
+    "databaseRequestsSpared": 4639
+  },
+  "problems": [
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=4",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.dsergebnis.de/nrw-cross-cup-2026/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/ausschreibungen-rad-net/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/rozpis-silnicni-casovka-cyklomanek-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.lrv-noe.at/media/doc/a3ac759dc37f54f5a694646af1e45f12/noe-rad-nachwuchscup-2027-.pdf",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://dzkol.pl/download/2026-challenge-dzkol-regulamin-i-wykaz-punktowanych-wyscigow/?wpdmdl=7073&refresh=6a9e949971bc41788777625",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://ridegravel.ch/bern",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=2",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.mazurymtb.pl/zawody/wyniki",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events&page=2",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://sumator.cz",
+      "error": "write_failed:sumator-enduro challenge moravka-2026-04-26:identity_review_required: this row is a different dated race than the record it is linked to; write_fai",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/mytinka-cup-2025",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events&page=4",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://dzkol.pl/kalendarz/kategoria/liga-mtb-junior/lista/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sumator.cz/cup/prazsky-mtb-pohar-2026",
+      "error": "write_failed:sumator-mistrovstvi prahy-2026-05-16:identity_review_required: this row is a different dated race than the record it is linked to",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=5",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=5",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.zelenak.cz/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/09/Do-vrchu-Medenec-2026-propozice-2.pdf",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/34-grosser-preis-von-buchholz/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/wp-content/uploads/2026/09/1-Mytinka_propozice_2026-003.pdf",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloman.cz/cyklomanek-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.radclub-moedling.at/thermenregion-cup-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=3",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.400ultra.cz/",
+      "error": "dynamic_render_unavailable",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events&page=3",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://pucharmazowsza.pl/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://radsport-thueringen.de/kann-losgehen-mitteldeutschland-crosst-wieder/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/gr-preis-der-suedlichen-weinstrasse-2026/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.gravelseries.cz/novinky/drasal-gravel-challenge-2027",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://szutrypremium.pl/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+      "error": "calendar_write_retry_pending; write_failed:csc-1413:Creating race: duplicate key value violates unique constraint \"event_sources_watched_url_id_external_id_key\"",
+      "state": "deferred"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/o-venec-burtu",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloman.cz/rozpis-papirak-cyklomanek-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/rozpis-babi-leto-cyklomanek-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/rozpis-bredy-maraton-cyklomanek",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.czechcyclingfederation.com/en/events/cesky-pohar-bmx/",
+      "error": "calendar_write_retry_pending; write_failed:csc-cup-bmx-2026-05-02-praha bohnice:Updating race: concurrent_event_update: race changed before write; write_failed:",
+      "state": "deferred"
+    },
+    {
+      "url": "https://radsport-thueringen.de/ausschreibung-athletiktest-22-11-2026/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://ctauthorcup.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://zlinska50.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/zavody-a-akce",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloman.cz/rozpis-silnicni-casovka-cyklomanek-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sokolovska24mtb.cz/xc-jarni-bajky",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sumator.cz/cup/slezsky-pohar-amaterskych-cyklistu-2026",
+      "error": "write_failed:sumator-do vrchu pusteven-2026-09-19:identity_review_required: conflicting fingerprint owned by f5ef27eb-06fb-4881-a701-0b8482020f4c",
+      "state": "failed"
+    },
+    {
+      "url": "https://dzkol.pl/download/2027-challenge-dzkol-regulamin-i-wykaz-punktowanych-wyscigow/?wpdmdl=7073&refresh=6a9e949971bc41788777625",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloteammxm.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=4",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "http://kaernten-radmarathon.at",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.mtb-sachsen-cup.de/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sumator.cz/cup/t-mobile-ceska-enduro-serie-2026",
+      "error": "write_failed:sumator-enduro challenge moravka-2026-04-26:identity_review_required: this row is a different dated race than the record it is linked to",
+      "state": "failed"
+    },
+    {
+      "url": "https://lausitzcup.de/index.php?catid=8&id=621%3Atermine-lausitzcup-2026&view=article",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/zpracovani-osobnich-udaju",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/meldelisten/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://mtbkreiscup.lima-city.de/Punktewertung_Altersklassen.html",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://okolojiznichcech.cz/zavod.html",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://bikeboard.at/termine",
+      "error": "write_failed:bikeboard-16350:Creating race: duplicate key value violates unique constraint \"event_sources_watched_url_id_external_id_key\"; write_failed:bikeboar",
+      "state": "failed"
+    },
+    {
+      "url": "https://cyklobrani.cz/o-zavodu/deti-a-cyklobrani",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sumator.cz/cup/cesky-pohar-horskych-kol-2026",
+      "error": "write_failed:sumator-cesky pohar ostrava-2026-08-16:identity_review_required: this row is a different dated race than the record it is linked to; write_failed:s",
+      "state": "failed"
+    },
+    {
+      "url": "https://sportraces.cz/kraslicky-sip",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://mtb.radsport-thueringen.de",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://dlbajk.cz/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://dzkol.pl/challenge/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://rcnk.at/veranstaltungen/kinderrennen-im-stadtpark",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "http://niederrhein-gravel.de",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://hynekmusil.cz/?serialosss=čpXC",
+      "error": "write_failed:hynek-cesky pohar mcr motol-2026-07-18:identity_review_required: this row is a different dated race than the record it is linked to; write_failed:h",
+      "state": "failed"
+    },
+    {
+      "url": "https://cfc-kladno.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://vrchozdol4.webnode.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.kuklikxco.cz/kuklikxco2025/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://rennsport.radsport-thueringen.de",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloman.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://okolo-stejskala.webnode.cz/detsky-zavod",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://radsport-buchholz.de/grosser-preis",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.pkk-hk.cz/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/zatecky-cyklista/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sumator.cz/?date_from=3-2026&date_to=12-2026",
+      "error": "write_failed:sumator-manitou zelezne hory-2026-08-15:write_time_budget_exhausted; write_failed:sumator-tour de fukushima-2026-06-14:write_time_budget_exhausted;",
+      "state": "deferred"
+    },
+    {
+      "url": "https://www.lrv-noe.at/nachwuchs",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.german-pumptrack-series.de/termine/essen-steele",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cyclingaustria.at/kalender?disziplinen=cyclocross&view=events",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "http://bikeri.cz/serial/bahenni-kral",
+      "error": "dynamic_render_unavailable",
+      "state": "unreadable"
+    },
+    {
+      "url": "http://glocknerkoenig.com",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://kellerwald-bikemarathon.de/hp2017",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://bike-paradise.cz/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/kometen-schmitter-nacht-von-huerth/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://tourdekosova.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloman.cz/zavody-a-akce",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.rad-bundesliga.net/frauen/termine2.html",
+      "error": "calendar_write_retry_pending; write_failed:rad-bl-337:Updating race: concurrent_event_update: race changed before write",
+      "state": "deferred"
+    },
+    {
+      "url": "https://rideandrest.net/eventi/",
+      "error": "write_failed:rideandrest-piccolo-trofeo-valbisenzio-2026-11-14:identity_review_required: conflicting fingerprint owned by 55182745-9c31-4f28-a9cb-710c4506f08c; ",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.lrv-noe.at/media/doc/0b5aa7f1bc4080c97aaaadd4b29ad2a3/arboe-bmx-nachwuchscup-2027.pdf",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/cyklomanek-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "http://bikeri.cz/zavody/propozice",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://radsport-thueringen.de/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "http://bikesportmh.cz/mohelnicky-1-2-maraton",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.tjoresin.cz/oresinsky-vanek/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=3",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://dzkol.pl/challenge-2026/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://mtbkreiscup.lima-city.de/Ausschreibung/2026/Ausschreibung_Kidscup_Heimenkirch_2026.pdf",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.dsergebnis.de/nievenheimer-ortsschildsprint-2026/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.hessen-radsport.de/disziplinen/strasse/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.ostalbgravel.de/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://odjazd.pl/",
+      "error": "write_failed:odjazd-24fe10af-c361-4795-838f-9e388008a58b:Creating race: duplicate key value violates unique constraint \"event_sources_watched_url_id_external_id",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.lrv-noe.at/media/doc/fa8407241e7b390286d6a5750a636595/noe-rad-nachwuchscup-2027.pdf",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://malevilcup.cz",
+      "error": "write_failed:malevil-2026-06-13:identity_review_required: multiple matching races; source row deferred",
+      "state": "failed"
+    },
+    {
+      "url": "http://www.mtbkreiscup.lima-city.de/Regeln.html",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://cyklosvec.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://kalendarzrowerowy.pl/kalendarz/",
+      "error": "write_failed:kalrow-pbt-rozgrzewka-2027:Creating race: duplicate key value violates unique constraint \"event_sources_watched_url_id_external_id_key\"; write_fail",
+      "state": "failed"
+    },
+    {
+      "url": "https://rcnk.at/veranstaltungen/tage-des-querfeldeinsports/samstag-kinder-und-trainingsrennen",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://prazska50.cz",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.svckostelec.cz/organizace-skolniho-roku",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.3xtop.cz/cs/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=2",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "http://austria-top-tour.at",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events&page=5",
+      "error": "HTTP 500",
+      "state": "failed"
+    },
+    {
+      "url": "https://goodtimesgravel.at/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.cykloman.cz/obchodni-podminky",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://eventivsport.com/map",
+      "error": "eventiv_api_http_401: cycling calendar unavailable",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.ztracenekobylky.cz/propozice-roubenkove26/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://sumator.cz/cup/prima-cup-2026",
+      "error": "write_failed:sumator-kupkolo cz trilogy-2026-07-06:identity_review_required: this row is a different dated race than the record it is linked to",
+      "state": "failed"
+    },
+    {
+      "url": "https://www.mazurymtb.pl/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://trnavskacyklistickaliga.sk",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.mtbpodralsko.cz/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "http://www.mazurymtb.pl/aktualnosci/bitwa-o-twierdze-boyen-zakonczyla-sezon-laciate-mazury-mtb-2026",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://www.mazurymtb.pl/p/wyscigi-nickelodeon-race-liga-szkolek-kolarskich",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://mtb-team-bucklige-welt.at/termine-events/schlossberg-xc",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    },
+    {
+      "url": "https://dzkol.pl/",
+      "error": "unsupported_or_empty_source",
+      "state": "unreadable"
+    }
+  ],
+  "silentSources": [
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events",
+      "prior": 20,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=4",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.dsergebnis.de/nrw-cross-cup-2026/",
+      "prior": 4,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cykloman.cz/rozpis-silnicni-casovka-cyklomanek-2026",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://dzkol.pl/download/2026-challenge-dzkol-regulamin-i-wykaz-punktowanych-wyscigow/?wpdmdl=7073&refresh=6a9e949971bc41788777625",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=2",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.mazurymtb.pl/zawody/wyniki",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events&page=2",
+      "prior": 20,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=cyclocross&view=events",
+      "prior": 13,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/mytinka-cup-2025",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://dzkol.pl/kalendarz/kategoria/liga-mtb-junior/lista/",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=5",
+      "prior": 10,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=5",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.zelenak.cz/",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.dsergebnis.de/cyclo-cross-bundesliga-2026-27/",
+      "prior": 2,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://cykloman.cz/cyklomanek-2026",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=3",
+      "prior": 29,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=strasse&view=events&page=3",
+      "prior": 8,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.roadcycling.cz/roadcup/rocnik-2027",
+      "prior": 14,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://radsport-thueringen.de/kann-losgehen-mitteldeutschland-crosst-wieder/",
+      "prior": 2,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/o-venec-burtu",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://ctauthorcup.cz",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://cykloman.cz/rozpis-silnicni-casovka-cyklomanek-2026",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?sparten=mtb&view=events&page=4",
+      "prior": 18,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.mtb-sachsen-cup.de/",
+      "prior": 3,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.dsergebnis.de/",
+      "prior": 22,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+      "prior": 6,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cykloman.cz/zpracovani-osobnich-udaju",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.dsergebnis.de/meldelisten/",
+      "prior": 4,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://cfc-kladno.cz",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.pkk-hk.cz/",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.kolokolemkomina.cz/zavody/zatecky-cyklista/",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.lrv-noe.at/nachwuchs",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.german-pumptrack-series.de/termine/essen-steele",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://cyclingaustria.at/kalender?disziplinen=cyclocross&view=events",
+      "prior": 8,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "http://bikeri.cz/serial/bahenni-kral",
+      "prior": 1,
+      "status": 200,
+      "error": "dynamic_render_unavailable"
+    },
+    {
+      "url": "https://bike-paradise.cz/",
+      "prior": 4,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://cykloman.cz/rozpis-jizda-do-vrchu-cyklomanek",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "http://bikeri.cz/zavody/propozice",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://radsport-thueringen.de/",
+      "prior": 2,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.tjoresin.cz/oresinsky-vanek/",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=3",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://www.svckostelec.cz/organizace-skolniho-roku",
+      "prior": 1,
+      "status": 200,
+      "error": "unsupported_or_empty_source"
+    },
+    {
+      "url": "https://www.cyclingaustria.at/kalender?view=events&page=2",
+      "prior": 30,
+      "status": null,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://eventivsport.com/map",
+      "prior": 105,
+      "status": null,
+      "error": "eventiv_api_http_401: cycling calendar unavailable"
+    }
+  ],
+  "costliest": [
+    {
+      "url": "https://portal.czechcyclingfederation.com/Races/Race/Pub",
+      "database": 1194,
+      "upserted": 169,
+      "extracted": 422
+    },
+    {
+      "url": "https://sumator.cz",
+      "database": 204,
+      "upserted": 0,
+      "extracted": 250
+    },
+    {
+      "url": "https://zapadoceskaamaterskaliga.cz/",
+      "database": 137,
+      "upserted": 15,
+      "extracted": 15
+    },
+    {
+      "url": "https://rideandrest.net/eventi/",
+      "database": 127,
+      "upserted": 0,
+      "extracted": 133
+    },
+    {
+      "url": "https://www.ixsdownhillcup.com/rennkalender",
+      "database": 117,
+      "upserted": 14,
+      "extracted": 14
+    },
+    {
+      "url": "https://zapadoceskaamaterskaliga.cz/kalendare/zal-2026",
+      "database": 111,
+      "upserted": 15,
+      "extracted": 15
+    },
+    {
+      "url": "https://kalendarzrowerowy.pl/kalendarz/",
+      "database": 104,
+      "upserted": 0,
+      "extracted": 25
+    },
+    {
+      "url": "https://bikeboard.at/termine",
+      "database": 92,
+      "upserted": 0,
+      "extracted": 79
+    },
+    {
+      "url": "https://sumator.cz/cup/uci-gran-fondo-world-series-2026",
+      "database": 82,
+      "upserted": 0,
+      "extracted": 31
+    },
+    {
+      "url": "https://odjazd.pl/",
+      "database": 74,
+      "upserted": 9,
+      "extracted": 235
+    },
+    {
+      "url": "https://sumator.cz/cup/uci-gran-fondo-world-series-2025",
+      "database": 60,
+      "upserted": 0,
+      "extracted": 28
+    },
+    {
+      "url": "https://www.polishbiketour.pl/pbt-news/kalendarz-polish-bike-tour-2026-co-jeszcze-przed-nami-w-sezonie",
+      "database": 55,
+      "upserted": 7,
+      "extracted": 7
+    }
+  ],
+  "failures": [
+    {
+      "error": "unsupported_or_empty_source",
+      "count": 100
+    },
+    {
+      "error": "HTTP 500",
+      "count": 17
+    },
+    {
+      "error": "write_failed",
+      "count": 13
+    },
+    {
+      "error": "calendar_write_retry_pending; write_failed",
+      "count": 3
+    },
+    {
+      "error": "dynamic_render_unavailable",
+      "count": 2
+    },
+    {
+      "error": "eventiv_api_http_401",
+      "count": 1
+    }
+  ]
+}

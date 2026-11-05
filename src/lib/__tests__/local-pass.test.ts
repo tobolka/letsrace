@@ -161,15 +161,19 @@ describe("last look at new races", () => {
   it("holds a name that says nothing", () => expect(check({ name: "SHORT TRACK" })).toContain("name_says_too_little"));
   it("holds a ride", () => expect(check({ event_type: "ride" })).toContain("listed_as_a_ride"));
   it("holds a date in the past", () => expect(check({ start_date: "2026-10-01" })).toContain("no_future_date"));
-  it("holds a race with no place, and one that cannot be put on the map", () => {
+  it("holds a race with no place but accepts a known town before geocoding", () => {
     expect(check({}, null)).toContain("no_usable_place");
-    expect(check({}, { municipality: "Kněžice", country_code: "CZ" })).toContain("place_not_on_the_map");
+    expect(check({}, { municipality: "Kněžice", country_code: "CZ" })).toEqual([]);
   });
   it("holds a race that may already be listed, but not an unrelated one that day", () => {
     const same = { id: "old", name: "Bike Maraton Kněžice", start_date: "2027-05-29", disciplines: ["mtb_marathon"], place };
     const other = { id: "other", name: "Gravel Třeboň", start_date: "2027-05-29", disciplines: ["gravel"], place: { municipality: "Třeboň", country_code: "CZ", lat: 49, lng: 14.77 } };
     expect(check({}, place, [same])).toContain("may_already_be_listed");
     expect(check({}, place, [other])).toEqual([]);
+  });
+  it("does not resurrect a merged event under a long title with wrong discipline tags", () => {
+    const known = { id: "merged-alias", name: "DWH Cross Wels", start_date: "2026-11-08", disciplines: ["cx"], website_url: "https://www.rc-ovilava-wels.at/", place: { municipality: "Wels", country_code: "AT" } };
+    expect(check({ name: "DWH Cross Wels Nationales Rennen mit Jedermannfrau Gravel MTB Rennen und BOA Mini Grand Prix", start_date: "2026-11-08", disciplines: ["mtb", "road", "gravel"], website_url: "https://rc-ovilava-wels.at/" }, { municipality: "4600 Wels", country_code: "AT" }, [known])).toContain("may_already_be_listed");
   });
 });
 
@@ -203,4 +207,9 @@ it("stops a record jumping between races joined by mistake, but lets a race be r
   expect(isDifferentDatedRace("radsport-27035-2027-04-17", "2027-04-17", "2027-04-17", sources)).toBe(false);
   expect(isDifferentDatedRace("radsport-27035-2027-05-02", "2027-05-02", "2027-04-17", [{ external_id: "radsport-27035-2027-04-17" }])).toBe(false);
   expect(isDifferentDatedRace("csc-1695", "2027-05-02", "2027-04-17", sources)).toBe(false);
+});
+
+it("does not hold Allgäu for an unrelated road event hundreds of kilometres away on its weekend", () => {
+  const incoming={id:"allgaeu",name:"Allgäu & Spätzle",start_date:"2027-06-18",end_date:"2027-06-20",disciplines:["road","gravel"]};
+  expect(newRaceProblems(incoming,{municipality:"Bad Waldsee",country_code:"DE",lat:47.9179844,lng:9.7494576},[{id:"munich",name:"Bayrisch-Böhmisches Biere und Bäder Brevet",start_date:"2027-06-19",disciplines:["road"],place:{municipality:"München",country_code:"DE",lat:48.1351,lng:11.582}}],"2026-11-05")).toEqual([]);
 });

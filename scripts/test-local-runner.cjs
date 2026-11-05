@@ -28,3 +28,8 @@ const {normalizeResult}=require('./local-runner.cjs');
 assert.deepEqual(normalizeResult({failed:3,problems:[{error:'unsupported_or_empty_source'},{error:'low confidence or empty extract'},{error:'HTTP 503'}]}),{failed:1,unreadable:2,problems:[{error:'unsupported_or_empty_source'},{error:'low confidence or empty extract'},{error:'HTTP 503'}]});
 assert.equal(normalizeResult({failed:2,unreadable:1,problems:[{error:'unsupported_or_empty_source'}]}).failed,2);
 console.log('PASS: historical diagnostics separate reader limits without hiding unknown failures');
+
+const {managedCommand}=require('./local-runner.cjs');
+assert.equal(managedCommand('/runtime'),'/runtime/scripts/local-cycle.sh');
+assert.equal(managedCommand('/runtime','/fixture/fake.sh'),'/fixture/fake.sh');
+console.log('PASS: managed production command uses the isolated local cycle');

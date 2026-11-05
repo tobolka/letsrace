@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { cleanGeocodeQuery, geocodeFromGazetteer, geocodePlace } from "@/lib/geocode";
 
+it("keeps the Italian comune instead of an appended venue entrance", () => {
+  expect(cleanGeocodeQuery("PARCO DEI POPOLI, CASTELLARANO (RE) - INGR. COPPI", "IT")).toEqual({ query: "CASTELLARANO", countryCode: "IT" });
+});
+
 it("keeps Polish Sobótka separate from Czech Sobotka and respects a stated country", () => {
   expect(geocodeFromGazetteer("Sobótka")?.countryCode).toBe("PL");
   expect(geocodeFromGazetteer("Sobotka", "CZ")?.countryCode).toBe("CZ");

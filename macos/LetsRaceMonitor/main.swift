@@ -4,6 +4,7 @@ import Foundation
 import os
 
 struct MonitorSnapshot: Decodable {
+    struct Cycle: Decodable { let state: String; let heldRaces: Int; let sourceFailures: Int; let unreadableSources: Int?; let seconds: Int?; let aiCostUsd: Double? }
     struct AI: Decodable { let lastRunAt: Double?; let month: String; let spentUsd: Double; let monthCapUsd: Double; let dayCapUsd: Double; let schedule: String }
     struct Counters: Decodable { let reads: Int?; let created: Int?; let updated: Int?; let failed: Int?; let leads: Int?; let queued: Int? }
     struct Problem: Decodable { let url: String?; let error: String? }
@@ -25,6 +26,7 @@ struct MonitorSnapshot: Decodable {
         let cpuPercent: Int?; let memoryFreePercent: Int?; let processes: [RunningProcess]
     }
     let at: String; let pid: Int; let root: String; let data: String
+    let pipelineMode: String?; let cycleResult: Cycle?
     let status: String; let paused: Bool; let childPid: Int?
     let stage: String?; let startedAt: Double?; let lastOutputAt: Double?
     let lastFinishedAt: Double?; let lastExitCode: Int?; let nextRunAt: Double
@@ -63,14 +65,17 @@ struct MonitorOverview: Codable {
         if let result = snapshot?.lastResult, let at = result.at {
             runs.append(LastRun(at: at, created: result.created ?? 0, updated: result.updated ?? 0, failed: result.failed ?? 0))
         }
-        if let job, let finished = date(job.finished_at), job.status != "running" {
+        if snapshot?.pipelineMode != "local-new-races", let job, let finished = date(job.finished_at), job.status != "running" {
             runs.append(LastRun(at: finished.timeIntervalSince1970 * 1000, created: job.summary.created ?? 0, updated: job.summary.updated ?? 0, failed: job.summary.failed ?? 0))
         }
-        if let browser = snapshot?.browser, let at = date(browser.at), (browser.read ?? 0) > 0 {
+        if snapshot?.pipelineMode != "local-new-races", let browser = snapshot?.browser, let at = date(browser.at), (browser.read ?? 0) > 0 {
             runs.append(LastRun(at: at.timeIntervalSince1970 * 1000, created: browser.created ?? 0, updated: browser.updated ?? 0, failed: browser.status == "failed" ? 1 : 0))
         }
         lastRun = runs.max { $0.at < $1.at }
-        if serverFresh, let waiting = server?.reviewCandidates {
+        if snapshot?.pipelineMode == "local-new-races" {
+            reviewTitle = "Nové závody automaticky, sporné nálezy zvlášť"
+            reviewDetail = snapshot?.cycleResult.map { "\($0.heldRaces) nálezů zůstává k posouzení. Nejsou to automaticky otázky pro tebe. Změny existujících závodů se zatím neodesílají." } ?? "První výsledek se doplní po dokončení nového průchodu. Změny existujících závodů se zatím neodesílají."
+        } else if serverFresh, let waiting = server?.reviewCandidates {
             reviewTitle = waiting > 0 ? "Podklady čekají na ověření" : "Není připravená žádná otázka pro tebe"
             let pending = waiting == 1 ? "1 podklad čeká na kontrolu." : (2...4).contains(waiting) ? "\(waiting) podklady čekají na kontrolu." : "\(waiting) podkladů čeká na kontrolu."
             reviewDetail = waiting > 0
@@ -92,6 +97,18 @@ struct MonitorOverview: Codable {
             state = State(title: "Sběr se dlouho neozval", detail: "Probíhající kontrola dlouho neposlala nový výsledek. Poslední dostupný průběh je v podrobnostech.", tone: "warning")
         } else if !serverFresh {
             state = State(title: "Stav serveru nelze ověřit", detail: "Mac se hlásí. Dostupnost serverové části teď není potvrzená.", tone: "warning")
+        } else if snapshot.pipelineMode == "local-new-races" {
+            if snapshot.status == "attention" {
+                state = State(title: "Poslední průchod potřebuje opravu", detail: snapshot.lastError ?? "Uložené výsledky zůstávají zachované. Další pokus naváže na práci.", tone: "warning")
+            } else if snapshot.childPid != nil {
+                state = State(title: "Právě kontroluji závody", detail: snapshot.stage ?? "Nové nálezy porovnávám s katalogem; nemusíš nic spouštět.", tone: "busy")
+            } else if snapshot.cycleResult?.state == "publication_pending" {
+                state = State(title: "Závody jsou uložené, zobrazení čeká", detail: "Kontrola veřejných stránek ještě nepotvrdila všechny výsledky.", tone: "warning")
+            } else if (snapshot.cycleResult?.sourceFailures ?? 0) > 0 || (snapshot.cycleResult?.unreadableSources ?? 0) > 0 {
+                state = State(title: "Průchod doběhl s omezením", detail: "Některé zdroje se nepodařilo přečíst. Nové závody a čekající nálezy jsou uvedené zvlášť.", tone: "warning")
+            } else {
+                state = State(title: "Další kontrola je naplánovaná", detail: "Nové závody kontroluji na Macu každých 12 hodin. Mac musí být zapnutý a přihlášený; po návratu navážu.", tone: "good")
+            }
         } else if server?.brokenSources == nil || server?.unreadableSources == nil || server?.reviewCandidates == nil {
             state = State(title: "Přehled sběru není úplný", detail: "Server odpovídá, ale část stavu není potvrzená. Chybějící počty se nepovažují za nulu.", tone: "warning")
         } else if job == nil {
@@ -313,6 +330,9 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let last = summary.lastRun {
             add(time(last.at), size: 12, bold: true, to: result)
             add("Nové položky v katalogu: \(last.created)\nUložené změny: \(last.updated)", size: 13, to: result)
+            if let seconds = snapshot?.cycleResult?.seconds {
+                add("Doba průchodu: \(seconds / 60) min \(seconds % 60) s", size: 12, color: .secondaryLabelColor, to: result)
+            }
         } else {
             add("Zatím bez výsledku", size: 13, to: result)
         }
@@ -323,6 +343,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         stack.addArrangedSubview(actions)
         let footer = section()
         footer.addArrangedSubview(smallButton(snapshot?.paused == true ? "Obnovit sběr na Macu" : "Pozastavit sběr na Macu", #selector(togglePause), enabled: snapshot != nil && !stale))
+        if snapshot?.pipelineMode == "local-new-races", let next = snapshot?.nextRunAt { add("Další kontrola: \(time(next))", size: 11, color: .secondaryLabelColor, to: footer) }
         add("Poslední hlášení: \(shortDate(snapshot?.at))", size: 10, color: .secondaryLabelColor, to: footer)
         document.layoutSubtreeIfNeeded()
         let height = stack.fittingSize.height + 44
@@ -360,6 +381,12 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         stack.addArrangedSubview(smallButton("Zpět na přehled", #selector(openOverviewPanel)))
         text("Co systém dělá", size: 22, bold: true, to: stack)
         text("Čtyři činnosti, jeden katalog. Tady je jejich nastavený režim; aktuální stav sběru je v přehledu.", color: .secondaryLabelColor, to: stack)
+        if snapshot?.pipelineMode == "local-new-races" {
+            section("1. Nové weby", "Zatím pozastavené", "Automatické rozšiřování seznamu zdrojů teď neběží. Nalezený web sám o sobě není nový závod.")
+            section("2. Nové závody ze známých webů", "Na Macu každých 12 hodin", "Čte jen splatné zdroje. Nálezy porovná s čerstvým katalogem včetně skrytých a sloučených záznamů. Prověřené nové závody odešle; nejisté nechá k posouzení.")
+            section("3. Změny existujících závodů", "Uložené místně, čekají na posouzení", "Tento první automatický režim změny existujících závodů neodesílá. Počasí, samostatné geokódování a zveřejnění dál zajišťuje server.")
+            section("4. Sporné nálezy", "Samostatné posouzení ještě zbývá", "Nálezy nezmizí po ukončení ani restartu. Zadržený nález není zamítnutý závod a automaticky neznamená otázku pro tebe. Placená AI v tomto režimu neběží.")
+        } else {
         section("1. Hledání nových webů", "Hledání automaticky · přijetí zdrojů čeká", "Hledá dosud neznámé pořadatele a kalendáře. Nalezený web je návrh zdroje, ještě ne nový závod. Jeho přijetí není plně automatické.")
         section("2. Nové závody ze známých webů", "Pravidelný automatický sběr", "Prochází sledované kalendáře a weby. Nález porovná s katalogem: nový závod přidá, známý aktualizuje a nejasnou shodu odloží k ověření.")
         section("3. Doplňování existujících závodů", "Část automaticky · AI v omezeném režimu", "Dohledává například web pořadatele a přihlášky. Podrobné doplňování neběží v každém cyklu; AI se spouští jen ve vybrané dny a v rozpočtu. Staré údaje nejsou novým potvrzením.")
@@ -368,6 +395,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             waiting = count == 1 ? "1 podklad čeká na ověření" : (2...4).contains(count) ? "\(count) podklady čekají na ověření" : "\(count) podkladů čeká na ověření"
         } else { waiting = "Aktuální počet čekajících podkladů není potvrzený" }
         section("4. Ověřování sporných nálezů", waiting, "Mac opakovaně kontroluje zdroje a ukládá další termín pokusu. Samostatné posouzení a zveřejnění zatím chybí. Změna stránky sama nepotvrzuje závod.")
+        }
         section("Co potřebuje tebe?", "Nemusíš vybírat ani spouštět sběrače", "Čekající podklady jsou práce k ověření, ne automaticky otázky pro tebe. Běžná technická chyba se nemá měnit v tvůj úkol.")
         stack.addArrangedSubview(smallButton("Zobrazit průběh a nástroje", #selector(openTechnicalPanel)))
         document.layoutSubtreeIfNeeded()
@@ -418,7 +446,11 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if serverRunning { serverLines += "\nBěží na serveru" }
         if let e = snapshot?.serverRequestError { serverLines += "\n\(e)" }
         let serverColor: NSColor = !freshServer || job == nil || job?.status == "error" || job?.status == "attention" ? .systemOrange : .systemGreen
-        card("Server zdarma", detail: serverLines, color: serverColor, buttons: [smallButton(serverRunning ? "Běží…" : "Spustit sběr", #selector(runServer), enabled: !serverRunning), smallButton("Obnovit stav", #selector(refreshServer)), smallButton("Stav a problémy", #selector(showServerProblems))], in: stack)
+        if snapshot?.pipelineMode == "local-new-races" {
+            card("Server · veřejný web a další služby", detail: "Starý sběr je vypnutý. Počasí, geokódování a zveřejnění zůstávají na serveru.", color: freshServer ? .systemGreen : .systemOrange, buttons: [smallButton("Obnovit stav", #selector(refreshServer))], in: stack)
+        } else {
+            card("Server zdarma", detail: serverLines, color: serverColor, buttons: [smallButton(serverRunning ? "Běží…" : "Spustit sběr", #selector(runServer), enabled: !serverRunning), smallButton("Obnovit stav", #selector(refreshServer)), smallButton("Stav a problémy", #selector(showServerProblems))], in: stack)
+        }
         let localBusy = snapshot?.childPid != nil
         let localRunning = localBusy && snapshot?.activeTask != "federation"
         let r = snapshot?.lastResult
@@ -427,12 +459,14 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if (r?.unreadable ?? 0) > 0 { localLines += " · \(r?.unreadable ?? 0) potřebuje jinou čtečku" }
         if (r?.deferred ?? 0) > 0 { localLines += " · \(r?.deferred ?? 0) odloženo" }
         if r?.reads == 0 { localLines += "\nŽádný zdroj nebyl splatný; tento běh nic nepřidal." }
+        if let cycle = snapshot?.cycleResult { localLines += "\n\(cycle.heldRaces) nálezů čeká k posouzení; změny existujících závodů se neodesílají." }
         if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) chyb · \(recent.unreadable ?? 0) čtení potřebuje jinou čtečku" }
         if localRunning { localLines += "\n\(translatedStage(snapshot?.stage)) · \(eta(snapshot?.activeTask ?? "refresh", started: snapshot?.startedAt))" }
         else if localBusy { localLines += "\nTeď běží federace; běžný sběr můžeš zařadit za ni." }
         if snapshot?.paused == true { localLines += localBusy ? "\nSběr na Macu je pozastavený; probíhající běh se dokončí." : "\nSběr na Macu je pozastavený." }
         if stale { localLines += "\nChybí čerstvé hlášení sběrače." }
         card("Mac zdarma · běžný sběr", detail: localLines, color: stale || (r?.failed ?? 0) > 0 ? .systemOrange : .systemGreen, buttons: [smallButton(localRunning ? "Běží…" : localBusy ? "Zařadit sběr" : "Spustit sběr", #selector(runNow), enabled: !localRunning), smallButton("Problémy a řešení", #selector(showLocalProblems))], in: stack)
+        if snapshot?.pipelineMode != "local-new-races" {
         let browser = snapshot?.browser
         let federationRunning = snapshot?.activeTask == "federation"
         let federationQueued = snapshot?.pendingTasks?.contains("federation") == true
@@ -448,6 +482,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         aiLines += "\n\(money(spent)) / 5 USD za měsíc · max. 0,50 USD za den"
         aiLines += blocked ? "\nMěsíční limit vyčerpaný. Další placené volání je blokované." : "\nDoplňuje základní údaje; běží na tomto Macu."
         card("AI kontrola · na Macu", detail: aiLines, color: .secondaryLabelColor, buttons: [smallButton(blocked ? "Limit vyčerpaný" : localBusy ? "Zařadit AI · max. 0,50 USD" : "Spustit AI · max. 0,50 USD", #selector(runAI), enabled: !blocked && snapshot?.pendingTasks?.contains("ai") != true), smallButton("Rozpočet a další běh", #selector(showAiBudget))], in: stack)
+        }
         let heartbeat = "Hlášení před \(duration((snapshot?.at).flatMap(parsedDate).map { $0.timeIntervalSince1970 * 1000 }))"
         var health = heartbeat + " · server před \(duration(server?.checkedAt.flatMap(parsedDate).map { $0.timeIntervalSince1970 * 1000 }))"
         if let h = server?.health { health += "\nZa 24 h: \(h.ok24h)/\(h.reads24h) čtení OK · čeká \(h.due)/\(h.sources) zdrojů" }
@@ -613,6 +648,10 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     @objc private func showHelp() {
         let a = NSAlert(); a.messageText = "Sběr se o sebe stará sám"
+        if snapshot?.pipelineMode == "local-new-races" {
+            a.informativeText = "Po přihlášení se spustí panel a plánovač. Nový průchod na Macu kontroluje splatné zdroje každých 12 hodin. Práci si pamatuje a nepřečítá vše od začátku. Při vypnutém Macu se zdroje nečtou; po zapnutí a přihlášení naváže.\n\nPrvní automatický režim posílá jen prověřené nové závody. Změny existujících závodů a nejasné nálezy zůstávají uložené k posouzení. Placená AI teď neběží. Starý serverový sběr je vypnutý; počasí, geokódování a zveřejnění na serveru zůstávají.\n\nPočet přečtených stránek není počet nových závodů. Panel ukazuje skutečně uložené výsledky a dobu průchodu. Nepodporované čtení není automaticky porucha. Zavření panelu nezastaví plánovač."
+            a.runModal(); return
+        }
         a.informativeText = "Procenta ukazují podíl uložených závodů s vyplněným názvem, termínem, místem, zemí, disciplínou a zdrojem. Nejsou důkazem správnosti a neříkají, kolik všech existujících závodů jsme našli. Změněné závody znamenají skutečnou změnu uloženého údaje; samy o sobě neprokazují, že je celý závod správný.\n\nPanel ukazuje skutečný stav a dobu běhu, bez odpočtu do dokončení.\n\nPo přihlášení se automaticky spustí panel i sběrač. Bezplatný sběr kontroluje zdroje každé dvě hodiny, Chrome se použije podle potřeby. AI kontrola běží na Macu v úterý a pátek ve společném limitu 5 USD za měsíc.\n\nZelená: běží nebo čeká na další spuštění. Oranžová: dlouho bez výstupu nebo výsledek k ověření. Červená: chybí čerstvé hlášení.\n\nZavření panelu nezastaví sběr. Při vypnutém Macu pokračuje server zdarma; místní sběr naváže po zapnutí a přihlášení."
         a.runModal()
     }

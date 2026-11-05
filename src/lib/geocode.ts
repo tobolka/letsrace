@@ -356,7 +356,7 @@ const GAZETTEER: Record<string, { lat: number; lng: number; cc: string }> = {
   aesch: { lat: 47.469, lng: 7.597, cc: "CH" },
   schotz: { lat: 47.169, lng: 7.99, cc: "CH" },
   pfynwald: { lat: 46.307, lng: 7.627, cc: "CH" },
-  osterhas: { lat: 47.155, lng: 7.65, cc: "CH" },
+  "affoltern am albis": { lat: 47.2782467, lng: 8.4521518, cc: "CH" },
   davos: { lat: 46.803, lng: 9.837, cc: "CH" },
   einsiedeln: { lat: 47.128, lng: 8.745, cc: "CH" },
   furtwangen: { lat: 48.05, lng: 8.208, cc: "DE" },
@@ -1314,6 +1314,13 @@ export function cleanGeocodeQuery(
 ): { query: string; countryCode: string } {
   let text = raw.replace(/\s+/g, " ").trim();
   let cc = (countryHint || "CZ").toUpperCase();
+  // Italian guides explicitly mark the comune with a province in parentheses.
+  // An entrance appended after it ("... CASTELLARANO (RE) - INGR. COPPI")
+  // is an address detail, not the town after the final dash.
+  if (cc === "IT") {
+    const comune = /(?:^|,)\s*([^,()]+?)\s*\([A-Z]{2}\)(?=\s*(?:[-–,]|$))/i.exec(text)?.[1]?.trim();
+    if (comune && !/^(?:parco|via|viale|piazza|centro)\b/i.test(comune)) text = comune;
+  }
   // A country identifies coverage, never a race venue. Otherwise Nominatim
   // supplies the country's centroid and the UI invents a precise distance.
   if ([...EUROPE_COUNTRY_CODES, "UK"].some((code) => code === text.toUpperCase())) {

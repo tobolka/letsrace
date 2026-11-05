@@ -34,6 +34,7 @@ function run(tool, args, env) {
   catch (error) { throw Error(`${tool} failed: ${String(error.stderr ?? error.message).replaceAll(env.PGPASSWORD, '***').slice(0, 400)}`); }
 }
 
+function copyCatalogue() {
 const env = serverEnvironment();
 const tables = run('psql', ['-qAt', '-c', "select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where c.relkind = 'r' and n.nspname in ('public', 'pipeline_private') order by 1"], env).split('\n').filter(Boolean);
 const unknown = tables.filter(table => !COPY.includes(table) && !LEAVE_OUT.includes(table));
@@ -48,3 +49,7 @@ run('pg_dump', ['--data-only', '--format=custom', ...COPY.map(table => `--table=
 renameSync(join(directory, 'schema.sql.tmp'), join(directory, 'schema.sql'));
 renameSync(join(directory, 'catalogue-baseline.dump.tmp'), join(directory, 'catalogue-baseline.dump'));
 console.log(`Copied structure and ${COPY.length} tables to ${directory}; ${LEAVE_OUT.length} tables left out.`);
+
+}
+module.exports = {COPY,LEAVE_OUT,serverEnvironment,copyCatalogue};
+if(require.main===module)copyCatalogue();

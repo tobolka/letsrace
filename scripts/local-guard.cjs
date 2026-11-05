@@ -7,6 +7,7 @@
 const childProcess = require('node:child_process');
 const http = require('node:http');
 const https = require('node:https');
+const { promisify } = require('node:util');
 
 const FORBIDDEN = /(?:^|\.)(?:supabase\.co|supabase\.com|letsrace\.cz|vercel\.app|vercel\.com|resend\.com|sendgrid\.net|slack\.com)$/i;
 const AI = /(?:^|\.)(?:anthropic\.com|openai\.com)$/i;
@@ -39,16 +40,28 @@ function checkedArguments(command, args) {
 }
 for (const method of ['spawn', 'execFile', 'spawnSync', 'execFileSync']) {
   const real = childProcess[method];
-  childProcess[method] = function guardedCommand(command, args, ...rest) {
+  const guarded = function guardedCommand(command, args, ...rest) {
     return real.call(this, command, checkedArguments(command, args), ...rest);
   };
+  // Node's execFile has a custom promise result {stdout, stderr}. Dropping it
+  // makes promisify return just stdout and breaks the curl document reader.
+  // Check arguments again rather than copying the original unguarded shortcut.
+  if (real[promisify.custom]) guarded[promisify.custom] = function(command, args, ...rest) {
+    return real[promisify.custom].call(this, command, checkedArguments(command, args), ...rest);
+  };
+  childProcess[method] = guarded;
 }
 for (const method of ['exec', 'execSync']) {
   const real = childProcess[method];
-  childProcess[method] = function guardedShell(command, ...rest) {
+  const guarded = function guardedShell(command, ...rest) {
     checkedArguments(command, []);
     return real.call(this, command, ...rest);
   };
+  if (real[promisify.custom]) guarded[promisify.custom] = function(command, ...rest) {
+    checkedArguments(command, []);
+    return real[promisify.custom].call(this, command, ...rest);
+  };
+  childProcess[method] = guarded;
 }
 
 const realFetch = globalThis.fetch;

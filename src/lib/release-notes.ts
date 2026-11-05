@@ -22,10 +22,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-05",
     items: {
       cs: [
+        "V kalendáři najdeš další závody v Česku, Polsku, Německu, Itálii a Švýcarsku včetně dětských soutěží.",
         "U JANEV CUPu v Jičíně najdeš areál, pořadatele a časy jednotlivých startů podle propozic.",
         "Lakeland GRVL 2027 je v kalendáři jen jednou a správně v Mikołajkách, Hardy Gravel Perun začíná 17. července a GR8 Lakes GRVL vede rovnou na přihlášku.",
       ],
       en: [
+        "The calendar includes more races in Czechia, Poland, Germany, Italy and Switzerland, including children’s events.",
         "The JANEV CUP race in Jičín shows its venue, organiser and individual start times from the race guide.",
         "Lakeland GRVL 2027 appears once in the calendar and correctly in Mikołajki, Hardy Gravel Perun starts on 17 July and GR8 Lakes GRVL links straight to registration.",
       ],

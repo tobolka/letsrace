@@ -104,3 +104,15 @@ Tento krok **nepublikuje, neslučuje ani neověřuje pravdivost závodu**. Odstr
 Při explicitním rozhodnutí zveřejnit kandidáta se před zápisem používá společná kontrola `validateReviewSource`, také přímo uvnitř zapisovače. Ověřuje aktuální dokument proti posouzenému snímku, doslovné citace a výslovný rok; konec vícedenního závodu také potřebuje doklad. Samotný název země nenahrazuje místo. Zapisovač zachovává kontrolu odmítnutých/pozastavených zdrojů a ochrany identity a ručních zámků. Jde zatím o cestu posouzených kandidátů, ne o záruku sjednocení všech automatických zápisů nebo ověření veřejné stránky.
 
 Další ročníky se hledají přes skutečné odkazy a oznámení pořadatelů. Sběrač již automaticky nezakládá ani neoživuje sledované adresy pouhou změnou roku v URL; tato cesta vytvářela neověřené články a archivní adresy. Dříve načtené užitečné zdroje zůstávají sledované.
+
+## Nový automatický režim Macu · 5. listopadu 2026
+
+`local-runner.cjs` spouští `local-cycle.sh`, nikoli starý průchod zapisující při čtení na server. Výchozí interval je **12 hodin**. Přihlášení uživatele spustí plánovač; po uspání nebo vypnutí naváže, bez souběhu dvou vlastních průchodů. Pauza a okamžité zastavení jsou odlišné: pauza nechá rozdělaný průchod dokončit, zastavení ukončí další kroky včetně odesílání.
+
+Jeden průchod stáhne čerstvý srovnávací katalog, čte splatné zdroje do trvalé místní databáze, oddělí nejasné nálezy a bezpečně odešle nejvýše 20 prověřených nových závodů. **Pracovní databázi neobnovuje ze serveru před každým během.** Zachová tedy otisky stránek, další termíny čtení a rozdělané výsledky. Přerušené čtení není důvod přečíst celý katalog znovu.
+
+První zapnutý rozsah jsou **nové závody ze známých zdrojů**. Změny existujících závodů zůstávají místně k posouzení. Placená AI ani hledání zcela nových webů v tomto režimu neběží. Starý serverový sběr `watch`/`explore` zůstává blokovaný. Server dál zajišťuje veřejný web, počasí, samostatné geokódování a potvrzení zveřejnění ve společných limitech. Odeslání do databáze není potvrzení veřejného zobrazení; to zaznamenává existující fronta kontrol, nikoli další neomezený kontrolor.
+
+Stav průchodu: `~/Library/Application Support/LetsRace/data/local-cycle-latest.json`. Jednotlivé výsledky, přesný odeslaný návrh, potvrzení zápisu a důvody držení zůstávají v `data/local-cycles/<čas>/`. Panel ukazuje skutečně uložené nové závody, dobu běhu a odloženou práci. Nezaměňuje místní změny za zveřejněné výsledky.
+
+Instalace: zkompilovat monitor podle `macos/LetsRaceMonitor/README.md`, potom `node scripts/with-node.cjs scripts/install-local-runner.cjs`. Instalace zachová pauzu. Zapnutí: v panelu „Obnovit sběr na Macu“. Ověřit první řízený průchod, jeho výsledek a další naplánovaný čas v `monitor.json`; samotná přítomnost procesu není důkazem úspěšného sběru.
