@@ -86,6 +86,22 @@ export function isDifferentDatedRace(externalId: string | undefined, startDate: 
   });
 }
 
+/**
+ * The same calendar lists this row and the stored race as two entries with their own ids and
+ * days, so they are two races however alike their names are ("Brevet 200" and "Brevet 300" of
+ * one club). Two different calendars disagreeing about a day prove nothing of the kind.
+ */
+export function isSameCalendarOtherRace(externalId: string | undefined, startDate: string, storedDate: string | null | undefined, sources: { external_id?: string | null }[] | null | undefined): boolean {
+  if (!isDifferentDatedRace(externalId, startDate, storedDate, sources)) return false;
+  const calendar = (id: string | null | undefined) => id?.split("-")[0] ?? "";
+  const dated = /^(.+)-(\d{4}-\d{2}-\d{2})$/;
+  const own = dated.exec(externalId!)!;
+  return (sources ?? []).some(source => {
+    const other = dated.exec(source.external_id ?? "");
+    return Boolean(other && other[1] !== own[1] && other[2] === storedDate && calendar(source.external_id) === calendar(externalId));
+  });
+}
+
 export type PlaceFacts = { municipality?: string | null; name?: string | null; geocode_query?: string | null; country_code?: string | null; lat?: number | null; lng?: number | null };
 
 /**

@@ -32,6 +32,28 @@ function eventTypeOf(tipo: string, pill: string): EventType | undefined {
   return undefined;
 }
 
+const MONTH_NUMBER: Record<string, number> = { gennaio: 1, febbraio: 2, marzo: 3, aprile: 4, maggio: 5, giugno: 6, luglio: 7, agosto: 8, settembre: 9, ottobre: 10, novembre: 11, dicembre: 12 };
+const shiftMonth = (ym: string, by: number) => {
+  const date = new Date(Date.UTC(Number(ym.slice(0, 4)), Number(ym.slice(5, 7)) - 1 + by, 1));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+};
+/**
+ * A month's page also lists what is still running from the month before, under the day it began:
+ * "30 · fino al 2 Maggio" on May's page began on 30 April, not on 30 May.
+ */
+export function spanOf(ym: string, day: string, until: string): { startDate: string; endDate?: string } {
+  const start = day.padStart(2, "0");
+  const match = /fino al\s+(\d{1,2})\s+([a-zà-ú]+)/i.exec(until);
+  const month = match ? MONTH_NUMBER[match[2]!.toLowerCase()] : undefined;
+  if (!match || !month) return { startDate: `${ym}-${start}` };
+  const endDay = match[1]!.padStart(2, "0"), endMonth = String(month).padStart(2, "0");
+  const pageMonth = Number(ym.slice(5, 7));
+  const began = month === pageMonth && Number(day) > Number(endDay) ? shiftMonth(ym, -1) : ym;
+  // A span into next year is named by its month alone.
+  const endYear = month < Number(began.slice(5, 7)) ? Number(began.slice(0, 4)) + 1 : Number(began.slice(0, 4));
+  return { startDate: `${began}-${start}`, endDate: `${endYear}-${endMonth}-${endDay}` };
+}
+
 /**
  * One month of rideandrest.net's calendar: every Italian race the federation
  * lists, with the day, the town, the length and the kind. The page names no
@@ -64,11 +86,12 @@ export function parseRideAndRestMonth(html: string): ParsedEvent[] {
       .filter(Boolean);
     const place = parts[0] ?? "";
     const tipo = parts[parts.length - 1] ?? "";
-    const startDate = `${ym}-${day.padStart(2, "0")}`;
+    const { startDate, endDate } = spanOf(ym, day, meta.find("strong").first().text());
     out.push({
       externalId: `rideandrest-${slug}-${startDate}`,
       name,
       startDate,
+      ...(endDate ? { endDate } : {}),
       placeText: place ? `${place}, Italia` : "Italia",
       countryHint: "IT",
       discipline: disciplineOf(tipo, pill),

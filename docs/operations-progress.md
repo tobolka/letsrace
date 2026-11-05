@@ -38,8 +38,21 @@ Ověřeno 5. listopadu 2026 večer. **Jeden společný kód; rozdílné místo s
 | **5** | Pokrytí: závody bez výsledku čtení. | **ČÁSTEČNĚ.** Z 629 „nečitelných“ zbývá 71: 616 má jen stránku platformy (RaceResult, odjazd.pl, dostartu.pl), kde nový termín nebývá, a část přečetl Chrome (40 stránek za průchod). **Hledání webů běží po 4 hodinách, ale ve zkoušce našlo 0 jistých z 12.** Závodů bez webu je 974; většina pochází z federačních kalendářů, které ročník 2027 teprve zveřejní. |
 | **6** | Doplňování existujících závodů. | **ČÁSTEČNĚ:** jen pole prázdná na obou stranách, nejvýš 60 závodů denně. Změny vyplněných hodnot, dat a míst dál čekají. |
 | **7** | Veřejné změny a staré odkazy. | **ČEKÁ NA ZÍTŘEJŠÍ BĚH.** Přesměrování sloučeného Welsu je v kódu, úloha čeká s nejvyšší prioritou na běh v 5:40 UTC; ověřit. Fronta 302 kontrol: důležité jdou první, 221 má nízkou prioritu. Limit 60 denně se nezvyšoval kvůli spotřebě Vercelu. Perun/Lakeland/GR8 neověřeno. |
-| **8** | Chybně spojené závody a opakované chyby zápisu. | **PŘEMĚŘENO, NEROZDĚLENO.** Veřejných budoucích záznamů s více daty ve zdrojích je podle faktů 15 (dříve se uvádělo 43 jinou metodou); 9 jsou brevety, 10 má typ vyjížďka. Hlavní příčina opakovaných chyb zápisu opravena. Na rozhodnutí čeká 82 řádků „jiný termín než propojený závod“. |
-| **9** | Dvě úplná čtení, kontrola spotřeby po přesunu. | **ZBÝVÁ.** |
+| **8** | Chybně spojené závody a opakované chyby zápisu. | **ROZDĚLENO.** 15 záznamů opraveno na Macu i serveru, záznam původních hodnot je v `reports/mac-offload-2026-11-05/split-journal-*.json`. Riva sloučena do správného záznamu. Stejná chyba by se už opakovat neměla: řádky jednoho kalendáře s různými ID a daty zůstávají oddělené. Ride&Rest čte správně akce přes přelom měsíce. Čeká: 3 brevety vedené jako závod (Essen 200, Essen 600 bergig, Auf zum Brocken) potřebují přetypovat na serveru. |
+| **9** | Treviso MTB. | **SLEDUJE SE NA MACU.** Přečteno 86 závodů, z toho 14 budoucích. Na server přibyl 1 nový, ostatní budoucí už v katalogu byly nebo čekají na kontrolu. Minulé závody zůstávají na Macu kvůli hledání dalších ročníků. Na rok 2027 web zatím uvádí jediný závod. |
+| **10** | Dvě úplná čtení, kontrola spotřeby po přesunu. | **ZBÝVÁ.** |
+
+## Přehodnocené pořadí (5. 11. večer)
+
+Stav cíle: ročník 2027 má 203 z 3 760 závodů 2026 (5 %): AT 12 %, CH 10 %, DE 6 %, CZ 5 %, PL 4 %, SK 2 %, IT 2 %. Pořadatelé a federace většinu termínů teprve zveřejní, takže cíl 90 % je zatím mimo dosah a dál nejde dohnat čtením.
+
+1. **Zdravé zdroje.** 299 ze 737 aktivních zdrojů má stav chyba nebo ke kontrole; část je z dnešního vynuceného přečtení, přeměřit. Právě kalendáře přinesou většinu termínů, až vyjdou.
+2. **Náhodný vzorek správnosti.** Mac zveřejňuje sám; vzorek zveřejněných závodů ověřit přímo u pořadatele.
+3. **Federace a týdenní číslo pokrytí.** ČSC a FCI stojí za 735 závody bez webu. Hlídat, že jejich kalendář 2027 zachytíme první den, a ukazovat číslo pokrytí po zemích.
+4. **Spotřeba po přesunu.** Zkontrolovat za pár dní, jinak nevíme, jestli přesun pomohl.
+5. **Údaje u závodů.** 676 z 1 211 budoucích závodů nemá odkaz na přihlášku, 171 nemá věkové kategorie.
+
+Níž odsunuto: hledání webů (0 jistých z 12), RaceResult, změny už vyplněných údajů (většinou čas posledního čtení), navyšování limitu kontrol stránek.
 
 ### Co zůstává skutečně hotové
 

@@ -65,6 +65,8 @@ const EVENT_TYPE_DISCIPLINE: Record<string, Discipline[]> = {
 
 /** Event types that are rides or tours rather than competition. */
 const RIDE_EVENT_TYPES = new Set([
+  "BREVET",
+  "GRAVEL_BREVET",
   "RTF",
   "CTF",
   "GRAVEL_TOUR",

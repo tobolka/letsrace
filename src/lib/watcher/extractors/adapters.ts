@@ -21,6 +21,7 @@ import {
 } from "@/lib/watcher/extractors/kalendarzrowerowy";
 import { isOdjazdHost, parseOdjazd } from "@/lib/watcher/extractors/odjazd";
 import { isRideAndRestHost, parseRideAndRest } from "@/lib/watcher/extractors/rideandrest";
+import { isTrevisoMtbHost, parseTrevisoMtb } from "@/lib/watcher/extractors/trevisomtb";
 import { isNaZavodyHost, parseNaZavody } from "@/lib/watcher/extractors/nazavody";
 import { isSporttHost, parseSportt } from "@/lib/watcher/extractors/sportt";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
@@ -614,6 +615,9 @@ export async function extractWithAdapter(
   }
   if (isRideAndRestHost(host)) {
     return { events: await parseRideAndRest(), strategy: "adapter:rideandrest" };
+  }
+  if (isTrevisoMtbHost(host)) {
+    return { events: await parseTrevisoMtb(), strategy: "adapter:trevisomtb" };
   }
   if (isOdjazdHost(host)) {
     return { events: await parseOdjazd(), strategy: "adapter:odjazd" };

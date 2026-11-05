@@ -27,7 +27,7 @@ import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
-import { chooseEventType, isDifferentDatedRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
+import { chooseEventType, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
 import { calendarRowHash, calendarRowProgress, isEventWriteConflict, MAX_CALENDAR_PROGRESS_ROWS, readCalendarProgress } from "@/lib/watcher/calendar-progress";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline, withDatabaseRequestCounts, withDatabaseWorkload } from "@/lib/supabase/request-budget";
@@ -236,7 +236,7 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
     // API, the month and race pages behind a landing page): the watched page
     // staying the same says nothing, and odjazd.pl's home page stayed the same
     // while its races changed every day. Always fetched whole, never skipped.
-    const FANS_OUT = /odjazd\.pl|rideandrest\.net|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com|fullgazrace\.de/i.test(row.url);
+    const FANS_OUT = /odjazd\.pl|rideandrest\.net|trevisomtb\.it|kalendarzrowerowy\.pl|radsport-events\.de|eventivsport\.com|fullgazrace\.de/i.test(row.url);
     const checkpointPrefix = `${watchReaderVersion(row.url)}:`;
     const progressVersion = `calendar-v1:${checkpointPrefix}${row.kind}:${row.url}`;
     const priorProgress = readCalendarProgress(row.calendar_write_progress, progressVersion);
@@ -1947,7 +1947,7 @@ async function upsertParsedEvent(
   if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
 
   if (review && (existingId ?? null) !== review.expectedEventId) throw Error("identity_review_required: catalogue changed since the reviewed identity");
-  const { data: existingFull } = existingId
+  let { data: existingFull } = existingId
     ? await supabase
         .from("events")
         .select(
@@ -1959,7 +1959,13 @@ async function upsertParsedEvent(
   if (existingId && !existingFull) throw new Error(`Matched race could not be read: ${existingId}`);
   const stored = existingFull as { start_date?: string; sources?: { external_id?: string | null }[] } | null;
   if (existingId && isDifferentDatedRace(ev.externalId, ev.startDate, stored?.start_date, stored?.sources)) {
-    throw new Error("identity_review_required: this row is a different dated race than the record it is linked to");
+    // Its own calendar lists them apart: resemblance must not glue them into one race
+    // whose date then flips with every read. This row becomes its own race.
+    if (matchedBySource || review || !isSameCalendarOtherRace(ev.externalId, ev.startDate, stored?.start_date, stored?.sources)) {
+      throw new Error("identity_review_required: this row is a different dated race than the record it is linked to");
+    }
+    existingId = undefined;
+    existingFull = null;
   }
 
   const reviewedStored = existingFull as { visibility?: string; merged_into_id?: string | null } | null;

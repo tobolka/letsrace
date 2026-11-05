@@ -7,7 +7,8 @@ import { newRaceProblems, type KnownRace } from "@/lib/local-pass/new-race-check
 import { createComparer, editionCoverage } from "@/lib/local-pass/compare";
 import { withChromeSlot } from "@/lib/watcher/chrome-slots";
 import { belongsToThisWorker } from "@/lib/watcher/pool";
-import { chooseEventType, isDifferentDatedRace, isSamePlace } from "@/lib/watcher/update-policy";
+import { chooseEventType, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace } from "@/lib/watcher/update-policy";
+import { spanOf } from "@/lib/watcher/extractors/rideandrest";
 import { nextForFreeHost, openStore, type CatalogueEvent, type LocalStore } from "@/lib/local-pass/store";
 
 const race = (over: Partial<CatalogueEvent>): CatalogueEvent => ({
@@ -212,4 +213,29 @@ it("stops a record jumping between races joined by mistake, but lets a race be r
 it("does not hold Allgäu for an unrelated road event hundreds of kilometres away on its weekend", () => {
   const incoming={id:"allgaeu",name:"Allgäu & Spätzle",start_date:"2027-06-18",end_date:"2027-06-20",disciplines:["road","gravel"]};
   expect(newRaceProblems(incoming,{municipality:"Bad Waldsee",country_code:"DE",lat:47.9179844,lng:9.7494576},[{id:"munich",name:"Bayrisch-Böhmisches Biere und Bäder Brevet",start_date:"2027-06-19",disciplines:["road"],place:{municipality:"München",country_code:"DE",lat:48.1351,lng:11.582}}],"2026-11-05")).toEqual([]);
+});
+
+describe("two entries of one calendar", () => {
+  const stored = [{ external_id: "radsport-16-2027-03-20" }];
+  it("are two races when the same calendar lists them with their own ids and days", () => {
+    expect(isSameCalendarOtherRace("radsport-47-2027-04-10", "2027-04-10", "2027-03-20", stored)).toBe(true);
+  });
+  it("are one race when only the day moved, or when two calendars disagree", () => {
+    expect(isSameCalendarOtherRace("radsport-16-2027-04-10", "2027-04-10", "2027-03-20", stored)).toBe(false);
+    expect(isSameCalendarOtherRace("sumator-gravel-2027-04-10", "2027-04-10", "2027-03-20", stored)).toBe(false);
+    expect(isSameCalendarOtherRace("radsport-47-2027-03-20", "2027-03-20", "2027-03-20", stored)).toBe(false);
+  });
+});
+
+describe("a Ride&Rest month page", () => {
+  it("dates what is still running from last month by the day it began", () => {
+    expect(spanOf("2027-05", "30", "fino al 2 Maggio")).toEqual({ startDate: "2027-04-30", endDate: "2027-05-02" });
+    expect(spanOf("2026-11", "30", "fino al 3 Novembre")).toEqual({ startDate: "2026-10-30", endDate: "2026-11-03" });
+  });
+  it("keeps a span that begins this month, and a plain day", () => {
+    expect(spanOf("2027-05", "14", "fino al 16 Maggio")).toEqual({ startDate: "2027-05-14", endDate: "2027-05-16" });
+    expect(spanOf("2027-04", "30", "fino al 2 Maggio")).toEqual({ startDate: "2027-04-30", endDate: "2027-05-02" });
+    expect(spanOf("2026-12", "30", "fino al 2 Gennaio")).toEqual({ startDate: "2026-12-30", endDate: "2027-01-02" });
+    expect(spanOf("2027-05", "14", "")).toEqual({ startDate: "2027-05-14" });
+  });
 });

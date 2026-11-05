@@ -1,0 +1,805 @@
+{
+ "at": "2026-11-05T17:57:19.266Z",
+ "target": "server",
+ "plan": [
+  {
+   "id": "42a8938e-a82e-4e0d-b1d6-cee15928b95f",
+   "date": "2027-03-20",
+   "source": "https://radsport-events.de/events/18",
+   "detach": [
+    "radsport-123-2027-05-15"
+   ]
+  },
+  {
+   "id": "d8f51434-c3c1-446d-80df-2284f1c00b52",
+   "date": "2027-04-10",
+   "source": "https://radsport-events.de/events/52",
+   "detach": [
+    "radsport-17-2027-03-20",
+    "radsport-301-2027-06-11"
+   ]
+  },
+  {
+   "id": "94bba7c5-2eea-44bb-a59a-08e43e881007",
+   "date": "2027-03-20",
+   "source": "https://radsport-events.de/events/16",
+   "detach": [
+    "radsport-47-2027-04-10"
+   ]
+  },
+  {
+   "id": "fffd8bed-6d22-4de0-a008-e013b42d5858",
+   "date": "2027-03-06",
+   "source": "https://radsport-events.de/events/15",
+   "detach": [
+    "radsport-27809-2027-03-20",
+    "radsport-46-2027-04-03",
+    "radsport-125-2027-04-24"
+   ]
+  },
+  {
+   "id": "5b3e295b-52a7-4c14-b0de-f6f01804fa23",
+   "date": "2027-05-29",
+   "source": "https://radsport-events.de/events/172",
+   "detach": [
+    "radsport-8-2027-04-17"
+   ]
+  },
+  {
+   "id": "0f0aaad1-6d69-4252-8691-ae6d76d777d9",
+   "date": "2027-04-30",
+   "source": "https://radsport-events.de/events/27851",
+   "website": "https://www.audaxsuisse.ch/brevets/brm-400-stuttgart-odyssey/",
+   "detach": [
+    "radsport-27035-2027-04-17",
+    "radsport-27852-2027-05-01"
+   ]
+  },
+  {
+   "id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+   "date": "2026-10-03",
+   "source": "https://radsport-events.de/events/558",
+   "detach": [
+    "radsport-266-2027-06-25",
+    "radsport-168-2027-05-08",
+    "radsport-126-2027-04-24"
+   ]
+  },
+  {
+   "id": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+   "date": "2027-05-08",
+   "source": "https://radsport-events.de/events/130",
+   "detach": [
+    "radsport-537-2027-09-11",
+    "radsport-233-2027-05-15"
+   ],
+   "moveOut": {
+    "external": "radsport-26779-2027-03-20",
+    "to": "c90d4f52-b07f-4569-aad5-794e12e169cf"
+   }
+  },
+  {
+   "id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+   "date": "2027-03-20",
+   "source": "https://radsport-events.de/events/26779",
+   "locationOf": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+   "detach": [
+    "radsport-27833-2027-04-10",
+    "radsport-27835-2027-05-29",
+    "radsport-27834-2027-05-22",
+    "radsport-27831-2027-03-13",
+    "radsport-26786-2027-04-24",
+    "radsport-27836-2027-06-12"
+   ]
+  },
+  {
+   "id": "351ed489-431e-4757-9ef5-69b021276b45",
+   "date": "2027-09-11",
+   "source": "https://radsport-events.de/events/27867",
+   "detach": [
+    "radsport-27866-2027-06-11"
+   ]
+  },
+  {
+   "id": "25fc034b-b1a7-4de7-868e-2a93ede53174",
+   "date": "2027-06-29",
+   "source": "https://radsport-events.de/events/27810",
+   "detach": [
+    "radsport-5157-2027-06-29",
+    "radsport-27811-2027-04-03"
+   ]
+  },
+  {
+   "id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+   "date": "2027-08-15",
+   "source": "https://www.cyclingaustria.at/",
+   "detach": [
+    "oerv-2EC3871759BE48719C07CFEE931B64FD-2027-07-24"
+   ]
+  },
+  {
+   "id": "2295516a-61df-4243-883a-6b9028370694",
+   "date": "2027-05-30",
+   "mergeInto": "53bf02fc-b24b-443e-bab3-40b8eed90036",
+   "source": "https://rideandrest.net/manifestazione/bike-festival-riva-del-garda-2027/",
+   "detach": [
+    "rideandrest-bike-festival-riva-del-garda-2027-2027-05-30"
+   ]
+  },
+  {
+   "id": "979a2aa5-72f0-451e-b538-c53b75ef4ed2",
+   "date": "2026-10-30",
+   "end": "2026-11-03",
+   "source": "https://rideandrest.net/manifestazione/molise-trail-2026/",
+   "detach": [
+    "rideandrest-molise-trail-2026-2026-11-30"
+   ]
+  },
+  {
+   "id": "fa9cbb9a-f2ef-42e3-9e2a-5aebb3034d4f",
+   "date": "2027-06-19",
+   "source": "https://www.gravallo.bike/",
+   "lock": [
+    "start_date",
+    "end_date"
+   ],
+   "detach": []
+  }
+ ],
+ "before": {
+  "events": [
+   {
+    "id": "0f0aaad1-6d69-4252-8691-ae6d76d777d9",
+    "name": "BRM 400 Stuttgart Odyssey",
+    "start_date": "2027-04-17",
+    "end_date": "2027-04-17",
+    "fingerprint": "2027-04-17:u0qpr:brm 400 stuttgart odyssey",
+    "website_url": "https://www.audaxsuisse.ch/brevets/brm-200-donaukinder/",
+    "location_id": "a8963c9c-d52b-4430-be5c-23155ccd97b1",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "2295516a-61df-4243-883a-6b9028370694",
+    "name": "Bike Festival Riva del Garda 2027",
+    "start_date": "2027-05-30",
+    "end_date": "2027-05-30",
+    "fingerprint": "2027-05-30:u0ptn:bike festival riva del garda",
+    "website_url": "https://rideandrest.net/manifestazione/bike-festival-riva-del-garda-2027/",
+    "location_id": "40f258b0-8c55-46f5-bf8f-9591fc873973",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "25fc034b-b1a7-4de7-868e-2a93ede53174",
+    "name": "Essen 600 bergig - ARA Ruhrgebiet",
+    "start_date": "2027-06-29",
+    "end_date": "2027-06-29",
+    "fingerprint": "2027-06-29:u1hur:essen 600 bergig ara ruhrgebiet",
+    "website_url": "https://ara-ruhrgebiet.de/brevets-2027/",
+    "location_id": "06cd2e9d-455d-45bb-9c09-e47dc0d5eace",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "351ed489-431e-4757-9ef5-69b021276b45",
+    "name": "Seven Almost Summits 777",
+    "start_date": "2027-06-11",
+    "end_date": "2027-06-13",
+    "fingerprint": "2027-06-11:u1x46:seven almost summits 777",
+    "website_url": "https://nl-rg.de/road/",
+    "location_id": "824ade60-86f5-4a03-b580-3be24e6bda82",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "42a8938e-a82e-4e0d-b1d6-cee15928b95f",
+    "name": "Brevet 200 ARA-Niederrhein",
+    "start_date": "2027-03-20",
+    "end_date": "2027-03-20",
+    "fingerprint": "2027-03-20:u1hmm:brevet 200 ara niederrhein",
+    "website_url": "https://www.audax-randonneure.de/startorte/niederrhein",
+    "location_id": "7d674169-28ff-4f14-acf3-e06a03d66887",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "5b3e295b-52a7-4c14-b0de-f6f01804fa23",
+    "name": "Brevet \"Zum Kahlen Asten\" - ARA Weser-Leinebergland",
+    "start_date": "2027-04-17",
+    "end_date": "2027-04-17",
+    "fingerprint": "2027-04-17:u1qcv:brevet zum kahlen asten ara weser leinebergland",
+    "website_url": "https://audax-randonneure.de/startorte/weser_leinebergland",
+    "location_id": "0f345186-d542-44ca-9598-4011063b706d",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "94bba7c5-2eea-44bb-a59a-08e43e881007",
+    "name": "Brevet 200 - ARA Mittelhessen",
+    "start_date": "2027-03-20",
+    "end_date": "2027-03-20",
+    "fingerprint": "2027-03-20:u0ypw:brevet 200 ara mittelhessen",
+    "website_url": "https://www.ara-mittelhessen.de/termine.html",
+    "location_id": "ac93f3a3-0c4a-4041-9982-43e028dfa45a",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "979a2aa5-72f0-451e-b538-c53b75ef4ed2",
+    "name": "MOLISE TRAIL 2026",
+    "start_date": "2026-11-30",
+    "end_date": "2026-11-30",
+    "fingerprint": "2026-11-30:sr6wf:molise trail",
+    "website_url": "https://rideandrest.net/manifestazione/molise-trail-2026/",
+    "location_id": "c44b6e99-a8dd-479e-b97d-ea9f64f5810f",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "name": "38. Internationales Kitzbühler Hahnenkamm Mountainbike Rennen",
+    "start_date": "2027-08-15",
+    "end_date": "2027-08-15",
+    "fingerprint": "2027-08-15:u22hw:38 internationales kitzbuhler hahnenkamm mountainbike rennen",
+    "website_url": "https://www.kitzsport.at/sportverein",
+    "location_id": "a6f67aad-b987-49cd-84fd-abe9d0a4f082",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+    "name": "Bonn - Lüttich - Bastogne - Bonn",
+    "start_date": "2027-05-15",
+    "end_date": "2027-05-15",
+    "fingerprint": "2027-05-15:u1j03:bonn luttich bastogne bonn",
+    "website_url": "https://www.radtreffcampus.de/brevet-rheinland/",
+    "location_id": "0edc3b05-fc3e-496c-a829-4ae947e3b090",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "name": "Brevet 200 + 300 – Braunkohle-Revier NRW",
+    "start_date": "2027-05-29",
+    "end_date": "2027-05-29",
+    "fingerprint": "2027-05-29:u1hcu:brevet 200 300 braunkohle revier nrw",
+    "website_url": "https://www.radtreffcampus.de/brevet-rheinland/",
+    "location_id": "258934bf-efe4-48f2-abe2-c72f8764c939",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "d8f51434-c3c1-446d-80df-2284f1c00b52",
+    "name": "Norddeutscher-Hügelklassiker - ARA Hamburg",
+    "start_date": "2027-03-20",
+    "end_date": "2027-03-20",
+    "fingerprint": "2027-03-20:u1x0s:norddeutscher hugelklassiker ara hamburg",
+    "website_url": "https://audax-randonneure.de/startorte/hamburg",
+    "location_id": "18c04c95-7a0a-4c72-a8f0-7a8cc5cd2009",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+    "name": "Brevet 200 - ARA Leipzig",
+    "start_date": "2027-04-24",
+    "end_date": "2027-04-24",
+    "fingerprint": "2027-04-24:u31h1:brevet 200 ara leipzig",
+    "website_url": "https://www.audax-sachsen.de/brevet-termine/",
+    "location_id": "c09edf4c-e110-446b-a468-c782e83c4c6a",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "fa9cbb9a-f2ef-42e3-9e2a-5aebb3034d4f",
+    "name": "GRAVALLO",
+    "start_date": "2027-06-19",
+    "end_date": "2027-06-19",
+    "fingerprint": "2027-06-19:u2d4v:gravallo",
+    "website_url": "https://www.gravallo.bike",
+    "location_id": "ccb8d401-78ca-4eea-9947-a8316b72ce4a",
+    "status": "scheduled",
+    "visibility": "public"
+   },
+   {
+    "id": "fffd8bed-6d22-4de0-a008-e013b42d5858",
+    "name": "Brevet 200 - ARA Schleswig-Holstein",
+    "start_date": "2027-04-03",
+    "end_date": "2027-04-03",
+    "fingerprint": "2027-04-03:u1xm0:brevet 200 ara schleswig holstein",
+    "website_url": "https://www.audax-randonneure.de/startorte/schleswig-hostein",
+    "location_id": "6ea29054-9220-4d29-86b0-e8b44415e521",
+    "status": "scheduled",
+    "visibility": "public"
+   }
+  ],
+  "sources": [
+   {
+    "id": "dc35a9a4-b668-4630-af64-fa53d89f6fc2",
+    "event_id": "0f0aaad1-6d69-4252-8691-ae6d76d777d9",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27035",
+    "external_id": "radsport-27035-2027-04-17",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-19T19:31:45.805311+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "be9a6b3d-b428-45f3-884d-8c63c3462ff7",
+    "event_id": "0f0aaad1-6d69-4252-8691-ae6d76d777d9",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27851",
+    "external_id": "radsport-27851-2027-04-30",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-19T19:31:46.784288+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "cdc957d5-600d-4794-ba98-033cab36f505",
+    "event_id": "0f0aaad1-6d69-4252-8691-ae6d76d777d9",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27852",
+    "external_id": "radsport-27852-2027-05-01",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-19T19:31:47.28364+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "3f03a406-190b-4239-b1ad-ff473bb40556",
+    "event_id": "2295516a-61df-4243-883a-6b9028370694",
+    "watched_url_id": "a2042dc4-4875-44f6-9aea-b18a407b1e8b",
+    "source_url": "https://rideandrest.net/manifestazione/bike-festival-riva-del-garda-2027/",
+    "external_id": "rideandrest-bike-festival-riva-del-garda-2027-2027-05-30",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-11-03T18:56:05.95316+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "15efaa16-1293-4a8f-9ba7-9f1cf38e75a0",
+    "event_id": "25fc034b-b1a7-4de7-868e-2a93ede53174",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/5157",
+    "external_id": "radsport-5157-2027-06-29",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-12T05:56:41.424872+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "83a8a875-6cd7-4206-ad07-bc5073a00518",
+    "event_id": "25fc034b-b1a7-4de7-868e-2a93ede53174",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27811",
+    "external_id": "radsport-27811-2027-04-03",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-12T05:56:34.005042+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "96c31bfd-a613-4212-bcb5-8fc6843ae7db",
+    "event_id": "25fc034b-b1a7-4de7-868e-2a93ede53174",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27810",
+    "external_id": "radsport-27810-2027-06-29",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-12T05:56:41.688025+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "853ad827-1526-479f-9639-efe5015bff61",
+    "event_id": "351ed489-431e-4757-9ef5-69b021276b45",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27866",
+    "external_id": "radsport-27866-2027-06-11",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-24T07:25:16.68+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "a03353d9-7353-4042-9ce0-bbcd0d26c06f",
+    "event_id": "351ed489-431e-4757-9ef5-69b021276b45",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27867",
+    "external_id": "radsport-27867-2027-09-11",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-24T07:25:18.628761+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "41552899-3c80-4607-9865-8a0657d691e4",
+    "event_id": "42a8938e-a82e-4e0d-b1d6-cee15928b95f",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/123",
+    "external_id": "radsport-123-2027-05-15",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:34.844738+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "0dc37ef1-2705-4192-85b4-32bc2be9aa2d",
+    "event_id": "42a8938e-a82e-4e0d-b1d6-cee15928b95f",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/18",
+    "external_id": "radsport-18-2027-03-20",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:28.999888+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "7e6101ed-7011-4a62-a524-2a800d6400a9",
+    "event_id": "5b3e295b-52a7-4c14-b0de-f6f01804fa23",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/8",
+    "external_id": "radsport-8-2027-04-17",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:32.022919+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "5e300002-c529-43c5-bf8d-9c2995741cfb",
+    "event_id": "5b3e295b-52a7-4c14-b0de-f6f01804fa23",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/172",
+    "external_id": "radsport-172-2027-05-29",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:36.42183+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "7b3411bc-046d-4b00-b041-a7323fe3cf69",
+    "event_id": "94bba7c5-2eea-44bb-a59a-08e43e881007",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/16",
+    "external_id": "radsport-16-2027-03-20",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:28.317822+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "79eafeac-0e97-4634-b63b-6016b20e762d",
+    "event_id": "94bba7c5-2eea-44bb-a59a-08e43e881007",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/47",
+    "external_id": "radsport-47-2027-04-10",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:31.791247+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "0dd7cd13-810b-446c-b665-2834a3cc5eee",
+    "event_id": "979a2aa5-72f0-451e-b538-c53b75ef4ed2",
+    "watched_url_id": "a2042dc4-4875-44f6-9aea-b18a407b1e8b",
+    "source_url": "https://rideandrest.net/manifestazione/molise-trail-2026/",
+    "external_id": "rideandrest-molise-trail-2026-2026-10-30",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:57:45.714677+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "18af3e06-e77a-41e8-b747-fef8a5dde8de",
+    "event_id": "979a2aa5-72f0-451e-b538-c53b75ef4ed2",
+    "watched_url_id": "a2042dc4-4875-44f6-9aea-b18a407b1e8b",
+    "source_url": "https://rideandrest.net/manifestazione/molise-trail-2026/",
+    "external_id": "rideandrest-molise-trail-2026-2026-11-30",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:57:46.518312+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "e04643b1-123a-41da-b3ee-d0095d09b339",
+    "event_id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "watched_url_id": "2a041f0b-4efe-4d53-801b-707b133a5af7",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=60A6059023A24BF7A8307C619BB1B41C&filter=page=5",
+    "external_id": "oerv-60A6059023A24BF7A8307C619BB1B41C-2027-08-15",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-23T19:40:47.085192+00:00",
+    "kind": "series"
+   },
+   {
+    "id": "9378d9db-f026-4c9a-a37e-a085305932de",
+    "event_id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "watched_url_id": "31a5d327-0549-497b-8fad-97adb1f9130c",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=60A6059023A24BF7A8307C619BB1B41C&filter=view=events&page=3",
+    "external_id": "oerv-60A6059023A24BF7A8307C619BB1B41C-2027-08-15",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-23T19:46:36.636644+00:00",
+    "kind": "series"
+   },
+   {
+    "id": "7de9d063-ff14-4487-b611-32474dbcd153",
+    "event_id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "watched_url_id": "2a041f0b-4efe-4d53-801b-707b133a5af7",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=2EC3871759BE48719C07CFEE931B64FD&filter=page=5",
+    "external_id": "oerv-2EC3871759BE48719C07CFEE931B64FD-2027-07-24",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-11-01T07:56:34.293197+00:00",
+    "kind": "series"
+   },
+   {
+    "id": "08173375-c568-4cd0-b580-7906b54ea7a0",
+    "event_id": "a1303aae-fc63-44b9-a1c9-e192024dc1a7",
+    "watched_url_id": "19b8187e-66ca-4c80-9338-40fe231d725b",
+    "source_url": "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=2EC3871759BE48719C07CFEE931B64FD&filter=view=events&page=2",
+    "external_id": "oerv-2EC3871759BE48719C07CFEE931B64FD-2027-07-24",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-11-01T08:00:30.98767+00:00",
+    "kind": "series"
+   },
+   {
+    "id": "f6ff5dd5-338b-4587-be37-13fc478ef888",
+    "event_id": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/26779",
+    "external_id": "radsport-26779-2027-03-20",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:45.792324+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "0f030073-8476-47cd-9dcf-6feca0f42c4c",
+    "event_id": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/130",
+    "external_id": "radsport-130-2027-05-08",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:49.135362+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "43769faa-665e-47d7-8141-966fbaaddb3f",
+    "event_id": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/537",
+    "external_id": "radsport-537-2027-09-11",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:58.236779+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "80ad928b-cf56-4a83-9e76-9fe25a812eee",
+    "event_id": "b0f9c209-53c0-4534-94c8-7ea00fe68a0a",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/233",
+    "external_id": "radsport-233-2027-05-15",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:49.751959+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "ed12480e-95b1-4048-8e97-6152409c90d3",
+    "event_id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27833",
+    "external_id": "radsport-27833-2027-04-10",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:46.82711+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "102b29be-ac71-46e4-bf32-d975b34b9908",
+    "event_id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27835",
+    "external_id": "radsport-27835-2027-05-29",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:51.47551+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "9bd64ed2-ce62-4ab0-8690-18e1bfae73aa",
+    "event_id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27834",
+    "external_id": "radsport-27834-2027-05-22",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:50.741746+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "e7bb25fc-6962-4ed1-b01e-343876b955c6",
+    "event_id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27831",
+    "external_id": "radsport-27831-2027-03-13",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:44.961316+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "0862251f-41ab-4b3d-b050-36d116eb5506",
+    "event_id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/26786",
+    "external_id": "radsport-26786-2027-04-24",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:47.474609+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "1486c16b-e317-485b-bee8-b6d0d149984f",
+    "event_id": "c90d4f52-b07f-4569-aad5-794e12e169cf",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27836",
+    "external_id": "radsport-27836-2027-06-12",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-18T05:56:54.283283+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "b75613ef-a6aa-4f27-935b-e7850394c1d0",
+    "event_id": "d8f51434-c3c1-446d-80df-2284f1c00b52",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/17",
+    "external_id": "radsport-17-2027-03-20",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:29.105839+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "4ead1bca-d914-493e-a675-ea92a3725c15",
+    "event_id": "d8f51434-c3c1-446d-80df-2284f1c00b52",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/52",
+    "external_id": "radsport-52-2027-04-10",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-12T05:56:34.190625+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "7a0b3d34-c2a3-4670-8f52-0e24868d5f34",
+    "event_id": "d8f51434-c3c1-446d-80df-2284f1c00b52",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/301",
+    "external_id": "radsport-301-2027-06-11",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-12T05:56:39.390343+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "21958316-7989-4b6f-9841-79dead2f4ce2",
+    "event_id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/266",
+    "external_id": "radsport-266-2027-06-25",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:40.640452+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "05a43231-7ba2-44d0-b89f-35d94afe4c0f",
+    "event_id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/168",
+    "external_id": "radsport-168-2027-05-08",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:34.816103+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "ffc023cb-5d93-4bb1-978a-5272d4da96a5",
+    "event_id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/126",
+    "external_id": "radsport-126-2027-04-24",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:33.457028+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "23f8c0e3-7157-4dd5-814b-c15f42317dd8",
+    "event_id": "f611e53a-7eb2-4b30-a343-9041cb4fce71",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/558",
+    "external_id": "radsport-558-2026-10-03",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-08-31T12:32:16.43794+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "ad7e5251-30f1-44d9-80c0-ee1e7d647503",
+    "event_id": "fa9cbb9a-f2ef-42e3-9e2a-5aebb3034d4f",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/26864",
+    "external_id": "radsport-26864-2027-06-19",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:39.997348+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "cc5924d7-ae9f-4274-8ca9-ed386a374aeb",
+    "event_id": "fa9cbb9a-f2ef-42e3-9e2a-5aebb3034d4f",
+    "watched_url_id": "73f6a82d-6800-4fb8-aafc-d1898fd497e9",
+    "source_url": "https://bikeboard.at/termine/gravallo-termin16386",
+    "external_id": "bikeboard-16386",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:57:30.213797+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "283f01d4-3026-45f5-b110-bf4c5f896dc2",
+    "event_id": "fffd8bed-6d22-4de0-a008-e013b42d5858",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/15",
+    "external_id": "radsport-15-2027-03-06",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:27.019527+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "a6fb13d8-4033-46a7-8c2c-dba49384834d",
+    "event_id": "fffd8bed-6d22-4de0-a008-e013b42d5858",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/27809",
+    "external_id": "radsport-27809-2027-03-20",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:29.807901+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "f8e8f292-1e64-4ed5-9e6b-65c3544bdab7",
+    "event_id": "fffd8bed-6d22-4de0-a008-e013b42d5858",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/46",
+    "external_id": "radsport-46-2027-04-03",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:30.717819+00:00",
+    "kind": "aggregator"
+   },
+   {
+    "id": "3d2b58f6-23bd-4d1d-9be3-49817b8b0e2d",
+    "event_id": "fffd8bed-6d22-4de0-a008-e013b42d5858",
+    "watched_url_id": "2d6c4cb2-01e6-45f2-b70e-3113b6da50dc",
+    "source_url": "https://radsport-events.de/events/125",
+    "external_id": "radsport-125-2027-04-24",
+    "raw_hash": null,
+    "is_canonical": true,
+    "created_at": "2026-10-10T05:56:32.791441+00:00",
+    "kind": "aggregator"
+   }
+  ],
+  "overrides": null
+ }
+}

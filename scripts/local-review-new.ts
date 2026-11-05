@@ -48,15 +48,17 @@ type SourceRow = { id: string; url: string; kind: string; status: string; added_
 const readSources = (database: string, where = "true") => JSON.parse(execFileSync(PSQL, ["-h", "127.0.0.1", "-p", "54329", "-U", "postgres", "-d", database, "-qAt", "-c", `select coalesce(json_agg(json_build_object('id',id,'url',url,'kind',kind,'status',status,'added_by',added_by,'notes',notes)),'[]') from public.watched_urls where ${where}`], { encoding: "utf8", maxBuffer: 2 ** 30, env: { ...process.env, NODE_OPTIONS: "" } })) as SourceRow[];
 const onTarget = target ? new Map(readSources(target).map(row => [row.id, row])) : null;
 const onTargetByUrl = new Map([...(onTarget?.values() ?? [])].map(row => [row.url, row]));
-const here = new Map(readSources(process.argv.find(value => value.startsWith("--work="))?.slice(7) ?? "letsrace", "added_by = 'pipeline_review' and status = 'paused'").map(row => [row.id, row]));
+const here = new Map(readSources(process.argv.find(value => value.startsWith("--work="))?.slice(7) ?? "letsrace", "(added_by = 'pipeline_review' and status = 'paused') or added_by = 'owner_request'").map(row => [row.id, row]));
 /**
  * How a race's source gets to the target, or why it cannot. A source found by a reviewed
  * announcement is evidence, never something to poll: it travels as its bare configuration,
- * paused, with none of the Mac's reading state. Anything else must already be there.
+ * paused, with none of the Mac's reading state. So does a source the owner asked the Mac to
+ * read: it is read here, and the server only needs it for its races' links. Anything else must
+ * already be there.
  */
 function sourcePath(id: string): { problem: string } | { use: string; carry?: SourceRow } {
   const there = onTarget?.get(id);
-  const evidenceOnly = (row: SourceRow) => row.added_by === "pipeline_review";
+  const evidenceOnly = (row: SourceRow) => row.added_by === "pipeline_review" || row.added_by === "owner_request";
   if (there) return there.status === "active" || evidenceOnly(there) ? { use: id } : { problem: "source_paused_on_server" };
   const local = here.get(id);
   if (!local) return { problem: "source_not_in_target_catalogue" };
@@ -147,7 +149,7 @@ for (const change of send) {
   change.after.watched_url_id = path.use;
   if (path.carry) carried.set(path.use, path.carry);
 }
-const sources: Change[] = [...carried.values()].map(row => ({ tab: "public.watched_urls", op: "insert", pk: { id: row.id }, after: { id: row.id, url: row.url, kind: row.kind, status: "paused", added_by: "pipeline_review", notes: row.notes } }));
+const sources: Change[] = [...carried.values()].map(row => ({ tab: "public.watched_urls", op: "insert", pk: { id: row.id }, after: { id: row.id, url: row.url, kind: row.kind, status: "paused", added_by: row.added_by, notes: row.notes } }));
 send.unshift(...sources);
 const body = send.map(change => JSON.stringify(change)).join("\n");
 writeFileSync(join(directory, "changes.ndjson"), body);

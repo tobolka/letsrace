@@ -18,6 +18,7 @@ const AGGREGATOR_HOSTS = [
   "jiskra.potocky.cz",
   "mso.swiss",
   "rideandrest.net",
+  "trevisomtb.it",
   // An entry platform, not a race's own page: sportt.cz/race/1540 is where you
   // pay, and it took the place of the organiser's own site on the one race it
   // touched before this was here.
@@ -119,7 +120,7 @@ function officialDepth(url: string): number {
 
 /** Keep a same-host race page (`/26-hk/`) over a listing, homepage, or /prihlaseni. */
 /** Calendars and listings that give each race a page of their own. */
-const CALENDAR_PAGE_HOSTS = /(^|\.)(odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net|cyklistikaszc\.sk|sumator\.cz|maraton\.cz|velokal\.de)$/i;
+const CALENDAR_PAGE_HOSTS = /(^|\.)(odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net|trevisomtb\.it|cyklistikaszc\.sk|sumator\.cz|maraton\.cz|velokal\.de)$/i;
 
 export function isCalendarPage(url: string | null | undefined): boolean {
   try {
