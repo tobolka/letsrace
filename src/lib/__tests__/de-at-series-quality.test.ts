@@ -856,3 +856,10 @@ describe("Závod míru and Deutschland Tour", () => {
     expect(events[0]?.endDate).toBe("2026-08-23");
   });
 });
+
+it("does not give last season's table the year in the site's heading", () => {
+  const row = (date: string) => `<a class="event-link" href="/rennen-detail/x-${date}"><div class="event-name">Trieb</div><div class="event-type">XCO</div><div class="event-date">${date}</div></a>`;
+  const season2026 = ["26.04", "21.06", "12.07", "19.07", "06.09"].map(row).join("");
+  expect(parseCubeCup("https://cup.cube.eu/", `<h1>CUBE Cupe 2027</h1>${season2026}`)).toEqual([]);
+  expect(parseCubeCup("https://cup.cube.eu/", `<h1>CUBE Cup 2026</h1>${season2026}`)).toHaveLength(5);
+});

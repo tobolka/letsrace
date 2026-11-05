@@ -19,6 +19,18 @@ const AGGREGATOR_HOST =
 const REGULATIONS_BLOCKLIST =
   /(?:^|\.)volynskytriatlon\.cz$/i;
 
+/**
+ * maraton.cz files each race's terms under its place, and its list once attached Velešín's terms
+ * to races far away. A file named for a place must be for a race that names that place.
+ */
+export function regulationsNameAnotherPlace(url: string, raceText: string): boolean {
+  const file = url.match(/maraton\.cz\/terms\/\d{8}_([a-z0-9-]+)\.pdf/i)?.[1];
+  if (!file) return false;
+  const fold = (text: string) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  const text = fold(raceText);
+  return !fold(file).split("-").some(word => word.length >= 4 && text.includes(word));
+}
+
 function hostOf(url: string): string | null {
   try {
     return new URL(url).hostname.replace(/^www\./i, "").toLowerCase();

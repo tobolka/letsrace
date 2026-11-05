@@ -1,0 +1,54 @@
+{
+ "at": "2026-11-05T23:26:42.318Z",
+ "before": [
+  {
+   "id": "4f7bc0dc-c53d-4559-922d-caf9f3b045aa",
+   "name": "TBC — TÁBOR",
+   "start_date": "2026-11-01",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  },
+  {
+   "id": "d5c4d3da-81a5-4fbb-a933-91cb3e46a82b",
+   "name": "BSK Giro Pičín",
+   "start_date": "2027-06-20",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  },
+  {
+   "id": "b017562f-e68e-4a47-a50c-e0adc4af94d5",
+   "name": "TBC série 2026 - přihlašování do bodování",
+   "start_date": "2026-12-07",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  },
+  {
+   "id": "468a7cdc-acc1-4bad-adae-bf3bcc2227fb",
+   "name": "Zlivský cyklomaraton",
+   "start_date": "2027-05-08",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  },
+  {
+   "id": "de1bbff1-20a7-403b-9528-39d79aa3bed8",
+   "name": "TBC — VIMPERK",
+   "start_date": "2026-11-14",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  },
+  {
+   "id": "468aa081-6560-4b70-b000-1b2335851e79",
+   "name": "HIGH POINT Galaxy MTB maraton",
+   "start_date": "2027-08-21",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  },
+  {
+   "id": "3f4f8c4a-1891-44b8-9b0a-59726117ebe3",
+   "name": "TBC — HŮRKA",
+   "start_date": "2026-11-07",
+   "regulations_url": "http://maraton.cz/terms/20261117_velesin.pdf",
+   "practical_details": {}
+  }
+ ]
+}

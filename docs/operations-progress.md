@@ -22,6 +22,8 @@ Nový ročník stavíme na posledním ověřeném ročníku podle [pravidel roč
 | **6. Ověřit skutečný veřejný výsledek** | Správné údaje a přesměrování jsou opravdu vidět lidem. | Ověřit Wels, Perun, Lakeland a GR8; u MSR Selce vyřešit rozpor dat. PGR, Grudziądz a Gravel Trans Jura jsou opravené; Saint Gravel a Selce zůstávají nerozhodnuté. Staré počty čekajících kontrol nepovažovat za aktuální; nejdřív přečíst dnešní stav. |
 | **7. Udržet provoz levný a spolehlivý** | Mac pokračuje v práci, uchovává výsledky a zbytečně nezatěžuje veřejný web. | Přesun a průběžné navazování již mají implementaci i dřívější provozní důkazy. Zbývá srovnat spotřebu po několika dnech a ověřit dvě úplná čtení i pokračování po pádu. Placené limity nezvyšovat. |
 
+Nález 6. 11.: část termínů 2027 byly data z roku 2026 s novým letopočtem. CUBE Cup je skrytý, RoadCup opravený a přidaná pojistka pro celé tabulky. [Výsledek](../reports/pdf-extraction-2026-11-05/shifted-dates/RESULT.md).
+
 ## Co je doložené a kde to běží
 
 Dřívější provozní výsledky jsou v [reportu přesunu na Mac](../reports/mac-offload-2026-11-05/RESULT.md). Následující tabulka rozlišuje tyto výsledky od nové rozpracované práce; není novým měřením produkce.

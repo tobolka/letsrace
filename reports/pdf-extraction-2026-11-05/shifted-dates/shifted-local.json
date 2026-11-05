@@ -1,0 +1,126 @@
+{
+ "at": "2026-11-05T23:26:11.686Z",
+ "dates": [
+  {
+   "id": "e5ac08b2-525f-4823-8a36-2725ffaa548d",
+   "name": "VELKÁ CENA BÍLINY - O Radovesickou kostku",
+   "start_date": "2027-06-07",
+   "end_date": "2027-06-07",
+   "website_url": "https://www.amaterskaliga.cz/zavody/2026/7-velka-cena-biliny-o-radovesickou-kostku#results"
+  },
+  {
+   "id": "2f2a06e4-0d7f-49ff-8bb4-fd14f0c23db8",
+   "name": "Most - Lesná",
+   "start_date": "2027-08-09",
+   "end_date": "2027-08-09",
+   "website_url": "https://www.amaterskaliga.cz/zavody/2026/9-most-lesna-2026"
+  },
+  {
+   "id": "dff4dd08-0b4f-4bd5-bf9e-e38f767160e9",
+   "name": "LAWI Tour",
+   "start_date": "2027-08-30",
+   "end_date": "2027-08-30",
+   "website_url": "https://www.roadcycling.cz/roadcup/rocnik-2027"
+  },
+  {
+   "id": "e019271d-1e8a-4715-9fce-894999d2b92c",
+   "name": "CUBE Cup — Franken-Bike-Marathon Trieb",
+   "start_date": "2027-06-21",
+   "end_date": "2027-06-21",
+   "website_url": "https://cup.cube.eu/rennen-detail/franken-bike-marathon-trieb-d-ab-u17"
+  }
+ ],
+ "hidden": [
+  {
+   "id": "db34cd9d-503c-4b0b-8ee9-d93beb72c3aa",
+   "name": "CUBE Cup — Sili Marathon Warmensteinach",
+   "start_date": "2027-07-12",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "8cc31e06-7a6a-460c-b581-53cbc5ca2f56",
+   "name": "CUBE Cup — Hof",
+   "start_date": "2027-09-12",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "5be36045-0a6e-4a7e-af5f-0252eacd5323",
+   "name": "CUBE Cup — Steinbach am Wald",
+   "start_date": "2027-07-25",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "157d3025-118a-41bd-bac6-e8b8610acb71",
+   "name": "CUBE Cup — Baunach",
+   "start_date": "2027-09-20",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "eee9e5d1-1804-4523-9aff-bc0502f57ca1",
+   "name": "CUBE Cup — Schneckenlohe",
+   "start_date": "2027-09-06",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "a3e7e859-d3a9-4f1a-8170-576062c350fd",
+   "name": "CUBE Cup — Bad Alexandersbad",
+   "start_date": "2027-05-09",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "0c7e115d-8225-4734-ac5d-bae2481e6eb8",
+   "name": "CUBE Cup — Pegnitz",
+   "start_date": "2027-07-19",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "9057ca79-713b-4f7b-95ea-401034405a07",
+   "name": "CUBE Cup — Stammbach",
+   "start_date": "2027-06-27",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "b2e93c2e-75de-40d8-893a-840dad0a42f7",
+   "name": "CUBE Cup — Trieb",
+   "start_date": "2027-04-26",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "ead2527c-c2a7-440c-91e1-bbe84664ff4c",
+   "name": "CUBE Cup — Wüstenselbitz",
+   "start_date": "2027-05-16",
+   "status": "scheduled",
+   "visibility": "public"
+  },
+  {
+   "id": "c1912dc2-e546-4925-a586-49c01d5fe6c6",
+   "name": "CUBE Cup — Schesslitz",
+   "start_date": "2027-09-27",
+   "status": "scheduled",
+   "visibility": "public"
+  }
+ ],
+ "merged": [
+  {
+   "keep": "28451850",
+   "drop": "6b7a561e"
+  },
+  {
+   "keep": "28451850",
+   "drop": "53fa2d87"
+  },
+  {
+   "keep": "373137a4",
+   "drop": "6af06c8b"
+  }
+ ]
+}

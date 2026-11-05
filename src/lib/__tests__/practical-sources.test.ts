@@ -1,6 +1,8 @@
 import { expect, it } from "vitest";
 import { documentKind, linkScore, onlyInBrowser, posterImages, rankPracticalLinks } from "@/lib/catalog/practical-sources";
 import { isNotCycling } from "@/lib/catalog/practical-extraction";
+import { regulationsNameAnotherPlace } from "@/lib/watcher/regulations-url";
+import { withoutLastYearsTable } from "@/lib/watcher/core";
 
 const race = { name: "34. Großer Preis von Buchholz", startDate: "2027-05-01" };
 const page = "https://club.test/race";
@@ -41,4 +43,20 @@ it("opens a browser only for pages built with JavaScript, and never for one veri
   expect(onlyInBrowser('<div id="app"></div><script src="a.js"></script>', "Verifying your browser... Just a moment")).toBe(false);
   expect(onlyInBrowser("<h1>Race</h1>", "Race 2027")).toBe(false);
   expect(onlyInBrowser('<div id="app"></div><script></script>', "x ".repeat(400))).toBe(false);
+});
+it("does not attach terms filed under another race's place", () => {
+  const velesin = "http://maraton.cz/terms/20261117_velesin.pdf";
+  expect(regulationsNameAnotherPlace(velesin, "TBC — VIMPERK Vimperk")).toBe(true);
+  expect(regulationsNameAnotherPlace(velesin, "TBC — Velešín")).toBe(false);
+  expect(regulationsNameAnotherPlace("https://club.test/propozice.pdf", "TBC — VIMPERK")).toBe(false);
+});
+it("leaves out a table of last year's weekends carrying next year's date", () => {
+  const today = new Date("2026-11-06T12:00:00Z");
+  const race = (startDate: string) => ({ startDate });
+  const shifted = ["2027-04-26", "2027-05-09", "2027-05-16", "2027-06-21", "2027-06-27", "2027-07-12", "2027-07-19", "2027-07-25", "2027-09-06", "2027-09-20"].map(race);
+  expect(withoutLastYearsTable(shifted, today)).toEqual([]);
+  const real = ["2027-04-25", "2027-05-08", "2027-05-16", "2027-06-20", "2027-06-26", "2027-07-11", "2027-07-18"].map(race);
+  expect(withoutLastYearsTable(real, today)).toHaveLength(7);
+  expect(withoutLastYearsTable(["2027-04-26", "2027-05-17"].map(race), today)).toHaveLength(2);
+  expect(withoutLastYearsTable([...shifted, race("2026-11-08")], today)).toEqual([race("2026-11-08")]);
 });

@@ -11,6 +11,7 @@ import {
 } from "@/lib/domain";
 import {
   extractEvents,
+  withoutLastYearsTable,
   canReconcileMissingEvents,
   watchReaderVersion,
   fetchPage,
@@ -325,7 +326,8 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
     }
 
     const deadline = opts?.deadline ?? Date.now() + DEFAULT_BUDGET_MS;
-    const extracted = await extractEvents(row.url, fetched.html, { deadline });
+    const read = await extractEvents(row.url, fetched.html, { deadline });
+    const extracted = { ...read, events: withoutLastYearsTable(read.events) };
     // Paged: PostgREST caps a select at a thousand rows however many there are,
     // and the largest aggregator here has 1798. Unpaged, 798 races looked new
     // on every single run — they competed for the new-race budget for ever and
@@ -1677,14 +1679,15 @@ async function upsertParsedEvent(
 
   const incomingWebsite = publicRaceUrl(ev.websiteUrl, ev.sourceUrl);
   const incomingRegistration = publicRaceUrl(ev.registrationUrl);
-  const { preferRegulationsUrl, isRegulationsUrl } = await import("@/lib/watcher/regulations-url");
+  const { preferRegulationsUrl, isRegulationsUrl, regulationsNameAnotherPlace } = await import("@/lib/watcher/regulations-url");
   const { isStartListUrl } = await import("@/lib/watcher/registration-url");
-  const incomingRegulations =
+  const offeredRegulations =
     publicRaceUrl(ev.regulationsUrl) ||
     (ev.regulationsUrl && isRegulationsUrl(ev.regulationsUrl)
       ? ev.regulationsUrl.trim()
       : null) ||
     (incomingWebsite && isRegulationsUrl(incomingWebsite) ? incomingWebsite : null);
+  const incomingRegulations = offeredRegulations && regulationsNameAnotherPlace(offeredRegulations, `${ev.name} ${ev.placeText ?? ""}`) ? null : offeredRegulations;
   const incomingResults = publicRaceUrl(ev.resultsUrl) || ev.resultsUrl?.trim() || null;
   const { isSharedCalendarEvidence } = await import("@/lib/watcher/source-identity");
   const sharedCalendar = isSharedCalendarEvidence(ev);

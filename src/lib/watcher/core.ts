@@ -250,3 +250,21 @@ export function errorPollAt(consecutiveFailures = 1): Date {
 export function reviewPollAt(): Date {
   return new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
 }
+
+/**
+ * A calendar headed with next year over last year's table gives last year's weekend races weekday
+ * dates in next year (Sunday 26.4.2026 becoming Monday 26.4.2027). Such a table has not been announced.
+ * Only a whole table can show this: one race on a Monday may be right.
+ */
+export function withoutLastYearsTable<T extends { startDate: string; endDate?: string | null }>(events: T[], today = new Date()): T[] {
+  const year = today.getUTCFullYear() + 1;
+  const next = events.filter(event => event.startDate.startsWith(`${year}-`) && (!event.endDate || event.endDate === event.startDate));
+  if (next.length < 5) return events;
+  const weekday = (date: string, shift = 0) => new Date(Date.UTC(Number(date.slice(0, 4)) + shift, Number(date.slice(5, 7)) - 1, Number(date.slice(8, 10)))).getUTCDay();
+  const weekend = (day: number) => day === 0 || day === 6;
+  // Sundays moved a day on: Monday now, Sunday then. Saturdays land on Sundays and hide among real dates, so they do not count against.
+  const mondays = next.filter(event => weekday(event.startDate) === 1 && weekday(event.startDate, -1) === 0).length;
+  const weekendLastYear = next.filter(event => weekend(weekday(event.startDate, -1))).length;
+  if (mondays < 3 || mondays / next.length < 0.3 || weekendLastYear / next.length < 0.8) return events;
+  return events.filter(event => !next.includes(event));
+}

@@ -17,12 +17,26 @@ function seasonYear(html: string, $: cheerio.CheerioAPI): number {
 }
 
 /**
+ * The site heads next season over last season's table for months. These are weekend races,
+ * so a table that does not fall on weekends in the headed year is not that year's.
+ */
+function tableYear(claimed: number, days: [number, number][]): number | null {
+  const onWeekend = (year: number) => days.filter(([day, month]) => [0, 6].includes(new Date(Date.UTC(year, month - 1, day)).getUTCDay())).length;
+  return days.length && onWeekend(claimed) >= days.length * 0.8 ? claimed : null;
+}
+
+/**
  * CUBE Cup / CUBE Kids Cup (Webflow) — homepage event table.
  * Rows: `.event-link` → date DD.MM, type (XCO/XCM), place name.
  */
 export function parseCubeCup(url: string, html: string): ParsedEvent[] {
   const $ = cheerio.load(html);
-  const year = seasonYear(html, $);
+  const days = $("a.event-link[href*='/rennen-detail/'] .event-date").toArray().flatMap((node): [number, number][] => {
+    const match = $(node).text().replace(/\s+/g, "").trim().match(/^(\d{1,2})\.(\d{1,2})$/);
+    return match ? [[Number(match[1]), Number(match[2])]] : [];
+  });
+  const year = tableYear(seasonYear(html, $), days);
+  if (year === null) return [];
   const events: ParsedEvent[] = [];
   const seen = new Set<string>();
 
