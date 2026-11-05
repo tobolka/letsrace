@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const text = z.string().trim().min(1).max(200);
-export const publicLink = z.url().max(2000).refine(value => { const u = new URL(value); return ["https:", "http:"].includes(u.protocol) && !u.username && !u.password; }, "Expected a public web link");
+export const publicLink = z.url().max(2000).refine(value => { try { const u = new URL(value); return ["https:", "http:"].includes(u.protocol) && !u.username && !u.password; } catch { return false; } }, "Expected a public web link");
 const evidence = { sourceUrl: publicLink, quote: z.string().trim().min(8).max(1500), checkedAt: z.iso.datetime({ offset: true }), editionYear: z.number().int().min(2000).max(2100), status: z.enum(["current", "year_neutral", "inherited"]), originEventId: z.uuid().optional() };
 const itemEvidence = { sourceQuote: z.string().min(5).max(1500).optional(), sourceUrl: publicLink.optional(), checkedAt: z.iso.datetime({ offset: true }).optional() };
 export const practicalValueSchemas = {

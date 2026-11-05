@@ -43,3 +43,13 @@ it("hides stale programme dates after rescheduling and facts from a different ed
   expect(practicalDetailsForEvent(result.details, "2027-07-16").schedule).toBeUndefined();
   expect(practicalDetailsForEvent(result.details, "2028-07-09")).toEqual({});
 });
+
+
+it("rejects a malformed source URL without losing another correctly sourced field", () => {
+  const result = verifyPracticalExtraction({ facts: {
+    venue: { ...fact({ name: "Invented", precision: "venue" }, venueQuote), source_url: "not a URL" },
+    organizer: fact({ name: "Revelations Club" }, "Organiser: Revelations Club", "year_neutral"),
+  } }, context);
+  expect(result.rejected).toEqual(["venue"]);
+  expect(result.details.organizer?.value.name).toBe("Revelations Club");
+});
