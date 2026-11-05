@@ -29,6 +29,14 @@ if (replay && (year !== replay.year || target !== replay.target || !Array.isArra
   throw new Error("Invalid replay race snapshot or season mismatch");
 }
 const retryErrors = args.includes("--retry-errors");
+const option = (name: string) => args.find(a=>a.startsWith(`--${name}=`))?.slice(name.length+3);
+const seconds = Number(option("seconds") ?? 3600), limit = Number(option("limit") ?? 100000);
+if (!Number.isFinite(seconds) || seconds < 1 || !Number.isInteger(limit) || limit < 1) throw Error("Invalid reading limits");
+const deadline = Date.now()+seconds*1000;
+const countries = option("countries")?.split(",");
+if(countries?.some(c=>!(/^[A-Z]{2}$/.test(c)))) throw Error("Invalid countries");
+let stopping=false, requestsThisPass=0;
+for(const signal of ["SIGTERM","SIGINT"] as const)process.on(signal,()=>{stopping=true;});
 if (replay && retryErrors) throw new Error("Retry requires a live audit");
 const deferHost = process.argv.find(arg => arg.startsWith("--defer-host="))?.split("=")[1];
 const pausedHosts = new Set(deferHost ? [deferHost] : []);
@@ -36,7 +44,7 @@ const country = args.find(arg => arg.startsWith("--country="))?.slice("--country
 if (country && (replay || !/^[A-Z]{2}$/.test(country))) throw new Error("Use --country=CC with a live audit");
 const rateLimitStreaks = new Map<string, number>();
 const runDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-const archive = replayDir ?? `reports/next-edition-websites-${year}-to-${target}-${runDay}${country ? `-${country.toLowerCase()}` : ""}`;
+const archive = replayDir ?? option("out") ?? `reports/next-edition-websites-${year}-to-${target}-${runDay}${country ? `-${country.toLowerCase()}` : ""}`;
 const directory = replay ? join(archive, "replay") : archive;
 mkdirSync(replay ? directory : join(directory, "pages"), { recursive: true });
 type Page = Job & { at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean };
@@ -55,7 +63,8 @@ if (existsSync(ledger)) for (const line of readFileSync(ledger, "utf8").trim().s
   const page = JSON.parse(line) as Page; pages.set(page.url, page);
 }
 for (const page of pages.values()) {
-  if (retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500)) pages.delete(page.url);
+  const stale = option("out") && Date.now()-Date.parse(page.at) > (page.error || page.needsBrowser || (page.status ?? 0)>=400 || page.requestAttempted===false ? 6*3600_000:14*86400_000);
+  if (stale || retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500)) pages.delete(page.url);
   else attempted.add(page.url);
 }
 function enqueue(raw: string, via: string, purpose: string) {
@@ -69,7 +78,7 @@ async function readRaces(from: string, until: string): Promise<Race[]> {
   const db = createServerSupabase(); const rows: Race[] = [];
   for (let offset = 0; ; offset += 1000) {
     const { data, error } = await db.from("events").select("id,slug,name,start_date,website_url,location:locations(municipality,country_code)")
-      .eq("visibility", "public").is("merged_into_id", null).gte("start_date", from).lt("start_date", until).order("id").range(offset, offset + 999);
+      .eq("visibility", "public").is("merged_into_id", null).or("event_type.is.null,event_type.neq.ride").gte("start_date", from).lt("start_date", until).order("id").range(offset, offset + 999);
     if (error) throw new Error(error.message);
     rows.push(...data); if (data.length < 1000) break;
   }
@@ -189,8 +198,8 @@ async function main() {
   if (replay) {
     ({ old, existing } = replay);
   } else {
-    old = (await readRaces(`${year}-01-01`, `${target}-01-01`)).filter(race => !country || race.location?.country_code === country);
-    existing = await readRaces(`${target}-01-01`, `${target + 1}-01-01`);
+    old = (await readRaces(`${year}-01-01`, `${target}-01-01`)).filter(race => (!country || race.location?.country_code === country) && (!countries || countries.includes(race.location?.country_code ?? "")));
+    existing = (await readRaces(`${target}-01-01`, `${target + 1}-01-01`)).filter(race => !countries || countries.includes(race.location?.country_code ?? ""));
     writeFileSync(join(directory, "races.json"), JSON.stringify({ year, target, old, existing }, null, 2));
   }
   for (const race of old) if (race.website_url) enqueue(race.website_url, race.id, `${year} race website`);
@@ -217,13 +226,14 @@ async function main() {
   try {
     async function worker() {
       for (;;) {
+        if(stopping || Date.now()>=deadline || requestsThisPass>=limit)return;
         const now = Date.now();
         const job = [...jobs.values()].find(j => {
           const host = hostnameOf(j.url); const interval = /raceresult/.test(host) ? 1500 : 500;
           return !attempted.has(j.url) && (activeHosts.get(host) ?? 0) < 1 && (pausedHosts.has(host) || now - (hostStarts.get(host) ?? 0) >= interval);
         });
         if (!job) { if ([...jobs.keys()].every(url => attempted.has(url))) return; await sleep(100); continue; }
-        attempted.add(job.url); const host = hostnameOf(job.url);
+        attempted.add(job.url); requestsThisPass++; const host = hostnameOf(job.url);
         activeHosts.set(host, (activeHosts.get(host) ?? 0) + 1); hostStarts.set(host, Date.now());
         try {
           const page = await inspect(job); pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
@@ -237,6 +247,11 @@ async function main() {
       }
     }
     await Promise.all(Array.from({ length: 24 }, worker));
-  } finally { clearInterval(timer); console.log(JSON.stringify(save())); saveRaceReview(); }
+  } finally {
+    clearInterval(timer);
+    const coverage=save();console.log(JSON.stringify(coverage));saveRaceReview();
+    // A bounded or stopped pass has saved its progress, not finished its queue.
+    if(!coverage.complete || stopping)process.exitCode=2;
+  }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

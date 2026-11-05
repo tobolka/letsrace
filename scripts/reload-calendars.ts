@@ -15,7 +15,9 @@ try {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (!m) continue;
     const val = m[2]!.replace(/^["']|["']$/g, "");
-    if (!process.env[m[1]!]) process.env[m[1]!] = val;
+    // An intentionally blank key belongs to the isolated Mac reader; never
+    // reload production credentials or paid-provider keys into that process.
+    process.env[m[1]!] ??= val;
   }
 } catch {
   /* ignore */

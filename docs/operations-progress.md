@@ -23,45 +23,29 @@ Ověřeno 5. listopadu 2026 odpoledne. **Jeden společný kód; rozdílné míst
 
 **Původní zadání dál platí:** pokrytí závodů, správné a bohaté údaje, minimum duplicit, aktuální veřejný web, srozumitelný přehled a hlídané náklady. Přesun náročné práce na Mac řeší část nákladů; ostatní body tím nejsou dokončené.
 
-## Co dělám právě teď
+## Aktuální priorita a předání Claudovi
 
-**Automatické spouštění nové pipeline na Macu je zapnuté v prvním vymezeném rozsahu.** První běh spuštěný plánovačem sám doběhl v 15:29; další je naplánovaný na 6. 11. ve 3:29. Čte splatné známé zdroje, porovnává výsledky s čerstvým katalogem a odesílá prověřené nové závody. Starý serverový sběr zůstává vypnutý. Neznamená to dokončení všech původních etap.
+**Nový pokyn vlastníka: přesunout maximum sběru a zpracování na Mac, aby tento měsíc ulevilo Supabase a Vercelu.** Dvanáctihodinové čekání není pro místní zpracování odůvodněné limity těchto služeb. Vlastník kvůli kreditům předává další práci Claudovi.
 
-### Zapnutí na Macu: ověřený stav
+**[Úplné nové předání pro Clauda](../reports/codex-handoff-2026-11-05/HANDOFF-CLAUDE.md)** obsahuje hotové změny, všechny rozpracované části, podklady, přesné provozní omezení a postup pokračování. Má přednost před starším popisem, co se právě dělá.
 
-| Krok | Stav |
-| --- | --- |
-| Jeden celý průchod: místní čtení → kontrola → bezpečné odeslání → veřejný detail | **DOKONČENO A ŽIVĚ VYZKOUŠENO.** První průchod 10 min 27 s, 377 zdrojů. Po opravě jedné duplicity přibylo 17 nových závodů; dříve odeslané tři jsou zvlášť. Jejich detaily byly dostupné. Původní kontrola dostupnosti sama nezachytila chybu v údajích; náprava a důkazy jsou ve výsledku. |
-| Automatické spouštění bez staré serverové zapisovací cesty | **NAINSTALOVÁNO A ZAPNUTO.** Jeden průchod najednou, interval 12 hodin. Ověřeno pozastavení, zastavení před odesíláním a restart bez souběžné práce. Panel popisuje nový skutečný režim. |
-| Druhý průchod: nepřidá stejné závody znovu a nebude zbytečně číst vše od začátku | **DOKONČENO.** Druhý průchod 29 s, žádné opakované čtení, žádný nový zápis; porovnání všech 9 658 místních závodů nenašlo změnu. |
-| Uložit obě sady změn odděleně, nainstalovat a sledovat skutečné automatické spuštění | **DOKONČENO NA MACU.** První plánovačem spuštěný průchod 24 s, bez nového čtení a zápisů. Další termín je uložený. Změny Clauda a navazující opravy jsou v samostatných commitech; kód je v hlavní větvi a nasazený na serveru (`ea94e4e3`). |
-
-**První zapínaný rozsah:** nové závody. Změny existujících závodů zůstávají uložené k posouzení; toto není tvrzení, že je celá původní pipeline hotová. Počasí, geokódování a zveřejnění dál zajišťují dosavadní serverové služby.
-
-| Pořadí | Co dokončím | Stav |
+| Pořadí | Co zbývá dokončit | Stav při předání |
 | --- | --- | --- |
-| 1 | Nové závody s názvem, termínem a místem; projít také zbytečně zadržené záznamy. | **PRVNÍ DÁVKA DOKONČENÁ.** Celkem 20 nových záznamů po opravě jedné duplicity. 13 nálezů zůstává oddělených; vyjížďky se nepřidávají mezi závody. [Výsledek a omezení](../reports/local-release-2026-11-05/RESULT.md). |
-| 2 | Uložit změny do hlavní větve, nasadit a aktualizovat kopii na Macu. | **DOKONČENO.** Kód v hlavní větvi, produkce `ea94e4e3` ve stavu READY; Mac má nový režim zapnutý. |
-| 3 | Dvě úplná čtení stejných zdrojů a porovnání, zda se údaje nepřetahují sem a tam. | **ZBÝVÁ V TOMTO ROZSAHU.** Běžné opakování už ověřené: nic znovu nečetlo a všechny místní záznamy zůstaly stejné. To nenahrazuje dvě vynucená úplná čtení. |
-| 4 | Rozdělit chybně spojené závody, vyřešit zadržené změny a chyby čteček; zapojit weby pořadatelů. | **ZBÝVÁ.** Konkrétní podklady jsou v novém předání. |
-| 5 | Ověřit skutečnou spotřebu a aktuálnost veřejného webu. | **ZBÝVÁ.** Místní sběr sám neřeší zátěž veřejných stránek. |
+| **1** | Přesunout i zbývající náročný sběr a doplňování ze serveru na Mac. | **ZBÝVÁ.** Watch/explore jsou blokované, ale serverový catalog stále čte FCI, RaceResult, propozice, Rakousko a registrace. Source-health, geokódování a historie počasí také nejsou přesunuté. |
+| **2** | Mac má průběžně dokončovat práci; nemá čekat 12 hodin, když je co dělat. | **ZBÝVÁ.** Dosud nastaveno 12 hodin. Při zrychlení odstranit i zbytečné opakované stahování celého serverového snapshotu. |
+| **3** | Zapojit weby pořadatelů a jejich nálezy do automatického ukládání. | **ROZPRACOVANÉ.** Ručně přečtené podklady pro 2027 jsou uložené místně; nejsou v pravidelném průchodu a z této poslední dávky nic nešlo do produkce. Přehled pokrývá 3 758 závodů 2026, 980 nemá web. Z 2 385 původních adres se zkusilo načíst 1 999. |
+| **4** | Bezpečně odesílat také doložená doplnění existujících závodů. | **ZBÝVÁ.** Nový režim posílá jen nové závody. Starší změny se drží místně, nejsou ztracené. Vyřešit i vazbu evidence-only zdrojů nových webů na cílový katalog. |
+| **5** | Dotáhnout veřejné změny a staré odkazy. | **ČÁSTEČNĚ.** Iaccobike veřejně ukazuje správnou obec. Obnovu staré adresy sloučeného Welsu je ještě třeba potvrdit. Ověřit také předchozí Perun/Lakeland/GR8 opravy. |
+| **6** | Rozdělit chybně spojené závody, vyřešit zadržené změny a opakované chyby zápisu. | **ZBÝVÁ.** Původní podklady: 43 podezřele spojených záznamů a 26 zadržených aktualizací; přeměřit současný stav. 13 nových nálezů z posledního běhu zůstává oddělených. |
+| **7** | Dvě úplná čtení, nezávislá kvalita a skutečná spotřeba po přesunu. | **ZBÝVÁ.** Rychlé opakování bez nové práce funguje, ale neprokazuje správnost všech údajů ani pokrytí katalogu. Rozpad Vercel CPU podle tras připojený účet podmiňuje placenou službou; žádný upgrade neproběhl. |
 
-Podklad: [PREDANI-CODEX.md](../reports/claude-review-2026-11-05/PREDANI-CODEX.md). Starší kontrola zůstává záznamem nálezů tehdejší verze, nikoliv aktuálním tvrzením, že všechny opravy stále chybí.
+### Co zůstává skutečně hotové
 
-**Nové omezení, přímo ověřené ve Vercelu:** za zobrazených posledních 30 dní je využito 9 hodin 28 minut CPU proti limitu 4 hodin. Samotný LetsRace tvoří 9 hodin 1 minutu (95,3 %). Je potřeba zjistit podíl veřejného webu a sběru a omezit největší příčinu. Další velké běhy se zatím nepouštějí; první malá zkouška už skončila.
-
-**Opravuju, jak si pomocník rozděluje práci. Našel jsem i zbytečné výpočty při zobrazování ročníků. Místní porovnání na stejných datech zrychlilo tuto část ze 4,7 sekundy na 0,064 sekundy a vrátilo stejné odkazy. Úsporu celého Vercelu ještě nemáme změřenou.**
-
-Dosavadní průchod mohl dlouho hledat a opakovaně číst stejné stránky. Doplnění a zobrazení informací přišlo na řadu až pozdě. Nový průchod dokončuje menší kus práce: našel → doplnil → ukázal.
-
-| Pořadí | Úkol | Stav |
-| --- | --- | --- |
-| **1** | Dlouhé hledání musí skončit včas. Doplnění údajů a zobrazení na webu dostane vlastní čas. Stejná stránka se v jednom průchodu nebude stahovat znovu pro každý závod. | **HOTOVÉ A OTESTOVANÉ.** Malý běh doběhl. Nasazeno v hlavní větvi i na serveru (`1ba374af`). Kopie na Macu je aktualizovaná; velké pravidelné běhy ještě nepouštím. |
-| **2** | Pustit malý skutečný běh a zkontrolovat, co přinesl. | **PRVNÍ BĚH DOBĚHL za 39 sekund.** Čtyři zdroje, sedm přečtených detailů, 18 stažených dokumentů. Žádný nový závod ani užitečné doplnění, bez placené AI. Samotná nula není chyba; u části načtených propozic ale pořadatel i program existují a čtečka je nezískala. |
-| **3** | Když něco nedotáhne, opravit příčinu a zkusit to znovu. | **OPRAVENO A NA JIČÍNĚ ŽIVĚ OVĚŘENO.** Výběr vynechává automaticky přidané stránky výsledků a slavnostního vyhlášení. Čtečka nově rozumí běžným propozicím v PDF: v Jičíně uložila pořadatele, areál a šest startů. Na veřejném detailu jsou tyto údaje vidět. Oprava programu je nasazená. Další dosud nepoužité propozice se teprve musí ověřit. |
-| **4** | Zapnout pravidelné běhy v ověřeném rozsahu. | **NOVÝ REŽIM NA MACU ZAPNUTÝ.** Rozsah, první řízený běh a omezení jsou výše. Starý serverový sběr zůstává vypnutý; úplná původní pipeline tím hotová není. |
-
-Tyto kroky mají značky P0.6a–c. Původní číslování není pořadí práce.
+- Nový automatický režim Macu je nainstalovaný a zapnutý; první automatický běh dokončen za 24 s. Starý serverový watch/explore se nepovoloval. Další naplánovaný čas při předání: **6. 11. 03:29 CET**.
+- První větší průchod: 377 zdrojů za 10 min 27 s, po opravě jedné duplicity 17 nových závodů; spolu se třemi dříve odeslanými celkem 20. Opakování 29 s bez opakovaného čtení a zápisu. [Výsledek a jeho omezení](../reports/local-release-2026-11-05/RESULT.md).
+- Pracovní databáze se zachovává, zapisuje se odděleně s potvrzením, funguje zámek souběhu a zastavení před odesláním. Panel odděluje nové skutečně odeslané výsledky od starých místních počtů.
+- Poslední ruční průchod webů pořadatelů je zastavený a podklady uložené. 314 stránek se zmínkou termínu **není 314 nových závodů**. U my.raceresult.com je 385 adres odložených kvůli odmítání požadavků; to je omezení cizího webu, ne Supabase/Vercelu.
+- Kód je v hlavní větvi a aplikace nasazená; poslední dva CLI doplňky a toto předání jsou v závěrečném samostatném commitu. Předchozí plná kontrola: 1 622 testů, typy a build prošly; poslední CLI doplňky: typy, cílený lint a 52 cílených testů prošly.
 
 ## Co ti musí ukázat skutečný běh
 
@@ -92,9 +76,9 @@ Kontroly těchto oprav prošly. **Jejich přínos pro celý katalog teprve změ�
 
 ## Proč to ještě nestačí
 
-Při dnešní kontrole jsme v sedmi podporovaných zemích našli **947 veřejných závodů pro rok 2027**. Jen **14** má vyplněný nový blok praktických informací. Některé údaje jsou uložené i jinde; tato čísla neříkají, že ostatní detaily jsou úplně prázdné ani že těch 14 je všechno správně.
+Při dřívější dnešní kontrole (před posledními importy) jsme v sedmi podporovaných zemích našli **947 veřejných závodů pro rok 2027**. Jen **14** má vyplněný nový blok praktických informací. Některé údaje jsou uložené i jinde; tato čísla neříkají, že ostatní detaily jsou úplně prázdné ani že těch 14 je všechno správně.
 
-Sledujeme **736 aktivních zdrojů**. Na rozhodnutí čeká **30 nalezených záznamů**: 11 nových a 19 odložených. Není tedy doložené, že máme tisíce hotových závodů, které stačí zveřejnit.
+Dřívější snímek uváděl **736 aktivních zdrojů**. Na rozhodnutí čeká **30 nalezených záznamů**: 11 nových a 19 odložených. Není tedy doložené, že máme tisíce hotových závodů, které stačí zveřejnit.
 
 Dřívější měření ukázalo, že **76 % čtení s dostupnými počítadly nepřineslo nový ani změněný záznam**. Potřebujeme lépe vybírat, co číst, a dokončovat získané informace. [Dřívější měření](../reports/pipeline-yield-2026-11-04/RESULT.md).
 

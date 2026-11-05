@@ -1,0 +1,62 @@
+{
+  "coverage": {
+    "at": "2026-11-05T15:56:14.161Z",
+    "startedAt": "2026-11-05T15:56:13.268Z",
+    "year": 2026,
+    "target": 2027,
+    "mode": "offline replay of archived results; no database or website requests",
+    "totalRaces": 3758,
+    "racesWithWebsite": 2778,
+    "racesWithValidWebsite": 2778,
+    "originalWebsites": 2385,
+    "originalWebsitesAttempted": 1999,
+    "queuedPages": 2851,
+    "processedPages": 2849,
+    "archivedOutsidePlan": 0,
+    "attemptedPages": 2464,
+    "deferredPages": 385,
+    "successfulPages": 2125,
+    "candidatePages": 314,
+    "unresolvedPages": 724,
+    "complete": false,
+    "allRequestsAttempted": false,
+    "limitations": [
+      "Source websites come from public, unmerged 2026 catalogue races.",
+      "HTML/PDF text and JSON-LD are checked; image-only and browser-only dates need manual review.",
+      "At most three explicit next-year links per original URL plus a year-neutral homepage are followed; this is not an exhaustive site crawl.",
+      "No full date detected does not prove that no announcement exists.",
+      "No AI calls or catalogue writes."
+    ]
+  },
+  "raceReviewStatuses": {
+    "no_date_signal_detected": 1704,
+    "no_website": 980,
+    "unreadable": 629,
+    "page_has_2027_dates_needs_identity_review": 316,
+    "year_mentioned_without_full_date": 128,
+    "not_checked": 1
+  },
+  "deferredHosts": {
+    "my.raceresult.com": 385
+  },
+  "missingJobs": [
+    {
+      "url": "https://tourdekosova.cz/",
+      "via": [
+        "4e88b29b-0cc7-4e1f-b3f7-b14945ebe465"
+      ],
+      "purpose": "2026 race website"
+    },
+    {
+      "url": "https://www.polishbiketour.pl/wydarzenia/baltyk-600-gdansk-szczecin-31-07-2027",
+      "via": [
+        "https://www.polishbiketour.pl/wydarzenia/zachod-800-zywiec-szczecin-01-08-2026",
+        "https://www.polishbiketour.pl/wydarzenia/gory-400-sanok-zywiec-04-07-2026",
+        "https://www.polishbiketour.pl/wydarzenia/wschod-1200-gdansk-sanok-06-06-2026",
+        "https://www.polishbiketour.pl/wydarzenia/polska-3200-gliwice-gliwice-15-08-2026",
+        "https://www.polishbiketour.pl/wydarzenia/wybrzeze-500-szczecin-sopot-08-08-2026"
+      ],
+      "purpose": "next-year link"
+    }
+  ]
+}
