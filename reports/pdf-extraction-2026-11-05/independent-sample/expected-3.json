@@ -1,0 +1,112 @@
+[
+ {
+  "id": "285b3646-9e26-46d7-bc11-b51fb6b59f96",
+  "name": "UCI C2 - CX Włoszakowice \"Część i chwała zwycięzcom\" dla uczczenia 108 rocznicy Powstania Wielkopolskiego",
+  "start_date": "2026-12-05",
+  "regulations_url": "https://pzkol.pl/pobierz/14491/s/14491_regulamin_zawodowcx_wloszakowice_.pdf",
+  "expected": {
+   "schedule": [
+    "09:00",
+    "09:50"
+   ],
+   "fees": "exists"
+  }
+ },
+ {
+  "id": "db21cb1c-3d31-4b8a-a904-a7d5eef36c90",
+  "name": "2x200 Ultra Challenge",
+  "start_date": "2027-06-26",
+  "regulations_url": "https://2x200.dubraquet.ch/sites/default/files/2x200_FRA_Conditions%20g%C3%A9n%C3%A9rales_sept%202026.pdf",
+  "expected": {
+   "organizer": "JVJ Promotion"
+  }
+ },
+ {
+  "id": "fd743cac-36b8-4b10-89b0-0294751d9420",
+  "name": "Schneeglöckchen-RTF",
+  "start_date": "2027-03-21",
+  "regulations_url": "https://lausitzer-sportevents.de/marathon/wp-content/uploads/AGB_ALLGEMEINE_-TEILNAHMEBEDINGUNGEN_Lausitzer-Sportevents-e-V.pdf",
+  "expected": {
+   "forbid_fees": [
+    100
+   ],
+   "note": "General terms only."
+  }
+ },
+ {
+  "id": "e9a64a2d-e3b8-4ee9-ab3b-274774f2dc47",
+  "name": "Spreewaldmarathon",
+  "start_date": "2027-04-24",
+  "regulations_url": "https://spreewaldmarathon.de/wpswm/wp-content/uploads/AGB-ALLGEMEINE-TEILNAHMEBEDINGUNGEN.pdf",
+  "expected": {
+   "forbid_fees": [
+    50,
+    100
+   ],
+   "note": "General terms only."
+  }
+ },
+ {
+  "id": "03f22017-1ac0-42b7-a81d-f501ccb7fe06",
+  "name": "4. Zima",
+  "start_date": "2026-12-13",
+  "regulations_url": "https://osirwyrzysk.pl/wp-content/uploads/2026/10/1.poprawiony-Regulamin-4-Pory-Roku-Debowa-Gora2026.pdf",
+  "expected": {
+   "venue": "Zielonagóra|Leśniczówk",
+   "schedule": [
+    "12:15"
+   ],
+   "routes": [
+    8.9,
+    14.5
+   ],
+   "fees": "exists",
+   "forbid_routes": [
+    5
+   ],
+   "note": "Bike race with run and walk on the same day."
+  }
+ },
+ {
+  "id": "da9a3ca6-323f-4e8c-a294-d4ec567e652a",
+  "name": "Junior Cup",
+  "start_date": "2027-08-22",
+  "regulations_url": "https://www.juniorcup.net/assets/propozice/junior_cup_propozice.pdf",
+  "expected": {
+   "venue": "Šimkovy",
+   "organizer": "SPORT asistent",
+   "schedule": [
+    "10:00",
+    "12:00"
+   ],
+   "routes": [
+    2.2
+   ],
+   "fees": "exists"
+  }
+ },
+ {
+  "id": "0b5dcdd6-73b5-4745-8dbb-e3108cf81aec",
+  "name": "3 Rosen Cross Moosburg",
+  "start_date": "2026-11-21",
+  "regulations_url": "https://www.rsv-moosburg.de/fileadmin/user_upload/images/Race/2026/Ausschreibung_3_Rosen_Cross_Moosburg_2026_final.pdf",
+  "expected": {
+   "venue": "FC Moosburg",
+   "organizer": "RSV Moosburg",
+   "schedule": [
+    "12:15",
+    "13:05"
+   ],
+   "fees": "exists"
+  }
+ },
+ {
+  "id": "e38ad5dd-be7b-4103-ab31-5e7abd5dcf81",
+  "name": "Dolomites Bike Day",
+  "start_date": "2027-06-19",
+  "regulations_url": "http://www.dolomitesbikeday.it/filemanager/files/pdf-regulation/DE_Reglement_DBD-pdf.pdf",
+  "expected": {
+   "note": "Reglement without a year; not counted."
+  }
+ }
+]

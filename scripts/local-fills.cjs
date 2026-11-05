@@ -11,12 +11,23 @@ const { mkdirSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { psql } = require('./local-sync.cjs');
 
-const EVENT_FIELDS = ['website_url', 'registration_url', 'regulations_url', 'results_url', 'class_label', 'competition_type', 'description', 'level', 'uci_class', 'formats', 'registration_opens_at', 'registration_closes_at', 'disciplines', 'practical_details'];
+const EVENT_FIELDS = ['website_url', 'registration_url', 'regulations_url', 'results_url', 'class_label', 'competition_type', 'description', 'level', 'uci_class', 'formats', 'registration_opens_at', 'registration_closes_at', 'disciplines'];
 /** Categories are one fact: their companions move only with them. */
 const AGE_FIELDS = ['age_categories', 'age_confidence', 'audience'];
 const LOCATION_FIELDS = ['lat', 'lng', 'geog', 'geocode_query', 'geocode_status'];
 const isEmpty = value => value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0) || (typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length === 0);
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+
+/** Venue, organiser, programme, fees and routes are separate facts: a race with a venue can still gain its programme. Each only where empty in all three senses, and never where someone locked it. */
+function practicalFill(work, base, target) {
+  const locks = target.locked_fields ?? [];
+  if (locks.includes('practical_details')) return null;
+  const held = target.practical_details ?? {}, known = base.practical_details ?? {}, added = {};
+  for (const [field, fact] of Object.entries(work.practical_details ?? {})) {
+    if (!isEmpty(fact) && isEmpty(known[field]) && isEmpty(held[field]) && !locks.includes(`practical.${field}`)) added[field] = fact;
+  }
+  return Object.keys(added).length ? { ...held, ...added } : null;
+}
 
 /** The pure decision, for one race as held in the three places. */
 function eventFills(work, base, target) {
@@ -29,6 +40,8 @@ function eventFills(work, base, target) {
   for (const field of EVENT_FIELDS) {
     if (!isEmpty(work[field]) && isEmpty(base[field]) && isEmpty(target[field])) { after[field] = work[field]; before[field] = target[field] ?? null; }
   }
+  const practical = practicalFill(work, base, target);
+  if (practical) { after.practical_details = practical; before.practical_details = target.practical_details ?? {}; }
   if (!isEmpty(work.age_categories) && isEmpty(base.age_categories) && isEmpty(target.age_categories)) {
     for (const field of AGE_FIELDS) if (!same(work[field], target[field])) { after[field] = work[field]; before[field] = target[field] ?? null; }
   }
@@ -48,15 +61,17 @@ const rows = (database, query) => new Map(JSON.parse(psql(database, `select coal
 
 function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', target, maxRaces = 40, maxPlaces = 40 }) {
   mkdirSync(directory, { recursive: true });
-  const columns = ['id', 'name', 'start_date', 'merged_into_id', ...EVENT_FIELDS, ...AGE_FIELDS].join(',');
+  const columns = ['id', 'name', 'start_date', 'merged_into_id', 'practical_details', ...EVENT_FIELDS, ...AGE_FIELDS].join(',');
   // Upcoming races only: an old edition's details help nobody enough to refresh its page.
   const eventsFrom = database => rows(database, `select ${columns} from public.events where start_date >= current_date`);
   const [workEvents, baseEvents, targetEvents] = [eventsFrom(work), eventsFrom(base), eventsFrom(target)];
+  const targetLocks = rows(target, `select event_id as id, locked_fields from public.event_overrides`);
   const changes = [];
   let waiting = 0, races = 0;
   const filled = new Map();
   for (const [id, row] of workEvents) {
-    const fill = eventFills(row, baseEvents.get(id), targetEvents.get(id));
+    const held = targetEvents.get(id);
+    const fill = eventFills(row, baseEvents.get(id), held && { ...held, locked_fields: targetLocks.get(id)?.locked_fields });
     if (!fill) continue;
     if (races >= maxRaces) { waiting++; continue; }
     races++;
@@ -68,7 +83,7 @@ function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', ta
     const known = new Set(JSON.parse(psql(base, `select coalesce(json_agg(id), '[]') from public.event_facts where event_id in (${list})`)));
     // Evidence travels with the field it proves.
     const facts = JSON.parse(psql(work, `select coalesce(json_agg(t), '[]') from public.event_facts t where event_id in (${list}) and status = 'active'`));
-    for (const fact of facts) if (!known.has(fact.id) && filled.get(fact.event_id).includes(fact.field)) changes.push({ tab: 'public.event_facts', pk: { id: fact.id }, owner: fact.event_id, op: 'insert', after: fact });
+    for (const fact of facts) if (!known.has(fact.id) && (filled.get(fact.event_id).includes(fact.field) || String(fact.field).startsWith('practical.') && filled.get(fact.event_id).includes('practical_details'))) changes.push({ tab: 'public.event_facts', pk: { id: fact.id }, owner: fact.event_id, op: 'insert', after: fact });
     const hasCategories = new Set(JSON.parse(psql(target, `select coalesce(json_agg(distinct event_id), '[]') from public.event_categories where event_id in (${list})`)));
     const categories = JSON.parse(psql(work, `select coalesce(json_agg(t), '[]') from public.event_categories t where event_id in (${list})`));
     for (const category of categories) if (filled.get(category.event_id).includes('age_categories') && !hasCategories.has(category.event_id)) changes.push({ tab: 'public.event_categories', pk: { id: category.id }, owner: category.event_id, op: 'insert', after: category });
@@ -97,4 +112,4 @@ function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', ta
   return { file, sha256, rows: changes.length, races, places, waiting };
 }
 
-module.exports = { fillPlan, eventFills, locationFill, EVENT_FIELDS, AGE_FIELDS };
+module.exports = { fillPlan, eventFills, practicalFill, locationFill, EVENT_FIELDS, AGE_FIELDS };

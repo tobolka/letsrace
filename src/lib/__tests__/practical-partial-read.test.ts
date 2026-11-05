@@ -16,10 +16,10 @@ it("saves useful work but leaves a capped document walk retryable rather than st
   });
   mocks.checkpoint.mockResolvedValue({ error: null });
   mocks.rpc.mockResolvedValue({ data: { status: "saved", changed: [], skipped: [] }, error: null });
-  mocks.read.mockImplementation(async url => ({ text: "Fixture source text", ...(url === "https://club.test/" ? { html: `<h1>Fixture race</h1>${Array.from({ length: 6 }, (_, n) => `<a href="/rules-${n}.pdf">Rules ${n}</a>`).join("")}` } : {}) }));
+  mocks.read.mockImplementation(async url => ({ text: "Fixture source text", ...(url === "https://club.test/" ? { html: `<h1>Fixture race</h1>${Array.from({ length: 9 }, (_, n) => `<a href="/rules-${n}.pdf">Rules ${n}</a>`).join("")}` } : {}) }));
   const result = await enrichPracticalDetails({ ids: ["race"], max: 1, structuredOnly: true, apply: true });
   expect(result).toMatchObject({ read: 1, partialReads: 1, deferred: 1, failed: 0, costUsd: 0 });
-  expect(mocks.read).toHaveBeenCalledTimes(5);
+  expect(mocks.read).toHaveBeenCalledTimes(8);
   expect(mocks.mark).not.toHaveBeenCalled();
   expect(mocks.ask).not.toHaveBeenCalled();
   expect(mocks.checkpoint).toHaveBeenCalledWith(expect.objectContaining({ event_id: "race", outcome: "failed", attempts: 1 }), { onConflict: "event_id,probe" });
@@ -48,7 +48,7 @@ for (const website of [null, "https://mtbs.cz/sekce/kalendar"]) {
       const result = await enrichPracticalDetails({ ids: ["race"], structuredOnly: true, apply: true, audit });
       expect(result).toMatchObject({ considered: 1, read: 1, changedFacts: 0, failed: 0 });
       expect(mocks.read).toHaveBeenCalledExactlyOnceWith(mocks.regulations, expect.anything());
-      expect(audit).toHaveBeenCalledWith(expect.objectContaining({ checked: { details: {}, rejected: [] } }));
+      expect(audit).toHaveBeenCalledWith(expect.objectContaining({ checked: expect.objectContaining({ details: {}, rejected: [] }) }));
       expect(mocks.mark).toHaveBeenCalledWith(expect.anything(), mocks.regulations, expect.stringContaining("race"), expect.any(String));
     } finally { mocks.website = "https://club.test/"; mocks.regulations = null; }
   });
@@ -58,11 +58,19 @@ for (const website of [null, "https://mtbs.cz/sekce/kalendar"]) {
 it("stops a rejected model configuration once instead of blaming and repeating every race", async () => {
   mocks.secondRace = true;
   mocks.read.mockClear(); mocks.ask.mockClear();
-  mocks.read.mockResolvedValue({ text: "Fixture race, 1. 5. 2027", html: null });
+  mocks.read.mockResolvedValue({ text: "Fixture race, 1. 5. 2027\nStart 10:00, Elite 12:30", html: null });
   mocks.ask.mockRejectedValue(new Error('Anthropic API 400: unsupported output schema'));
   try {
     const result = await enrichPracticalDetails({ max: 2 });
     expect(result).toMatchObject({ read: 1, deferred: 1, failed: 0 });
     expect(mocks.ask).toHaveBeenCalledOnce();
   } finally { mocks.secondRace = false; mocks.ask.mockReset(); }
+});
+
+it("does not pay the model when no document holds anything a rider could use", async () => {
+  mocks.read.mockClear(); mocks.ask.mockClear();
+  mocks.read.mockResolvedValue({ text: "Fixture race, welcome to our club 2027", html: null });
+  const result = await enrichPracticalDetails({ max: 1 });
+  expect(result).toMatchObject({ read: 1, failed: 0, costUsd: 0 });
+  expect(mocks.ask).not.toHaveBeenCalled();
 });

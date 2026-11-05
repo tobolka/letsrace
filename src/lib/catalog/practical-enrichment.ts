@@ -16,6 +16,7 @@ import type { Json } from "@/lib/supabase/database.types";
 import { localSourceReader } from "./local-source-cache";
 import { resolve } from "node:path";
 import { isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
+import { documentDetails, documentKind, posterImages, rankPracticalLinks } from "./practical-sources";
 
 export function practicalWindows(text: string, max = 6000) {
   const spans: [number, number][] = [[0, Math.min(1200, text.length)]];
@@ -40,15 +41,25 @@ export function practicalSeedUrls(row: { regulations_url?: string | null; websit
 
 /** Never fan out through a federation directory or an entry platform listing.
  * Their attached seed documents are still read; unrelated races' files are not. */
-export function practicalChildLinks(url: string, links: Iterable<string>, row: { registration_url?: string | null; website_url?: string | null }): string[] {
+export function practicalChildLinks(url: string, links: Iterable<string>, row: { name?: string; start_date?: string; registration_url?: string | null; website_url?: string | null }, pageText = ""): string[] {
   if (isDumpListingUrl(url) || url === row.registration_url && url !== row.website_url) return [];
-  return [...links].filter(link => {
-    if (!isPracticalDocumentUrl(link)) return false;
-    const path = decodeURIComponent(new URL(link).pathname);
-    if (/\.(?:gpx|kml|kmz)$/i.test(path) || /(?:^|\/)(?:results|ergebnisse|vysledky|archiv|archive)(?:[\/._-]|$)/i.test(path)) return false;
-    return /\.pdf$/i.test(path) || /kontakt|contact|propoz|regulation|ausschreibung|program|schedule|trasy?|routes?/i.test(path) && new URL(link).hostname === new URL(url).hostname;
-  });
+  const usable = [...links].filter(isPracticalDocumentUrl);
+  return row.name && row.start_date
+    ? rankPracticalLinks(usable, pageText, url, { name: row.name, startDate: row.start_date })
+    : usable.filter(link => { // Without a known race only the plainest signs count.
+      const path = decodeURIComponent(new URL(link).pathname);
+      if (/\.(?:gpx|kml|kmz)$/i.test(path) || /(?:^|\/)(?:results|ergebnisse|vysledky|archiv|archive)(?:[\/._-]|$)/i.test(path)) return false;
+      return /\.pdf$/i.test(path) || /kontakt|contact|propoz|regulation|ausschreibung|program|schedule|trasy?|routes?/i.test(path) && new URL(link).hostname === new URL(url).hostname;
+    });
 }
+
+/** Enough to stop looking: this edition's document with what a rider needs. */
+const completeDocument = (doc: PracticalDocument, row: { name: string; start_date: string }) => {
+  if (documentKind(doc, { name: row.name, startDate: row.start_date }) !== "regulations") return false;
+  const details = documentDetails(doc);
+  return details.fees && details.times >= 2;
+};
+const MAX_READS_PER_RACE = 8, MAX_DOCUMENTS_FOR_MODEL = 5;
 
 /** Rotate bounded child reads so a long navigation cannot starve later rules. */
 export function rotatePracticalLinks(links: string[], attempts: number): string[] {
@@ -77,7 +88,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
   const history = new Map(probes.map(p => [p.event_id, p]));
   const today = new Date().toISOString().slice(0, 10);
   const rows = await readAllRows((from, to) => {
-    let query = db.from("events").select("id,name,start_date,end_date,public_revision,practical_details,website_url,registration_url,regulations_url,location:locations(venue,country_code)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).or("website_url.not.is.null,regulations_url.not.is.null,registration_url.not.is.null").order("start_date").order("id").range(from, to);
+    let query = db.from("events").select("id,name,start_date,end_date,public_revision,practical_details,website_url,registration_url,regulations_url,location:locations(venue,country_code,municipality)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).or("website_url.not.is.null,regulations_url.not.is.null,registration_url.not.is.null").order("start_date").order("id").range(from, to);
     if (options.ids?.length) query = query.in("id", options.ids);
     return query;
   });
@@ -87,7 +98,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     if (wantedCountries && !options.ids?.length && !wantedCountries.includes(row.location?.country_code ?? "")) return false;
     const previous = history.get(row.id), days = previous?.outcome === "failed" ? 3 : 14;
     return Boolean(options.ids?.length || !previous || Date.now() - Date.parse(previous.last_attempt_at) > days * 86400000);
-  }).sort((a, b) => Object.keys(readPracticalDetails(a.practical_details)).length - Object.keys(readPracticalDetails(b.practical_details)).length);
+  }).sort((a, b) => Object.keys(readPracticalDetails(a.practical_details)).length - Object.keys(readPracticalDetails(b.practical_details)).length || a.start_date.localeCompare(b.start_date));
   const batch = fairCatalogueBatch(targets, options.max ?? 12, row => row.location?.country_code ?? "unknown");
   const result = { eligible: targets.length, considered: batch.length, read: 0, changedFacts: 0, changedRaces: 0, skippedLocked: 0, unchanged: 0, partialReads: 0, deferred: 0, failed: 0, costUsd: 0, downloadedDocuments: 0, reusedDocuments: 0 };
   const shared = process.env.SOURCE_DOCUMENT_CACHE_DIR ? localSourceReader({
@@ -112,7 +123,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     let unreadable = 0;
     let checkpoint: "failed" | "silent" | null = null;
     try {
-      while (queue.length && seen.size < 5 && Date.now() + 30_000 < deadline) {
+      while (queue.length && seen.size < MAX_READS_PER_RACE && Date.now() + 30_000 < deadline && !documents.some(document => completeDocument(document, row))) {
         const url = queue.shift()!;
         if (seen.has(url) || !isPracticalDocumentUrl(url)) continue;
         seen.add(url);
@@ -120,23 +131,32 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         if (!doc?.text.trim()) { unreadable++; continue; }
         const source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
         documents.push({ url, text: source.text, links: [...source.links] });
-        const children = practicalChildLinks(url, source.links, row).filter(link => !seen.has(link));
-        queue.push(...rotatePracticalLinks(children, Number(history.get(row.id)?.attempts ?? 0)));
+        const children = practicalChildLinks(url, source.links, row, source.text).filter(link => !seen.has(link));
+        const posters = doc.html ? posterImages(doc.html, url).filter(link => !seen.has(link)) : [];
+        // The most promising links come first, ahead of what earlier pages left waiting.
+        queue.push(...posters, ...children);
+        queue.sort((a, b) => (children.indexOf(a) < 0 ? 99 : children.indexOf(a)) - (children.indexOf(b) < 0 ? 99 : children.indexOf(b)));
       }
+      if (!documents.length) { result.failed++; checkpoint = "failed"; continue; }
+      // Statutes and the like only cost money and invite mistakes.
+      const kinds = new Map(documents.map(document => [document.url, documentKind(document, { name: row.name, startDate: row.start_date })]));
+      const rank = { regulations: 0, no_details: 1, other_edition: 2, general_terms: 3, not_about_races: 4 } as const;
+      documents.splice(0, documents.length, ...documents.filter(document => kinds.get(document.url) !== "not_about_races").sort((a, b) => rank[kinds.get(a.url)!] - rank[kinds.get(b.url)!]).slice(0, MAX_DOCUMENTS_FOR_MODEL));
       if (!documents.length) { result.failed++; checkpoint = "failed"; continue; }
       const partial = unreadable > 0 || queue.some(url => !seen.has(url) && isPracticalDocumentUrl(url));
       if (partial) { result.partialReads++; defer(); }
       const hash = createHash("sha256").update(JSON.stringify({ documents, name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue })).digest("hex"), reader = `${probe}:${row.id}`;
       if (await alreadyRead(db, checkpointUrl, reader, hash)) { result.unchanged++; checkpoint = partial ? "failed" : "silent"; continue; }
       if (Date.now() + 10_000 >= deadline) { defer(); break; }
-      const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, documents };
+      const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, municipality: row.location?.municipality ?? null, ownUrls: [row.website_url, row.regulations_url], documents };
       let deterministic: PracticalDetails = {};
       for (const document of documents) deterministic = combinePracticalFindings(deterministic, practicalProgramme(document, context));
       const fieldsNeeded = ["venue", "organizer", "schedule", "fees", "routes"].filter(field => !(field in deterministic));
       const user = JSON.stringify({ fieldsNeeded, race: { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue }, documents: documents.map(doc => ({ ...doc, candidateIdentityLines: practicalIdentityLines(row.name, doc.text), text: doc.text.split("\n").map((line, index) => `${index + 1}: ${line}`).join("\n").slice(0, 40000), links: doc.links.slice(0, 100) })) });
       let raw: unknown = { facts: {} }, modelDeferred = false;
       let usage = { tokensIn: 0, tokensOut: 0, costUsd: 0 };
-      if (!options.structuredOnly && fieldsNeeded.length) {
+      // Nothing this edition's rider could use was found, so the model would only be paid to say so.
+      if (!options.structuredOnly && fieldsNeeded.length && documents.some(document => kinds.get(document.url) === "regulations")) {
         try {
           const reply = await cachedExtraction({ version: probe, system: PRACTICAL_EXTRACTION_PROMPT, schema: PRACTICAL_RESPONSE_SCHEMA, eventId: row.id, sourceHash: hash, user }, async () => {
             const answer = await askJson<unknown>({ system: PRACTICAL_EXTRACTION_PROMPT, user, outputSchema: PRACTICAL_RESPONSE_SCHEMA, maxTokens: 5000, timeoutMs: Math.max(1000, Math.min(60000, deadline - Date.now() - 10000)) });

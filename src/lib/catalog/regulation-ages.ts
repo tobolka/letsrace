@@ -105,13 +105,31 @@ function isPdf(type: string, bytes: Uint8Array, url: string): boolean {
   );
 }
 
+/** A page with hardly any letters, or with letters from a font that lost its mapping, is a picture of text. */
+export function pageNeedsOcr(text: string): boolean {
+  const compact = text.replace(/\s/g, "");
+  if (compact.length < 40) return true;
+  const broken = [...compact].filter((c) => c === "\ufffd" || (c >= "\ue000" && c <= "\uf8ff") || (c >= "\u0000" && c < "\u0020")).length;
+  return broken / compact.length > 0.1;
+}
+
 export async function pdfText(bytes: Uint8Array): Promise<string> {
   const { extractText, getDocumentProxy } = await import("unpdf");
   // Broken embedded fonts make pdf.js print one "Warning:" line per glyph.
   // The text still extracts; only real failures should reach the log.
-  const pdf = await getDocumentProxy(bytes, { verbosity: 0 });
+  // pdf.js takes the bytes away, and the picture reader may still need them.
+  const pdf = await getDocumentProxy(bytes.slice(), { verbosity: 0 });
   const { text } = await extractText(pdf, { mergePages: false });
-  return (Array.isArray(text) ? text : [text]).join("\n\n");
+  const pages = Array.isArray(text) ? text : [text];
+  const toRead = pages.flatMap((page, index) => pageNeedsOcr(page) ? [index + 1] : []);
+  if (!toRead.length) return pages.join("\n\n");
+  const { pdfPagesText } = await import("@/lib/catalog/document-ocr");
+  // Without the picture reader the document is still worth what its text pages hold.
+  const read = await pdfPagesText(bytes, toRead).catch(() => new Map<number, string>());
+  return pages.map((page, index) => {
+    const seen = read.get(index + 1);
+    return seen && !pageNeedsOcr(seen) ? seen : page;
+  }).join("\n\n");
 }
 
 export function htmlText(html: string): string {
@@ -247,9 +265,14 @@ async function officeText(bytes: Uint8Array, url: string): Promise<string | null
 export type ReadDoc = { url: string; text: string; html: string | null; thin: boolean };
 
 export async function readDocument(url: string, opts?: { maxBytes?: number }): Promise<ReadDoc | null> {
-  const doc = await fetchBytes(url, opts?.maxBytes);
+  const doc = await fetchBytes(directDocumentUrl(url), opts?.maxBytes);
   if (!doc) return null;
   if (isPdf(doc.type, doc.bytes, url)) return { url, text: await pdfText(doc.bytes), html: null, thin: false };
+  if (/^image\/(png|jpe?g|webp|tiff)/.test(doc.type) || /\.(png|jpe?g|webp)(\?|$)/i.test(url)) {
+    const { imageText } = await import("@/lib/catalog/document-ocr");
+    const text = await imageText(doc.bytes).catch(() => "");
+    return text ? { url, text, html: null, thin: text.length < 300 } : null;
+  }
   if (/text\/plain/.test(doc.type)) return { url, text: new TextDecoder("utf-8").decode(doc.bytes), html: null, thin: false };
   if (isOfficeDocument(doc.type, doc.bytes, url)) {
     const text = await officeText(doc.bytes, url);

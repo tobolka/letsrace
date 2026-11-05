@@ -22,6 +22,6 @@ async function main() {
   const audit: unknown[] = [];
   const result = await enrichPracticalDetails({ max, ids: arg("ids")?.split(","), apply: process.argv.includes("--apply"), structuredOnly: process.argv.includes("--structured-only"), deadline, log: console.log, audit: arg("audit") ? async value => { audit.push(value); await writeJsonAtomic(resolve(arg("audit")!), audit); } : undefined });
   console.log(result);
-  if (result.failed) process.exitCode = 1; else if (result.deferred) process.exitCode = 2;
+  if (result.failed && !process.argv.includes("--tolerate-unreadable")) process.exitCode = 1; else if (result.deferred) process.exitCode = 2;
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : "Practical reader failed"); process.exitCode = 1; });

@@ -20,6 +20,7 @@ const TARGET_MIN_GAP_MS=3*HOUR;
 const NEW_RACES_PER_SEND=100;
 /** Reading races' own sites for details, which the server used to do once a day. */
 const SITE_DETAILS_EVERY_MS=6*HOUR;
+const REGULATIONS_EVERY_MS=6*HOUR;
 const GEOCODE_EVERY_MS=12*HOUR;
 const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
 /** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
@@ -38,10 +39,10 @@ function acquireLock(file){
  catch(e){if(e.code!=='EEXIST')throw e;const old=json(file);if(!old?.pid)throw Error('Nečitelný zámek místního běhu');let alive=true;try{process.kill(old.pid,0);}catch(x){if(x.code==='ESRCH')alive=false;else throw x;}if(alive)throw Error('Místní průchod už běží');fs.unlinkSync(file);return acquireLock(file);}
  return ()=>{if(json(file)?.pid===process.pid)fs.unlinkSync(file);};
 }
-function run(command,args,{allowedCodes=[0],timeout=120000}={}){
+function run(command,args,{allowedCodes=[0],timeout=120000,extraEnv={}}={}){
  return new Promise((resolve,reject)=>{
   if(interrupted)return reject(Error('Běh byl zastaven; uložená práce zůstává na příště'));
-  const child=cp.spawn(command,args,{cwd:root,env,stdio:['ignore','pipe','pipe']});let output='';let timedOut=false;
+  const child=cp.spawn(command,args,{cwd:root,env:{...env,...extraEnv},stdio:['ignore','pipe','pipe']});let output='';let timedOut=false;
   let killTimer;const stop=()=>{child.kill('SIGTERM');killTimer=setTimeout(()=>child.kill('SIGKILL'),15000);killTimer.unref();};
   const timer=setTimeout(()=>{timedOut=true;stop();},timeout);const abort=()=>{interrupted=true;stop();};process.once('SIGTERM',abort);process.once('SIGINT',abort);
   child.stdout.on('data',b=>{process.stdout.write(b);output=(output+b).slice(-(2**22));});child.stderr.on('data',b=>process.stderr.write(b));
@@ -161,15 +162,17 @@ async function main(){
 
   // Part 3: the rest of the upkeep that only needs other people's websites and the copy here.
   const tsx='./node_modules/tsx/dist/cli.mjs';
-  const upkeep=async(name,key,every,text,args,seconds)=>{
+  const upkeep=async(name,key,every,text,args,seconds,extraEnv={})=>{
    if(!dueEvery(state[key],every))return;
    stage(text);
    try{
-    const done=await local(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000});
+    const done=await local(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000,extraEnv});
     state[key]=new Date().toISOString();saveState();(report.upkeep??={})[name]=done.code===2?'deferred':'done';
    }catch(e){if(interrupted)throw e;(report.upkeep??={})[name]=`failed: ${e.message}`;console.warn(`Údržba ${name} se nepovedla: ${e.message}`);}
   };
   await upkeep('siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS,'Doplňuji údaje z webů závodů',['scripts/local-catalog-fills.ts'],480);
+  // The one step allowed the AI key, and only within the shared limits the step itself enforces.
+  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=30','--minutes=8','--tolerate-unreadable'],540,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
   await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480);
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);

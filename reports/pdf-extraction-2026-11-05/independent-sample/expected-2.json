@@ -1,0 +1,158 @@
+[
+ {
+  "id": "2922dfd2-b492-42a7-b16d-61520e24f5db",
+  "name": "Pražský MTB pohár — 2. kolo Motol XCO",
+  "start_date": "2027-03-27",
+  "regulations_url": "https://prahamtb.cz/wp-content/uploads/2026/03/Propozice-PMTBP-2026-2.kolo-Motol-2.pdf",
+  "expected": {
+   "venue": "Motol",
+   "organizer": "Sportovní klub cyklistů Praha",
+   "forbid_fields": [
+    "schedule",
+    "fees",
+    "routes"
+   ],
+   "note": "Regulations for 12 Apr 2026; race is 27 Mar 2027. Stable facts only."
+  }
+ },
+ {
+  "id": "5c5c9311-5288-4117-b0aa-7c637483cd2a",
+  "name": "ProTour Cyclocross Cup — Wyścig 3 - Walka o Moryń",
+  "start_date": "2026-11-08",
+  "regulations_url": "https://cyclocross.com.pl/wp-content/uploads/2026/09/protour-cyclocross-cup-2026-regulamin.pdf",
+  "expected": {
+   "schedule": [
+    "11:00",
+    "12:00",
+    "13:00"
+   ],
+   "fees": [
+    50,
+    70,
+    90
+   ],
+   "note": "Series regulations with a common programme and fees."
+  }
+ },
+ {
+  "id": "1790a5d0-bb9c-4cbb-bf6c-da66ba021ca0",
+  "name": "Carinthia200 2027",
+  "start_date": "2027-05-23",
+  "regulations_url": "https://carinthia200.com/pdf/20261016_C200_Teilnahmebedingungen27_DE_EN.pdf",
+  "expected": {
+   "venue": "Villach",
+   "organizer": "PPG",
+   "routes": [
+    197.4,
+    105.7
+   ]
+  }
+ },
+ {
+  "id": "fb0edf38-2821-4aed-ab88-7fc77121c48a",
+  "name": "Mazowiecki Gravel",
+  "start_date": "2027-06-19",
+  "regulations_url": "https://cdn.sanity.io/files/xticlf7m/production/041dc007b3f172f01d53df8adbf1da136b213339.pdf",
+  "expected": {
+   "organizer": "Stowarzyszenie",
+   "forbid_fields": [
+    "schedule",
+    "fees",
+    "routes"
+   ],
+   "note": "Document is for June 2026; race is June 2027."
+  }
+ },
+ {
+  "id": "dfcb4965-e922-4957-925e-994cb7940ebe",
+  "name": "Stahlrad Laatzen Advents-CTF",
+  "start_date": "2026-11-29",
+  "regulations_url": "https://stahlradlaatzen.de/wp-content/uploads/2025/08/Satzung_ab_2022.pdf",
+  "expected": {
+   "forbid_fees": [
+    1
+   ],
+   "note": "Club statutes, nothing about the race."
+  }
+ },
+ {
+  "id": "7364199b-dd76-444a-8c41-1c50c9db32b9",
+  "name": "Müggelheimer Runde",
+  "start_date": "2026-11-08",
+  "regulations_url": "https://www.radsport-adw.de/Mueggelheimer-Runde-2026_Ausschreibung-mit-Navigation.pdf",
+  "expected": {
+   "venue": "Rübezahl",
+   "schedule": [
+    "10:00"
+   ],
+   "fees": [
+    5,
+    8
+   ],
+   "routes": [
+    48
+   ]
+  }
+ },
+ {
+  "id": "13f142d9-8d4e-4f17-9a89-0be143032766",
+  "name": "Säntis-Classic",
+  "start_date": "2027-06-13",
+  "regulations_url": "https://www.saentis-classic.ch/files/Downloads/Reglement_Classic-Tour27.pdf",
+  "expected": {
+   "venue": "Weinfelden",
+   "schedule": [
+    "07:30",
+    "08:00"
+   ],
+   "fees": [
+    90,
+    120
+   ],
+   "routes": [
+    130
+   ]
+  }
+ },
+ {
+  "id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+  "name": "Wiosenne Szutry Premium",
+  "start_date": "2027-04-17",
+  "regulations_url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "expected": {
+   "organizer": "programersi",
+   "routes": [
+    100,
+    200
+   ],
+   "forbid_routes": [
+    300,
+    400
+   ],
+   "note": "Three editions in one rulebook; only 100 and 200 km belong to this date."
+  }
+ },
+ {
+  "id": "e8f236b4-8d18-431d-afec-b1313a16b2fe",
+  "name": "VII Ogólnopolski wyścig w kolarstwie przełajowym \"Moskava Cyclocross\" o puchar burmistrza miasta środa wielkopolska",
+  "start_date": "2026-11-29",
+  "regulations_url": "https://pzkol.pl/pobierz/14485/s/14485_regulamin_zawodowvii_ogolnopolski.pdf",
+  "expected": {
+   "venue": "rednim|redzkim|Resto",
+   "organizer": "Urząd Miasta",
+   "schedule": [
+    "09:00",
+    "12:30"
+   ],
+   "fees": [
+    60,
+    50,
+    30
+   ],
+   "forbid_fees": [
+    1200
+   ],
+   "note": "Lap length 2500 m is not expected as a route."
+  }
+ }
+]

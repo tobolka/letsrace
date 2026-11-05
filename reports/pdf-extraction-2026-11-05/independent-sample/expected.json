@@ -1,0 +1,175 @@
+[
+ {
+  "id": "af252b5e-122f-4caf-9f41-71dc012d1487",
+  "name": "Crossmania #2 - Strausberg",
+  "start_date": "2026-11-08",
+  "regulations_url": "https://assets.zyrosite.com/UFgc2P5iIMkfKoKK/crossmania-ga-2026-cfjzrUjvWyjmDtHZ.pdf",
+  "expected": {
+   "venue": "Sport- und Erholungspark",
+   "organizer": "RSC Strausberg",
+   "schedule": [
+    "13:20",
+    "12:30",
+    "09:40"
+   ],
+   "fees": [
+    22,
+    7,
+    2
+   ],
+   "routes": [
+    2.1
+   ],
+   "forbid_organizer": [
+    "Lehnin",
+    "Zugvogel",
+    "Sprinter",
+    "Cöpenick"
+   ],
+   "note": "Series document; only round 2 lines count for venue and organizer."
+  }
+ },
+ {
+  "id": "a0b7b34b-3684-4e26-9b54-ad5d5ff9f972",
+  "name": "Viking Bike Winterchallenge GTF",
+  "start_date": "2026-11-08",
+  "regulations_url": "https://rv-schleswig.de/wp-content/uploads/2026/10/Gravel_OCTF-2026-Info-u.-Anm.-ueb.arb_.pdf",
+  "expected": {
+   "venue": "Dannewerkschule",
+   "organizer": "Schleswig",
+   "schedule": [
+    "10:00"
+   ],
+   "fees": [
+    8,
+    12
+   ],
+   "routes": [
+    35,
+    55,
+    70
+   ]
+  }
+ },
+ {
+  "id": "6bd09643-ee76-4f20-9c60-0afd6a505eba",
+  "name": "3Lions — 6. RCV Gravel Cross Race",
+  "start_date": "2026-11-07",
+  "regulations_url": "http://rv-waldmoessingen.de/assets/downloads/3Lions-Ausschreibung-2026.pdf",
+  "expected": {
+   "note": "Cup rulebook only: nothing about this race."
+  }
+ },
+ {
+  "id": "18d74d49-5add-4afc-ad95-667f82cf7215",
+  "name": "Gravel-Ride Thurgau",
+  "start_date": "2027-06-12",
+  "regulations_url": "https://www.saentis-classic.ch/files/Downloads/Reglement_Gravel-Ride%20Thurgau27.pdf",
+  "expected": {
+   "venue": "Classic",
+   "schedule": [
+    "12:00"
+   ],
+   "fees": [
+    60
+   ],
+   "routes": [
+    85
+   ],
+   "note": "Organiser is not stated as such."
+  }
+ },
+ {
+  "id": "f026b381-70a5-4aab-bc67-2a2a26c540e2",
+  "name": "The untamed Kingdom",
+  "start_date": "2027-04-17",
+  "regulations_url": "https://assets.zyrosite.com/A0xW4JgkjqI5xGyz/paraisu_spirit-and-rules-M1UAclEZAAZPTsdy.pdf",
+  "expected": {
+   "forbid_fees": [
+    150
+   ],
+   "note": "Rules; 150 EUR is a tracker deposit, not a fee."
+  }
+ },
+ {
+  "id": "4ab62d36-8542-4688-a9a8-7aa1d87f4cb5",
+  "name": "24H-MTB-Rennen am Alfsee 2027",
+  "start_date": "2027-04-23",
+  "regulations_url": "https://24h-alfsee.de/wp-content/uploads/2026/08/Reglement-2027_Stand-2026-08-14.pdf",
+  "expected": {
+   "forbid_fees": [
+    100
+   ],
+   "note": "Rules; 100 EUR is a protest fee. Alfseeradsport e.V. appears only as contact address."
+  }
+ },
+ {
+  "id": "98469c38-1d5f-4cf7-8b8a-1061c924f781",
+  "name": "Bike 224 Meilen",
+  "start_date": "2027-01-21",
+  "regulations_url": "https://24stundenburgenland.com/wp-content/uploads/2023/10/24H-2024-Bike_WebTechnical.pdf",
+  "expected": {
+   "note": "Wrong document: 2024 bike inspection sheet. Nothing usable."
+  }
+ },
+ {
+  "id": "514645c2-9a4e-4a87-80a6-44ba551c9832",
+  "name": "MTB Silberwald Kidsrace Schwaz",
+  "start_date": "2027-09-04",
+  "regulations_url": "https://www.radteamtirol.at/_files/ugd/a88acc_0e17399b2ddc4bf18772a6804e830b84.pdf",
+  "expected": {
+   "forbid_fields": [
+    "schedule",
+    "fees"
+   ],
+   "note": "Regulations for 5 Sep 2026; race is 4 Sep 2027. Venue and organiser may carry over as stable, times and fees must not."
+  }
+ },
+ {
+  "id": "96f2398a-1ebf-4ffe-8adb-6d438535278f",
+  "name": "XXX międzynarodowy wyścig w kolarstwie przełajowym, Memoriał Edwarda Pełki, Sławomira Frejowskiego, puchar burmistrza miasta i gminy Szczekociny",
+  "start_date": "2026-11-08",
+  "regulations_url": "https://pzkol.pl/pobierz/14456/s/14456_regulaminxxx_miedzynarodowy_wysci.pdf",
+  "expected": {
+   "venue": "Kompleks",
+   "organizer": "Szczekociny",
+   "schedule": [
+    "10:00",
+    "12:30"
+   ],
+   "fees": [
+    25,
+    30,
+    50,
+    60,
+    80
+   ],
+   "routes": [
+    2.8
+   ],
+   "forbid_fees": [
+    100,
+    1200,
+    300,
+    400,
+    500
+   ],
+   "note": "100 zl is a number deposit; other amounts are prizes."
+  }
+ },
+ {
+  "id": "acfd9ef7-6c71-47d8-97f6-9f8fdddf1350",
+  "name": "JANEV CUP 2026 / UCI C2 - Jičín",
+  "start_date": "2026-11-14",
+  "regulations_url": "https://www.cyklokros.cz/files/rozpis-janev-cup-2026-cyklokros-v22.pdf",
+  "expected": {
+   "fees": [
+    300,
+    500,
+    550,
+    650
+   ],
+   "note": "Series rules, only the fees were checked by hand. Other fields judged from the source if extracted."
+  }
+ }
+]

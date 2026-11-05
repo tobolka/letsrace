@@ -8,6 +8,13 @@ export function practicalProgramme(doc: PracticalDocument, context: ProgrammeCon
   return combinePracticalFindings(combinePracticalFindings(programmeRows(doc, context), keyValueProgramme(doc, context)), headedProgramme(doc, context));
 }
 
+/** Also the short form a series table uses: "08.11.26 #2 crossmania in Strausberg". */
+function statesRaceDay(line: string, day: string): boolean {
+  if (quoteContainsDate(line, day)) return true;
+  const [year, month, date] = day.split("-");
+  return new RegExp(`(?<![\\d.])0?${Number(date)}\\.\\s*0?${Number(month)}\\.\\s*${year!.slice(2)}(?!\\d)`).test(line);
+}
+
 /** Race-specific PDF guides often have a title, not a "Race:" table cell. */
 function headedProgramme(doc: PracticalDocument, context: ProgrammeContext): PracticalDetails {
   const lines = doc.text.split("\n").map(line => line.trim()).filter(Boolean);
@@ -15,9 +22,12 @@ function headedProgramme(doc: PracticalDocument, context: ProgrammeContext): Pra
   if (!head.includes(context.startDate.slice(0, 4)) || !quoteContainsDate(head, context.startDate)) return {};
   const facts: Record<string, unknown> = {};
   const evidence = (value: unknown, quote: string) => ({ value, quote, source_url: doc.url, identity_quote: head, edition_quote: head, status: "current" });
-  const organizer = lines.find(line => /^(?:Pořadatel|Poradatel|Organiser|Organizer|Veranstalter)\s*:\s*/i.test(line));
-  if (organizer) {
-    const name = organizer.replace(/^[^:]+:\s*/, "").trim();
+  // A series document has one such line per round; only the one under this race's date is its organiser.
+  const organizerLines = lines.flatMap((line, index) => /^(?:Pořadatel|Poradatel|Organiser|Organizer|Veranstalter)\s*:\s*/i.test(line) ? [index] : []);
+  const organizerIndex = organizerLines.length === 1 ? organizerLines[0] : organizerLines.find(index => lines.slice(Math.max(0, index - 2), index).some(line => statesRaceDay(line, context.startDate)));
+  if (organizerIndex !== undefined) {
+    const organizer = lines[organizerIndex]!;
+    const name = organizer.replace(/^[^:]+:\s*/, "").replace(/\s+\p{L}[\p{L}-]*\s*:.*$/u, "").trim();
     if (name.length > 1 && name.length <= 200) facts.organizer = evidence({ name }, organizer);
   }
   const venue = lines.find(line => /^(?:Místo konání|Miesto konania|Areál|Race venue|Veranstaltungsort)\s*:\s*/i.test(line));
