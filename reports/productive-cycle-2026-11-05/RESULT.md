@@ -73,3 +73,7 @@ Důkazy o ochranných opravách převzatého kódu jsou v [předchozím reportu]
 ## Kontroly před vydáním
 
 1 567 testů ve 235 souborech prošlo. Prošla kontrola typů, cílený lint a produkční sestavení. Zkouška časového stropu zastaví také potomka kroku; zkouška pořadí ověřuje, že po dávce zdrojů přijde doplňování a zveřejnění před rozsáhlou údržbou. Konkrétní commit a produkční nasazení doplní závěrečná kontrola.
+
+## Ověřené vydání
+
+Aplikační commit `1ba374af4adfbf507f213eed6ebf51c429c73c87` je v `origin/main`; produkční nasazení `dpl_H89qskyitcffBvbFghnQvPujPYL9` je READY a má aliasy `letsrace.cz` i `www.letsrace.cz`. Po nasazení ověřeny běžné veřejné stránky Jičína (pořadatel, areál, šest startů, bez dvojení překladu), JBC a Peitz. [Výsledky](production.json). Soukromá kopie na Macu má shodné otisky provozních souborů. Mac je v pauze bez potomka a serverové scany stále blokuje původní pravidlo. Žádné placené předplatné ani finanční limity se neměnily.

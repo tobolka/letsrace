@@ -14,14 +14,14 @@ To ještě nemáme hotové. Opravené části nejsou důkazem, že dobře funguj
 
 **Opravuju, jak si pomocník rozděluje práci. Našel jsem i zbytečné výpočty při zobrazování ročníků. Místní porovnání na stejných datech zrychlilo tuto část ze 4,7 sekundy na 0,064 sekundy a vrátilo stejné odkazy. Úsporu celého Vercelu ještě nemáme změřenou.**
 
-Dnes může dlouho hledat a opakovaně číst stejné stránky. Doplnění informací a jejich zobrazení na webu přijde na řadu až pozdě. Chci, aby vždy udělal menší kus práce celý: našel → doplnil → ukázal.
+Dosavadní průchod mohl dlouho hledat a opakovaně číst stejné stránky. Doplnění a zobrazení informací přišlo na řadu až pozdě. Nový průchod dokončuje menší kus práce: našel → doplnil → ukázal.
 
 | Pořadí | Úkol | Stav |
 | --- | --- | --- |
-| **1** | Dlouhé hledání musí skončit včas. Doplnění údajů a zobrazení na webu dostane vlastní čas. Stejná stránka se v jednom průchodu nebude stahovat znovu pro každý závod. | **HOTOVÉ A OTESTOVANÉ.** Malý běh doběhl. Právě posílám ověřené změny do hlavní větve a na server; velké pravidelné běhy ještě nepouštím. |
+| **1** | Dlouhé hledání musí skončit včas. Doplnění údajů a zobrazení na webu dostane vlastní čas. Stejná stránka se v jednom průchodu nebude stahovat znovu pro každý závod. | **HOTOVÉ A OTESTOVANÉ.** Malý běh doběhl. Nasazeno v hlavní větvi i na serveru (`1ba374af`). Kopie na Macu je aktualizovaná; velké pravidelné běhy ještě nepouštím. |
 | **2** | Pustit malý skutečný běh a zkontrolovat, co přinesl. | **PRVNÍ BĚH DOBĚHL za 39 sekund.** Čtyři zdroje, sedm přečtených detailů, 18 stažených dokumentů. Žádný nový závod ani užitečné doplnění, bez placené AI. Samotná nula není chyba; u části načtených propozic ale pořadatel i program existují a čtečka je nezískala. |
-| **3** | Když něco nedotáhne, opravit příčinu a zkusit to znovu. | **OPRAVENO A NA JIČÍNĚ ŽIVĚ OVĚŘENO.** Výběr vynechává automaticky přidané stránky výsledků a slavnostního vyhlášení. Čtečka nově rozumí běžným propozicím v PDF: v Jičíně uložila pořadatele, areál a šest startů. Na veřejném detailu jsou tyto údaje vidět. Teď dokončuju kontrolu a nasazení změněného programu. |
-| **4** | Zapnout pravidelné běhy v ověřeném rozsahu. | **ČEKÁ na výsledek.** Velké automatické scany jsou zatím pozastavené. |
+| **3** | Když něco nedotáhne, opravit příčinu a zkusit to znovu. | **OPRAVENO A NA JIČÍNĚ ŽIVĚ OVĚŘENO.** Výběr vynechává automaticky přidané stránky výsledků a slavnostního vyhlášení. Čtečka nově rozumí běžným propozicím v PDF: v Jičíně uložila pořadatele, areál a šest startů. Na veřejném detailu jsou tyto údaje vidět. Oprava programu je nasazená. Další dosud nepoužité propozice se teprve musí ověřit. |
+| **4** | Zapnout pravidelné běhy v ověřeném rozsahu. | **ČEKÁ na ověření spotřeby a širšího vzorku.** Velké automatické scany jsou zatím pozastavené. |
 
 Tyto kroky mají značky P0.6a–c. Původní číslování není pořadí práce.
 

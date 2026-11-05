@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://letsrace.cz/cs/zavod/janev-cup-uci-c2-jicin-2026-11-14",
+    "status": 200,
+    "title": "JANEV CUP 2026 / UCI C2 - Jičín",
+    "organizer": true,
+    "venue": true,
+    "starts": 6,
+    "englishDuplicate": false,
+    "cache": "MISS"
+  },
+  {
+    "url": "https://letsrace.cz/cs/zavod/jbc-4x-revelations-2027",
+    "status": 200,
+    "title": "4X Pro Tour - JBC 4X Revelations",
+    "cache": "MISS"
+  },
+  {
+    "url": "https://letsrace.cz/cs/zavod/mtb-rennen-am-badesee-in-peitz-2026",
+    "status": 200,
+    "title": "MTB Rennen am Badesee in Peitz",
+    "cache": "MISS"
+  }
+]
