@@ -27,21 +27,21 @@ Ověřeno 5. listopadu 2026 odpoledne. **Jeden společný kód; rozdílné míst
 
 **Automatické spouštění nové pipeline na Macu je zapnuté v prvním vymezeném rozsahu.** První běh spuštěný plánovačem sám doběhl v 15:29; další je naplánovaný na 6. 11. ve 3:29. Čte splatné známé zdroje, porovnává výsledky s čerstvým katalogem a odesílá prověřené nové závody. Starý serverový sběr zůstává vypnutý. Neznamená to dokončení všech původních etap.
 
-### Co ještě chybí k zapnutí na Macu
+### Zapnutí na Macu: ověřený stav
 
 | Krok | Stav |
 | --- | --- |
 | Jeden celý průchod: místní čtení → kontrola → bezpečné odeslání → veřejný detail | **DOKONČENO A ŽIVĚ VYZKOUŠENO.** První průchod 10 min 27 s, 377 zdrojů. Po opravě jedné duplicity přibylo 17 nových závodů; dříve odeslané tři jsou zvlášť. Jejich detaily byly dostupné. Původní kontrola dostupnosti sama nezachytila chybu v údajích; náprava a důkazy jsou ve výsledku. |
 | Automatické spouštění bez staré serverové zapisovací cesty | **NAINSTALOVÁNO A ZAPNUTO.** Jeden průchod najednou, interval 12 hodin. Ověřeno pozastavení, zastavení před odesíláním a restart bez souběžné práce. Panel popisuje nový skutečný režim. |
 | Druhý průchod: nepřidá stejné závody znovu a nebude zbytečně číst vše od začátku | **DOKONČENO.** Druhý průchod 29 s, žádné opakované čtení, žádný nový zápis; porovnání všech 9 658 místních závodů nenašlo změnu. |
-| Uložit obě sady změn odděleně, nainstalovat a sledovat skutečné automatické spuštění | **DOKONČENO NA MACU.** První plánovačem spuštěný průchod 24 s, bez nového čtení a zápisů. Další termín je uložený. Změny Clauda a navazující opravy jsou v samostatných commitech; zveřejnění hlavní větve je dokončováno. |
+| Uložit obě sady změn odděleně, nainstalovat a sledovat skutečné automatické spuštění | **DOKONČENO NA MACU.** První plánovačem spuštěný průchod 24 s, bez nového čtení a zápisů. Další termín je uložený. Změny Clauda a navazující opravy jsou v samostatných commitech; kód je v hlavní větvi a nasazený na serveru (`ea94e4e3`). |
 
 **První zapínaný rozsah:** nové závody. Změny existujících závodů zůstávají uložené k posouzení; toto není tvrzení, že je celá původní pipeline hotová. Počasí, geokódování a zveřejnění dál zajišťují dosavadní serverové služby.
 
 | Pořadí | Co dokončím | Stav |
 | --- | --- | --- |
 | 1 | Nové závody s názvem, termínem a místem; projít také zbytečně zadržené záznamy. | **PRVNÍ DÁVKA DOKONČENÁ.** Celkem 20 nových záznamů po opravě jedné duplicity. 13 nálezů zůstává oddělených; vyjížďky se nepřidávají mezi závody. [Výsledek a omezení](../reports/local-release-2026-11-05/RESULT.md). |
-| 2 | Uložit změny do hlavní větve, nasadit a aktualizovat kopii na Macu. | **MAC AKTUALIZOVANÝ.** Automatický běh dokončen; změny do hlavní větve a nasazení dokončuji. |
+| 2 | Uložit změny do hlavní větve, nasadit a aktualizovat kopii na Macu. | **DOKONČENO.** Kód v hlavní větvi, produkce `ea94e4e3` ve stavu READY; Mac má nový režim zapnutý. |
 | 3 | Dvě úplná čtení stejných zdrojů a porovnání, zda se údaje nepřetahují sem a tam. | **ZBÝVÁ V TOMTO ROZSAHU.** Běžné opakování už ověřené: nic znovu nečetlo a všechny místní záznamy zůstaly stejné. To nenahrazuje dvě vynucená úplná čtení. |
 | 4 | Rozdělit chybně spojené závody, vyřešit zadržené změny a chyby čteček; zapojit weby pořadatelů. | **ZBÝVÁ.** Konkrétní podklady jsou v novém předání. |
 | 5 | Ověřit skutečnou spotřebu a aktuálnost veřejného webu. | **ZBÝVÁ.** Místní sběr sám neřeší zátěž veřejných stránek. |

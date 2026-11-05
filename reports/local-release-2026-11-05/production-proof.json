@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "trofeo-iaccobike-2026",
+    "status": 200,
+    "url": "https://letsrace.cz/cs/zavod/trofeo-iaccobike-2026",
+    "raceId": "cefb7224-3e6a-426c-90ff-554ed1ca1374",
+    "Castellarano": true,
+    "hasBadMunicipality": false
+  },
+  {
+    "slug": "dwh-cross-wels-nationales-rennen-mit-jedermannfrau-gravel-2026",
+    "status": 200,
+    "url": "https://letsrace.cz/cs/zavod/dwh-cross-wels-nationales-rennen-mit-jedermannfrau-gravel-2026",
+    "raceId": "3e8e6af5-1dfc-45ed-b9f8-2e4ce842cb9d",
+    "Castellarano": false,
+    "hasBadMunicipality": false
+  },
+  {
+    "slug": "gp-osterhas-2027",
+    "status": 200,
+    "url": "https://letsrace.cz/cs/zavod/gp-osterhas-2027",
+    "raceId": "2d966321-da80-4354-a3be-660d4123bb18",
+    "Castellarano": false,
+    "hasBadMunicipality": false
+  }
+]

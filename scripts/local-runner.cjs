@@ -81,6 +81,16 @@ function main() {
  }
  const priorReport=json(path.join(data,'last-problems.json'),null);
  if(!previous.lastResult && priorReport)previous.lastResult={...priorReport,at:Date.parse(priorReport.at)};
+ // Old runs counted local writes as changes. Keep their evidence, but never
+ // mix those counts into the new mode's actually uploaded catalogue results.
+ if(!process.env.LETSRACE_RUN_COMMAND && previous.resultMode!=='local-new-races'){
+  const archive=path.join(data,'legacy-run-results-before-local-cycles.json');
+  if(!fs.existsSync(archive))atomic(archive,{history:previous.history||[],lastResult:previous.lastResult||null});
+  const cycle=previous.cycleResult;
+  previous.history=[];previous.lastActivityResult=null;previous.lastResult=null;
+  if(cycle?.finishedAt){const result={at:Date.parse(cycle.finishedAt),created:Number(cycle.publishedNewRaces||0),updated:Number(cycle.updatedRaces||0),reads:Number(cycle.readSources||0),failed:Number(cycle.sourceFailures||0),unreadable:Number(cycle.unreadableSources||0),deferred:Number(cycle.deferredSources||0),queued:Number(cycle.heldRaces||0),problems:cycle.problems||[]};rememberResult(previous,result);}
+  previous.resultMode='local-new-races';
+ }
  const lastBrowser=json(path.join(data,'pipeline-browser-status.json'),null);
  if(!previous.durations?.federation && lastBrowser?.log===previous.logPath && previous.lastFinishedAt>previous.startedAt)previous.durations={...previous.durations,federation:[previous.lastFinishedAt-previous.startedAt]};
  // A hard crash can leave the child alive. Retire only our recorded process

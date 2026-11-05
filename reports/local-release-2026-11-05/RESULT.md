@@ -25,7 +25,7 @@ První průchod měl **241 úspěšných zdrojů, 30 technických chyb, 102 nepo
 ## Chyby zachycené až po první dávce
 
 1. **Wels:** široký název z Bikeboardu s nesprávně obecnými disciplínami prošel vedle stávajícího CX závodu. Nový `3e8e6af5-1dfc-45ed-b9f8-2e4ce842cb9d` byl přes obnovitelné `app_merge_events` připojen k původnímu `09e14a6c-8fac-442b-a4db-4d1c57608922`; zdroje a vztahy se zachovaly. Kontrola nyní zahrnuje i skryté a dříve sloučené názvy. Dlouhý název na stejném oficiálním webu a ve stejný den neobejde držení jen kvůli chybným disciplínám. Jde o držení k posouzení, ne automatické sloučení rozdílných disciplín.
-2. **Trofeo Iaccobike:** zdroj výslovně uvádí `PARCO DEI POPOLI, CASTELLARANO (RE) - INGR. COPPI`. Obec byla chybně odvozena z poslední části jako `INGR. COPPI`. Opravená obec a hledaný bod jsou **Castellarano**; souřadnice zůstávají prázdné. Obec uvedená s italským kódem provincie má přednost před dodatkem o vstupu. Celý původní text místa zůstává zachovaný. Databáze po opravě ověřená; následné potvrzení veřejné revize čeká v běžné frontě, nepřeskakuje limity.
+2. **Trofeo Iaccobike:** zdroj výslovně uvádí `PARCO DEI POPOLI, CASTELLARANO (RE) - INGR. COPPI`. Obec byla chybně odvozena z poslední části jako `INGR. COPPI`. Opravená obec a hledaný bod jsou **Castellarano**; souřadnice zůstávají prázdné. Obec uvedená s italským kódem provincie má přednost před dodatkem o vstupu. Celý původní text místa zůstává zachovaný. Databáze po opravě ověřená. Po nasazení je Castellarano viditelné i na skutečném českém detailu; úplné potvrzení všech jazyků dál zajišťuje běžná fronta.
 
 ## Ochrany a důkazy
 
@@ -36,6 +36,10 @@ První průchod měl **241 úspěšných zdrojů, 30 technických chyb, 102 nepo
 - Opravená ztráta vlastního chování `promisify(execFile)` způsobovala šest chyb `indexOf`; bezplatné čtení konkrétní dříve postižené stránky nyní vrací HTTP 200 a text.
 - Následné veřejné kontroly používají existující společnou frontu a její limit 60 pokusů denně; nový automatický průchod nepřidává další neomezený kontrolor.
 - **1 622 testů prošlo, kontrola typů, produkční sestavení, cílený lint a testy transakčního zápisu prošly.** Testy plánovače ověřily pauzu, spuštění, restart, výsledky bez dvojího započtení; Swift model ověřil i nový místní režim.
+
+## Nasazení a poslední veřejná kontrola
+
+Aplikační změny `ea94e4e3` jsou v hlavní větvi a na `letsrace.cz`, Vercel READY. Český detail Iaccobike ukazuje Castellarano bez chybného `INGR. COPPI`. Stará adresa nově sloučeného Welsu při poslední kontrole ještě vrací původní detail; databáze už má správný stav, ale veřejná obnova čeká na společný limit. Tento nedokončený veřejný výsledek není označený jako vyřešené přesměrování. `watch` i `explore` po nasazení dál vracejí 403.
 
 ## Co to nedokončuje
 
