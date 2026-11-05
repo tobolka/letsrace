@@ -863,7 +863,7 @@ export async function extractWithAdapter(
     return { events: parseWerdenfelserCup(url, html), strategy: "adapter:werdenfels" };
   }
   if (host.includes("sportchallenge.cz")) {
-    if (!/podkrkonosskymaraton\/2026/i.test(url)) {
+    if (!/podkrkonosskymaraton\/20\d{2}/i.test(url)) {
       return { events: [], strategy: "adapter:podkrkonos-skip" };
     }
     return { events: parsePodkrkonosskyMaraton(url, html), strategy: "adapter:podkrkonos" };
@@ -947,7 +947,7 @@ export async function extractWithAdapter(
       return { events: parseLillelundsCup(url, html), strategy: "adapter:lillelunds" };
     }
   }
-  if (host.includes("datasport.de") && /mtbwildpoldsried2026/i.test(url)) {
+  if (host.includes("datasport.de") && /mtbwildpoldsried20\d{2}/i.test(url)) {
     return { events: parseAllgaeuKidsCup(url, html), strategy: "adapter:allgaeu-kids" };
   }
   if (host.includes("xco-nrw-cup.de")) {
@@ -990,7 +990,7 @@ export async function extractWithAdapter(
     return { events: await parseBahno(url, html), strategy: "adapter:bahno" };
   }
   if (host.includes("bike-revolution.ch")) {
-    if (!/anmeldung-2026/i.test(url)) {
+    if (!/anmeldung-20\d{2}/i.test(url)) {
       return { events: [], strategy: "adapter:br-skip" };
     }
     return { events: parseBikeRevolutionKids(url, html), strategy: "adapter:bike-revolution" };
@@ -1081,7 +1081,7 @@ export async function extractWithAdapter(
   if (host.includes("sloxcup.com")) {
     try {
       const path = new URL(url).pathname.replace(/\/$/, "") || "/";
-      if (!/dirke-2026/i.test(path)) {
+      if (!/dirke-20\d{2}/i.test(path)) {
         return { events: [], strategy: "adapter:sloxcup-skip" };
       }
     } catch {
@@ -1092,7 +1092,7 @@ export async function extractWithAdapter(
   if (host.includes("sloveniadownhillcup.si")) {
     try {
       const path = new URL(url).pathname.replace(/\/$/, "") || "/";
-      if (!/((en|sl)\/)?(races|dirke)-2026/i.test(path)) {
+      if (!/((en|sl)\/)?(races|dirke)-20\d{2}/i.test(path)) {
         return { events: [], strategy: "adapter:slodh-skip" };
       }
     } catch {
@@ -1130,7 +1130,7 @@ export async function extractWithAdapter(
     if (/kampioenschappen\/nk-mountainbike/i.test(url)) {
       return { events: parseNkMtb(url, html), strategy: "adapter:nk-mtb" };
     }
-    if (/streetrace-competitie-2026/i.test(url)) {
+    if (/streetrace-competitie-20\d{2}/i.test(url)) {
       return { events: parseStreetrace(url, html), strategy: "adapter:streetrace" };
     }
     return { events: [], strategy: "adapter:knwu-skip" };

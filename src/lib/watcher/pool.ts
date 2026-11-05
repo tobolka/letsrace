@@ -84,3 +84,16 @@ export function hostIntervalMs(host: string): number {
   if (h.includes("ucimtbworldseries.com")) return 300;
   return 200;
 }
+
+/**
+ * Parallel passes on the Mac: every site belongs to exactly one worker process, so
+ * the per-site request gate still holds across processes. Unset everywhere else.
+ */
+export function belongsToThisWorker(host: string, shard = process.env.LOCAL_WORKER_SHARD): boolean {
+  if (!shard) return true;
+  const [index, count] = shard.split("/").map(Number);
+  if (!Number.isInteger(index) || !Number.isInteger(count) || count < 1 || index < 0 || index >= count) throw new Error("Invalid LOCAL_WORKER_SHARD");
+  let hash = 2166136261;
+  for (const character of host.replace(/^www\./, "").toLowerCase()) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+  return (hash >>> 0) % count === index;
+}

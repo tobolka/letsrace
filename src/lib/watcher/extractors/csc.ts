@@ -61,6 +61,18 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
     }
   }
   const events = parseCscPublicGrid(url, pageHtml);
+  // The portal opens on the current year, so next season never reaches the default grid.
+  // Failing here fails the read: an incomplete pair must not look like races that vanished.
+  if (hasCscPublicGrid(pageHtml) && !hasCscPublicGrid(html) && process.env.NEXT_PHASE !== "phase-production-build" && !process.env.VERCEL) {
+    const { renderCscPublicCalendar } = await import(
+      /* webpackIgnore: true */
+      /* turbopackIgnore: true */
+      "./csc-render"
+    );
+    const next = await renderCscPublicCalendar(url, { year: new Date().getFullYear() + 1 });
+    const known = new Set(events.map(event => event.externalId));
+    for (const event of parseCscPublicGrid(url, next)) if (!known.has(event.externalId)) events.push(event);
+  }
   /*
    * The grid needs a browser to exist, and on Vercel there is none — the
    * renderer returns nothing there by design. An empty result used to come

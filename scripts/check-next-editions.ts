@@ -9,6 +9,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "dotenv";
+import { defaultEditionSeason } from "../src/lib/catalog/edition-season";
 
 type Page = { url: string; title?: string; dates?: string[]; textFile?: string };
 type Review = { id: string; name: string; start_date: string; website_url: string | null; reviewStatus: string; candidatePages?: Page[] };
@@ -18,7 +19,7 @@ const arg = (name: string) => process.argv.find(value => value.startsWith(`--${n
 const country = (arg("country") ?? "CZ").toUpperCase();
 const apply = process.argv.includes("--apply");
 const maxAi = Number(arg("max-ai") ?? 300);
-const season = Number(arg("season") ?? new Date().getFullYear()), target = season + 1;
+const season = Number(arg("season") ?? defaultEditionSeason()), target = season + 1;
 /** Dry-run recall test: behave as if these existing editions were missing. */
 const ignored = new Set((arg("ignore-event") ?? "").split(",").filter(Boolean));
 if (apply && ignored.size) throw Error("--ignore-event is for dry runs only");

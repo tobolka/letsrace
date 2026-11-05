@@ -62,6 +62,10 @@ export function isBikeboardHost(host: string): boolean {
  * the source does not need editing every January.
  */
 export async function parseBikeboardCalendar(url: string, html: string): Promise<ParsedEvent[]> {
+  // Since the 2026 redesign one page lists every upcoming race, and year URLs redirect to it.
+  const listed = parseBikeboardListing(url, html);
+  if (listed.length) return enrichFromDetailPages(listed);
+
   const years = /\/termine\/\d{4}/.test(url)
     ? [Number(url.match(/\/termine\/(\d{4})/)![1])]
     : [new Date().getUTCFullYear(), new Date().getUTCFullYear() + 1];
@@ -98,6 +102,55 @@ export async function parseBikeboardCalendar(url: string, html: string): Promise
 async function fetchPage(url: string): Promise<string | null> {
   const res = await fetchText(url, { timeoutMs: 20_000 });
   return res.ok && res.text ? res.text : null;
+}
+
+/** Status labels that share the chip markup but say nothing about the race. */
+const NOT_A_KIND = /woche|heute|morgen|neu$/i;
+
+/** The redesigned calendar: one link per race, with the year and exact point as attributes. */
+export function parseBikeboardListing(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  $("a.ev").each((_, el) => {
+    const $row = $(el);
+    const href = $row.attr("href") ?? "";
+    const id = href.match(/termin(\d+)\s*$/)?.[1];
+    const day = Number($row.find(".ev-day").first().text().trim());
+    const mon = MONTHS[$row.find(".ev-mon").first().text().trim().slice(0, 3).toLowerCase()];
+    const year = Number($row.attr("data-jahr"));
+    if (!id || !day || !mon || !year) return;
+
+    const $title = $row.find(".ev-title").first().clone();
+    $title.find(".chip").remove();
+    const name = $title.text().replace(/\s+/g, " ").trim();
+    if (name.length < 3) return;
+
+    const chips = $row.find(".ev-chips .chip").map((_i, c) => $(c).text().trim().toLowerCase()).get().filter(chip => chip && !NOT_A_KIND.test(chip));
+    const types = chips.filter(chip => chip in TYPE_DISCIPLINE);
+    const kinds = chips.filter(chip => !(chip in TYPE_DISCIPLINE));
+    const racing = kinds.filter(kind => !NOT_A_RACE.has(kind));
+    if (kinds.length && !racing.length) return;
+    const discipline = disciplinesFor(racing, types);
+    const startDate = iso(year, mon, day);
+    if (!discipline.length || !startDate) return;
+
+    const lat = Number($row.attr("data-lat")), lng = Number($row.attr("data-lng"));
+    const hasPoint = $row.attr("data-lat") && $row.attr("data-lng") && Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0);
+    events.push({
+      externalId: `bikeboard-${id}`,
+      name: name.slice(0, 160),
+      startDate,
+      placeText: $row.find(".ev-place").first().text().replace(/\s+/g, " ").trim(),
+      countryHint: countryFrom($row.find(".ev-place img").first().attr("src")),
+      discipline,
+      audience: audienceFor(racing),
+      ...eventTypeFor(racing),
+      ...(hasPoint ? { lat, lng } : {}),
+      sourceUrl: href.startsWith("http") ? href : new URL(href, url).toString(),
+      confidence: 0.85,
+    });
+  });
+  return events;
 }
 
 export function parseBikeboardPage(url: string, html: string): ParsedEvent[] {
@@ -255,6 +308,27 @@ export function detailFacts(html: string): { website?: string; place?: string } 
       /* keep the listing's link */
     }
   }
+
+  // The redesigned page: plain label and value pairs in the sidebar.
+  $(".side .fact").each((_, el) => {
+    const label = $(el).find("span").first().text().trim();
+    if (label === "Homepage" && !out.website) {
+      const link = $(el).find("a[href^='http']").first().attr("href");
+      try {
+        if (link) {
+          const u = new URL(link);
+          u.searchParams.delete("utm_source");
+          u.searchParams.delete("utm_medium");
+          if (!isBikeboardHost(u.hostname)) out.website = u.toString().replace(/\?$/, "");
+        }
+      } catch { /* keep the listing's link */ }
+    }
+    if (label === "Ort") {
+      // "4600 Wels<br>Oberösterreich": the town line, not the federal state.
+      const town = ($(el).find("b").first().html() ?? "").split(/<br\s*\/?>/i)[0]!.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      if (town) out.place = cheerio.load(`<i>${town}</i>`).text();
+    }
+  });
 
   $(".tdv2-fact").each((_, el) => {
     if ($(el).find(".tdv2-fact-key").first().text().trim() !== "Ort") return;

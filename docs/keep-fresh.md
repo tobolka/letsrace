@@ -54,7 +54,7 @@ Reálné skeny ČSC během úpravy přečetly 419 záznamů a provedly 248 zápi
 
 Místní cyklus jednou týdně spustí `scripts/check-next-editions.ts --country=CZ --apply`. Přečte weby závodů z minulé sezóny a u každého určí stav: nalezeno, zveřejněno, čeká s důvodem, zatím neoznámeno, jen zmíněný rok, nečitelné, nebo bez webu. AI jen navrhuje. Závod se založí, když citace s celým datem doslova stojí na webu téhož závodu, nejde o uzávěrku ani předběžný termín a stejný den není v katalogu podobný závod ze stejného místa nebo webu. Sporné případy zůstávají nezveřejněné a zkusí se další týden, vlastník je nerozhoduje.
 
-Výsledek je v `edition-status.json` v denním adresáři `reports/next-edition-websites-*` a souhrn v `pipeline_jobs` pod klíčem `next-editions-cz`. Limit AI je 1 USD na běh a 8 USD měsíčně (`EDITION_AI_BUDGET_USD`, `EDITION_AI_MONTHLY_USD`). Pozastavení sběru na Macu zastaví i tuto kontrolu.
+Výsledek je v `edition-status.json` v denním adresáři `reports/next-edition-websites-*` a souhrn v `pipeline_jobs` pod klíčem `next-editions-cz`. Kontrola běží v prvním AI cyklu týdne a platí pro ni společné limity AI: 0,50 USD denně a 5 USD měsíčně. `EDITION_AI_BUDGET_USD` může limit na běh jen snížit. Do konce září se hledají ročníky aktuálního roku, od října ročníky příštího roku; jiný rok lze zadat přes `--season`. Pozastavení sběru na Macu zastaví i tuto kontrolu.
 
 Náhled bez zápisu:
 
@@ -64,7 +64,7 @@ node scripts/with-node.cjs tsx scripts/check-next-editions.ts --country=CZ
 
 ## Duplicity
 
-Každý místní cyklus sloučí jisté duplicity podle pravidel a nové závody z posledních 12 hodin posoudí AI, nejvýše za 0,10 USD. Jednou denně AI projde všechny budoucí závody. Sloučit lze jen dvojici, kterou AI označí jako stejný závod a potvrdí ji stránka nebo shoda názvů. Přepínač `CATALOG_REVIEW_MERGES=1` vrací režim bez zápisu. Chybné sloučení se vrací příkazem `scripts/restore-event-merge.ts --history=<id> --apply`.
+Každý místní cyklus sloučí jisté duplicity podle pravidel, bez AI a hned po zveřejňování. V AI dnech (úterý a pátek) AI projde všechny budoucí závody jako první ze svých úloh, nejvýše za 0,20 USD; co nestihne, zůstává na další AI den. Sloučit lze jen dvojici, kterou AI označí jako stejný závod a potvrdí ji stránka nebo shoda názvů. Přepínač `CATALOG_REVIEW_MERGES=1` vrací režim bez zápisu. Chybné sloučení se vrací příkazem `scripts/restore-event-merge.ts --history=<id> --apply`.
 
 ## Jediné místní spuštění
 

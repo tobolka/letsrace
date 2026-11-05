@@ -49,7 +49,7 @@ async function main() {
   const fails: { url: string; error?: string }[] = [];
 
   for (let round = 1; round <= rounds; round++) {
-    const outcomes = await runDueWatches(limit, { concurrency: 4, budgetMs: seconds * 1000 });
+    const outcomes = await runDueWatches(limit, { concurrency: Number(process.env.LOCAL_WORKER_CONCURRENCY ?? 4), budgetMs: seconds * 1000 });
     reportWatchBatch(outcomes);
     for (const outcome of outcomes) latest.set(outcome.watchedUrlId, outcome);
     if (!outcomes.length) {

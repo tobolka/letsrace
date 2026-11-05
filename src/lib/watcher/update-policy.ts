@@ -1,3 +1,5 @@
+import { fold } from "@/lib/text-match";
+
 /** A broad calendar may fill gaps but cannot replace an official source's
  * identity/date/location fields. Alternative assertions remain in source evidence.
  */
@@ -52,4 +54,56 @@ export function protectSpecificFacts(stored: Record<string, unknown> | null, pro
     }
   }
   return kept;
+}
+
+/**
+ * What a re-read may do to a race's kind. Titles and series links differ per source,
+ * so a guess from them must never replace a stored kind: two calendars would otherwise
+ * swap it on every read. A source that states a kind outright can still correct it,
+ * including a series or cup wrongly stored on what is one race. Saying only "race" does
+ * not take away a championship or a ride, since listings call those races too.
+ */
+export function chooseEventType<T extends string>(stated: T | null | undefined, stored: T | null | undefined, guessed: T): T {
+  if (!stored) return stated ?? guessed;
+  if (!stated) return stored;
+  return stated === "race" && stored !== "series" && stored !== "cup" ? stored : stated;
+}
+
+/**
+ * Some calendars put the date in a row's id. When one record holds another race's row for
+ * the date it now shows, this row is a different race joined to it by mistake, and letting
+ * it set the date makes the record jump on every read. The same race moved to a new date
+ * keeps its number, so a genuine reschedule still goes through.
+ */
+export function isDifferentDatedRace(externalId: string | undefined, startDate: string, storedDate: string | null | undefined, sources: { external_id?: string | null }[] | null | undefined): boolean {
+  if (!externalId || !storedDate || startDate === storedDate) return false;
+  const dated = /^(.+)-(\d{4}-\d{2}-\d{2})$/;
+  const own = dated.exec(externalId);
+  if (!own) return false;
+  return (sources ?? []).some(source => {
+    const other = dated.exec(source.external_id ?? "");
+    return Boolean(other && other[1] !== own[1] && other[2] === storedDate);
+  });
+}
+
+export type PlaceFacts = { municipality?: string | null; name?: string | null; geocode_query?: string | null; country_code?: string | null; lat?: number | null; lng?: number | null };
+
+/**
+ * Two location rows can describe one place: older duplicates, or the same town with
+ * different capitals. Moving a race between them changes nothing for a rider, and it
+ * must not swap coordinates for a row that has none, so such a move is not worth a write.
+ * Filling in a missing point, or a start that is really elsewhere in town, is a real change.
+ */
+export function isSamePlace(current: PlaceFacts | null | undefined, incoming: { query: string; country?: string | null; lat?: number | null; lng?: number | null }): boolean {
+  if (!current || !incoming.query.trim()) return false;
+  if (incoming.country && current.country_code && incoming.country !== current.country_code) return false;
+  const label = (value: string | null | undefined) => fold(value).replace(/[^a-z0-9]+/g, " ").trim();
+  const wanted = label(incoming.query);
+  if (![current.geocode_query, current.municipality, current.name].some(value => label(value) === wanted)) return false;
+  if (incoming.lat != null && incoming.lng != null) {
+    if (current.lat == null || current.lng == null) return false;
+    // About 500 m: the same row's rounding, not another venue in the same town.
+    return Math.abs(current.lat - incoming.lat) <= 0.005 && Math.abs(current.lng - incoming.lng) <= 0.0075;
+  }
+  return true;
 }

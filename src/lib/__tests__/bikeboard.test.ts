@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detailFacts, parseBikeboardPage } from "@/lib/watcher/extractors/bikeboard";
+import { detailFacts, parseBikeboardListing, parseBikeboardPage } from "@/lib/watcher/extractors/bikeboard";
 
 const row = (opts: {
   id?: string;
@@ -127,5 +127,36 @@ describe("detailFacts", () => {
 
   it("returns nothing when the page links only back to bikeboard", () => {
     expect(detailFacts(`<a class="tdv2-btn tdv2-btn--primary" href="https://bikeboard.at/x">x</a>`)).toEqual({});
+  });
+});
+
+describe("the redesigned calendar", () => {
+  const entry = (over: { id?: string; year?: string; day?: string; mon?: string; title?: string; chips?: string[]; place?: string; flag?: string; lat?: string } = {}) => {
+    const { id = "16244", year = "2027", day = "08", mon = "Mai", title = "DWH Cross Wels", chips = ["Rennrad", "Querfeldein"], place = "Wels", flag = "at", lat = "48.163591" } = over;
+    return `<a class="ev" href="/termine/dwh-cross-wels-termin${id}" data-jahr="${year}" data-lat="${lat}" data-lng="14.0235498">
+      <span class="ev-date"><span class="ev-dow">So</span><span class="ev-day">${day}</span><span class="ev-mon">${mon}</span></span>
+      <span><span class="ev-title">${title} <span class="chip lime">Diese Woche</span></span><span class="ev-sub">Text</span></span>
+      <span class="ev-place"><img src="/images/flags/4x3/${flag}.svg">${place}</span>
+      <span class="ev-chips">${chips.map(chip => `<span class="chip">${chip}</span>`).join("")}</span></a>`;
+  };
+  const url = "https://bikeboard.at/termine";
+
+  it("reads the race with its year, place, point and discipline", () => {
+    expect(parseBikeboardListing(url, entry())).toEqual([expect.objectContaining({
+      externalId: "bikeboard-16244", name: "DWH Cross Wels", startDate: "2027-05-08", placeText: "Wels", countryHint: "AT",
+      lat: 48.163591, lng: 14.0235498, discipline: ["cx"], sourceUrl: "https://bikeboard.at/termine/dwh-cross-wels-termin16244",
+    })]);
+  });
+  it("skips what is not a race and keeps the same identity as the old layout", () => {
+    expect(parseBikeboardListing(url, entry({ chips: ["MTB", "Fahrtechnik"] }))).toEqual([]);
+    expect(parseBikeboardListing(url, entry({ chips: ["MTB", "Cross Country", "Nächste Woche"] }))[0]?.discipline).toEqual(["xco"]);
+  });
+  it("does not invent a point the page does not give", () => {
+    expect(parseBikeboardListing(url, entry({ lat: "" }))[0]).not.toHaveProperty("lat");
+  });
+  it("reads the new detail sidebar without tracking parameters or the federal state", () => {
+    const html = `<aside class="side"><div class="fact"><span>Ort</span><b>4600 Wels<br>Oberösterreich</b></div>
+      <div class="fact"><span>Homepage</span><b><a href="https://www.rc-ovilava-wels.at?utm_source=bikeboard&amp;utm_medium=referral">x</a></b></div></aside>`;
+    expect(detailFacts(html)).toEqual({ place: "4600 Wels", website: "https://www.rc-ovilava-wels.at/" });
   });
 });

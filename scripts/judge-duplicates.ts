@@ -16,5 +16,7 @@ async function main() {
   const newerThanHours = Number(process.argv.find((a) => a.startsWith("--newer-than-hours="))?.slice(19) ?? 0) || undefined;
   const r = await judgeDuplicates({ maxPairs: max, dryRun: !apply, newerThanHours, log: console.log });
   console.log({ ...r, costUsd: Number(r.usage.costUsd.toFixed(3)), dry: !apply });
+  // Out of model budget is unfinished work, so the day is not recorded as judged.
+  if (r.stopped) process.exitCode = 2;
 }
 main().catch((e) => { console.error(e); process.exit(1); });

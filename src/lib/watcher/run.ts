@@ -21,13 +21,13 @@ import {
   isPendingSeasonUrl,
   seasonGuessLanded,
 } from "@/lib/watcher/core";
-import { hostnameOf, mapPool } from "@/lib/watcher/pool";
+import { belongsToThisWorker, hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
 import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
-import { preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts } from "@/lib/watcher/update-policy";
+import { chooseEventType, isDifferentDatedRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
 import { calendarRowHash, calendarRowProgress, isEventWriteConflict, MAX_CALENDAR_PROGRESS_ROWS, readCalendarProgress } from "@/lib/watcher/calendar-progress";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline, withDatabaseRequestCounts, withDatabaseWorkload } from "@/lib/supabase/request-budget";
@@ -102,7 +102,8 @@ export async function runDueWatches(
       .in("kind", [...kinds])
       .lte("next_poll_at", nowIso)
       .order("next_poll_at", { ascending: true })
-      .limit(Math.max(take * 3, 40));
+      // A worker sees only its own hosts, so it has to look further down the queue.
+      .limit(process.env.LOCAL_WORKER_SHARD ? 5000 : Math.max(take * 3, 40));
     if (error) throw new Error(error.message);
     const dumpHost = /federciclismo\.it|eventivsport\.com|ffc\.fr|ffvelo\.fr/i;
     // The ČSC Blazor grid is rendered by a local Chrome scan. Vercel cannot
@@ -110,7 +111,8 @@ export async function runDueWatches(
     // a known error and makes the health signal misleading.
     const eligible = (due ?? []).filter((row) =>
       !(process.env.VERCEL && /portal\.czechcyclingfederation\.com\/Races(?:\/|$)/i.test(row.url as string)) &&
-      !(row.added_by === "auto-same-domain" && isAuxiliaryDiscoveryUrl(row.url))
+      !(row.added_by === "auto-same-domain" && isAuxiliaryDiscoveryUrl(row.url)) &&
+      belongsToThisWorker(hostnameOf(row.url))
     );
     const rest = eligible.filter((row) => !dumpHost.test(row.url as string));
     const dumps = eligible.filter((row) => dumpHost.test(row.url as string)).slice(0, 2);
@@ -122,7 +124,8 @@ export async function runDueWatches(
       if (selectedIds.has(row.id)) continue;
       const host = hostnameOf(row.url);
       const selected = selectedByHost.get(host) ?? 0;
-      if (selected >= 2) continue;
+      // On the Mac a worker owns its sites, and the request gate already spaces their calls.
+      if (selected >= (process.env.LOCAL_WORKER_SHARD ? 12 : 2)) continue;
       claimed.push(row);
       selectedIds.add(row.id);
       selectedByHost.set(host, selected + 1);
@@ -1946,12 +1949,16 @@ async function upsertParsedEvent(
     ? await supabase
         .from("events")
         .select(
-          "*, sources:event_sources(kind), overrides:event_overrides(locked_fields)",
+          "*, sources:event_sources(kind, external_id), overrides:event_overrides(locked_fields)",
         )
         .eq("id", existingId)
         .maybeSingle()
     : { data: byFp };
   if (existingId && !existingFull) throw new Error(`Matched race could not be read: ${existingId}`);
+  const stored = existingFull as { start_date?: string; sources?: { external_id?: string | null }[] } | null;
+  if (existingId && isDifferentDatedRace(ev.externalId, ev.startDate, stored?.start_date, stored?.sources)) {
+    throw new Error("identity_review_required: this row is a different dated race than the record it is linked to");
+  }
 
   const reviewedStored = existingFull as { visibility?: string; merged_into_id?: string | null } | null;
   if (review && ((existingId ?? null) !== review.expectedEventId || existingId && (reviewedStored?.visibility !== "public" || reviewedStored?.merged_into_id))) {
@@ -2045,7 +2052,10 @@ async function upsertParsedEvent(
         .lte("lng", lng + 0.045);
     }
     const { data: reused, error: reuseError } = await reuseQuery
-      .order("updated_at", { ascending: false })
+      // Among duplicates always the same row: "last updated" sent a race to another
+      // copy of its town on each read. Prefer one that already has coordinates.
+      .order("lat", { ascending: true, nullsFirst: false })
+      .order("id", { ascending: true })
       .limit(1)
       .maybeSingle();
 
@@ -2250,9 +2260,7 @@ async function upsertParsedEvent(
     // from the title; only fall back to the classifier when it says nothing.
     // Nor does a title guess undo a race already judged a ride (by a reader
     // that saw more than the title).
-    event_type:
-      ev.eventType ??
-      ((existingRow as { event_type?: string | null } | null)?.event_type === "ride" ? "ride" : classified.eventType),
+    event_type: chooseEventType<string>(ev.eventType, (existingRow as { event_type?: string | null } | null)?.event_type, classified.eventType) as NonNullable<typeof classified.eventType>,
     competition_type: overviewOnly && classified.competitionType === "community" ? "other" : classified.competitionType,
     season: classified.season || mergedStart.slice(0, 4),
     timezone: timezoneForCountry(ev.countryHint),
@@ -2350,6 +2358,17 @@ async function upsertParsedEvent(
         .maybeSingle();
       const loc = (cur as { location?: { municipality?: string | null; lat?: number | null } | null } | null)?.location;
       keepCurrentPlace = Boolean(loc?.municipality && !isGarbagePlace(loc.municipality) && !isCountryOnlyPlace(loc.municipality));
+    }
+    // Only a race about to move costs this read; most re-reads name the row it already has.
+    const heldLocationId = (existingFull as { location_id?: string | null } | null)?.location_id;
+    if (existingId && !keepCurrentPlace && ev.placeText && heldLocationId && heldLocationId !== locationId) {
+      const { data: held, error: placeError } = await supabase
+        .from("locations")
+        .select("municipality, name, geocode_query, country_code, lat, lng")
+        .eq("id", heldLocationId)
+        .maybeSingle();
+      if (placeError) throw new Error(`Reading current place: ${placeError.message}`);
+      keepCurrentPlace = isSamePlace(held as PlaceFacts | null, { query: dedupeCommaParts(ev.placeText), country: ingestCountry, lat: resolvedLat, lng: resolvedLng });
     }
     if (!keepCurrentPlace) payload.location_id = locationId;
   }

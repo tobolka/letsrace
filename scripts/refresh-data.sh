@@ -3,7 +3,7 @@
 #
 #   bash scripts/refresh-data.sh 2>&1 | tee tmp/refresh-$(date +%F).log
 #
-# Official calendars first, then every per-race reader, then duplicates.
+# Due sources, practical details and publication first; then duplicates and other upkeep.
 # Each step is its own process, so one failure does not stop the rest.
 set -u
 cd "$(dirname "$0")/.."
@@ -22,9 +22,17 @@ export CATALOG_OVERVIEW_ONLY="${CATALOG_OVERVIEW_ONLY:-1}"
 export SOURCE_DOCUMENT_CACHE_DIR="${SOURCE_DOCUMENT_CACHE_DIR:-$PWD/tmp/source-documents}"
 FAILURES=0
 DEFERRED=0
-# Every normal cycle has an end; individual lanes have their own smaller limit.
-CYCLE_SECONDS="${PIPELINE_CYCLE_SECONDS:-900}"
-if ! [[ "$CYCLE_SECONDS" =~ ^[0-9]+$ ]] || [ "$CYCLE_SECONDS" -lt 60 ] || [ "$CYCLE_SECONDS" -gt 3600 ]; then echo 'Invalid cycle duration'; exit 1; fi
+# Every cycle has an end, sized to its work. The model passes run only in this one
+# cycle on an AI day and measured up to 74 minutes per step, so they cannot share
+# the free cycle's limits. A deep collection asks for hours explicitly.
+DEFAULT_CYCLE_SECONDS=900
+DEFAULT_STEP_SECONDS=300
+if [ "${PIPELINE_MODE:-free}" = "ai" ]; then DEFAULT_CYCLE_SECONDS=7200; DEFAULT_STEP_SECONDS=7200; fi
+if [ "${SOURCE_DEEP:-0}" = "1" ]; then
+  DEFAULT_CYCLE_SECONDS=$(( DEFAULT_CYCLE_SECONDS + $(awk -v hours="${SOURCE_DEEP_HOURS:-4}" 'BEGIN { printf "%d", hours * 3600 }') ))
+fi
+CYCLE_SECONDS="${PIPELINE_CYCLE_SECONDS:-$DEFAULT_CYCLE_SECONDS}"
+if ! [[ "$CYCLE_SECONDS" =~ ^[0-9]+$ ]] || [ "$CYCLE_SECONDS" -lt 60 ] || [ "$CYCLE_SECONDS" -gt 86400 ]; then echo 'Invalid cycle duration'; exit 1; fi
 CYCLE_END=$(( $(date +%s) + CYCLE_SECONDS ))
 if [ "${SOURCE_RUN_DEADLINE:-0}" -le 0 ] || [ "$SOURCE_RUN_DEADLINE" -gt "$CYCLE_END" ]; then export SOURCE_RUN_DEADLINE="$CYCLE_END"; fi
 
@@ -36,7 +44,7 @@ step() {
   local result=0
   local started=$(date +%s)
   local remaining=$((SOURCE_RUN_DEADLINE - started))
-  local cap="${PIPELINE_STEP_SECONDS:-180}"
+  local cap="${PIPELINE_STEP_SECONDS:-${DEFAULT_STEP_SECONDS:-300}}"
   if [ "$remaining" -lt "$cap" ]; then cap="$remaining"; fi
   # The child has its own safe process group; a late request cannot consume the next lane.
   node scripts/with-node.cjs scripts/bounded-pipeline-step.cjs "$cap" "${PIPELINE_NODE_BINARY:-node}" scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs "$@" || result=$?
@@ -103,17 +111,17 @@ PIPELINE_STEP_SECONDS=60 step "Publish changes in the map and calendar" scripts/
 PIPELINE_STEP_SECONDS=60 step "Check newly changed public race pages" scripts/publish-catalogue-changes.ts
 
 if [ "${PIPELINE_SKIP_MAINTENANCE:-0}" != "1" ]; then
-# A daily/weekly maintenance pass uses only time remaining after the productive lanes.
+# Maintenance uses only time remaining after the productive lanes. Sure duplicates
+# are rule-based and free, so they go first and are merged every cycle.
+if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
+  step "Duplicates (review only)" scripts/merge-duplicates.ts --dry
+else
+  step "Duplicates" scripts/merge-duplicates.ts
+fi
 daily_step "Follow up waiting race evidence" scripts/recheck-discovery-candidates.ts --max=20 --apply
 weekly_browser_step
 weekly_editions_step
 daily_step "Free discovery of new source links" scripts/explore-sources.ts
-if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
-  daily_step "Duplicates (review only)" scripts/merge-duplicates.ts --dry
-else
-  daily_step "Duplicates" scripts/merge-duplicates.ts
-  LLM_BUDGET_USD=0.10 daily_step "Duplicates among new races" scripts/judge-duplicates.ts --max=30 --newer-than-hours=12 --apply
-fi
 if [ "${CATALOG_DETAIL_ENRICHMENT:-0}" = "1" ]; then
 step "Czech federation race pages"         scripts/fill-csc-ages.ts --apply
 step "Austrian race pages"                 scripts/fill-cyclingaustria.ts --max=400 --apply
@@ -131,7 +139,7 @@ if [ "${SOURCE_DEEP:-0}" = "1" ]; then
     REMAINING=$((SOURCE_RUN_DEADLINE - $(date +%s)))
     if [ "$REMAINING" -gt 0 ]; then DEEP_HOURS=$(awk -v seconds="$REMAINING" -v cap="$DEEP_HOURS" 'BEGIN { printf "%.6f", (seconds < cap * 3600 ? seconds : cap * 3600) / 3600 }'); fi
   fi
-  step "All countries: all-source documents, resumable local archive" scripts/collect-source-dossiers.ts --country=all --out=tmp/source-dossiers --render --hours="$DEEP_HOURS"
+  PIPELINE_STEP_SECONDS="${REMAINING:-$(awk -v hours="$DEEP_HOURS" 'BEGIN { printf "%d", hours * 3600 }')}" step "All countries: all-source documents, resumable local archive" scripts/collect-source-dossiers.ts --country=all --out=tmp/source-dossiers --render --hours="$DEEP_HOURS"
 fi
 # The language model reads race pages once a day, within a small budget:
 # new races, and ones not read for a month. Calendars it reads only when they
@@ -139,6 +147,13 @@ fi
 TODAY=$(date +%F)
 # LLM_DAILY=1 turns it on (keep-fresh.sh sets it); every step has its own cap.
 if [ "${LLM_DAILY:-0}" = "1" ]; then
+  # A race listed twice is the most visible error, and later readers can use up the
+  # shared daily cap. Pairs left by this limit stay due, so the step reports deferred.
+  if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
+    LLM_BUDGET_USD=0.20 daily_step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
+  else
+    LLM_BUDGET_USD=0.20 daily_step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
+  fi
   # Practical decision-making facts get a bounded share of the same existing ledger.
   LLM_BUDGET_USD=0.15 daily_step "Official venues, programmes, fees and route documents" scripts/enrich-practical-details.ts --max=12 --minutes=3 --apply
   # One season document can fill many rounds; give it first claim on the budget.
@@ -157,11 +172,6 @@ if [ "${LLM_DAILY:-0}" = "1" ]; then
     LLM_BUDGET_USD=0.50 daily_step "Classes from every source of each race" scripts/fill-dossier-classes.ts --max=300 --all-sources --dossier-dir=tmp/source-dossiers --render --apply
   fi
   LLM_BUDGET_USD=0.15 daily_step "Races linked to their series"    scripts/link-series.ts --apply
-  if [ "${CATALOG_REVIEW_MERGES:-0}" = "1" ]; then
-    LLM_BUDGET_USD=0.50 daily_step "Duplicates judged (review only)" scripts/judge-duplicates.ts --max=150
-  else
-    LLM_BUDGET_USD=0.50 daily_step "Duplicates judged by the model" scripts/judge-duplicates.ts --max=150 --apply
-  fi
   LLM_BUDGET_USD=0.50 daily_step "Race or ride, new listings"       scripts/classify-event-kind.ts --since=3 --apply
   daily_step "Italian races: rideandrest page"   scripts/fill-rideandrest-links.ts --apply
 fi

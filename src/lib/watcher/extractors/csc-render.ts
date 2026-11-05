@@ -3,6 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { BOT_UA } from "@/lib/watcher/http";
+import { withChromeSlot } from "@/lib/watcher/chrome-slots";
 
 const CSC_PUB = "https://portal.czechcyclingfederation.com/Races/Race/Pub";
 // Eighteen pages of twenty-five at a Blazor round trip each; 55 s was ending runs
@@ -22,7 +23,12 @@ type CdpResponse = { id?: number; method?: string; result?: unknown; error?: { m
  */
 const MIN_PLAUSIBLE_ROWS = 100;
 
-export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
+/**
+ * The portal opens on the current year, so its next season never appears in the
+ * default grid. Pass a year to read that season instead. An announced empty year
+ * is a valid result, so the plausibility floor below applies only to the default.
+ */
+export async function renderCscPublicCalendar(url = CSC_PUB, opts?: { year?: number }): Promise<string> {
   // Never launch Chrome while Next is bundling or on Vercel (NFT traces spawn).
   if (process.env.NEXT_PHASE === "phase-production-build") return "";
   if (process.env.VERCEL) return "";
@@ -33,11 +39,13 @@ export async function renderCscPublicCalendar(url = CSC_PUB): Promise<string> {
   let html = "", lastError: unknown;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const rendered = await renderOnce(url, chrome);
+      const rendered = await withChromeSlot(() => renderOnce(url, chrome, opts?.year));
+      if (opts?.year) return rendered;
       if (countRows(rendered) > countRows(html)) html = rendered;
       if (countRows(html) >= MIN_PLAUSIBLE_ROWS) return html;
     } catch (error) { lastError = error; }
   }
+  if (opts?.year) throw new Error(`ČSC calendar ${opts.year} did not render: ${String(lastError)}`);
   // A partial grid is not an authoritative calendar. Never reconcile removals
   // against a single page after a broken pager or disconnected Blazor circuit.
   if (countRows(html) < MIN_PLAUSIBLE_ROWS) throw new Error(`ČSC incomplete calendar (${countRows(html)} rows)${lastError ? `: ${String(lastError)}` : ""}`);
@@ -51,6 +59,7 @@ function countRows(html: string): number {
 async function renderOnce(
   url: string,
   chrome: NonNullable<Awaited<ReturnType<typeof resolveChrome>>>,
+  year?: number,
 ): Promise<string> {
   const { spawn } = await import(
     /* webpackIgnore: true */
@@ -101,6 +110,13 @@ async function renderOnce(
        * until the page-size control exists before asking it for everything.
        */
       await waitForSettledRows(cdp, deadline);
+      if (year) {
+        await selectCscYear(cdp, year, deadline);
+        if (await rowCount(cdp) === 0) {
+          const empty = await cdp.evaluate("document.documentElement.outerHTML");
+          return typeof empty === "string" ? empty : "";
+        }
+      }
       await waitUntil(cdp, `[...document.querySelectorAll("select")].some((s) => [...s.options].some((o) => o.value === "500"))`, Math.min(deadline, Date.now() + 10_000));
       // Prerendered rows can precede Blazor's live circuit. A single change
       // event in that window is ignored. Confirm the resulting row count and
@@ -271,7 +287,11 @@ export function parseCscRaceDetailText(text: string): CscRaceDetail {
  * and its category list exists only after the scripts run. One Chrome for the
  * batch; local only, like the portal reader.
  */
-export async function renderPagesHtml(
+export function renderPagesHtml(urls: string[], opts?: { settleMs?: number; budgetMs?: number }): Promise<Map<string, string>> {
+  return withChromeSlot(() => renderPages(urls, opts));
+}
+
+async function renderPages(
   urls: string[],
   opts?: { settleMs?: number; budgetMs?: number },
 ): Promise<Map<string, string>> {
@@ -384,6 +404,35 @@ async function firstPageWs(port: number): Promise<string> {
   const page = pages.find((p) => p.type === "page" && p.webSocketDebuggerUrl) ?? pages[0];
   if (!page?.webSocketDebuggerUrl) throw new Error("no chrome page target");
   return page.webSocketDebuggerUrl;
+}
+
+/** Blazor can ignore a change before its circuit attaches, so confirm the grid really moved. */
+async function selectCscYear(cdp: Cdp, year: number, deadline: number): Promise<void> {
+  const text = JSON.stringify(String(year));
+  for (let attempt = 0; attempt < 6 && Date.now() < deadline; attempt++) {
+    const state = await cdp.evaluate(`(() => {
+      const sel = [...document.querySelectorAll("select")].find((s) => [...s.options].some((o) => o.text.trim() === ${text}));
+      if (!sel) return null;
+      sel.value = [...sel.options].find((o) => o.text.trim() === ${text}).value;
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    })()`);
+    if (!state) throw new Error(`ČSC calendar has no year ${year} yet`);
+    await sleep(2000);
+    const applied = await cdp.evaluate(`(() => {
+      const rows = [...document.querySelectorAll("tr.table-row-selectable")];
+      const total = /(\\d+)\\s+(?:polož|items|entries)/i.exec(document.body.innerText);
+      if (!rows.length) return total?.[1] === "0";
+      return rows.every((row) => row.cells[0]?.innerText.trim() === ${text});
+    })()`);
+    if (applied) { if (await rowCount(cdp) > 0) await waitForSettledRows(cdp, Math.min(deadline, Date.now() + 5000)); return; }
+  }
+  const seen = await cdp.evaluate(`JSON.stringify({
+    rows: document.querySelectorAll("tr.table-row-selectable").length,
+    first: document.querySelector("tr.table-row-selectable")?.cells[0]?.innerText.trim() ?? null,
+    summary: (document.body.innerText.match(/.{0,30}\\d+\\s+(?:polož|items|entries).{0,10}/i) ?? [null])[0],
+  })`);
+  throw new Error(`ČSC calendar did not switch to ${year}: ${String(seen)}`);
 }
 
 async function bumpPageSize(cdp: Cdp): Promise<void> {
