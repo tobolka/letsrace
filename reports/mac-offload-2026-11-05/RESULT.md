@@ -52,7 +52,7 @@ Přečetl jsem 201 čekajících závodů (Claude v této relaci, bez placeného
 ## Nezávislá kontrola
 
 - Doslovné čtení proti závodům, které do katalogu přišly jinudy: 22 shod, 2 rozdíly. Knappenman byla chyba čtení (datum začátku přihlášek), opraveno a v testech. Góry 400 má na stránce 5. 6., katalog 3. 7. spojil jiné kolo.
-- Ruční čtení proti katalogu: 23 shod. Saint Gravel: stránka uvádí „Sonntag, 11. September“, 11. září 2027 je sobota, katalog má 12. 9.; nerozhodnuto.
+- Ruční čtení proti katalogu: 25 shod. Saint Gravel: stránka uvádí „Sonntag, 11. September“, 11. září 2027 je sobota, katalog má 12. 9.; nerozhodnuto.
 - Omezení: není to náhodný vzorek, katalog sám může být špatně a nikdo to neověřil u pořadatelů.
 
 ## Co není hotové
