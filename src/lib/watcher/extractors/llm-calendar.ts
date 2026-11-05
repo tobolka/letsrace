@@ -12,6 +12,9 @@ import { askJson, addUsage, NO_USAGE, HAIKU, LlmResponseError, type LlmUsage } f
 import { cachedExtraction } from "@/lib/llm/extraction-cache";
 import { isArchiveDiscoveryUrl } from "@/lib/watcher/discovery-policy";
 
+/** A page's own title ("Termine 2027") says what the page is, not which series its races belong to. */
+const GENERIC_PAGE_TITLE = /^(?:termine|termin|kalender|rennkalender|veranstaltungen|calendario|gare|eventi|kalendarz|zawody|kalendář|kalendar|závody|zavody|akce|preteky|calendar|events|races|race dates)(?:\s+(?:20\d{2}(?:\s*[/-]\s*\d{2,4})?))?$/i;
+
 export const CALENDAR_READER_VERSION = "calendar-v7";
 const CHUNK = 36_000;
 const MAX_CHUNKS = 5;
@@ -264,7 +267,7 @@ export function verifyRaces(raw: RawRace[], text: string, links: Set<string>, so
     const seriesQuote = typeof r.series_quote === "string" ? skeleton(r.series_quote) : "";
     const seriesName = typeof r.series_name === "string" && !isSiteIdentityName(r.series_name) && seriesQuote.length >= 6 && hay.includes(seriesQuote) && seriesQuote.includes(skeleton(r.series_name)) ? r.series_name.trim() : undefined;
     const displaySeries = seriesName?.replace(/^\d+\.\s*(?:ročník|rocnik|edition)\s*/i, "").trim();
-    const name = displaySeries && !skeleton(rowName).includes(skeleton(displaySeries)) ? `${displaySeries} — ${rowName}` : rowName;
+    const name = displaySeries && !GENERIC_PAGE_TITLE.test(displaySeries) && !skeleton(rowName).includes(skeleton(displaySeries)) ? `${displaySeries} — ${rowName}` : rowName;
     const place = typeof r.place === "string" && (quote.includes(skeleton(r.place)) || (typeof r.place_quote === "string" && skeleton(r.place_quote).includes(skeleton(r.place)) && hay.includes(skeleton(r.place_quote)) && skeleton(r.place_quote).includes(skeleton(rowName)))) ? r.place.trim() : "";
     const country = typeof r.country === "string" && /^[A-Z]{2}$/.test(r.country) && (new RegExp(`\\b${r.country}\\b`).test(r.quote) || Boolean(countryQuote && COUNTRY_WORDS[r.country]?.test(countryQuote))) ? r.country : undefined;
     out.push({
