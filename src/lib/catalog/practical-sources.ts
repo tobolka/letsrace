@@ -90,6 +90,11 @@ export function posterImages(html: string, pageUrl: string): string[] {
   return [...new Set(found)].slice(0, 3);
 }
 
+/** A page that asks to verify the visitor is not ours to pass, in any browser. */
+export const asksToVerifyVisitor = (text: string) => /just a moment|checking your browser|verifying (?:your browser|you)|security checkpoint|attention required|ověřujeme váš|captcha/i.test(text);
+/** Built with JavaScript alone: nothing to read until a browser runs it, and no one asked us to prove anything. */
+export const onlyInBrowser = (html: string, text: string) => text.replace(/\s+/g, " ").length < 400 && !asksToVerifyVisitor(`${text} ${html.slice(0, 4000)}`) && /<script/i.test(html) && /doesn't work properly without javascript|enable javascript|id="(?:app|root|__next)"|wixsite|wix\.com|data-reactroot/i.test(html);
+
 export type DocumentKind = "regulations" | "general_terms" | "not_about_races" | "other_edition" | "no_details";
 
 /** What a read document turned out to be, for this race's edition. */

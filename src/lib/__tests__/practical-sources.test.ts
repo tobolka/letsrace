@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { documentKind, linkScore, posterImages, rankPracticalLinks } from "@/lib/catalog/practical-sources";
+import { documentKind, linkScore, onlyInBrowser, posterImages, rankPracticalLinks } from "@/lib/catalog/practical-sources";
 import { isNotCycling } from "@/lib/catalog/practical-extraction";
 
 const race = { name: "34. Großer Preis von Buchholz", startDate: "2027-05-01" };
@@ -35,4 +35,10 @@ it("finds a poster shown as a picture, not logos", () => {
 it("sees a run named plainly, and keeps a round of a cup", () => {
   expect(isNotCycling("10 km Antenne Brandenburg Lauf")).toBe(true);
   expect(isNotCycling("2. Lauf Elite")).toBe(false);
+});
+it("opens a browser only for pages built with JavaScript, and never for one verifying its visitors", () => {
+  expect(onlyInBrowser('<div id="app"></div><script src="a.js"></script>', "We are sorry, but the page doesn't work properly without JavaScript enabled.")).toBe(true);
+  expect(onlyInBrowser('<div id="app"></div><script src="a.js"></script>', "Verifying your browser... Just a moment")).toBe(false);
+  expect(onlyInBrowser("<h1>Race</h1>", "Race 2027")).toBe(false);
+  expect(onlyInBrowser('<div id="app"></div><script></script>', "x ".repeat(400))).toBe(false);
 });

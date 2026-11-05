@@ -31,6 +31,7 @@ if (replay && (year !== replay.year || target !== replay.target || !Array.isArra
   throw new Error("Invalid replay race snapshot or season mismatch");
 }
 const retryErrors = args.includes("--retry-errors");
+const retryShort = args.includes("--retry-short");
 const option = (name: string) => args.find(a=>a.startsWith(`--${name}=`))?.slice(name.length+3);
 const seconds = Number(option("seconds") ?? 3600), limit = Number(option("limit") ?? 100000);
 if (!Number.isFinite(seconds) || seconds < 1 || !Number.isInteger(limit) || limit < 1) throw Error("Invalid reading limits");
@@ -49,7 +50,7 @@ const runDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", yea
 const archive = replayDir ?? option("out") ?? `reports/next-edition-websites-${year}-to-${target}-${runDay}${country ? `-${country.toLowerCase()}` : ""}`;
 const directory = replay ? join(archive, "replay") : archive;
 mkdirSync(replay ? directory : join(directory, "pages"), { recursive: true });
-type Page = Job & { at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean; rendered?: boolean };
+type Page = Job & { asksVerification?: boolean; at: string; requestAttempted?: boolean; status?: number; finalUrl?: string; title?: string; textLength?: number; error?: string; snippets?: string[]; dateSignals?: string[]; structuredEvents?: ReturnType<typeof extractJsonLdEvents>; follow?: string[]; textFile?: string; needsBrowser?: boolean; rendered?: boolean };
 const canonical = (raw: string): string | null => {
   try { const u = new URL(raw); if (!/^https?:$/.test(u.protocol)) return null; u.hash = ""; return u.href; } catch { return null; }
 };
@@ -68,6 +69,7 @@ const hostStarts = new Map<string, number>();
 const ledger = join(archive, "pages.jsonl");
 if (replay && !existsSync(ledger)) throw new Error("Replay archive is missing pages.jsonl");
 const browserOff = args.includes("--no-browser");
+const asksForVerification = (text: string) => /just a moment|checking your browser|verifying (?:your browser|you)|security checkpoint|attention required|ověřujeme váš|captcha/i.test(text);
 const BROWSER_READS_PER_PASS = 40;
 let browserReads = 0;
 const failures = new Map<string, number>();
@@ -91,7 +93,7 @@ function rereadAt(page: Page): number {
 }
 for (const page of pages.values()) {
   const stale = option("out") && Date.now() >= rereadAt(page);
-  if (stale || retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500)) pages.delete(page.url);
+  if (stale || retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500) || retryShort && page.needsBrowser && page.rendered && !page.error) pages.delete(page.url);
   else attempted.add(page.url);
 }
 function enqueue(raw: string, via: string, purpose: string) {
@@ -164,13 +166,18 @@ async function inspect(job: Job, viaBrowser = false): Promise<Page> {
     const structuredEvents = extractJsonLdEvents(response.finalUrl ?? job.url, response.html).filter(e => e.startDate.startsWith(`${target}-`));
     $("script,style,noscript,svg,footer,nav,aside").remove();
     $("br,p,div,section,article,h1,h2,h3,tr,li").each((_, el) => { $(el).append("\n"); });
-    const text = $("body").text().replace(/[\t\r ]+/g, " ").replace(/ *\n */g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+    const clean = (raw: string) => raw.replace(/[\t\r ]+/g, " ").replace(/ *\n */g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+    // Some themes keep the whole race inside an aside or footer: then the stripped page is not the page.
+    const full = cheerio.load(response.html); full("script,style,noscript,svg").remove(); full("br,p,div,section,article,h1,h2,h3,tr,li").each((_, el) => { full(el).append("\n"); });
+    const stripped = clean($("body").text()), whole = clean(full("body").text());
+    const text = stripped.replace(/\s+/g, " ").length < 300 && whole.length >= 800 ? whole : stripped;
     const flat = text.replace(/\s+/g, " ");
     const textFile = `pages/${keyOf(job.url)}.txt`;
     writeFileSync(join(directory, textFile), `${response.finalUrl ?? job.url}\n${title}\n\n${text}`);
     return { ...base, status: response.status, finalUrl: response.finalUrl, title, textLength: flat.length, textFile,
-      snippets: yearSnippets(flat), dateSignals: dateSignals(flat), structuredEvents,
-      rendered: viaBrowser, needsBrowser: flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)|just a moment|checking your browser/i.test(flat),
+      snippets: yearSnippets(flat), dateSignals: dateSignals(flat), structuredEvents, asksVerification: asksForVerification(flat),
+      // Seen through a browser, a short page simply is short. It has been read; only a page asking to verify the visitor has not.
+      rendered: viaBrowser, needsBrowser: asksForVerification(flat) || (viaBrowser ? flat.length < 40 : flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)/i.test(flat)),
       follow: [...new Set(follow.sort((a, b) => b.score - a.score).map(x => x.url))].slice(0, 3) };
   } catch (error) { return { ...base, error: error instanceof Error ? error.message : String(error) }; }
 }
@@ -274,7 +281,7 @@ async function main() {
           appendFileSync(ledger, JSON.stringify({ ...job, at: new Date().toISOString(), error: READING }) + "\n");
           // The request has its own limit, but parsing and redirects do not. One page must not hold the pass.
           let watchdog: NodeJS.Timeout | undefined;
-          const page = await Promise.race([inspect(job).then(first => first.needsBrowser && !first.error && !browserOff && browserReads++ < BROWSER_READS_PER_PASS ? inspect(job, true) : first), new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 90 s" }), 90_000); })]);
+          const page = await Promise.race([inspect(job).then(first => first.needsBrowser && !first.error && !browserOff && !first.asksVerification && browserReads++ < BROWSER_READS_PER_PASS ? inspect(job, true) : first), new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 90 s" }), 90_000); })]);
           clearTimeout(watchdog);
           pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
           if (isFailure(page)) failures.set(job.url, (failures.get(job.url) ?? 0) + 1); else failures.delete(job.url);

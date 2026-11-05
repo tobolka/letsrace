@@ -1,0 +1,93 @@
+[
+ {
+  "keep": "d509ca92-051c-4bb2-b50e-cd97dae3b13a",
+  "drop": "235d81f6-8530-4fb1-ae38-d37d7ad3cd56",
+  "keepName": "Mountainbike JUNIOR Festival Graz/Stattegg, UCI C3",
+  "dropName": "Mountainbike JUNIOR Festival Graz/Stattegg, UCI C3",
+  "why": "Stejný název a web; termín 8. 7. je samostatný záznam téhož závodu"
+ },
+ {
+  "keep": "105d1181-7faf-4d81-8f35-16369f566ce0",
+  "drop": "c5ade0ec-6bb5-427f-aaa6-e3f34f095bf9",
+  "keepName": "11° TROFEO CITTADELLA DELLO SPORT",
+  "dropName": "11° TROFEO CITTADELLA DELLO SPORT",
+  "why": "Cinquale je část Montignosa, stejný den i název"
+ },
+ {
+  "keep": "e2fca3a2-48c9-4c28-bc15-0288e406f566",
+  "drop": "6671a0e8-a78a-4e04-8aaf-ee911345cf56",
+  "keepName": "Limburgs Mooiste MTB",
+  "dropName": "Limburgs Mooiste MTB",
+  "why": "Stejný název, den i web; země BE je chyba"
+ },
+ {
+  "keep": "78eebeec-bcc4-4804-9d0a-566d8a0d6be8",
+  "drop": "910c5ad2-c670-4739-a19e-43ddcd4e8c3d",
+  "keepName": "90 mistrzostwa polski w kolarstwie przełajowym - Cybinka - Bieganów",
+  "dropName": "Mistrzostwa Polski w Kolarstwie Przełajowym / Cybinka-Bieganów",
+  "why": "Stejné mistrovství, stejný termín"
+ },
+ {
+  "keep": "9fd1c0f7-e35e-4315-ba92-ba1e695e6398",
+  "drop": "90a4cc0b-5a0d-4c82-9786-6ea6cf71bf5e",
+  "keepName": "Brittnauer Ironbike",
+  "dropName": "Ironbike Brittnau",
+  "why": "Web uvádí 19. a 20. června 2027"
+ },
+ {
+  "keep": "12516d0d-d13d-4087-b664-3d4511324bc6",
+  "drop": "89e115a4-a4bf-4f98-8d1c-ce8340f4f022",
+  "keepName": "35° TROFEO CITTA' DI BOLZANO - KIDS PROMOZIONALE",
+  "dropName": "35° TROFEO CITTA' DI BOLZANO - KIDS",
+  "why": "Stejný den i místo, jedna akce"
+ },
+ {
+  "keep": "2b965e9a-615b-429f-b917-759e65383785",
+  "drop": "cbf6f3b9-ff30-421c-a18d-c5c78d1b37ef",
+  "keepName": "GRAND ESCAPE TUSCANY 2027",
+  "dropName": "The Grand Escape Tuscany",
+  "why": "Stejný závod a den; PL je chyba, vlastní web má první"
+ },
+ {
+  "keep": "c212c467-0453-443c-b90f-9c46e9a6ce8f",
+  "drop": "dcf816c2-2d86-4889-95a1-ecf818f26578",
+  "keepName": "Sydbank Stjerne Tour de Grindsted",
+  "dropName": "Stjernetour de Grindsted",
+  "why": "Stejný závod, den i web"
+ },
+ {
+  "keep": "84a85bf2-aa71-49fe-922c-805dc3007a85",
+  "drop": "8f955d43-f598-4812-b7d8-f5446472fe04",
+  "keepName": "VIII Mari e Monti",
+  "dropName": "VIII Ciclopedalata Mari e Monti",
+  "why": "Stejný ročník, den i místo"
+ },
+ {
+  "keep": "99e83114-b88b-4759-acb1-c0f26f887733",
+  "drop": "3d7524b6-0deb-4ec3-94e8-ff137c116bd6",
+  "keepName": "Przełajowy XLVII Ogólnopolski wyścig pod Patronatem Burmistrza Gminy i miasta Koziegłowy Jacka Ślęczki, Upamiętniający 108 rocznicę odzyskania Niepodległości Po",
+  "dropName": "XLVIII międzynarodowy wyścig pod patronatem burmistrza gminy i miasta Koziegłowy Jacka Ślęczki w ramach obchodów Święta Niepodległości",
+  "why": "Starší položka PZKol už neexistuje, stejný den a pořadatel"
+ },
+ {
+  "keep": "822a0e25-1b5e-4648-9492-3e924d0c7f1b",
+  "drop": "e6c19cd4-b645-4844-81f9-67fd0defd7dd",
+  "keepName": "CX Lubuskie Warte Zachodu - UCI C2",
+  "dropName": "międzynarodowy wyścig kolarski \"Lubuskie Warte Zachodu\" - UCI C2",
+  "why": "Dvě položky PZKol téhož závodu; Drzonków je část Zielone Góry"
+ },
+ {
+  "keep": "9ada4000-feea-4871-ac55-5536d4db3d1d",
+  "drop": "129fe8ad-f73f-46ab-a58e-61e3489c541f",
+  "keepName": "7° TROFEO CICLOCROSS CASENTINO - CAMPIONATO REGIONALE IN PROVA UNICA",
+  "dropName": "7° TROFEO CICLOCROSS CASENTINO",
+  "why": "Stejný závod, den i místo"
+ },
+ {
+  "keep": "f82b848f-288d-479c-8d5f-e2785da080a1",
+  "drop": "94a031e9-51b8-46d1-8cdd-e9ab073257f7",
+  "keepName": "ogólnopolski wyścig kolarski - o puchar wójta gminy Załuski",
+  "dropName": "Ogólnopolski Wyścig w Kolarstwie Przełajowym o Puchar Rady Gminy Załuski",
+  "why": "PZKol má 19. 12. Puchar Rady a 20. 12. Puchar Wójta; tenhle třetí záznam z odjazd.pl na 20. 12. je ten druhý"
+ }
+]

@@ -16,7 +16,8 @@ import type { Json } from "@/lib/supabase/database.types";
 import { localSourceReader } from "./local-source-cache";
 import { resolve } from "node:path";
 import { isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
-import { documentDetails, documentKind, posterImages, rankPracticalLinks } from "./practical-sources";
+import { documentDetails, documentKind, onlyInBrowser, posterImages, rankPracticalLinks } from "./practical-sources";
+import { renderPagesHtml } from "@/lib/watcher/extractors/csc-render";
 
 export function practicalWindows(text: string, max = 6000) {
   const spans: [number, number][] = [[0, Math.min(1200, text.length)]];
@@ -59,7 +60,7 @@ const completeDocument = (doc: PracticalDocument, row: { name: string; start_dat
   const details = documentDetails(doc);
   return details.fees && details.times >= 2;
 };
-const MAX_READS_PER_RACE = 8, MAX_DOCUMENTS_FOR_MODEL = 5;
+const MAX_READS_PER_RACE = 8, MAX_DOCUMENTS_FOR_MODEL = 5, MAX_BROWSER_READS_PER_RUN = 8;
 
 /** Rotate bounded child reads so a long navigation cannot starve later rules. */
 export function rotatePracticalLinks(links: string[], attempts: number): string[] {
@@ -113,6 +114,7 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
     documentsByUrl.set(url, request);
     return request;
   };
+  let renders = 0;
   for (const row of batch) {
     let deferred = false;
     const defer = () => { if (!deferred) { result.deferred++; deferred = true; } };
@@ -129,7 +131,13 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
         seen.add(url);
         const doc = await readOnce(url).catch(() => null);
         if (!doc?.text.trim()) { unreadable++; continue; }
-        const source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
+        let source = doc.html ? pageAsText(doc.html, url) : { text: doc.text, links: new Set<string>() };
+        // Only on the Mac, and a few per run: starting a browser is the slow way to read a page.
+        if (doc.html && process.platform === "darwin" && !process.env.VERCEL && !options.structuredOnly && renders < MAX_BROWSER_READS_PER_RUN && onlyInBrowser(doc.html, source.text)) {
+          renders++;
+          const rendered = await renderPagesHtml([url], { settleMs: 2500, budgetMs: 30_000 }).then(pages => pages.get(url)).catch(() => undefined);
+          if (rendered) source = pageAsText(rendered, url);
+        }
         documents.push({ url, text: source.text, links: [...source.links] });
         const children = practicalChildLinks(url, source.links, row, source.text).filter(link => !seen.has(link));
         const posters = doc.html ? posterImages(doc.html, url).filter(link => !seen.has(link)) : [];

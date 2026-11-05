@@ -1,0 +1,71 @@
+{
+ "at": "2026-11-05T23:15:49.417Z",
+ "done": [
+  {
+   "keep": "mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027",
+   "drop": "mountainbike-junior-festival-graz-stattegg-uci-c3-2027",
+   "why": "Stejný název a web; termín 8. 7. je samostatný záznam téhož závodu"
+  },
+  {
+   "keep": "11-trofeo-cittadella-dello-sport-2026",
+   "drop": "11-trofeo-cittadella-dello-sport-montignoso-ms-fraz-cinquale-2026",
+   "why": "Cinquale je část Montignosa, stejný den i název"
+  },
+  {
+   "keep": "limburgs-mooiste-mtb-heerlen-2027",
+   "drop": "limburgs-mooiste-mtb-2027",
+   "why": "Stejný název, den i web; země BE je chyba"
+  },
+  {
+   "keep": "90-mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-2027",
+   "drop": "mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-bieganow-2027",
+   "why": "Stejné mistrovství, stejný termín"
+  },
+  {
+   "keep": "brittnauer-ironbike-2027",
+   "drop": "ironbike-brittnau-2027",
+   "why": "Web uvádí 19. a 20. června 2027"
+  },
+  {
+   "keep": "35-trofeo-citta-di-bolzano-kids-promozionale-2026",
+   "drop": "35-trofeo-citta-di-bolzano-kids-2026",
+   "why": "Stejný den i místo, jedna akce"
+  },
+  {
+   "keep": "the-grand-escape-tuscany-2027",
+   "drop": "the-grand-escape-tuscany-campiglia-marittima-toskania-2027",
+   "why": "Stejný závod a den; PL je chyba, vlastní web má první"
+  },
+  {
+   "keep": "sydbank-stjerne-tour-de-grindsted-2027",
+   "drop": "stjernetour-de-grindsted-2027",
+   "why": "Stejný závod, den i web"
+  },
+  {
+   "keep": "viii-mari-e-monti-2026",
+   "drop": "viii-ciclopedalata-mari-e-monti-2026",
+   "why": "Stejný ročník, den i místo"
+  },
+  {
+   "keep": "przelajowy-xlvii-ogolnopolski-wyscig-pod-patronatem-2026",
+   "drop": "xlviii-miedzynarodowy-wyscig-pod-patronatem-burmistrza-gminy-2026",
+   "why": "Starší položka PZKol už neexistuje, stejný den a pořadatel"
+  },
+  {
+   "keep": "cx-lubuskie-warte-zachodu-uci-c2-2026",
+   "drop": "miedzynarodowy-wyscig-kolarski-lubuskie-warte-zachodu-uci-c2-2026",
+   "why": "Dvě položky PZKol téhož závodu; Drzonków je část Zielone Góry"
+  },
+  {
+   "keep": "7-trofeo-ciclocross-casentino-campionato-regionale-in-prova-2026",
+   "drop": "7-trofeo-ciclocross-casentino-2026",
+   "why": "Stejný závod, den i místo"
+  },
+  {
+   "keep": "ogolnopolski-wyscig-kolarski-o-puchar-wojta-gminy-zaluski-2026",
+   "drop": "ogolnopolski-wyscig-w-kolarstwie-przelajowym-o-puchar-rady-zaluski-2026",
+   "why": "PZKol má 19. 12. Puchar Rady a 20. 12. Puchar Wójta; tenhle třetí záznam z odjazd.pl na 20. 12. je ten druhý"
+  }
+ ],
+ "skipped": []
+}

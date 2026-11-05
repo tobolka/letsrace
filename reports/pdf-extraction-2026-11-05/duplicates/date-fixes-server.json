@@ -1,0 +1,26 @@
+{
+ "at": "2026-11-05T23:16:56.791Z",
+ "before": [
+  {
+   "id": "20dafa05-605e-4326-aa06-a6085747d64a",
+   "name": "PGR Poland Gravel Race",
+   "start_date": "2027-07-31",
+   "end_date": "2027-08-03",
+   "merged": null
+  },
+  {
+   "id": "d7ca6e90-8ff6-4ab5-a2b8-347b888b919d",
+   "name": "Gravelowa Korona Kujaw i Pomorza - Grudziądz",
+   "start_date": "2027-06-26",
+   "end_date": "2027-06-27",
+   "merged": null
+  },
+  {
+   "id": "ad1c0455-ff9a-4740-b6d5-ccc6feca2fae",
+   "name": "Gravel Trans Jura",
+   "start_date": "2027-06-03",
+   "end_date": "2027-06-08",
+   "merged": null
+  }
+ ]
+}
