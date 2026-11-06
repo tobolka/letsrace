@@ -29,6 +29,18 @@ function practicalFill(work, base, target) {
   return Object.keys(added).length ? { ...held, ...added } : null;
 }
 
+/** Only what the second reader confirmed, for the value it saw, may leave the Mac. */
+function confirmedDetails(details, entry) {
+  const kept = {};
+  for (const [field, fact] of Object.entries(details ?? {})) {
+    if (field === 'documents') { kept[field] = fact; continue; }
+    const check = entry?.fields?.[field];
+    if (check?.verdict === 'confirmed' && check.value === valueHash(fact?.value)) kept[field] = fact;
+  }
+  return kept;
+}
+const valueHash = value => createHash('sha256').update(JSON.stringify(value ?? null)).digest('hex').slice(0, 16);
+
 /** The pure decision, for one race as held in the three places. */
 const STAND_IN_HOSTS = /(^|\.)(kalendar\.winspace\.cz|odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net)$/i;
 function pageKind(url) {
@@ -75,7 +87,7 @@ function locationFill(work, base, target) {
 
 const rows = (database, query) => new Map(JSON.parse(psql(database, `select coalesce(json_agg(t), '[]') from (${query}) t`)).map(row => [row.id, row]));
 
-function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', target, maxRaces = 40, maxPlaces = 40 }) {
+function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', target, maxRaces = 40, maxPlaces = 40, gate = null }) {
   mkdirSync(directory, { recursive: true });
   const columns = ['id', 'name', 'start_date', 'merged_into_id', 'practical_details', ...EVENT_FIELDS, ...AGE_FIELDS].join(',');
   // Upcoming races only: an old edition's details help nobody enough to refresh its page.
@@ -87,7 +99,8 @@ function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', ta
   const filled = new Map();
   for (const [id, row] of workEvents) {
     const held = targetEvents.get(id);
-    const fill = eventFills(row, baseEvents.get(id), held && { ...held, locked_fields: targetLocks.get(id)?.locked_fields });
+    const checked = gate ? { ...row, practical_details: confirmedDetails(row.practical_details, gate[id]) } : row;
+    const fill = eventFills(checked, baseEvents.get(id), held && { ...held, locked_fields: targetLocks.get(id)?.locked_fields });
     if (!fill) continue;
     if (races >= maxRaces) { waiting++; continue; }
     races++;
@@ -99,7 +112,7 @@ function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', ta
     const known = new Set(JSON.parse(psql(base, `select coalesce(json_agg(id), '[]') from public.event_facts where event_id in (${list})`)));
     // Evidence travels with the field it proves.
     const facts = JSON.parse(psql(work, `select coalesce(json_agg(t), '[]') from public.event_facts t where event_id in (${list}) and status = 'active'`));
-    for (const fact of facts) if (!known.has(fact.id) && (filled.get(fact.event_id).includes(fact.field) || String(fact.field).startsWith('practical.') && filled.get(fact.event_id).includes('practical_details'))) changes.push({ tab: 'public.event_facts', pk: { id: fact.id }, owner: fact.event_id, op: 'insert', after: fact });
+    for (const fact of facts) if (!known.has(fact.id) && (filled.get(fact.event_id).includes(fact.field) || String(fact.field).startsWith('practical.') && filled.get(fact.event_id).includes('practical_details') && (!gate || confirmedDetails(workEvents.get(fact.event_id)?.practical_details, gate[fact.event_id])[String(fact.field).slice(10)]))) changes.push({ tab: 'public.event_facts', pk: { id: fact.id }, owner: fact.event_id, op: 'insert', after: fact });
     const hasCategories = new Set(JSON.parse(psql(target, `select coalesce(json_agg(distinct event_id), '[]') from public.event_categories where event_id in (${list})`)));
     const categories = JSON.parse(psql(work, `select coalesce(json_agg(t), '[]') from public.event_categories t where event_id in (${list})`));
     for (const category of categories) if (filled.get(category.event_id).includes('age_categories') && !hasCategories.has(category.event_id)) changes.push({ tab: 'public.event_categories', pk: { id: category.id }, owner: category.event_id, op: 'insert', after: category });
@@ -128,4 +141,4 @@ function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', ta
   return { file, sha256, rows: changes.length, races, places, waiting };
 }
 
-module.exports = {betterWebsite, fillPlan, eventFills, practicalFill, locationFill, EVENT_FIELDS, AGE_FIELDS };
+module.exports = {betterWebsite, confirmedDetails, valueHash, fillPlan, eventFills, practicalFill, locationFill, EVENT_FIELDS, AGE_FIELDS };

@@ -1,0 +1,543 @@
+{
+ "checked": 60,
+ "totals": {
+  "confirmed": 177,
+  "wrong_meaning": 19,
+  "wrong_value": 31,
+  "wrong_edition": 1,
+  "not_in_document": 2
+ },
+ "cost": 0.05312890000000001,
+ "flagged": [
+  {
+   "race": "BRM 600 Winterfell Night King",
+   "date": "2026-11-06",
+   "field": "parking",
+   "verdict": "wrong_meaning",
+   "reason": "The text lists P+Rail Lugano at 16 CHF/Tag, but the parking entry combines it with a sleeping-arrangement joke and the note that the 'Kein Königszelt' accommodation is self-arranged; the parking claim mixes accommodation text with a parking fee, and the document's infrastructure exclusion says parking is not included.",
+   "value": "ee0153dce1fb3a58"
+  },
+  {
+   "race": "BRM 600 Winterfell Night King",
+   "date": "2026-11-06",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names AUDAX Suisse as organisation, with DIAbLES RoUGES as the address-holding group at Dorfstrasse 31, Buch SH, so the organiser is AUDAX Suisse as stated.",
+   "value": "db9a29f788ada570"
+  },
+  {
+   "race": "BRM 400 Winterfell White Walker",
+   "date": "2026-11-06",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names AUDAX Suisse as the organisation but gives DIAbLES RoUGES as the club/organiser contact address; the homologating body is AUDAX Club Parisien, so AUDAX Suisse is consistent with the 'Organisation' label.",
+   "value": "db9a29f788ada570"
+  },
+  {
+   "race": "UPCYCLE TRAIL WEEKEND 2026",
+   "date": "2026-11-07",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "Door opening at 07:15 is stated as exact, but the 07:30 start is given as 'dalle 7:30 alle 9:00', a window rather than a single approximate time; the 07:15 entry is correct, the 07:30 entry is only partly supported.",
+   "value": "fd96d57ce48ce658",
+   "wrong_items": [
+    "Partenza alla francese 07:30 (document says 07:30 to 09:00)"
+   ]
+  },
+  {
+   "race": "UPCYCLE TRAIL WEEKEND 2026",
+   "date": "2026-11-07",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names Upcycle as the cafe and event host, and the event as 'Upcycle Trail Weekend' with Upcycle's gravel ride; it does not explicitly name a separate organiser, so the value is a reasonable reading but not stated in those words.",
+   "value": "72bb3d8559a77e08"
+  },
+  {
+   "race": "BRM 200 Winterfell Stark Family",
+   "date": "2026-11-07",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names AUDAX Suisse as the organisation with address Dorfstrasse 31, Buch SH, but the claimed URL and name are the series' own site, which is only acceptable if the document says it organises this round, and the document does not use those words for this brevet.",
+   "value": "db9a29f788ada570",
+   "wrong_items": [
+    "AUDAX Suisse"
+   ]
+  },
+  {
+   "race": "FRANCIACORTA GRAVEL 3.5",
+   "date": "2026-11-07",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "Boost Events is the organiser, but the email and phone given are those of partner Cycling Lake Iseo, which the document presents only for bike rental.",
+   "value": "1d2f67a41b964098",
+   "wrong_items": [
+    "email info@cyclinglakeiseo.com",
+    "phone 3495276703"
+   ]
+  },
+  {
+   "race": "Afeno Quer und Bike Cup #5",
+   "date": "2026-11-07",
+   "field": "fees",
+   "verdict": "wrong_meaning",
+   "reason": "The document gives the fee schedule for the series overall with an early-bird cutoff, but the same amounts appear to apply to the whole Cup season, not specifically to Möhlin; the listed rows without validUntil (per-race and late amounts) are also not clearly tied to this race, and the document does not state these fees are specific to the 07.11.2026 Möhlin round.",
+   "value": "e8f5dc4e8fdbf7a9",
+   "wrong_items": [
+    "Elite, Amateure, Master, Hobby (150 CHF, no validUntil)",
+    "Junioren, Damen (120 CHF, no validUntil)",
+    "Anfänger, Schüler (90 CHF, no validUntil)"
+   ]
+  },
+  {
+   "race": "Afeno Quer und Bike Cup #5",
+   "date": "2026-11-07",
+   "field": "schedule",
+   "verdict": "wrong_edition",
+   "reason": "The document's race dates list Möhlin on 07.11.2026, but the Afeno Cup schedule is listed with Muttenz on 14.11.2026, and the group start times (12.00, 12.45, 15.00, 15.45) are given generally rather than specifically for Möhlin; the Kidsrace time is stated as approximate in the document.",
+   "value": "fe7a4dee71850827",
+   "wrong_items": [
+    "Gruppe A 12:00 (not confirmed for Möhlin)",
+    "Gruppe B 12:45 (not confirmed for Möhlin)",
+    "Kidsrace 14:00 (not confirmed for Möhlin)",
+    "Gruppe C 15:00 (not confirmed for Möhlin)",
+    "Gruppe D 15:45 (not confirmed for Möhlin)"
+   ]
+  },
+  {
+   "race": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+   "date": "2026-11-07",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document's taryfikator B fees differ from the claims for several categories (e.g. Żak 30, Junior młodszy 60, Masters 160, Amator 150) and the Amator A/B and Masters rows are not as stated; several listed amounts also do not match the table.",
+   "value": "839c85405e03eb7a",
+   "wrong_items": [
+    "Żak Dz. / Chł taryfikator A",
+    "Junior młodszy /juniorka młodsza taryfikator A",
+    "Masters M/K taryfikator A",
+    "Żak Dz. / Chł",
+    "Junior młodszy /juniorka młodsza",
+    "Masters M/K",
+    "Młodzik/młodziczka (taryfikator B)",
+    "Amator M/K (taryfikator B)"
+   ]
+  },
+  {
+   "race": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+   "date": "2026-11-07",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document's programme gives the 09:00 Amator Mężczyźni start and other times, but the claims list the 'Zak' full-round start at 11:02 as non-approximate and the 'Junior Młodszy' at 14:20 and blocks at 12:00 and 15:20; the 'otwarcie biura' is 08:00 and the 'Junior' 12:31 start matches, so the schedule is mostly consistent but the 09:01 Amator Kobiety and 10:01 Masters III/IV times are stated with approximate flags the document does not give; the Zak Chłopcy/Dziewczyny entry is not a single category name in the document.",
+   "value": "96ee63f59b61f796",
+   "wrong_items": [
+    "kategoria Zak Chłopcy, Zak Dziewczyny - Jedna Pełna Runda"
+   ]
+  },
+  {
+   "race": "Mistrovství Ústeckého kraje v cyklokrosu pro rok 2026 — Nové Město v Krušných horách",
+   "date": "2026-11-07",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The document lists Žáci/žákyně, Kadeti/kadetky, Juniorky/ženy and Junioři/muži, but the claim's labels are in a different order and mismatch the document's pairing; the category set itself is the same.",
+   "value": "05976c9f9003c787"
+  },
+  {
+   "race": "GUNSHA Cross Challenge — Jena",
+   "date": "2026-11-08",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document gives 10 Uhr as the start of the event on 8 Nov 2026, but the only listed schedule item is the JENBIKE Cross label with approximate false; the document says the day starts at 10 Uhr with U11–U17 juniors in the morning, so the single label is a simplification, though the time and date match.",
+   "value": "c706d841b79d11d9"
+  },
+  {
+   "race": "6. kolo: Grand Prix Sereď",
+   "date": "2026-11-08",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names 'CK AB Sereď BRUVO Slovakia s.r.o.' as the Organizátor, but Ronny Bruynseels is the Riaditeľ pretekov (race director), not a contact person stated for the organizer; the claim's contactName is a role mislabel, though the director role itself is accurate.",
+   "value": "c7a00e0429068429",
+   "wrong_items": [
+    "contactName: Ronny Bruynseels (document lists him as race director, not organizer contact)"
+   ]
+  },
+  {
+   "race": "Crossmania #2 - Strausberg",
+   "date": "2026-11-08",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The value lists only 'Masters 2', but the document's schedule and fee table include many categories (Masters 3, Masters 4, U11 to U19, Elite, Hobby, FunRace, etc.); the 'Masters 2' entry is the only one shown and it is not the full list.",
+   "value": "4001e20fbcdf2142",
+   "wrong_items": [
+    "Masters 2 (incomplete list; document also has Masters 3, Masters 4, U11–U19, Frauen/Männer Elite, Masters, Hobby, FunRace)"
+   ]
+  },
+  {
+   "race": "MTB Rennen am Badesee in Peitz",
+   "date": "2026-11-08",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The PDF gives Startnummernausgabe from 9:00 and Rennen 1 at 10:00, but Rennen 2 starts at 11:00 and is not an approximate time; the approximate flag and the stated Rennen 2 start are otherwise consistent with the document, so only the approximate flag is questionable.",
+   "value": "1513b77b0c10d8f6",
+   "wrong_items": [
+    "Rennen 2 über 8 Runden Start gegen 11:00 (approximate flag)"
+   ]
+  },
+  {
+   "race": "MTB Rennen am Badesee in Peitz",
+   "date": "2026-11-08",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The PDF lists Kinder U13 over 2 laps and Kinder U15 over 3 laps, but the Kinder U13 and U15 categories are otherwise matched; however the Master birth-year ranges and the Master 3/4 labels match the document, so only the Kinder U13/U15 and Frauen entries are unchecked by the document's birth years.",
+   "value": "47e7e9a695e6c8ba"
+  },
+  {
+   "race": "Viking Bike Winterchallenge GTF",
+   "date": "2026-11-08",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document gives the start at 10:00 Uhr, and registration opens at 09:00 on the race day; the claim's entry is registration, not a start time, and the start time is missing.",
+   "value": "fa1c758ac8f2c6a5",
+   "wrong_items": [
+    "Anmeldung ab 09:00 Uhr am Starttag"
+   ]
+  },
+  {
+   "race": "Viking Bike Winterchallenge O-CTF",
+   "date": "2026-11-08",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "Registration on site opens at 09:00, but the document gives the start at 10:00 Uhr; the 09:00 entry is labelled as registration, which is correct, so the schedule itself is partly right but the start time is missing.",
+   "value": "5b269e6083452fe5"
+  },
+  {
+   "race": "Viking Bike Winterchallenge O-CTF",
+   "date": "2026-11-08",
+   "field": "categories",
+   "verdict": "wrong_meaning",
+   "reason": "Document says the start is free for children and youth up to 18, which is a fee exemption, not a category of riders.",
+   "value": "0f68e2b98e655aa6",
+   "wrong_items": [
+    "Kinder und Jugendliche bis 18 Jahre"
+   ]
+  },
+  {
+   "race": "Krapf Bike Cup #4",
+   "date": "2026-11-08",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document gives Einzelrennen Erwachsene as CHF 30 per race (only the FUN category is CHF 20) and lists no Gesamtwertung Erwachsene at CHF 80 besides the FUN category; the catalogue's 'Gesamtwertung Erwachsene' at 80 duplicates the FUN item and the 'Einzelrennen Erwachsene' at 20 is wrong.",
+   "value": "979ffb0c7907787f",
+   "wrong_items": [
+    "Einzelrennen Erwachsene",
+    "Gesamtwertung Erwachsene"
+   ]
+  },
+  {
+   "race": "DWH - dachwelten Cross powered by RCO BOA Wels",
+   "date": "2026-11-08",
+   "field": "routes",
+   "verdict": "wrong_value",
+   "reason": "The Men Juniors, Men Masters II/VI, Member Card männlich group is listed at 3,2 km, but the Men Elite, U23, Masters I and Amateure Herren group at 3,2 km is listed only for race 7; race 6 includes women and the first group is in race 7 with 60 min and 3,2 km, so the grouping is inaccurate. The Juniors/Masters II group is in race 6 with 40 min and 3,2 km, which matches the claim.",
+   "value": "a16edface06b470f",
+   "wrong_items": [
+    "Men Elite, Men U23, Men Masters I, Amateure Herren LM OÖ"
+   ]
+  },
+  {
+   "race": "DWH - dachwelten Cross powered by RCO BOA Wels",
+   "date": "2026-11-08",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document lists race 6 at 11:45/11:48 and race 7 at 12:50, but the Jedermann:Frau start at 09:00, U17/U15/U13 starts and the BOA Mini Grand Prix at 11:00 are consistent; the claimed 10:00 for Member Card männl. Jugend and others match. The schedule itself is accurate, so only the race 6 entry is partially off because the claim omits the 11:45 women's start.",
+   "value": "b9059851f0fdef2a",
+   "wrong_items": [
+    "Men Juniors, Men Masters IIVI, Member Card männlich at 11:48 combined with Women start 11:45 not shown separately"
+   ]
+  },
+  {
+   "race": "ORC 4 - Cyclocross de Rennaz",
+   "date": "2026-11-08",
+   "field": "venue",
+   "verdict": "wrong_meaning",
+   "reason": "The document lists Rennaz (VD) as the ORC4 round location but gives no precise venue; the value is only a municipality, which is consistent, yet it names no specific venue within Rennaz.",
+   "value": "938efe6ed7f481da"
+  },
+  {
+   "race": "XXX międzynarodowy wyścig w kolarstwie przełajowym, Memoriał Edwarda Pełki, Sławomira Frejowskiego, puchar burmistrza miasta i gminy Szczekociny",
+   "date": "2026-11-08",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names Miasto i Gmina Szczekociny together with MGOKiS and MGLKS Olimpijczyk as organisers, and Robert Zawalski as race director with the listed email; the phone and contact name match, but the organiser list is joint, not solely the city and gmina.",
+   "value": "4039b9d22862fd70"
+  },
+  {
+   "race": "Oderský pohár — ACK Stará Ves n. O. II.",
+   "date": "2026-11-08",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names ACS DRAK Vrbno pod Pradědem as the main organiser of the series; ACK Stará Ves n. O. is only listed as the race host for this round, and p. Nepraš is shown as the contact for the 08.11. round.",
+   "value": "aa4bad723b946e19",
+   "wrong_items": [
+    "name: ACK Stará Ves n. O. (presented as organiser; document lists ACS DRAK Vrbno as Hlavní pořadatel)"
+   ]
+  },
+  {
+   "race": "Oderský pohár — ACK Stará Ves n. O. II.",
+   "date": "2026-11-08",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The category list matches the document's categories and birth years, but the document gives no category-specific mapping to this round beyond the series-wide list, and the labels/ranges match; the Masters 55–64 and 65+ rows and others are present, so the list is consistent with the source.",
+   "value": "5164c3a9a7fa8ba2"
+  },
+  {
+   "race": "Bydgoski Rowerowy Rajd Niepodległości",
+   "date": "2026-11-11",
+   "field": "parking",
+   "verdict": "not_in_document",
+   "reason": "The regulamin only mentions parking in general terms for stops (\"na parkingu, łące lub polanie\") and gives no parking information for the venue.",
+   "value": "b58a8092606b5c83"
+  },
+  {
+   "race": "ORC 5 - Cyclocross de la Riviera",
+   "date": "2026-11-14",
+   "field": "venue",
+   "verdict": "wrong_value",
+   "reason": "The document lists ORC5 as Cyclocross de la Riviera in Chailly-sur-Montreux (VD) on 14.11.2026 with organiser Velo Club Vevey, so the municipality is confirmed but 'Chailly-sur-Montreux (VD)' is only a locality, not a venue name; the claim's venue name matches the document's listing text, so the value is correct at municipality precision.",
+   "value": "eb66a7d99e1eb61f"
+  },
+  {
+   "race": "CycloCross im STEVENS-Cup 2026/2027 Bad Doberaner SV 90 e.V.",
+   "date": "2026-11-14",
+   "field": "venue",
+   "verdict": "wrong_value",
+   "reason": "The document lists Bad Doberan as the round 10 venue, but the claim's precision label 'municipality' is an inference; the document only names the town and club, which is consistent with the claim, so the value itself is supported.",
+   "value": "67fece7eca2d0ec7"
+  },
+  {
+   "race": "CycloCross im STEVENS-Cup 2026/2027 Bad Doberaner SV 90 e.V.",
+   "date": "2026-11-14",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document's start times for Bad Doberan's round are 09:45 Hobby M 40 and 09:46 Hobby M 50, but the schedule's date and times match the start list for round 1 (27.09.2026 Duvenstedt), not round 10 in Bad Doberan; the round 10 date is 14.11.2026 but the document lists the 09:45/09:46 times under round 1, so these times are not stated for Bad Doberan.",
+   "value": "6c7fb79d873cca94",
+   "wrong_items": [
+    "Hobby M 40 09:45",
+    "Hobby M 50 09:46"
+   ]
+  },
+  {
+   "race": "CycloCross im STEVENS-Cup 2026/2027 Bad Doberaner SV 90 e.V.",
+   "date": "2026-11-14",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "Birth-year ranges for Hobby M 40 (1978-1987) and Hobby M 50 (1940-1977) match, but the document's Hobby M 50 entry says 1977 and older, and the document also lists Masters 3, Masters 4 and other classes that the claim omits; the claimed Hobby M 17-39 range (1988-2010) is also not given in the schedule and Hobby Frauen 1940-2010 is correct, so several entries differ in label or range.",
+   "value": "f6371eec8b25ca8d",
+   "wrong_items": [
+    "Hobby M 17-39"
+   ]
+  },
+  {
+   "race": "JANEV CUP 2026 / UCI C2 - Jičín",
+   "date": "2026-11-14",
+   "field": "venue",
+   "verdict": "not_in_document",
+   "reason": "The race guide gives the race office at Revoluční 1295 and a race course, but never names 'Jičín – Šibeňák park' as the venue.",
+   "value": "dcdbfa7e255bf19b"
+  },
+  {
+   "race": "JANEV CUP 2026 / UCI C2 - Jičín",
+   "date": "2026-11-14",
+   "field": "routes",
+   "verdict": "wrong_value",
+   "reason": "The race guide states a race course of 2600 m, which matches 2.6 km, but the rozpis allows 2500–3500 m; the value itself is consistent, so this is confirmed rather than wrong.",
+   "value": "1723bd1ac349186b"
+  },
+  {
+   "race": "Krapf Bike Cup #5",
+   "date": "2026-11-15",
+   "field": "organizer",
+   "verdict": "wrong_meaning",
+   "reason": "The document names Radsport Krapf AG as organiser, but the phone number given there is 071 424 22 00 and the email is info@radsport-krapf.ch, which matches; the contact name 'Radsport Krapf' is the company itself rather than a named contact. The organiser details are otherwise supported.",
+   "value": "c41c90ba93127ae1",
+   "wrong_items": [
+    "contactName"
+   ]
+  },
+  {
+   "race": "Slovácký Kros — Kyjov",
+   "date": "2026-11-15",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The document's category list includes muži Open (1988–2008), which is missing from the claimed categories, and the claimed list places junioři and juniorky in a different order, which is harmless; the main omission is muži Open.",
+   "value": "0f6648ee0657e4fc",
+   "wrong_items": [
+    "muži Open – elite a U23 (1988–2008)"
+   ]
+  },
+  {
+   "race": "Afeno Quer und Bike Cup #6",
+   "date": "2026-11-21",
+   "field": "fees",
+   "verdict": "wrong_meaning",
+   "reason": "The document lists 150/120/90 CHF as the series-wide start fees for all races, and 25/20/15 CHF as per-race amounts; the per-race rows are repeated under two labels, which is consistent with the source, but the first set is a series fee rather than a single race fee for Pfaffnau.",
+   "value": "584f2be202fb1f4e"
+  },
+  {
+   "race": "3 Rosen Cross Moosburg",
+   "date": "2026-11-21",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document gives the Nenngeld for U11-U15 as 8 EUR, Elite/Masters as 20 EUR and Hobby/Jedermann as 30 EUR, which match, but the claim omits U17 and U19 fees; the listed amounts themselves are correct, so this is mainly incomplete rather than wrong.",
+   "value": "2c7d1a4d0a74e8c2"
+  },
+  {
+   "race": "Lorsbacher Cross-Duathlon",
+   "date": "2026-11-21",
+   "field": "routes",
+   "verdict": "wrong_value",
+   "reason": "The distance line '5 km Laufen, 20 km Radfahren, 3 km Laufen' and the three Komoot profile links are stated, but the item 'distanceKm: 20' is only the bike leg, and the route labels are the same as the document's; the profile items match, so only the summary entry's distance field is partly inconsistent with a single-distance meaning.",
+   "value": "8db662bf8d6467a3",
+   "wrong_items": [
+    "Distanzen: 5 km Laufen, 20 km Radfahren, 3 km Laufen"
+   ]
+  },
+  {
+   "race": "Lorsbacher Cross-Duathlon",
+   "date": "2026-11-21",
+   "field": "parking",
+   "verdict": "wrong_value",
+   "reason": "The document says the Park&Ride lot at the station is about 3 walking minutes away in one place and five walking minutes in the FAQ, and it does not state the claimed 3-minute figure consistently; the claimed note is otherwise taken from the document.",
+   "value": "c16de8a49800b975",
+   "wrong_items": [
+    "Es gibt nur begrenzte Parkplatzkapazität am Sportplatz „Am Schinderwald“. Wir empfehlen nachdrücklich, auf dem Park&Ride-Platz am Bahnhof in Lorsbach zu parken (Adresse: Am Bahnhof, 65719 Hofheim-Lorsbach), nur 3 Geh-Minuten bis zum Veranstaltungsort."
+   ]
+  },
+  {
+   "race": "NRW-Cross-Cup 2026 — Donkey Creek Cyclocross",
+   "date": "2026-11-21",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "Document gives Nenngeld for several classes, but the listed amounts for R.5.1, R.5.2, R.6.2, R.7.x and R.8.2 do not match the document's stated fees (e.g. R.5.1 is 20 with 15 reduced, R.5.2 is 10 with 5 reduced, R.8.2 is 8, R.7.1-7.3 are 15).",
+   "value": "b3a28a4f4f764646",
+   "wrong_items": [
+    "R. 5.2: Hobby Nenngeld",
+    "R. 6.2: Hobby Nenngeld"
+   ]
+  },
+  {
+   "race": "ogólnopolski wyścig w kolarstwie przełajowym",
+   "date": "2026-11-21",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The document gives Master taryfikator A 80 PLN and B 160 PLN, which the claims omit, but the other listed amounts match the document's tariff; the list is incomplete rather than wrong, so the stated items are correct.",
+   "value": "b1c5bf3fdddfbeba"
+  },
+  {
+   "race": "ogólnopolski wyścig w kolarstwie przełajowym",
+   "date": "2026-11-21",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document's timetable has the Amator Mężczyzni categories (18-35 and 36+) at a time not listed in the claim, and the Master, Elita Kobiet and Juniorka slots match, so the schedule matches the document apart from omitting those entries.",
+   "value": "8ad37d5e3fe6bf89"
+  },
+  {
+   "race": "ProTour Cyclocross Cup — Wyścig 4",
+   "date": "2026-11-21",
+   "field": "routes",
+   "verdict": "wrong_value",
+   "reason": "The regulations give a lap length range of 2.5 to 3.5 km for the loop, and the specific Zwierzyn route is only to be published 7 days before the race, so a fixed 2.5 km figure is not stated for this round.",
+   "value": "4235b40ae658ae8d",
+   "wrong_items": [
+    "pętla 2.5 km"
+   ]
+  },
+  {
+   "race": "Czech National Championship - Park & Flatland",
+   "date": "2026-11-21",
+   "field": "parking",
+   "verdict": "wrong_meaning",
+   "reason": "The claim presents a note that parking inside the venue is not possible, but the document also lists a paid/free public parking lot; the value is a restriction note rather than parking information for the venue, so it is only partially accurate.",
+   "value": "ec699bd099a70e35"
+  },
+  {
+   "race": "Czech National Championship - Park & Flatland",
+   "date": "2026-11-21",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "The document lists the eight categories, but the Junior categories are described as riders aged 14 and under on the day, and the claim's birthYears field '14 let a méně' is a restatement, not a birth-year range; the Park junior category is mixed boys and girls, which the claim omits.",
+   "value": "ca6c35d342e87aa2",
+   "wrong_items": [
+    "PARK – Junior – jezdci, kteří mají v den konání 14 let a méně",
+    "FLATLAND – Junior – jezdci, kteří mají v den konání 14 let a méně"
+   ]
+  },
+  {
+   "race": "Babinského bloudění 2026",
+   "date": "2026-11-21",
+   "field": "venue",
+   "verdict": "wrong_meaning",
+   "reason": "Document gives the start/finish as in front of Hospůdka Na Braňce, located in Ptýrov, but the claimed precision 'start' and locality 'Ptýrov' are only partially aligned; the venue is the start/finish spot, and the document names Ptýrov as the presentation location and závodní prostor area rather than the venue locality itself.",
+   "value": "95319772480a19ba"
+  },
+  {
+   "race": "ORC 6 - Cyclocross de Martigny",
+   "date": "2026-11-21",
+   "field": "fees",
+   "verdict": "wrong_value",
+   "reason": "The regulation lists the same fee structure for the series, which applies to each round including ORC6, but the claimed label 'U19 Juniors Hommes CHF 20' and the grouping of U11 through U9 at CHF 10 otherwise match; however the claim omits that Masters 1-4 pay CHF 25 and the 'Passeport' discount, so the list is incomplete rather than wrong, and the items given are accurate.",
+   "value": "d9fccc1f35f466f0"
+  },
+  {
+   "race": "ORC 6 - Cyclocross de Martigny",
+   "date": "2026-11-21",
+   "field": "venue",
+   "verdict": "wrong_meaning",
+   "reason": "The document gives Martigny (VS) as the town of ORC6 but the 'Cyclocross d'Octodure' organiser is Crossroad Kids Bike Club, and no precise venue or circuit location within Martigny is stated; the claim's 'municipality' precision matches the document's town listing.",
+   "value": "72ee5dbc28ab31de"
+  },
+  {
+   "race": "Cyklokros Slavkov u Brna 2026",
+   "date": "2026-11-22",
+   "field": "fees",
+   "verdict": "wrong_meaning",
+   "reason": "The document states the 150 Kč and 300 Kč amounts as startovné (entry fees) for these categories, so the amounts are right, but the claim lists 'pro kategorie ve 4. a 5. vlně' as a separate 300 CZK item and the labels are reworded; the amounts themselves match the document.",
+   "value": "3daf9e0fe199fc08"
+  },
+  {
+   "race": "Swiss Cyclo-cross Cup #4 - Radquer Hittnau",
+   "date": "2026-11-22",
+   "field": "parking",
+   "verdict": "wrong_meaning",
+   "reason": "The parking text is a copied map-legend line for the parking location, and the claim presents it as a parking fact rather than the stated parking arrangement; the document lists several parking areas (car park for all cars on Sunday, camper parking at TCS parking, overnight camping relocated to TCS parkings Isikon, Stud or Hermetsbüel), which the claim does not reflect.",
+   "value": "188433e860480f14",
+   "wrong_items": [
+    "2 : Parking Voiture : Parking pour tous les Voiture le dimanche"
+   ]
+  },
+  {
+   "race": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+   "date": "2026-11-22",
+   "field": "schedule",
+   "verdict": "wrong_value",
+   "reason": "The document lists different times and a fuller schedule: M14/Z14 at 10:00 and M12/Z12 at 10:40 match, but the claim omits the M09/Z09 start at 11:00 and the kadets/women/men E-OPEN race at 13:00, and misstates the junior/men race as 14:00 (correct) while the claim's approximate flags and missing items make it incomplete; the 11:20, 11:40, 11:50 starts and the 14:00 junior/men start match the document.",
+   "value": "1af973acb1c5e7ed",
+   "wrong_items": [
+    "Missing 11:00 start of M09/Z09 (dětí do 9 let)",
+    "Missing 13:00 start of kadetů, kadetek, juniorek, žen a mužů E/OPEN (30 minut)"
+   ]
+  },
+  {
+   "race": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+   "date": "2026-11-22",
+   "field": "categories",
+   "verdict": "wrong_value",
+   "reason": "Birth years for the under-5 and under-9 and youngest categories differ or are omitted: the document has Z05/M05 born 2021-2022 and Z09/M09 born 2017-2018, while the claim omits the under-5 categories and lists Dívky/Chlapci do 7 let as 2019-2020 (correct) but 'Dívky na odrážedlech' etc. are correct; the claim also omits the Ženy, MA-ME men and MO OPEN categories and lists 'Dívky do 9 let' correctly.",
+   "value": "1cd7a9bf3029138b",
+   "wrong_items": [
+    "Missing Dívky do 5 let (Z05, 2021-2022)",
+    "Missing Chlapci do 5 let (M05, 2021-2022)",
+    "Missing Ženy (Z, 2008 and earlier)",
+    "Missing Muži MA, MB, MC, MD, ME and MO OPEN categories"
+   ]
+  }
+ ]
+}

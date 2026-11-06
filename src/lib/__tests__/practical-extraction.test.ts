@@ -256,4 +256,9 @@ describe("organiser contact, parking and categories", () => {
     const quote = "Divieto di transito e di sosta in Piazza Silvio Arrivabene";
     expect(verifyPracticalExtraction({ facts: { venue: fact({ name: "Piazza Silvio Arrivabene", precision: "venue" }, quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] }).reasons.venue).toBe("traffic_notice");
   });
+  it("does not take a route's distance for a category", () => {
+    const quote = "CTF 35 km CTF 55 km Gravel 70 km";
+    const { details } = verifyPracticalExtraction({ facts: { categories: fact([{ label: "CTF 35 km", sourceQuote: quote }, { label: "Gravel 70 km", sourceQuote: quote }], quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] });
+    expect(details.categories).toBeUndefined();
+  });
 });

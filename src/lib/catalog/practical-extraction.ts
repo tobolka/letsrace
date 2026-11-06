@@ -280,7 +280,9 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       const rows = practicalValueSchemas.categories.parse(value.data).filter(v => {
         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url)), q = v.sourceQuote ?? fact.quote;
         const years = v.birthYears?.match(/\d{4}/g) ?? [];
-        return itemDoc && rowDocumentOK(itemDoc) && q.length >= 3 && contains(itemDoc.text, q) && (labelSupported(q, v.label) || contains(itemDoc.text, v.label)) && years.every(y => q.includes(y)) && !isNotCycling(v.label);
+        // A distance is a route, not who may race.
+        const isRoute = /\d\s*km\b|percorso|strecke|tras[ay]\b|\bctf\b|\brtf\b/i.test(v.label);
+        return itemDoc && rowDocumentOK(itemDoc) && q.length >= 3 && contains(itemDoc.text, q) && (labelSupported(q, v.label) || contains(itemDoc.text, v.label)) && years.every(y => q.includes(y)) && !isNotCycling(v.label) && !isRoute;
       }).map(v => ({ ...v, sourceQuote: storedQuote(v.sourceQuote ?? fact.quote, v.label), sourceUrl: v.sourceUrl ?? doc.url, checkedAt: context.now ?? new Date().toISOString() }));
       value.data = rows; supported = rows.length > 0;
     } else if (field === "schedule") {

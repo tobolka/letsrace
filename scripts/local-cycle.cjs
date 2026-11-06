@@ -183,6 +183,8 @@ async function main(){
   await upkeep('siteDocuments','siteDocumentsAt',24*HOUR,'Hledám propozice na webech závodů',['scripts/harvest-site-documents.ts','--apply','--seconds=480'],540);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
   await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:'60',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
+  // Nothing found above leaves the Mac until this reader has confirmed it against its source.
+  await upkeep('checkDetails','checkDetailsAt',HOUR,'Kontroluji nalezené údaje',['scripts/check-details.ts','--max=40','--seconds=420',`--gate=${path.join(data,'details-gate.json')}`],480,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json')});
   await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480,{BRAVE_SEARCH_LIMIT:'40',SEARCH_LEDGER_PATH:path.join(data,'search-budget.json')});
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
@@ -236,7 +238,7 @@ async function main(){
     // first, so it is noted and never stops anything; the field just stays as it is.
     const today=new Date().toISOString().slice(0,10);if(state.fillDay?.date!==today)state.fillDay={date:today,races:0};
     const allowance=Math.min(FILLED_RACES_PER_CYCLE,FILLED_RACES_PER_DAY-state.fillDay.races);
-    const fills=fillPlan(path.join(directory,'fills'),{target:remote,maxRaces:Math.max(0,allowance)});
+    const fills=fillPlan(path.join(directory,'fills'),{target:remote,maxRaces:Math.max(0,allowance),gate:json(path.join(data,'details-gate.json'),{})});
     report.fills={races:fills.races,places:fills.places,waiting:fills.waiting};state.fillsWaiting=allowance>0?fills.waiting:0;
     // While this file exists, details found here wait for a quality check and nothing of them is sent.
     report.detailsHeld=fs.existsSync(path.join(data,'hold-details.json'));

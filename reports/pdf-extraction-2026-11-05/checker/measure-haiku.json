@@ -1,0 +1,480 @@
+{
+ "cost": 0.011408999999999999,
+ "results": [
+  {
+   "expect": "wrong",
+   "label": "vstupenky jako startovné",
+   "checks": [
+    {
+     "field": "fees",
+     "verdict": "confirmed",
+     "reason": "The document states online fees of 390 CZK until 28 November, 450 CZK online on 29 November, 450 CZK at the on-site box office, and 200 CZK for people over 65 and people with disabilities for this Tábor round.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "série jako pořadatel",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "wrong_meaning",
+     "reason": "The document lists the Veselí nad Lužnicí city website entry with 'Pořadatel akce' pointing to a TBC série web link for the race, but the organizer label itself is a link to tbcserie.cz for event 2026 race 214 rather than the series naming itself as organiser; the series is only a calendar link, and the city office is the page owner.",
+     "wrong_items": [
+      "TBC Serie"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "ředitel seriálu jako pořadatel kola",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "wrong_meaning",
+     "reason": "The document names ACS DRAK Vrbno pod Pradědem as main organiser of the whole series, not of the 8 November Stará Ves n. O. II. round, which is listed with contact p. Nepraš.",
+     "wrong_items": [
+      "ACS DRAK Vrbno pod Pradědem as organiser of ACK Stará Ves n. O. II."
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "zákaz vjezdu jako místo",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "wrong_meaning",
+     "reason": "The document gives the Piazza Silvio Arrivabene, via Porto and via dei Pescatori area as the road-closure/no-parking zone (Divieto di transito e di sosta), not as the race venue; the race course is described as mainly in areas closed to traffic around Fondo Mincio.",
+     "wrong_items": [
+      "venue name",
+      "locality"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "zastaralé startovné",
+   "checks": [
+    {
+     "field": "fees",
+     "verdict": "wrong_value",
+     "reason": "The document's 90 km MTB fees are 700, 700, 900 and 1000 CZK, not 600/750/850/950; the 53 km MTB and Gravel, 30 km MTB and Family amounts also differ, and several children's entries (Mladší žáci, Kluci 9-10, Kluci 5-6, Holky 7-8) are not listed with those amounts.",
+     "wrong_items": [
+      "90 km MTB (all four tiers)",
+      "53 km MTB (all four tiers)",
+      "53 km Gravel (all four tiers)",
+      "30 km MTB (all four tiers)",
+      "30 km MTB Family jízda (all four tiers)",
+      "Odstrkovadla a kola kluci (70 CZK tier and 50 CZK tier)",
+      "Odstrkovadla a kola holky",
+      "Mladší žáci",
+      "Mladší žákyně",
+      "Kluci 9-10",
+      "Holky 9-10",
+      "Kluci 5-6",
+      "Holky 5-6",
+      "Kluci 7-8",
+      "Holky 7-8"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "propozice jiného závodu (Čuňkov na Hůrku)",
+   "checks": [
+    {
+     "field": "fees",
+     "verdict": "wrong_race",
+     "reason": "The document is the Cunkov race propositions (22.7.2026), not the Hůrka race on 2026-11-07; its entry fee is 300 CZK for all categories, not 999 CZK for 'Muži, ženy'.",
+     "wrong_items": [
+      "Muži, ženy: 999 CZK"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "cizí harmonogram (Hůrka na Vimperk, doc Vimperk)",
+   "checks": [
+    {
+     "field": "schedule",
+     "verdict": "wrong_value",
+     "reason": "The document gives no 'večerní běh' at 17:00; it lists a 9:00 venue opening, a 10:00 first start and results at 15:30, and the 08:30 'Otevření prezentace' does not match the stated 9 o'clock registration start.",
+     "wrong_items": [
+      "večerní běh 17:00",
+      "Otevření prezentace 08:30"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "wrong",
+   "label": "jiný rok (rozpis 2024 na Brno 2026)",
+   "race": {
+    "name": "Brněnský cyklokrosový pohár",
+    "start_date": "2026-11-07",
+    "municipality": "Pisárky"
+   },
+   "unreadable": true
+  },
+  {
+   "expect": "right",
+   "label": "TBC — HŮRKA",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "Document states Místo Hůrka u Jistebnice, areál lyžařského vleku for the 7.11.2026 race.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "Document states Pořadatel SPSVD Jistebnice with contact Zdeněk Tomeček, info@spsvd.cz.",
+     "wrong_items": []
+    },
+    {
+     "field": "parking",
+     "verdict": "confirmed",
+     "reason": "Document states Parkování: Na vyznačeném místě v prostoru startu a cíle.",
+     "wrong_items": []
+    },
+    {
+     "field": "categories",
+     "verdict": "wrong_value",
+     "reason": "Men 18-29 is given as 2008 – 1997 in the document, matching; but the claim's birth year ranges are all as stated, so check: the document lists all 22 categories identically, so no difference found.",
+     "wrong_items": []
+    },
+    {
+     "field": "schedule",
+     "verdict": "wrong_value",
+     "reason": "Document lists 8:30 prezentace, 10:00 starší žáci, 10:30 mladší, 11:00 8-9 let, 11:20 6-7, 11:40 4-5, 11:55 odrážedla, 13:00 kadeti/kadetky/juniorky/ženy/muži open, 14:00 junioři a muži; the claim omits the 17:00 evening run but otherwise matches.",
+     "wrong_items": []
+    },
+    {
+     "field": "fees",
+     "verdict": "confirmed",
+     "reason": "Document lists Startovné amounts matching all eight claimed fee items (350/500, 350/500, 150/200, 50/100 CZK).",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "JANEV CUP 2026 / UCI C1 - Veselí nad Luž",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "The race guide states the venue is Veselské pískovny, Hamerská 259, Veselí nad Lužnicí.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The guide names Cycling club Jihočeské naděje z.s. as organiser, with Radek Bechyňský as race director and the listed phone and email.",
+     "wrong_items": []
+    },
+    {
+     "field": "parking",
+     "verdict": "confirmed",
+     "reason": "The guide states parking is charged at 350 CZK for caravans and 150 CZK for passenger cars and vans.",
+     "wrong_items": []
+    },
+    {
+     "field": "schedule",
+     "verdict": "confirmed",
+     "reason": "The guide gives MEN JUNIOR 11:10, WOMEN 12:15 and MEN 13:30 on Saturday 12.12.2026, matching the claim.",
+     "wrong_items": []
+    },
+    {
+     "field": "routes",
+     "verdict": "confirmed",
+     "reason": "The guide states the race course is 2700 m, which is 2.7 km, double pit.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "MČR cyklokros mládež — Veselí nad Lužnic",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "The guide states the venue is Veselské pískovny, Hamerská 259, Veselí nad Lužnicí.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The guide names Cycling club Jihočeské naděje z.s. as organiser, with Radek Bechyňský as race director and the listed phone and email.",
+     "wrong_items": []
+    },
+    {
+     "field": "parking",
+     "verdict": "confirmed",
+     "reason": "The guide states parking is charged at 350 CZK for caravans and 150 CZK for passenger cars and vans.",
+     "wrong_items": []
+    },
+    {
+     "field": "schedule",
+     "verdict": "confirmed",
+     "reason": "The Sunday 13.12.2026 National Youth Championships schedule matches the document's start times for all six categories.",
+     "wrong_items": []
+    },
+    {
+     "field": "routes",
+     "verdict": "confirmed",
+     "reason": "The guide gives the race course as 2700 m, which matches the 2.7 km value.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "JANEV CUP 2026 / UCI C2 - Jičín",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "The race guide states the venue as Jičín – Šibeňák park for the 14 November 2026 race.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The guide names CYKLOKLUB Jičín z.s. as organiser, with Petr Kordík as chairman and race director; the phone and email match the race director contact.",
+     "wrong_items": []
+    },
+    {
+     "field": "parking",
+     "verdict": "confirmed",
+     "reason": "The guide gives the same parking text: adjacent meadows, parking lot at Datart (preferably for men and women elite, reservations by e-mail), other areas without reservations.",
+     "wrong_items": []
+    },
+    {
+     "field": "schedule",
+     "verdict": "confirmed",
+     "reason": "All six start times in the schedule match the guide (09:10, 10:15, 11:00, 12:20, 13:20, 14:30), though the guide lists the women's youth start as a joint start including Women Beginner Younger, which the claim's label omits.",
+     "wrong_items": []
+    },
+    {
+     "field": "routes",
+     "verdict": "confirmed",
+     "reason": "The guide states race course 2600 m, which is 2.6 km, for the race course route.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "JANEV CUP 2026 / UCI C2 - Kolín",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "The guide states the venue as Kolín – Borky, Brankovická street 979, Mirek Tuček Athletic Stadium.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The guide names Organiser: Z&S Apache Team, z.s., with Race Director Mgr. Jan Slavíček, and the claimed phone and email match the guide's contact details for him.",
+     "wrong_items": []
+    },
+    {
+     "field": "parking",
+     "verdict": "confirmed",
+     "reason": "The guide states Parking: Brankovická Street, see map.",
+     "wrong_items": []
+    },
+    {
+     "field": "schedule",
+     "verdict": "confirmed",
+     "reason": "The guide's schedule gives 09:10 women cadet/beginner, 10:15 men beginner, 11:00 men cadet, 12:20 men junior, 13:20 women, 14:30 men, all on 5 December 2026, matching the claimed times.",
+     "wrong_items": []
+    },
+    {
+     "field": "routes",
+     "verdict": "confirmed",
+     "reason": "The guide gives Race course: 3400 m, double pit, which equals 3.4 km.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "JANEV Cup — Prachatice",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "The guide states the venue is Prachatice with coordinates, matching the claim.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The guide names LYKO KLUB Prachatice z.s. as organiser, with Václav Dostál as race director and the same phone and email.",
+     "wrong_items": []
+    },
+    {
+     "field": "parking",
+     "verdict": "confirmed",
+     "reason": "The guide states parking is at the race venue and that team parking and caravans should be arranged via the race director.",
+     "wrong_items": []
+    },
+    {
+     "field": "schedule",
+     "verdict": "confirmed",
+     "reason": "All six start times and category labels match the guide's schedule on 17 November 2026.",
+     "wrong_items": []
+    },
+    {
+     "field": "routes",
+     "verdict": "confirmed",
+     "reason": "The guide gives the race course as 2500 m, which matches 2.5 km.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "Oderský pohár — ACK Stará Ves n. O. II.",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "wrong_meaning",
+     "reason": "The document names ACS DRAK Vrbno as main organiser of the series; ACK Stará Ves n. O. appears only as the venue of round 08.11., and p. Nepraš is listed as its contact person, so the organiser claim is not supported.",
+     "wrong_items": [
+      "name: ACK Stará Ves n. O. (document names ACS DRAK Vrbno pod Pradědem as main organiser)"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "TBC — VIMPERK",
+   "checks": [
+    {
+     "field": "categories",
+     "verdict": "wrong_value",
+     "reason": "Category list mostly matches, but the document splits muži A, B, C, D (ročník 2008–1967) into separate categories with 50-minute races, which the claim omits, and lists the 'muži A/B/C/D' entries as one combined category missing from the claim.",
+     "wrong_items": [
+      "muži A",
+      "muži B",
+      "muži C",
+      "muži D"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "TBC — PRACHATICE",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The document states 'Pořadatel: LYKO klub Prachatice , Sportovní Zařízení Prachatice' for this 2026 Prachatice round, with the director Václav Dostál and the same phone and email.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "Slovácký Kros — Kyjov",
+   "checks": [
+    {
+     "field": "venue",
+     "verdict": "confirmed",
+     "reason": "The rozpis states the venue as Kyjov – areál městského stadionu, Mezivodí 2233/2a, matching the claimed name and address.",
+     "wrong_items": []
+    },
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The rozpis names Pořadatel: CK Dacom Pharma Kyjov, z.s., with Vladimír Hušek as race director and the same phone and email.",
+     "wrong_items": []
+    },
+    {
+     "field": "categories",
+     "verdict": "wrong_value",
+     "reason": "Most categories and birth years match, but the rozpis lists 'muži Open – elite a U23 (1988–2008)' which is missing from the claimed list, and the claim's 'muži masters II' and others otherwise align.",
+     "wrong_items": [
+      "muži Open – elite a U23 (1988–2008) missing"
+     ]
+    },
+    {
+     "field": "schedule",
+     "verdict": "wrong_value",
+     "reason": "Start times match the rozpis for all five waves, but the claimed 'ženy' and other labels are fine; the 'muži Open' wave is not included in the claimed schedule's category labels, so the schedule itself is accurate for wave start times.",
+     "wrong_items": []
+    },
+    {
+     "field": "fees",
+     "verdict": "confirmed",
+     "reason": "The rozpis gives startovné of 150 Kč for mládež (přípravka, žáci, žákyně) and 300 Kč for kadeti, kadetky, junioři, juniorky, ženy, muži (vč. masters a hobby).",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "6. kolo: Grand Prix Sereď",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "wrong_meaning",
+     "reason": "The document names the Slovak cycling federation (Slovenský zväz cyklistiky) as the organiser, with CK AB Sereď BRUVO Slovakia s.r.o. listed as the 'Organizátor' line; the contact Ronny Bruynseels is the race director, not the organiser, and the club is shown as a co-organiser ('Spoluorganizátori') in the partner section.",
+     "wrong_items": [
+      "contactName: Ronny Bruynseels is the race director (Riaditeľ pretekov), not an organiser contact"
+     ]
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "Žabácký cyklokros 2026 – Memoriál Rudolf",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The document names Povltavský sportovní klub DA-BA, zapsaný spolek as organiser (Pořadatel), with contact Petr Bartoš, phone 605 219 220 and email da-ba@da-ba.com, matching the claim.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "Žabácký cyklokros 2026 – Memoriál Rudolf",
+   "checks": [
+    {
+     "field": "categories",
+     "verdict": "wrong_value",
+     "reason": "The document lists the same categories and birth years for the 2023-2025 through junior categories, but it also includes Z05/M05 (ages 5, born 2021-2022) which the claim omits; the claim's list is otherwise a subset of the document's categories.",
+     "wrong_items": []
+    }
+   ]
+  },
+  {
+   "expect": "right",
+   "label": "Cyklokros Slavkov u Brna 2026",
+   "checks": [
+    {
+     "field": "organizer",
+     "verdict": "confirmed",
+     "reason": "The document states 'Pořadatel: CykloKyjovský MTB Team z. s.' with the site mtbteam.cyklokyjovsky.cz, and lists Radek Neužil as a race director with phone 728 287 938.",
+     "wrong_items": []
+    }
+   ]
+  }
+ ]
+}
