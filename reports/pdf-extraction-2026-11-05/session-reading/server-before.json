@@ -1,0 +1,37 @@
+{
+ "target": "server",
+ "days": 60,
+ "at": "2026-11-06T10:33:20.345Z",
+ "all": {
+  "label": "Vše",
+  "races": 340,
+  "Kategorie (obecné)": "272 (80 %)",
+  "Kategorie z propozic": "0 (0 %)",
+  "Pořadatel": "14 (4 %)",
+  "Kontakt": "0 (0 %)",
+  "Startovné": "11 (3 %)",
+  "Tratě": "5 (1 %)",
+  "Harmonogram": "11 (3 %)",
+  "Parkování": "0 (0 %)",
+  "Registrace": "110 (32 %)",
+  "Výsledky (aspoň server)": "18 (5 %)",
+  "Propozice": "103 (30 %)",
+  "Vlastní stránka závodu": "256 (75 %)"
+ },
+ "czsk": {
+  "label": "CZ + SK",
+  "races": 44,
+  "Kategorie (obecné)": "38 (86 %)",
+  "Kategorie z propozic": "0 (0 %)",
+  "Pořadatel": "4 (9 %)",
+  "Kontakt": "0 (0 %)",
+  "Startovné": "1 (2 %)",
+  "Tratě": "1 (2 %)",
+  "Harmonogram": "3 (7 %)",
+  "Parkování": "0 (0 %)",
+  "Registrace": "15 (34 %)",
+  "Výsledky (aspoň server)": "5 (11 %)",
+  "Propozice": "12 (27 %)",
+  "Vlastní stránka závodu": "35 (80 %)"
+ }
+}
