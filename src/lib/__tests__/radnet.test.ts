@@ -88,11 +88,12 @@ describe("Italian calendar pages", () => {
 
 describe("sign-up links", () => {
   it("takes a known sign-up service named beside a word for signing up", () => {
-    expect(registrationLinkIn("Le iscrizioni saranno effettuate solo tramite portale on-line - www.endu.net\nInfo")).toBe("https://www.endu.net");
+    expect(registrationLinkIn("Le iscrizioni tramite portale on-line - https://www.endu.net/it/events/gara/entry\nInfo")).toBe("https://www.endu.net/it/events/gara/entry");
     expect(registrationLinkIn("Anmeldung https://www.datasport.de/anmeldeservice/rosencrossmoosburg2026 Ergebnisdienst")).toBe("https://www.datasport.de/anmeldeservice/rosencrossmoosburg2026");
   });
   it("ignores other links and a service nobody says to sign up at", () => {
     expect(registrationLinkIn("Anmeldung per Mail, siehe https://club.de/info")).toBeNull();
-    expect(registrationLinkIn("Foto: www.endu.net")).toBeNull();
+    expect(registrationLinkIn("Foto: https://www.endu.net/it/events/gara")).toBeNull();
+    expect(registrationLinkIn("Iscrizioni solo tramite portale www.endu.net")).toBeNull();
   });
 });

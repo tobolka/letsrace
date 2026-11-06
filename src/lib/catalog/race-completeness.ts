@@ -194,9 +194,10 @@ const SIGN_UP_WORD = /iscri|anmeld|meldung|nennung|inscri|registr|regist|zapis|z
 export function registrationLinkIn(text: string): string | null {
   for (const match of text.matchAll(/(?:https?:\/\/|\bwww\.)[^\s)\]>"',;]+/gi)) {
     const raw = match[0]!.replace(/[.:]+$/, ""), url = /^www\./i.test(raw) ? `https://${raw}` : raw;
-    let host = "";
-    try { host = new URL(url).hostname; } catch { continue; }
-    if (!SIGN_UP_HOSTS.test(host)) continue;
+    let host = "", path = "";
+    try { ({ hostname: host, pathname: path } = new URL(url)); } catch { continue; }
+    // A service's front page says nothing about this race: the button would lead riders to search for it themselves.
+    if (!SIGN_UP_HOSTS.test(host) || /^\/(?:zapisy|cyklokros|entry|events?)?\/?$/i.test(path)) continue;
     const around = text.slice(Math.max(0, match.index! - 160), match.index! + raw.length + 40);
     if (SIGN_UP_WORD.test(around)) return url;
   }
