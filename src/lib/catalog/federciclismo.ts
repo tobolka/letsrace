@@ -18,7 +18,7 @@ export function federciclismoFacts(doc: { url: string; text: string }) {
   if (name) facts.organizer = fact({ name, ...(phone ? { phone } : {}), ...(email ? { email } : {}) }, `Organizzatore: ${name}`);
   const allowedLine = line(text, "Categorie ammesse");
   // A plain list of classes is split; a sentence about who may ride stays whole.
-  const isSentence = /\b(?:tutte|tutti|compresi|aperta|categorie|riservata)\b/i.test(allowedLine);
+  const isSentence = /\b(?:tutte|tutti|compresi|aperta|categorie|riservata)\b|\(/i.test(allowedLine);
   const classes = (isSentence ? [allowedLine.slice(0, 160)] : allowedLine.split(/\s+-\s+|\s*,\s*/)).map(clean).filter(label => label.length >= 2);
   if (classes.length) facts.categories = fact(classes.map(label => ({ label, sourceQuote: `Categorie ammesse: ${allowedLine}` })), `Categorie ammesse: ${allowedLine}`);
   const start = /^Partenza:[ \t]*(.*?)[ \t]*H:(\d{1,2}):(\d{2})[ \t]*$/m.exec(text);
