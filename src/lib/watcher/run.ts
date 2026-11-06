@@ -28,7 +28,7 @@ import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
-import { chooseEventType, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
+import { chooseEventType, isDayOfStoredRace, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
 import { calendarRowHash, calendarRowProgress, isEventWriteConflict, MAX_CALENDAR_PROGRESS_ROWS, readCalendarProgress } from "@/lib/watcher/calendar-progress";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline, withDatabaseRequestCounts, withDatabaseWorkload } from "@/lib/supabase/request-budget";
@@ -72,6 +72,17 @@ const MAX_REFRESH_PER_RUN = 250;
 const DEFAULT_BUDGET_MS = 260_000;
 const DEFAULT_CONCURRENCY = 10;
 const CALENDAR_KINDS = ["series", "federation", "aggregator", "calendar"] as const;
+/** The Mac has no platform time limit, so what it has already read is never thrown away for lack of time. */
+const MAC_WRITE_ALLOWANCE_MS = 90_000;
+
+/**
+ * Pages of one site wait their turn inside a shared time budget. On 5 Nov 2026 a Cycling Austria page
+ * was often read with seconds left, saved none of its 30 rows and was read again later, up to eight
+ * times, though saving takes under half a minute when it has the time.
+ */
+export function writeDeadlineFor(deadline: number, now: number, onMac: boolean): number {
+  return onMac ? Math.max(deadline, now + MAC_WRITE_ALLOWANCE_MS) : deadline;
+}
 
 export async function runDueWatches(
   limit = 120,
@@ -106,6 +117,14 @@ export async function runDueWatches(
       // A worker sees only its own hosts, so it has to look further down the queue.
       .limit(process.env.LOCAL_WORKER_SHARD ? 5000 : Math.max(take * 3, 40));
     if (error) throw new Error(error.message);
+    // Helper pages are never read, so they would stay "due" for ever and look like work left.
+    const neverRead = (due ?? []).filter((row) => row.added_by === "auto-same-domain" && isAuxiliaryDiscoveryUrl(row.url as string));
+    if (neverRead.length) {
+      const { error: postponeError } = await supabase.from("watched_urls")
+        .update({ next_poll_at: new Date(Date.now() + 90 * 24 * 3_600_000).toISOString() })
+        .in("id", neverRead.map((row) => row.id));
+      if (postponeError) console.error("Could not postpone helper pages", postponeError);
+    }
     const dumpHost = /federciclismo\.it|eventivsport\.com|ffc\.fr|ffvelo\.fr/i;
     // The ČSC Blazor grid is rendered by a local Chrome scan. Vercel cannot
     // render it; claiming it here only overwrites a successful local scan with
@@ -464,10 +483,11 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
     let upserted = 0;
     // Bounded parallelism for DB upserts (same-host sources stay polite upstream)
     const writeFailures: { externalId: string; error: string }[] = [];
+    const writeDeadline = writeDeadlineFor(deadline, Date.now(), Boolean(process.env.LOCAL_WORKER_SHARD));
     const upsertResults = await mapPool(toUpsert, 4, async ev => {
       try {
-        if (Date.now() > deadline - 5000) throw new Error("write_time_budget_exhausted");
-        const result = await withDatabaseDeadline(deadline - 5000, () => upsertParsedEvent(ev, row.id, row.kind, row.url));
+        if (Date.now() > writeDeadline - 5000) throw new Error("write_time_budget_exhausted");
+        const result = await withDatabaseDeadline(writeDeadline - 5000, () => upsertParsedEvent(ev, row.id, row.kind, row.url));
         const hash = rowHashes.get(ev.externalId);
         if (result) {
           committedWrites++;
@@ -1960,8 +1980,9 @@ async function upsertParsedEvent(
         .maybeSingle()
     : { data: byFp };
   if (existingId && !existingFull) throw new Error(`Matched race could not be read: ${existingId}`);
-  const stored = existingFull as { start_date?: string; sources?: { external_id?: string | null }[] } | null;
+  const stored = existingFull as { start_date?: string; end_date?: string | null; sources?: { external_id?: string | null }[] } | null;
   if (existingId && isDifferentDatedRace(ev.externalId, ev.startDate, stored?.start_date, stored?.sources)) {
+    if (matchedBySource && !review && isDayOfStoredRace(ev.startDate, stored?.start_date, stored?.end_date)) return { id: existingId, created: false, changed: false };
     // Its own calendar lists them apart: resemblance must not glue them into one race
     // whose date then flips with every read. This row becomes its own race.
     if (matchedBySource || review || !isSameCalendarOtherRace(ev.externalId, ev.startDate, stored?.start_date, stored?.sources)) {

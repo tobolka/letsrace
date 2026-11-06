@@ -19,6 +19,17 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-06",
+    items: {
+      cs: [
+        "Tlačítko Web závodu vede na stránku právě toho závodu, ne na cizí kalendář nebo jiný závod téže série."
+      ],
+      en: [
+        "The race website button goes to that race's own page, not to another calendar or another race in the series."
+      ],
+    },
+  },
+  {
     date: "2026-11-04",
     items: {
       cs: [

@@ -8,6 +8,7 @@ const cp=require('node:child_process');
 const {plan,assertReviewed}=require('./local-sync.cjs');
 const {COPY,serverEnvironment}=require('./local-pull.cjs');
 const {fillPlan}=require('./local-fills.cjs');
+const {moreWorkLeft}=require('./local-schedule.cjs');
 const BIN=process.env.LOCAL_PG_BIN||'/opt/homebrew/opt/postgresql@17/bin';
 const data=process.env.LETSRACE_DATA_DIR||path.join(os.homedir(),'Library/Application Support/LetsRace/data');
 const root=path.resolve(__dirname,'..');const env={...process.env,LC_ALL:'en_US.UTF-8',PGTZ:'UTC'};
@@ -25,6 +26,8 @@ const GEOCODE_EVERY_MS=12*HOUR;
 const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
 /** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
 const WEBSITE_SEARCH_EVERY_MS=4*HOUR;
+const ORGANISER_GAP_MS=HOUR/2;
+const RESUME_PUBLISHING_EVERY_MS=6*HOUR;
 /** Every filled race queues a public page check, of which the server does 60 a day. */
 const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=60;
 /** An operator's pause reaches the reader without a whole catalogue dump. */
@@ -55,8 +58,10 @@ function editionSeason(now=new Date()){
  return part('month')>=10?part('year'):part('year')-1;
 }
 /** Does the organiser reading have anything to do, by what it saved last time? */
-function organiserDue(coverage,now=Date.now()){
+function organiserDue(coverage,now=Date.now(),lastPass=null){
  if(!coverage||coverage.unreadPages==null||coverage.unreadPages>0)return true;
+ // Pages fall due one at a time: wait and read them together, not a whole cycle for each.
+ if(lastPass&&now-Date.parse(lastPass)<ORGANISER_GAP_MS)return false;
  return Boolean(coverage.nextDueAt)&&Date.parse(coverage.nextDueAt)<=now;
 }
 /** Is a look at the target needed now? Each reason is one that sending could actually act on. */
@@ -136,8 +141,8 @@ async function main(){
   // Part 2: organisers' own websites, for the coming season's announced dates.
   const ledger=path.join(archive,'pages.jsonl');const ledgerSize=()=>{try{return fs.statSync(ledger).size;}catch{return 0;}};
   const sizeBefore=ledgerSize();const coverageBefore=json(path.join(archive,'coverage.json'));
-  if(organiserDue(coverageBefore)){
-   stage('Čtu weby pořadatelů');
+  if(organiserDue(coverageBefore,Date.now(),state.organiserPassAt)){
+   stage('Čtu weby pořadatelů');state.organiserPassAt=new Date().toISOString();saveState();
    try{
     const bounded=['scripts/bounded-pipeline-step.cjs','600',process.execPath,'scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/audit-next-edition-websites.ts',String(season),`--countries=${COUNTRIES}`,`--out=${archive}`,'--seconds=480','--limit=250'];
     await local(bounded,{allowedCodes:[0,2],timeout:11*60_000});
@@ -170,6 +175,8 @@ async function main(){
     state[key]=new Date().toISOString();saveState();(report.upkeep??={})[name]=done.code===2?'deferred':'done';
    }catch(e){if(interrupted)throw e;(report.upkeep??={})[name]=`failed: ${e.message}`;console.warn(`Údržba ${name} se nepovedla: ${e.message}`);}
   };
+  // Publications stopped halfway, already approved. Without this a race stays half-published for good.
+  await upkeep('resumePublishing','resumePublishingAt',RESUME_PUBLISHING_EVERY_MS,'Dokončuji přerušená zveřejnění',['scripts/review-discovery-candidates.ts','--resume','--apply'],120);
   await upkeep('siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS,'Doplňuji údaje z webů závodů',['scripts/local-catalog-fills.ts'],480);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
   await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=30','--minutes=8','--tolerate-unreadable'],540,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
@@ -242,20 +249,21 @@ async function main(){
 
   // What the runner needs to decide when to come back.
   const dueAfter=Number(sql('letsrace',dueNow).trim());report.dueSourcesAfter=dueAfter;
-  const progressed=report.readAttempts>0||organiser.read>0||organiser.attempted>0||report.publishedNewRaces>0||report.updatedRaces>0;
-  report.progressed=progressed;
-  // Due rows a reader keeps passing over (helper pages, leases) are not work left: only a cycle
-  // that moved something may ask to go straight on.
-  report.moreWork=progressed&&(dueAfter>0||Boolean(organiser.unread)||organiser.deferred);
+  // A race refused again is not progress: organiser.attempted counts those too.
+  report.progressed=report.readAttempts>0||organiser.read>0||organiser.published>0||report.publishedNewRaces>0||report.updatedRaces>0;
+  report.moreWork=moreWorkLeft({readAttempts:report.readAttempts,dueAfter,organiserRead:organiser.read,organiserPublished:organiser.published,organiserUnread:organiser.unread,organiserDeferred:organiser.deferred});
   const nextPoll=sql('letsrace',"select coalesce(min(next_poll_at),now()+interval '6 hours') from public.watched_urls where status='active' and next_poll_at>now()").trim();
   const moments=[Date.parse(nextPoll.replace(' ','T').replace(/([+-]\d\d)$/,'$1:00'))];
-  if(organiser.nextDueAt)moments.push(Date.parse(organiser.nextDueAt));
+  if(organiser.nextDueAt)moments.push(Math.max(Date.parse(organiser.nextDueAt),state.organiserPassAt?Date.parse(state.organiserPassAt)+ORGANISER_GAP_MS:0));
   if(state.targetCheckedAt)moments.push(Date.parse(state.targetCheckedAt)+(targetWanted(state,eventsNow,Date.parse(state.targetCheckedAt))?TARGET_MIN_GAP_MS:TARGET_MAX_AGE_MS));
   if(state.siteDetailsAt)moments.push(Date.parse(state.siteDetailsAt)+SITE_DETAILS_EVERY_MS);
   report.nextWorkAt=new Date(Math.min(...moments.filter(Number.isFinite),Date.now()+6*HOUR)).toISOString();
   if(failed)throw Error(failed);
   // The raw report stays available; a checked public race is distinct from an extracted row.
-  report.state=report.publicChecks.some(c=>!c.verified)?'publication_pending':report.unfinishedSources?'attention':'finished';report.stage=report.state==='finished'?'Hotovo':report.state==='attention'?'Část práce nemá dokončený výsledek':'Čekám na zobrazení na webu';
+  // Pages are checked by a server queue that takes days, and nothing ever returned to this report,
+  // so every cycle that delivered a race used to end "unfinished" for good. The count stays on record.
+  report.pagesAwaitingCheck=report.publicChecks.filter(c=>!c.verified).length;
+  report.state=report.unfinishedSources?'attention':'finished';report.stage=report.state==='finished'?'Hotovo':'Část práce nemá dokončený výsledek';
   if(report.state==='attention')process.exitCode=1;
  }catch(e){report.state='attention';report.error=e.message;if(!failed)console.error(`!!! ${e.message}`);process.exitCode=1;}
  finally{
@@ -264,8 +272,7 @@ async function main(){
   // A cycle that found nothing to do leaves its result in local-cycle-latest.json and no folder behind.
   if(report.state==='finished'&&!report.progressed&&!report.targetRead&&!report.upkeep)fs.rmSync(directory,{recursive:true,force:true});
   release();console.log('local_cycle_result '+JSON.stringify(report));
-  console.log(`=== done ${report.finishedAt}\n=== failed steps: ${report.state==='attention'?1:0}\n=== deferred steps: ${report.state==='publication_pending'?1:0}`);
-  if(report.state==='publication_pending')process.exitCode=2;
+  console.log(`=== done ${report.finishedAt}\n=== failed steps: ${report.state==='attention'?1:0}\n=== deferred steps: 0`);
  }
 }
 module.exports={acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason,coverageFrom};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

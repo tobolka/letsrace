@@ -87,6 +87,14 @@ export function isDifferentDatedRace(externalId: string | undefined, startDate: 
 }
 
 /**
+ * A race over several days that a calendar lists by day. That row is the same race, so it needs
+ * neither a new record nor a review, and the race must not start moving to the listed day.
+ */
+export function isDayOfStoredRace(startDate: string, storedStart: string | null | undefined, storedEnd: string | null | undefined): boolean {
+  return Boolean(storedStart && storedEnd && startDate > storedStart && startDate <= storedEnd);
+}
+
+/**
  * The same calendar lists this row and the stored race as two entries with their own ids and
  * days, so they are two races however alike their names are ("Brevet 200" and "Brevet 300" of
  * one club). Two different calendars disagreeing about a day prove nothing of the kind.

@@ -24,4 +24,15 @@ function nextRunAt({ now, result, exitCode, failures = 0 }) {
   return now + Math.min(LONGEST_WAIT_MS, Math.max(SHORTEST_WAIT_MS, Number.isFinite(due) ? due - now : LONGEST_WAIT_MS));
 }
 
-module.exports = { nextRunAt, cycleFailed, failureDelay, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS };
+/**
+ * Go straight on only for work the next cycle can actually move: sources it may still read, or
+ * organiser pages not read yet. Rows the reader never takes and races that keep being refused are
+ * no reason to come back; they kept the Mac in a one-minute loop all night on 6 Nov 2026.
+ */
+function moreWorkLeft({ readAttempts = 0, dueAfter = 0, organiserRead = 0, organiserPublished = 0, organiserUnread = 0, organiserDeferred = false }) {
+  return (readAttempts > 0 && dueAfter > 0)
+    || (organiserRead > 0 && organiserUnread > 0)
+    || (organiserDeferred && (organiserRead > 0 || organiserPublished > 0));
+}
+
+module.exports = { nextRunAt, moreWorkLeft, cycleFailed, failureDelay, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS };

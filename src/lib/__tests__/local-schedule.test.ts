@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import { describe, expect, it } from "vitest";
 
 const require = createRequire(import.meta.url);
-const { nextRunAt, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS } = require("../../../scripts/local-schedule.cjs");
+const { nextRunAt, moreWorkLeft, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS } = require("../../../scripts/local-schedule.cjs");
 const { organiserDue, targetNeeded, coverageFrom } = require("../../../scripts/local-cycle.cjs");
 const { eventFills, locationFill } = require("../../../scripts/local-fills.cjs");
 const now = Date.parse("2026-11-05T12:00:00Z");
@@ -25,6 +25,29 @@ describe("when the Mac's next cycle starts", () => {
     expect(nextRunAt({ now, exitCode: 1, result: failed, failures: 3 })).toBe(now + 20 * 60_000);
     expect(nextRunAt({ now, exitCode: 1, result: failed, failures: 40 })).toBe(now + 60 * 60_000);
     expect(nextRunAt({ now, exitCode: 1, result: null, failures: 1 })).toBe(now + 5 * 60_000);
+  });
+});
+
+describe("whether a cycle goes straight on", () => {
+  it("goes on while it is reading sources that are still due", () => {
+    expect(moreWorkLeft({ readAttempts: 12, dueAfter: 40 })).toBe(true);
+  });
+  it("does not go on for sources the reader never takes", () => {
+    expect(moreWorkLeft({ readAttempts: 0, dueAfter: 3 })).toBe(false);
+  });
+  it("does not go on because a page was read while other rows sit due", () => {
+    expect(moreWorkLeft({ readAttempts: 0, dueAfter: 3, organiserRead: 1, organiserUnread: 0 })).toBe(false);
+  });
+  it("does not go on for races that keep being refused", () => {
+    expect(moreWorkLeft({ organiserRead: 0, organiserPublished: 0, organiserUnread: 0, organiserDeferred: false })).toBe(false);
+    expect(moreWorkLeft({ organiserRead: 0, organiserPublished: 0, organiserDeferred: true })).toBe(false);
+  });
+  it("goes on while organiser pages are left unread or a pass ran out of time after moving something", () => {
+    expect(moreWorkLeft({ organiserRead: 40, organiserUnread: 200 })).toBe(true);
+    expect(moreWorkLeft({ organiserPublished: 2, organiserDeferred: true })).toBe(true);
+  });
+  it("copes with an unknown unread count", () => {
+    expect(moreWorkLeft({ organiserRead: 4, organiserUnread: null })).toBe(false);
   });
 });
 
@@ -90,5 +113,11 @@ describe("what a cycle needs from elsewhere", () => {
     expect(organiserDue({ unreadPages: 4 }, now)).toBe(true);
     expect(organiserDue({ unreadPages: 0, nextDueAt: at(1000) }, now)).toBe(false);
     expect(organiserDue({ unreadPages: 0, nextDueAt: at(-1000) }, now)).toBe(true);
+  });
+  it("gathers organiser pages falling due one by one instead of a cycle for each", () => {
+    const due = { unreadPages: 0, nextDueAt: at(-1000) };
+    expect(organiserDue(due, now, at(-60_000))).toBe(false);
+    expect(organiserDue(due, now, at(-31 * 60_000))).toBe(true);
+    expect(organiserDue({ unreadPages: 4 }, now, at(-60_000))).toBe(true);
   });
 });

@@ -1,0 +1,198 @@
+{
+ "at": "2026-11-06T08:39:35.127Z",
+ "before": [
+  {
+   "id": "438e1659-6bcd-40d1-a217-c924130b7791",
+   "slug": "tbc-bernarticky-cyklokros-2026",
+   "name": "TBC — Bernartický cyklokros",
+   "start_date": "2026-09-20",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-194/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": [
+    "name",
+    "location_id"
+   ]
+  },
+  {
+   "id": "49fee2df-1c3f-4eba-be52-a7814d0d927b",
+   "slug": "galaxy-cyklosvec-cyklokros-kukle-kukle-u-talina-2026",
+   "name": "Galaxy Cyklošvec cyklokros Kukle",
+   "start_date": "2026-09-26",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-197/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": null
+  },
+  {
+   "id": "8df32ecc-75e6-4369-b131-7e243797094b",
+   "slug": "tbc-cyklokros-chynov-2026",
+   "name": "TBC — Cyklokros Chýnov",
+   "start_date": "2026-09-27",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-199/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": [
+    "location_id"
+   ]
+  },
+  {
+   "id": "c601aad6-f1e2-4d1b-9d2d-5b7b97a3f191",
+   "slug": "tbc-cirkus-cyklokros-strakonice-2026",
+   "name": "TBC — Cirkus cyklokros Strakonice",
+   "start_date": "2026-10-11",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-215/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": [
+    "location_id"
+   ]
+  },
+  {
+   "id": "2d56ea39-6571-45b3-8edc-8f4e633f195f",
+   "slug": "tbc-litvinovice-2026",
+   "name": "TBC — LITVÍNOVICE",
+   "start_date": "2026-10-18",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-213/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": [
+    "location_id"
+   ]
+  },
+  {
+   "id": "4f7bc0dc-c53d-4559-922d-caf9f3b045aa",
+   "slug": "tbc-tabor-2026",
+   "name": "TBC — TÁBOR",
+   "start_date": "2026-11-01",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-217/",
+   "regulations_url": null,
+   "locks": [
+    "start_date",
+    "end_date"
+   ]
+  },
+  {
+   "id": "3f4f8c4a-1891-44b8-9b0a-59726117ebe3",
+   "slug": "tbc-hurka-2026",
+   "name": "TBC — HŮRKA",
+   "start_date": "2026-11-07",
+   "website_url": "https://spsvd.cz/hurecky-krpal-2026",
+   "regulations_url": null,
+   "locks": [
+    "location_id"
+   ]
+  },
+  {
+   "id": "de1bbff1-20a7-403b-9528-39d79aa3bed8",
+   "slug": "cyklokros-na-vodniku-vimperk-2026",
+   "name": "TBC — VIMPERK",
+   "start_date": "2026-11-14",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+   "regulations_url": null,
+   "locks": null
+  },
+  {
+   "id": "3a10adcc-1cb1-4abf-b0a4-7b58a0c9cf2d",
+   "slug": "cyklokros-prachatice-2026",
+   "name": "TBC — PRACHATICE",
+   "start_date": "2026-11-15",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-216/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": null
+  },
+  {
+   "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+   "slug": "zabacky-cyklokros-memorial-rudolfa-bartose-2026",
+   "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+   "start_date": "2026-11-22",
+   "website_url": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": [
+    "name",
+    "start_date",
+    "end_date",
+    "website_url",
+    "visibility",
+    "status",
+    "season",
+    "location_id"
+   ]
+  },
+  {
+   "id": "f2164309-a63d-4a2a-85d9-44bc25de7a20",
+   "slug": "tbc-veseli-nad-luznici-2026",
+   "name": "TBC — VESELÍ NAD LUŽNICÍ",
+   "start_date": "2026-12-06",
+   "website_url": "https://tbcserie.cz/kalendar-2026/zavod-214/",
+   "regulations_url": "https://tbcserie.cz/pravidla",
+   "locks": [
+    "location_id"
+   ]
+  }
+ ],
+ "done": [
+  {
+   "slug": "tbc-bernarticky-cyklokros-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-194/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-194/",
+   "clearedRules": true
+  },
+  {
+   "slug": "galaxy-cyklosvec-cyklokros-kukle-kukle-u-talina-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-197/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-197/",
+   "clearedRules": true
+  },
+  {
+   "slug": "tbc-cyklokros-chynov-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-199/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-199/",
+   "clearedRules": true
+  },
+  {
+   "slug": "tbc-cirkus-cyklokros-strakonice-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-215/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-215/",
+   "clearedRules": true
+  },
+  {
+   "slug": "tbc-litvinovice-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-213/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-213/",
+   "clearedRules": true
+  },
+  {
+   "slug": "tbc-tabor-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-217/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-217/",
+   "clearedRules": false
+  },
+  {
+   "slug": "tbc-hurka-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-203/",
+   "from": "https://spsvd.cz/hurecky-krpal-2026",
+   "clearedRules": false
+  },
+  {
+   "slug": "cyklokros-na-vodniku-vimperk-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+   "clearedRules": false
+  },
+  {
+   "slug": "cyklokros-prachatice-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-216/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-216/",
+   "clearedRules": true
+  },
+  {
+   "slug": "zabacky-cyklokros-memorial-rudolfa-bartose-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+   "from": "https://www.cus-sportujsnami.cz/events/zabacky-cyklokros-2026-memorial-rudolfa-bartose/",
+   "clearedRules": true
+  },
+  {
+   "slug": "tbc-veseli-nad-luznici-2026",
+   "url": "https://tbcserie.cz/kalendar-2026/zavod-214/",
+   "from": "https://tbcserie.cz/kalendar-2026/zavod-214/",
+   "clearedRules": true
+  }
+ ],
+ "skipped": []
+}

@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 const state = vi.hoisted(() => ({ due: [] as { id: string; url: string; kind: string; added_by?: string }[], known: [] as { external_id: string; event: { updated_at: string } }[], sourceInserts: [] as unknown[], writes: [] as { table: string; value: Record<string, unknown> }[], fetch: vi.fn(), extract: vi.fn(), hide: vi.fn(), touch: vi.fn(), touchAll: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: async (name: string, args: Record<string, unknown>) => {
   if (name === "pipeline_claim_source_read") return { data: [{ key: "source:source", token: "test-lease", payload: { sourceRevision: "2026-11-04" } }], error: null };
@@ -24,7 +24,7 @@ vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: () => ({ rpc: as
 } }) }));
 vi.mock("@/lib/watcher/core", async original => ({ ...await original<typeof import("@/lib/watcher/core")>(), fetchPage: state.fetch, extractEvents: state.extract }));
 vi.mock("@/lib/catalog/freshness", () => ({ hideDroppedCalendarEvents: state.hide, touchLastSeenForWatchedUrl: state.touchAll, touchListedEvents: state.touch }));
-import { watchOne, runDueWatches } from "@/lib/watcher/run";
+import { watchOne, runDueWatches, writeDeadlineFor } from "@/lib/watcher/run";
 import { WATCH_READER_VERSION, canReconcileMissingEvents } from "@/lib/watcher/core";
 afterEach(() => { state.due.length = 0; state.known.length = 0; state.writes.length = 0; state.sourceInserts.length = 0; vi.clearAllMocks(); });
 
@@ -51,6 +51,8 @@ it("does not re-read automatically discovered results and award pages as calenda
     { id: "calendar", url: "https://other.test/kalendar", kind: "calendar" });
   state.fetch.mockResolvedValue({ status: 304, unchanged: true, html: "", hash: "stable" });
   expect((await runDueWatches(4)).map(row => row.watchedUrlId)).toEqual(["calendar"]);
+  // Never read, so they must not stay due for ever and pass for work left.
+  expect(state.writes.some(w => w.table === "watched_urls" && typeof w.value.next_poll_at === "string" && Date.parse(w.value.next_poll_at as string) > Date.now() + 30 * 24 * 3_600_000)).toBe(true);
 });
 
 it("does not checkpoint or hide missing races after an incomplete read and retries without old HTTP validators", async () => {
@@ -159,4 +161,17 @@ it("only refreshes listed unchanged rows when a source has other linked races", 
     calendar_write_progress: { version: `calendar-v1:${WATCH_READER_VERSION}:calendar:https://club.test/calendar`, rows: [["listed", entry.hash, entry.until, 0]] } });
   expect(state.touch).toHaveBeenCalledWith("source", ["listed"]);
   expect(state.touchAll).not.toHaveBeenCalled();
+});
+
+describe("time to save what a source read", () => {
+  const now = 1_000_000;
+  it("gives the Mac time to save a page read late in its budget", () => {
+    expect(writeDeadlineFor(now + 2_000, now, true)).toBe(now + 90_000);
+  });
+  it("keeps a later deadline the Mac already has", () => {
+    expect(writeDeadlineFor(now + 200_000, now, true)).toBe(now + 200_000);
+  });
+  it("never extends the deadline on the server, which has a hard time limit", () => {
+    expect(writeDeadlineFor(now + 2_000, now, false)).toBe(now + 2_000);
+  });
 });

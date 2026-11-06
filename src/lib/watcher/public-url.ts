@@ -120,7 +120,7 @@ function officialDepth(url: string): number {
 
 /** Keep a same-host race page (`/26-hk/`) over a listing, homepage, or /prihlaseni. */
 /** Calendars and listings that give each race a page of their own. */
-const CALENDAR_PAGE_HOSTS = /(^|\.)(odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net|trevisomtb\.it|cyklistikaszc\.sk|sumator\.cz|maraton\.cz|velokal\.de)$/i;
+const CALENDAR_PAGE_HOSTS = /(^|\.)(kalendar\.winspace\.cz|odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net|trevisomtb\.it|cyklistikaszc\.sk|sumator\.cz|maraton\.cz|velokal\.de)$/i;
 
 export function isCalendarPage(url: string | null | undefined): boolean {
   try {
@@ -156,7 +156,9 @@ export function preferDeeperOfficialUrl(
     const b = new URL(prev);
     const hostA = a.hostname.replace(/^www\./i, "").toLowerCase();
     const hostB = b.hostname.replace(/^www\./i, "").toLowerCase();
-    if (hostA !== hostB) return next;
+    // Sites of different owners: only a clearly better kind of page may replace the one we have.
+    // Taking the latest instead let calendars overwrite a race's own page in turn, on every read.
+    if (hostA !== hostB) return Math.min(officialDepth(next), 10) > Math.min(officialDepth(prev), 10) ? next : prev;
     return officialDepth(next) >= officialDepth(prev) ? next : prev;
   } catch {
     /* ignore */
@@ -202,6 +204,9 @@ function scoreListing(url: string): number {
   }
 }
 
+/** Pages of a race's site that are not the page to send a rider to first. */
+const SIDE_PAGE = /\/(ceny|cena|faq|faq-s|kontakt|contact|impressum|clanky|clanek|aktuality|news|blog|post|galerie|gallery|sponzor[a-z]*|registrace|anmeldung|zapisy[a-z-]*|prihlas[a-z]*|krok\d)(\/|$|-)/i;
+
 export function resolveEventOutboundUrls(input: {
   websiteUrl?: string | null;
   registrationUrl?: string | null;
@@ -218,11 +223,18 @@ export function resolveEventOutboundUrls(input: {
 } {
   const sources = input.sourceUrls ?? [];
   let websiteUrl = publicRaceUrl(input.websiteUrl);
-  for (const c of sources) {
-    if (/\/(ergebnisse|results|vysledk|výsled)/i.test(c || "")) continue;
-    const u = publicRaceUrl(c);
-    if (!u) continue;
-    websiteUrl = preferDeeperOfficialUrl(u, websiteUrl);
+  // A race's own stored page stands. Sources only help when there is none yet: going through them
+  // regardless let the last calendar win on every page view, and could even show another race's page.
+  const needsBetterPage = (url: string | null) => !url || isCalendarPage(url) || officialDepth(url) < 10;
+  if (needsBetterPage(websiteUrl)) {
+    for (const c of sources) {
+      if (/\/(ergebnisse|results|vysledk|výsled)/i.test(c || "")) continue;
+      const u = publicRaceUrl(c);
+      if (!u) continue;
+      // An organiser's homepage gives way only to a page about the race on that same site.
+      if (websiteUrl && !isCalendarPage(websiteUrl) && (hostOf(u) !== hostOf(websiteUrl) || SIDE_PAGE.test(u))) continue;
+      websiteUrl = preferDeeperOfficialUrl(u, websiteUrl);
+    }
   }
   if (!websiteUrl) websiteUrl = publicRaceUrl(input.seriesWebsiteUrl);
   const registrationUrl = pickRegistrationUrl(input.registrationUrl, ...sources);

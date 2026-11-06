@@ -7,7 +7,7 @@ import { newRaceProblems, type KnownRace } from "@/lib/local-pass/new-race-check
 import { createComparer, editionCoverage } from "@/lib/local-pass/compare";
 import { withChromeSlot } from "@/lib/watcher/chrome-slots";
 import { belongsToThisWorker } from "@/lib/watcher/pool";
-import { chooseEventType, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace } from "@/lib/watcher/update-policy";
+import { chooseEventType, isDayOfStoredRace, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace } from "@/lib/watcher/update-policy";
 import { spanOf } from "@/lib/watcher/extractors/rideandrest";
 import { nextForFreeHost, openStore, type CatalogueEvent, type LocalStore } from "@/lib/local-pass/store";
 
@@ -238,4 +238,13 @@ describe("a Ride&Rest month page", () => {
     expect(spanOf("2026-12", "30", "fino al 2 Gennaio")).toEqual({ startDate: "2026-12-30", endDate: "2027-01-02" });
     expect(spanOf("2027-05", "14", "")).toEqual({ startDate: "2027-05-14" });
   });
+});
+
+it("treats a later day of a multi-day race as that race, and nothing else", () => {
+  expect(isDayOfStoredRace("2026-11-15", "2026-11-14", "2026-11-15")).toBe(true);
+  expect(isDayOfStoredRace("2026-07-18", "2026-07-17", "2026-07-19")).toBe(true);
+  expect(isDayOfStoredRace("2026-07-20", "2026-07-17", "2026-07-19")).toBe(false);
+  expect(isDayOfStoredRace("2026-07-16", "2026-07-17", "2026-07-19")).toBe(false);
+  expect(isDayOfStoredRace("2026-07-17", "2026-07-17", "2026-07-17")).toBe(false);
+  expect(isDayOfStoredRace("2026-07-18", "2026-07-17", null)).toBe(false);
 });

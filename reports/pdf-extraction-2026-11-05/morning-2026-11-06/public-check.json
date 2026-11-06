@@ -1,0 +1,342 @@
+{
+ "hidden": [
+  {
+   "name": "CUBE Cup — Pegnitz",
+   "slug": "cube-cup-pegnitz-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Baunach",
+   "slug": "cube-cup-baunach-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Steinbach am Wald",
+   "slug": "cube-cup-steinbach-am-wald-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Hof",
+   "slug": "cube-cup-hof-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Stammbach",
+   "slug": "cube-cup-stammbach-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Bad Alexandersbad",
+   "slug": "cube-cup-bad-alexandersbad-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Trieb",
+   "slug": "cube-cup-trieb-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Schesslitz",
+   "slug": "cube-cup-schesslitz-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Sili Marathon Warmensteinach",
+   "slug": "cube-cup-sili-marathon-warmensteinach-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Wüstenselbitz",
+   "slug": "cube-cup-wustenselbitz-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  },
+  {
+   "name": "CUBE Cup — Schneckenlohe",
+   "slug": "cube-cup-schneckenlohe-2027",
+   "status": "hidden",
+   "http": 404,
+   "location": null
+  }
+ ],
+ "dates": [
+  {
+   "name": "PGR Poland Gravel Race",
+   "db": "2027-08-07",
+   "http": 200,
+   "shows": true
+  },
+  {
+   "name": "Most - Lesná",
+   "db": "2027-08-08",
+   "http": 200,
+   "shows": true
+  },
+  {
+   "name": "Gravel Trans Jura",
+   "db": "2027-06-02",
+   "http": 200,
+   "shows": true
+  },
+  {
+   "name": "Gravelowa Korona Kujaw i Pomorza - Grudziądz",
+   "db": "2027-06-05",
+   "http": 200,
+   "shows": true
+  },
+  {
+   "name": "LAWI Tour",
+   "db": "2027-08-29",
+   "http": 200,
+   "shows": true
+  },
+  {
+   "name": "CUBE Cup — Franken-Bike-Marathon Trieb",
+   "db": "2027-06-06",
+   "http": 200,
+   "shows": true
+  },
+  {
+   "name": "VELKÁ CENA BÍLINY - O Radovesickou kostku",
+   "db": "2027-06-06",
+   "http": 200,
+   "shows": true
+  }
+ ],
+ "merged": [
+  {
+   "drop": "mountainbike-junior-festival-graz-stattegg-uci-c3-2027",
+   "keep": "mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027",
+   "http": 308,
+   "location": "/cs/zavod/mountainbike-junior-festival-graz-stattegg-uci-c3-steiermark-2027"
+  },
+  {
+   "drop": "11-trofeo-cittadella-dello-sport-montignoso-ms-fraz-cinquale-2026",
+   "keep": "11-trofeo-cittadella-dello-sport-2026",
+   "http": 308,
+   "location": "/cs/zavod/11-trofeo-cittadella-dello-sport-2026"
+  },
+  {
+   "drop": "limburgs-mooiste-mtb-2027",
+   "keep": "limburgs-mooiste-mtb-heerlen-2027",
+   "http": 404,
+   "location": null
+  },
+  {
+   "drop": "mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-bieganow-2027",
+   "keep": "90-mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-2027",
+   "http": 308,
+   "location": "/cs/zavod/90-mistrzostwa-polski-w-kolarstwie-przelajowym-cybinka-2027"
+  },
+  {
+   "drop": "ironbike-brittnau-2027",
+   "keep": "brittnauer-ironbike-2027",
+   "http": 308,
+   "location": "/cs/zavod/brittnauer-ironbike-2027"
+  },
+  {
+   "drop": "35-trofeo-citta-di-bolzano-kids-2026",
+   "keep": "35-trofeo-citta-di-bolzano-kids-promozionale-2026",
+   "http": 308,
+   "location": "/cs/zavod/35-trofeo-citta-di-bolzano-kids-promozionale-2026"
+  },
+  {
+   "drop": "the-grand-escape-tuscany-campiglia-marittima-toskania-2027",
+   "keep": "the-grand-escape-tuscany-2027",
+   "http": 308,
+   "location": "/cs/zavod/the-grand-escape-tuscany-2027"
+  },
+  {
+   "drop": "stjernetour-de-grindsted-2027",
+   "keep": "sydbank-stjerne-tour-de-grindsted-2027",
+   "http": 404,
+   "location": null
+  },
+  {
+   "drop": "viii-ciclopedalata-mari-e-monti-2026",
+   "keep": "viii-mari-e-monti-2026",
+   "http": 308,
+   "location": "/cs/zavod/viii-mari-e-monti-2026"
+  },
+  {
+   "drop": "xlviii-miedzynarodowy-wyscig-pod-patronatem-burmistrza-gminy-2026",
+   "keep": "przelajowy-xlvii-ogolnopolski-wyscig-pod-patronatem-2026",
+   "http": 308,
+   "location": "/cs/zavod/przelajowy-xlvii-ogolnopolski-wyscig-pod-patronatem-2026"
+  },
+  {
+   "drop": "miedzynarodowy-wyscig-kolarski-lubuskie-warte-zachodu-uci-c2-2026",
+   "keep": "cx-lubuskie-warte-zachodu-uci-c2-2026",
+   "http": 308,
+   "location": "/cs/zavod/cx-lubuskie-warte-zachodu-uci-c2-2026"
+  },
+  {
+   "drop": "7-trofeo-ciclocross-casentino-2026",
+   "keep": "7-trofeo-ciclocross-casentino-campionato-regionale-in-prova-2026",
+   "http": 308,
+   "location": "/cs/zavod/7-trofeo-ciclocross-casentino-campionato-regionale-in-prova-2026"
+  },
+  {
+   "drop": "ogolnopolski-wyscig-w-kolarstwie-przelajowym-o-puchar-rady-zaluski-2026",
+   "keep": "ogolnopolski-wyscig-kolarski-o-puchar-wojta-gminy-zaluski-2026",
+   "http": 308,
+   "location": "/cs/zavod/ogolnopolski-wyscig-kolarski-o-puchar-wojta-gminy-zaluski-2026"
+  }
+ ],
+ "detailsRaces": 20,
+ "details": [
+  {
+   "slug": "afeno-quer-und-bike-cup-6-2026",
+   "facts": 3,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "orc-6-cyclocross-de-martigny-2026",
+   "facts": 2,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "krapf-bike-cup-5-2026",
+   "facts": 3,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "8-trofeo-le-valli-sul-mincio-2026",
+   "facts": 2,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "orc-5-cyclocross-de-la-riviera-2026",
+   "facts": 1,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "krapf-bike-cup-4-2026",
+   "facts": 4,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "msr-v-cyklokrose-9-kolo-selce-2026",
+   "facts": 2,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "orc-4-cyclocross-de-rennaz-2026",
+   "facts": 1,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "upcycle-trail-weekend-2026",
+   "facts": 4,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "krajsky-prebor-v-cyklokrosu-usteckeho-kraje-nove-mesto-v-2026",
+   "facts": 4,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "afeno-quer-und-bike-cup-5-2026",
+   "facts": 2,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "franciacorta-gravel-3-5-2026",
+   "facts": 5,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "niepodleglosciowy-maraton-mtb-2026",
+   "facts": 4,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "brm-600-winterfell-night-king-2026",
+   "facts": 2,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "6-kolo-grand-prix-sered-2026",
+   "facts": 3,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "dwh-dachwelten-cross-powered-by-rco-boa-wels-2026",
+   "facts": 5,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "brm-200-winterfell-stark-family-2026",
+   "facts": 2,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "ogolnopolski-wyscig-w-kolarstwie-przelajowym-memorial-zalesie-gorne-kolo-piaseczna-2026",
+   "facts": 5,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "brm-400-winterfell-white-walker-2026",
+   "facts": 1,
+   "http": 200,
+   "section": true
+  },
+  {
+   "slug": "janev-cup-uci-c2-jicin-2026-11-14",
+   "facts": 4,
+   "http": 200,
+   "section": true
+  }
+ ],
+ "totals": [
+  {
+   "y": 2026,
+   "n": 599
+  },
+  {
+   "y": 2027,
+   "n": 1368
+  },
+  {
+   "y": 2028,
+   "n": 8
+  }
+ ]
+}
