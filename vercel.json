@@ -20,5 +20,6 @@
       "path": "/api/cron/weather-history",
       "schedule": "10 4 * * *"
     }
-  ]
+  ],
+  "ignoreCommand": "git diff --quiet ${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- src public package.json package-lock.json next.config.ts vercel.json tsconfig.json postcss.config.mjs ':!src/lib/__tests__'"
 }

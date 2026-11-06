@@ -6,6 +6,7 @@ import { verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
 import { mergePracticalDetails } from "@/lib/practical-details";
 import { federciclismoFacts, rideAndRestFacts } from "@/lib/catalog/federciclismo";
 import { registrationLinkIn } from "@/lib/catalog/race-completeness";
+import { maratonRows, matchPortalRow, wynikiPage, wynikiRows } from "@/lib/catalog/signup-portals";
 
 const url = "https://www.rad-net.de/rad-net-portal/a.htm?url=mode%3Dascr_detail";
 const text = `Donkey Creek Cyclocross LV Nordrhein-Westfalen Cyclo-Cross
@@ -95,5 +96,24 @@ describe("sign-up links", () => {
     expect(registrationLinkIn("Anmeldung per Mail, siehe https://club.de/info")).toBeNull();
     expect(registrationLinkIn("Foto: https://www.endu.net/it/events/gara")).toBeNull();
     expect(registrationLinkIn("Iscrizioni solo tramite portale www.endu.net")).toBeNull();
+  });
+});
+
+describe("sign-up portals", () => {
+  it("reads maraton.cz's cycling rows only", () => {
+    const rows = maratonRows("07.11.2026 | C-CX | Hůrka | [Hůrecký krpál (TBC série) - přihláška](https://maraton.cz/terminovka/entry/706) | x\n14.11.2026 | RUN | Praha | [Rokytka - přihláška](https://maraton.cz/terminovka/entry/698) | x");
+    expect(rows).toEqual([{ date: "2026-11-07", place: "Hůrka", title: "Hůrecký krpál (TBC série)", signUp: "https://maraton.cz/terminovka/entry/706" }]);
+  });
+  it("reads wynikizawodow's list and a race's page", () => {
+    const rows = wynikiRows("[14 listopada 2026 Laskowice Pomorskie](https://wynikizawodow.eu/zawody/353)\n[Owocowy Przełaj UCI C1](https://wynikizawodow.eu/zawody/353)");
+    expect(rows[0]).toMatchObject({ date: "2026-11-14", place: "Laskowice Pomorskie", title: "Owocowy Przełaj UCI C1" });
+    expect(wynikiPage("Kontakt do organizatora:\ne-mail: a@onet.pl\n[Regulamin](https://w.eu/pobierz/1/s/1_regulamin.pdf)")).toEqual({ regulations: "https://w.eu/pobierz/1/s/1_regulamin.pdf", email: "a@onet.pl" });
+  });
+  it("gives a row to a race only when it is sure", () => {
+    const row = { date: "2026-11-14", title: "Cyklokros na Vodníku", place: "Vimperk", signUp: "x" };
+    const vimperk = { name: "TBC — VIMPERK", start_date: "2026-11-14" }, other = { name: "Liga Praha", start_date: "2026-11-14" };
+    expect(matchPortalRow(row, [vimperk, other])).toEqual([vimperk]);
+    expect(matchPortalRow({ ...row, date: "2026-11-15" }, [vimperk])).toEqual([]);
+    expect(matchPortalRow(row, [vimperk, { name: "Vimperk Open", start_date: "2026-11-14" }])).toEqual([]);
   });
 });
