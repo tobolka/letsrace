@@ -82,6 +82,14 @@ export type SearchHit = { url: string; title: string };
  * from a script; this one can, if asked politely — a few seconds apart.
  */
 export async function searchWeb(query: string): Promise<SearchHit[]> {
+  // DuckDuckGo stopped answering scripts: for months this step asked, was refused and looked as if it found nothing.
+  const ledger = process.env.SEARCH_LEDGER_PATH;
+  if (ledger && process.env.BRAVE_API_KEY && Number(process.env.BRAVE_SEARCH_LIMIT ?? 0) > 0) {
+    const { takeSearch } = await import("@/lib/catalog/race-completeness");
+    if (!takeSearch(ledger, { day: Number(process.env.SEARCHES_A_DAY ?? 60), month: 1000 })) throw new Error("search allowance used up");
+    const { braveSearch } = await import("@/lib/catalog/brave");
+    return (await braveSearch(query, { count: 10 })).map(hit => ({ url: hit.url, title: hit.title }));
+  }
   const res = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, {
     headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15", accept: "text/html" },
     signal: AbortSignal.timeout(20_000),
@@ -248,7 +256,7 @@ export async function findWebsites(opts?: {
       .in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", opts?.from ?? today)
       // No site of its own: none, or only a calendar's page for it.
-      .or("website_url.is.null,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*")
+      .or("website_url.is.null,website_url.ilike.*winspace.cz*,website_url.ilike.*uci.org*,website_url.ilike.*bikeboard.at*,website_url.ilike.*raceresult.com*,website_url.ilike.*federciclismo.it*,website_url.ilike.*finishers.com*,website_url.ilike.*cyclingaustria.at*,website_url.ilike.*pzkol.pl*,website_url.ilike.*rideandrest.net*,website_url.ilike.*odjazd.pl*,website_url.ilike.*kalendarzrowerowy*,website_url.ilike.*eventivsport*,website_url.ilike.*radsport-events*,website_url.ilike.*granfondoguide*,website_url.ilike.*cyklistikaszc.sk*,website_url.ilike.*cyklokros.cz/kalendar*")
       .order("start_date", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
@@ -256,8 +264,6 @@ export async function findWebsites(opts?: {
     for (const row of rows) {
       if (skip.has(row.id)) continue;
       if (opts?.countries?.length && !opts.countries.includes(row.location?.country_code ?? "")) continue;
-      // With no site at all, an entry page is already somewhere to go.
-      if (!row.website_url && row.registration_url) continue;
       targets.push({ id: row.id, name: row.name, startDate: row.start_date, municipality: row.location?.municipality ?? null });
       if (targets.length >= max) break;
     }
