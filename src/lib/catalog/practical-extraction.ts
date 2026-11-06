@@ -95,6 +95,16 @@ const allDatesIn = (text: string) => new Set([...text.matchAll(/(?<![\d.])(\d{1,
  * both. A document whose opening states this race's day and names it or its town is the race's own,
  * and all of it speaks about this race. A series' rulebook lists many race days and is not.
  */
+/**
+ * The race's stored document is its series': it lists this round by day and place, and its fees, classes and
+ * start times are common to all rounds. Such a document speaks for the round. It says nothing of another round's venue.
+ */
+export function isSeriesDocumentOfRound(doc: PracticalDocument, context: { name: string; startDate: string; municipality?: string | null; ownUrls?: (string | null | undefined)[] }): boolean {
+  if (!context.ownUrls?.includes(doc.url) || !editionYearSupported(doc.text, Number(context.startDate.slice(0, 4)))) return false;
+  const words = [...(fold(context.municipality ?? "").match(/[a-z0-9]{4,}/g) ?? []), ...(fold(context.name).match(/[a-z0-9]{5,}/g) ?? [])];
+  return doc.text.split("\n").some(line => (quoteContainsDate(line, context.startDate) || allDatesIn(line).has(context.startDate)) && words.some(word => fold(line).includes(word)));
+}
+
 export function isOwnDocument(doc: PracticalDocument, context: { name: string; startDate: string; municipality?: string | null; ownUrls?: (string | null | undefined)[] }): boolean {
   const head = doc.text.slice(0, OWN_DOCUMENT_HEAD);
   // "Sobota 7.11 2026" is a full date too, however the separators fell.
@@ -225,7 +235,10 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
     // The race record's own link whose file name states the year speaks for that edition, unless it says otherwise inside.
     const namedEdition = Boolean(doc && context.ownUrls?.includes(doc.url) && fileStatesEdition(doc.url, year) && !doc.text.split("\n").slice(0, 25).some(line => /20\d{2}/.test(line) && !editionYearSupported(line, year)));
     const edition = namedEdition || Boolean(doc && fact.edition_quote.length >= 8 && editionYearSupported(fact.edition_quote, year) && contains(doc.text, fact.edition_quote) && !/copyright|©/i.test(fact.edition_quote));
-    const ownDocument = Boolean(doc && isOwnDocument(doc, context));
+    // Common to all rounds, or a line naming this round's own town.
+    const roundWords = fold(context.municipality ?? "").match(/[a-z0-9]{4,}/g) ?? [];
+    const speaksForRound = Boolean(doc && isSeriesDocumentOfRound(doc, context) && (["fees", "categories", "schedule", "routes"].includes(field) || field === "organizer" && roundWords.some(word => fold(fact.quote).includes(word))));
+    const ownDocument = Boolean(doc && (isOwnDocument(doc, context) || speaksForRound));
     if (!value.success) { refuse(key, "bad_value"); continue; }
     if (!quoted || !doc) { refuse(key, "quote_not_in_document"); continue; }
     if (!identity && !ownDocument && !(field === "venue" && context.knownVenue)) { refuse(key, "not_about_this_race"); continue; }
@@ -260,7 +273,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       const seriesPart = /\s[—–-]\s/.test(context.name) ? context.name.split(/\s[—–-]\s/)[0]! : "";
       const raceNameWords = new Set(fold(seriesPart).match(/[a-z0-9]{3,}/g) ?? []);
       const organiserWords = (fold(v.name).match(/[a-z0-9]{3,}/g) ?? []).filter(word => !["serie", "series", "seria"].includes(word));
-      if (otherDays > 3 && !isOwnDocument(doc, context) && !quoteContainsDate(fact.quote, context.startDate) || organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
+      if (otherDays > 3 && !isOwnDocument(doc, context) && !speaksForRound && !quoteContainsDate(fact.quote, context.startDate) || organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
       // "Organizátor:" often heads the lines below it, so the word may stand just above the quote.
       const lines = doc.text.split("\n"), at = lines.findIndex(line => contains(line, v.name));
       const nearby = at >= 0 ? lines.slice(Math.max(0, at - 3), at + 1).join(" ") : "";
@@ -293,7 +306,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
         const time = new RegExp(`(?<![\\d:.])0?${hour}[:.h]${v.time.slice(3, 5)}(?!\\d)${v.time.startsWith("00", 3) ? `|(?<![\\d:.])0?${hour}\\s*(?:uhr|hod(?:in)?|godz|h)\\b` : ""}`, "i");
         const oneDay = !context.endDate || context.endDate === context.startDate;
         const statesDay = (text: string, day: string) => quoteContainsDate(text, day) || allDatesIn(text).has(day);
-        const dateOK = statesDay(q, v.date) || oneDay && v.date === context.startDate && statesDay(itemDoc?.text.slice(0, OWN_DOCUMENT_HEAD) ?? "", v.date) || oneDay && v.date === context.startDate && namedEdition && itemDoc?.url === doc.url || !oneDay && headingDay(itemDoc?.text ?? "", q, context.startDate, context.endDate ?? context.startDate, statesDay) === v.date;
+        const dateOK = statesDay(q, v.date) || oneDay && v.date === context.startDate && speaksForRound || oneDay && v.date === context.startDate && statesDay(itemDoc?.text.slice(0, OWN_DOCUMENT_HEAD) ?? "", v.date) || oneDay && v.date === context.startDate && namedEdition && itemDoc?.url === doc.url || !oneDay && headingDay(itemDoc?.text ?? "", q, context.startDate, context.endDate ?? context.startDate, statesDay) === v.date;
         if (isNotCycling(v.label) || !itemDoc || !rowDocumentOK(itemDoc) || !q || !contains(itemDoc.text, q) || !(labelSupported(q, v.label) || fact.quote.length <= 1500 && contains(fact.quote, q) && labelSupported(fact.quote, v.label)) || v.date < context.startDate || v.date > (context.endDate ?? context.startDate) || !dateOK || !time.test(q) || isTimeRange(q, v.time)) return [];
         return [{ ...v, approximate: v.approximate || /~\s*\d|cca\s*\d|approx|přibliž|pribliz/i.test(q), sourceQuote: storedQuote(q, v.label), sourceUrl: itemDoc.url, checkedAt: context.now ?? new Date().toISOString() }];
       });

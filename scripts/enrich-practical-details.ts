@@ -7,7 +7,11 @@ async function main() {
   for (const [key, value] of Object.entries(parse(await readFile(".env.local", "utf8")))) process.env[key] ??= value;
   const arg = (key: string) => process.argv.find(value => value.startsWith(`--${key}=`))?.slice(key.length + 3);
   process.env.LLM_EXTRACTION_CACHE_DIR ??= resolve("tmp/extraction-cache");
-  for (const [key, limit] of [["LLM_BUDGET_USD", 0.15], ["LLM_DAILY_BUDGET_USD", 0.50], ["LLM_MONTHLY_BUDGET_USD", 5]] as const) {
+  // The owner may raise the day's limit for one date, in writing: OWNER_DAY_LIMIT=2026-11-06:1. Nothing else lifts it.
+  const [ownerDay, ownerLimit] = (process.env.OWNER_DAY_LIMIT ?? "").split(":");
+  const dayLimit = ownerDay === new Date().toISOString().slice(0, 10) && Number(ownerLimit) > 0 ? Number(ownerLimit) : 0.50;
+  if (dayLimit !== 0.50) process.env.LLM_DAILY_BUDGET_USD = String(dayLimit);
+  for (const [key, limit] of [["LLM_BUDGET_USD", 0.40], ["LLM_DAILY_BUDGET_USD", dayLimit], ["LLM_MONTHLY_BUDGET_USD", 5]] as const) {
     const value = Number(process.env[key] ?? limit);
     if (!Number.isFinite(value) || value < 0) throw Error(`Invalid ${key}`);
     process.env[key] = String(Math.min(value, limit));

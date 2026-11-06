@@ -261,4 +261,17 @@ describe("organiser contact, parking and categories", () => {
     const { details } = verifyPracticalExtraction({ facts: { categories: fact([{ label: "CTF 35 km", sourceQuote: quote }, { label: "Gravel 70 km", sourceQuote: quote }], quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] });
     expect(details.categories).toBeUndefined();
   });
+  it("lets a series' document speak for a round it lists, for what is common to all rounds", () => {
+    const series = "Weser-Ems-Cup 2026/27\n7.Lauf 08.11.2026 Rheine-Elte\n8.Lauf 06.12.2026 Osnabrück\nStartgeld Elite 15 Euro\nStartzeiten 09:30 Hobby Männer\nVeranstalter: Bezirk Weser-Ems";
+    const round = { name: "Weser-Ems-Cup Rheine", startDate: "2026-11-08", municipality: "Rheine", ownUrls: [url], documents: [{ url, text: series, links: [] }], now: "2026-11-06T10:00:00.000Z" };
+    const facts = { fees: fact([{ label: "Elite", amount: 15, currency: "EUR", sourceQuote: "Startgeld Elite 15 Euro" }], "Startgeld Elite 15 Euro"), schedule: fact([{ label: "Hobby Männer", date: "2026-11-08", time: "09:30", sourceQuote: "Startzeiten 09:30 Hobby Männer" }], "Startzeiten 09:30 Hobby Männer") };
+    const { details } = verifyPracticalExtraction({ facts }, round);
+    expect(details.fees?.value[0]?.amount).toBe(15);
+    expect(details.schedule?.value[0]?.time).toBe("09:30");
+  });
+  it("does not let a series' document speak for a round it does not list", () => {
+    const series = "Weser-Ems-Cup 2026/27\n8.Lauf 06.12.2026 Osnabrück\nStartgeld Elite 15 Euro";
+    const round = { name: "Weser-Ems-Cup Rheine", startDate: "2026-11-08", municipality: "Rheine", ownUrls: [url], documents: [{ url, text: series, links: [] }] };
+    expect(verifyPracticalExtraction({ facts: { fees: fact([{ label: "Elite", amount: 15, currency: "EUR", sourceQuote: "Startgeld Elite 15 Euro" }], "Startgeld Elite 15 Euro") } }, round).details.fees).toBeUndefined();
+  });
 });

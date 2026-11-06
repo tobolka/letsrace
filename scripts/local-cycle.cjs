@@ -29,7 +29,7 @@ const WEBSITE_SEARCH_EVERY_MS=4*HOUR;
 const ORGANISER_GAP_MS=HOUR/2;
 const RESUME_PUBLISHING_EVERY_MS=6*HOUR;
 /** Every filled race queues a public page check, of which the server does 60 a day. */
-const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=60;
+const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=150;
 /** An operator's pause reaches the reader without a whole catalogue dump. */
 const PAUSE_SYNC_MS=HOUR/2;
 const ASSESS_AT_LEAST_EVERY_MS=24*HOUR;
