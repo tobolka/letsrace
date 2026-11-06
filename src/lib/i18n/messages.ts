@@ -63,7 +63,7 @@ export const messages = {
     locationDenied: "Location permission denied",
     locationOutside: "We can’t show your location — the map only covers Europe.",
     noResults: "No races match these filters",
-    openWebsite: "Race website available",
+    openWebsite: "Race website",
     register: "Registration",
     regulations: "Race info",
     results: "Results",

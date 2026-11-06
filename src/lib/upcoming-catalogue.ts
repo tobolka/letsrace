@@ -10,7 +10,7 @@ import { listEvents } from "@/lib/events";
  */
 export const upcomingCatalogue = unstable_cache(
   () => listEvents({}),
-  ["public-catalogue-feed-v1"],
+  ["public-catalogue-feed-v2"],
   // 24h data cache + CDN below: Free-tier Supabase egress/log ingestion cannot
   // afford a full catalogue pull on every short TTL miss.
   { revalidate: 60 * 60 * 24, tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG] },
