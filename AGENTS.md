@@ -33,3 +33,12 @@ Every change that goes live gets judged for the riders and parents who use Let's
 - **Write Czech and English by hand**; the other languages show the English until translated. Never claim more than the change does: check the diff before writing the sentence.
 - **Group by the day it went live** (`YYYY-MM-DD`). Add to today's entry if it exists.
 - Do this in the same change as the work, so the notes and the site go out together.
+
+## Hosting allowance: pushes and crawlers cost CPU
+
+The hosting plan allows 4 hours of function CPU a month, and every production deployment empties the page cache, so the next visitors and crawlers re-render pages. Deployments now skip commits that touch no app code (`ignoreCommand` in `vercel.json`), and `src/app/robots.txt/route.ts` keeps the costliest crawlers to the pages worth reading.
+
+- Push app changes together, not one commit at a time. Pipeline scripts, reports and docs do not deploy.
+- Never check hundreds of live pages to confirm a change; check a handful.
+- Page refreshes past the daily allowance need the owner's say each time.
+- When CPU rises, look first at Firewall → Traffic (top user agents) and deployments per day.

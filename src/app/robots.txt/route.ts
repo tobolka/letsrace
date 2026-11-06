@@ -17,6 +17,27 @@ export function GET() {
     "Disallow: /admin/",
     "Disallow: /api/",
     "",
+    // Crawlers that read the whole catalogue in every language cost more of the
+    // hosting allowance than they bring: one made 45% of a day's requests. A named
+    // group replaces the one above for that crawler, so it repeats the rules.
+    "User-agent: OAI-SearchBot",
+    "Content-Signal: ai-train=no, search=yes, ai-input=yes",
+    "Allow: /",
+    "Disallow: /admin",
+    "Disallow: /admin/",
+    "Disallow: /api/",
+    "Disallow: /de/",
+    "Disallow: /pl/",
+    "Disallow: /sk/",
+    "Disallow: /race-card/",
+    "Disallow: /*-2025$",
+    "",
+    "User-agent: Amazonbot",
+    "Disallow: /",
+    "",
+    "User-agent: Reflectionbot",
+    "Disallow: /",
+    "",
     // A comment, not a directive: "Agentmap:" is not part of the robots.txt
     // grammar and validators read it as a malformed file. The catalogue is
     // already announced properly by the Link headers and under /.well-known.
