@@ -18,6 +18,7 @@ const daysUntil = (date: string, now: number) => (Date.parse(date) - now) / DAY;
 
 /** Sooner races are worth looking at again sooner: that is when organisers publish. */
 export function daysBeforeNextLook(race: RaceToComplete, failed: boolean, now = Date.now()): number {
+  if (awaitingInstructions(race, now)) return 2;
   if (!missingFields(race.practical_details)) return 30;
   const days = daysUntil(race.start_date, now);
   if (failed || days <= 30) return 3;
@@ -116,9 +117,44 @@ export function resultsLinkIn(text: string): string | null {
 /** A source page of this race that could carry details: a page of its own, not a site's front page or a calendar. */
 export function ownSourcePages(urls: (string | null | undefined)[]): string[] {
   return [...new Set(urls.filter((url): url is string => {
-    if (!url || isDumpListingUrl(url) || isCalendarPage(url) || isAggregatorUrl(url)) return false;
+    if (!url || isDumpListingUrl(url) || isCalendarPage(url) || isAggregatorUrl(url) || /\/(?:kalendar|kalendare|terminovka|termine)(?:\/|$)/i.test(url)) return false;
     try { return new URL(url).pathname.replace(/\/+$/, "").length > 3; } catch { return false; }
   }))];
+}
+
+/**
+ * The race's regulations among what was read, wherever they were found. Without this a PDF reached
+ * through the organiser's page gave its facts, but riders never got the link to it.
+ */
+export function regulationsAmong(documents: { url: string; text: string }[], race: { name: string; start_date: string; municipality?: string | null }): string | null {
+  const file = /\.pdf(?:$|\?)|propoz|ausschreibung|regulamin|regolamento|reglement|règlement/i;
+  const candidates = documents.filter(document => { try { return file.test(decodeURIComponent(document.url)); } catch { return file.test(document.url); } });
+  return candidates.find(document => /\.pdf(?:$|\?)/i.test(document.url) && documentIsAboutRace(document.text, race))?.url ?? candidates.find(document => documentIsAboutRace(document.text, race))?.url ?? null;
+}
+
+const INSTRUCTIONS = /organiza[cč]n[ií][\s_-]*pokyn|pokyny[\s_-]*(?:pro|k[\s_-]*z[aá]vodu)|org[\s_-]*pokyn|\bpokyny\b|instrukcj|informator|organisationshinweis|teilnehmerinfo|wettkampfinfo|athlete[\s_-]*guide|rider[\s_-]*guide|race[\s_-]*guide|technical[\s_-]*guide|guida[\s_-]*tecnica/i;
+const SERIES_RULES = /\/(?:pravidla|rules|regeln|reglement-serie)(?:\/|$|\.)|pravidla[\s_-]*(?:s[eé]rie|seri[aá]lu|poh[aá]ru)/i;
+const decoded = (url: string) => { try { return decodeURIComponent(url); } catch { return url; } };
+
+/** Which of the documents read are worth a link of their own. Organisers publish instructions days before a race, apart from the regulations. */
+export function documentLinks(documents: { url: string; text: string }[], race: { name: string; start_date: string; municipality?: string | null; website_url?: string | null }): { kind: "regulations" | "instructions" | "series_rules"; url: string }[] {
+  const out: { kind: "regulations" | "instructions" | "series_rules"; url: string }[] = [];
+  const hostOf = (url: string | null | undefined) => { try { return new URL(url ?? "").hostname.replace(/^www\./, ""); } catch { return ""; } };
+  const regulations = regulationsAmong(documents, race);
+  for (const document of documents) {
+    const name = `${decoded(document.url)} ${document.text.slice(0, 200)}`;
+    if (SERIES_RULES.test(decoded(document.url))) { if (hostOf(document.url) === hostOf(race.website_url)) out.push({ kind: "series_rules", url: document.url }); continue; }
+    if (INSTRUCTIONS.test(name) && documentIsAboutRace(document.text, race)) out.push({ kind: "instructions", url: document.url });
+    else if (document.url === regulations) out.push({ kind: "regulations", url: document.url });
+  }
+  return out;
+}
+
+/** Instructions come late: until they are here, a race in its last two weeks is looked at every other day. */
+export function awaitingInstructions(race: RaceToComplete, now = Date.now()): boolean {
+  const days = daysUntil(race.start_date, now);
+  const documents = (race.practical_details as { documents?: { value?: { kind?: string }[] } } | undefined)?.documents?.value ?? [];
+  return days >= 0 && days <= 14 && !documents.some(document => document.kind === "instructions");
 }
 
 const HOMEPAGE = /^https?:\/\/[^/]+\/?$/i;

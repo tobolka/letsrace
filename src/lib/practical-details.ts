@@ -8,6 +8,7 @@ export const practicalValueSchemas = {
   venue: z.object({ name: text, streetAddress: text.optional(), postalCode: z.string().trim().min(1).max(20).optional(), locality: text.optional(), countryCode: z.string().regex(/^[A-Z]{2}$/).optional(), precision: z.enum(["venue", "start", "municipality"]) }).strict(),
   organizer: z.object({ name: text, url: publicLink.optional(), contactName: text.optional(), phone: z.string().trim().min(5).max(40).optional(), email: z.string().trim().email().max(200).optional() }).strict(),
   parking: z.object({ note: z.string().trim().min(3).max(400) }).strict(),
+  documents: z.array(z.object({ kind: z.enum(["regulations", "instructions", "series_rules"]), url: publicLink }).strict()).min(1),
   categories: z.array(z.object({ ...itemEvidence, label: text, birthYears: z.string().trim().min(4).max(40).optional() }).strict()).min(1),
   schedule: z.array(z.object({ ...itemEvidence, approximate: z.boolean().optional(), label: text, date: z.iso.date(), time: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/), timeZone: z.string().max(80).refine(value => { try { new Intl.DateTimeFormat("en", { timeZone: value }); return true; } catch { return false; } }).optional() }).strict()).min(1).max(40),
   fees: z.array(z.object({ ...itemEvidence, label: text, amount: z.number().min(0).max(1000000), currency: z.string().regex(/^[A-Z]{3}$/), validUntil: z.iso.date().optional(), url: publicLink.optional() }).strict()).min(1).max(100),
@@ -17,6 +18,7 @@ export const practicalDetailsSchema = z.object({
   venue: z.object({ ...evidence, value: practicalValueSchemas.venue }).strict().optional(),
   organizer: z.object({ ...evidence, value: practicalValueSchemas.organizer }).strict().optional(),
   parking: z.object({ ...evidence, value: practicalValueSchemas.parking }).strict().optional(),
+  documents: z.object({ ...evidence, value: practicalValueSchemas.documents }).strict().optional(),
   categories: z.object({ ...evidence, value: practicalValueSchemas.categories, status: z.literal("current") }).strict().optional(),
   schedule: z.object({ ...evidence, value: practicalValueSchemas.schedule, status: z.literal("current") }).strict().optional(),
   fees: z.object({ ...evidence, value: practicalValueSchemas.fees, status: z.literal("current") }).strict().optional(),
@@ -52,8 +54,8 @@ export function practicalDetailsForEvent(value: unknown, startDate: string, endD
 }
 
 export const practicalCopy = {
-  cs: { title: "Před cestou na závod", venue: "Areál a adresa", organizer: "Pořadatel", schedule: "Program a starty", fees: "Startovné", routes: "Tratě", parking: "Parkování", categories: "Kategorie", contact: "Kontakt", source: "Zdroj", previous: "Z předchozího ročníku", neutral: "Údaj pořadatele bez určení ročníku", gpx: "Stáhnout GPX", map: "Mapa trasy", until: "do" },
-  en: { title: "Before you travel", venue: "Venue and address", organizer: "Organiser", schedule: "Schedule and starts", fees: "Entry fees", routes: "Routes", parking: "Parking", categories: "Categories", contact: "Contact", source: "Source", previous: "From a previous edition", neutral: "Year-neutral organiser information", gpx: "Download GPX", map: "Route map", until: "until" },
+  cs: { title: "Před cestou na závod", venue: "Areál a adresa", organizer: "Pořadatel", schedule: "Program a starty", fees: "Startovné", routes: "Tratě", parking: "Parkování", categories: "Kategorie", contact: "Kontakt", documents: "Dokumenty", regulationsDocument: "Propozice", instructions: "Organizační pokyny", seriesRules: "Pravidla série", source: "Zdroj", previous: "Z předchozího ročníku", neutral: "Údaj pořadatele bez určení ročníku", gpx: "Stáhnout GPX", map: "Mapa trasy", until: "do" },
+  en: { title: "Before you travel", venue: "Venue and address", organizer: "Organiser", schedule: "Schedule and starts", fees: "Entry fees", routes: "Routes", parking: "Parking", categories: "Categories", contact: "Contact", documents: "Documents", regulationsDocument: "Regulations", instructions: "Race instructions", seriesRules: "Series rules", source: "Source", previous: "From a previous edition", neutral: "Year-neutral organiser information", gpx: "Download GPX", map: "Route map", until: "until" },
 };
 
 /** Positive facts from another source add variants; absence is not evidence of removal. */

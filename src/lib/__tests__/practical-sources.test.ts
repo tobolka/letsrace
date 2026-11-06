@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { documentKind, linkScore, onlyInBrowser, posterImages, rankPracticalLinks } from "@/lib/catalog/practical-sources";
 import { isNotCycling } from "@/lib/catalog/practical-extraction";
 import { regulationsNameAnotherPlace } from "@/lib/watcher/regulations-url";
@@ -59,4 +59,12 @@ it("leaves out a table of last year's weekends carrying next year's date", () =>
   expect(withoutLastYearsTable(real, today)).toHaveLength(7);
   expect(withoutLastYearsTable(["2027-04-26", "2027-05-17"].map(race), today)).toHaveLength(2);
   expect(withoutLastYearsTable([...shifted, race("2026-11-08")], today)).toEqual([race("2026-11-08")]);
+});
+
+describe("Czech regulations that open with Statut závodu", () => {
+  it("are regulations, not a club's statutes", () => {
+    const text = "HŮRECKÝ KRPÁL\nStatut závodu CX z TBC série\nStartovné 350 Kč\n8:30 Prezentace\n10:00 Start";
+    expect(documentKind({ url: "https://spsvd.cz/propozice.pdf", text }, { name: "Hůrecký krpál", startDate: "2026-11-07" })).not.toBe("not_about_races");
+    expect(documentKind({ url: "https://klub.cz/stanovy.pdf", text: "Statut spolku\nČlánek 1" }, { name: "Závod", startDate: "2026-11-07" })).toBe("not_about_races");
+  });
 });

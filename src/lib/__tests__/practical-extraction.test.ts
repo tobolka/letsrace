@@ -231,4 +231,20 @@ describe("organiser contact, parking and categories", () => {
     const { details } = verifyPracticalExtraction({ facts: { venue: fact({ name: "Hůrka u Jistebnice 49.4728000N, 14.5471622E", precision: "venue" }, "HŮRECKÝ KRPÁL 7.11.2026 Hůrka u Jistebnice") } }, { ...context, documents: [{ url, text: `${text}\nHůrka u Jistebnice 49.4728000N, 14.5471622E`, links: [] }] });
     expect(details.venue?.value.name).toBe("Hůrka u Jistebnice");
   });
+  it("does not take a series' head for the round's organiser, nor the series for its own organiser", () => {
+    const calendar = "ODERSKÝ POHÁR 2026\n12. 09. 2026 Rohov\n19. 09. 2026 Žádlovice\n26. 09. 2026 Ostrava\n27. 09. 2026 Frýdek\n10. 10. 2026 Třebová\n7. 11. 2026 Hůrka u Jistebnice HŮRECKÝ KRPÁL\nHlavní pořadatel: ACS DRAK Vrbno";
+    const series = { ...context, ownUrls: [], documents: [{ url, text: calendar, links: [] }] };
+    expect(verifyPracticalExtraction({ facts: { organizer: { ...fact({ name: "ACS DRAK Vrbno" }, "Hlavní pořadatel: ACS DRAK Vrbno"), identity_quote: "7. 11. 2026 Hůrka u Jistebnice HŮRECKÝ KRPÁL", edition_quote: "ODERSKÝ POHÁR 2026" } } }, series).reasons.organizer).toBe("series_not_round");
+    const tbc = { ...context, name: "TBC — Hůrka", documents: [{ url, text: `${text}\nPořadatel: TBC Serie`, links: [] }] };
+    expect(verifyPracticalExtraction({ facts: { organizer: fact({ name: "TBC Serie" }, "Pořadatel: TBC Serie") } }, tbc).details.organizer).toBeUndefined();
+  });
+  it("accepts an organiser's address written without https", () => {
+    const { details } = verifyPracticalExtraction({ facts: { organizer: fact({ name: "SPSVD Jistebnice", url: "www.spsvd.cz" }, "Pořadatel: SPSVD Jistebnice") } }, { ...context, documents: [{ url, text, links: ["https://www.spsvd.cz"] }] });
+    expect(details.organizer?.value.name).toBe("SPSVD Jistebnice");
+  });
+  it("refuses spectators' tickets as an entry fee", () => {
+    const quote = "On-site box office 450 CZK";
+    const { details } = verifyPracticalExtraction({ facts: { fees: fact([{ label: "On-site box office", amount: 450, currency: "CZK", sourceQuote: quote }], quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] });
+    expect(details.fees).toBeUndefined();
+  });
 });

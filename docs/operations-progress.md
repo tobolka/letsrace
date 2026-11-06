@@ -10,6 +10,8 @@ Teď má přednost čtení propozic a doplňování údajů: místo startu, poř
 
 Nový ročník stavíme na posledním ověřeném ročníku podle [pravidel ročníků](annual-editions.md). Minulý ročník zůstává zachovaný; staré propozice nepotvrzují letošní program a startovné.
 
+**Směr od 6. 11. 2026:** systém, který se učí po webech a zvládne tisíce závodů. Návrh a pořadí stavby jsou v [systému doplňování závodů](race-completion-system.md) a má přednost před tabulkou níže.
+
 ## Pořadí práce
 
 | Priorita | Výsledek, který potřebujeme | Aktuální stav a další krok |

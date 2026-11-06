@@ -100,7 +100,8 @@ export type DocumentKind = "regulations" | "general_terms" | "not_about_races" |
 /** What a read document turned out to be, for this race's edition. */
 export function documentKind(doc: Pick<PracticalDocument, "url" | "text">, context: SourceContext): DocumentKind {
   const text = fold(doc.text), head = text.slice(0, 1500), year = Number(context.startDate.slice(0, 4));
-  if (/\bsatzung\b|\bstanovy\b|\bstatut\b|aufnahmeantrag|vereinssatzung/.test(`${head} ${fold(decoded(doc.url))}`)) return "not_about_races";
+  // "Statut závodu" heads ordinary Czech regulations; only a club's own statutes are left out.
+  if (/\bsatzung\b|\bstanovy\b|\bstatut\b(?!\s+(?:zavodu|podniku|akce|preteku))|aufnahmeantrag|vereinssatzung/.test(`${head} ${fold(decoded(doc.url))}`)) return "not_about_races";
   const details = documentDetails(doc);
   const years = [...new Set([...head.matchAll(/(?<!\d)(20[12]\d)(?!\d)/g)].map(match => Number(match[1])))];
   const speaksOfEdition = text.includes(String(year)) || linkYears(fold(decoded(doc.url))).includes(year) || new RegExp(`\\b${year - 1}\\s*[-/]\\s*${String(year).slice(2)}\\b`).test(text);

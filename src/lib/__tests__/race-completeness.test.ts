@@ -16,11 +16,11 @@ describe("which known race is worked on next", () => {
     expect(list.sort((a, b) => completionOrder(a, b, now)).map(r => r.name)).toEqual(["near sk", "near it", "far cz", "far it"]);
   });
   it("comes back sooner the nearer the race, and rarely once it has everything", () => {
-    expect(daysBeforeNextLook(race({ start_date: "2026-11-20" }), false, now)).toBe(3);
+    expect(daysBeforeNextLook(race({ start_date: "2026-11-30" }), false, now)).toBe(3);
     expect(daysBeforeNextLook(race({ start_date: "2027-01-15" }), false, now)).toBe(7);
     expect(daysBeforeNextLook(race({ start_date: "2027-06-01" }), false, now)).toBe(21);
     expect(daysBeforeNextLook(race({ start_date: "2027-06-01" }), true, now)).toBe(3);
-    expect(daysBeforeNextLook(race({ practical_details: { organizer: {}, schedule: {}, fees: {}, categories: {} } }), false, now)).toBe(30);
+    expect(daysBeforeNextLook(race({ start_date: "2027-06-01", practical_details: { organizer: {}, schedule: {}, fees: {}, categories: {} } }), false, now)).toBe(30);
   });
 });
 
@@ -114,5 +114,46 @@ describe("results of a race", () => {
     expect(resultsLinkIn("Ceny: Medaile pro první tři. Výsledky: www.maraton.cz\nParkování")).toBe("https://www.maraton.cz");
     expect(resultsLinkIn("Ergebnisse: https://my.raceresult.com/123/results.")).toBe("https://my.raceresult.com/123/results");
     expect(resultsLinkIn("Výsledky budou vyhlášeny v 15:30")).toBeNull();
+  });
+});
+
+describe("the link to a race's regulations", () => {
+  const race = { name: "Hůrecký krpál", start_date: "2026-11-07", municipality: "Hůrka u Jistebnice" };
+  const text = "HŮRECKÝ KRPÁL cyklokrosový závod. Datum Sobota 7.11.2026 Místo Hůrka u Jistebnice, kolo.";
+  it("is saved when a PDF was reached through the organiser's page", async () => {
+    const { regulationsAmong } = await import("@/lib/catalog/race-completeness");
+    expect(regulationsAmong([{ url: "https://spsvd.cz/hurecky-krpal/", text }, { url: "https://spsvd.cz/2026_Hurecky_krpal_propozice.pdf", text }], race)).toBe("https://spsvd.cz/2026_Hurecky_krpal_propozice.pdf");
+  });
+  it("is not taken from an ordinary page or another race's file", async () => {
+    const { regulationsAmong } = await import("@/lib/catalog/race-completeness");
+    expect(regulationsAmong([{ url: "https://spsvd.cz/hurecky-krpal/", text }], race)).toBeNull();
+    expect(regulationsAmong([{ url: "https://a.cz/cunkovak-propozice.pdf", text: "Čuňkovák cyklokros 12.10.2026" }], race)).toBeNull();
+  });
+});
+
+describe("documents worth a link of their own", () => {
+  const race = { name: "Hůrecký krpál", start_date: "2026-11-07", municipality: "Hůrka u Jistebnice", website_url: "https://tbcserie.cz/kalendar-2026/zavod-203/" };
+  const text = "HŮRECKÝ KRPÁL cyklokrosový závod. Datum Sobota 7.11.2026 Místo Hůrka u Jistebnice, kolo.";
+  it("tells instructions, regulations and series rules apart", async () => {
+    const { documentLinks } = await import("@/lib/catalog/race-completeness");
+    expect(documentLinks([
+      { url: "https://spsvd.cz/2026_krpal_propozice.pdf", text },
+      { url: "https://spsvd.cz/organizacni-pokyny-krpal.pdf", text: `Organizační pokyny. ${text}` },
+      { url: "https://tbcserie.cz/pravidla", text: "Pravidla TBC série" },
+    ], race)).toEqual([
+      { kind: "regulations", url: "https://spsvd.cz/2026_krpal_propozice.pdf" },
+      { kind: "instructions", url: "https://spsvd.cz/organizacni-pokyny-krpal.pdf" },
+      { kind: "series_rules", url: "https://tbcserie.cz/pravidla" },
+    ]);
+  });
+  it("takes no instructions of another race, nor rules of a foreign site", async () => {
+    const { documentLinks } = await import("@/lib/catalog/race-completeness");
+    expect(documentLinks([{ url: "https://a.cz/organizacni-pokyny.pdf", text: "Organizační pokyny Čuňkovák cyklokros 12.10.2026" }, { url: "https://jiny.cz/pravidla", text: "Pravidla" }], race)).toEqual([]);
+  });
+  it("looks every other day in a race's last two weeks until instructions are out", async () => {
+    const { daysBeforeNextLook } = await import("@/lib/catalog/race-completeness");
+    const soon = "2026-11-12";
+    expect(daysBeforeNextLook({ name: "A", start_date: soon, practical_details: {} }, false, now)).toBe(2);
+    expect(daysBeforeNextLook({ name: "A", start_date: soon, practical_details: { organizer: {}, schedule: {}, fees: {}, categories: {}, documents: { value: [{ kind: "instructions" }] } } }, false, now)).toBe(30);
   });
 });

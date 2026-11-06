@@ -18,7 +18,7 @@ import { isAccountOrNewsletterUrl } from "@/lib/watcher/registration-url";
 import { documentDetails, documentKind, onlyInBrowser, posterImages, rankPracticalLinks } from "./practical-sources";
 import { renderPagesHtml } from "@/lib/watcher/extractors/csc-render";
 import { braveSearch } from "@/lib/catalog/brave";
-import { completionOrder, daysBeforeNextLook, documentIsAboutRace, ownSourcePages, placeAndDayQuery, regulationsQuery, resultsLinkIn, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
+import { completionOrder, daysBeforeNextLook, documentIsAboutRace, documentLinks, ownSourcePages, placeAndDayQuery, regulationsAmong, regulationsQuery, resultsLinkIn, takeSearch, usableHits, websiteMayBeReplaced } from "@/lib/catalog/race-completeness";
 
 export function practicalWindows(text: string, max = 6000) {
   const spans: [number, number][] = [[0, Math.min(1200, text.length)]];
@@ -247,12 +247,18 @@ export async function enrichPracticalDetails(options: { max?: number; ids?: stri
       result.costUsd += usage.costUsd; result.read++;
       const checked = verifyPracticalExtraction(resolvePracticalEvidence(raw, documents), context);
       checked.details = combinePracticalFindings(checked.details, deterministic);
+      const links = documentLinks(documents, { name: row.name, start_date: row.start_date, municipality: row.location?.municipality, website_url: row.website_url });
+      if (links.length) {
+        const first = documents.find(document => document.url === links[0]!.url)!;
+        checked.details = { ...checked.details, documents: { value: links, sourceUrl: first.url, quote: first.text.replace(/\s+/g, " ").trim().slice(0, 200).padEnd(8, "."), checkedAt: new Date().toISOString(), editionYear: Number(row.start_date.slice(0, 4)), status: "current" } };
+      }
       await options.audit?.({ id: row.id, raw, documents, checked, usage });
       options.log?.(JSON.stringify({ id: row.id, name: row.name, documents: documents.length, details: checked.details, rejected: checked.rejected, dry: !options.apply }));
       if (options.apply) {
         const saved = await savePracticalDetails(row.id, row.public_revision, checked.details);
         if (saved.status !== "saved") { defer(); continue; }
         for (const document of documents) { found.results ??= resultsLinkIn(document.text) ?? undefined; }
+        found.regulations ??= regulationsAmong(documents, { name: row.name, start_date: row.start_date, municipality: row.location?.municipality }) ?? undefined;
         result.linksSaved += await saveFoundLinks(row, found);
         result.changedFacts += saved.changed?.length ?? 0; result.changedRaces += Number(Boolean(saved.changed?.length)); result.skippedLocked += saved.skipped?.length ?? 0;
         // Failed/partial source reads remain retryable, even after useful other facts were saved.

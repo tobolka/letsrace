@@ -101,6 +101,9 @@ export function isOwnDocument(doc: PracticalDocument, context: { name: string; s
   // An exact catalogue link may put its date below navigation and introductory text.
   // A shared domain alone never establishes which round or edition this is.
   const exactLink = context.ownUrls?.includes(doc.url);
+  // The race's stored page opening with its date ("Termín: 22. 11. 2026") is that race's, whatever deadlines follow.
+  const opening = doc.text.slice(0, 500);
+  if (exactLink && quoteContainsDate(opening, context.startDate) && editionYearSupported(opening, Number(context.startDate.slice(0, 4))) && [...allDatesIn(opening)].filter(date => date !== context.startDate).length <= 1) return true;
   const datedText = exactLink ? doc.text : head;
   if (!quoteContainsDate(datedText, context.startDate) && !allDatesIn(datedText).has(context.startDate)) return false;
   const year = context.startDate.slice(0, 4);
@@ -164,11 +167,14 @@ const labelSupported = (quote: string, label: string) => {
 };
 
 /** Normalize harmless provider formatting; never manufacture a missing required value. */
+/** A web address as organisers write it: "www.da-ba.com". */
+const withScheme = (url: unknown) => typeof url === "string" && /^www\.[^\s/]+\.[a-z]{2,}/i.test(url.trim()) ? `https://${url.trim()}` : url;
 function normalizedValue(field: PracticalField, input: unknown): unknown {
   const clean = (input: unknown) => {
     if (!input || typeof input !== "object" || Array.isArray(input)) return input;
     const row = { ...input } as Record<string, unknown>;
     for (const key of ["url", "gpxUrl", "mapUrl"]) if (row[key] === "" || row[key] === null) delete row[key];
+    if (row.url !== undefined) row.url = withScheme(row.url);
     if (field === "fees" && typeof row.amount === "string" && /^\d+(?:[.,]\d{1,2})?$/.test(row.amount)) row.amount = Number(row.amount.replace(",", "."));
     if (field === "venue" && ["area", "locality", "town", "city", "village", "region"].includes(String(row.precision))) row.precision = "municipality";
     if (typeof row.sourceQuote === "string") row.sourceQuote = storedQuote(row.sourceQuote, String(row.label ?? row.name ?? ""));
@@ -190,7 +196,7 @@ const isTimeRange = (quote: string, time: string) => {
   const hour = Number(time.slice(0, 2)), minute = time.slice(3, 5);
   return new RegExp(`\\b0?${hour}[:.h]${minute}\\s*(?:[-–—]|to|bis)\\s*\\d{1,2}[:.h]\\d{2}`, "i").test(quote);
 };
-const isPrizeOrTicket = (quote: string) => /\b(?:preisgeld|prize|premi|nagrod|pramie|ticketprijzen|voorverkoop|dagprijs|spectator|divack|deposit|refundable|kaution|pfand|zaloha|kauce|kaucja|einspruch\w*|anzeigegebuhr|protest\w*)\b/i.test(fold(quote))
+const isPrizeOrTicket = (quote: string) => /\b(?:box office|people over \d+|admission|vstupn[eé]|vstupenk\w*|preisgeld|prize|premi|nagrod|pramie|ticketprijzen|voorverkoop|dagprijs|spectator|divack|deposit|refundable|kaution|pfand|zaloha|kauce|kaucja|einspruch\w*|anzeigegebuhr|protest\w*)\b/i.test(fold(quote))
   || /\bpreis\b(?!\s*(?:fur|pro|je|:|\d))/i.test(fold(quote))
   || /\bceny\b(?!\s+(?:startovneho|za\s+(?:start|ucast|registraci)))/i.test(fold(quote));
 
@@ -236,7 +242,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
     if (field === "venue") {
       const v = practicalValueSchemas.venue.parse(value.data);
       // "Prachatice 48.9982933N, 14.0170867E": the coordinates are not part of the name.
-      v.name = v.name.replace(/[,|\s]*(?:GPS:?\s*)?\d{1,2}\.\d{3,}\s*°?\s*[NS]?[,\s]+\d{1,3}\.\d{3,}\s*°?\s*[EW]?\)?\s*$/i, "").trim() || v.name;
+      v.name = v.name.replace(/[,|\s(]*(?:GPS:?\s*)?\d{1,2}\.\d{3,}\s*°?\s*[NS]?[,\s]+\d{1,3}\.\d{3,}\s*°?\s*[EW]?\)?\s*$/i, "").replace(/[\s,(|–-]+$/, "").trim() || v.name;
       value.data = v;
       // Its address may stand a line or two from its name, but it must be in the document.
       supported = (labelSupported(fact.quote, v.name) || ownDocument && contains(doc.text, v.name)) && [v.streetAddress, v.postalCode, v.locality].filter((part): part is string => Boolean(part)).every(part => contains(doc.text, part)) && (identity || ownDocument || v.name === context.knownVenue);
@@ -246,6 +252,11 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       if (v.precision === "start" && !/start|départ|partenza|štart/i.test(fact.quote)) value.data = { ...v, precision: "venue" };
     } else if (field === "organizer") {
       const v = practicalValueSchemas.organizer.parse(value.data);
+      // A document listing many race days is the series': its head is not this round's organiser, and the series is not its own organiser.
+      const otherDays = [...allDatesIn(doc.text)].filter(date => date.startsWith(String(year)) && date !== context.startDate).length;
+      const raceNameWords = new Set(fold(context.name).match(/[a-z0-9]{3,}/g) ?? []);
+      const organiserWords = (fold(v.name).match(/[a-z0-9]{3,}/g) ?? []).filter(word => !["serie", "series", "seria"].includes(word));
+      if (otherDays > 3 && !isOwnDocument(doc, context) || organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
       // "Organizátor:" often heads the lines below it, so the word may stand just above the quote.
       const lines = doc.text.split("\n"), at = lines.findIndex(line => contains(line, v.name));
       const nearby = at >= 0 ? lines.slice(Math.max(0, at - 3), at + 1).join(" ") : "";
