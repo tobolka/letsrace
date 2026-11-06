@@ -55,6 +55,9 @@ describe("what may speak for a race", () => {
   it("refuses a page of another race in that town", () => {
     expect(documentIsAboutRace("Cyklokros Tábor TBC série 7.11.2026, Tábor", { name: "TBC — HŮRKA", start_date: "2026-11-07", municipality: "Hůrka u Jistebnice" })).toBe(false);
   });
+  it("refuses another year's event whose sidebar lists this race", () => {
+    expect(documentIsAboutRace("Soběšická Mulda 12. 10. 2025 MTB závod Brno. Další nejbližší akce: 7. 11. 2026 Brněnský cyklokrosový pohár", { name: "Brněnský cyklokrosový pohár", start_date: "2026-11-07", municipality: "Pisárky" })).toBe(false);
+  });
   it("refuses a casino in the same town on the same day", () => {
     expect(documentIsAboutRace("Grand Prix Šamorín v pokeru, Card Casino Šamorín, 22.11.2026, 8. kolo turnaje", { name: "8. kolo: Grand Prix Šamorín (UCI C2)", start_date: "2026-11-22", municipality: "Šamorín" })).toBe(false);
   });

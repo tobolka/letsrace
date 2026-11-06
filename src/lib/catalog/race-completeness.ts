@@ -84,6 +84,9 @@ export function distinctiveWords(name: string): string[] {
  */
 export function documentIsAboutRace(text: string, race: { name: string; start_date: string; municipality?: string | null }): boolean {
   const t = folded(text).replace(/\s+/g, " ");
+  // A page opening with another year's date is that event's, even if "next events" beside it names this race.
+  const firstDate = /(?<!\d)\d{1,2}\s*\.\s*\d{1,2}\s*\.\s*(20\d{2})(?!\d)/.exec(t.slice(0, 400));
+  if (firstDate && firstDate[1] !== race.start_date.slice(0, 4) && !distinctiveWords(race.name.split(/[—–]/).at(-1)!).some(word => t.slice(0, firstDate.index).includes(word))) return false;
   if (!CYCLING.test(t) || OTHER_SPORT.test(t.slice(0, 3000)) && !/cyklokros|cyclocross|\bmtb\b/.test(t.slice(0, 1500))) return false;
   const place = race.municipality ? folded(race.municipality).split(/[^a-z0-9]+/).filter(word => word.length >= 3) : [];
   // Catalogues label rounds "Series — Town": the page may call the race something else, but then its place must be there, with the series.

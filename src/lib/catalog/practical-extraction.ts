@@ -234,7 +234,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
     if ((field === "venue" || field === "organizer") && quoteIsAboutAnotherDay(fact.quote, context.startDate, context.endDate ?? context.startDate)) { refuse(key, "not_about_this_race"); continue; }
     // Where a venue or organiser stands may outlast its year; it then simply is not a fresh confirmation.
     if (fact.status === "current" && !edition && !ownDocument && (field === "venue" || field === "organizer")) fact.status = "year_neutral";
-    if (fact.status === "current" && ((!edition && !ownDocument) || [...fact.quote.matchAll(/(?:ročník|edition|saison|season|programme|program|propozice)\s*[:—-]?\s*(20\d{2}(?:\s*[-/]\s*(?:20)?\d{2})?)/gi)].some(match => !editionYearSupported(match[1], year)))) { refuse(key, "not_this_edition"); continue; }
+    if (fact.status === "current" && ((!edition && !ownDocument) || [...fact.quote.matchAll(/(?:ročník|edition|saison|season|programme|program|propozice)\s*[:—-]?\s*(20\d{2}(?:\s*[-/]\s*(?:20)?\d{2})?)/gi)].some(match => !editionYearSupported(match[1], year) && Number(match[1].slice(0, 4)) >= year - 3))) { refuse(key, "not_this_edition"); continue; }
     if (["schedule", "fees", "routes", "categories"].includes(field) && fact.status !== "current" && !ownDocument && !edition) { refuse(key, "not_this_edition"); continue; }
     const rowDocumentOK = (itemDoc: PracticalDocument | undefined) => Boolean(itemDoc && (itemDoc.url === doc.url || isOwnDocument(itemDoc, context)));
     const linkOK = (url?: string) => !url || doc.links.includes(url) || url === doc.url;
@@ -254,15 +254,17 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       const v = practicalValueSchemas.organizer.parse(value.data);
       // A document listing many race days is the series': its head is not this round's organiser, and the series is not its own organiser.
       const otherDays = [...allDatesIn(doc.text)].filter(date => date.startsWith(String(year)) && date !== context.startDate).length;
-      const raceNameWords = new Set(fold(context.name).match(/[a-z0-9]{3,}/g) ?? []);
+      // "Series — Town": the words before the dash are the series'. A name without one says nothing about it.
+      const seriesPart = /\s[—–-]\s/.test(context.name) ? context.name.split(/\s[—–-]\s/)[0]! : "";
+      const raceNameWords = new Set(fold(seriesPart).match(/[a-z0-9]{3,}/g) ?? []);
       const organiserWords = (fold(v.name).match(/[a-z0-9]{3,}/g) ?? []).filter(word => !["serie", "series", "seria"].includes(word));
-      if (otherDays > 3 && !isOwnDocument(doc, context) || organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
+      if (otherDays > 3 && !isOwnDocument(doc, context) && !quoteContainsDate(fact.quote, context.startDate) || organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
       // "Organizátor:" often heads the lines below it, so the word may stand just above the quote.
       const lines = doc.text.split("\n"), at = lines.findIndex(line => contains(line, v.name));
       const nearby = at >= 0 ? lines.slice(Math.max(0, at - 3), at + 1).join(" ") : "";
       const compactName = fold(v.name).replace(/[^a-z0-9]/g, ""), host = (() => { try { return fold(new URL(doc.url).hostname).replace(/[^a-z0-9]/g, ""); } catch { return ""; } })();
       // A page on the club's own domain needs no "organiser" word to say whose it is.
-      supported = (contains(fact.quote, v.name) || compactName.length >= 5 && fold(fact.quote).replace(/[^a-z0-9]/g, "").includes(compactName) || wordsStandIn(fact.quote, v.name)) && (compactName.length >= 5 && host.includes(compactName) || /poradat|porada|usporiadat|organis|organizz|organiz|orga-?team|veranstalter|ausrichter|promoter/i.test(fold(`${fact.quote} ${nearby}`).replace(/\s/g, "")));
+      supported = (contains(fact.quote, v.name) || compactName.length >= 5 && fold(fact.quote).replace(/[^a-z0-9]/g, "").includes(compactName) || wordsStandIn(fact.quote, v.name)) && (compactName.length >= 5 && host.includes(compactName) || /poradat|porada|usporiadat|organis|organizz|organiz|orga-?team|veranstalter|ausrichter|promoter|\(kont/i.test(fold(`${fact.quote} ${nearby}`).replace(/\s/g, "")));
       if (supported) {
         // A contact counts only if the document really gives it.
         const digits = (t: string) => t.replace(/\D/g, "");

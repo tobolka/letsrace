@@ -247,4 +247,9 @@ describe("organiser contact, parking and categories", () => {
     const { details } = verifyPracticalExtraction({ facts: { fees: fact([{ label: "On-site box office", amount: 450, currency: "CZK", sourceQuote: quote }], quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] });
     expect(details.fees).toBeUndefined();
   });
+  it("reads \"ročník 2011-2012\" as a birth year, not as another edition", () => {
+    const quote = "ZK – Kadetky, ročník 2011-2012";
+    const { details } = verifyPracticalExtraction({ facts: { categories: fact([{ label: "Kadetky", birthYears: "2011-2012", sourceQuote: quote }], quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] });
+    expect(details.categories?.value[0]?.label).toBe("Kadetky");
+  });
 });

@@ -42,6 +42,20 @@ Každá nalezená chyba končí pravidlem a testem, ne opravou záznamu:
 
 Výběr hotových knihoven je zadán v [průzkumu](../reports/pdf-extraction-2026-11-05/morning-2026-11-06/LIBRARY-RESEARCH-PROMPT.md).
 
+## Co ukázalo ruční čtení a měření (6. 11.)
+Závody v příštích 70 dnech bez propozic, 197: u 115 neznáme vlastní web, u 29 web PDF nezveřejňuje, u 18 žádné PDF nevypadá jako propozice, u 32 patří PDF jinému závodu nebo ročníku, 3 přijaté. **Největší díra je nalezení webu pořadatele.**
+
+Postupy podle výtěžnosti:
+- Stránky závodů na webu série a soubory v kalendáři disciplíny (cyklokros.cz, slovenský svaz): vysoká přesnost, ale jen pro pár webů. Celý katalog: 14 změn.
+- Seznam PDF přes WordPress a odkazy v kódu stránky: u 110 z 222 webů vrátil dokumenty, přijato 7 ze 422 závodů, hlavně protože propozice 2027 ještě nejsou.
+- Brave `site:… filetype:pdf`: funguje, index ale chybí a zpožďuje se.
+- Vzor adresy z jednoho dokumentu (`race-guide-<město>-2026.pdf`): 3 ze 3 v rámci série.
+- Portál českého svazu a `data.ceskysvazcyklistiky.cz`: slepá ulička, starý server nefunguje a detail závodu propozice neměl.
+
+Systémové chyby nalezené čtením a opravené pravidlem: „Statut závodu“ čtený jako stanovy, „ročník 2011“ čtený jako ročník závodu, stránka jiného roku přijatá kvůli postrannímu panelu.
+
+Co se ještě nedá vyjádřit: délka okruhu u cyklokrosu, kontakt bez uvedeného pořadatele, startovné „dle pravidel série“, které má dědit kolo ze série. Poslední uvádějí TBC, Janev i slovenský pohár, takže jde o další systémovou úlohu.
+
 ## Pět částí
 1. **Fronta podle chybějících položek.** Závod se vrací podle toho, co mu chybí a jak blízko je. Hotovo: pořadí a intervaly v `race-completeness.ts`.
 2. **Naučené postupy po webech.** Pro každý web se uloží postup bez kódu: jak z kalendáře nebo série najít stránku závodu, kde leží propozice a pod jakými nadpisy jsou údaje. AI ho navrhne jednou z několika ukázek. Systém ho ověří na stránkách, a pokud uspěje, další čtení jsou zdarma. Když úspěšnost spadne, postup se pozastaví a web se naučí znovu. Přidání webu tak znamená jednu cenu, ne cenu za každý závod.

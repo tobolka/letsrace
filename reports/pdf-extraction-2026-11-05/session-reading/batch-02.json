@@ -1,0 +1,632 @@
+[
+{
+"id": "a1b88f9e-da8f-4c24-bc8b-cfc83f8cf244",
+"how": "vzor cyklokros.cz/files/race-guide-<město>-2026.pdf odhadnutý podle Veselí; dokument si potvrdí datum sám",
+"documents": [
+"https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "Cycling club Jihočeské naděje z.s.",
+"contactName": "Radek Bechyňský",
+"phone": "+420 776 797 360",
+"email": "info@cyklokrosveseli.cz"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Organiser: Cycling club Jihočeské naděje z.s.",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"venue": {
+"value": {
+"name": "Veselské pískovny",
+"precision": "venue"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Venue: Veselské pískovny - Hamerská 259, 391 81 Veselí nad Lužnicí II",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"parking": {
+"value": {
+"note": "See the map—parking is charged: 350 CZK for caravans, 150 CZK for passenger cars and vans"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Parking: See the map—parking is charged: 350 CZK for caravans, 150 CZK for passenger cars and vans",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"routes": {
+"value": [
+{
+"name": "Race course",
+"distanceKm": 2.7,
+"sourceQuote": "Race course: 2700 m, double pit"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Race course: 2700 m, double pit",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"schedule": {
+"value": [
+{
+"label": "MEN JUNIOR",
+"date": "2026-12-12",
+"time": "11:10",
+"sourceQuote": "11:10 MEN JUNIOR – C1 (40 min.)"
+},
+{
+"label": "WOMEN",
+"date": "2026-12-12",
+"time": "12:15",
+"sourceQuote": "12:15 WOMEN – C1 (45 min.)"
+},
+{
+"label": "MEN",
+"date": "2026-12-12",
+"time": "13:30",
+"sourceQuote": "13:30 MEN – C1 (60 min.)"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "11:10 MEN JUNIOR – C1 (40 min.)",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+}
+},
+"forceInstructions": true
+},
+{
+"id": "e7f382e3-eaec-4ee7-8942-1c03d89e6042",
+"how": "vzor cyklokros.cz/files/race-guide-<město>-2026.pdf odhadnutý podle Veselí; dokument si potvrdí datum sám",
+"documents": [
+"https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "Cycling club Jihočeské naděje z.s.",
+"contactName": "Radek Bechyňský",
+"phone": "+420 776 797 360",
+"email": "info@cyklokrosveseli.cz"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Organiser: Cycling club Jihočeské naděje z.s.",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"venue": {
+"value": {
+"name": "Veselské pískovny",
+"precision": "venue"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Venue: Veselské pískovny - Hamerská 259, 391 81 Veselí nad Lužnicí II",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"parking": {
+"value": {
+"note": "See the map—parking is charged: 350 CZK for caravans, 150 CZK for passenger cars and vans"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Parking: See the map—parking is charged: 350 CZK for caravans, 150 CZK for passenger cars and vans",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"routes": {
+"value": [
+{
+"name": "Race course",
+"distanceKm": 2.7,
+"sourceQuote": "Race course: 2700 m, double pit"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "Race course: 2700 m, double pit",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+},
+"schedule": {
+"value": [
+{
+"label": "WOMEN BEGINNER YOUNGER",
+"date": "2026-12-13",
+"time": "09:15",
+"sourceQuote": "09:15 WOMEN BEGINNER YOUNGER (a separate start, 20 min.)"
+},
+{
+"label": "WOMEN BEGINNER OLDER",
+"date": "2026-12-13",
+"time": "09:55",
+"sourceQuote": "09:55 WOMEN BEGINNER OLDER (a separate start, 20 min.)"
+},
+{
+"label": "MEN BEGINNER YOUNGER",
+"date": "2026-12-13",
+"time": "10:35",
+"sourceQuote": "10:35 MEN BEGINNER YOUNGER (a separate start, 20 min.)"
+},
+{
+"label": "MEN BEGINNER OLDER",
+"date": "2026-12-13",
+"time": "11:15",
+"sourceQuote": "11:15 MEN BEGINNER OLDER (a separate start, 20 min.)"
+},
+{
+"label": "WOMEN CADET",
+"date": "2026-12-13",
+"time": "12:00",
+"sourceQuote": "12:00 WOMEN CADET (a separate start, 30 min.)"
+},
+{
+"label": "MEN CADET",
+"date": "2026-12-13",
+"time": "12:50",
+"sourceQuote": "12:50 MEN CADET (a separate start, 30 min.)"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-veseli-nad-luznici-2026.pdf",
+"quote": "09:15 WOMEN BEGINNER YOUNGER (a separate start, 20 min.)",
+"identity_quote": "8th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday and Sunday 12 and 13 December 2026",
+"status": "current"
+}
+}
+},
+{
+"id": "acfd9ef7-6c71-47d8-97f6-9f8fdddf1350",
+"how": "vzor cyklokros.cz/files/race-guide-<město>-2026.pdf odhadnutý podle Veselí; dokument si potvrdí datum sám",
+"documents": [
+"https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "CYKLOKLUB Jičín z.s.",
+"contactName": "Petr Kordík",
+"phone": "+420 737 948 738",
+"email": "petr.kordik@centrum.cz"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+"quote": "Organiser: CYKLOKLUB Jičín z.s.",
+"identity_quote": "5th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 14 November 2026",
+"status": "current"
+},
+"venue": {
+"value": {
+"name": "Jičín – Šibeňák park",
+"precision": "venue"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+"quote": "Venue: Jičín – Šibeňák park",
+"identity_quote": "5th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 14 November 2026",
+"status": "current"
+},
+"parking": {
+"value": {
+"note": "Adjacent meadows, parking lot at Datart (preferably for MEN and WOMEN Elite, reservations by e-mail at klapkova@gymjc.cz), other areas without reservations – see the map"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+"quote": "Parking: Adjacent meadows, parking lot at Datart (preferably for MEN and WOMEN Elite, reservations by e-mail at klapkova@gymjc.cz), other areas without reservations – see the map",
+"identity_quote": "5th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 14 November 2026",
+"status": "current"
+},
+"routes": {
+"value": [
+{
+"name": "Race course",
+"distanceKm": 2.6,
+"sourceQuote": "Race course: 2600 m, double pit"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+"quote": "Race course: 2600 m, double pit",
+"identity_quote": "5th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 14 November 2026",
+"status": "current"
+},
+"schedule": {
+"value": [
+{
+"label": "WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN",
+"date": "2026-11-14",
+"time": "09:10",
+"sourceQuote": "09:10 WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN"
+},
+{
+"label": "MEN BEGINNER OLDER and MEN BEGINNER YOUNGER",
+"date": "2026-11-14",
+"time": "10:15",
+"sourceQuote": "10:15 MEN BEGINNER OLDER and MEN BEGINNER YOUNGER (joint start"
+},
+{
+"label": "MEN CADET",
+"date": "2026-11-14",
+"time": "11:00",
+"sourceQuote": "11:00 MEN CADET (30 min.)"
+},
+{
+"label": "MEN JUNIOR",
+"date": "2026-11-14",
+"time": "12:20",
+"sourceQuote": "12:20 MEN JUNIOR – C2 (40 min.)"
+},
+{
+"label": "WOMEN",
+"date": "2026-11-14",
+"time": "13:20",
+"sourceQuote": "13:20 WOMEN – C2 (45 min.)"
+},
+{
+"label": "MEN",
+"date": "2026-11-14",
+"time": "14:30",
+"sourceQuote": "14:30 MEN – C2 (60 min.)"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+"quote": "09:10 WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN",
+"identity_quote": "5th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 14 November 2026",
+"status": "current"
+}
+}
+},
+{
+"id": "e36ac730-584a-4776-b389-c1b3271be60a",
+"how": "vzor cyklokros.cz/files/race-guide-<město>-2026.pdf odhadnutý podle Veselí; dokument si potvrdí datum sám",
+"documents": [
+"https://www.cyklokros.cz/files/race-guide-kolin-2026.pdf"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "Z&S Apache Team, z.s.",
+"contactName": "Mgr. Jan Slavíček",
+"phone": "+420 777 722 710",
+"email": "slavicek@cyclingagency.cz"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-kolin-2026.pdf",
+"quote": "Organiser: Z&S Apache Team, z.s.",
+"identity_quote": "7th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 5 December 2026",
+"status": "current"
+},
+"venue": {
+"value": {
+"name": "Kolín – Borky, Brankovická street 979, Mirek Tuček Athletic Stadium",
+"precision": "venue"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-kolin-2026.pdf",
+"quote": "Venue: Kolín – Borky, Brankovická street 979, Mirek Tuček Athletic Stadium",
+"identity_quote": "7th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 5 December 2026",
+"status": "current"
+},
+"parking": {
+"value": {
+"note": "Brankovická Street, see map"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-kolin-2026.pdf",
+"quote": "Parking: Brankovická Street, see map",
+"identity_quote": "7th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 5 December 2026",
+"status": "current"
+},
+"routes": {
+"value": [
+{
+"name": "Race course",
+"distanceKm": 3.4,
+"sourceQuote": "Race course: 3400 m, double pit"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-kolin-2026.pdf",
+"quote": "Race course: 3400 m, double pit",
+"identity_quote": "7th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 5 December 2026",
+"status": "current"
+},
+"schedule": {
+"value": [
+{
+"label": "WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN",
+"date": "2026-12-05",
+"time": "09:10",
+"sourceQuote": "09:10 WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN"
+},
+{
+"label": "MEN BEGINNER OLDER and MEN BEGINNER YOUNGER",
+"date": "2026-12-05",
+"time": "10:15",
+"sourceQuote": "10:15 MEN BEGINNER OLDER and MEN BEGINNER YOUNGER (joint start"
+},
+{
+"label": "MEN CADET",
+"date": "2026-12-05",
+"time": "11:00",
+"sourceQuote": "11:00 MEN CADET (30 min.)"
+},
+{
+"label": "MEN JUNIOR",
+"date": "2026-12-05",
+"time": "12:20",
+"sourceQuote": "12:20 MEN JUNIOR – C2 (40 min.)"
+},
+{
+"label": "WOMEN",
+"date": "2026-12-05",
+"time": "13:20",
+"sourceQuote": "13:20 WOMEN – C2 (45 min.)"
+},
+{
+"label": "MEN",
+"date": "2026-12-05",
+"time": "14:30",
+"sourceQuote": "14:30 MEN – C2 (60 min.)"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-kolin-2026.pdf",
+"quote": "09:10 WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN",
+"identity_quote": "7th race of JANEV CUP 2026",
+"edition_quote": "Date: Saturday, 5 December 2026",
+"status": "current"
+}
+}
+},
+{
+"id": "1705b643-ec03-4030-bfa6-245040c7eeae",
+"how": "vzor cyklokros.cz/files/race-guide-<město>-2026.pdf odhadnutý podle Veselí; dokument si potvrdí datum sám",
+"documents": [
+"https://www.cyklokros.cz/files/race-guide-prachatice-2026.pdf"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "LYKO KLUB Prachatice z.s.",
+"contactName": "Václav Dostál",
+"phone": "+420 737 291 159",
+"email": "lykoklub@seznam.cz"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-prachatice-2026.pdf",
+"quote": "Organiser: LYKO KLUB Prachatice z.s.",
+"identity_quote": "6th race of JANEV CUP 2026",
+"edition_quote": "Date: Tuesday 17 November 2026",
+"status": "current"
+},
+"venue": {
+"value": {
+"name": "Prachatice",
+"precision": "venue"
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-prachatice-2026.pdf",
+"quote": "Venue: Prachatice (48.9982300N, 14.0173400E; https://cxprachatice.cz/)",
+"identity_quote": "6th race of JANEV CUP 2026",
+"edition_quote": "Date: Tuesday 17 November 2026",
+"status": "current"
+},
+"parking": {
+"value": {
+"note": "At the race venue If you are interested in team parking and caravans, please contact the race director."
+},
+"source_url": "https://www.cyklokros.cz/files/race-guide-prachatice-2026.pdf",
+"quote": "Parking: At the race venue If you are interested in team parking and caravans, please contact the race director.",
+"identity_quote": "6th race of JANEV CUP 2026",
+"edition_quote": "Date: Tuesday 17 November 2026",
+"status": "current"
+},
+"routes": {
+"value": [
+{
+"name": "Race course",
+"distanceKm": 2.5,
+"sourceQuote": "Race course: 2500 m, double pit"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-prachatice-2026.pdf",
+"quote": "Race course: 2500 m, double pit",
+"identity_quote": "6th race of JANEV CUP 2026",
+"edition_quote": "Date: Tuesday 17 November 2026",
+"status": "current"
+},
+"schedule": {
+"value": [
+{
+"label": "WOMEN BEGINNER OLDER and WOMEN BEGINNER YOUNGER",
+"date": "2026-11-17",
+"time": "09:40",
+"sourceQuote": "09:40 WOMEN BEGINNER OLDER and WOMEN BEGINNER YOUNGER (joint"
+},
+{
+"label": "MEN BEGINNER YOUNGER",
+"date": "2026-11-17",
+"time": "10:20",
+"sourceQuote": "10:20 MEN BEGINNER YOUNGER (a separate start, 20 min.)"
+},
+{
+"label": "MEN BEGINNER OLDER",
+"date": "2026-11-17",
+"time": "11:00",
+"sourceQuote": "11:00 MEN BEGINNER OLDER (a separate start, 20 min.)"
+},
+{
+"label": "WOMEN CADET",
+"date": "2026-11-17",
+"time": "12:20",
+"sourceQuote": "12:20 WOMEN CADET (a separate start, 30 min.)"
+},
+{
+"label": "MEN CADET",
+"date": "2026-11-17",
+"time": "13:10",
+"sourceQuote": "13:10 MEN CADET (a separate start, 30 min.)"
+},
+{
+"label": "MEN JUNIOR",
+"date": "2026-11-17",
+"time": "14:00",
+"sourceQuote": "14:00 MEN JUNIOR (a separate start, 40 min.)"
+}
+],
+"source_url": "https://www.cyklokros.cz/files/race-guide-prachatice-2026.pdf",
+"quote": "09:40 WOMEN BEGINNER OLDER and WOMEN BEGINNER YOUNGER (joint",
+"identity_quote": "6th race of JANEV CUP 2026",
+"edition_quote": "Date: Tuesday 17 November 2026",
+"status": "current"
+}
+}
+},
+{
+"id": "ed72dd49-74ac-4c25-a9ac-885b81f47756",
+"how": "web obchodu pořadatele seriálu; řádek kola v tabulce seriálu",
+"documents": [
+"https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "ACK Stará Ves n. O.",
+"contactName": "p. Nepraš",
+"phone": "602 576 603"
+},
+"source_url": "https://www.kolarna.eu/kolarna-cba-odersky-pohar-2026/",
+"quote": "08. 11. 2026 – ACK Stará Ves n. O. II. (kont: p. Nepraš, 602 576 603)",
+"identity_quote": "08. 11. 2026 – ACK Stará Ves n. O. II.",
+"edition_quote": "25. ROČNÍK KOLÁRNA – CBA ODERSKÝ POHÁR 2026",
+"status": "current"
+}
+}
+},
+{
+"id": "de1bbff1-20a7-403b-9528-39d79aa3bed8",
+"how": "stránka kola na webu série",
+"documents": [
+"https://tbcserie.cz/kalendar-2026/zavod-211/"
+],
+"facts": {
+"categories": {
+"value": [
+{
+"label": "odrážedla dívky/chlapci",
+"birthYears": "2023–2025",
+"sourceQuote": "odrážedla dívky/chlapci (2023–2025)"
+},
+{
+"label": "kola dívky/chlapci 2021–2022",
+"birthYears": "2021–2022",
+"sourceQuote": "kola dívky/chlapci (2021–2022)"
+},
+{
+"label": "kola dívky/chlapci 2019–2020",
+"birthYears": "2019–2020",
+"sourceQuote": "kola dívky/chlapci (2019–2020)"
+},
+{
+"label": "kola dívky/chlapci 2017–2018",
+"birthYears": "2017–2018",
+"sourceQuote": "kola dívky/chlapci (2017–2018)"
+},
+{
+"label": "mladší žákyně",
+"birthYears": "2015–2016",
+"sourceQuote": "mladší žákyně (2015–2016)"
+},
+{
+"label": "mladší žáci",
+"birthYears": "2015–2016",
+"sourceQuote": "mladší žáci (2015–2016)"
+},
+{
+"label": "starší žákyně",
+"birthYears": "2013–2014",
+"sourceQuote": "starší žákyně (2013–2014)"
+},
+{
+"label": "starší žáci",
+"birthYears": "2013–2014",
+"sourceQuote": "starší žáci (2013–2014)"
+},
+{
+"label": "kadetky",
+"birthYears": "2011–2012",
+"sourceQuote": "kadetky (2011–2012)"
+},
+{
+"label": "kadeti",
+"birthYears": "2011–2012",
+"sourceQuote": "kadeti (2011–2012)"
+},
+{
+"label": "juniorky",
+"birthYears": "2009–2010",
+"sourceQuote": "juniorky (2009–2010)"
+},
+{
+"label": "junioři",
+"birthYears": "2009–2010",
+"sourceQuote": "junioři (2009–2010)"
+},
+{
+"label": "ženy",
+"birthYears": "2008 a starší",
+"sourceQuote": "ženy (2008 a starší)"
+},
+{
+"label": "muži E",
+"birthYears": "1966 a starší",
+"sourceQuote": "muži E (1966 a starší)"
+},
+{
+"label": "muži OPEN",
+"birthYears": "2008 a starší",
+"sourceQuote": "muži OPEN (2008 a starší)"
+}
+],
+"source_url": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+"quote": "mladší žákyně (2015–2016)",
+"identity_quote": "Vimperský cyklokros na Vodníku (TBC série)",
+"edition_quote": "Termín: 14. 11. 2026",
+"status": "current"
+}
+}
+},
+{
+"id": "3a10adcc-1cb1-4abf-b0a4-7b58a0c9cf2d",
+"how": "stránka kola na webu série",
+"documents": [
+"https://tbcserie.cz/kalendar-2026/zavod-216/"
+],
+"facts": {
+"organizer": {
+"value": {
+"name": "LYKO klub Prachatice , Sportovní Zařízení Prachatice",
+"contactName": "Václav Dostál",
+"phone": "737291159",
+"email": "lykoklub@seznam.cz",
+"url": "https://cxprachatice.cz/"
+},
+"source_url": "https://tbcserie.cz/kalendar-2026/zavod-216/",
+"quote": "Pořadatel: LYKO klub Prachatice , Sportovní Zařízení Prachatice",
+"identity_quote": "CYKLOKROS PRACHATICE",
+"edition_quote": "Datum konání: 15.11.2026",
+"status": "current"
+}
+}
+}
+]

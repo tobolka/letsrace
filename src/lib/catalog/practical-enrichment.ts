@@ -83,7 +83,7 @@ export async function savePracticalDetails(eventId: string, revision: string, de
 }
 
 /** Links found for a race go where nothing better is stored, unless someone locked them. */
-async function saveFoundLinks(row: { id: string; website_url?: string | null; regulations_url?: string | null; results_url?: string | null }, found: { website?: string; regulations?: string; results?: string }): Promise<number> {
+export async function saveFoundLinks(row: { id: string; website_url?: string | null; regulations_url?: string | null; results_url?: string | null }, found: { website?: string; regulations?: string; results?: string }): Promise<number> {
   if (!found.website && !found.regulations && !found.results) return 0;
   const db = createServerSupabase();
   const { data: overrides } = await db.from("event_overrides").select("locked_fields").eq("event_id", row.id).maybeSingle();
