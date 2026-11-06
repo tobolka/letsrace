@@ -36,9 +36,10 @@ Every change that goes live gets judged for the riders and parents who use Let's
 
 ## Hosting allowance: pushes and crawlers cost CPU
 
-The hosting plan allows 4 hours of function CPU a month, and every production deployment empties the page cache, so the next visitors and crawlers re-render pages. Deployments now skip commits that touch no app code (`ignoreCommand` in `vercel.json`), and `src/app/robots.txt/route.ts` keeps the costliest crawlers to the pages worth reading.
+The hosting plan allows 4 hours of function CPU a month, and every production deployment empties the page cache, so the next visitors and crawlers re-render pages. A commit whose message contains `[no deploy]` does not deploy (`ignoreCommand` in `vercel.json`; git itself is not available there, because `.vercelignore` keeps `.git/` out), and `src/app/robots.txt/route.ts` keeps the costliest crawlers to the pages worth reading.
 
-- Push app changes together, not one commit at a time. Pipeline scripts, reports and docs do not deploy.
+- Push app changes together, not one commit at a time.
+- Put `[no deploy]` in the message of the last commit of a push only if nothing in that push changes the running site: pipeline scripts, reports and docs. Only that last commit is looked at, so a marked commit on top of an app change would leave the change undeployed.
 - Never check hundreds of live pages to confirm a change; check a handful.
 - Page refreshes past the daily allowance need the owner's say each time.
 - When CPU rises, look first at Firewall → Traffic (top user agents) and deployments per day.
