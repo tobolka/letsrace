@@ -1,0 +1,136 @@
+{
+ "local": [
+  {
+   "id": "5093dc70-bec9-4897-b050-7348f6084f31",
+   "name": "Cross im Bad",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "7eaf754b-fdd2-4496-acfb-c919a2c70164",
+   "name": "Rederberch Rodeo",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "f0f2c207-011f-449c-813f-a06f39577098",
+   "name": "BLACK MOUNTAIN - 7. Off Season Race",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "8b841f36-922d-426a-bd42-bfc6d5c4e6c6",
+   "name": "Ride. Grill. Chill. - Borderless Trails",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "a31652b9-4139-43b7-9100-b4d397b77825",
+   "name": "Mettenschicht im TrailCenter Rabenberg",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "45171a3e-ab1a-460e-ab6c-48d4597efacf",
+   "name": "Weihnachtsausfahrt der DIMB IG Dresden",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "7c01433e-dee4-4744-a1d5-288273422731",
+   "name": "Adelsberger Bike Marathon",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "0bae7fcd-16ef-48d0-8418-f10768e1e590",
+   "name": "Drei-Talsperren-Marathon",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "d89a7067-7bbe-4b4d-b0a6-419cb960ec4c",
+   "name": "Bikestore Superprestige Badcross",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "3c9139bc-768b-45e0-9403-eecf0ef379f7",
+   "name": "Frankenhainer Cyclo-Cross",
+   "regulations_url": "https://www.rad-net.de/rad-net-portal/rad-net-ausschreibungen.htm?url=%2Fmodules.php%3Fname%3DAusschreibung&url_hash=uSwzL6PJy_k5sHq6-DL9JQLRhAKSLlHt_zLM8jYvlhU"
+  },
+  {
+   "id": "78eebeec-bcc4-4804-9d0a-566d8a0d6be8",
+   "name": "90 mistrzostwa polski w kolarstwie przełajowym - Cybinka - Bieganów",
+   "regulations_url": "http://nprk.pzkol.pl/12,regulamin.html"
+  },
+  {
+   "id": "99e83114-b88b-4759-acb1-c0f26f887733",
+   "name": "Przełajowy XLVII Ogólnopolski wyścig pod Patronatem Burmistrza Gminy i miasta Koziegłowy Jacka Ślęczki, Upamiętniający 108 rocznicę odzyskania Niepodległości Po",
+   "regulations_url": "http://nprk.pzkol.pl/12,regulamin.html"
+  },
+  {
+   "id": "dfcb4965-e922-4957-925e-994cb7940ebe",
+   "name": "Stahlrad Laatzen Advents-CTF",
+   "regulations_url": "https://stahlradlaatzen.de/wp-content/uploads/2025/08/Satzung_ab_2022.pdf"
+  }
+ ],
+ "server": [
+  {
+   "id": "5093dc70-bec9-4897-b050-7348f6084f31",
+   "name": "Cross im Bad",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "7eaf754b-fdd2-4496-acfb-c919a2c70164",
+   "name": "Rederberch Rodeo",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "f0f2c207-011f-449c-813f-a06f39577098",
+   "name": "BLACK MOUNTAIN - 7. Off Season Race",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "dfcb4965-e922-4957-925e-994cb7940ebe",
+   "name": "Stahlrad Laatzen Advents-CTF",
+   "regulations_url": "https://stahlradlaatzen.de/wp-content/uploads/2025/08/Satzung_ab_2022.pdf"
+  },
+  {
+   "id": "8b841f36-922d-426a-bd42-bfc6d5c4e6c6",
+   "name": "Ride. Grill. Chill. - Borderless Trails",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "a31652b9-4139-43b7-9100-b4d397b77825",
+   "name": "Mettenschicht im TrailCenter Rabenberg",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "45171a3e-ab1a-460e-ab6c-48d4597efacf",
+   "name": "Weihnachtsausfahrt der DIMB IG Dresden",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "7c01433e-dee4-4744-a1d5-288273422731",
+   "name": "Adelsberger Bike Marathon",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "0bae7fcd-16ef-48d0-8418-f10768e1e590",
+   "name": "Drei-Talsperren-Marathon",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "d89a7067-7bbe-4b4d-b0a6-419cb960ec4c",
+   "name": "Bikestore Superprestige Badcross",
+   "regulations_url": "https://www.mtb-sachsen-cup.de/ausschreibung"
+  },
+  {
+   "id": "78eebeec-bcc4-4804-9d0a-566d8a0d6be8",
+   "name": "90 mistrzostwa polski w kolarstwie przełajowym - Cybinka - Bieganów",
+   "regulations_url": "http://nprk.pzkol.pl/12,regulamin.html"
+  },
+  {
+   "id": "99e83114-b88b-4759-acb1-c0f26f887733",
+   "name": "Przełajowy XLVII Ogólnopolski wyścig pod Patronatem Burmistrza Gminy i miasta Koziegłowy Jacka Ślęczki, Upamiętniający 108 rocznicę odzyskania Niepodległości Po",
+   "regulations_url": "http://nprk.pzkol.pl/12,regulamin.html"
+  },
+  {
+   "id": "3c9139bc-768b-45e0-9403-eecf0ef379f7",
+   "name": "Frankenhainer Cyclo-Cross",
+   "regulations_url": "https://www.rad-net.de/rad-net-portal/rad-net-ausschreibungen.htm?url=%2Fmodules.php%3Fname%3DAusschreibung&url_hash=uSwzL6PJy_k5sHq6-DL9JQLRhAKSLlHt_zLM8jYvlhU"
+  }
+ ]
+}

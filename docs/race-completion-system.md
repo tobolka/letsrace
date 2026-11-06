@@ -80,3 +80,15 @@ Dotažení dlouhého ocasu pak dělá hlavně krok 1 a hledání. Co ani tak nep
 
 ## Kde jsme
 Hotové: opravené odkazy na web, zapnutý Brave s limitem, hledání se dvěma dotazy a kontrolou totožnosti, nové položky karty a jejich zobrazení, měření pokrytí. Výzkum knihoven je [zde](../reports/pdf-extraction-2026-11-05/morning-2026-11-06/RESEARCH.md). Jednorázové skripty v `reports/pdf-extraction-2026-11-05/tbc-links/` byly nouzové řešení pro zítřejší závod.
+
+## What reading the regulations by hand taught the reader (2026-11-06)
+
+All documents linked from races in the next 60 days were read in a session; what they showed is now in the system:
+
+- **rad-net.de** gives every published German race on one template (`src/lib/catalog/radnet.ts`, `scripts/harvest-radnet.ts`, daily in the Mac cycle): organiser, contact, class, fee, start time, lap. No AI. Its later calendar pages also list next year's provisional dates ("Vorläufiger Termin"), which are not imported yet.
+- Regulations can come as a **zip**, and timetables as a **picture inside a PDF**; both are opened now.
+- Times may read `6,45` or `10 Uhr`; a time may be a range; free entry is a fee of 0.
+- A row of a table answers to the table's heading however far above it stands. A lap of up to 8 km is a route if it is called a lap.
+- A club's statutes are not regulations.
+- **One list, one document.** Each new reading of a document replaces its last one, and timetables, fees and categories from two documents are never mixed; the fullest stands.
+- Belgium is not a listed country, so its races have no public page, whatever they hold.
