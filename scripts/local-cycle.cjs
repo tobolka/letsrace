@@ -238,7 +238,9 @@ async function main(){
     const allowance=Math.min(FILLED_RACES_PER_CYCLE,FILLED_RACES_PER_DAY-state.fillDay.races);
     const fills=fillPlan(path.join(directory,'fills'),{target:remote,maxRaces:Math.max(0,allowance)});
     report.fills={races:fills.races,places:fills.places,waiting:fills.waiting};state.fillsWaiting=allowance>0?fills.waiting:0;
-    if(fills.rows&&!report.rehearsal){
+    // While this file exists, details found here wait for a quality check and nothing of them is sent.
+    report.detailsHeld=fs.existsSync(path.join(data,'hold-details.json'));
+    if(fills.rows&&!report.rehearsal&&!report.detailsHeld){
      stage('Odesílám doplněné údaje');
      const sentFills=await run(process.execPath,['scripts/local-sync.cjs','send',`--changes=${fills.file}`,`--confirm=${fills.sha256}`,`--problems=${path.join(directory,'fills','problems.json')}`]);
      const result=JSON.parse(sentFills.output);atomic(path.join(directory,'fills','sent.json'),result);
