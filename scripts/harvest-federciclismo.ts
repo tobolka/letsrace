@@ -13,13 +13,14 @@ async function main() {
   const { pageAsText } = await import("../src/lib/watcher/extractors/llm-calendar");
   const { federciclismoFacts, rideAndRestFacts } = await import("../src/lib/catalog/federciclismo");
   const { verifyPracticalExtraction } = await import("../src/lib/catalog/practical-extraction");
-  const { savePracticalDetails } = await import("../src/lib/catalog/practical-enrichment");
+  const { savePracticalDetails, saveFoundLinks } = await import("../src/lib/catalog/practical-enrichment");
+  const { registrationLinkIn } = await import("../src/lib/catalog/race-completeness");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10), until = new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
-  const { data, error } = await db.from("events").select("id,name,start_date,end_date,public_revision,website_url,regulations_url,practical_details,location:locations(venue,municipality),sources:event_sources!inner(source_url)")
+  const { data, error } = await db.from("events").select("id,name,start_date,end_date,public_revision,website_url,regulations_url,registration_url,practical_details,location:locations(venue,municipality),sources:event_sources!inner(source_url)")
     .eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).lte("start_date", until).like("sources.source_url", "%members.federciclismo.it/race/detail/%").order("start_date").limit(2000)
-    .returns<{ id: string; name: string; start_date: string; end_date: string | null; public_revision: string; website_url: string | null; regulations_url: string | null; practical_details: { organizer?: { sourceUrl?: string; checkedAt?: string } } | null; location: { venue: string | null; municipality: string | null } | null; sources: { source_url: string }[] }[]>();
+    .returns<{ id: string; name: string; start_date: string; end_date: string | null; public_revision: string; website_url: string | null; regulations_url: string | null; registration_url: string | null; practical_details: { organizer?: { sourceUrl?: string; checkedAt?: string } } | null; location: { venue: string | null; municipality: string | null } | null; sources: { source_url: string }[] }[]>();
   if (error) throw Error(error.message);
   const freshAfter = new Date(Date.now() - 14 * 86_400_000).toISOString();
   const due = (data ?? []).filter(event => process.argv.includes("--force") || !(event.practical_details?.organizer?.sourceUrl?.includes("federciclismo") && (event.practical_details.organizer.checkedAt ?? "") > freshAfter));
@@ -39,6 +40,7 @@ async function main() {
     for (const key of Object.keys(checked.details)) stats.fields[key] = (stats.fields[key] ?? 0) + 1;
     for (const [key, why] of Object.entries(checked.reasons)) stats.refused[`${key}:${why}`] = (stats.refused[`${key}:${why}`] ?? 0) + 1;
     if (process.argv.includes("--verbose")) console.log(`${event.start_date} ${event.name.slice(0, 40)}: ${Object.keys(checked.details).join(",") || "-"} ${JSON.stringify(checked.reasons)}`);
+    if (apply) { const registration = registrationLinkIn(page.text); if (registration) await saveFoundLinks(event, { registration }); }
     if (apply && Object.keys(checked.details).length) {
       const saved = await savePracticalDetails(event.id, event.public_revision, checked.details) as { changed?: string[] };
       if (saved.changed?.length) stats.saved++;

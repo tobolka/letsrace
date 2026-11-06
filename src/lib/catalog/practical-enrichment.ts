@@ -83,19 +83,20 @@ export async function savePracticalDetails(eventId: string, revision: string, de
 }
 
 /** Links found for a race go where nothing better is stored, unless someone locked them. */
-export async function saveFoundLinks(row: { id: string; website_url?: string | null; regulations_url?: string | null; results_url?: string | null }, found: { website?: string; regulations?: string; results?: string }): Promise<number> {
-  if (!found.website && !found.regulations && !found.results) return 0;
+export async function saveFoundLinks(row: { id: string; website_url?: string | null; regulations_url?: string | null; results_url?: string | null; registration_url?: string | null }, found: { registration?: string; website?: string; regulations?: string; results?: string }): Promise<number> {
+  if (!found.website && !found.regulations && !found.results && !found.registration) return 0;
   const db = createServerSupabase();
   const { data: overrides } = await db.from("event_overrides").select("locked_fields").eq("event_id", row.id).maybeSingle();
   const locked = new Set(overrides?.locked_fields ?? []);
-  const changes: { website_url?: string; regulations_url?: string; results_url?: string } = {};
+  const changes: { website_url?: string; regulations_url?: string; results_url?: string; registration_url?: string } = {};
+  if (found.registration && !locked.has("registration_url") && !row.registration_url) changes.registration_url = found.registration;
   if (found.website && !locked.has("website_url") && websiteMayBeReplaced(row.website_url)) changes.website_url = found.website;
   if (found.regulations && !locked.has("regulations_url") && !row.regulations_url) changes.regulations_url = found.regulations;
   if (found.results && !locked.has("results_url") && !row.results_url) changes.results_url = found.results;
   if (!Object.keys(changes).length) return 0;
   const { error } = await db.from("events").update(changes).eq("id", row.id);
   if (error) throw Error(`Saving found links: ${error.message}`);
-  const previous: Record<string, string | null | undefined> = { website_url: row.website_url, regulations_url: row.regulations_url, results_url: row.results_url };
+  const previous: Record<string, string | null | undefined> = { website_url: row.website_url, regulations_url: row.regulations_url, results_url: row.results_url, registration_url: row.registration_url };
   const { error: factError } = await db.from("event_facts").insert(Object.entries(changes).map(([field, value]) => ({ event_id: row.id, field, value, previous: previous[field] ?? null, source_url: value, quote: "Found by search; the page names this race and its date", method: "search_verified", version: "1" })));
   if (factError) throw Error(`Recording found links: ${factError.message}`);
   return Object.keys(changes).length;

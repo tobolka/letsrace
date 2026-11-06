@@ -186,3 +186,19 @@ export function takeSearch(path: string, limits: { day: number; month: number },
   renameSync(`${path}.tmp`, path);
   return true;
 }
+
+const SIGN_UP_HOSTS = /(?:^|\.)(?:endu\.net|my\.raceresult\.com|raceresult\.com|datasport\.de|datasport\.com|zpn-timing\.de|wynikizawodow\.eu|dostartu\.pl|elektronicznezapisy\.pl|protimer\.pl|akces-sport\.pl|inessport\.pl|zmierzymyczas\.pl|time2race\.eu|maraton\.cz|sportsoft\.cz|sportsoft\.com|sumator\.cz|rennanmeldung\.de|mso\.swiss|mso-hu\.ch|fattorek\.it|kronoservice\.com|wedosport\.net|icron\.it|chronorace\.be|race-hub\.io|timing\.rsv-finsterwalde\.de)$/i;
+const SIGN_UP_WORD = /iscri|anmeld|meldung|nennung|inscri|registr|regist|zapis|zgłosz|zglosz|přihl|prihl|sign.?up|entry/i;
+
+/** The link where riders sign up: a known sign-up service, named beside a word for signing up. */
+export function registrationLinkIn(text: string): string | null {
+  for (const match of text.matchAll(/(?:https?:\/\/|\bwww\.)[^\s)\]>"',;]+/gi)) {
+    const raw = match[0]!.replace(/[.:]+$/, ""), url = /^www\./i.test(raw) ? `https://${raw}` : raw;
+    let host = "";
+    try { host = new URL(url).hostname; } catch { continue; }
+    if (!SIGN_UP_HOSTS.test(host)) continue;
+    const around = text.slice(Math.max(0, match.index! - 160), match.index! + raw.length + 40);
+    if (SIGN_UP_WORD.test(around)) return url;
+  }
+  return null;
+}

@@ -181,6 +181,7 @@ async function main(){
   // Finding comes before reading: neither needs search or AI, and what they find the next step reads.
   await upkeep('calendarDocuments','calendarDocumentsAt',7*24*HOUR,'Hledám propozice v kalendářích',['scripts/harvest-calendar-documents.ts','--apply','--seconds=480'],540);
   await upkeep('siteDocuments','siteDocumentsAt',24*HOUR,'Hledám propozice na webech závodů',['scripts/harvest-site-documents.ts','--apply','--seconds=480'],540);
+  await upkeep('winspace','winspaceAt',24*HOUR,'Čtu pořadatele českých závodů z kalendáře',['scripts/harvest-winspace.ts','--apply','--seconds=300'],360);
   await upkeep('pzkol','pzkolAt',24*HOUR,'Čtu polské závody ze stránek federace',['scripts/harvest-pzkol.ts','--apply','--seconds=300'],360);
   await upkeep('federciclismo','federciclismoAt',24*HOUR,'Čtu italské závody ze stránek federace',['scripts/harvest-federciclismo.ts','--apply','--seconds=480'],540);
   await upkeep('radNet','radNetAt',24*HOUR,'Čtu německé závody z rad-net',['scripts/harvest-radnet.ts','--apply'],540);

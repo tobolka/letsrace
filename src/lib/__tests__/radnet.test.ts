@@ -5,6 +5,7 @@ import { zipEntries } from "@/lib/catalog/regulation-ages";
 import { verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
 import { mergePracticalDetails } from "@/lib/practical-details";
 import { federciclismoFacts, rideAndRestFacts } from "@/lib/catalog/federciclismo";
+import { registrationLinkIn } from "@/lib/catalog/race-completeness";
 
 const url = "https://www.rad-net.de/rad-net-portal/a.htm?url=mode%3Dascr_detail";
 const text = `Donkey Creek Cyclocross LV Nordrhein-Westfalen Cyclo-Cross
@@ -82,5 +83,16 @@ describe("Italian calendar pages", () => {
     expect(raw.facts.organizer!.value.name).toBe("ASD CLUB MTB SORCI VERDI");
     expect(raw.facts.venue!.value.name).toBe("Corso Garibaldi");
     expect(raw.facts.schedule!.value[0]!.time).toBe("07:00");
+  });
+});
+
+describe("sign-up links", () => {
+  it("takes a known sign-up service named beside a word for signing up", () => {
+    expect(registrationLinkIn("Le iscrizioni saranno effettuate solo tramite portale on-line - www.endu.net\nInfo")).toBe("https://www.endu.net");
+    expect(registrationLinkIn("Anmeldung https://www.datasport.de/anmeldeservice/rosencrossmoosburg2026 Ergebnisdienst")).toBe("https://www.datasport.de/anmeldeservice/rosencrossmoosburg2026");
+  });
+  it("ignores other links and a service nobody says to sign up at", () => {
+    expect(registrationLinkIn("Anmeldung per Mail, siehe https://club.de/info")).toBeNull();
+    expect(registrationLinkIn("Foto: www.endu.net")).toBeNull();
   });
 });

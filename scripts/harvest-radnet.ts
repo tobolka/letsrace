@@ -15,7 +15,8 @@ async function main() {
   const { pageAsText } = await import("../src/lib/watcher/extractors/llm-calendar");
   const { radNetCalendarRows, radNetCalendarPages, radNetFacts } = await import("../src/lib/catalog/radnet");
   const { verifyPracticalExtraction } = await import("../src/lib/catalog/practical-extraction");
-  const { savePracticalDetails } = await import("../src/lib/catalog/practical-enrichment");
+  const { savePracticalDetails, saveFoundLinks } = await import("../src/lib/catalog/practical-enrichment");
+  const { registrationLinkIn } = await import("../src/lib/catalog/race-completeness");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
   const read = async (url: string) => {
@@ -39,7 +40,7 @@ async function main() {
   }
   const details = new Map(rows.filter(row => !/typ%3Di/.test(row.url) || true).map(row => [`${row.date}|${row.title}`, row]));
   const today = new Date().toISOString().slice(0, 10);
-  const { data: events, error } = await db.from("events").select("id,name,start_date,end_date,public_revision,website_url,regulations_url,practical_details,location:locations!inner(venue,municipality,country_code)").gte("start_date", today).eq("location.country_code", "DE").returns<{ id: string; name: string; start_date: string; end_date: string | null; public_revision: string; website_url: string | null; regulations_url: string | null; location: { venue: string | null; municipality: string | null } | null }[]>();
+  const { data: events, error } = await db.from("events").select("id,name,start_date,end_date,public_revision,website_url,regulations_url,registration_url,practical_details,location:locations!inner(venue,municipality,country_code)").eq("visibility", "public").is("merged_into_id", null).gte("start_date", today).eq("location.country_code", "DE").returns<{ id: string; name: string; start_date: string; end_date: string | null; public_revision: string; website_url: string | null; regulations_url: string | null; registration_url: string | null; location: { venue: string | null; municipality: string | null } | null }[]>();
   if (error) throw Error(error.message);
   const stats = { rows: details.size, matched: 0, read: 0, saved: 0, fields: {} as Record<string, number> };
   const unmatched: string[] = [];
@@ -65,6 +66,7 @@ async function main() {
     const checked = verifyPracticalExtraction(raw, context);
     console.log(`${row.date} ${event.name.slice(0, 40)}: ${Object.keys(checked.details).join(",") || "-"} ${JSON.stringify(checked.reasons)}`);
     for (const key of Object.keys(checked.details)) stats.fields[key] = (stats.fields[key] ?? 0) + 1;
+    if (apply) { const registration = registrationLinkIn(page.text); if (registration) await saveFoundLinks(event, { registration }); }
     if (apply && Object.keys(checked.details).length) {
       const saved = await savePracticalDetails(event.id, event.public_revision, checked.details) as { changed?: string[] };
       if (saved.changed?.length) stats.saved++;
