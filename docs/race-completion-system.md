@@ -92,3 +92,9 @@ All documents linked from races in the next 60 days were read in a session; what
 - A club's statutes are not regulations.
 - **One list, one document.** Each new reading of a document replaces its last one, and timetables, fees and categories from two documents are never mixed; the fullest stands.
 - Belgium is not a listed country, so its races have no public page, whatever they hold.
+
+More sources with one page shape, read daily without AI:
+
+- **Italian federation** (`members.federciclismo.it/race/detail/<id>`, `src/lib/catalog/federciclismo.ts`): organiser with phone and email, classes, lap, start, timetable, services. Some pages sit behind its sign-in and stay unread. The Italian calendar site `rideandrest.net` gives organiser and meeting point for races the federation does not carry.
+- **Polish federation** (`pzkol.pl/kalendarz/<id>,…`, `src/lib/catalog/pzkol.ts`): organiser and the link to the regulations, whose text then goes to the reader.
+- `odjazd.pl` and the Czech federation portal say almost nothing about a race without signing in; they are not worth reading.

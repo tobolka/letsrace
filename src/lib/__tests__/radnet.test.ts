@@ -4,6 +4,7 @@ import { radNetCalendarRows, radNetFacts } from "@/lib/catalog/radnet";
 import { zipEntries } from "@/lib/catalog/regulation-ages";
 import { verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
 import { mergePracticalDetails } from "@/lib/practical-details";
+import { federciclismoFacts, rideAndRestFacts } from "@/lib/catalog/federciclismo";
 
 const url = "https://www.rad-net.de/rad-net-portal/a.htm?url=mode%3Dascr_detail";
 const text = `Donkey Creek Cyclocross LV Nordrhein-Westfalen Cyclo-Cross
@@ -55,5 +56,31 @@ describe("lists read from documents", () => {
     const series = { schedule: fact([row("Termin", "10:00", "https://a.test/s", "2026-11-05T10:00:00Z")]) } as never;
     const own = { schedule: fact([row("U11", "10:30", "https://a.test/o", "2026-11-06T10:00:00Z"), row("U13", "11:00", "https://a.test/o", "2026-11-06T10:00:00Z")]) } as never;
     expect((mergePracticalDetails(series, own).schedule!.value).map(item => item.label)).toEqual(["U11", "U13"]);
+  });
+});
+
+describe("Italian federation pages", () => {
+  const url = "https://members.federciclismo.it/race/detail/1";
+  const text = `Fuoristrada - CICLOCROSS DEL LAGO\n\nData: 15 Novembre 2026\nLuogo: Gavoi (NU)\nCategorie ammesse: Junior M/F - Under23 M/F\n\nOrganizzatore: BIKE TEAM DEMURTAS\nTelefono: 078439050\nEmail: vanni@ciclidemurtas.it\n\nProgramma\n\nCICLOCROSS DEL LAGO\n\nKM: 2,650\n\nDescrizione: CRONOPROGRAMMA:\n• Gara OPEN F - JUNIOR M/F ore 10:15\n\nPartenza: Via Roma 1 - Gavoi (NU) H:09:00\n\nServizi: Ampia area parcheggi - pronto soccorso\n`;
+  const raw = federciclismoFacts({ url, text }) as { facts: Record<string, { value: unknown }> };
+  (raw.facts.schedule!.value as { date: string }[]).forEach(row => { row.date = "2026-11-15"; });
+  const { details, reasons } = verifyPracticalExtraction(raw, { name: "Ciclocross del Lago", startDate: "2026-11-15", ownUrls: [url], documents: [{ url, text, links: [] }], documentSettled: true }) as unknown as { details: Record<string, { value: never }>; reasons: object };
+  it("reads the organiser with contact, the classes, the lap and the timetable", () => {
+    expect(reasons).toEqual({});
+    expect(details.organizer!.value).toMatchObject({ name: "BIKE TEAM DEMURTAS", phone: "078439050", email: "vanni@ciclidemurtas.it" });
+    expect(details.categories!.value).toEqual([expect.objectContaining({ label: "Junior M/F" }), expect.objectContaining({ label: "Under23 M/F" })]);
+    expect(details.routes!.value).toEqual([expect.objectContaining({ distanceKm: 2.65 })]);
+    expect(details.schedule!.value).toEqual([expect.objectContaining({ time: "10:15" })]);
+    expect(details.parking!.value).toEqual({ note: "Ampia area parcheggi" });
+  });
+});
+
+describe("Italian calendar pages", () => {
+  it("reads who organises and where riders meet", () => {
+    const url = "https://rideandrest.net/manifestazione/x/", text = "domenica 8 Novembre 2026 · FOSSOMBRONE (PU)\nTipo: Enduro\nRitrovo: Corso Garibaldi, ore 07:00\nOrganizza: ASD CLUB MTB SORCI VERDI\n";
+    const raw = rideAndRestFacts({ url, text }) as { facts: Record<string, { value: { name?: string; time?: string }[] & { name?: string } }> };
+    expect(raw.facts.organizer!.value.name).toBe("ASD CLUB MTB SORCI VERDI");
+    expect(raw.facts.venue!.value.name).toBe("Corso Garibaldi");
+    expect(raw.facts.schedule!.value[0]!.time).toBe("07:00");
   });
 });

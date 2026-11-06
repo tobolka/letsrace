@@ -86,7 +86,7 @@ const rawFact = z.object({ value: z.unknown(), source_url: publicLink, quote: z.
 const fold = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/\s+/g, " ").trim();
 const contains = (text: string, value: string) => fold(text).includes(fold(value));
 const decodedUrl = (url: string) => { try { return decodeURIComponent(url); } catch { return url; } };
-const numberIn = (text: string, value: number) => new RegExp(`(?:^|[^\\d])${String(value).replace(".", "[.,]")}(?:[^\\d]|$)`).test(text.replace(/(\d)[.\s\u00a0‘’'`](?=\d{3}(?:\D|$))/g, "$1"));
+const numberIn = (text: string, value: number) => new RegExp(`(?:^|[^\\d])${String(value).replace(".", "[.,]")}${Number.isInteger(value) ? "" : "0*"}(?:[^\\d]|$)`).test(text.replace(/(\d)[.\s\u00a0‘’'`](?=\d{3}(?:\D|$))/g, "$1"));
 
 const OWN_DOCUMENT_HEAD = 2_400;
 const allDatesIn = (text: string) => new Set([...text.matchAll(/(?<![\d.])(\d{1,2})\.\s*(\d{1,2})\.?\s*(20\d{2})(?!\d)|(?<!\d)(20\d{2})-(\d{2})-(\d{2})(?!\d)/g)].map(m => m[1] ? `${m[3]}-${m[2]!.padStart(2, "0")}-${m[1].padStart(2, "0")}` : `${m[4]}-${m[5]}-${m[6]}`));
@@ -206,12 +206,12 @@ const isTimeRange = (quote: string, time: string) => {
   const hour = Number(time.slice(0, 2)), minute = time.slice(3, 5);
   return new RegExp(`\\b0?${hour}[:.h]${minute}\\s*(?:[-–—]|to|bis)\\s*\\d{1,2}[:.h]\\d{2}`, "i").test(quote);
 };
-const isPrizeOrTicket = (quote: string) => /\b(?:box office|people over \d+|admission|vstupn[eé]|vstupenk\w*|preisgeld|prize|premi|nagrod|pramie|ticketprijzen|voorverkoop|dagprijs|spectator|divack|deposit|refundable|kaution|pfand|zaloha|kauce|kaucja|einspruch\w*|anzeigegebuhr|protest\w*)\b/i.test(fold(quote))
+const isPrizeOrTicket = (quote: string) => /\b(?:box office|people over \d+|admission|vstupn[eé]|vstupenk\w*|preisgeld|prize|premi|nagrod|pramie|ticketprijzen|voorverkoop|dagprijs|spectator|divack|deposit|refundable|kaution|cauzion\w*|pfand|zaloha|kauce|kaucja|einspruch\w*|anzeigegebuhr|protest\w*)\b/i.test(fold(quote))
   || /\bpreis\b(?!\s*(?:fur|pro|je|:|\d))/i.test(fold(quote))
   || /\bceny\b(?!\s+(?:startovneho|za\s+(?:start|ucast|registraci)))/i.test(fold(quote));
 
 /** Verify each field independently; a valid quotation is necessary but its values must match too. */
-export function verifyPracticalExtraction(raw: unknown, context: { name: string; startDate: string; endDate?: string | null; knownVenue?: string; municipality?: string | null; ownUrls?: (string | null | undefined)[]; documents: PracticalDocument[]; now?: string; readByPerson?: boolean }): { details: PracticalDetails; rejected: string[]; reasons: Record<string, string> } {
+export function verifyPracticalExtraction(raw: unknown, context: { name: string; startDate: string; endDate?: string | null; knownVenue?: string; municipality?: string | null; ownUrls?: (string | null | undefined)[]; documents: PracticalDocument[]; now?: string; documentSettled?: boolean }): { details: PracticalDetails; rejected: string[]; reasons: Record<string, string> } {
   const details: Record<string, unknown> = {}, rejected: string[] = [], reasons: Record<string, string> = {};
   const refuse = (key: string, why: string) => { rejected.push(key); reasons[key] = why; };
   const facts = z.object({ facts: z.record(z.string(), z.unknown()) }).safeParse(raw);
@@ -238,8 +238,8 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
     // Common to all rounds, or a line naming this round's own town.
     const roundWords = fold(context.municipality ?? "").match(/[a-z0-9]{4,}/g) ?? [];
     const speaksForRound = Boolean(doc && isSeriesDocumentOfRound(doc, context) && (["fees", "categories", "schedule", "routes"].includes(field) || field === "organizer" && roundWords.some(word => fold(fact.quote).includes(word))));
-    // Whoever read the whole document by hand has settled whose it is; quotes and values are still checked.
-    const ownDocument = Boolean(doc && (context.readByPerson || isOwnDocument(doc, context) || speaksForRound));
+    // Read whole by hand, or the very page the race came from: whose it is is settled. Quotes and values are still checked.
+    const ownDocument = Boolean(doc && (context.documentSettled || isOwnDocument(doc, context) || speaksForRound));
     if (!value.success) { refuse(key, "bad_value"); continue; }
     if (!quoted || !doc) { refuse(key, "quote_not_in_document"); continue; }
     if (!identity && !ownDocument && !(field === "venue" && context.knownVenue)) { refuse(key, "not_about_this_race"); continue; }
@@ -274,7 +274,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       const seriesPart = /\s[—–-]\s/.test(context.name) ? context.name.split(/\s[—–-]\s/)[0]! : "";
       const raceNameWords = new Set(fold(seriesPart).match(/[a-z0-9]{3,}/g) ?? []);
       const organiserWords = (fold(v.name).match(/[a-z0-9]{3,}/g) ?? []).filter(word => !["serie", "series", "seria"].includes(word));
-      if (otherDays > 3 && !ownDocument && !quoteContainsDate(fact.quote, context.startDate) || organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
+      if (otherDays > 3 && !ownDocument && !quoteContainsDate(fact.quote, context.startDate) || !context.documentSettled && organiserWords.length > 0 && organiserWords.every(word => raceNameWords.has(word))) { refuse(key, "series_not_round"); continue; }
       // "Organizátor:" often heads the lines below it, so the word may stand just above the quote.
       const lines = doc.text.split("\n"), at = lines.findIndex(line => contains(line, v.name));
       // A row of a table answers to the table's heading, however many rows stand between them.
@@ -284,7 +284,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       const nearby = at >= 0 ? lines.slice(Math.max(0, top - 3), at + 1).join(" ") : "";
       const compactName = fold(v.name).replace(/[^a-z0-9]/g, ""), host = (() => { try { return fold(new URL(doc.url).hostname).replace(/[^a-z0-9]/g, ""); } catch { return ""; } })();
       // A page on the club's own domain needs no "organiser" word to say whose it is.
-      supported = (contains(fact.quote, v.name) || compactName.length >= 5 && fold(fact.quote).replace(/[^a-z0-9]/g, "").includes(compactName) || wordsStandIn(fact.quote, v.name)) && (compactName.length >= 5 && host.includes(compactName) || (context.readByPerson || /poradat|porada|usporiadat|organis|organizz|organiz|orga-?team|veranstalter|ausrichter|promoter|\(kont/i.test(fold(`${fact.quote} ${nearby}`).replace(/\s/g, ""))));
+      supported = (contains(fact.quote, v.name) || compactName.length >= 5 && fold(fact.quote).replace(/[^a-z0-9]/g, "").includes(compactName) || wordsStandIn(fact.quote, v.name)) && (compactName.length >= 5 && host.includes(compactName) || (context.documentSettled || /poradat|porada|usporiadat|organis|organizz|organiz|orga-?team|veranstalter|ausrichter|promoter|\(kont/i.test(fold(`${fact.quote} ${nearby}`).replace(/\s/g, ""))));
       if (supported) {
         // A contact counts only if the document really gives it.
         const digits = (t: string) => t.replace(/\D/g, "");
@@ -293,7 +293,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
       }
     } else if (field === "parking") {
       const v = practicalValueSchemas.parking.parse(value.data);
-      supported = !v.note.includes("](") && contains(doc.text, v.note) && /parkov|parking|parken|parkier|parkm|parkplatz|parkplätze|stacionowan|parcheggio|stationnement|parkpl/i.test(`${fact.quote} ${v.note}`);
+      supported = !v.note.includes("](") && contains(doc.text, v.note) && /parkov|parking|parken|parkier|parkm|parchegg|parkplatz|parkplätze|stacionowan|parcheggio|stationnement|parkpl/i.test(`${fact.quote} ${v.note}`);
     } else if (field === "categories") {
       const rows = practicalValueSchemas.categories.parse(value.data).filter(v => {
         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url)), q = v.sourceQuote ?? fact.quote;
@@ -308,10 +308,10 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url));
         const q = v.sourceQuote ?? fact.quote;
         const hour = Number(v.time.slice(0, 2));
-        const time = new RegExp(`(?<![\\d:.])0?${hour}[:.h]${v.time.slice(3, 5)}(?!\\d)${v.time.startsWith("00", 3) ? `|(?<![\\d:.])0?${hour}\\s*(?:uhr|hod(?:in)?|godz|h)\\b` : ""}|(?:godz\\.?|godzin[ay]|hod\\.?)\\s*0?${hour},${v.time.slice(3, 5)}(?!\\d)`, "i");
+        const time = new RegExp(`(?:(?<![\\d:.])|\\bh:)0?${hour}[:.h]${v.time.slice(3, 5)}(?!\\d)${v.time.startsWith("00", 3) ? `|(?<![\\d:.])0?${hour}\\s*(?:uhr|hod(?:in)?|godz|h)\\b` : ""}|(?:godz\\.?|godzin[ay]|hod\\.?)\\s*0?${hour},${v.time.slice(3, 5)}(?!\\d)`, "i");
         const oneDay = !context.endDate || context.endDate === context.startDate;
         const statesDay = (text: string, day: string) => quoteContainsDate(text, day) || allDatesIn(text).has(day);
-        const dateOK = context.readByPerson && oneDay && v.date === context.startDate || statesDay(q, v.date) || oneDay && v.date === context.startDate && speaksForRound || oneDay && v.date === context.startDate && statesDay(itemDoc?.text.slice(0, OWN_DOCUMENT_HEAD) ?? "", v.date) || oneDay && v.date === context.startDate && namedEdition && itemDoc?.url === doc.url || !oneDay && headingDay(itemDoc?.text ?? "", q, context.startDate, context.endDate ?? context.startDate, statesDay) === v.date;
+        const dateOK = context.documentSettled && oneDay && v.date === context.startDate || statesDay(q, v.date) || oneDay && v.date === context.startDate && speaksForRound || oneDay && v.date === context.startDate && statesDay(itemDoc?.text.slice(0, OWN_DOCUMENT_HEAD) ?? "", v.date) || oneDay && v.date === context.startDate && namedEdition && itemDoc?.url === doc.url || !oneDay && headingDay(itemDoc?.text ?? "", q, context.startDate, context.endDate ?? context.startDate, statesDay) === v.date;
         if (isNotCycling(v.label) || !itemDoc || !rowDocumentOK(itemDoc) || !q || !contains(itemDoc.text, q) || !(labelSupported(q, v.label) || fact.quote.length <= 1500 && contains(fact.quote, q) && labelSupported(fact.quote, v.label)) || v.date < context.startDate || v.date > (context.endDate ?? context.startDate) || !dateOK || !time.test(q)) return [];
         // A range is kept as one: it must not read as an exact start.
         const range = isTimeRange(q, v.time) ? new RegExp(`\\b0?${hour}[:.h]${v.time.slice(3, 5)}\\s*(?:[-–—]|to|bis)\\s*(\\d{1,2})[:.h](\\d{2})`, "i").exec(q) : null;
@@ -333,7 +333,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
     } else {
       const rows = practicalValueSchemas.routes.parse(value.data).filter(v => {
         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url)), q = v.sourceQuote ?? fact.quote;
-        return itemDoc && rowDocumentOK(itemDoc) && q.length >= 5 && contains(itemDoc.text, q) && (labelSupported(q, v.name) || contains(itemDoc.text, v.name)) && (v.distanceKm != null || routeLinks(v, itemDoc)) && (v.distanceKm == null || numberIn(q, v.distanceKm) && /\d\s*(?:km\b|kilomet)/i.test(q) || numberIn(q, Math.round(v.distanceKm * 1000)) && /\d\s*(?:m|metru|metrow|meters?|metres?)\b/i.test(fold(q))) && !isNotCycling(v.name) && (contains(context.name, v.name) || (v.distanceKm ?? 99) <= 8 || !/\b(?:runde|runda|lap|okruh)\b/i.test(fold(v.name)));
+        return itemDoc && rowDocumentOK(itemDoc) && q.length >= 5 && contains(itemDoc.text, q) && (labelSupported(q, v.name) || contains(itemDoc.text, v.name)) && (v.distanceKm != null || routeLinks(v, itemDoc)) && (v.distanceKm == null || numberIn(q, v.distanceKm) && /\d\s*(?:km\b|kilomet)|\bkm\s*:\s*\d/i.test(q) || numberIn(q, Math.round(v.distanceKm * 1000)) && /\d\s*(?:m|metru|metrow|meters?|metres?)\b/i.test(fold(q))) && !isNotCycling(v.name) && (contains(context.name, v.name) || (v.distanceKm ?? 99) <= 8 || !/\b(?:runde|runda|lap|okruh)\b/i.test(fold(v.name)));
       }).map(v => {
         const itemDoc = context.documents.find(d => d.url === (v.sourceUrl ?? doc.url)), { surface, gpxUrl, mapUrl, elevationM, ...rest } = v, routeQuote = v.sourceQuote ?? fact.quote;
         const climbStands = elevationM != null && numberIn(routeQuote, elevationM) && /převýš|prevys|elev|ascent|climb|höhen|hohen|\d\s*hm\b|przewyz|v[ýy][šs]kov|dénivel|dislivello/i.test(routeQuote);
