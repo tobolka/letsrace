@@ -18,6 +18,16 @@ export function radNetCalendarRows(text: string): RadNetRow[] {
   return rows;
 }
 
+export type RadNetFullRow = { date: string; endDate?: string; title: string; url: string; place: string; kind: string };
+
+/** A calendar row opened for entry, with the kind of racing. Rows with only a provisional date carry no link, so they do not match. */
+export function radNetFullRows(text: string): RadNetFullRow[] {
+  return [...text.matchAll(/\b(?:Mo|Di|Mi|Do|Fr|Sa|So), (\d{2})\.(\d{2})\.(\d{4})(?: bis (?:Mo|Di|Mi|Do|Fr|Sa|So), (\d{2})\.(\d{2})\.(\d{4}))? \[([^\]]+)\]\((https?:[^)\s]+)\)\s+(.+?)\s+(Str\.|Cross|MTB|Bahn|Gravel|BMX|Halle|Trial|RTF|CTF)\s+[A-ZÄÖÜ]{2,3}\b/g)].map(match => {
+    const date = `${match[3]}-${match[2]}-${match[1]}`, end = match[4] ? `${match[6]}-${match[5]}-${match[4]}` : undefined;
+    return { date, ...(end && end !== date ? { endDate: end } : {}), title: clean(match[7]!), url: match[8]!, place: clean(match[9]!), kind: match[10]! };
+  });
+}
+
 export const radNetCalendarPages = (links: string[]) => [...new Set(links.filter(link => /rad-net\.de\/.*pgID_Veranstaltung%3D\d+(?:&|$)/i.test(link) && !/ascr_detail/i.test(link)))];
 
 const between = (text: string, from: string, to: string[]) => {

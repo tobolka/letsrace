@@ -185,6 +185,7 @@ async function main(){
   await upkeep('winspace','winspaceAt',24*HOUR,'Čtu pořadatele českých závodů z kalendáře',['scripts/harvest-winspace.ts','--apply','--seconds=300'],360);
   await upkeep('pzkol','pzkolAt',24*HOUR,'Čtu polské závody ze stránek federace',['scripts/harvest-pzkol.ts','--apply','--seconds=300'],360);
   await upkeep('federciclismo','federciclismoAt',24*HOUR,'Čtu italské závody ze stránek federace',['scripts/harvest-federciclismo.ts','--apply','--seconds=480'],540);
+  await upkeep('radNetNew','radNetNewAt',24*HOUR,'Přidávám chybějící vypsané německé závody',['scripts/radnet-new-races.ts','--apply','--skip=3 Rosen Cross,Meisterschaft der Nordverbände'],360);
   await upkeep('radNet','radNetAt',24*HOUR,'Čtu německé závody z rad-net',['scripts/harvest-radnet.ts','--apply'],540);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
   await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:'60',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
