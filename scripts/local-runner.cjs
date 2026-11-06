@@ -121,6 +121,8 @@ function main() {
   state.serverRequestError='Sběr teď probíhá na Macu; staré serverové spouštění je vypnuté.';
   save();snapshot();
  }
+ let pagesRefreshing=false;
+ const PAGES_REFRESH_EVERY_MS=60*60_000;
  async function checkServer() {
   if(process.env.LETSRACE_NO_SERVER_CHECK === "1" || serverChecking)return;
   const paused=json(controlFile).paused===true, now=Date.now();
@@ -141,6 +143,21 @@ function main() {
     atomic(path.join(data,'server-status.json'),server);
   }catch(e){server={...server,error:e.message,attemptedAt:new Date().toISOString()};}
   finally{serverChecking=false;snapshot();}
+ }
+ // The server's own timer asks for page refreshes once a day and can find its allowance used up, which leaves
+ // delivered details unseen for a day. Asking every hour changes no allowance: the server still decides.
+ async function refreshPages() {
+  const now=Date.now();
+  if(process.env.LETSRACE_NO_SERVER_CHECK==="1"||pagesRefreshing||json(controlFile).paused===true||now-Date.parse(state.pagesRefreshAt||0)<PAGES_REFRESH_EVERY_MS)return;
+  pagesRefreshing=true;state.pagesRefreshAt=new Date(now).toISOString();save();
+  try{
+   const {parse}=require('dotenv');
+   const secret=parse(fs.readFileSync(path.join(root,'.env.local'))).CRON_SECRET;
+   if(!secret)throw Error('Chybí přístup k obnově stránek');
+   const response=await fetch('https://letsrace.cz/api/cron/publication',{headers:{Authorization:`Bearer ${secret}`},signal:AbortSignal.timeout(5*60_000)});
+   state.pagesRefreshResult=response.ok?(await response.json()).requests?.status??'unknown':`HTTP ${response.status}`;
+  }catch(e){state.pagesRefreshResult=`failed: ${e.message}`;}
+  finally{pagesRefreshing=false;save();}
  }
  function snapshot() {
   const control=json(controlFile), now=Date.now();
@@ -197,6 +214,7 @@ function main() {
   });
  }
  function tick(){
+  refreshPages().catch(()=>{});
   if(stopping)return;
   const control=json(controlFile);
   if(control.serverRunNowAt&&control.serverRunNowAt!==state.handledServer){state.handledServer=control.serverRunNowAt;save();void runServer();}
