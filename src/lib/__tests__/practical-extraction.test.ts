@@ -77,8 +77,8 @@ describe("practical source verification regressions", () => {
     const result = run("schedule", [{ label: "Elite start", date: "2027-07-09", time: "09:30" }, { label: "Unknown", date: "2027-07-09" }, { label: "Elite start", date: "2027-07-09", time: "00:00" }], "9 July 2027 Elite start 09:30");
     expect(result.details.schedule?.value.map(row => row.time)).toEqual(["09:30"]);
   });
-  it("does not present a range as a precise start", () => {
-    expect(run("schedule", [{ label: "Elite start", date: "2027-07-09", time: "09:30" }], "9 July 2027 Elite start 09:30–10:00").details).toEqual({});
+  it("keeps a range as a range, not as a precise start", () => {
+    expect(run("schedule", [{ label: "Elite start", date: "2027-07-09", time: "09:30" }], "9 July 2027 Elite start 09:30–10:00").details.schedule?.value[0]).toMatchObject({ time: "09:30", endTime: "10:00" });
   });
   it("normalizes a decimal fee and empty optional URL", () => {
     expect(run("fees", [{ label: "Entry Elite", amount: "17.50", currency: "EUR", url: "" }], "2027 Entry Elite 17,50 EUR").details.fees?.value[0].amount).toBe(17.5);
@@ -91,7 +91,7 @@ describe("practical source verification regressions", () => {
     const route = run("routes", [{ name: "Main route", distanceKm: 40, surface: "sand" }], "2027 Main route 40 km gravel").details.routes?.value[0];
     expect(route?.distanceKm).toBe(40);
     expect(route).not.toHaveProperty("surface");
-    expect(run("routes", [{ name: "Runde", distanceKm: 2.55 }], "2027 Runde ca. 2550m").details).toEqual({});
+    expect(run("routes", [{ name: "Runde", distanceKm: 2.55 }], "2027 Runde ca. 2550m").details).toHaveProperty("routes");
   });
   it("does not borrow row evidence from an unrelated document", () => {
     const other = { url: "https://other.test/race", text: "Another race 9 July 2027 Elite start 09:30", links: [] };

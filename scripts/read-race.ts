@@ -54,7 +54,7 @@ async function main() {
       let doc; try { doc = JSON.parse(readFileSync(join(dir, "documents", `${keyOf(url)}.json`), "utf8")); } catch { doc = await read(url); }
       if (doc) documents.push(doc);
     }
-    const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, municipality: row.location?.municipality ?? null, ownUrls: [...entry.documents, row.website_url, row.regulations_url], documents };
+    const context = { name: row.name, startDate: row.start_date, endDate: row.end_date, knownVenue: row.location?.venue ?? undefined, municipality: (entry as { municipality?: string }).municipality ?? null, ownUrls: [...entry.documents, row.website_url, row.regulations_url], documents, readByPerson: true };
     const checked = verifyPracticalExtraction({ facts: entry.facts }, context);
     const links_: ReturnType<typeof documentLinks> = entry.forceInstructions ? entry.documents.map(url => ({ kind: "instructions" as const, url })) : documentLinks(documents, { name: row.name, start_date: row.start_date, municipality: row.location?.municipality, website_url: row.website_url });
     if (links_.length) { const first = documents.find(document => document.url === links_[0]!.url)!; (checked.details as Record<string, unknown>).documents = { value: links_, sourceUrl: first.url, quote: first.text.replace(/\s+/g, " ").trim().slice(0, 200), checkedAt: new Date().toISOString(), editionYear: Number(row.start_date.slice(0, 4)), status: "current" }; }

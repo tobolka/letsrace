@@ -1,3 +1,4 @@
+import { inflateRawSync } from "node:zlib";
 import * as cheerio from "cheerio";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { clearProbe, recentlyProbed, recordProbe } from "@/lib/catalog/probes";
@@ -121,15 +122,43 @@ export async function pdfText(bytes: Uint8Array): Promise<string> {
   const pdf = await getDocumentProxy(bytes.slice(), { verbosity: 0 });
   const { text } = await extractText(pdf, { mergePages: false });
   const pages = Array.isArray(text) ? text : [text];
-  const toRead = pages.flatMap((page, index) => pageNeedsOcr(page) ? [index + 1] : []);
+  const pictured = await pagesWithLargePictures(pdf, pages.length).catch(() => new Set<number>());
+  const toRead = pages.flatMap((page, index) => pageNeedsOcr(page) || pictured.has(index + 1) ? [index + 1] : []);
   if (!toRead.length) return pages.join("\n\n");
   const { pdfPagesText } = await import("@/lib/catalog/document-ocr");
   // Without the picture reader the document is still worth what its text pages hold.
   const read = await pdfPagesText(bytes, toRead).catch(() => new Map<number, string>());
   return pages.map((page, index) => {
     const seen = read.get(index + 1);
-    return seen && !pageNeedsOcr(seen) ? seen : page;
+    if (!seen || pageNeedsOcr(seen)) return page;
+    return pageNeedsOcr(page) ? seen : withWhatPicturesAdd(page, seen);
   }).join("\n\n");
+}
+
+/** Word puts tables and programmes into PDFs as pictures on pages that otherwise have text. */
+const LARGE_PICTURE_PX = 300, MOST_PICTURE_PAGES = 15;
+async function pagesWithLargePictures(pdf: Awaited<ReturnType<typeof import("unpdf").getDocumentProxy>>, count: number): Promise<Set<number>> {
+  const { OPS } = await import("unpdf/pdfjs").then(module => module as unknown as { OPS: Record<string, number> }).catch(() => ({ OPS: { paintImageXObject: 85 } }));
+  const found = new Set<number>();
+  for (let number = 1; number <= count && found.size < MOST_PICTURE_PAGES; number++) {
+    const page = await pdf.getPage(number);
+    const list = await page.getOperatorList();
+    for (let index = 0; index < list.fnArray.length; index++) {
+      if (list.fnArray[index] !== OPS.paintImageXObject) continue;
+      const name = String(list.argsArray[index]?.[0] ?? "");
+      const image = await new Promise<{ width?: number; height?: number } | null>(resolve => { try { page.objs.get(name, resolve); } catch { resolve(null); } setTimeout(() => resolve(null), 500); });
+      if ((image?.width ?? 0) >= LARGE_PICTURE_PX && (image?.height ?? 0) >= LARGE_PICTURE_PX / 2) { found.add(number); break; }
+    }
+  }
+  return found;
+}
+
+/** The page's own text stays exact; only lines the text does not have are added from the picture reading. */
+export function withWhatPicturesAdd(page: string, seen: string): string {
+  const key = (line: string) => line.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const known = key(page);
+  const extra = seen.split("\n").map(line => line.trim()).filter(line => key(line).length >= 3 && !known.includes(key(line)));
+  return extra.length ? `${page}\n${extra.join("\n")}` : page;
 }
 
 export function htmlText(html: string): string {
@@ -264,6 +293,27 @@ async function officeText(bytes: Uint8Array, url: string): Promise<string | null
 
 export type ReadDoc = { url: string; text: string; html: string | null; thin: boolean };
 
+const isZipArchive = (bytes: Uint8Array, url: string) => /\.zip(?:$|\?)/i.test(url) && bytes[0] === 0x50 && bytes[1] === 0x4b;
+
+/** The files of a zip archive, read from its central directory. */
+export function zipEntries(bytes: Uint8Array): { name: string; bytes: Uint8Array }[] {
+  const buffer = Buffer.from(bytes), entries: { name: string; bytes: Uint8Array }[] = [];
+  let end = buffer.length - 22;
+  while (end >= 0 && buffer.readUInt32LE(end) !== 0x06054b50) end--;
+  if (end < 0) return entries;
+  let at = buffer.readUInt32LE(end + 16);
+  for (let i = 0, count = buffer.readUInt16LE(end + 10); i < count && at + 46 <= buffer.length && buffer.readUInt32LE(at) === 0x02014b50; i++) {
+    const method = buffer.readUInt16LE(at + 10), size = buffer.readUInt32LE(at + 20), nameLength = buffer.readUInt16LE(at + 28), extra = buffer.readUInt16LE(at + 30), comment = buffer.readUInt16LE(at + 32), local = buffer.readUInt32LE(at + 42);
+    const name = buffer.subarray(at + 46, at + 46 + nameLength).toString("utf8");
+    const start = local + 30 + buffer.readUInt16LE(local + 26) + buffer.readUInt16LE(local + 28), raw = buffer.subarray(start, start + size);
+    if (!name.endsWith("/") && (method === 0 || method === 8)) {
+      try { entries.push({ name, bytes: new Uint8Array(method === 8 ? inflateRawSync(raw) : raw) }); } catch { /* an entry that will not open is skipped */ }
+    }
+    at += 46 + nameLength + extra + comment;
+  }
+  return entries;
+}
+
 export async function readDocument(url: string, opts?: { maxBytes?: number }): Promise<ReadDoc | null> {
   const doc = await fetchBytes(directDocumentUrl(url), opts?.maxBytes);
   if (!doc) return null;
@@ -274,6 +324,16 @@ export async function readDocument(url: string, opts?: { maxBytes?: number }): P
     return text ? { url, text, html: null, thin: text.length < 300 } : null;
   }
   if (/text\/plain/.test(doc.type)) return { url, text: new TextDecoder("utf-8").decode(doc.bytes), html: null, thin: false };
+  // A federation may pack the regulations into an archive; what counts is the documents inside.
+  if (isZipArchive(doc.bytes, url)) {
+    const texts: string[] = [];
+    for (const entry of zipEntries(doc.bytes).slice(0, 6)) {
+      if (isPdf("", entry.bytes, entry.name)) texts.push(await pdfText(entry.bytes).catch(() => ""));
+      else if (isOfficeDocument("", entry.bytes, entry.name)) texts.push(await officeText(entry.bytes, entry.name).catch(() => "") ?? "");
+    }
+    const text = texts.filter(Boolean).join("\n\n");
+    return text ? { url, text, html: null, thin: false } : null;
+  }
   if (isOfficeDocument(doc.type, doc.bytes, url)) {
     const text = await officeText(doc.bytes, url);
     return text ? { url, text, html: null, thin: false } : null;

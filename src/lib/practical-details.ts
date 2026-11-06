@@ -10,7 +10,7 @@ export const practicalValueSchemas = {
   parking: z.object({ note: z.string().trim().min(3).max(400) }).strict(),
   documents: z.array(z.object({ kind: z.enum(["regulations", "instructions", "series_rules"]), url: publicLink }).strict()).min(1),
   categories: z.array(z.object({ ...itemEvidence, label: text, birthYears: z.string().trim().min(4).max(40).optional() }).strict()).min(1),
-  schedule: z.array(z.object({ ...itemEvidence, approximate: z.boolean().optional(), label: text, date: z.iso.date(), time: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/), timeZone: z.string().max(80).refine(value => { try { new Intl.DateTimeFormat("en", { timeZone: value }); return true; } catch { return false; } }).optional() }).strict()).min(1).max(40),
+  schedule: z.array(z.object({ ...itemEvidence, approximate: z.boolean().optional(), label: text, date: z.iso.date(), time: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/), endTime: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).optional(), timeZone: z.string().max(80).refine(value => { try { new Intl.DateTimeFormat("en", { timeZone: value }); return true; } catch { return false; } }).optional() }).strict()).min(1).max(40),
   fees: z.array(z.object({ ...itemEvidence, label: text, amount: z.number().min(0).max(1000000), currency: z.string().regex(/^[A-Z]{3}$/), validUntil: z.iso.date().optional(), url: publicLink.optional() }).strict()).min(1).max(100),
   routes: z.array(z.object({ ...itemEvidence, name: text, distanceKm: z.number().positive().max(20000).optional(), elevationM: z.number().nonnegative().max(300000).optional(), surface: text.optional(), gpxUrl: publicLink.optional(), mapUrl: publicLink.optional() }).strict()).min(1).max(30),
 };

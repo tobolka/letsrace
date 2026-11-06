@@ -24,12 +24,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       cs: [
         "Tlačítko Web závodu vede na stránku právě toho závodu, ne na cizí kalendář nebo jiný závod téže série.",
         "U závodů uvidíš kategorie s ročníky, kontakt na pořadatele a kde zaparkovat, pokud je pořadatel uvádí.",
-        "Po startu závodu najdeš tlačítko Výsledky, které vede na server časomíry."
+        "Po startu závodu najdeš tlačítko Výsledky, které vede na server časomíry.",
+        "Čas v programu uvedený jako rozmezí se ukáže celý, od kdy do kdy."
       ],
       en: [
         "The race website button goes to that race's own page, not to another calendar or another race in the series.",
         "Race pages show categories with birth years, the organiser's contact and where to park, when the organiser gives them.",
-        "Once a race has started, a Results button takes you to the timing company's site."
+        "Once a race has started, a Results button takes you to the timing company's site.",
+        "A programme time given as a range shows in full, from when until when."
       ],
     },
   },

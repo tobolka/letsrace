@@ -135,7 +135,9 @@ export function ownSourcePages(urls: (string | null | undefined)[]): string[] {
  */
 export function regulationsAmong(documents: { url: string; text: string }[], race: { name: string; start_date: string; municipality?: string | null }): string | null {
   const file = /\.pdf(?:$|\?)|propoz|ausschreibung|regulamin|regolamento|reglement|règlement/i;
-  const candidates = documents.filter(document => { try { return file.test(decodeURIComponent(document.url)); } catch { return file.test(document.url); } });
+  // A club's statutes are a PDF that names the club, not the regulations of its race.
+  const notRegulations = /satzung|stanovy|bylaws|beitragsordnung|jugendordnung|vereinsordnung/i;
+  const candidates = documents.filter(document => { const url = decoded(document.url); return file.test(url) && !notRegulations.test(url); });
   return candidates.find(document => /\.pdf(?:$|\?)/i.test(document.url) && documentIsAboutRace(document.text, race))?.url ?? candidates.find(document => documentIsAboutRace(document.text, race))?.url ?? null;
 }
 

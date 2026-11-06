@@ -1,0 +1,43 @@
+import { describe, expect, it } from "vitest";
+import { deflateRawSync } from "node:zlib";
+import { radNetCalendarRows, radNetFacts } from "@/lib/catalog/radnet";
+import { zipEntries } from "@/lib/catalog/regulation-ages";
+import { verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
+
+const url = "https://www.rad-net.de/rad-net-portal/a.htm?url=mode%3Dascr_detail";
+const text = `Donkey Creek Cyclocross LV Nordrhein-Westfalen Cyclo-Cross
+Tag: Sa, 21.11.2026 Ort: 52385 Nideggen-Schmidt Ausrichter: TUS Schmidt 1911 e.V. Veranstalter: TUS Schmidt 1911 e.V. Hinweise: Parkplätze am Sportplatz. Start/Ziel: Eichheckstraße 44 Art: - Nr.-Ausgabe: Eichheckstraße 44 An: Carsten Lennartz Straße: Im Sief 9 Wohnort: 52385 Nideggen Telefon: +49 1704594387 Telefax: - E-Mail: donkey@donkey-creek.de Internet: x R. 1.3: Hobby 15 min olv Start: 10:30 Uhr Strecke: Runde ca. 500m mit ca. 5 HM.; Startberechtigt: R1.3: Hobby Jg. 2015/2016; Ehreng.: Medaillen; R. 3.1: Jugend männlich U17 Nenngeld: 5,00 €/Nachm. 5,00 € 30 min V60/3 olv Start: 10:55 Uhr Strecke: Wiese. Runde ca. 2550m mit ca. 65 HM.; Rennbeginn`;
+
+describe("rad-net", () => {
+  const raw = radNetFacts({ url, text }) as { facts: Record<string, { value: unknown }> };
+  (raw.facts.schedule!.value as { date: string }[]).forEach(row => { row.date = "2026-11-21"; });
+  const { details } = verifyPracticalExtraction(raw, { name: "Donkey Creek Cyclocross", startDate: "2026-11-21", ownUrls: [url], documents: [{ url, text, links: [] }] }) as unknown as { details: Record<string, { value: never }> };
+
+  it("reads who runs the race and whom to write to", () => {
+    expect(details.organizer!.value).toMatchObject({ name: "TUS Schmidt 1911 e.V.", contactName: "Carsten Lennartz", phone: "+49 1704594387", email: "donkey@donkey-creek.de" });
+  });
+  it("reads each class with its start and fee, and says who a plain Hobby is", () => {
+    expect(details.fees!.value).toEqual([expect.objectContaining({ label: "Jugend männlich U17", amount: 5, currency: "EUR" })]);
+    expect(details.schedule!.value).toEqual(expect.arrayContaining([expect.objectContaining({ time: "10:55" })]));
+    expect(details.categories!.value).toEqual(expect.arrayContaining([expect.objectContaining({ birthYears: "2015/2016" })]));
+  });
+  it("takes the longest lap, not the children's", () => {
+    expect(details.routes!.value).toEqual([expect.objectContaining({ distanceKm: 2.55 })]);
+  });
+  it("finds the rows of a calendar page, also over several days", () => {
+    const rows = radNetCalendarRows("Sa, 07.11.2026 [Die Mauer](https://a.de/1) Hürth Cross NRW 04.11.2026 Do, 12.11.2026 bis So, 15.11.2026 [Bahnpokal](https://a.de/2) Berlin Bahn BER");
+    expect(rows).toEqual([{ date: "2026-11-07", title: "Die Mauer", url: "https://a.de/1", place: "Hürth" }, { date: "2026-11-12", title: "Bahnpokal", url: "https://a.de/2", place: "Berlin" }]);
+  });
+});
+
+describe("zip archives", () => {
+  it("opens the documents inside", () => {
+    const name = Buffer.from("rozpis.pdf"), body = Buffer.from("%PDF-1.4 obsah"), packed = deflateRawSync(body);
+    const local = Buffer.alloc(30); local.writeUInt32LE(0x04034b50, 0); local.writeUInt16LE(name.length, 26);
+    const central = Buffer.alloc(46); central.writeUInt32LE(0x02014b50, 0); central.writeUInt16LE(8, 10); central.writeUInt32LE(packed.length, 20); central.writeUInt16LE(name.length, 28); central.writeUInt32LE(0, 42);
+    const end = Buffer.alloc(22); end.writeUInt32LE(0x06054b50, 0); end.writeUInt16LE(1, 10); end.writeUInt32LE(local.length + name.length + packed.length, 16);
+    const [entry] = zipEntries(new Uint8Array(Buffer.concat([local, name, packed, central, name, end])));
+    expect(entry!.name).toBe("rozpis.pdf");
+    expect(Buffer.from(entry!.bytes).toString()).toBe("%PDF-1.4 obsah");
+  });
+});
