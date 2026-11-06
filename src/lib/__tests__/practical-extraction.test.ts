@@ -252,4 +252,8 @@ describe("organiser contact, parking and categories", () => {
     const { details } = verifyPracticalExtraction({ facts: { categories: fact([{ label: "Kadetky", birthYears: "2011-2012", sourceQuote: quote }], quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] });
     expect(details.categories?.value[0]?.label).toBe("Kadetky");
   });
+  it("does not take a traffic notice for the venue", () => {
+    const quote = "Divieto di transito e di sosta in Piazza Silvio Arrivabene";
+    expect(verifyPracticalExtraction({ facts: { venue: fact({ name: "Piazza Silvio Arrivabene", precision: "venue" }, quote) } }, { ...context, documents: [{ url, text: `${text}\n${quote}`, links: [] }] }).reasons.venue).toBe("traffic_notice");
+  });
 });

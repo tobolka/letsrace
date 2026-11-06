@@ -1,0 +1,3518 @@
+[
+ {
+  "id": "baba9664-fa19-4948-9225-63e1d5788ea9",
+  "name": "BRM 600 Winterfell Night King",
+  "date": "2026-11-06",
+  "end": "2026-11-06",
+  "town": "Bahnhof, Lugano",
+  "cc": "CH",
+  "website": "https://www.audaxsuisse.ch/brevets/brm-600-winterfell-night-king/",
+  "regs": "https://www.audaxsuisse.ch/kuhl-to-know/reglement/",
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.audaxsuisse.ch/brevets/brm-600-winterfell-night-king/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Bahnhof Lugano",
+     "locality": "Lugano",
+     "precision": "start",
+     "postalCode": "6900",
+     "countryCode": "CH",
+     "streetAddress": "Via Basilea 6"
+    },
+    "quote": "[Start/Ziel:](https://www.audaxsuisse.ch/anreise/) | Bahnhof Via Basilea 6 CH-6900 Lugano TI SCHWEIZ [46.005031, 8.946343](https://www.google.com/maps/place/46%C2%B000'18.3%22N+8%C"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.audaxsuisse.ch/app/module/webproduct/goto/m/me199dc9e12531105",
+    "status": "year_neutral",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "url": "https://www.audaxsuisse.ch/",
+     "name": "AUDAX Suisse"
+    },
+    "quote": "Organisation\n\nAUDAX Suisse"
+   }
+  ]
+ },
+ {
+  "id": "ac9aff80-21f7-49ce-a449-f20faa0b5126",
+  "name": "BRM 400 Winterfell White Walker",
+  "date": "2026-11-06",
+  "end": "2026-11-06",
+  "town": "Bahnhof Lugano, Lugano",
+  "cc": "CH",
+  "website": "https://www.audaxsuisse.ch/brevets/brm-400-winterfell-white-walker",
+  "regs": "https://www.audaxsuisse.ch/kuhl-to-know/reglement/",
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.audaxsuisse.ch/brevets/brm-400-winterfell-white-walker",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Bahnhof Via Basilea 6 CH-6900 Lugano TI SCHWEIZ",
+     "locality": "Lugano",
+     "precision": "start",
+     "postalCode": "6900",
+     "countryCode": "CH",
+     "streetAddress": "Via Basilea 6"
+    },
+    "quote": "[Start/Ziel:](https://www.audaxsuisse.ch/anreise/) | Bahnhof Via Basilea 6 CH-6900 Lugano TI SCHWEIZ [46.005031, 8.946343](https://www.google.com/maps/place/46%C2%B000'18.3%22N+8%C"
+   }
+  ]
+ },
+ {
+  "id": "db104a11-51b7-4c75-aa0e-fe49004f970c",
+  "name": "UPCYCLE TRAIL WEEKEND 2026",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Milano",
+  "cc": "IT",
+  "website": "https://rideandrest.net/manifestazione/upcycle-trail-weekend-2026/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Upcycle Milano Bike Café",
+     "locality": "Milano",
+     "precision": "start",
+     "streetAddress": "via Ampère 59"
+    },
+    "quote": "Partenza e ritorno: Upcycle Milano Bike Café, via Ampère 59, Milano."
+   },
+   {
+    "field": "routes",
+    "url": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "percorso CORTO",
+      "checkedAt": "2026-11-05T23:05:50.192Z",
+      "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+      "distanceKm": 60,
+      "sourceQuote": "percorso CORTO (60 km):"
+     },
+     {
+      "name": "percorso MEDIO",
+      "checkedAt": "2026-11-05T23:05:50.192Z",
+      "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+      "distanceKm": 100,
+      "sourceQuote": "percorso MEDIO (100 km) e percorso LUNGO (150 km):"
+     },
+     {
+      "name": "percorso LUNGO",
+      "checkedAt": "2026-11-05T23:05:50.192Z",
+      "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+      "distanceKm": 150,
+      "sourceQuote": "percorso MEDIO (100 km) e percorso LUNGO (150 km):"
+     }
+    ],
+    "quote": "La classica Gravel Ride di Upcycle con 3 percorsi: 60, 100 e 150 km circa, per tutte le gambe (in pianura, comunque). Sono ammesse tutte le biciclette adatte a terreni sterrati."
+   },
+   {
+    "field": "schedule",
+    "url": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-08",
+      "time": "07:15",
+      "label": "Apertura porte",
+      "checkedAt": "2026-11-05T23:05:50.189Z",
+      "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+      "approximate": false,
+      "sourceQuote": "Apertura porte alle 7:15 con ritiro ride pack"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "07:30",
+      "label": "Partenza alla francese",
+      "checkedAt": "2026-11-05T23:05:50.190Z",
+      "sourceUrl": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+      "approximate": true,
+      "sourceQuote": "Partenza alla francese dalle 7:30 alle 9:00."
+     }
+    ],
+    "quote": "Apertura porte alle 7:15 con ritiro ride pack\nPartenza alla francese dalle 7:30 alle 9:00."
+   },
+   {
+    "field": "organizer",
+    "url": "https://upcyclecafe.it/upcycle-trail-weekend-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Upcycle"
+    },
+    "quote": "La classica Gravel Ride di Upcycle con 3 percorsi: 60, 100 e 150 km circa, per tutte le gambe (in pianura, comunque). Sono ammesse tutte le biciclette adatte a terreni sterrati."
+   }
+  ]
+ },
+ {
+  "id": "a59f6eaa-b246-43d4-a9db-615b58911b53",
+  "name": "FRANCIACORTA GRAVEL 3.5",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Rodengo Saiano",
+  "cc": "IT",
+  "website": "https://rideandrest.net/manifestazione/franciacorta-gravel-3-5/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "QUOTA unica",
+      "amount": 35,
+      "currency": "EUR",
+      "checkedAt": "2026-11-05T23:05:36.389Z",
+      "sourceUrl": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+      "sourceQuote": "QUOTA unica di € 35,00"
+     }
+    ],
+    "quote": "COSTO\n\nQUOTA unica di € 35,00"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Villa Giuliana",
+     "locality": "Rodengo Saiano",
+     "precision": "venue",
+     "countryCode": "IT"
+    },
+    "quote": "VILLA GIULIANA - RODENGO SAIANO (BS)"
+   },
+   {
+    "field": "routes",
+    "url": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "Distanza percorso corto",
+      "checkedAt": "2026-11-05T23:05:36.390Z",
+      "sourceUrl": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+      "distanceKm": 70,
+      "elevationM": 750,
+      "sourceQuote": "Distanza percorso corto 70 km\n\n70 km\n\nDislivello.\n\n750 mt"
+     }
+    ],
+    "quote": "Distanza percorso corto 70 km\n\n70 km\n\nDislivello.\n\n750 mt"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-07",
+      "time": "08:30",
+      "label": "Apertura operazioni di segreteria",
+      "checkedAt": "2026-11-05T23:05:36.388Z",
+      "sourceUrl": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+      "approximate": false,
+      "sourceQuote": "ORE 8:30 apertura operazioni di segreteria"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "10:00",
+      "label": "Partenza alla francese",
+      "checkedAt": "2026-11-05T23:05:36.388Z",
+      "sourceUrl": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+      "approximate": false,
+      "sourceQuote": "e ORE 10.00 partenza alla francese"
+     }
+    ],
+    "quote": "7 novembre 2026\n\nQUANDO e DOVE...\n\n07 novembre 2026\n\nVILLA GIULIANA - RODENGO SAIANO (BS)\n\nRITROVO...\n\nORE 8:30 apertura operazioni di segreteria\ne ORE 10.00 partenza alla francese"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.boostevents.it/franciacorta-gravel-ed3-5-2026/",
+    "status": "year_neutral",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Boost Events"
+    },
+    "quote": "Vai al contenuto\n\nFranciacorta Gravel '26 Ed. 3.5\n\nLa prima classica autunnale di Boost Events ti porta nel cuore del territorio delle bollicine, tra i colori caldi dell’autunno, l"
+   }
+  ]
+ },
+ {
+  "id": "8e629361-9715-408e-b258-50485d9ae581",
+  "name": "BRM 200 Winterfell Stark Family",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Tre Torri, Milano",
+  "cc": "IT",
+  "website": "https://www.audaxsuisse.ch/brevets/brm-200-winterfell-stark-family",
+  "regs": null,
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.audaxsuisse.ch/brevets/brm-200-winterfell-stark-family",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Piazza Tre Torri 3, Milano",
+     "locality": "Milano",
+     "precision": "start",
+     "postalCode": "20145",
+     "countryCode": "IT",
+     "streetAddress": "Piazza Tre Torri 3"
+    },
+    "quote": "[Start:](https://www.audaxsuisse.ch/anreise/) | Piazza Tre Torri 3 I-20145 Milano ITALIEN [45.477161, 9.155506](https://www.google.com/maps/place/45%C2%B028'37.8%22N+9%C2%B009'19.8"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.audaxsuisse.ch/brevets/brm-200-winterfell-stark-family",
+    "status": "year_neutral",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "AUDAX Suisse"
+    },
+    "quote": "Organisation\n\nAUDAX Suisse"
+   }
+  ]
+ },
+ {
+  "id": "3636b10b-dd7c-4503-8798-eae1e18b9738",
+  "name": "Niepodległościowy Maraton MTB",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Wieruszów",
+  "cc": "PL",
+  "website": "https://odjazd.pl/wydarzenie/b7fd5047-ed27-4022-9764-b8aeac178b06",
+  "regs": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Wpisowe Niepodległościowy maraton MTB dystans MINI i MEGA",
+      "amount": 120,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:34.485Z",
+      "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+      "sourceQuote": "3. Wysokość wpisowego w Niepodległościowym maratonie MTB : dystans MINI i MEGA\nwynosi 120 zł ."
+     },
+     {
+      "label": "Zapisy w dniu zawodów",
+      "amount": 200,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:34.485Z",
+      "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+      "sourceQuote": "ZAPISY W DNIU ZAWODÓW ( świadczenia: numer startowy z chipem plus posiłek) – 200 zł"
+     }
+    ],
+    "quote": "1. Wysokość opłaty startowej:\n2. Członkowie klubu - WKK Wieruszów Wiśniewski MTB TEAM - nie ponoszą opłaty\nstartowej .\n3. Wysokość wpisowego w Niepodległościowym maratonie MTB : dy"
+   },
+   {
+    "field": "venue",
+    "url": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Agroturystyka - NA Grobli - Mieleszynek",
+     "precision": "start"
+    },
+    "quote": "1. Niepodległościowy maraton MTB odbędzie się w dniu 07 - Listopad - 2026 rok\n2. Start zawodów odbędzie się z \"Agroturystyka - NA Grobli - Mieleszynek\""
+   },
+   {
+    "field": "schedule",
+    "url": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-07",
+      "time": "11:00",
+      "label": "Niepodległościowy maraton MTB",
+      "checkedAt": "2026-11-05T23:05:34.479Z",
+      "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+      "approximate": false,
+      "sourceQuote": "Data 7-11-2026\nGodzina startu 11:00 Niepodległościowego maratonu MTB i o godzinie 11:30 start"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "11:30",
+      "label": "Niepodległościowy maratonu MTB KIDS",
+      "checkedAt": "2026-11-05T23:05:34.480Z",
+      "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+      "approximate": false,
+      "sourceQuote": "Godzina startu 11:00 Niepodległościowego maratonu MTB i o godzinie 11:30 start\nNiepodległościowego maratonu MTB KIDS"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "14:30",
+      "label": "dekoracja zwycięzców",
+      "checkedAt": "2026-11-05T23:05:34.481Z",
+      "sourceUrl": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+      "approximate": true,
+      "sourceQuote": "* Około godziny 14:30 dekoracja zwycięzców"
+     }
+    ],
+    "quote": "Data 7-11-2026\nGodzina startu 11:00 Niepodległościowego maratonu MTB i o godzinie 11:30 start\nNiepodległościowego maratonu MTB KIDS\n* Około godziny 14:30 dekoracja zwycięzców"
+   },
+   {
+    "field": "organizer",
+    "url": "https://wkkwieruszow.pl/wp-content/uploads/2026/09/regulamin-N-M-MTB-W-2026.pdf",
+    "status": "year_neutral",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Stowarzyszenie Wieruszowski klub kolarski"
+    },
+    "quote": "a) Stowarzyszenie Wieruszowski klub kolarski ul. Waryńskiego 14 , 98-400 Wieruszów"
+   }
+  ]
+ },
+ {
+  "id": "96c5327a-0fb6-40e8-a435-89d46e8fa2ee",
+  "name": "Mistrovství Ústeckého kraje v cyklokrosu pro rok 2026 — Nové Město v Krušných horách",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Nové Město v Krušných horách",
+  "cc": "CZ",
+  "website": "https://www.cyklokros.cz/kalendar",
+  "regs": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Předem přihlášení",
+      "amount": 200,
+      "currency": "CZK",
+      "checkedAt": "2026-11-05T23:05:49.428Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "sourceQuote": "Startovné : Předem přihlášení 200Kč, registrace na místě 300Kč,"
+     },
+     {
+      "label": "registrace na místě",
+      "amount": 300,
+      "currency": "CZK",
+      "checkedAt": "2026-11-05T23:05:49.428Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "sourceQuote": "Startovné : Předem přihlášení 200Kč, registrace na místě 300Kč,"
+     }
+    ],
+    "quote": "Startovné : Předem přihlášení 200Kč, registrace na místě 300Kč,"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Běžecký stadion Nové Město v Krušných horách",
+     "precision": "start"
+    },
+    "quote": "Termín Sobota 7.11 2026 v 10:00 hod\nMísto Běžecký stadion Nové Město v Krušných horách\nParkování Vlakové nádraží Nové Město v Krušných horách https://mapy.com/s/nanokazona\nKancelář"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-07",
+      "time": "08:30",
+      "label": "Kancelář závodu",
+      "checkedAt": "2026-11-05T23:05:49.426Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "approximate": false,
+      "sourceQuote": "Kancelář závodu V místě startu od 8:30 hod"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "10:00",
+      "label": "žáci, žákyně",
+      "checkedAt": "2026-11-05T23:05:49.426Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "approximate": false,
+      "sourceQuote": "Pořadí startu : 10:00 hod. ………………….. žáci, žákyně"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "10:30",
+      "label": "kadeti, kadetky",
+      "checkedAt": "2026-11-05T23:05:49.427Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "approximate": false,
+      "sourceQuote": "10:30 hod. ………………….. kadeti, kadetky"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "11:45",
+      "label": "junioři, muži",
+      "checkedAt": "2026-11-05T23:05:49.427Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "approximate": false,
+      "sourceQuote": "11:45 hod. …………………... junioři, muži"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "11:46",
+      "label": "ženy+juniorky",
+      "checkedAt": "2026-11-05T23:05:49.427Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "approximate": false,
+      "sourceQuote": "11:46 hod. …………………... ženy+juniorky"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "13:00",
+      "label": "vyhlášení výsledků",
+      "checkedAt": "2026-11-05T23:05:49.428Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+      "approximate": true,
+      "sourceQuote": "cca 13:00 hod. ……………… vyhlášení výsledků"
+     }
+    ],
+    "quote": "Termín Sobota 7.11 2026 v 10:00 hod\nMísto Běžecký stadion Nové Město v Krušných horách\nParkování Vlakové nádraží Nové Město v Krušných horách https://mapy.com/s/nanokazona\nKancelář"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.cyklokros.cz/files/cx-vcpr-2026-propozice.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Bicykl team Ústí nad Labem z.s."
+    },
+    "quote": "Pořadatel Bicykl team Ústí nad Labem z.s. z pověření Ústeckého svazu cyklistiky"
+   }
+  ]
+ },
+ {
+  "id": "15731f94-298e-4b60-b229-e09479656ca7",
+  "name": "Ogólnopolski wyścig w kolarstwie przełajowym - memoriał Mieczysława Brzezińskiego",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Zalesie Górne koło Piaseczna",
+  "cc": "PL",
+  "website": "https://pzkol.pl/kalendarz/2881,ogolnopolski-wyscig-w-kolarstwie-przelajowym-memorial-mieczyslawa-brzezinskiego.html",
+  "regs": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Żak Dz. / Chł taryfikator A",
+      "amount": 15,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1"
+     },
+     {
+      "label": "Młodzik/młodziczka taryfikator A",
+      "amount": 25,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł"
+     },
+     {
+      "label": "Młodzik/młodziczka taryfikator B",
+      "amount": 50,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "Młodzik/młodziczka  25zł  50 zł"
+     },
+     {
+      "label": "Junior młodszy /juniorka młodsza taryfikator A",
+      "amount": 30,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł\nJunior młodszy /juniorka młodsza 30zł  60 zt"
+     },
+     {
+      "label": "Junior / juniorka taryfikator A",
+      "amount": 50,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł\nJunior młodszy /juniorka młodsza 30zł  60 zt\nJunior / juniorka  50 zł  100 zł"
+     },
+     {
+      "label": "Junior / juniorka taryfikator B",
+      "amount": 100,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "Junior / juniorka  50 zł  100 zł"
+     },
+     {
+      "label": "Elita M /K taryfikator A",
+      "amount": 60,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł\nJunior młodszy /juniorka młodsza 30zł  60 zt\nJunior / juniorka  50 zł  100 zł\nElita M /K  60 zł  120 zł"
+     },
+     {
+      "label": "Elita M /K taryfikator B",
+      "amount": 120,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "Elita M /K  60 zł  120 zł"
+     },
+     {
+      "label": "U23-M/K taryfikator A",
+      "amount": 60,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł\nJunior młodszy /juniorka młodsza 30zł  60 zt\nJunior / juniorka  50 zł  100 zł\nElita M /K  60 zł  120 zł\nU23-M/K  60 zł  120 zł"
+     },
+     {
+      "label": "U23-M/K taryfikator B",
+      "amount": 120,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "U23-M/K  60 zł  120 zł"
+     },
+     {
+      "label": "Masters M/K taryfikator A",
+      "amount": 80,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł\nJunior młodszy /juniorka młodsza 30zł  60 zt\nJunior / juniorka  50 zł  100 zł\nElita M /K  60 zł  120 zł\nU23-M/K  60 zł  120 zł\nMasters M/K  80 zł  160 zt"
+     },
+     {
+      "label": "Amator M/K taryfikator A",
+      "amount": 100,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sport.pl/zapisy/\nKategorie  optata startowa „A\"  optata startowa „B\"\nŻak Dz. / Chł  15zł  30 z1\nMłodzik/młodziczka  25zł  50 zł\nJunior młodszy /juniorka młodsza 30zł  60 zt\nJunior / juniorka  50 zł  100 zł\nElita M /K  60 zł  120 zł\nU23-M/K  60 zł  120 zł\nMasters M/K  80 zł  160 zt\nAmator M/K  100 zł  150 zł"
+     },
+     {
+      "label": "Amator M/K taryfikator B",
+      "amount": 150,
+      "currency": "PLN",
+      "checkedAt": "2026-11-05T23:05:10.832Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "sourceQuote": "Amator M/K  100 zł  150 zł"
+     }
+    ],
+    "quote": "10. Zgłoszenia i opłaty:\nZgłoszenia i opłaty do wyścigu wyłącznie drogą elektroniczną w terminie\n5.11.2026r (czwartek do godziny 18:00 TARYFIKATOR „A\")\nPo przez stronę www.akces-sp"
+   },
+   {
+    "field": "venue",
+    "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "name": "Ośrodek Planeta Zalesie Górne",
+     "precision": "venue",
+     "streetAddress": "ulica Wczasowa 1"
+    },
+    "quote": "5. Data i miejsce wyścigu\nOśrodek Planeta Zalesie Górne ulica Wczasowa 1"
+   },
+   {
+    "field": "routes",
+    "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "Długość jednego okrążenia",
+      "checkedAt": "2026-11-05T23:05:10.834Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "distanceKm": 2.5,
+      "sourceQuote": "Długość jednego okrążenia 2500m."
+     }
+    ],
+    "quote": "Ośrodek Planeta Zalesie Górne ulica Wczasowa 1\nDługość jednego okrążenia 2500m."
+   },
+   {
+    "field": "schedule",
+    "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-07",
+      "time": "09:00",
+      "label": "kategoria Amator Mężczyźni",
+      "checkedAt": "2026-11-05T23:05:10.818Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "9:00 - kategoria Amator Mężczyźni (około 45 min)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "09:01",
+      "label": "kategoria Amator Kobiety",
+      "checkedAt": "2026-11-05T23:05:10.818Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "9:01 - kategoria Amator Kobiety (Około 30 min)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "10:00",
+      "label": "kategoria Masters | (35-44), II (45-54)",
+      "checkedAt": "2026-11-05T23:05:10.819Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "10:00 - kategoria Masters | (35-44), II (45-54) (ok 45 minut)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "10:01",
+      "label": "kategoria Masters |||(55-64), IV (65 i starsi)",
+      "checkedAt": "2026-11-05T23:05:10.819Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "10:01 - kategoria Masters |||(55-64), IV (65 i starsi) (okoto 35 min)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "11:00",
+      "label": "kategoria Elita Kobiet / U-23 / Juniorka",
+      "checkedAt": "2026-11-05T23:05:10.819Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "11:00— kategoria Elita Kobiet / U-23 / Juniorka (ok 45 minut)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "11:01",
+      "label": "kategoria Juniorka Mtodsza",
+      "checkedAt": "2026-11-05T23:05:10.820Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "11:01- kategoria Juniorka Mtodsza (okoto 30 min)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "11:02",
+      "label": "kategoria Zak Chłopcy, Zak Dziewczyny - Jedna Pełna Runda",
+      "checkedAt": "2026-11-05T23:05:10.820Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": false,
+      "sourceQuote": "11:02 — kategoria Zak Chłopcy, Zak Dziewczyny - Jedna Pełna Runda"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "12:30",
+      "label": "kategoria Elita Mężczyzn / U -23",
+      "checkedAt": "2026-11-05T23:05:10.821Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "12:30 - kategoria Elita Mężczyzn / U -23 (ok 60 minut)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "12:31",
+      "label": "kategoria Junior",
+      "checkedAt": "2026-11-05T23:05:10.821Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "12:31 - kategoria Junior (ok 40 minut)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "13:45",
+      "label": "kategoria Młodzik",
+      "checkedAt": "2026-11-05T23:05:10.821Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "13:45- kategoria Młodzik (ok 20 minut)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "13:46",
+      "label": "kategoria Mtodziczka",
+      "checkedAt": "2026-11-05T23:05:10.822Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": true,
+      "sourceQuote": "13:46 - kategoria Mtodziczka) ok 20 minut)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "14:20",
+      "label": "kategoria Junior Młodszy",
+      "checkedAt": "2026-11-05T23:05:10.822Z",
+      "sourceUrl": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+      "approximate": false,
+      "sourceQuote": "14:20- kategoria Junior Młodszy"
+     }
+    ],
+    "quote": "8:00 - otwarcie biura\n8:00 - 8.50 - Trening na trasie zawodów\n9:00 - kategoria Amator Mężczyźni (około 45 min)\n9:01 - kategoria Amator Kobiety (Około 30 min)\n10:00 - kategoria Mast"
+   },
+   {
+    "field": "organizer",
+    "url": "https://pzkol.pl/pobierz/14487/s/14487_regulamin_zawodowogolnopolski_wys.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Ludowy Uczniowski Klub Sportowy TRÓJKA Piaseczno"
+    },
+    "quote": "1. Organizator:\nLudowy Uczniowski Klub Sportowy TRÓJKA Piaseczno"
+   }
+  ]
+ },
+ {
+  "id": "4d220c62-c3ea-4257-a6df-a662a0f58cab",
+  "name": "Afeno Quer und Bike Cup #5",
+  "date": "2026-11-07",
+  "end": "2026-11-07",
+  "town": "Möhlin",
+  "cc": "CH",
+  "website": "https://qubcup.jimdofree.com/",
+  "regs": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Elite, Amateure, Master, Hobby",
+      "amount": 150,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:48.351Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "validUntil": "2026-09-26",
+      "sourceQuote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby"
+     },
+     {
+      "label": "Junioren, Damen",
+      "amount": 120,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:48.351Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "validUntil": "2026-09-26",
+      "sourceQuote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen"
+     },
+     {
+      "label": "Anfänger, Schüler",
+      "amount": 90,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:48.351Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "validUntil": "2026-09-26",
+      "sourceQuote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen\n90.00 CHF Anfänger, Schüler"
+     },
+     {
+      "label": "Elite, Amateure, Master, Hobby pro Rennen",
+      "amount": 25,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:48.351Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "pro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby"
+     },
+     {
+      "label": "Junioren, Damen pro Rennen",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:48.351Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "pro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby\n20.00 CHF Junioren, Damen"
+     },
+     {
+      "label": "Anfänger, Schüler pro Rennen",
+      "amount": 15,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:48.351Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "pro Rennen:\n25.00 CHF Elite, Amateure, Master, Hobby\n20.00 CHF Junioren, Damen\n15.00 CHF Anfänger, Schüler"
+     }
+    ],
+    "quote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen\n9"
+   },
+   {
+    "field": "schedule",
+    "url": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-07",
+      "time": "12:00",
+      "label": "Gruppe A",
+      "checkedAt": "2026-11-05T23:05:48.348Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "12:45",
+      "label": "Gruppe B",
+      "checkedAt": "2026-11-05T23:05:48.348Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe B: 12.45 Uhr / ca. 40 Min. Renndauer"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "14:00",
+      "label": "Kidsrace",
+      "checkedAt": "2026-11-05T23:05:48.349Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Kidsrace ca. 14.00 Uhr / ca. 3-8min je nach Runde (verkürzte Runde im Zielbereich)"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "15:00",
+      "label": "Gruppe C",
+      "checkedAt": "2026-11-05T23:05:48.349Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe C: 15.00 Uhr / ca. 25 Min. Renndauer"
+     },
+     {
+      "date": "2026-11-07",
+      "time": "15:45",
+      "label": "Gruppe D",
+      "checkedAt": "2026-11-05T23:05:48.349Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe D: 15.45 Uhr / ca. 40 Min. Renndauer"
+     }
+    ],
+    "quote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer\nGruppe B: 12.45 Uhr / ca. 40 Min. Renndauer\nKidsrace ca. 14.00 Uhr / ca. 3-8min je nach Runde (verkürzte Runde im Zielbereich)\nGruppe C:"
+   }
+  ]
+ },
+ {
+  "id": "083acc15-7304-41e4-9771-13a11bbf1c85",
+  "name": "ORC 4 - Cyclocross de Rennaz",
+  "date": "2026-11-08",
+  "end": "2026-11-08",
+  "town": "Rennaz",
+  "cc": "CH",
+  "website": "https://www.omniumromand.com/orc4-cyclocross-de-rennaz-vd.html",
+  "regs": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "U9 Filles / U9 Garçons",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "Les Petits et Petites Cracks Gratuit\nU9 Filles / U9 Garçons CHF 10"
+     },
+     {
+      "label": "U11 Filles / U11 Garçons",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U11 Filles / U11 Garçons CHF 10"
+     },
+     {
+      "label": "U13 Filles / U13 Garçons",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U13 Filles / U13 Garçons CHF 10"
+     },
+     {
+      "label": "U15 Filles / U15 Garçons",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U15 Filles / U15 Garçons CHF 10"
+     },
+     {
+      "label": "U17 Filles / U17 Garçons",
+      "amount": 15,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U17 Filles / U17 Garçons CHF 15"
+     },
+     {
+      "label": "U19 Juniors Hommes",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U19 Juniors Hommes CHF 20"
+     },
+     {
+      "label": "Dames",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "Dames CHF 20"
+     },
+     {
+      "label": "Hommes",
+      "amount": 25,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:05:52.680Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "Hommes CHF 25"
+     }
+    ],
+    "quote": "3. FINANCES D'INSCRIPTION\nPar manche :\nLes Petits et Petites Cracks Gratuit\nU9 Filles / U9 Garçons CHF 10\nU11 Filles / U11 Garçons CHF 10\nU13 Filles / U13 Garçons CHF 10\nU15 Filles"
+   }
+  ]
+ },
+ {
+  "id": "507d686d-c638-4b08-b1f0-f70c1358b1a2",
+  "name": "8º TROFEO LE VALLI SUL MINCIO",
+  "date": "2026-11-08",
+  "end": "2026-11-08",
+  "town": "Rivalta sul mincio",
+  "cc": "IT",
+  "website": "https://lombardia.piazzainfesta.it/rodigo/ciclocross-le-valli-del-mincio-126730",
+  "regs": null,
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://lombardia.piazzainfesta.it/rodigo/ciclocross-le-valli-del-mincio-126730",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Rivalta sul Mincio, Piazza Silvio Arrivabene, via Porto e via dei Pescatori",
+     "locality": "Rodigo",
+     "precision": "municipality",
+     "countryCode": "IT"
+    },
+    "quote": "Rivalta sul Mincio, Piazza Silvio Arrivabene, via Porto e via dei Pescatori, Rodigo (MN)"
+   },
+   {
+    "field": "organizer",
+    "url": "https://lombardia.piazzainfesta.it/rodigo/ciclocross-le-valli-del-mincio-126730",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "A.S.D. Amici del Pedale Rivaltese"
+    },
+    "quote": "Organizzato da A.S.D. Amici del Pedale Rivaltese"
+   }
+  ]
+ },
+ {
+  "id": "5efe256c-291d-40bb-9d38-7d155f97743f",
+  "name": "Krapf Bike Cup #4",
+  "date": "2026-11-08",
+  "end": "2026-11-08",
+  "town": "St.Gallen",
+  "cc": "CH",
+  "website": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+  "regs": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Gesamtwertung Erwachsene (teilnahmeberechtigt für alle 6 Rennen)",
+      "amount": 120,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:06:06.376Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Bei Anmeldungen bis Freitag 16. Oktober 2026 Gesamtwertung Erwachsene                   CHF 120.00 (teilnahmeberechtigt für alle 6 Rennen)"
+     },
+     {
+      "label": "Gesamtwertung Erwachsene Kategorie 2 Runden FUN",
+      "amount": 80,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:06:06.376Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Gesamtwertung Erwachsene                   CHF 80.00 (Kategorie \"2 Runden FUN\", teilnahmeberechtigt für alle 6 Rennen)"
+     },
+     {
+      "label": "Gesamtwertung Kids",
+      "amount": 60,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:06:06.376Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Gesamtwertung Kids                                  CHF 60.00   (teilnahmeberechtigt für alle 6 Rennen) Einzelrennen-Anmeldung bis 12.00 Uhr am Tag vor dem Rennen Einzelrennen Erwachsene                       CHF 30.00 pro Rennen"
+     },
+     {
+      "label": "Einzelrennen Erwachsene",
+      "amount": 30,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:06:06.376Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Gesamtwertung Kids                                  CHF 60.00   (teilnahmeberechtigt für alle 6 Rennen) Einzelrennen-Anmeldung bis 12.00 Uhr am Tag vor dem Rennen Einzelrennen Erwachsene                       CHF 30.00 pro Rennen"
+     },
+     {
+      "label": "Einzelrennen Erwachsene Kategorie 2 Runden FUN",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:06:06.376Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Einzelrennen Erwachsene                       CHF 20.00 pro Rennen (Kategorie \"2 Runden FUN\")"
+     },
+     {
+      "label": "Einzelrennen Kids",
+      "amount": 15,
+      "currency": "CHF",
+      "checkedAt": "2026-11-05T23:06:06.376Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Einzelrennen Kids                                      CHF 15.00 pro Rennen Die Startnummer wird für alle 6 Rennen verwendet und muss retourniert werden. Die Startnummern können nach Anmeldung sofort bei uns im Shop abgeholt werden. Am Renntag sind die Startnummern direkt bei Start/Ziel zu beziehen."
+     }
+    ],
+    "quote": "Bei Anmeldungen bis Freitag 16. Oktober 2026 Gesamtwertung Erwachsene                   CHF 120.00 (teilnahmeberechtigt für alle 6 Rennen)\n\nGesamtwertung Erwachsene                "
+   },
+   {
+    "field": "venue",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Abtwil – Parkplatz Breitfeld (Hafnersberg)",
+     "locality": "Abtwil",
+     "precision": "start",
+     "countryCode": "CH"
+    },
+    "quote": "4 | Sonntag, 8. November | 09:30 Uhr | Abtwil | [Breitfeld](https://www.google.com/maps/place/Parkplatz+Breitfeld+(Hafnersberg)/@47.4108353,9.2971855,860m/data=!3m1!1e3!4m6!3m5!1s0"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-08",
+      "time": "09:30",
+      "label": "Start/Ziel Abtwil, Sonntag 8. November, 09:30 Uhr",
+      "checkedAt": "2026-11-05T23:06:06.371Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "approximate": false,
+      "sourceQuote": "4 | Sonntag, 8. November | 09:30 Uhr | Abtwil | [Breitfeld](https://www.google.com/maps/place/Parkplatz+Breitfeld+(Hafnersberg)/@47.4108353,9.2971855,860m/data=!3m1!1e3!4m6!3m5!1s0x479ae05b55e16b71:0xfea1a8f6a5c6e764!8m2!3d47.410836!4d9.3019488!16s%2Fg%2F11f5h2xych?entry=ttu&g_ep=EgoyMDI2MTAxMy4wIKXMDSoASAFQAw%3D%3D) | [Start/Ziel](https://www.google.com/maps/place/47%C2%B025'05.7%22N+9%C2%B018'10.1%22E/@47.418259,9.302813,860m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d47.418259!4d9.302813?entry=ttu&g_ep=EgoyMDI2MTAxMy4wIKXMDSoASAFQAw%3D%3D)"
+     }
+    ],
+    "quote": "4 | Sonntag, 8. November | 09:30 Uhr | Abtwil | [Breitfeld](https://www.google.com/maps/place/Parkplatz+Breitfeld+(Hafnersberg)/@47.4108353,9.2971855,860m/data=!3m1!1e3!4m6!3m5!1s0"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "year_neutral",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "url": "https://www.radsport-krapf.ch/",
+     "name": "Radsport Krapf AG"
+    },
+    "quote": "Die Bewilligung gilt nur für die speziell bezeichneten Strecken am oben aufgeführten Renntag, nicht aber für das Training vor, bzw. nach der Veranstaltung! Fehlbare Fahrer müssen a"
+   }
+  ]
+ },
+ {
+  "id": "09e14a6c-8fac-442b-a4db-4d1c57608922",
+  "name": "DWH - dachwelten Cross powered by RCO BOA Wels",
+  "date": "2026-11-08",
+  "end": "2026-11-08",
+  "town": "Wels",
+  "cc": "AT",
+  "website": "https://www.rc-ovilava-wels.at/",
+  "regs": "https://www.cyclingaustria.at/images/Cup/26%20Cup%20Ausschreibungen/Cycling%20Austria%20Cyclocross%20Cup%2026-27_2.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Nenngeld Jedermann Rennen 1",
+      "amount": 28,
+      "currency": "EUR",
+      "checkedAt": "2026-11-05T23:05:16.817Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "sourceQuote": "Nenngeld Jedermann Rennen 1 28 €"
+     }
+    ],
+    "quote": "NENNUNG\nOnline über computerauswertung.at\nNennschluss: Mittwoch, 4. November 2026\nNachnennung bis zum Renntag 8.11.2026 möglich\nNenngeld Jedermann Rennen 1 28 €\nNenngeld Lizen"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Freizeitanlage Wels-Wimpassing",
+     "locality": "Wels",
+     "precision": "venue",
+     "postalCode": "4600",
+     "countryCode": "AT",
+     "streetAddress": "Römerstraße 200k"
+    },
+    "quote": "S TA R T / Z I E L\nFreizeitanlage Wels-Wimpassing\nRömerstraße 200k, 4600 Wels"
+   },
+   {
+    "field": "routes",
+    "url": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "Men Elite, Men U23, Men Masters I, Amateure Herren LM OÖ",
+      "checkedAt": "2026-11-05T23:05:16.818Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "distanceKm": 3.2,
+      "sourceQuote": "7 12:50 Men Elite, Men U23, Men Masters I, Amateure\nHerren LM OÖ\n60 min\nStrecke 3,2 km"
+     },
+     {
+      "name": "Men Juniors, Men Masters IIVI, Member Card männlich",
+      "checkedAt": "2026-11-05T23:05:16.818Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "distanceKm": 3.2,
+      "sourceQuote": "1148 Men Juniors, Men Masters IIVI, Member\nCard männlich\n40 min\nStrecke 3,2 km"
+     }
+    ],
+    "quote": "6 11:45\n11:48\n1145 Women Elite, Women U23, Women Juniors,\nWomen Masters, Amateure Frauen, Member Card\nweiblich LM OÖ\n1148 Men Juniors, Men Masters IIVI, Member\nCard männlich\n4"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-08",
+      "time": "09:00",
+      "label": "Jedermann:Frau · Gravel & MTB UNLIZENZIERT",
+      "checkedAt": "2026-11-05T23:05:16.815Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "approximate": false,
+      "sourceQuote": "1 09:00 Jedermann:Frau · Gravel & MTB UNLIZENZIERT"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:00",
+      "label": "Member Card männl. Jugend, U17 männlich",
+      "checkedAt": "2026-11-05T23:05:16.815Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "approximate": false,
+      "sourceQuote": "2 10:00 Member Card männl. Jugend, U17 männlich"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:10",
+      "label": "Member Card m/w Jugend, U15 männlich, U17 weiblich LM OÖ",
+      "checkedAt": "2026-11-05T23:05:16.816Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "approximate": false,
+      "sourceQuote": "3 10:10 Member Card m/w Jugend, U15 männlich, U17\nweiblich LM OÖ"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:15",
+      "label": "Member Card m/w Jugend, U13 m/w, U15 weiblich LM OÖ",
+      "checkedAt": "2026-11-05T23:05:16.816Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "approximate": false,
+      "sourceQuote": "4 10:15 Member Card m/w Jugend, U13 m/w, U15\nweiblich LM OÖ"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "11:00",
+      "label": "BOA Mini Grand Prix UNLIZENZIERT",
+      "checkedAt": "2026-11-05T23:05:16.816Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "approximate": false,
+      "sourceQuote": "5 11:00 BOA Mini Grand Prix UNLIZENZIERT"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "12:50",
+      "label": "Men Elite, Men U23, Men Masters I, Amateure Herren LM OÖ",
+      "checkedAt": "2026-11-05T23:05:16.816Z",
+      "sourceUrl": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+      "approximate": false,
+      "sourceQuote": "7 12:50 Men Elite, Men U23, Men Masters I, Amateure\nHerren LM OÖ"
+     }
+    ],
+    "quote": "DWH CROSS · RENNEN & KLASSEN S O 8.1 1 . 2 0 2 6 · W E L S\nNR START KLASSEN DAUER / STRECKE PREISE\n1 09:00 Jedermann:Frau · Gravel & MTB UNLIZENZIERT\nJedermann männlich / weiblich "
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.rc-ovilava-wels.at/DWH_Cross_2026_Teilnehmerinfo.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "RC Ovilava Wels"
+    },
+    "quote": "V E R A N S TA LT E R\nRC Ovilava Wels"
+   }
+  ]
+ },
+ {
+  "id": "8bcdc4f3-6ac9-4223-b94f-254edc165664",
+  "name": "6. kolo: Grand Prix Sereď",
+  "date": "2026-11-08",
+  "end": "2026-11-08",
+  "town": "Sereď",
+  "cc": "SK",
+  "website": "https://www.cyklistikaszc.sk/sk/cyklokros/kalendar",
+  "regs": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Priemyselná ulica 5, Sereď",
+     "locality": "Sereď",
+     "precision": "venue",
+     "postalCode": "926 01",
+     "countryCode": "SK",
+     "streetAddress": "Priemyselná 5"
+    },
+    "quote": "Dátum a miesto 8.11.2026 Priemyselná ulica 5. Sereď"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-08",
+      "time": "09:15",
+      "label": "Masters A, B, C + ženy Masters",
+      "checkedAt": "2026-11-05T23:05:17.749Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "Program 9:15 Masters A, B, C + ženy Masters"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:00",
+      "label": "Mladší žiaci",
+      "checkedAt": "2026-11-05T23:05:17.749Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "10:00 Mladší žiaci + 10:02 Žiačky"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:02",
+      "label": "Žiačky",
+      "checkedAt": "2026-11-05T23:05:17.749Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "10:00 Mladší žiaci + 10:02 Žiačky"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:30",
+      "label": "Starší žiaci",
+      "checkedAt": "2026-11-05T23:05:17.750Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "10:30 Starší žiaci + 10:32 Kadetky"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "10:32",
+      "label": "Kadetky",
+      "checkedAt": "2026-11-05T23:05:17.750Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "10:30 Starší žiaci + 10:32 Kadetky"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "11:15",
+      "label": "Kadeti",
+      "checkedAt": "2026-11-05T23:05:17.750Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "11:15 Kadeti"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "13:00",
+      "label": "Ženy Elite (U23)",
+      "checkedAt": "2026-11-05T23:05:17.750Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "13:00 Ženy Elite (U23) + 13:02 Juniorky"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "13:02",
+      "label": "Juniorky",
+      "checkedAt": "2026-11-05T23:05:17.750Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "13:00 Ženy Elite (U23) + 13:02 Juniorky"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "14:00",
+      "label": "Muži Elite (U23)",
+      "checkedAt": "2026-11-05T23:05:17.751Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "14:00 Muži Elite (U23) + 14:02 Juniori"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "14:02",
+      "label": "Juniori",
+      "checkedAt": "2026-11-05T23:05:17.751Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "14:00 Muži Elite (U23) + 14:02 Juniori"
+     },
+     {
+      "date": "2026-11-08",
+      "time": "15:15",
+      "label": "Nábor",
+      "checkedAt": "2026-11-05T23:05:17.751Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+      "approximate": false,
+      "sourceQuote": "15:15 Nábor"
+     }
+    ],
+    "quote": "Tréning na trati 8:30 – 9:10\n12:10 – 12:50\nProgram 9:15 Masters A, B, C + ženy Masters\n10:00 Mladší žiaci + 10:02 Žiačky\n10:30 Starší žiaci + 10:32 Kadetky\n11:15 Kadeti\n13:00 Ženy "
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/8f86b305ab26f14587e2ba40e8.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "CK AB Sereď BRUVO Slovakia s.r.o."
+    },
+    "quote": "Organizátor CK AB Sereď BRUVO Slovakia s.r.o."
+   }
+  ]
+ },
+ {
+  "id": "3e089530-3e74-46e9-b6b7-cc0b5f76e47a",
+  "name": "ORC 5 - Cyclocross de la Riviera",
+  "date": "2026-11-14",
+  "end": "2026-11-14",
+  "town": "Montreux",
+  "cc": "CH",
+  "website": "https://www.omniumromand.com/orc5-cyclocross-de-montreux-vd.html",
+  "regs": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Chailly-sur-Montreux",
+     "locality": "Chailly-sur-Montreux",
+     "precision": "municipality",
+     "countryCode": "CH"
+    },
+    "quote": "ORC5 Samedi\n14.11.2026\nChailly-sur-Montreux (VD)\nCyclocross de la Riviera\nVelo Club Vevey"
+   }
+  ]
+ },
+ {
+  "id": "acfd9ef7-6c71-47d8-97f6-9f8fdddf1350",
+  "name": "JANEV CUP 2026 / UCI C2 - Jičín",
+  "date": "2026-11-14",
+  "end": "2026-11-14",
+  "town": "Jičín",
+  "cc": "CZ",
+  "website": "https://www.cyklokros.cz/janev-jicin-26",
+  "regs": "https://www.cyklokros.cz/files/rozpis-janev-cup-2026-cyklokros-v22.pdf",
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Jičín -Šibeňák",
+     "precision": "venue"
+    },
+    "quote": "Místo konání: Jičín -Šibeňák"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 6,
+    "value": [
+     {
+      "date": "2026-11-14",
+      "time": "09:10",
+      "label": "KADETKY, STARŠÍ ŽÁKYNĚ a MLADŠÍ ŽÁKYNĚ",
+      "checkedAt": "2026-11-05T07:49:25.156Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+      "approximate": false,
+      "sourceQuote": "09:10 KADETKY, STARŠÍ ŽÁKYNĚ a MLADŠÍ ŽÁKYNĚ (společný start po jedné"
+     },
+     {
+      "date": "2026-11-14",
+      "time": "10:15",
+      "label": "STARŠÍ ŽÁCI a MLADŠÍ ŽÁCI",
+      "checkedAt": "2026-11-05T07:49:25.157Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+      "approximate": false,
+      "sourceQuote": "10:15 STARŠÍ ŽÁCI a MLADŠÍ ŽÁCI (společný start po jedné minutě na 20´ a"
+     },
+     {
+      "date": "2026-11-14",
+      "time": "11:00",
+      "label": "KADETI",
+      "checkedAt": "2026-11-05T07:49:25.158Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+      "approximate": false,
+      "sourceQuote": "11:00 KADETI (samostatný start na 30´)"
+     },
+     {
+      "date": "2026-11-14",
+      "time": "12:20",
+      "label": "JUNIOŘI",
+      "checkedAt": "2026-11-05T07:49:25.158Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+      "approximate": false,
+      "sourceQuote": "12:20 JUNIOŘI (samostatně na 40´)"
+     },
+     {
+      "date": "2026-11-14",
+      "time": "13:20",
+      "label": "ŽENY",
+      "checkedAt": "2026-11-05T07:49:25.158Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+      "approximate": false,
+      "sourceQuote": "13:20 ŽENY (samostatně na 45´)"
+     },
+     {
+      "date": "2026-11-14",
+      "time": "14:30",
+      "label": "MUŽI",
+      "checkedAt": "2026-11-05T07:49:25.158Z",
+      "sourceUrl": "https://www.cyklokros.cz/files/2026-11-14-jicin-c2-v10-final.pdf",
+      "approximate": false,
+      "sourceQuote": "14:30 MUŽI (samostatně na 60´)"
+     }
+    ],
+    "quote": "09:10 WOMEN CADET, WOMEN BEGINNER OLDER and WOMEN"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "CYKLOKLUB Jičín z.s."
+    },
+    "quote": "Organiser: CYKLOKLUB Jičín z.s."
+   }
+  ]
+ },
+ {
+  "id": "0f8fd23f-2262-4666-ac41-ca227c7915f2",
+  "name": "Krapf Bike Cup #5",
+  "date": "2026-11-15",
+  "end": "2026-11-15",
+  "town": "Halingen",
+  "cc": "CH",
+  "website": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+  "regs": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Gesamtwertung Erwachsene",
+      "amount": 120,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:36.254Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Bei Anmeldungen bis Freitag 16. Oktober 2026 Gesamtwertung Erwachsene                   CHF 120.00 (teilnahmeberechtigt für alle 6 Rennen)"
+     },
+     {
+      "label": "Gesamtwertung Erwachsene",
+      "amount": 80,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:36.254Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Gesamtwertung Erwachsene                   CHF 80.00 (Kategorie \"2 Runden FUN\", teilnahmeberechtigt für alle 6 Rennen)"
+     },
+     {
+      "label": "Gesamtwertung Kids",
+      "amount": 60,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:36.254Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Gesamtwertung Kids                                  CHF 60.00   (teilnahmeberechtigt für alle 6 Rennen) Einzelrennen-Anmeldung bis 12.00 Uhr am Tag vor dem Rennen Einzelrennen Erwachsene                       CHF 30.00 pro Rennen"
+     },
+     {
+      "label": "Einzelrennen Erwachsene",
+      "amount": 30,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:36.254Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Gesamtwertung Kids                                  CHF 60.00   (teilnahmeberechtigt für alle 6 Rennen) Einzelrennen-Anmeldung bis 12.00 Uhr am Tag vor dem Rennen Einzelrennen Erwachsene                       CHF 30.00 pro Rennen"
+     },
+     {
+      "label": "Einzelrennen Erwachsene",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:36.254Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Einzelrennen Erwachsene                       CHF 20.00 pro Rennen (Kategorie \"2 Runden FUN\")"
+     },
+     {
+      "label": "Einzelrennen Kids",
+      "amount": 15,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:36.254Z",
+      "sourceUrl": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+      "sourceQuote": "Einzelrennen Kids                                      CHF 15.00 pro Rennen Die Startnummer wird für alle 6 Rennen verwendet und muss retourniert werden. Die Startnummern können nach Anmeldung sofort bei uns im Shop abgeholt werden. Am Renntag sind die Startnummern direkt bei Start/Ziel zu beziehen."
+     }
+    ],
+    "quote": "Bei Anmeldungen bis Freitag 16. Oktober 2026 Gesamtwertung Erwachsene                   CHF 120.00 (teilnahmeberechtigt für alle 6 Rennen)\n\nGesamtwertung Erwachsene                "
+   },
+   {
+    "field": "venue",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Halingen b. Matzingen",
+     "locality": "Halingen b. Matzingen",
+     "precision": "start"
+    },
+    "quote": "0m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d47.418259!4d9.302813?entry=ttu&g_ep=EgoyMDI2MTAxMy4wIKXMDSoASAFQAw%3D%3D)\n\n5 | Sonntag, 15. November | 09:30 Uhr | Halingen b. Matzingen | [Obers"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.radsport-krapf.ch/infos-zum-krapf-cup-2026",
+    "status": "year_neutral",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Radsport Krapf AG"
+    },
+    "quote": "Die Bewilligung gilt nur für die speziell bezeichneten Strecken am oben aufgeführten Renntag, nicht aber für das Training vor, bzw. nach der Veranstaltung! Fehlbare Fahrer müssen a"
+   }
+  ]
+ },
+ {
+  "id": "33512975-8ee0-408b-9a20-0e437f58e684",
+  "name": "ORC 6 - Cyclocross de Martigny",
+  "date": "2026-11-21",
+  "end": "2026-11-21",
+  "town": "Martigny",
+  "cc": "CH",
+  "website": "https://www.omniumromand.com/orc6_cyclo-cross-doctodure-vs.html",
+  "regs": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Hommes CHF 25",
+      "amount": 25,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "Hommes CHF 25"
+     },
+     {
+      "label": "Dames CHF 20",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "Dames CHF 20"
+     },
+     {
+      "label": "U19 Juniors Hommes CHF 20",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U19 Juniors Hommes CHF 20"
+     },
+     {
+      "label": "U17 Filles / U17 Garçons CHF 15",
+      "amount": 15,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U17 Filles / U17 Garçons CHF 15"
+     },
+     {
+      "label": "U15 Filles / U15 Garçons CHF 10",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U15 Filles / U15 Garçons CHF 10"
+     },
+     {
+      "label": "U13 Filles / U13 Garçons CHF 10",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U13 Filles / U13 Garçons CHF 10"
+     },
+     {
+      "label": "U11 Filles / U11 Garçons CHF 10",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U11 Filles / U11 Garçons CHF 10"
+     },
+     {
+      "label": "U9 Filles / U9 Garçons CHF 10",
+      "amount": 10,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:32:52.241Z",
+      "sourceUrl": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+      "sourceQuote": "U9 Filles / U9 Garçons CHF 10"
+     }
+    ],
+    "quote": "Par manche :\nLes Petits et Petites Cracks Gratuit\nU9 Filles / U9 Garçons CHF 10\nU11 Filles / U11 Garçons CHF 10\nU13 Filles / U13 Garçons CHF 10\nU15 Filles / U15 Garçons CHF 10\nU17 "
+   },
+   {
+    "field": "venue",
+    "url": "https://www.omniumromand.com/uploads/1/2/5/1/125115772/re%CC%80glement_orc_2026-27.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Martigny (VS)",
+     "locality": "Martigny",
+     "precision": "municipality",
+     "countryCode": "CH"
+    },
+    "quote": "ORC6 Samedi\n21.11.2026\nMartigny (VS)\nCyclocross d’Octodure"
+   }
+  ]
+ },
+ {
+  "id": "375f0a20-a410-4be1-8721-008685772089",
+  "name": "Afeno Quer und Bike Cup #6",
+  "date": "2026-11-21",
+  "end": "2026-11-21",
+  "town": "Pfaffnau",
+  "cc": "CH",
+  "website": "https://qubcup.jimdofree.com/",
+  "regs": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Elite, Amateure, Master, Hobby",
+      "amount": 150,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:33:06.054Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "150.00 CHF Elite, Amateure, Master, Hobby"
+     },
+     {
+      "label": "Junioren, Damen",
+      "amount": 120,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:33:06.054Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "120.00 CHF Junioren, Damen"
+     },
+     {
+      "label": "Anfänger, Schüler",
+      "amount": 90,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:33:06.054Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "90.00 CHF Anfänger, Schüler"
+     },
+     {
+      "label": "Elite, Amateure, Master, Hobby pro Rennen",
+      "amount": 25,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:33:06.054Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "25.00 CHF Elite, Amateure, Master, Hobby"
+     },
+     {
+      "label": "Junioren, Damen pro Rennen",
+      "amount": 20,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:33:06.054Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "20.00 CHF Junioren, Damen"
+     },
+     {
+      "label": "Anfänger, Schüler pro Rennen",
+      "amount": 15,
+      "currency": "CHF",
+      "checkedAt": "2026-11-06T05:33:06.054Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "sourceQuote": "15.00 CHF Anfänger, Schüler"
+     }
+    ],
+    "quote": "Bei der Online Anmeldung fallen NEU Bearbeitungsgebühren an. Bis am\n26.09.2026 vor 20.00 Uhr für alle Rennen\n\n150.00 CHF Elite, Amateure, Master, Hobby\n120.00 CHF Junioren, Damen\n9"
+   },
+   {
+    "field": "venue",
+    "url": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Pfaffnau LU",
+     "locality": "Pfaffnau",
+     "precision": "municipality",
+     "postalCode": "6264",
+     "countryCode": "CH"
+    },
+    "quote": "4132 Muttenz BL 14.11.2026\n6264 Pfaffnau LU Schlussrennen 21.11.2026"
+   },
+   {
+    "field": "schedule",
+    "url": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2026-11-21",
+      "time": "12:00",
+      "label": "Gruppe A",
+      "checkedAt": "2026-11-06T05:33:06.047Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer"
+     },
+     {
+      "date": "2026-11-21",
+      "time": "12:45",
+      "label": "Gruppe B",
+      "checkedAt": "2026-11-06T05:33:06.047Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe B: 12.45 Uhr / ca. 40 Min. Renndauer"
+     },
+     {
+      "date": "2026-11-21",
+      "time": "14:00",
+      "label": "Kidsrace",
+      "checkedAt": "2026-11-06T05:33:06.047Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Kidsrace ca. 14.00 Uhr / ca. 3-8min je nach Runde (verkürzte Runde im Zielbereich)"
+     },
+     {
+      "date": "2026-11-21",
+      "time": "15:00",
+      "label": "Gruppe C",
+      "checkedAt": "2026-11-06T05:33:06.048Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe C: 15.00 Uhr / ca. 25 Min. Renndauer"
+     },
+     {
+      "date": "2026-11-21",
+      "time": "15:45",
+      "label": "Gruppe D",
+      "checkedAt": "2026-11-06T05:33:06.048Z",
+      "sourceUrl": "https://qubcup.jimdofree.com/app/download/7595430759/Ausschreibung+Afeno+2026.pdf?t=1784092100",
+      "approximate": true,
+      "sourceQuote": "Gruppe D: 15.45 Uhr / ca. 40 Min. Renndauer"
+     }
+    ],
+    "quote": "Gruppe A: 12.00 Uhr / ca. 25 Min. Renndauer\nGruppe B: 12.45 Uhr / ca. 40 Min. Renndauer\nKidsrace ca. 14.00 Uhr / ca. 3-8min je nach Runde (verkürzte Runde im Zielbereich)\nGruppe C:"
+   }
+  ]
+ },
+ {
+  "id": "ca4496d4-5663-45a5-a9a4-e20a8af989d2",
+  "name": "MSR v cyklokrose (9. kolo)",
+  "date": "2026-12-05",
+  "end": "2026-12-05",
+  "town": "Selce",
+  "cc": "SK",
+  "website": "https://www.cyklistikaszc.sk/sk/submenu/kalendar-vysledky",
+  "regs": "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf",
+  "facts": [
+   {
+    "field": "routes",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "Futbalové ihrisko a okolie",
+      "checkedAt": "2026-11-05T23:06:04.635Z",
+      "sourceUrl": "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf",
+      "distanceKm": 2.5,
+      "sourceQuote": "Trať Futbalové ihrisko a okolie–50% trávnaté plochy,50% les, 2500m"
+     }
+    ],
+    "quote": "Trať Futbalové ihrisko a okolie–50% trávnaté plochy,50% les, 2500m"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.cyklistikaszc.sk/kalendar/propozicie/51e9120f9321462cce5d28fea4.pdf",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Cyklistický klub CykloGlajza Selce OZ"
+    },
+    "quote": "Organizátor Cyklistický klub CykloGlajza Selce OZ"
+   }
+  ]
+ },
+ {
+  "id": "0c5b3456-b536-4fe8-a834-c72d898303af",
+  "name": "Ostalb Gravel",
+  "date": "2027-04-11",
+  "end": "2027-04-11",
+  "town": "Aalen",
+  "cc": "DE",
+  "website": "https://www.ostalbgravel.de/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.ostalbgravel.de/alle-infos/anmeldung/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Teilnahmegebühr",
+      "amount": 69,
+      "currency": "EUR"
+     },
+     {
+      "label": "U18",
+      "amount": 39,
+      "currency": "EUR"
+     }
+    ],
+    "quote": "Teilnahmegebühr: 69 €; Ermäßigte Teilnahmegebühr (U18): 39 €"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.ostalbgravel.de/alle-infos/strecken/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "name": "Halle 18, Spedition Brucker",
+     "locality": "Aalen",
+     "precision": "start",
+     "postalCode": "73430",
+     "countryCode": "DE",
+     "streetAddress": "Daimlerstraße 15"
+    },
+    "quote": "Start für alle Strecken: Halle 18, Spedition Brucker GmbH, Daimlerstraße 15, 73430 Aalen"
+   },
+   {
+    "field": "routes",
+    "url": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "name": "Kurzstrecke",
+      "distanceKm": 55,
+      "elevationM": 800
+     },
+     {
+      "name": "Langstrecke",
+      "distanceKm": 83,
+      "elevationM": 1400
+     }
+    ],
+    "quote": "Kurzstrecke 55 km | ca. 800 hm; Langstrecke 83 km | 1.400 hm"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.datasport.de/anmeldeservice/ostalbgravel2027",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "date": "2027-04-11",
+      "time": "10:00",
+      "label": "Langstrecke 83 km",
+      "timeZone": "Europe/Berlin"
+     },
+     {
+      "date": "2027-04-11",
+      "time": "11:00",
+      "label": "Kurzstrecke 55 km",
+      "timeZone": "Europe/Berlin"
+     }
+    ],
+    "quote": "So. 11.04.27 11:00 Uhr Kurzstrecke 55 km | ca. 800 hm So. 11.04.27 10:00 Uhr Langstrecke 83 km | 1.400 hm"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.ostalbgravel.de/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "url": "https://www.ostalbgravel.de/",
+     "name": "Ostalb Giro GmbH"
+    },
+    "quote": "Veranstalter: Ostalb Giro GmbH"
+   }
+  ]
+ },
+ {
+  "id": "c9bd52a6-5c75-4b18-a747-87cb7595e874",
+  "name": "Wiosenne Szutry Premium",
+  "date": "2027-04-17",
+  "end": "2027-04-17",
+  "town": "Wrocław",
+  "cc": "PL",
+  "website": "https://szutrypremium.pl/",
+  "regs": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://szutrypremium.pl/ceny/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Všechny trasy",
+      "amount": 249,
+      "currency": "PLN",
+      "validUntil": "2027-02-14"
+     },
+     {
+      "label": "Všechny trasy od 15. 2. 2027",
+      "amount": 299,
+      "currency": "PLN"
+     }
+    ],
+    "quote": "do 14.02.2027 – 249 zł; od 15.02.2027 – 299 zł; Obowiązuje jedna cena na wszystkie dystanse"
+   },
+   {
+    "field": "routes",
+    "url": "https://szutrypremium.pl/trasy-edycja-wiosenna/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "100 km",
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "distanceKm": 200
+     }
+    ],
+    "quote": "17.04.2027 – WROCŁAW. Dystanse 100 i 200 km."
+   },
+   {
+    "field": "organizer",
+    "url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://szutrypremium.pl/",
+     "name": "programersi.com sp. z o.o."
+    },
+    "quote": "Organizatorem wydarzeń rowerowych Szutry Premium jest programersi.com sp. z o.o. z siedzibą we Wrocławiu"
+   }
+  ]
+ },
+ {
+  "id": "72427d58-6a5b-4a97-860f-c80c77041d3b",
+  "name": "RAAB FORCE Rohálovská 50ka 2027 - 18. ročník",
+  "date": "2027-05-01",
+  "end": "2027-05-01",
+  "town": "Prusinovice",
+  "cc": "CZ",
+  "website": "https://www.vesani.cz/propozice/",
+  "regs": "https://www.vesani.cz/propozice/",
+  "facts": [
+   {
+    "field": "schedule",
+    "url": "https://www.vesani.cz/propozice/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2027-05-01",
+      "time": "12:30",
+      "label": "Start hlavního závodu",
+      "checkedAt": "2026-11-03T13:54:57.715Z",
+      "sourceUrl": "https://www.vesani.cz/propozice/",
+      "approximate": false,
+      "sourceQuote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový limit na dojetí 5 hodin Start [dětských závodů](https://www.vesani.cz/propozice-deti) od 8:30"
+     }
+    ],
+    "quote": "Start | Start hlavního závodu 1.5.2027 ve 12:30 v Prusinovicích [Mapa startu a řazení do koridorů](https://www.vesani.cz/webfiles/obrazky-obecne/roh50_mapa_startu_2026.jpg) Časový "
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.vesani.cz/propozice/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Sportovní klub Vesani.cz, z.s."
+    },
+    "quote": "Pořadatel | Sportovní klub Vesani.cz, z.s."
+   }
+  ]
+ },
+ {
+  "id": "00862df3-deff-45d8-816b-13a72191e6b9",
+  "name": "NN KIDS RACE",
+  "date": "2027-05-30",
+  "end": "2027-05-30",
+  "town": "Hradec Králové",
+  "cc": "CZ",
+  "website": "https://cyklomaratontour.cz/",
+  "regs": "https://cyklomaratontour.cz/informace/dulezite-informace/pravidla-zavodu.html",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "NN Kids Race",
+      "amount": 250,
+      "currency": "CZK",
+      "validUntil": "2026-12-31"
+     },
+     {
+      "label": "NN Kids Race",
+      "amount": 300,
+      "currency": "CZK",
+      "validUntil": "2027-03-01"
+     },
+     {
+      "label": "NN Kids Race",
+      "amount": 350,
+      "currency": "CZK",
+      "validUntil": "2027-05-27"
+     },
+     {
+      "label": "NN Kids Race na místě",
+      "amount": 400,
+      "currency": "CZK",
+      "validUntil": "2027-05-30"
+     }
+    ],
+    "quote": "NN Kids race: do 31.12.2026 250 Kč; do 1.3.2027 300 Kč; do 27.5.2027 350 Kč; na místě 400 Kč"
+   },
+   {
+    "field": "venue",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "name": "Malšovická aréna",
+     "locality": "Hradec Králové",
+     "precision": "venue",
+     "countryCode": "CZ"
+    },
+    "quote": "NN KIDS RACE 2027, Hradec Králové - Malšovická aréna, 30.5.2027"
+   },
+   {
+    "field": "schedule",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "date": "2027-05-30",
+      "time": "10:00",
+      "label": "Start dětských závodů",
+      "timeZone": "Europe/Prague"
+     }
+    ],
+    "quote": "10:00 - 11:00 Start Dětských závodů NN Kids Race - starty dle kategorií"
+   },
+   {
+    "field": "organizer",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://cyklomaratontour.cz/",
+     "name": "EVENT media s.r.o."
+    },
+    "quote": "Kontakt EVENT media s.r.o., Kaprova 42/14, 110 00 Praha 1"
+   }
+  ]
+ },
+ {
+  "id": "f1d40430-b0ae-4dcf-9b94-0288fd48e3b4",
+  "name": "Decathlon Cyklomaraton Hradec Králové",
+  "date": "2027-05-30",
+  "end": "2027-05-30",
+  "town": "Hradec Králové",
+  "cc": "CZ",
+  "website": "https://cyklomaratontour.cz/",
+  "regs": "https://cyklomaratontour.cz/informace/dulezite-informace/pravidla-zavodu.html",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Dospělí 60 a 30 km",
+      "amount": 750,
+      "currency": "CZK",
+      "validUntil": "2026-12-31"
+     },
+     {
+      "label": "Dospělí 60 a 30 km",
+      "amount": 800,
+      "currency": "CZK",
+      "validUntil": "2027-03-01"
+     },
+     {
+      "label": "Dospělí 60 a 30 km",
+      "amount": 900,
+      "currency": "CZK",
+      "validUntil": "2027-05-27"
+     },
+     {
+      "label": "Dospělí 60 a 30 km na místě",
+      "amount": 1000,
+      "currency": "CZK",
+      "validUntil": "2027-05-30"
+     }
+    ],
+    "quote": "Startovné 2027: do 31.12.2026 750 Kč; do 1.3.2027 800 Kč; do 27.5.2027 900 Kč; na místě 1000 Kč"
+   },
+   {
+    "field": "venue",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "name": "Malšovická aréna",
+     "locality": "Hradec Králové",
+     "precision": "venue",
+     "countryCode": "CZ"
+    },
+    "quote": "Místo Malšovická Aréna. Místo prezentace Hradec Králové"
+   },
+   {
+    "field": "routes",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "name": "MTB 60 km",
+      "distanceKm": 60
+     },
+     {
+      "name": "MTB 30 km",
+      "distanceKm": 30
+     },
+     {
+      "name": "Gravel 30 km",
+      "distanceKm": 30
+     }
+    ],
+    "quote": "60 km DECATHLON CYKLOMARATON Hradec Králové; 30 km krátký závod; 30 km krátký závod + Gravel"
+   },
+   {
+    "field": "schedule",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "date": "2027-05-30",
+      "time": "12:00",
+      "label": "Start 60 km",
+      "timeZone": "Europe/Prague"
+     },
+     {
+      "date": "2027-05-30",
+      "time": "12:20",
+      "label": "Start 30 km",
+      "timeZone": "Europe/Prague"
+     }
+    ],
+    "quote": "12:00 START DECATHLON CYKLOMARATON HRADEC KRÁLOVÉ 6Okm; 12:20 START 30 km"
+   },
+   {
+    "field": "organizer",
+    "url": "https://cyklomaratontour.cz/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://cyklomaratontour.cz/",
+     "name": "EVENT media s.r.o."
+    },
+    "quote": "Kontakt EVENT media s.r.o., Kaprova 42/14, 110 00 Praha 1"
+   }
+  ]
+ },
+ {
+  "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d01",
+  "name": "BAJKSERVIS Stupava maratón MTB",
+  "date": "2027-06-19",
+  "end": "2027-06-19",
+  "town": "Stupava",
+  "cc": "SK",
+  "website": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "label": "Uhradené do 31. 3. 2027",
+      "amount": 35,
+      "currency": "EUR",
+      "validUntil": "2027-03-31"
+     }
+    ],
+    "quote": "uhradené od 1.12. 2026 do polnoci 31.3. 2027 - 35 €"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Penzión INTENZÍVA / BAJKSERVIS",
+     "locality": "Stupava",
+     "precision": "venue",
+     "countryCode": "SK",
+     "streetAddress": "Nová ulica 66"
+    },
+    "quote": "Miesto: Stupava, Penzión INTENZÍVA/BAJKSERVIS (Nová ulica 66)."
+   },
+   {
+    "field": "routes",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "name": "Dlhá trať",
+      "distanceKm": 78,
+      "elevationM": 1900
+     },
+     {
+      "name": "Stredná trať",
+      "distanceKm": 42,
+      "elevationM": 950
+     },
+     {
+      "name": "Krátka trať",
+      "distanceKm": 25,
+      "elevationM": 500
+     },
+     {
+      "name": "Family trať",
+      "distanceKm": 7,
+      "elevationM": 120
+     }
+    ],
+    "quote": "Maratón - dlhá trať - 78 km, Prevýšenie 1900m; stredná trať - 42km, 950m; krátka trať - 25km, 500m; family trať - 7km, 120m"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-maraton/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "date": "2027-06-19",
+      "time": "10:00",
+      "label": "Dlhá trať 78 km",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "10:40",
+      "label": "Stredná trať 42 km E-bike",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "11:00",
+      "label": "Stredná trať 42 km",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "11:30",
+      "label": "Krátka trať 25 km",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-06-19",
+      "time": "11:40",
+      "label": "Family trať 7 km",
+      "timeZone": "Europe/Bratislava"
+     }
+    ],
+    "quote": "10:00 Dlhá trať MTB 78 km; 10:40 Stredná trať MTB 42 km E-bike; 11:00 Stredná trať MTB 42 km; 11:30 Krátka trať MTB 25 km; 11:40 Family trať MTB 7km"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.stupavskymaraton.sk/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://www.stupavskymaraton.sk/",
+     "name": "Občianske združenie Maratón"
+    },
+    "quote": "USPoriadateĽ Občianske združenie Maratón, Štúrova 50, 900 33 Marianka"
+   }
+  ]
+ },
+ {
+  "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d02",
+  "name": "Detský MTB cyklomaratónik Stupava",
+  "date": "2027-06-20",
+  "end": "2027-06-20",
+  "town": "Stupava",
+  "cc": "SK",
+  "website": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Online",
+      "amount": 7,
+      "currency": "EUR"
+     },
+     {
+      "label": "Na místě",
+      "amount": 10,
+      "currency": "EUR"
+     }
+    ],
+    "quote": "cez online registráciu - 7€; uhradené v mieste konania - 10€"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.stupavskymaraton.sk/rubrika/skoda-stupava-maraton-2024/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "name": "BAJKSERVIS",
+     "locality": "Stupava",
+     "precision": "venue",
+     "countryCode": "SK",
+     "streetAddress": "Nová ulica 66"
+    },
+    "quote": "DETSKÝ MTB CYKLOMARATÓNIK. Kedy: 20.6.2027. Miesto: BAJKSERVIS (Nová ulica 66)"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.stupavskymaraton.sk/inpage/junior-mtb/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "date": "2027-06-20",
+      "time": "11:00",
+      "label": "Start kategorie BABY, ostatní následně",
+      "timeZone": "Europe/Bratislava"
+     }
+    ],
+    "quote": "Štart 11:00 kategória BABY a ostatné následne"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.stupavskymaraton.sk/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://www.stupavskymaraton.sk/",
+     "name": "Občianske združenie Maratón"
+    },
+    "quote": "USPoriadateĽ Občianske združenie Maratón, Štúrova 50, 900 33 Marianka"
+   }
+  ]
+ },
+ {
+  "id": "4a99a311-023a-4b88-8a78-ad8e954eb926",
+  "name": "4X Pro Tour - JBC 4X Revelations",
+  "date": "2027-07-09",
+  "end": "2027-07-10",
+  "town": "Jablonec nad Nisou",
+  "cc": "CZ",
+  "website": "https://www.jbc4xrevelations.com",
+  "regs": null,
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://www.jbc4xrevelations.com/en/contact",
+    "status": "year_neutral",
+    "statesDay": false,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Areál Dobrá Voda",
+     "locality": "Jablonec nad Nisou 6",
+     "precision": "venue",
+     "postalCode": "466 01",
+     "countryCode": "CZ",
+     "streetAddress": "Turnovská 40"
+    },
+    "quote": "Areál Dobrá Voda Turnovská 40 466 01, Jablonec nad Nisou 6"
+   }
+  ]
+ },
+ {
+  "id": "87b2f415-1481-43d7-91b3-03d959d0ca6a",
+  "name": "Letnie Szutry Premium",
+  "date": "2027-07-31",
+  "end": "2027-07-31",
+  "town": "Wrocław",
+  "cc": "PL",
+  "website": "https://szutrypremium.pl/",
+  "regs": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://szutrypremium.pl/ceny/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Všechny trasy",
+      "amount": 349,
+      "currency": "PLN",
+      "validUntil": "2027-02-14"
+     },
+     {
+      "label": "Všechny trasy od 15. 2. 2027",
+      "amount": 399,
+      "currency": "PLN"
+     }
+    ],
+    "quote": "do 14.02.2027 – 349 zł; od 15.02.2027 – 399 zł; Obowiązuje jedna cena na wszystkie dystanse"
+   },
+   {
+    "field": "routes",
+    "url": "https://szutrypremium.pl/trasy-edycja-letnia/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "100 km",
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "distanceKm": 200
+     },
+     {
+      "name": "300 km",
+      "distanceKm": 300
+     },
+     {
+      "name": "400 km",
+      "distanceKm": 400
+     }
+    ],
+    "quote": "31.07.2027 – WROCŁAW. Dystanse 100, 200, 300 i 400 km."
+   },
+   {
+    "field": "organizer",
+    "url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://szutrypremium.pl/",
+     "name": "programersi.com sp. z o.o."
+    },
+    "quote": "Organizatorem wydarzeń rowerowych Szutry Premium jest programersi.com sp. z o.o. z siedzibą we Wrocławiu"
+   }
+  ]
+ },
+ {
+  "id": "627394f7-e4a4-412e-9ad0-b4710b729817",
+  "name": "FILIPA Podkrkonošský maraton",
+  "date": "2027-07-31",
+  "end": null,
+  "town": "Lázně Bělohrad",
+  "cc": "CZ",
+  "website": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+  "regs": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 32,
+    "value": [
+     {
+      "label": "90 km MTB",
+      "amount": 600,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-02-27",
+      "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "90 km MTB",
+      "amount": 750,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-06-29",
+      "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "90 km MTB",
+      "amount": 850,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-30",
+      "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "90 km MTB",
+      "amount": 950,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "Mladší žáci",
+      "amount": 0,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Mladší žáci | ~09:16:18 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2015 - 2016 | hromadný start"
+     },
+     {
+      "label": "Mladší žákyně",
+      "amount": 50,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Mladší žákyně | ~09:16:48 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2015 - 2016 | hromadný start"
+     },
+     {
+      "label": "Kluci 9-10",
+      "amount": 0,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Kluci 9-10 | ~09:34:45 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start"
+     },
+     {
+      "label": "Holky 9-10",
+      "amount": 0,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Holky 9-10 | ~09:49:33 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start"
+     },
+     {
+      "label": "53 km MTB",
+      "amount": 500,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-02-27",
+      "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km MTB",
+      "amount": 650,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-06-29",
+      "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km MTB",
+      "amount": 750,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-30",
+      "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km MTB",
+      "amount": 850,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km Gravel",
+      "amount": 500,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-02-27",
+      "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km Gravel",
+      "amount": 650,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-06-28",
+      "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km Gravel",
+      "amount": 750,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-30",
+      "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "53 km Gravel",
+      "amount": 850,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "label": "30 km MTB",
+      "amount": 350,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-02-27",
+      "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+     },
+     {
+      "label": "30 km MTB",
+      "amount": 500,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-06-29",
+      "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+     },
+     {
+      "label": "30 km MTB",
+      "amount": 550,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-30",
+      "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+     },
+     {
+      "label": "30 km MTB",
+      "amount": 600,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+     },
+     {
+      "label": "30 km MTB Family jízda",
+      "amount": 700,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-02-26",
+      "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+     },
+     {
+      "label": "30 km MTB Family jízda",
+      "amount": 1000,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-06-29",
+      "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+     },
+     {
+      "label": "30 km MTB Family jízda",
+      "amount": 1100,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-30",
+      "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+     },
+     {
+      "label": "30 km MTB Family jízda",
+      "amount": 1200,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+     },
+     {
+      "label": "Odstrkovadla a kola kluci",
+      "amount": 50,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-28",
+      "sourceQuote": "Odstrkovadla a kola kluci | ~10:22:55 | 50,- Kč, online termín cena splatnost 28.07.2027 50,- Kč online 31.07.2027 70,- Kč online | 2023 a mladší | hromadný start"
+     },
+     {
+      "label": "Odstrkovadla a kola kluci",
+      "amount": 70,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Odstrkovadla a kola kluci | ~10:22:55 | 50,- Kč, online termín cena splatnost 28.07.2027 50,- Kč online 31.07.2027 70,- Kč online | 2023 a mladší | hromadný start"
+     },
+     {
+      "label": "Odstrkovadla a kola holky",
+      "amount": 50,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Odstrkovadla a kola holky | ~10:27:44 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online 31.07.2027 50,- Kč online | 2023 a mladší | hromadný start"
+     },
+     {
+      "label": "Kluci 5-6",
+      "amount": 50,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Kluci 5-6 | ~10:34:53 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start"
+     },
+     {
+      "label": "Holky 5-6",
+      "amount": 50,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Holky 5-6 | ~10:45:26 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start"
+     },
+     {
+      "label": "Kluci 7-8",
+      "amount": 0,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Kluci 7-8 | ~10:54:02 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start"
+     },
+     {
+      "label": "Holky 7-8",
+      "amount": 0,
+      "currency": "CZK",
+      "checkedAt": "2026-11-03T08:32:15.579Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "validUntil": "2027-07-31",
+      "sourceQuote": "Holky 7-8 | ~11:09:55 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start"
+     }
+    ],
+    "quote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a "
+   },
+   {
+    "field": "routes",
+    "url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 6,
+    "value": [
+     {
+      "name": "90 km MTB",
+      "checkedAt": "2026-11-03T08:32:15.581Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "distanceKm": 90,
+      "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "name": "53 km MTB",
+      "checkedAt": "2026-11-03T08:32:15.581Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "distanceKm": 53,
+      "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "name": "53 km Gravel",
+      "checkedAt": "2026-11-03T08:32:15.581Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "distanceKm": 53,
+      "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "name": "30 km MTB",
+      "checkedAt": "2026-11-03T08:32:15.581Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "distanceKm": 30,
+      "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+     },
+     {
+      "name": "30 km MTB Family jízda",
+      "checkedAt": "2026-11-03T08:32:15.581Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "distanceKm": 30,
+      "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+     }
+    ],
+    "quote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a "
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 16,
+    "value": [
+     {
+      "date": "2027-07-31",
+      "time": "09:02:00",
+      "label": "90 km MTB",
+      "checkedAt": "2026-11-03T08:32:15.567Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "09:16:18",
+      "label": "Mladší žáci",
+      "checkedAt": "2026-11-03T08:32:15.567Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Mladší žáci | ~09:16:18 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2015 - 2016 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "09:16:48",
+      "label": "Mladší žákyně",
+      "checkedAt": "2026-11-03T08:32:15.567Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Mladší žákyně | ~09:16:48 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2015 - 2016 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "09:34:45",
+      "label": "Kluci 9-10",
+      "checkedAt": "2026-11-03T08:32:15.568Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Kluci 9-10 | ~09:34:45 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "09:49:33",
+      "label": "Holky 9-10",
+      "checkedAt": "2026-11-03T08:32:15.568Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Holky 9-10 | ~09:49:33 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:20:00",
+      "label": "53 km MTB",
+      "checkedAt": "2026-11-03T08:32:15.568Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:20:00",
+      "label": "53 km Gravel",
+      "checkedAt": "2026-11-03T08:32:15.568Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:20:00",
+      "label": "30 km MTB",
+      "checkedAt": "2026-11-03T08:32:15.569Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:20:00",
+      "label": "30 km MTB Family jízda",
+      "checkedAt": "2026-11-03T08:32:15.569Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:22:55",
+      "label": "Odstrkovadla a kola kluci",
+      "checkedAt": "2026-11-03T08:32:15.569Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Odstrkovadla a kola kluci | ~10:22:55 | 50,- Kč, online termín cena splatnost 28.07.2027 50,- Kč online 31.07.2027 70,- Kč online | 2023 a mladší | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:27:44",
+      "label": "Odstrkovadla a kola holky",
+      "checkedAt": "2026-11-03T08:32:15.569Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Odstrkovadla a kola holky | ~10:27:44 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online 31.07.2027 50,- Kč online | 2023 a mladší | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:34:53",
+      "label": "Kluci 5-6",
+      "checkedAt": "2026-11-03T08:32:15.569Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Kluci 5-6 | ~10:34:53 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:45:26",
+      "label": "Holky 5-6",
+      "checkedAt": "2026-11-03T08:32:15.570Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Holky 5-6 | ~10:45:26 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "10:54:02",
+      "label": "Kluci 7-8",
+      "checkedAt": "2026-11-03T08:32:15.570Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Kluci 7-8 | ~10:54:02 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start"
+     },
+     {
+      "date": "2027-07-31",
+      "time": "11:09:55",
+      "label": "Holky 7-8",
+      "checkedAt": "2026-11-03T08:32:15.570Z",
+      "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+      "approximate": true,
+      "sourceQuote": "Holky 7-8 | ~11:09:55 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start"
+     }
+    ],
+    "quote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a "
+   }
+  ]
+ },
+ {
+  "id": "3e2b7f10-6a54-4d1e-9c11-7f0b1a2c3d03",
+  "name": "BAJKSERVIS Stupava MTB sprint Biely kríž",
+  "date": "2027-08-29",
+  "end": "2027-08-29",
+  "town": "Stupava",
+  "cc": "SK",
+  "website": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Převodem",
+      "amount": 20,
+      "currency": "EUR",
+      "validUntil": "2027-08-27"
+     },
+     {
+      "label": "V hotovosti",
+      "amount": 25,
+      "currency": "EUR",
+      "validUntil": "2027-08-29"
+     }
+    ],
+    "quote": "štartovné prevodom do 27.08.2027 20€; štartovné v hotovosti od 28.08.2027 do 29.08.2027 10:00 25€"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "name": "BAJKSERVIS, cíl Biely kríž / Chata Klinec",
+     "locality": "Stupava",
+     "precision": "start",
+     "countryCode": "SK",
+     "streetAddress": "Nová ulica 66"
+    },
+    "quote": "Kde Stupava, Penzión INTENZÍVA/BAJKSERVIS (Nová ulica 66). Cieľ Biely Kríž / CHATA KLINEC"
+   },
+   {
+    "field": "routes",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "Stupava – Biely kríž",
+      "distanceKm": 11,
+      "elevationM": 400
+     }
+    ],
+    "quote": "11km/400m prevýšenie"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.stupavskymaraton.sk/inpage/mtb-sprint-biely-kriz-2024/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "date": "2027-08-29",
+      "time": "10:30",
+      "label": "E-bike",
+      "timeZone": "Europe/Bratislava"
+     },
+     {
+      "date": "2027-08-29",
+      "time": "11:00",
+      "label": "MTB",
+      "timeZone": "Europe/Bratislava"
+     }
+    ],
+    "quote": "E-bike 10:30; MTB 11:00 v 1 minútových intervaloch"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.stupavskymaraton.sk/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://www.stupavskymaraton.sk/",
+     "name": "Občianske združenie Maratón"
+    },
+    "quote": "USPoriadateĽ Občianske združenie Maratón, Štúrova 50, 900 33 Marianka"
+   }
+  ]
+ },
+ {
+  "id": "d57834f6-a747-4237-9507-c7e3a41c63bc",
+  "name": "Dirndltal Race Gravel & MTB",
+  "date": "2027-09-18",
+  "end": "2027-09-18",
+  "town": "Frankenfels",
+  "cc": "AT",
+  "website": "https://www.dirndltal-race.at/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://www.dirndltal-race.at/kids-und-youth-race",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 4,
+    "value": [
+     {
+      "label": "Kids U7 bis U11",
+      "amount": 0,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+      "sourceQuote": "U7 bis U11 = kostenlos (freiwillige Spende)"
+     },
+     {
+      "label": "Youth U13 bis U15",
+      "amount": 11,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+      "sourceQuote": "U13 bis U15 laut ÖRV = 11 Euro"
+     },
+     {
+      "label": "Fun Race",
+      "amount": 45,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+      "sourceQuote": "Fun Race : € 45,- (ab 16.09.2027 + € 10,- Nachnenngebühr"
+     },
+     {
+      "label": "Fun Race Jugend (2009-2012)",
+      "amount": 40,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+      "sourceQuote": "Fun Race für Jugend (2009-2012): € 40,-"
+     },
+     {
+      "label": "Adventure Race",
+      "amount": 88,
+      "currency": "EUR",
+      "sourceUrl": "https://www.dirndltal-race.at/adventurerace",
+      "sourceQuote": "Startgebühr bis 10.9.2027 € 88,-"
+     }
+    ],
+    "quote": "U7 bis U11 = kostenlos (freiwillige Spende); U13 bis U15 laut ÖRV = 11 Euro"
+   },
+   {
+    "field": "venue",
+    "url": "https://www.dirndltal-race.at/funundtrophyrace",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "name": "Bahnhof Laubenbachmühle",
+     "locality": "Frankenfels",
+     "precision": "start",
+     "postalCode": "3213",
+     "countryCode": "AT"
+    },
+    "quote": "Start und Ziel direkt bei Betriebszentrum Laubenbachmühle ( Bahnhof der Mariazellerbahn ) in 3213 Frankenfels, Laubenbachgegend."
+   },
+   {
+    "field": "routes",
+    "url": "https://www.dirndltal-race.at/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "name": "Fun Race",
+      "distanceKm": 20,
+      "elevationM": 800
+     },
+     {
+      "name": "Trophy Race",
+      "distanceKm": 40,
+      "elevationM": 1600
+     },
+     {
+      "name": "Adventure Race (Richtwert)",
+      "surface": "MTB oder Gravel",
+      "distanceKm": 100,
+      "elevationM": 1800
+     }
+    ],
+    "quote": "Fun Race 20km und 800hm; Trophy Race 40km 1600hm; Adventure Race rund 100 km und 1.800hm"
+   },
+   {
+    "field": "schedule",
+    "url": "https://www.dirndltal-race.at/kids-und-youth-race",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 3,
+    "value": [
+     {
+      "date": "2027-09-18",
+      "time": "09:30",
+      "label": "Kids und Youth Race",
+      "timeZone": "Europe/Vienna",
+      "sourceUrl": "https://www.dirndltal-race.at/kids-und-youth-race",
+      "sourceQuote": "Rennen 1: 09:30 Uhr - U7 Laufrad"
+     },
+     {
+      "date": "2027-09-18",
+      "time": "10:00",
+      "label": "Adventure Race, St. Pölten",
+      "timeZone": "Europe/Vienna",
+      "sourceUrl": "https://www.dirndltal-race.at/adventurerace",
+      "approximate": true,
+      "sourceQuote": "St. Pölten Rathausplatz, ab circa 10:00 Uhr im Minutentakt"
+     },
+     {
+      "date": "2027-09-18",
+      "time": "13:30",
+      "label": "Fun und Trophy Race",
+      "timeZone": "Europe/Vienna",
+      "sourceUrl": "https://www.dirndltal-race.at/funundtrophyrace",
+      "sourceQuote": "Fun und Trophy Race ab 13:30 Uhr"
+     }
+    ],
+    "quote": "Rennen 1: 09:30 Uhr - U7 Laufrad; Fun und Trophy Race ab 13:30 Uhr; Neutraler Start St. Pölten ab circa 10:00 Uhr"
+   },
+   {
+    "field": "organizer",
+    "url": "https://www.dirndltal-race.at/",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://www.rcpurgstall.at/",
+     "name": "ARBÖ RC Purgstall"
+    },
+    "quote": "Veranstalter ARBÖ RC Purgstall, Fasangartengasse 9, 3251 Purgstall"
+   }
+  ]
+ },
+ {
+  "id": "8439de52-4a9f-4bb7-a55b-92032d905a6a",
+  "name": "Good Times Gravel",
+  "date": "2027-09-25",
+  "end": "2027-09-25",
+  "town": "Maria Enzersdorf",
+  "cc": "AT",
+  "website": "https://goodtimesgravel.at/",
+  "regs": null,
+  "facts": [
+   {
+    "field": "venue",
+    "url": "https://goodtimesgravel.at/",
+    "status": "year_neutral",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": {
+     "name": "Freizeitgelände",
+     "locality": "Maria Enzersdorf",
+     "precision": "venue",
+     "postalCode": "2344",
+     "countryCode": "AT"
+    },
+    "quote": "This is the event location – Freizeitgelände, Maria Enzersdorf"
+   },
+   {
+    "field": "organizer",
+    "url": "https://bikeboard.at/termine/good-times-gravel-termin16408",
+    "status": "current",
+    "statesDay": false,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://goodtimesgravel.at/",
+     "name": "BikeSchneiderei e.U."
+    },
+    "quote": "Ort 2344 Maria Enzersdorf, Niederösterreich. Veranstalter BikeSchneiderei e.U."
+   }
+  ]
+ },
+ {
+  "id": "0eadbfa6-38ce-46f5-bec9-820da406dba3",
+  "name": "Jesienne Szutry Premium",
+  "date": "2027-09-25",
+  "end": "2027-09-25",
+  "town": "Wrocław",
+  "cc": "PL",
+  "website": "https://szutrypremium.pl/",
+  "regs": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+  "facts": [
+   {
+    "field": "fees",
+    "url": "https://szutrypremium.pl/ceny/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": [
+     {
+      "label": "Všechny trasy",
+      "amount": 249,
+      "currency": "PLN",
+      "validUntil": "2027-02-14"
+     },
+     {
+      "label": "Všechny trasy od 15. 2. 2027",
+      "amount": 299,
+      "currency": "PLN"
+     }
+    ],
+    "quote": "do 14.02.2027 – 249 zł; od 15.02.2027 – 299 zł; Obowiązuje jedna cena na wszystkie dystanse"
+   },
+   {
+    "field": "routes",
+    "url": "https://szutrypremium.pl/trasy-edycja-jesienna/",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 0,
+    "value": [
+     {
+      "name": "100 km",
+      "distanceKm": 100
+     },
+     {
+      "name": "200 km",
+      "distanceKm": 200
+     }
+    ],
+    "quote": "25.09.2027 – WROCŁAW. Dystanse 100 i 200 km."
+   },
+   {
+    "field": "organizer",
+    "url": "https://szutrypremium.pl/wp-content/uploads/2026/09/regulamin-2027.pdf",
+    "status": "current",
+    "statesDay": true,
+    "quoteMissing": 1,
+    "value": {
+     "url": "https://szutrypremium.pl/",
+     "name": "programersi.com sp. z o.o."
+    },
+    "quote": "Organizatorem wydarzeń rowerowych Szutry Premium jest programersi.com sp. z o.o. z siedzibą we Wrocławiu"
+   }
+  ]
+ }
+]

@@ -241,6 +241,8 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
     let supported = false;
     if (field === "venue") {
       const v = practicalValueSchemas.venue.parse(value.data);
+      // A traffic notice names the streets around a race, not where it is held.
+      if (/divieto|strassensperr|straßensperr|sperrung|uzav[ií]rk|uzávěr|road closure|zakaz ruchu|zamkni[eę]ci/i.test(fold(fact.quote))) { refuse(key, "traffic_notice"); continue; }
       // "Prachatice 48.9982933N, 14.0170867E": the coordinates are not part of the name.
       v.name = v.name.replace(/[,|\s(]*(?:GPS:?\s*)?\d{1,2}\.\d{3,}\s*°?\s*[NS]?[,\s]+\d{1,3}\.\d{3,}\s*°?\s*[EW]?\)?\s*$/i, "").replace(/[\s,(|–-]+$/, "").trim() || v.name;
       value.data = v;

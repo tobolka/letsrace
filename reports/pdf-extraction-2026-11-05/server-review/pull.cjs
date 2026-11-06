@@ -1,0 +1,4 @@
+const cp=require('child_process'),fs=require('fs');const {serverEnvironment}=require('../../../scripts/local-pull.cjs');const env={...serverEnvironment(),NODE_OPTIONS:''};
+const q=s=>cp.execFileSync('/opt/homebrew/opt/postgresql@17/bin/psql',['-qAt','-c',s],{encoding:'utf8',env,maxBuffer:1e9});
+const rows=JSON.parse(q(`select coalesce(json_agg(t),'[]') from (select e.id,e.slug,e.name,e.start_date,e.end_date,e.website_url,e.regulations_url,l.municipality,l.country_code,e.practical_details from public.events e left join public.locations l on l.id=e.location_id where e.visibility='public' and e.merged_into_id is null and e.start_date>=current_date and e.practical_details<>'{}'::jsonb order by e.start_date) t`));
+fs.writeFileSync(__dirname+'/server-before.json',JSON.stringify(rows,null,1));console.log(rows.length);

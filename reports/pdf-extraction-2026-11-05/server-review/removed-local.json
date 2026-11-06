@@ -1,0 +1,313 @@
+[
+ {
+  "name": "FILIPA Podkrkonošský maraton",
+  "field": "fees",
+  "id": "627394f7-e4a4-412e-9ad0-b4710b729817",
+  "before": {
+   "quote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start",
+   "value": [
+    {
+     "label": "90 km MTB",
+     "amount": 600,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-02-27",
+     "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "90 km MTB",
+     "amount": 750,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-06-29",
+     "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "90 km MTB",
+     "amount": 850,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-30",
+     "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "90 km MTB",
+     "amount": 950,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "90 km MTB | ~09:02:00 | 600,- Kč, online termín cena splatnost 27.02.2027 600,- Kč online 29.06.2027 750,- Kč online 30.07.2027 850,- Kč online 31.07.2027 950,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "Mladší žáci",
+     "amount": 0,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Mladší žáci | ~09:16:18 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2015 - 2016 | hromadný start"
+    },
+    {
+     "label": "Mladší žákyně",
+     "amount": 50,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Mladší žákyně | ~09:16:48 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2015 - 2016 | hromadný start"
+    },
+    {
+     "label": "Kluci 9-10",
+     "amount": 0,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Kluci 9-10 | ~09:34:45 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start"
+    },
+    {
+     "label": "Holky 9-10",
+     "amount": 0,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Holky 9-10 | ~09:49:33 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2017 - 2018 | hromadný start"
+    },
+    {
+     "label": "53 km MTB",
+     "amount": 500,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-02-27",
+     "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km MTB",
+     "amount": 650,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-06-29",
+     "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km MTB",
+     "amount": 750,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-30",
+     "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km MTB",
+     "amount": 850,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "53 km MTB | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 29.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km Gravel",
+     "amount": 500,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-02-27",
+     "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km Gravel",
+     "amount": 650,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-06-28",
+     "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km Gravel",
+     "amount": 750,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-30",
+     "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "53 km Gravel",
+     "amount": 850,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "53 km Gravel | ~10:20:00 | 500,- Kč, online termín cena splatnost 27.02.2027 500,- Kč online 28.06.2027 650,- Kč online 30.07.2027 750,- Kč online 31.07.2027 850,- Kč online | 2014 a starší | hromadný start"
+    },
+    {
+     "label": "30 km MTB",
+     "amount": 350,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-02-27",
+     "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+    },
+    {
+     "label": "30 km MTB",
+     "amount": 500,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-06-29",
+     "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+    },
+    {
+     "label": "30 km MTB",
+     "amount": 550,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-30",
+     "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+    },
+    {
+     "label": "30 km MTB",
+     "amount": 600,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "30 km MTB | ~10:20:00 | 350,- Kč, online termín cena splatnost 27.02.2027 350,- Kč online 29.06.2027 500,- Kč online 30.07.2027 550,- Kč online 31.07.2027 600,- Kč online | 2017 a starší | hromadný start"
+    },
+    {
+     "label": "30 km MTB Family jízda",
+     "amount": 700,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-02-26",
+     "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+    },
+    {
+     "label": "30 km MTB Family jízda",
+     "amount": 1000,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-06-29",
+     "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+    },
+    {
+     "label": "30 km MTB Family jízda",
+     "amount": 1100,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-30",
+     "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+    },
+    {
+     "label": "30 km MTB Family jízda",
+     "amount": 1200,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "30 km MTB Family jízda | ~10:20:00 | 700,- Kč, online termín cena splatnost 26.02.2027 700,- Kč online 29.06.2027 1 000,- Kč online 30.07.2027 1 100,- Kč online 31.07.2027 1 200,- Kč online | 2014 a starší | Podkategorie 27km MTB. Započítavá se druhý čas v cíli - tzn. dvojice by měla projet závod spolu a cíl protnout společně. Jeden ze dvojice musí být rodič, druhý potomek (2007-2012). Závodníci jsou hodnoceni i ve své standartní kategorii."
+    },
+    {
+     "label": "Odstrkovadla a kola kluci",
+     "amount": 50,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-28",
+     "sourceQuote": "Odstrkovadla a kola kluci | ~10:22:55 | 50,- Kč, online termín cena splatnost 28.07.2027 50,- Kč online 31.07.2027 70,- Kč online | 2023 a mladší | hromadný start"
+    },
+    {
+     "label": "Odstrkovadla a kola kluci",
+     "amount": 70,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Odstrkovadla a kola kluci | ~10:22:55 | 50,- Kč, online termín cena splatnost 28.07.2027 50,- Kč online 31.07.2027 70,- Kč online | 2023 a mladší | hromadný start"
+    },
+    {
+     "label": "Odstrkovadla a kola holky",
+     "amount": 50,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Odstrkovadla a kola holky | ~10:27:44 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online 31.07.2027 50,- Kč online | 2023 a mladší | hromadný start"
+    },
+    {
+     "label": "Kluci 5-6",
+     "amount": 50,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Kluci 5-6 | ~10:34:53 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start"
+    },
+    {
+     "label": "Holky 5-6",
+     "amount": 50,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Holky 5-6 | ~10:45:26 | 50,- Kč, online termín cena splatnost 31.07.2027 50,- Kč online | 2021 - 2022 | hromadný start"
+    },
+    {
+     "label": "Kluci 7-8",
+     "amount": 0,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Kluci 7-8 | ~10:54:02 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start"
+    },
+    {
+     "label": "Holky 7-8",
+     "amount": 0,
+     "currency": "CZK",
+     "checkedAt": "2026-11-03T08:32:15.579Z",
+     "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+     "validUntil": "2027-07-31",
+     "sourceQuote": "Holky 7-8 | ~11:09:55 | 0,- Kč, zdarma termín cena splatnost 31.07.2027 0,- Kč zdarma | 2019 - 2020 | hromadný start"
+    }
+   ],
+   "status": "current",
+   "checkedAt": "2026-11-03T08:32:15.579Z",
+   "sourceUrl": "https://www.sportchallenge.cz/cz/podkrkonosskymaraton/2027/propozice",
+   "editionYear": 2027
+  }
+ },
+ {
+  "name": "8º TROFEO LE VALLI SUL MINCIO",
+  "field": "venue",
+  "id": "507d686d-c638-4b08-b1f0-f70c1358b1a2",
+  "before": {
+   "quote": "Rivalta sul Mincio, Piazza Silvio Arrivabene, via Porto e via dei Pescatori, Rodigo (MN)",
+   "value": {
+    "name": "Rivalta sul Mincio, Piazza Silvio Arrivabene, via Porto e via dei Pescatori",
+    "locality": "Rodigo",
+    "precision": "municipality",
+    "countryCode": "IT"
+   },
+   "status": "current",
+   "checkedAt": "2026-11-06T05:32:26.833Z",
+   "sourceUrl": "https://lombardia.piazzainfesta.it/rodigo/ciclocross-le-valli-del-mincio-126730",
+   "editionYear": 2026
+  }
+ }
+]
