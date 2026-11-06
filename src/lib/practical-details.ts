@@ -59,6 +59,34 @@ export const practicalCopy = {
 };
 
 /** Positive facts from another source add variants; absence is not evidence of removal. */
+type ListRow = { sourceUrl?: string; checkedAt?: string; date?: string; label?: string };
+const NOT_A_PROGRAMME_ROW = /^(?:termin|start|startzeit|za[cč][aá]tek)$/i;
+
+/**
+ * Two documents are never mixed in a timetable, a fee list or the categories: their rows would repeat and
+ * contradict each other, so the fullest list stands. Routes may add up, since another document can name a further course.
+ */
+export function tidyPracticalDetails(details: PracticalDetails): PracticalDetails {
+  const result = { ...details } as Record<string, unknown>;
+  for (const field of ["schedule", "fees", "categories"] as const) {
+    const fact = details[field];
+    if (!fact) continue;
+    const rows = fact.value as unknown as ListRow[], source = (row: ListRow) => row.sourceUrl ?? fact.sourceUrl;
+    const group = (row: ListRow) => field === "schedule" ? row.date ?? "" : "";
+    const newest = new Map<string, string>(), winners = new Map<string, string>();
+    for (const row of rows) if ((row.checkedAt ?? "") > (newest.get(source(row)) ?? "")) newest.set(source(row), row.checkedAt ?? "");
+    for (const name of new Set(rows.map(group))) {
+      const counts = new Map<string, number>();
+      for (const row of rows) if (group(row) === name) counts.set(source(row), (counts.get(source(row)) ?? 0) + 1);
+      winners.set(name, [...counts].sort((a, b) => b[1] - a[1] || (newest.get(b[0]) ?? "").localeCompare(newest.get(a[0]) ?? ""))[0]![0]);
+    }
+    let kept = rows.filter(row => winners.get(group(row)) === source(row));
+    if (field === "schedule" && kept.some(row => !NOT_A_PROGRAMME_ROW.test(row.label ?? ""))) kept = kept.filter(row => !NOT_A_PROGRAMME_ROW.test(row.label ?? ""));
+    result[field] = { ...fact, value: kept };
+  }
+  return result as PracticalDetails;
+}
+
 export function mergePracticalDetails(stored: PracticalDetails, incoming: PracticalDetails): PracticalDetails {
   const result = { ...incoming };
   const content = (value: Record<string, unknown>) => JSON.stringify(Object.fromEntries(Object.entries(value).filter(([key]) => key !== "checkedAt").sort(([a], [b]) => a.localeCompare(b))));
@@ -68,13 +96,19 @@ export function mergePracticalDetails(stored: PracticalDetails, incoming: Practi
     type Item = Record<string, unknown>;
     const key = (item: Item) => JSON.stringify(field === "routes" ? [item.name] : field === "categories" ? [item.label] : field === "schedule" ? [item.label, item.date] : [item.label, item.currency, item.validUntil ?? null]);
     const previous = old.value as unknown as Item[];
+    // Each reading of a document replaces its last one; what another document said stays for now.
+    const readAgain = new Set((next.value as unknown as Item[]).map(item => item.sourceUrl ?? next.sourceUrl));
     const items = new Map(previous.map(item => [key(item), { ...item, sourceUrl: item.sourceUrl ?? old.sourceUrl, sourceQuote: item.sourceQuote ?? old.quote, checkedAt: item.checkedAt ?? old.checkedAt }]));
+    const held = new Map(items);
+    // A much shorter list is a partial reading rather than a correction, and routes may add up.
+    const sameSource = [...items].filter(([, item]) => readAgain.has(item.sourceUrl));
+    if (field !== "routes" && (next.value as unknown[]).length * 3 >= sameSource.length) for (const [name] of sameSource) items.delete(name);
     for (const item of next.value as unknown as Item[]) {
       const withSource = { ...item, sourceUrl: item.sourceUrl ?? next.sourceUrl, sourceQuote: item.sourceQuote ?? next.quote, checkedAt: item.checkedAt ?? next.checkedAt };
-      const held = items.get(key(item));
-      items.set(key(item), held && content(held) === content(withSource) ? held : withSource);
+      const earlier = held.get(key(item));
+      items.set(key(item), earlier && content(earlier) === content(withSource) ? earlier : withSource);
     }
     (result as Record<string, unknown>)[field] = { ...next, value: [...items.values()] };
   }
-  return practicalDetailsSchema.parse(result);
+  return practicalDetailsSchema.parse(tidyPracticalDetails(result));
 }

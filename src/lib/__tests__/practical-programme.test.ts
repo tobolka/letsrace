@@ -130,12 +130,12 @@ it("does not reuse the guide for another race or edition, or turn its office int
   const office = {...jicinGuide,text:jicinGuide.text.replace("Místo konání:","Adresa kanceláře:")};
   expect(practicalProgramme(office,jicin).venue).toBeUndefined();
 });
-it("keeps one complete programme when official Czech and English guides give the same starts", () => {
+it("keeps one complete programme when official Czech and English guides give the same or differing starts", () => {
   const original=practicalProgramme(jicinGuide,jicin);
   const translated=structuredClone(original);
   translated.schedule!.sourceUrl="https://www.cyklokros.cz/files/race-guide-jicin-2026.pdf";
   translated.schedule!.value.forEach((row,index)=>row.label=["WOMEN CADET","MEN BEGINNER","MEN CADET"][index]);
   expect(combinePracticalFindings(original,translated).schedule?.value).toHaveLength(3);
   translated.schedule!.value[2].time="11:20";
-  expect(combinePracticalFindings(original,translated).schedule?.value).toHaveLength(6);
+  expect(combinePracticalFindings(original,translated).schedule?.value).toHaveLength(3);
 });

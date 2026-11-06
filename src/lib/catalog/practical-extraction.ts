@@ -315,7 +315,7 @@ export function verifyPracticalExtraction(raw: unknown, context: { name: string;
         if (isNotCycling(v.label) || !itemDoc || !rowDocumentOK(itemDoc) || !q || !contains(itemDoc.text, q) || !(labelSupported(q, v.label) || fact.quote.length <= 1500 && contains(fact.quote, q) && labelSupported(fact.quote, v.label)) || v.date < context.startDate || v.date > (context.endDate ?? context.startDate) || !dateOK || !time.test(q)) return [];
         // A range is kept as one: it must not read as an exact start.
         const range = isTimeRange(q, v.time) ? new RegExp(`\\b0?${hour}[:.h]${v.time.slice(3, 5)}\\s*(?:[-–—]|to|bis)\\s*(\\d{1,2})[:.h](\\d{2})`, "i").exec(q) : null;
-        return [{ ...v, ...(range ? { endTime: `${range[1]!.padStart(2, "0")}:${range[2]}` } : {}), approximate: v.approximate || /~\s*\d|cca\s*\d|approx|přibliž|pribliz/i.test(q), sourceQuote: storedQuote(q, v.label), sourceUrl: itemDoc.url, checkedAt: context.now ?? new Date().toISOString() }];
+        return [{ ...v, label: v.label.replace(/^program\s+/i, ""), ...(range ? { endTime: `${range[1]!.padStart(2, "0")}:${range[2]}` } : {}), approximate: v.approximate || /~\s*\d|cca\s*\d|approx|přibliž|pribliz/i.test(q), sourceQuote: storedQuote(q, v.label), sourceUrl: itemDoc.url, checkedAt: context.now ?? new Date().toISOString() }];
       });
       value.data = rows; supported = rows.length > 0;
     } else if (field === "fees") {

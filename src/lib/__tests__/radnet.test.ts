@@ -3,6 +3,7 @@ import { deflateRawSync } from "node:zlib";
 import { radNetCalendarRows, radNetFacts } from "@/lib/catalog/radnet";
 import { zipEntries } from "@/lib/catalog/regulation-ages";
 import { verifyPracticalExtraction } from "@/lib/catalog/practical-extraction";
+import { mergePracticalDetails } from "@/lib/practical-details";
 
 const url = "https://www.rad-net.de/rad-net-portal/a.htm?url=mode%3Dascr_detail";
 const text = `Donkey Creek Cyclocross LV Nordrhein-Westfalen Cyclo-Cross
@@ -39,5 +40,20 @@ describe("zip archives", () => {
     const [entry] = zipEntries(new Uint8Array(Buffer.concat([local, name, packed, central, name, end])));
     expect(entry!.name).toBe("rozpis.pdf");
     expect(Buffer.from(entry!.bytes).toString()).toBe("%PDF-1.4 obsah");
+  });
+});
+
+describe("lists read from documents", () => {
+  const row = (label: string, time: string, sourceUrl: string, checkedAt: string) => ({ label, date: "2026-11-08", time, approximate: false, sourceUrl, sourceQuote: `${time} ${label} row`, checkedAt });
+  const fact = (value: unknown[]) => ({ value, sourceUrl: "https://a.test/r", quote: "a quote long enough", checkedAt: "2026-11-06T10:00:00Z", status: "current", editionYear: 2026 });
+  it("lets a new reading of a document replace its last one, without repeating rows", () => {
+    const old = { schedule: fact([row("Mladší žiaci", "10:00", "https://a.test/r", "2026-11-05T10:00:00Z")]) } as never;
+    const next = { schedule: fact([row("Mladší žiaci + Žiačky", "10:00", "https://a.test/r", "2026-11-06T10:00:00Z")]) } as never;
+    expect((mergePracticalDetails(old, next).schedule!.value).map(item => item.label)).toEqual(["Mladší žiaci + Žiačky"]);
+  });
+  it("keeps the fullest timetable and never mixes two documents", () => {
+    const series = { schedule: fact([row("Termin", "10:00", "https://a.test/s", "2026-11-05T10:00:00Z")]) } as never;
+    const own = { schedule: fact([row("U11", "10:30", "https://a.test/o", "2026-11-06T10:00:00Z"), row("U13", "11:00", "https://a.test/o", "2026-11-06T10:00:00Z")]) } as never;
+    expect((mergePracticalDetails(series, own).schedule!.value).map(item => item.label)).toEqual(["U11", "U13"]);
   });
 });
