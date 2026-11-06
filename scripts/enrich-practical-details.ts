@@ -20,7 +20,7 @@ async function main() {
   const max = Number(arg("max") ?? 12);
   if (!Number.isInteger(max) || max < 1 || max > 100) throw Error("Invalid batch size");
   const audit: unknown[] = [];
-  const result = await enrichPracticalDetails({ max, ids: arg("ids")?.split(","), apply: process.argv.includes("--apply"), structuredOnly: process.argv.includes("--structured-only"), deadline, log: console.log, audit: arg("audit") ? async value => { audit.push(value); await writeJsonAtomic(resolve(arg("audit")!), audit); } : undefined });
+  const result = await enrichPracticalDetails({ max, ids: arg("ids")?.split(","), apply: process.argv.includes("--apply"), search: arg("search-ledger") ? { ledger: arg("search-ledger")!, day: Number(arg("searches-a-day") ?? 60), month: Number(arg("searches-a-month") ?? 1000) } : undefined, structuredOnly: process.argv.includes("--structured-only"), deadline, log: console.log, audit: arg("audit") ? async value => { audit.push(value); await writeJsonAtomic(resolve(arg("audit")!), audit); } : undefined });
   console.log(result);
   if (result.failed && !process.argv.includes("--tolerate-unreadable")) process.exitCode = 1; else if (result.deferred) process.exitCode = 2;
 }

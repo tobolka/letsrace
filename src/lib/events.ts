@@ -580,7 +580,7 @@ async function loadPublicEventBySlug(
   return event;
 }
 export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
-  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v6", slug],
+  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v7", slug],
   { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
 )());
 
@@ -766,6 +766,7 @@ function mapEventRow(row: Record<string, unknown>): EventListItem {
     resultsUrl: row.results_url as string | null,
     seriesWebsiteUrl: series?.website_url as string | null,
     sourceUrls: sourceUrlsFromRow(row),
+    startDate: row.start_date as string | null,
   });
   return {
     description: (row.description as string | null) ?? null,

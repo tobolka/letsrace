@@ -204,6 +204,15 @@ function scoreListing(url: string): number {
   }
 }
 
+/** Timing companies publish results where they took the entries. */
+const RESULTS_SERVERS: Record<string, string | null> = { "maraton.cz": "https://maraton.cz/", "marathon.cz": "https://www.marathon.cz/", "sumator.cz": "https://sumator.cz/", "racetime.sk": "https://www.racetime.sk/", "sportsoft.cz": "https://www.sportsoft.cz/", "my.raceresult.com": null, "stopsport.cz": null, "time-sport.cz": null, "sportstiming.dk": null, "endu.net": null, "onreg.datasport.com": null, "datasport.com": null, "zpn-timing.de": null, "njuko.com": null, "maratonczykpomiarczasu.pl": null, "competit.pl": null, "mso.swiss": null };
+export function resultsServerOf(registrationUrl: string | null | undefined): string | null {
+  const host = hostOf(registrationUrl);
+  const known = host && Object.keys(RESULTS_SERVERS).find(server => host === server || host.endsWith(`.${server}`));
+  if (!known) return null;
+  return RESULTS_SERVERS[known] ?? registrationUrl ?? null;
+}
+
 /** Pages of a race's site that are not the page to send a rider to first. */
 const SIDE_PAGE = /\/(ceny|cena|faq|faq-s|kontakt|contact|impressum|clanky|clanek|aktuality|news|blog|post|galerie|gallery|sponzor[a-z]*|registrace|anmeldung|zapisy[a-z-]*|prihlas[a-z]*|krok\d)(\/|$|-)/i;
 
@@ -214,6 +223,9 @@ export function resolveEventOutboundUrls(input: {
   resultsUrl?: string | null;
   seriesWebsiteUrl?: string | null;
   sourceUrls?: (string | null | undefined)[];
+  /** Once a race has started, its timing server is where results are, even without a link of their own. */
+  startDate?: string | null;
+  today?: string;
 }): {
   websiteUrl: string | null;
   registrationUrl: string | null;
@@ -239,7 +251,8 @@ export function resolveEventOutboundUrls(input: {
   if (!websiteUrl) websiteUrl = publicRaceUrl(input.seriesWebsiteUrl);
   const registrationUrl = pickRegistrationUrl(input.registrationUrl, ...sources);
   let regulationsUrl = publicRaceUrl(input.regulationsUrl);
-  const resultsUrl = publicRaceUrl(input.resultsUrl);
+  const today = input.today ?? new Date().toISOString().slice(0, 10);
+  const resultsUrl = publicRaceUrl(input.resultsUrl) ?? (input.startDate && input.startDate <= today ? resultsServerOf(registrationUrl) : null);
 
   if (websiteUrl && registrationUrl && websiteUrl === registrationUrl) {
     websiteUrl = null;

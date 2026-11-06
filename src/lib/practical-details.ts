@@ -6,7 +6,9 @@ const evidence = { sourceUrl: publicLink, quote: z.string().trim().min(8).max(15
 const itemEvidence = { sourceQuote: z.string().min(5).max(1500).optional(), sourceUrl: publicLink.optional(), checkedAt: z.iso.datetime({ offset: true }).optional() };
 export const practicalValueSchemas = {
   venue: z.object({ name: text, streetAddress: text.optional(), postalCode: z.string().trim().min(1).max(20).optional(), locality: text.optional(), countryCode: z.string().regex(/^[A-Z]{2}$/).optional(), precision: z.enum(["venue", "start", "municipality"]) }).strict(),
-  organizer: z.object({ name: text, url: publicLink.optional() }).strict(),
+  organizer: z.object({ name: text, url: publicLink.optional(), contactName: text.optional(), phone: z.string().trim().min(5).max(40).optional(), email: z.string().trim().email().max(200).optional() }).strict(),
+  parking: z.object({ note: z.string().trim().min(3).max(400) }).strict(),
+  categories: z.array(z.object({ ...itemEvidence, label: text, birthYears: z.string().trim().min(4).max(40).optional() }).strict()).min(1),
   schedule: z.array(z.object({ ...itemEvidence, approximate: z.boolean().optional(), label: text, date: z.iso.date(), time: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/), timeZone: z.string().max(80).refine(value => { try { new Intl.DateTimeFormat("en", { timeZone: value }); return true; } catch { return false; } }).optional() }).strict()).min(1).max(40),
   fees: z.array(z.object({ ...itemEvidence, label: text, amount: z.number().min(0).max(1000000), currency: z.string().regex(/^[A-Z]{3}$/), validUntil: z.iso.date().optional(), url: publicLink.optional() }).strict()).min(1).max(100),
   routes: z.array(z.object({ ...itemEvidence, name: text, distanceKm: z.number().positive().max(20000).optional(), elevationM: z.number().nonnegative().max(300000).optional(), surface: text.optional(), gpxUrl: publicLink.optional(), mapUrl: publicLink.optional() }).strict()).min(1).max(30),
@@ -14,6 +16,8 @@ export const practicalValueSchemas = {
 export const practicalDetailsSchema = z.object({
   venue: z.object({ ...evidence, value: practicalValueSchemas.venue }).strict().optional(),
   organizer: z.object({ ...evidence, value: practicalValueSchemas.organizer }).strict().optional(),
+  parking: z.object({ ...evidence, value: practicalValueSchemas.parking }).strict().optional(),
+  categories: z.object({ ...evidence, value: practicalValueSchemas.categories, status: z.literal("current") }).strict().optional(),
   schedule: z.object({ ...evidence, value: practicalValueSchemas.schedule, status: z.literal("current") }).strict().optional(),
   fees: z.object({ ...evidence, value: practicalValueSchemas.fees, status: z.literal("current") }).strict().optional(),
   routes: z.object({ ...evidence, value: practicalValueSchemas.routes, status: z.literal("current") }).strict().optional(),
@@ -48,19 +52,19 @@ export function practicalDetailsForEvent(value: unknown, startDate: string, endD
 }
 
 export const practicalCopy = {
-  cs: { title: "Před cestou na závod", venue: "Areál a adresa", organizer: "Pořadatel", schedule: "Program a starty", fees: "Startovné", routes: "Trasy", source: "Zdroj", previous: "Z předchozího ročníku", neutral: "Údaj pořadatele bez určení ročníku", gpx: "Stáhnout GPX", map: "Mapa trasy", until: "do" },
-  en: { title: "Before you travel", venue: "Venue and address", organizer: "Organiser", schedule: "Schedule and starts", fees: "Entry fees", routes: "Routes", source: "Source", previous: "From a previous edition", neutral: "Year-neutral organiser information", gpx: "Download GPX", map: "Route map", until: "until" },
+  cs: { title: "Před cestou na závod", venue: "Areál a adresa", organizer: "Pořadatel", schedule: "Program a starty", fees: "Startovné", routes: "Tratě", parking: "Parkování", categories: "Kategorie", contact: "Kontakt", source: "Zdroj", previous: "Z předchozího ročníku", neutral: "Údaj pořadatele bez určení ročníku", gpx: "Stáhnout GPX", map: "Mapa trasy", until: "do" },
+  en: { title: "Before you travel", venue: "Venue and address", organizer: "Organiser", schedule: "Schedule and starts", fees: "Entry fees", routes: "Routes", parking: "Parking", categories: "Categories", contact: "Contact", source: "Source", previous: "From a previous edition", neutral: "Year-neutral organiser information", gpx: "Download GPX", map: "Route map", until: "until" },
 };
 
 /** Positive facts from another source add variants; absence is not evidence of removal. */
 export function mergePracticalDetails(stored: PracticalDetails, incoming: PracticalDetails): PracticalDetails {
   const result = { ...incoming };
   const content = (value: Record<string, unknown>) => JSON.stringify(Object.fromEntries(Object.entries(value).filter(([key]) => key !== "checkedAt").sort(([a], [b]) => a.localeCompare(b))));
-  for (const field of ["schedule", "fees", "routes"] as const) {
+  for (const field of ["schedule", "fees", "routes", "categories"] as const) {
     const next = incoming[field], old = stored[field];
     if (!next || !old || old.editionYear !== next.editionYear) continue;
     type Item = Record<string, unknown>;
-    const key = (item: Item) => JSON.stringify(field === "routes" ? [item.name] : field === "schedule" ? [item.label, item.date] : [item.label, item.currency, item.validUntil ?? null]);
+    const key = (item: Item) => JSON.stringify(field === "routes" ? [item.name] : field === "categories" ? [item.label] : field === "schedule" ? [item.label, item.date] : [item.label, item.currency, item.validUntil ?? null]);
     const previous = old.value as unknown as Item[];
     const items = new Map(previous.map(item => [key(item), { ...item, sourceUrl: item.sourceUrl ?? old.sourceUrl, sourceQuote: item.sourceQuote ?? old.quote, checkedAt: item.checkedAt ?? old.checkedAt }]));
     for (const item of next.value as unknown as Item[]) {

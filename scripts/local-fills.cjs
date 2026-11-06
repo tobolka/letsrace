@@ -30,6 +30,20 @@ function practicalFill(work, base, target) {
 }
 
 /** The pure decision, for one race as held in the three places. */
+const STAND_IN_HOSTS = /(^|\.)(kalendar\.winspace\.cz|odjazd\.pl|kalendarzrowerowy\.pl|eventivsport\.com|granfondoguide\.com|finishers\.com|bikeboard\.at|radsport-events\.de|rideandrest\.net)$/i;
+function pageKind(url) {
+  try {
+    const { hostname, pathname } = new URL(url);
+    if (STAND_IN_HOSTS.test(hostname.replace(/^www\./, ''))) return 'calendar';
+    return pathname.replace(/\/+$/, '') ? 'page' : 'home';
+  } catch { return null; }
+}
+/** Someone changing the link on the server since the copy keeps it; only stand-ins are replaced, and never by one. */
+function betterWebsite(work, base, target) {
+  if (!work || !target || work === target || base !== target) return false;
+  const was = pageKind(target), now = pageKind(work);
+  return now === 'page' && (was === 'home' || was === 'calendar');
+}
 function eventFills(work, base, target) {
   if (!work || !target || target.merged_into_id || work.merged_into_id) return null;
   // Not in the copy at all: the Mac itself created this race later, so nothing was there to remove.
@@ -40,6 +54,8 @@ function eventFills(work, base, target) {
   for (const field of EVENT_FIELDS) {
     if (!isEmpty(work[field]) && isEmpty(base[field]) && isEmpty(target[field])) { after[field] = work[field]; before[field] = target[field] ?? null; }
   }
+  // The one value that may change: a homepage or a calendar's stand-in gives way to the race's own page.
+  if (betterWebsite(work.website_url, base.website_url, target.website_url)) { after.website_url = work.website_url; before.website_url = target.website_url; }
   const practical = practicalFill(work, base, target);
   if (practical) { after.practical_details = practical; before.practical_details = target.practical_details ?? {}; }
   if (!isEmpty(work.age_categories) && isEmpty(base.age_categories) && isEmpty(target.age_categories)) {
@@ -112,4 +128,4 @@ function fillPlan(directory, { work = 'letsrace', base = 'letsrace_baseline', ta
   return { file, sha256, rows: changes.length, races, places, waiting };
 }
 
-module.exports = { fillPlan, eventFills, practicalFill, locationFill, EVENT_FIELDS, AGE_FIELDS };
+module.exports = {betterWebsite, fillPlan, eventFills, practicalFill, locationFill, EVENT_FIELDS, AGE_FIELDS };

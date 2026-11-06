@@ -55,3 +55,18 @@ describe("the website button of a race page", () => {
     expect(resolveEventOutboundUrls({ websiteUrl: "https://zavod.cz/", sourceUrls: ["https://jiny-kalendar.cz/zavod/123"] }).websiteUrl).toBe("https://zavod.cz/");
   });
 });
+
+describe("the results link", () => {
+  it("points at the timing server once the race has started, and not before", async () => {
+    const { resolveEventOutboundUrls } = await import("@/lib/watcher/public-url");
+    const race = { registrationUrl: "https://maraton.cz/terminovka/entry/571" };
+    expect(resolveEventOutboundUrls({ ...race, startDate: "2026-11-07", today: "2026-11-07" }).resultsUrl).toBe("https://maraton.cz/");
+    expect(resolveEventOutboundUrls({ ...race, startDate: "2026-11-07", today: "2026-11-06" }).resultsUrl).toBeNull();
+    expect(resolveEventOutboundUrls({ registrationUrl: "https://my.raceresult.com/386744/", startDate: "2026-01-01", today: "2026-11-06" }).resultsUrl).toBe("https://my.raceresult.com/386744/");
+  });
+  it("prefers the race's own results and guesses nothing for an unknown entry page", async () => {
+    const { resolveEventOutboundUrls } = await import("@/lib/watcher/public-url");
+    expect(resolveEventOutboundUrls({ registrationUrl: "https://maraton.cz/x", resultsUrl: "https://a.cz/vysledky", startDate: "2026-01-01", today: "2026-11-06" }).resultsUrl).toBe("https://a.cz/vysledky");
+    expect(resolveEventOutboundUrls({ registrationUrl: "https://klub.cz/prihlaska", startDate: "2026-01-01", today: "2026-11-06" }).resultsUrl).toBeNull();
+  });
+});

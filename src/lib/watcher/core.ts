@@ -159,7 +159,9 @@ export function nextPollAt(startDate?: string | null): Date {
   const start = new Date(startDate);
   const days = (start.getTime() - now.getTime()) / (24 * 60 * 60 * 1000);
   if (days < -7) return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-  if (days <= 30) return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  // Dates in a calendar rarely move. The last week is when a change or cancellation matters.
+  if (days <= 7) return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  if (days <= 30) return new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
   return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 }
 

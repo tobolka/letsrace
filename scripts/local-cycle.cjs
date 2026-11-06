@@ -21,7 +21,7 @@ const TARGET_MIN_GAP_MS=3*HOUR;
 const NEW_RACES_PER_SEND=100;
 /** Reading races' own sites for details, which the server used to do once a day. */
 const SITE_DETAILS_EVERY_MS=6*HOUR;
-const REGULATIONS_EVERY_MS=6*HOUR;
+const REGULATIONS_EVERY_MS=HOUR;
 const GEOCODE_EVERY_MS=12*HOUR;
 const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
 /** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
@@ -179,7 +179,7 @@ async function main(){
   await upkeep('resumePublishing','resumePublishingAt',RESUME_PUBLISHING_EVERY_MS,'Dokončuji přerušená zveřejnění',['scripts/review-discovery-candidates.ts','--resume','--apply'],120);
   await upkeep('siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS,'Doplňuji údaje z webů závodů',['scripts/local-catalog-fills.ts'],480);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
-  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=30','--minutes=8','--tolerate-unreadable'],540,{LOCAL_ALLOW_AI:'1',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
+  await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:'60',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
   await upkeep('websiteSearch','websiteSearchAt',WEBSITE_SEARCH_EVERY_MS,'Hledám weby závodů, které žádný nemají',['scripts/find-websites.ts','--apply','--max=40','--prefer=CZ,SK',`--countries=${COUNTRIES}`,`--from=${season}-01-01`],480);
   await upkeep('geocode','geocodedAt',GEOCODE_EVERY_MS,'Doplňuji místa na mapě',['scripts/geocode-pending.ts','120'],300);
   await upkeep('sourceHealth','sourceHealthAt',SOURCE_HEALTH_EVERY_MS,'Kontroluji zdroje, které zmlkly',['scripts/local-source-health.ts',`--out=${path.join(data,'source-health-latest.json')}`],480);
@@ -257,6 +257,7 @@ async function main(){
   if(organiser.nextDueAt)moments.push(Math.max(Date.parse(organiser.nextDueAt),state.organiserPassAt?Date.parse(state.organiserPassAt)+ORGANISER_GAP_MS:0));
   if(state.targetCheckedAt)moments.push(Date.parse(state.targetCheckedAt)+(targetWanted(state,eventsNow,Date.parse(state.targetCheckedAt))?TARGET_MIN_GAP_MS:TARGET_MAX_AGE_MS));
   if(state.siteDetailsAt)moments.push(Date.parse(state.siteDetailsAt)+SITE_DETAILS_EVERY_MS);
+  if(state.regulationsAt)moments.push(Date.parse(state.regulationsAt)+REGULATIONS_EVERY_MS);
   report.nextWorkAt=new Date(Math.min(...moments.filter(Number.isFinite),Date.now()+6*HOUR)).toISOString();
   if(failed)throw Error(failed);
   // The raw report stays available; a checked public race is distinct from an extracted row.

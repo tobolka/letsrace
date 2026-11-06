@@ -209,3 +209,26 @@ describe("what an independent read of real regulations caught", () => {
     expect(verifyPracticalExtraction({ facts: { venue: { value: { name: "Plac przed Centrum Kultury", precision: "venue" }, quote: "Miejsce zbiórki: Plac przed Centrum Kultury", source_url: other.url, identity_quote: "Rajd Niepodległości 2026", edition_quote: "Rajd Niepodległości 2026", status: "year_neutral" } } }, { name: "Rajd Niepodległości", startDate: "2026-11-07", municipality: "Świecie", documents: [other] }).details.venue).toBeUndefined();
   });
 });
+
+describe("organiser contact, parking and categories", () => {
+  const url = "https://spsvd.cz/propozice.pdf";
+  const text = "HŮRECKÝ KRPÁL 7.11.2026 Hůrka u Jistebnice\nPořadatel: SPSVD Jistebnice\nŘeditel závodu: Zdeněk Tomeček Tel.: 731 402 943 E-mail: info@spsvd.cz\nParkování na vyznačeném místě v prostoru startu a cíle.\nZK Kadetky 2011 – 2012\nMJ Junioři 2009 – 2010";
+  const context = { name: "Hůrecký krpál", startDate: "2026-11-07", municipality: "Hůrka u Jistebnice", ownUrls: [url], documents: [{ url, text, links: [] }], now: "2026-11-06T10:00:00.000Z" };
+  const fact = (value: unknown, quote: string) => ({ value, source_url: url, quote, identity_quote: "HŮRECKÝ KRPÁL 7.11.2026", edition_quote: "HŮRECKÝ KRPÁL 7.11.2026", status: "current" });
+  it("keeps a contact the document gives and drops one it does not", () => {
+    const { details } = verifyPracticalExtraction({ facts: { organizer: fact({ name: "SPSVD Jistebnice", contactName: "Zdeněk Tomeček", phone: "731 402 943", email: "jiny@spsvd.cz" }, "Pořadatel: SPSVD Jistebnice") } }, context);
+    expect(details.organizer?.value).toEqual({ name: "SPSVD Jistebnice", contactName: "Zdeněk Tomeček", phone: "731 402 943" });
+  });
+  it("keeps parking only as the document words it", () => {
+    expect(verifyPracticalExtraction({ facts: { parking: fact({ note: "Parkování na vyznačeném místě v prostoru startu a cíle." }, "Parkování na vyznačeném místě v prostoru startu a cíle.") } }, context).details.parking?.value.note).toContain("vyznačeném");
+    expect(verifyPracticalExtraction({ facts: { parking: fact({ note: "Parkoviště zdarma u kostela" }, "Parkování na vyznačeném místě v prostoru startu a cíle.") } }, context).details.parking).toBeUndefined();
+  });
+  it("keeps categories with the birth years the document states", () => {
+    const { details } = verifyPracticalExtraction({ facts: { categories: fact([{ label: "Kadetky", birthYears: "2011 – 2012", sourceQuote: "ZK Kadetky 2011 – 2012" }, { label: "Junioři", birthYears: "1999 – 2000", sourceQuote: "MJ Junioři 2009 – 2010" }], "ZK Kadetky 2011 – 2012") } }, context);
+    expect(details.categories?.value.map(row => row.label)).toEqual(["Kadetky"]);
+  });
+  it("takes the coordinates off a venue's name", () => {
+    const { details } = verifyPracticalExtraction({ facts: { venue: fact({ name: "Hůrka u Jistebnice 49.4728000N, 14.5471622E", precision: "venue" }, "HŮRECKÝ KRPÁL 7.11.2026 Hůrka u Jistebnice") } }, { ...context, documents: [{ url, text: `${text}\nHůrka u Jistebnice 49.4728000N, 14.5471622E`, links: [] }] });
+    expect(details.venue?.value.name).toBe("Hůrka u Jistebnice");
+  });
+});

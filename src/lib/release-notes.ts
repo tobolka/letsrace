@@ -22,10 +22,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-06",
     items: {
       cs: [
-        "Tlačítko Web závodu vede na stránku právě toho závodu, ne na cizí kalendář nebo jiný závod téže série."
+        "Tlačítko Web závodu vede na stránku právě toho závodu, ne na cizí kalendář nebo jiný závod téže série.",
+        "U závodů uvidíš kategorie s ročníky, kontakt na pořadatele a kde zaparkovat, pokud je pořadatel uvádí.",
+        "Po startu závodu najdeš tlačítko Výsledky, které vede na server časomíry."
       ],
       en: [
-        "The race website button goes to that race's own page, not to another calendar or another race in the series."
+        "The race website button goes to that race's own page, not to another calendar or another race in the series.",
+        "Race pages show categories with birth years, the organiser's contact and where to park, when the organiser gives them.",
+        "Once a race has started, a Results button takes you to the timing company's site."
       ],
     },
   },
