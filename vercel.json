@@ -21,5 +21,5 @@
       "schedule": "10 4 * * *"
     }
   ],
-  "ignoreCommand": "git diff --quiet ${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- src public package.json package-lock.json next.config.ts vercel.json tsconfig.json postcss.config.mjs ':!src/lib/__tests__'"
+  "ignoreCommand": "if git rev-parse --git-dir >/dev/null 2>&1 && git diff --quiet ${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- src public package.json package-lock.json next.config.ts vercel.json tsconfig.json postcss.config.mjs; then exit 0; else exit 1; fi"
 }
