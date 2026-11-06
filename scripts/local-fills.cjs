@@ -30,10 +30,13 @@ function practicalFill(work, base, target) {
 }
 
 /** Only what the second reader confirmed, for the value it saw, may leave the Mac. */
+// A federation's fixed page is read by rule, not by a model, so a second reader would spend the AI allowance
+// checking what cannot have been misread. It would also hold thousands of races behind a daily limit.
+const READ_BY_RULE = /^https:\/\/(?:www\.)?(?:rad-net\.de|members\.federciclismo\.it)\//i;
 function confirmedDetails(details, entry) {
   const kept = {};
   for (const [field, fact] of Object.entries(details ?? {})) {
-    if (field === 'documents') { kept[field] = fact; continue; }
+    if (field === 'documents' || READ_BY_RULE.test(fact?.sourceUrl ?? '')) { kept[field] = fact; continue; }
     const check = entry?.fields?.[field];
     if (check?.verdict === 'confirmed' && check.value === valueHash(fact?.value)) kept[field] = fact;
   }

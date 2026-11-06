@@ -31,3 +31,9 @@ it("lets out nothing a race has no check for, except links to its documents", ()
   const documents = { value: [{ kind: "regulations", url: "https://a.cz/p.pdf" }] };
   expect(confirmedDetails({ fees, documents }, undefined)).toEqual({ documents });
 });
+
+it("needs no second reader for what a federation's fixed page says, while anything else still does", () => {
+  const fact = (sourceUrl: string) => ({ value: { name: "Klub" }, sourceUrl });
+  const kept = confirmedDetails({ organizer: fact("https://www.rad-net.de/rad-net-portal/a.htm"), venue: fact("https://club.test/propozice.pdf") }, undefined);
+  expect(Object.keys(kept)).toEqual(["organizer"]);
+});
