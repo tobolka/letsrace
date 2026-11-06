@@ -65,6 +65,13 @@ describe("what may speak for a race", () => {
     const far = `Vimperk cyklokros TBC ${"x ".repeat(800)} 14.11.2026 MTB závod Šumava`;
     expect(documentIsAboutRace(far, { name: "TBC — VIMPERK", start_date: "2026-11-14", municipality: "Vimperk" })).toBe(false);
   });
+  it("recognises a day written in words, in the languages we read", () => {
+    expect(statesRaceDay("SABATO 7 NOVEMBRE 2026", "2026-11-07")).toBe(true);
+    expect(statesRaceDay("Neděle 22. listopadu 2026", "2026-11-22")).toBe(true);
+    expect(statesRaceDay("Sonntag, 8. November", "2026-11-08")).toBe(true);
+    expect(statesRaceDay("17 novembre 2026", "2026-11-07")).toBe(false);
+    expect(statesRaceDay("7 dicembre 2026", "2026-11-07")).toBe(false);
+  });
   it("recognises the day however it is written", () => {
     expect(statesRaceDay("Sobota 7.11.2026", "2026-11-07")).toBe(true);
     expect(statesRaceDay("07. 11. 2026", "2026-11-07")).toBe(true);

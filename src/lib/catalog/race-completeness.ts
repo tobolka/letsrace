@@ -61,9 +61,13 @@ export function usableHits(urls: string[], race: { name: string; start_date: str
 }
 
 /** The text gives this race's day, written as people write dates here. */
+const MONTH_WORDS = ["", "ledna|leden|januar|january|janvier|gennaio|stycznia|januára", "února|unor|februar|february|février|febbraio|lutego|februára", "března|brezna|marz|märz|march|mars|marzo|marca|marca", "dubna|april|avril|aprile|kwietnia|apríla", "května|kvetna|mai|may|maggio|maja|mája", "června|cervna|juni|june|juin|giugno|czerwca|júna", "července|cervence|juli|july|juillet|luglio|lipca|júla", "srpna|august|août|agosto|sierpnia|augusta", "září|zari|september|septembre|settembre|września|septembra", "října|rijna|oktober|october|octobre|ottobre|października|októbra", "listopadu|november|novembre|listopada|novembra", "prosince|dezember|december|décembre|dicembre|grudnia|decembra"];
+
 export function statesRaceDay(text: string, startDate: string): boolean {
   const [year, month, day] = startDate.split("-").map(Number) as [number, number, number];
   const clean = text.replace(/\s+/g, " ");
+  // "7 novembre 2026", "22. listopadu 2026", "Sonntag, 8. November"
+  if (new RegExp(`(?<!\\d)0?${day}\\.?\\s+(?:${MONTH_WORDS[month]})(?![\\p{L}])`, "iu").test(clean)) return true;
   return new RegExp(`(?<![\\d.])0?${day}\\s*[./]\\s*0?${month}(?:\\s*[./]\\s*(?:20)?${String(year).slice(2)})?(?![\\d])`).test(clean) || clean.includes(startDate);
 }
 
@@ -101,7 +105,7 @@ export function documentIsAboutRace(text: string, race: { name: string; start_da
   if (!pageIsAbout(text, race.name, race.municipality ?? null, race.start_date) && words.length < 2 && !place.length) return false;
   // The day and the name belong together: a season's table or a news page lists many races and days.
   const [, month, day] = race.start_date.split("-").map(Number) as [number, number, number];
-  const dated = new RegExp(`(?<![\\d.])0?${day}\\s*[./]\\s*0?${month}(?![\\d])`, "g");
+  const dated = new RegExp(`(?<![\\d.])0?${day}\\s*[./]\\s*0?${month}(?![\\d])|(?<!\\d)0?${day}\\.?\\s+(?:${folded(MONTH_WORDS[month]!)})(?![a-z])`, "g");
   for (const match of t.matchAll(dated)) {
     const around = t.slice(Math.max(0, match.index - 700), match.index + 700);
     if (words.every(word => around.includes(word))) return true;
