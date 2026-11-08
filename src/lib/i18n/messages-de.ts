@@ -218,6 +218,7 @@ export const de = {
   teaserBrowse: "Rennen ansehen",
   resizePanel: "Bereich anpassen",
   collapseList: "Liste ausblenden",
+  seriesWebsite: "Website der Serie",
   expandList: "Liste einblenden",
   raceMoreLoading: "Weitere Angaben werden geladen…",
   raceAbout: "Über das Rennen",

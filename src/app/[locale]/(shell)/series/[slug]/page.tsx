@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { MapPinned } from "lucide-react";
+import { ExternalLink, MapPinned } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getPublicSeriesRow, getSeriesBySlug } from "@/lib/events";
 import { BadgeCheck } from "lucide-react";
@@ -18,6 +18,7 @@ import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { todayIso } from "@/lib/date-presets";
 import { Button } from "@/components/ui/button";
+import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { SeriesSkeleton } from "./series-skeleton";
 
 /** Same as race details: CDN for a week; admin edits refresh the tag. */
@@ -124,12 +125,26 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
           title={data.series.name}
           description={words.own ?? words.generated}
         >
+          <div className="flex flex-wrap gap-2">
           <Button asChild>
             <Link href={`/${locale}?series=${data.series.slug}&dateFrom=${todayIso()}&dateTo=`}>
               <MapPinned data-icon="inline-start" />
               {t.viewOnMap}
             </Link>
           </Button>
+          {/* The organiser's own page for the series: its rules, standings and news. */}
+          {data.series.websiteUrl ? (
+            <OutboundTrackLink
+              href={data.series.websiteUrl}
+              eventName="outbound_click"
+              eventProps={{ series_slug: slug, kind: "series_website", location: "series_page", presentation: "page" }}
+              size="default"
+            >
+              <ExternalLink data-icon="inline-start" />
+              {t.seriesWebsite}
+            </OutboundTrackLink>
+          ) : null}
+          </div>
         </BrowseIntro>
         {data.series.organizerVerified ? (
           <p className="mt-3 text-xs text-muted-foreground">
