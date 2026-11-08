@@ -352,6 +352,14 @@ export type SeriesListItem = {
   eventCount: number;
   /** Legacy property name: this series has a managing organiser. */
   organizerVerified: boolean;
+  /** The organiser stated the categories, rather than our reading of the rounds. */
+  ageCategoriesConfirmed: boolean;
+  /** kids / youth / adults / mixed. */
+  audience: string | null;
+  /** Where the series was read from, of what kind, and when it was last seen there. */
+  sourceUrl: string | null;
+  sourceKind: string | null;
+  lastSeenAt: string | null;
 };
 
 function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListItem {
@@ -371,11 +379,16 @@ function mapSeriesRow(row: Record<string, unknown>, eventCount = 0): SeriesListI
     season: row.season ? String(row.season) : null,
     eventCount,
     organizerVerified: Boolean(row.organizer_verified_at),
+    ageCategoriesConfirmed: Boolean(row.age_categories_confirmed_at),
+    audience: (row.audience_hint as string) ?? null,
+    sourceUrl: publicRaceUrl(row.source_url as string | null),
+    sourceKind: (row.source_kind as string) ?? null,
+    lastSeenAt: (row.last_seen_at as string) ?? null,
   };
 }
 
 const SERIES_PUBLIC_COLUMNS =
-  "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, series_type, level, competition_type, season, organizer_verified_at";
+  "id, name, slug, short_name, description, website_url, country_code, disciplines, age_categories, age_categories_confirmed_at, audience_hint, series_type, level, competition_type, season, source_url, source_kind, last_seen_at, organizer_verified_at";
 
 export async function listSeries(filters: EventFilters = {}): Promise<SeriesListItem[]> {
   const supabase = createServerSupabase("public-web");
@@ -474,7 +487,7 @@ async function readPublicSeriesRow(slug: string) {
 }
 
 export const getPublicSeriesRow = cache((slug: string) => unstable_cache(() => readPublicSeriesRow(slug),
-  ["public-series-row-v3", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
+  ["public-series-row-v4", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
 
 /** Use an independent database read when checking what the public page shows. */
 export async function readPublicSeries(slug: string, readRow = readPublicSeriesRow): Promise<{ series: SeriesListItem; events: EventListItem[] } | null> {
@@ -503,7 +516,7 @@ export async function readPublicSeries(slug: string, readRow = readPublicSeriesR
 }
 
 export const getSeriesBySlug = cache((slug: string) => unstable_cache(() => readPublicSeries(slug, getPublicSeriesRow),
-  ["public-series-rounds-v5", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
+  ["public-series-rounds-v6", slug], { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicSeriesTag(slug)] })());
 
 export async function getEventById(id: string) {
   const supabase = createServerSupabase();

@@ -28,6 +28,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Celý detail závodu otevřeš tlačítkem, které je na kartě vždy dole, a odkazy na web, propozice i předpověď počasí jsou pohromadě v jednom seznamu.",
         "Karta na mapě i stránka závodu řadí údaje stejně a stejně vypadají, takže je najdeš na stejném místě.",
         "Stránka seriálu má tlačítko na web seriálu, pokud ho známe.",
+        "Na stránce seriálu hned vidíš, pro koho je, jaké disciplíny a úroveň má, o jaký seriál jde a odkud údaje máme.",
       ],
       en: [
         "Opening a race on the map for the first time leaves the map where it was instead of jumping elsewhere.",
@@ -36,6 +37,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "A button always at the foot of the race card opens the full race page, and the links to the website, regulations and weather forecast sit together in one list.",
         "The race card on the map and the race page order and show the details the same way, so you find them in the same place.",
         "A series page has a button to the series' own website, when we know it.",
+        "A series page shows at a glance who it is for, its disciplines and level, what kind of series it is and where our details come from.",
       ],
     },
   },

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { ExternalLink, MapPinned } from "lucide-react";
+import { Bike, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getPublicSeriesRow, getSeriesBySlug } from "@/lib/events";
 import { BadgeCheck } from "lucide-react";
@@ -20,6 +20,13 @@ import { todayIso } from "@/lib/date-presets";
 import { Button } from "@/components/ui/button";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { SeriesSkeleton } from "./series-skeleton";
+import { Badge } from "@/components/ui/badge";
+import { ExplainedBadge } from "@/components/explore/explained-badge";
+import { MetaRow } from "@/components/explore/meta-row";
+import { AGE_CATEGORIES, formatEventCategoryLabel } from "@/lib/taxonomy";
+import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { lastCheckedLabel } from "@/lib/trust";
+import { competitionTypeLabel, seriesLabels, seriesSourceKindLabel, seriesTypeLabel } from "@/lib/series-copy";
 
 /** Same as race details: CDN for a week; admin edits refresh the tag. */
 export const revalidate = 604800;
@@ -47,7 +54,7 @@ function seriesWords(data: NonNullable<Awaited<ReturnType<typeof getSeriesBySlug
   const generated = fillCopy(copy.series, { name, rounds: counted(data.events.length, "round", locale), season });
   const own = locale === "cs" ? data.series.description?.trim() || null : null;
   const description = own && `${own} ${generated}`.length <= DESCRIPTION_MAX ? `${own} ${generated}` : own ?? generated;
-  return { title: fillCopy(copy.seriesTitle, { name: named }), description, generated, own };
+  return { title: fillCopy(copy.seriesTitle, { name: named }), description, generated, own, season };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -154,6 +161,7 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
             </span>
           </p>
         ) : null}
+        <SeriesFacts series={data.series} season={words.season} locale={locale} />
         {words.own ? (
           <p className="mt-6 text-pretty text-muted-foreground">{words.generated}</p>
         ) : null}
@@ -185,5 +193,98 @@ async function Series({ locale, slug }: { locale: Locale; slug: string }) {
         )}
       </div>
     </article>
+  );
+}
+
+/**
+ * The series at a glance, in the rows a race page uses: who it is for, what
+ * kind of racing, how high it reaches, what kind of series it is and its
+ * season — then where we read it and when.
+ */
+function SeriesFacts({
+  series,
+  season,
+  locale,
+}: {
+  series: NonNullable<Awaited<ReturnType<typeof getSeriesBySlug>>>["series"];
+  /** The years its rounds are in, as the page's title gives them — not the stored season, which lags. */
+  season: string;
+  locale: Locale;
+}) {
+  const t = messages[locale];
+  const labels = seriesLabels(locale);
+  const who = formatEventCategoryLabel(
+    { audience: series.audience, ageCategories: series.ageCategories },
+    { kids: t.kids, youth: t.youth, adults: t.adults },
+    (id) => ageCategoryLabel(id, locale),
+  );
+  const whoChips = who ? who.split(" · ").filter(Boolean) : [];
+  const helpFor = (label: string) => {
+    const id = AGE_CATEGORIES.find((c) => ageCategoryLabel(c, locale) === label);
+    return id ? ageCategoryHelp(id, locale) : "";
+  };
+  const disciplines = series.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean);
+  const kind = [seriesTypeLabel(series.seriesType, locale), competitionTypeLabel(series.competitionType, locale)].filter(
+    (v): v is string => Boolean(v),
+  );
+  const checked = lastCheckedLabel(series.lastSeenAt, locale, t.trustChecked);
+  let host: string | null = null;
+  try {
+    host = series.sourceUrl ? new URL(series.sourceUrl).hostname.replace(/^www\./, "") : null;
+  } catch {}
+  const sourceKind = seriesSourceKindLabel(series.sourceKind, locale);
+
+  return (
+    <div className="mt-6 flex flex-col gap-2">
+      {whoChips.length ? (
+        <MetaRow icon={<UserRound />} label={t.audience}>
+          {whoChips.map((chip) => (
+            <ExplainedBadge key={chip} explanation={helpFor(chip)} className={series.ageCategoriesConfirmed ? undefined : "border-dashed"}>
+              {chip}
+            </ExplainedBadge>
+          ))}
+          {series.ageCategoriesConfirmed ? null : (
+            <span className="text-xs text-muted-foreground" title={t.ageUnconfirmedHelp}>
+              {t.ageGuessed}
+            </span>
+          )}
+        </MetaRow>
+      ) : null}
+      {disciplines.length ? (
+        <MetaRow icon={<Bike />} label={t.formatLabel}>
+          {disciplines.map((d) => (
+            <Badge key={d} variant="outline">{d}</Badge>
+          ))}
+        </MetaRow>
+      ) : null}
+      {series.level ? (
+        <MetaRow icon={<ChartNoAxesColumnIncreasing />} label={t.levelFilter}>
+          <Badge variant="outline">{raceLevelLabel(series.level, locale)}</Badge>
+        </MetaRow>
+      ) : null}
+      {kind.length || season ? (
+        <MetaRow icon={<Trophy />} label={labels.kind}>
+          {kind.map((k) => (
+            <Badge key={k} variant="outline">{k}</Badge>
+          ))}
+          {season ? <span className="text-sm text-muted-foreground">{labels.season.replace("{season}", season)}</span> : null}
+        </MetaRow>
+      ) : null}
+      {host || checked ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          {host && series.sourceUrl ? (
+            <>
+              {labels.source}:{" "}
+              <a href={series.sourceUrl} target="_blank" rel="nofollow noopener noreferrer" className="underline underline-offset-4">
+                {host}
+              </a>
+              {sourceKind ? ` (${sourceKind})` : null}
+            </>
+          ) : null}
+          {host && checked ? <span aria-hidden> · </span> : null}
+          {checked ? <time dateTime={series.lastSeenAt ?? undefined}>{checked}</time> : null}
+        </p>
+      ) : null}
+    </div>
   );
 }
