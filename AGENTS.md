@@ -22,6 +22,16 @@ When an organiser announces a new annual edition, use the latest verified editio
 
 Operational guidance and limits of the current automation: `docs/annual-editions.md`.
 
+## Adding or updating a race: finish it from its regulations
+
+A race is not done when it has a name, a date and a place. Whenever an agent adds a race or updates one, it also looks for the race's regulations (propozice, Ausschreibung, regulamin, regolamento, rozpis, race guide) and fills in what they say, through the same checks as everything else (`scripts/read-race.ts`, `verifyPracticalExtraction`).
+
+- Look where the race came from first: its own page, the series' page, the federation's page (rad-net, federciclismo, pzkol), sign-up portals (maraton.cz, sportsoft, wynikizawodow) and the organiser's site. Search the web only after that.
+- Take every detail the regulations give: organiser and contact, venue, timetable, fees, categories with birth years, routes, parking, and the links to regulations, sign-up and results. Quote the document; never guess or carry last year's values over as this year's.
+- If a source has a fixed shape that no reader handles yet, write the reader (`src/lib/catalog/` with a test, a script in `scripts/`, and a daily step in `scripts/local-cycle.cjs`), so the next thousand races from it need no one. Read a few by hand first to learn the shape.
+- If nothing is published yet, say so and leave the race to the daily readers; do not fill gaps with assumptions.
+- Details read from documents follow `docs/race-completion-system.md`.
+
 ## Release notes: explain every change in human words
 
 Every change that goes live gets judged for the riders and parents who use Let's Race, and written up in `src/lib/release-notes.ts`, which the About page shows under "What's new". Newest day first, one entry per day.
