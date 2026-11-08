@@ -38,6 +38,13 @@ export function GET() {
     "User-agent: Reflectionbot",
     "Disallow: /",
     "",
+    // SEO tools and a shopping search read thousands of race pages a day and send no riders.
+    "User-agent: SemrushBot",
+    "Disallow: /",
+    "",
+    "User-agent: Amzn-SearchBot",
+    "Disallow: /",
+    "",
     // A comment, not a directive: "Agentmap:" is not part of the robots.txt
     // grammar and validators read it as a malformed file. The catalogue is
     // already announced properly by the Link headers and under /.well-known.
