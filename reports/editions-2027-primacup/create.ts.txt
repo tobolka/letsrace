@@ -1,0 +1,46 @@
+// Prima CUP 2027 dates from the organiser's poster, sent by the owner on 2026-11-08 (poster saved beside this file).
+// Each 2027 edition builds on its 2026 record: name, place, series, disciplines, audience and age bands as last year.
+// Run: node scripts/with-node.cjs ./node_modules/tsx/dist/cli.mjs <copy as .ts> [--apply]
+import { readFileSync, writeFileSync } from "node:fs"; import { parse } from "dotenv";
+const ROUNDS: { prev: string; name: string; start: string; end?: string; quote: string; website?: string }[] = [
+  { prev: "02215feb-73f4-4b70-b358-b8829df7a417", name: "Prima CUP Hradec Králové", start: "2027-04-10", quote: "10. DUBNA 2027 HRADEC KRÁLOVÉ" },
+  { prev: "841ad983-6f8e-4ff1-9c98-941ef7897474", name: "Prima CUP Harrachov – Jakuszyce", start: "2027-05-08", quote: "8. KVĚTNA 2027 HARRACHOV-JAKUSZYCE SKLARSKA POREBA" },
+  { prev: "1b656c42-e805-407c-9eed-2a9dd6a9ee50", name: "Prima CUP Dolní Morava", start: "2027-06-05", quote: "5. ČERVNA 2027 DOLNÍ MORAVA" },
+  { prev: "10707dda-ea1d-4d14-a26e-c68dd3c71d5f", name: "Prima CUP Sázava", start: "2027-06-19", quote: "19. ČERVNA 2027 SÁZAVA" },
+  { prev: "66f6338c-7d1a-4b30-a208-0d38a0629c3d", name: "Kupkolo MTB Trilogy", start: "2027-07-03", end: "2027-07-05", quote: "3-5. ČERVENCE 2027 KUPKOLO MTB TRILOGY TEPLICE NAD METUJI", website: "https://www.mtbtrilogy.com" },
+  { prev: "945513da-78ac-4843-836c-5f604204d85f", name: "Unikovo Českopetrovická koolna", start: "2027-09-04", quote: "4. ZÁŘÍ 2027 UNIKOVO ČESKOPETROVICKÁ KOOLNA" },
+  { prev: "52665b4c-96cd-4bb5-8962-5a745210e345", name: "Prima CUP Valtice", start: "2027-09-18", quote: "18. ZÁŘÍ 2027 VALTICE - CELKOVÉ VYHLÁŠENÍ-NEBODOVANÉ" },
+  { prev: "1074ffcc-e59f-4794-b544-74f676c132de", name: "Gočárovy schody", start: "2027-09-28", quote: "28.ZÁŘÍ 2027 GOČÁROVY SCHODY - NEBODOVANÝ ZÁVOD" },
+];
+const SOURCE = "https://www.iprimacup.cz/";
+(async () => {
+  for (const [k, v] of Object.entries(parse(readFileSync(".env.local", "utf8")))) process.env[k] ??= v;
+  const apply = process.argv.includes("--apply");
+  const { createServerSupabase } = await import("../../src/lib/supabase/server");
+  const { upsertManualEvent } = await import("../../src/lib/events");
+  const db = createServerSupabase();
+  const done: unknown[] = [];
+  for (const round of ROUNDS) {
+    const { data: prev, error } = await db.from("events").select("id,name,start_date,disciplines,audience,series_id,age_categories,event_type,level,location:locations(name,municipality,country_code,lat,lng)").eq("id", round.prev).single()
+      .returns<{ id: string; name: string; start_date: string; disciplines: string[]; audience: string; series_id: string | null; age_categories: string[] | null; event_type: string | null; level: string | null; location: { name: string; municipality: string | null; country_code: string; lat: number | null; lng: number | null } }>();
+    if (error || !prev) throw Error(`${round.name}: previous edition not found`);
+    const { data: twins } = await db.from("events").select("id,name,start_date,visibility").gte("start_date", "2027-01-01").lte("start_date", "2027-12-31").eq("series_id", prev.series_id ?? "00000000-0000-0000-0000-000000000000");
+    const { data: same } = await db.from("events").select("id,name,start_date,visibility,series_id").eq("name", round.name).eq("start_date", round.start);
+    const clash = (twins ?? []).find(row => row.start_date === round.start) ?? (same ?? []).find(row => row.series_id);
+    const partial = (same ?? []).find(row => !row.series_id);
+    console.log(`${round.start} ${round.name} <- ${prev.start_date} ${prev.name} | ${prev.location.municipality} | ${clash ? `UŽ JE: ${clash.name}` : "nový"}`);
+    if (clash || !apply) continue;
+    // The admin path ends by refreshing the site's cache, which only works inside the site: the race is saved by then.
+    const id = partial?.id ?? await upsertManualEvent({ name: round.name, startDate: round.start, ...(round.end ? { endDate: round.end } : {}), placeName: prev.location.name, municipality: prev.location.municipality ?? undefined, countryCode: prev.location.country_code, lat: prev.location.lat ?? undefined, lng: prev.location.lng ?? undefined, disciplines: prev.disciplines as never, audience: prev.audience as never, websiteUrl: round.website ?? SOURCE, status: "scheduled", visibility: "public" }).catch(async (error: Error) => {
+      if (!/static generation store missing/.test(error.message)) throw error;
+      const { data: saved } = await db.from("events").select("id").eq("name", round.name).eq("start_date", round.start).single();
+      return saved!.id as string;
+    });
+    const { error: updateError } = await db.from("events").update({ series_id: prev.series_id, age_categories: prev.age_categories, age_confidence: "previous", event_type: prev.event_type, level: prev.level } as never).eq("id", id);
+    if (updateError) throw Error(updateError.message);
+    const { error: factError } = await db.from("event_facts").insert({ event_id: id, field: "start_date", value: round.end ? { start: round.start, end: round.end } : round.start, previous: null, source_url: SOURCE, quote: round.quote, method: "owner_supplied_poster", version: "prima-cup-2027-poster", status: "active" } as never);
+    if (factError) console.log(`  fakt se neuložil: ${factError.message}`);
+    done.push({ id, name: round.name, start: round.start, previousEdition: prev.id });
+  }
+  if (apply) writeFileSync("reports/editions-2027-primacup/created.json", JSON.stringify(done, null, 1));
+})().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

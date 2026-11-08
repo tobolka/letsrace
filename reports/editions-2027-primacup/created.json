@@ -1,0 +1,50 @@
+[
+ {
+  "id": "415932e3-6d8f-47b2-a762-b263ab46b406",
+  "name": "Prima CUP Hradec Králové",
+  "start": "2027-04-10",
+  "previousEdition": "02215feb-73f4-4b70-b358-b8829df7a417"
+ },
+ {
+  "id": "b63ade08-cf49-402a-a47e-0719a136c12d",
+  "name": "Prima CUP Harrachov – Jakuszyce",
+  "start": "2027-05-08",
+  "previousEdition": "841ad983-6f8e-4ff1-9c98-941ef7897474"
+ },
+ {
+  "id": "1759a224-8bf4-4f0f-abfd-44ea0a8d7be2",
+  "name": "Prima CUP Dolní Morava",
+  "start": "2027-06-05",
+  "previousEdition": "1b656c42-e805-407c-9eed-2a9dd6a9ee50"
+ },
+ {
+  "id": "ae89a449-289f-4cc9-bb2f-344372543822",
+  "name": "Prima CUP Sázava",
+  "start": "2027-06-19",
+  "previousEdition": "10707dda-ea1d-4d14-a26e-c68dd3c71d5f"
+ },
+ {
+  "id": "69839b64-869b-4055-ba67-470d5b37241f",
+  "name": "Kupkolo MTB Trilogy",
+  "start": "2027-07-03",
+  "previousEdition": "66f6338c-7d1a-4b30-a208-0d38a0629c3d"
+ },
+ {
+  "id": "097c8d01-5c65-4b84-a8a5-42445c86a9c2",
+  "name": "Unikovo Českopetrovická koolna",
+  "start": "2027-09-04",
+  "previousEdition": "945513da-78ac-4843-836c-5f604204d85f"
+ },
+ {
+  "id": "4a3f6b27-ed6c-4824-aee1-578b4722c3a9",
+  "name": "Prima CUP Valtice",
+  "start": "2027-09-18",
+  "previousEdition": "52665b4c-96cd-4bb5-8962-5a745210e345"
+ },
+ {
+  "id": "bcb1c5c1-3d8f-44d4-a34d-9f0e92b2313b",
+  "name": "Gočárovy schody",
+  "start": "2027-09-28",
+  "previousEdition": "1074ffcc-e59f-4794-b544-74f676c132de"
+ }
+]
