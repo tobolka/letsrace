@@ -7,12 +7,15 @@ import { track } from "@/lib/analytics";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
+import { CardSection, RaceMoreDetails, type CardLink } from "@/components/explore/race-more-details";
+import { RaceWeather, windyLabel, windyUrl } from "@/components/race/race-weather";
 import { SaveRaceButton } from "@/components/race/save-race-button";
 import { Button } from "@/components/ui/button";
 import { eventPagePath } from "@/lib/event-url";
 import type { EventListItem } from "@/lib/events";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
+import { localePath } from "@/lib/localized-paths";
 import { cn } from "@/lib/utils";
 
 /**
@@ -24,6 +27,11 @@ import { cn } from "@/lib/utils";
  * the full page — the shape a maps app gives a place, so four small things
  * are not crowded against the one big one. The organiser's other pages are
  * rows of a list at the foot, not more buttons in the pile.
+ *
+ * The desktop's floating card is the same body (`variant="card"`): there the
+ * full page has a button of its own at the card's foot, so the tiles are
+ * three, and the weather and the series' page join the facts. Under them both
+ * comes the rest of what the race page knows, as it arrives.
  */
 export function EmbeddedBody({
   event,
@@ -44,7 +52,9 @@ export function EmbeddedBody({
   trustText,
   trustLow,
   checkedText,
+  variant = "sheet",
 }: {
+  variant?: "sheet" | "card";
   event: EventListItem;
   locale: string;
   placeLabel: string;
@@ -71,11 +81,33 @@ export function EmbeddedBody({
     (event.endDate && event.endDate !== event.startDate
       ? ` – ${format(parseISO(event.endDate), "d. MMMM", { locale: df })}`
       : "");
+  const card = variant === "card";
+  // The forecast sits with the facts on the desktop card; the phone keeps it
+  // for the race page, where it has room for the hour-by-hour chart.
+  const weatherAt =
+    card &&
+    event.location?.lat != null &&
+    event.location.lng != null &&
+    event.status !== "cancelled" &&
+    (event.endDate ?? event.startDate) >= new Date().toISOString().slice(0, 10)
+      ? { lat: event.location.lat, lng: event.location.lng }
+      : null;
+  // Every way off the card, one list, one look: the organiser's pages, the
+  // series' page, the forecast.
+  const links: CardLink[] = [
+    ...secondaryLinks.map((link) => ({ ...link, external: true })),
+    ...(event.series
+      ? [{ href: localePath(locale, `series/${event.series.slug}`), label: event.series.name, kind: "series", external: false }]
+      : []),
+    ...(weatherAt ? [{ href: windyUrl(weatherAt.lat, weatherAt.lng), label: windyLabel(locale), kind: "weather", external: true }] : []),
+  ];
   const tile =
     "flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-xl bg-muted/70 px-1 text-xs font-medium text-foreground touch-manipulation transition-colors active:bg-muted disabled:opacity-60 [&_svg]:size-5 [&>span]:max-w-full [&>span]:truncate";
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
+      {/* When and where, the way in, and what else you can do with it. */}
+      <div className="flex flex-col gap-3 pb-4">
       <div className="flex flex-col gap-1">
         <p className="flex items-center gap-2 text-base font-medium">
           <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -109,7 +141,7 @@ export function EmbeddedBody({
         <p className="text-sm text-muted-foreground">{t.noOnlineEntry}</p>
       )}
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className={cn("grid gap-2", card ? "grid-cols-3" : "grid-cols-4")}>
         {directionsUrl ? (
           <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile} onClick={() => trackEnter("directions")}>
             <Navigation aria-hidden />
@@ -134,21 +166,25 @@ export function EmbeddedBody({
           {linkCopied ? <Check aria-hidden /> : <Share aria-hidden />}
           <span>{linkCopied ? t.linkCopied : t.actionShare}</span>
         </button>
-        <Link
-          href={eventPagePath(locale, event.slug)}
-          aria-label={t.openRaceDetail}
-          onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
-          className={tile}
-        >
-          <Maximize2 aria-hidden />
-          <span>{t.actionDetail}</span>
-        </Link>
+        {card ? null : (
+          <Link
+            href={eventPagePath(locale, event.slug)}
+            aria-label={t.openRaceDetail}
+            onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
+            className={tile}
+          >
+            <Maximize2 aria-hidden />
+            <span>{t.actionDetail}</span>
+          </Link>
+        )}
         <p className="sr-only" aria-live="polite">
           {linkCopied ? t.linkCopied : ""}
         </p>
       </div>
+      </div>
 
-      <div className="flex flex-col gap-1.5">
+      {/* Who it is for and what kind of race it is. */}
+      <CardSection className="flex flex-col gap-2 py-3.5">
         <MetaRow icon={<UserRound />} label={t.audience}>
           {whoChips.length > 0 ? (
             <>
@@ -192,28 +228,15 @@ export function EmbeddedBody({
             )}
           </MetaRow>
         ) : null}
-      </div>
+        {weatherAt ? (
+          <RaceWeather key={event.id} lat={weatherAt.lat} lng={weatherAt.lng} date={event.startDate} locale={locale} hideLink />
+        ) : null}
+      </CardSection>
 
-      {secondaryLinks.length > 0 ? (
-        <ul className="-mx-4 border-y">
-          {secondaryLinks.map((link) => (
-            <li key={link.href} className="border-b last:border-b-0">
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEnter(link.kind)}
-                className="flex h-12 items-center justify-between gap-3 px-4 text-sm font-medium transition-colors active:bg-accent"
-              >
-                <span className="truncate">{link.label}</span>
-                <ExternalLink className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <RaceMoreDetails event={event} locale={locale} links={links} onLink={trackEnter} />
 
       {trustText || checkedText ? (
+        <CardSection className="pt-3">
         <p
           className={cn("text-xs leading-snug", trustLow ? "text-destructive" : "text-muted-foreground")}
           title={t.trustExplanation}
@@ -228,6 +251,7 @@ export function EmbeddedBody({
             </>
           ) : null}
         </p>
+        </CardSection>
       ) : null}
     </div>
   );

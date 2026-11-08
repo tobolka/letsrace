@@ -15,6 +15,7 @@ export interface LeafletMap {
   setView(point: [number, number], zoom: number, options?: object): this;
   fitBounds(bounds: [[number, number], [number, number]], options?: object): this;
   panInside(point: [number, number], options?: object): this;
+  panBy(offset: [number, number], options?: object): this;
   getBounds(): Bounds;
   getZoom(): number;
   getBoundsZoom(bounds: [[number, number], [number, number]], inside?: boolean, padding?: [number, number]): number;

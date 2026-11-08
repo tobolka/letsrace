@@ -1,6 +1,6 @@
 "use client";
 
-import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, ageGroupMenuHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
@@ -318,8 +318,8 @@ export function MobileFiltersSheet({
                     onClick={() => onCategory(opt.id)}
                   >
                     {ageCategoryLabel(opt.id, locale)}
-                    {ageGroupHint(opt.id, locale) ? (
-                      <span className="ml-1 text-xs opacity-60">{ageGroupHint(opt.id, locale)}</span>
+                    {ageGroupMenuHint(opt.id, locale) ? (
+                      <span className="ml-1 text-xs opacity-60">{ageGroupMenuHint(opt.id, locale)}</span>
                     ) : null}
                   </Chip>
                 ))}

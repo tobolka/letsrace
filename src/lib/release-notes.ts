@@ -19,6 +19,25 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-08",
+    items: {
+      cs: [
+        "Když na mapě poprvé otevřeš závod, mapa zůstane, kde byla, a neodskočí jinam.",
+        "Seznam závodů vedle mapy schováš tlačítkem u loga; zůstane z něj malá lišta s filtry, ze které ho zase otevřeš.",
+        "Karta závodu na mapě je širší a ukáže víc: program, startovné, kategorie, tratě, areál a pořadatele, když je pořadatel uvádí.",
+        "Celý detail závodu otevřeš tlačítkem, které je na kartě vždy dole, a odkazy na web, propozice i předpověď počasí jsou pohromadě v jednom seznamu.",
+        "Karta na mapě i stránka závodu řadí údaje stejně a stejně vypadají, takže je najdeš na stejném místě.",
+      ],
+      en: [
+        "Opening a race on the map for the first time leaves the map where it was instead of jumping elsewhere.",
+        "The race list beside the map hides with the button by the logo, leaving a small bar with the filters that brings it back.",
+        "The race card on the map is wider and shows more: the schedule, fees, categories, routes, venue and organiser, when the organiser gives them.",
+        "A button always at the foot of the race card opens the full race page, and the links to the website, regulations and weather forecast sit together in one list.",
+        "The race card on the map and the race page order and show the details the same way, so you find them in the same place.",
+      ],
+    },
+  },
+  {
     date: "2026-11-06",
     items: {
       cs: [

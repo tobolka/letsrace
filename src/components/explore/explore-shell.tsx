@@ -273,15 +273,22 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     if (next === "distance" && !distanceEnabled) setLocateSeq((n) => n + 1);
   }
 
+  /*
+   * Only a race the page was opened with is a place to fly to. The map takes
+   * the first focus it is given and zooms to the race's region, so a race
+   * picked later — a pin or a row — was treated the same way the first time:
+   * the camera jumped out to a 200 km view and the list was fetched again.
+   */
+  const [landingSlug] = useState(filters.e);
   const initialFocus = useMemo(() => {
-    if (!filters.e) return null;
+    if (!filters.e || filters.e !== landingSlug) return null;
     const ev = events.find((e) => e.slug === filters.e);
     if (ev?.location?.lat == null || ev.location.lng == null) return null;
     const lng = Number(ev.location.lng);
     const lat = Number(ev.location.lat);
     if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
     return { lng, lat };
-  }, [filters.e, events]);
+  }, [filters.e, events, landingSlug]);
 
   const filterActions = useMapFilterActions({
     filters,
@@ -324,9 +331,10 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     listSnap,
     detailSnap,
     viewportH,
+    listCollapsed: panel.collapsed,
   });
 
-  function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean; wide?: boolean }) {
+  function renderFilterBar(opts?: { hideSearch?: boolean; allFilters?: boolean; wide?: boolean; compact?: boolean }) {
     return (
       <MapFilterBar
         key={filterBarReset}
@@ -343,6 +351,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         hideSearch={opts?.hideSearch}
         allFilters={opts?.allFilters}
         wide={opts?.wide}
+        compact={opts?.compact}
         onPreset={setDateRange}
         onCategory={toggleCategory}
         onDiscipline={toggleDiscipline}
@@ -390,7 +399,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         className="absolute inset-y-0 right-0 left-0 md:left-[var(--map-panel-width)]"
         style={
           {
-            "--map-panel-width": `${panel.width}px`,
+            "--map-panel-width": `${panel.mapFull ? 0 : panel.width}px`,
             "--map-sheet-inset": `${mapPadding.bottom}px`,
           } as CSSProperties
         }
@@ -459,6 +468,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         locale={locale}
         messages={messages}
         filterBar={renderFilterBar()}
+        compactFilterBar={panel.collapsed ? renderFilterBar({ compact: true }) : null}
         listRef={listRef}
         toolbar={{
           count: listSettled ? visibleEvents.length : null,

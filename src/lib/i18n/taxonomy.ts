@@ -87,6 +87,15 @@ export function ageGroupHint(id: string, locale: string): string {
 }
 
 /** Age range for a chip tooltip. One short line, no essay. */
+/**
+ * The hint beside a category in the filter menus. Elite has none there: it
+ * has no age range of its own, and the sentence saying so crowded the row.
+ * Its tooltip on a race (`ageCategoryHelp`) still says it.
+ */
+export function ageGroupMenuHint(id: string, locale: string): string {
+  return id === "elite" ? "" : ageGroupHint(id, locale);
+}
+
 export function ageCategoryHelp(id: string, locale: string): string {
   return ageBandHint(id, locale) || ageGroupHint(id, locale);
 }

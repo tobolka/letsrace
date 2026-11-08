@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * is on screen immediately and the races drop into it when they arrive.
  *
  * Every measurement here is copied from the component it stands in for, not
- * approximated: the same h-12 header, the same md wordmark, the same 400px
+ * approximated: the same h-12 header, the same md wordmark, the same 360px
  * panel against the same edge, the same 90px list rows. A skeleton that is nearly
  * right is worse than none — the swap becomes a flinch.
  */
@@ -26,7 +26,7 @@ export default function Loading() {
 
       {/* Desktop: the panel Card, mirroring ExploreShell's own chrome. */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-20 hidden md:flex">
-        <div className="flex h-full w-[400px] flex-col overflow-hidden border-r bg-card">
+        <div className="flex h-full w-[360px] flex-col overflow-hidden border-r bg-card">
           <div className="flex h-12 shrink-0 items-center border-b px-4">
             <BrandMark size="xs" />
           </div>

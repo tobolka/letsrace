@@ -1,10 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 
-const DEFAULT_PANEL_W = 400;
-const MIN_PANEL_W = 340;
+/** A little narrower than it was, so the race card beside it can be wider. */
+export const DEFAULT_PANEL_W = 360;
+const MIN_PANEL_W = 320;
 const MAX_PANEL_W = 560;
+/** The race card floating over the map, beside the panel. */
+export const RACE_CARD_W = 384;
+/** How long the panel takes to slide in or out; the map waits for it. */
+export const PANEL_SLIDE_MS = 240;
+const COLLAPSED_KEY = "letsrace:map-list-collapsed";
+const COLLAPSED_EVENT = "letsrace:map-list-collapsed";
+/** The choice made on this page, for a browser that will not store it. */
+let collapsedOverride: boolean | null = null;
+
+function readCollapsed(): boolean {
+  if (collapsedOverride != null) return collapsedOverride;
+  try {
+    return window.localStorage.getItem(COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function subscribeCollapsed(onChange: () => void) {
+  window.addEventListener(COLLAPSED_EVENT, onChange);
+  return () => window.removeEventListener(COLLAPSED_EVENT, onChange);
+}
 
 /**
  * How wide the panel may be dragged. The full-width list is its own page now
@@ -12,7 +35,7 @@ const MAX_PANEL_W = 560;
  */
 function panelMaxWidth() {
   const stage = document.getElementById("shell-stage");
-  const room = (stage?.clientWidth ?? window.innerWidth) - 12 - 344;
+  const room = (stage?.clientWidth ?? window.innerWidth) - 12 - (RACE_CARD_W + 24);
   return Math.max(DEFAULT_PANEL_W, Math.min(MAX_PANEL_W, room));
 }
 
@@ -26,12 +49,46 @@ export type PanelResize = {
   /** The live width while dragging, null otherwise. */
   dragWidth: number | null;
   setDragging: (px: number | null) => void;
+  /** The list is put away, leaving a small bar over the map. */
+  collapsed: boolean;
+  setCollapsed: (next: boolean) => void;
+  /**
+   * Whether the map reaches under the panel's place. It follows `collapsed`,
+   * except that on the way back it waits for the panel to finish sliding in:
+   * the panel slides over a map that is still whole, and only then does the
+   * map make room, so no bare strip shows behind the moving edge.
+   */
+  mapFull: boolean;
 };
 
 /** The side panel's width: kept while the page is open, live while its edge is dragged. */
 export function usePanelResize(): PanelResize {
   const [chosen, setChosen] = useState(DEFAULT_PANEL_W);
   const [dragWidth, setDragging] = useState<number | null>(null);
+  // Remembered per browser: someone who likes the map whole gets it whole.
+  const collapsed = useSyncExternalStore(subscribeCollapsed, readCollapsed, () => false);
+  // True for the moment the panel slides back in over a still-whole map.
+  const [settling, setSettling] = useState(false);
+  const settleTimer = useRef(0);
+
+  function setCollapsed(next: boolean) {
+    window.clearTimeout(settleTimer.current);
+    const store = () => {
+      try {
+        window.localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
+      } catch {}
+      collapsedOverride = next;
+      window.dispatchEvent(new Event(COLLAPSED_EVENT));
+    };
+    // The panel slides; on the way back the map waits for it, so no bare
+    // strip shows behind the moving edge.
+    if (!next) {
+      setSettling(true);
+      settleTimer.current = window.setTimeout(() => setSettling(false), PANEL_SLIDE_MS);
+    } else setSettling(false);
+    store();
+  }
+
   return {
     width: dragWidth ?? chosen,
     dragging: dragWidth != null,
@@ -39,6 +96,9 @@ export function usePanelResize(): PanelResize {
     setChosen,
     dragWidth,
     setDragging,
+    collapsed,
+    setCollapsed,
+    mapFull: collapsed || settling,
   };
 }
 

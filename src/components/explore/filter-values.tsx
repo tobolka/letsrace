@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { countryDisplayName } from "@/lib/geo/europe";
 import type { Messages } from "@/lib/i18n/messages";
-import { ageCategoryLabel, ageGroupHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
+import { ageCategoryLabel, ageGroupMenuHint, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { familyColor } from "@/lib/map-visuals";
 import { AGE_CATEGORY_FILTERS, DISCIPLINE_TREE, RACE_LEVELS } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -100,7 +100,7 @@ export function FilterValues(props: FilterValuesProps) {
           >
             {ageCategoryLabel(opt.id, locale)}
             {/* Which classes the group means, in the organisers' terms. */}
-            <span className="ml-auto pl-4 text-right text-xs whitespace-nowrap tabular-nums text-muted-foreground">{ageGroupHint(opt.id, locale)}</span>
+            <span className="ml-auto pl-4 text-right text-xs whitespace-nowrap tabular-nums text-muted-foreground">{ageGroupMenuHint(opt.id, locale)}</span>
           </DropdownMenuCheckboxItem>
         ))}
       </>

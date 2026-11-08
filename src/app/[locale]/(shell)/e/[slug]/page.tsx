@@ -32,6 +32,8 @@ import { dateFnsLocale } from "@/lib/i18n/dates";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { PracticalRaceFacts } from "@/components/race/practical-race-facts";
+import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
+import { DOCUMENT_KINDS } from "@/lib/race-fact-copy";
 import { RacePageView } from "@/components/analytics/race-page-view";
 import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
@@ -166,6 +168,15 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     !event.registrationUrl && !event.websiteUrl && event.listingUrl ? { href: event.listingUrl, label: t.calendarListing, kind: "listing" } : null,
   ].filter((l): l is { href: string; label: string; kind: string } => Boolean(l))
     .filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);
+  // The first is the big button; the rest, with the regulations' other
+  // documents, are the list of links under it.
+  const documentNames = DOCUMENT_KINDS[locale];
+  const pageLinks: RaceLink[] = [
+    ...actionLinks.slice(1).map((l) => ({ ...l, external: true })),
+    ...(event.practicalDetails?.documents?.value ?? [])
+      .filter((doc) => !actionLinks.some((l) => l.href === doc.url))
+      .map((doc) => ({ href: doc.url, label: documentNames[doc.kind], kind: doc.kind, external: true })),
+  ].filter((l, i, all) => all.findIndex((x) => x.href === l.href) === i);
 
   // What links this page into the rest of the site: its series' other rounds,
   // similar races nearby, and the hub for its kind of racing.
@@ -323,7 +334,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
-          {actionLinks.map((link, index) => (
+          {actionLinks.slice(0, 1).map((link, index) => (
             <OutboundTrackLink
               key={link.href}
               href={link.href}
@@ -345,6 +356,12 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </Button>
         </div>
         {actionLinks.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">{t.noOnlineEntry}</p> : null}
+        {/* The organiser's other pages and documents: one list, the same rows as the map's race card. */}
+        <RaceLinkRows
+          links={pageLinks}
+          analytics={{ raceId: event.id, slug: event.slug, location: "race_page", presentation: "page" }}
+          className="mt-4 divide-y divide-border/60 overflow-hidden rounded-xl border"
+        />
         <p className="mt-2 text-xs text-muted-foreground">
           {event.organizerVerified ? (
             // Ownership is not a claim that every displayed fact was checked.
@@ -365,6 +382,8 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
         </p>
 
+        <PracticalRaceFacts event={event} locale={locale} />
+
         <section className="mt-10">
           <h2 className="mb-3 text-lg font-semibold">{rc.about}</h2>
           {/* The race at a glance — routes and the youngest category — before the account of it. */}
@@ -375,7 +394,6 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </p>
         </section>
 
-        <PracticalRaceFacts event={event} locale={locale} />
 
         {categories.length > 0 ? (
           // The routes and classes as the organiser published them, each with

@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useMemo } from "react";
 import type { MapPadding } from "@/components/map/types";
+import { RACE_CARD_W } from "@/components/explore/panel-resize";
 
 /**
  * How much of the map the interface covers, as the camera should treat it.
@@ -19,16 +20,18 @@ export function mapPaddingFor(opts: {
   /** The sheet's snap: a share of the screen (0–1) or a CSS length in px. */
   snap: number | string;
   viewportH: number;
+  /** Desktop: the list is put away and only its small bar floats top-left. */
+  listCollapsed?: boolean;
 }): MapPadding {
-  const { isDesktop, hasCard, snap, viewportH } = opts;
+  const { isDesktop, hasCard, snap, viewportH, listCollapsed = false } = opts;
   if (!isDesktop) {
     const snapPx =
       typeof snap === "number" ? viewportH * snap : Number.parseFloat(snap) || viewportH * 0.5;
     const open = Math.round(Math.min(snapPx, viewportH * 0.55, 640));
     return { top: 16, right: 12, bottom: open + 12, left: 12 };
   }
-  const detailW = hasCard ? 320 + 12 : 0;
-  return { top: 16, right: 56, bottom: 56, left: detailW + 48 };
+  const detailW = hasCard ? RACE_CARD_W + 12 : 0;
+  return { top: listCollapsed && !hasCard ? 72 : 16, right: 56, bottom: 56, left: detailW + 48 };
 }
 
 /**
@@ -46,13 +49,14 @@ export function useMapPadding(opts: {
   listSnap: number | string;
   detailSnap: number;
   viewportH: number;
+  listCollapsed?: boolean;
 }): MapPadding {
-  const { isDesktop, hasCard, viewportH } = opts;
+  const { isDesktop, hasCard, viewportH, listCollapsed } = opts;
   const listSnap = useDeferredValue(opts.listSnap);
   const detailSnap = useDeferredValue(opts.detailSnap);
   const snap = hasCard ? detailSnap : listSnap;
   return useMemo(
-    () => mapPaddingFor({ isDesktop, hasCard, snap, viewportH }),
-    [isDesktop, hasCard, snap, viewportH],
+    () => mapPaddingFor({ isDesktop, hasCard, snap, viewportH, listCollapsed }),
+    [isDesktop, hasCard, snap, viewportH, listCollapsed],
   );
 }

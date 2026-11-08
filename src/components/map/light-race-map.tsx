@@ -237,11 +237,22 @@ export function LightRaceMap(props: RaceMapProps) {
       }
       draw(); report(); setEpoch((n) => n + 1);
       void loadCities().then((data) => { if (!disposed) { cities = data; draw(); } }).catch(() => {});
+      // Where the map's left edge sits on screen. It moves when the list beside
+      // the map is put away or brought back, and when its edge is dragged.
+      let lastLeft = el.getBoundingClientRect().left;
       const observer = new ResizeObserver(([entry]) => {
         // A sheet or responsive transition can temporarily hide the container.
         // Preserve the camera rather than publishing a zero-area URL/fetch.
         if (!entry || entry.contentRect.width <= 0 || entry.contentRect.height <= 0) return;
-        map.invalidateSize({ pan: false }); report();
+        const left = el.getBoundingClientRect().left;
+        const shift = Math.round(left - lastLeft);
+        lastLeft = left;
+        map.invalidateSize({ pan: false });
+        // The map pans by as much as its edge moved, so the races stay where
+        // they were on screen instead of sliding along with the edge. It does
+        // not zoom: a map that rescales whenever the list opens is unsettling.
+        if (shift) map.panBy([shift, 0], { animate: false });
+        report();
       });
       observer.observe(el);
       cleanup = () => {

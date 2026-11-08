@@ -22,6 +22,11 @@ describe("mapPaddingFor", () => {
     expect(mapPaddingFor({ isDesktop: true, hasCard: false, snap: 0.5, viewportH: 800 })).toEqual({
       top: 16, right: 56, bottom: 56, left: 48,
     });
-    expect(mapPaddingFor({ isDesktop: true, hasCard: true, snap: 0.5, viewportH: 800 }).left).toBe(48 + 332);
+    expect(mapPaddingFor({ isDesktop: true, hasCard: true, snap: 0.5, viewportH: 800 }).left).toBe(48 + 384 + 12);
+  });
+
+  it("with the list put away, keeps races out from under its small bar", () => {
+    expect(mapPaddingFor({ isDesktop: true, hasCard: false, snap: 0.5, viewportH: 800, listCollapsed: true }).top).toBe(72);
+    expect(mapPaddingFor({ isDesktop: true, hasCard: true, snap: 0.5, viewportH: 800, listCollapsed: true }).top).toBe(16);
   });
 });

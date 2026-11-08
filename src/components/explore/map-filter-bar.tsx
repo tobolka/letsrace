@@ -62,6 +62,7 @@ export function MapFilterBar({
   hideSearch = false,
   allFilters = false,
   wide = false,
+  compact = false,
   hideDate = false,
   extra,
   menuExtra,
@@ -94,6 +95,11 @@ export function MapFilterBar({
   allFilters?: boolean;
   /** Full-width list mode: every filter pinned, chips wrap instead of scroll. */
   wide?: boolean;
+  /**
+   * The bar left over the map when the list is put away: as wide as its
+   * filters, growing sideways with each one rather than onto a second line.
+   */
+  compact?: boolean;
   /** The schedule picks its dates by month, so it has no date control. */
   hideDate?: boolean;
   /** Only races whose stated categories fit; unconfirmed ones hidden. */
@@ -156,13 +162,15 @@ export function MapFilterBar({
     <div
       className={cn(
         "pointer-events-auto flex items-center gap-1.5",
-        pinAll && !wide ? "w-max" : "w-full",
+        (pinAll && !wide) || compact ? "w-max max-w-full" : "w-full",
       )}
     >
       <div
         className={cn(
           "flex items-center gap-1.5",
-          wide
+          compact
+            ? "min-w-0 flex-nowrap overflow-x-auto [scrollbar-width:none]"
+            : wide
             ? "min-w-0 flex-1 flex-wrap"
             : pinAll
             ? "flex-nowrap"
@@ -206,7 +214,11 @@ export function MapFilterBar({
                 <DropdownMenuContent
                   align="start"
                   className={cn(
-                    "max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-gutter:stable]",
+                    // No scrollbar column kept free when the list does not
+                    // scroll: it read as a wide margin on the right. Only the
+                    // series, whose counts line up at the edge, keep it.
+                    "max-h-[min(60dvh,20rem)] overflow-y-auto [scrollbar-width:thin]",
+                    id === "series" && "[scrollbar-gutter:stable]",
                     id === "series" ? "w-72 max-w-[calc(100vw-1.5rem)]" : "w-56",
                   )}
                   collisionPadding={12}
@@ -265,7 +277,8 @@ export function MapFilterBar({
                       <DropdownMenuSubContent
                         className={cn(
                           // The scrollbar took the column the counts sit in.
-                          "max-h-80 overflow-y-auto [scrollbar-gutter:stable]",
+                          "max-h-80 overflow-y-auto [scrollbar-width:thin]",
+                          id === "series" && "[scrollbar-gutter:stable]",
                           id === "series" ? "w-72" : "w-56",
                         )}
                       >

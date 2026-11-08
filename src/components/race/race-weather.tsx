@@ -222,6 +222,21 @@ function useWeather(lat: number, lng: number, date: string) {
 }
 
 type Props = { lat: number; lng: number; date: string; locale: string };
+
+/**
+ * The forecast link's name on the race card, which lists its links together:
+ * what it is for, not whose site it opens.
+ */
+export function windyLabel(locale: string): string {
+  return FORECAST_LINK[asLocale(locale)];
+}
+const FORECAST_LINK: Record<Locale, string> = {
+  cs: "Předpověď počasí",
+  sk: "Predpoveď počasia",
+  pl: "Prognoza pogody",
+  de: "Wettervorhersage",
+  en: "Weather forecast",
+};
 const WEATHER_SOURCES = {
   "open-meteo": { name: "Open-Meteo", url: "https://open-meteo.com/" },
   "visual-crossing": { name: "Visual Crossing Weather", url: "https://www.visualcrossing.com/" },
@@ -232,7 +247,10 @@ const WEATHER_SOURCES = {
  * close, and what the week around this date was like in past years. Nothing
  * at all when there is no answer — a race page does not wait for the weather.
  */
-export function RaceWeather({ lat, lng, date, locale }: Props) {
+export function RaceWeather({ lat, lng, date, locale, hideLink = false }: Props & {
+  /** The race card lists the Windy link among its other links instead. */
+  hideLink?: boolean;
+}) {
   const weather = useWeather(lat, lng, date);
   const c = copy[asLocale(locale)];
   const f = weather?.forecast;
@@ -295,7 +313,7 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
             </TooltipContent>
           </Tooltip>
         ) : null}
-        <a
+        {hideLink ? null : <a
           href={windyUrl(lat, lng)}
           target="_blank"
           rel="noopener noreferrer"
@@ -303,7 +321,7 @@ export function RaceWeather({ lat, lng, date, locale }: Props) {
         >
           {c.windy}
           <ExternalLink className="size-3" aria-hidden />
-        </a>
+        </a>}
       </span>
     </MetaRow>
   );

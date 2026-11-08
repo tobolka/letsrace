@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 
-/** Must match the desktop list panel in explore-shell (width + gap). */
-export const DEFAULT_CARD_X = 400 + 12;
+import { DEFAULT_PANEL_W, RACE_CARD_W } from "@/components/explore/panel-resize";
+
+/** Beside the desktop list panel at its default width, with a gap. */
+export const DEFAULT_CARD_X = DEFAULT_PANEL_W + 12;
 const DEFAULT_Y = 12;
 const DRAG_MARGIN = 12;
 
@@ -20,9 +22,15 @@ function stageSize(el: HTMLElement | null) {
   };
 }
 
+/** The least of the card that stays on the map; it shortens and scrolls below that. */
+const MIN_VISIBLE_H = 240;
+
 function clampPanelPos(x: number, y: number, el: HTMLElement | null) {
-  const w = el?.offsetWidth ?? 320;
-  const h = el?.offsetHeight ?? 200;
+  const w = el?.offsetWidth ?? RACE_CARD_W;
+  // Not the card's own height: a long card is as tall as the map, and clamping
+  // by it pinned the card to the top, over the list's bar. Its height follows
+  // where it sits, so only a usable piece of it has to fit below.
+  const h = Math.min(el?.offsetHeight ?? 200, MIN_VISIBLE_H);
   const stage = stageSize(el);
   const maxX = Math.max(DRAG_MARGIN, stage.w - w - DRAG_MARGIN);
   const maxY = Math.max(DRAG_MARGIN, stage.h - h - DRAG_MARGIN);
@@ -49,6 +57,7 @@ export function useDraggableCard({
   dockRight,
   dockTop,
   leftX,
+  topY = DEFAULT_Y,
 }: {
   eventId: string;
   embedded: boolean;
@@ -56,6 +65,8 @@ export function useDraggableCard({
   dockRight: boolean;
   dockTop: number;
   leftX: number;
+  /** Where the card starts from the top when it sits beside the panel. */
+  topY?: number;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
@@ -73,13 +84,13 @@ export function useDraggableCard({
   useEffect(() => {
     if (embedded || anchored) return;
     // Docked: the list leaves a strip on the right, so start there. Undocked
-    // returns to the default beside the 400px panel. Dragging still works.
-    const x = dockRight ? Math.max(12, stageSize(cardRef.current).w - 320 - 12) : leftX;
+    // returns to the default beside the list panel. Dragging still works.
+    const x = dockRight ? Math.max(12, stageSize(cardRef.current).w - RACE_CARD_W - 12) : leftX;
     // Docked, it starts below the account button that floats top-right.
-    const next = clampPanelPos(x, dockRight ? dockTop : DEFAULT_Y, cardRef.current);
+    const next = clampPanelPos(x, dockRight ? dockTop : topY, cardRef.current);
     offsetRef.current = next;
     setOffset(next);
-  }, [dockRight, dockTop, embedded, anchored, leftX]);
+  }, [dockRight, dockTop, embedded, anchored, leftX, topY]);
 
   useEffect(() => {
     if (embedded || anchored) return;

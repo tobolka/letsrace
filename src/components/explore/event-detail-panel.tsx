@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { ChevronUp, X } from "lucide-react";
+import { ArrowRight, ChevronUp, X } from "lucide-react";
+import Link from "next/link";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -18,11 +19,11 @@ import { track } from "@/lib/analytics";
 import { useMediaQuery } from "@/hooks/use-viewport";
 import { cn } from "@/lib/utils";
 import { buildDetailModel } from "@/components/explore/event-detail-model";
-import { EventDetailBody } from "@/components/explore/event-detail-body";
 import { EmbeddedBody } from "@/components/explore/event-detail-embedded";
-import { EventTrustRow } from "@/components/explore/event-trust-row";
+import { RACE_CARD_W } from "@/components/explore/panel-resize";
 import { useShareLink } from "@/components/explore/use-share-link";
 import { DEFAULT_CARD_X, useDraggableCard } from "@/components/explore/use-draggable-card";
+import { eventPagePath } from "@/lib/event-url";
 import { focusKeyboardItem, visibleKeyboardItems } from "@/lib/keyboard-navigation";
 
 
@@ -37,6 +38,7 @@ export function EventDetailPanel({
   dockRight = false,
   dockTop = 64,
   leftX = DEFAULT_CARD_X,
+  topY,
 }: {
   event: EventListItem;
   onClose: () => void;
@@ -58,6 +60,8 @@ export function EventDetailPanel({
   dockTop?: number;
   /** Where the card starts when it sits beside the panel. */
   leftX?: number;
+  /** How far down it starts there — lower when the list's small bar is above it. */
+  topY?: number;
 }) {
   const t = messagesFor(locale);
   const { linkCopied, copyShareLink } = useShareLink(event, locale);
@@ -68,6 +72,7 @@ export function EventDetailPanel({
     dockRight,
     dockTop,
     leftX,
+    topY,
   });
   const m = buildDetailModel(event, locale, t);
 
@@ -132,15 +137,25 @@ export function EventDetailPanel({
       className={cn(
         // overflow-x-hidden: long series chips / nowrap buttons used to force a
         // horizontal scrollbar while the card was dragged around the map.
-        "pointer-events-auto w-full max-w-[min(320px,calc(100vw-1.5rem))] gap-0 overflow-x-hidden overflow-y-hidden py-0",
+        "pointer-events-auto w-full gap-0 overflow-x-hidden overflow-y-hidden py-0",
         dragging && "select-none",
         embedded
           ? "flex h-full min-h-0 max-w-none flex-col border-0 shadow-none"
           : anchored
-            ? "flex w-[320px] max-h-[min(72dvh,36rem)] flex-col border-0 shadow-none"
-            : "absolute z-40 w-[320px] max-h-[calc(100dvh-1.5rem)] shadow-lg",
+            ? "flex w-[340px] max-w-[calc(100vw-1.5rem)] max-h-[min(72dvh,36rem)] flex-col border-0 shadow-none"
+            : "absolute z-40 flex flex-col shadow-lg",
       )}
-      style={embedded || anchored ? undefined : { left: offset.x, top: offset.y }}
+      style={
+        embedded || anchored
+          ? undefined
+          : {
+              left: offset.x,
+              top: offset.y,
+              width: `min(${RACE_CARD_W}px, calc(100% - 1.5rem))`,
+              // Down to the map's foot, never past it: the card scrolls inside.
+              maxHeight: `calc(100% - ${offset.y + 12}px)`,
+            }
+      }
     >
       <CardHeader
         /*
@@ -227,63 +242,47 @@ export function EventDetailPanel({
           "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4",
           embedded
             ? "px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            : "py-3",
+            : "pt-3 pb-4",
         )}
         inert={dragging || undefined}
       >
-        {embedded ? (
-          <EmbeddedBody
-            event={event}
-            locale={locale}
-            placeLabel={m.placeLabel}
-            directionsUrl={m.directionsUrl}
-            primary={m.primary}
-            secondaryLinks={m.secondaryLinks}
-            whoChips={m.whoChips}
-            ageHintFor={m.ageHintFor}
-            levelLabel={m.levelLabel}
-            levelHelp={m.levelHelp}
-            discChips={m.discChips}
-            onSelectSeries={onSelectSeries}
-            trackEnter={trackEnter}
-            linkCopied={linkCopied}
-            onShare={() => void copyShareLink()}
-            trustText={m.trustText}
-            trustLow={m.trust === "low"}
-            checkedText={m.checkedText && event.lastSeenAt ? m.checkedText : null}
-          />
-        ) : (
-          <EventDetailBody
-            event={event}
-            locale={locale}
-            placeLabel={m.placeLabel}
-            directionsUrl={m.directionsUrl}
-            whoChips={m.whoChips}
-            ageHintFor={m.ageHintFor}
-            levelLabel={m.levelLabel}
-            levelHelp={m.levelHelp}
-            discChips={m.discChips}
-            actionLinks={m.actionLinks}
-            onSelectSeries={onSelectSeries}
-            trackEnter={trackEnter}
-          />
-        )}
+        <EmbeddedBody
+          variant={embedded ? "sheet" : "card"}
+          event={event}
+          locale={locale}
+          placeLabel={m.placeLabel}
+          directionsUrl={m.directionsUrl}
+          primary={m.primary}
+          secondaryLinks={m.secondaryLinks}
+          whoChips={m.whoChips}
+          ageHintFor={m.ageHintFor}
+          levelLabel={m.levelLabel}
+          levelHelp={m.levelHelp}
+          discChips={m.discChips}
+          onSelectSeries={onSelectSeries}
+          trackEnter={trackEnter}
+          linkCopied={linkCopied}
+          onShare={() => void copyShareLink()}
+          trustText={m.trustText}
+          trustLow={m.trust === "low"}
+          checkedText={m.checkedText && event.lastSeenAt ? m.checkedText : null}
+        />
       </CardContent>
 
       {embedded ? null : (
-        <CardFooter
-          className="shrink-0 justify-between gap-2 border-t px-2 py-2 [.border-t]:pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-2"
-          inert={dragging || undefined}
-        >
-          <EventTrustRow
-            event={event}
-            locale={locale}
-            trustLow={m.trust === "low"}
-            trustText={m.trustText}
-            checkedText={m.checkedText}
-            linkCopied={linkCopied}
-            onShare={() => void copyShareLink()}
-          />
+        // The way to the race's own page, always in sight at the card's foot
+        // however far its facts are scrolled. It used to be a small icon among
+        // three others, and people did not know the card had a bigger version.
+        <CardFooter className="shrink-0 border-t p-2 [.border-t]:pt-2" inert={dragging || undefined}>
+          <Button asChild variant="secondary" className="w-full justify-between">
+            <Link
+              href={eventPagePath(locale, event.slug)}
+              onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
+            >
+              {t.openRaceDetail}
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+          </Button>
         </CardFooter>
       )}
 
