@@ -81,6 +81,11 @@ export function EmbeddedBody({
       ? ` – ${format(parseISO(event.endDate), "d. MMMM", { locale: df })}`
       : "");
   const card = variant === "card";
+  // The place itself on Google Maps (the Navigate button plans the drive).
+  const lat = event.location?.lat;
+  const lng = event.location?.lng;
+  const placeQuery = lat != null && lng != null ? `${lat},${lng}` : placeLabel.trim();
+  const placeUrl = placeQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQuery)}` : null;
   // The forecast sits with the facts on the desktop card; the phone keeps it
   // for the race page, where it has room for the hour-by-hour chart.
   const weatherAt =
@@ -114,7 +119,19 @@ export function EmbeddedBody({
         <p className="flex items-start gap-2 text-sm">
           <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
           <span className="min-w-0 flex-1 break-words">
-            <span className="font-medium">{placeLabel || "—"}</span>
+            {placeUrl ? (
+              <a
+                href={placeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium underline-offset-4 hover:underline"
+                onClick={() => trackEnter("place")}
+              >
+                {placeLabel}
+              </a>
+            ) : (
+              <span className="font-medium">{placeLabel || "—"}</span>
+            )}
             {discChips.length > 0 ? (
               <span className="text-muted-foreground">
                 <span aria-hidden> · </span>
