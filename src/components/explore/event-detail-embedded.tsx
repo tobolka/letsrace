@@ -187,13 +187,16 @@ export function EmbeddedBody({
           <Button
             type="button"
             variant="outline"
-            aria-pressed={linkCopied}
-            onClick={() => {
+            aria-label={linkCopied ? t.linkCopied : t.shareRace}
+            onClick={(e) => {
+              // The label stays put, so the row does not reflow; only the icon
+              // says it worked (and the live region below says it aloud).
+              e.currentTarget.blur();
               if (!linkCopied) onShare();
             }}
           >
             {linkCopied ? <Check data-icon="inline-start" /> : <Share data-icon="inline-start" />}
-            {linkCopied ? t.linkCopied : t.actionShare}
+            {t.actionShare}
           </Button>
           <p className="sr-only" aria-live="polite">
             {linkCopied ? t.linkCopied : ""}
