@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, Droplets, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
+import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
 import { MetaRow } from "@/components/explore/meta-row";
 import { ExplainedHint } from "@/components/explore/explained-badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -247,11 +247,9 @@ const WEATHER_SOURCES = {
  * close, and what the week around this date was like in past years. Nothing
  * at all when there is no answer — a race page does not wait for the weather.
  */
-export function RaceWeather({ lat, lng, date, locale, hideLink = false, compact = false }: Props & {
+export function RaceWeather({ lat, lng, date, locale, hideLink = false }: Props & {
   /** The race card lists the Windy link among its other links instead. */
   hideLink?: boolean;
-  /** The race card's look: the temperature large, rain and wind as two figures beside it. */
-  compact?: boolean;
 }) {
   const weather = useWeather(lat, lng, date);
   const c = copy[asLocale(locale)];
@@ -283,41 +281,6 @@ export function RaceWeather({ lat, lng, date, locale, hideLink = false, compact 
   const pastHelp = k
     ? `${c.past}: ${c.day} ${k.tmax}°, ${fill(c.pastRain, { n: Math.round(k.rainyShare * 100) })}. ${fill(c.climateHelp, { n: k.years }).replace("Open-Meteo", climateSource.name)}`
     : "";
-  if (compact && f) {
-    return (
-      <div className="rounded-xl bg-muted/60 px-3.5 py-3">
-        <div className="flex items-center gap-3.5">
-          <span className="text-foreground [&_svg]:size-8 [&_svg]:stroke-[1.5]" aria-hidden>{SKY_ICON[f.sky]}</span>
-          <div className="min-w-0">
-            <p className="text-2xl font-semibold leading-none tracking-tight tabular-nums">{temps}</p>
-            <p className="mt-1 truncate text-xs text-muted-foreground first-letter:uppercase">{c.sky[f.sky]}</p>
-          </div>
-          <dl className="ml-auto flex flex-col gap-1 text-sm tabular-nums">
-            {f.rainChance != null ? (
-              <div className="flex items-center justify-end gap-1.5">
-                <Droplets className="size-3.5 text-muted-foreground" aria-hidden />
-                <dd>{f.rainChance} %</dd>
-              </div>
-            ) : null}
-            <div className="flex items-center justify-end gap-1.5">
-              <Wind className="size-3.5 text-muted-foreground" aria-hidden />
-              <dd>{f.windKmh} km/h</dd>
-            </div>
-          </dl>
-        </div>
-        {past ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <p className="mt-2.5 w-fit cursor-help border-t border-border/70 pt-2 text-xs text-muted-foreground">{past}</p>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={6} className="max-w-64 text-pretty">
-              {pastHelp}
-            </TooltipContent>
-          </Tooltip>
-        ) : null}
-      </div>
-    );
-  }
   return (
     <MetaRow icon={f ? SKY_ICON[f.sky] : <Thermometer />} label={c.label}>
       <span className="text-sm">

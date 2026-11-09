@@ -1,7 +1,7 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { ChartNoAxesColumnIncreasing, Trophy, UserRound } from "lucide-react";
+import { Calendar, ChartNoAxesColumnIncreasing, MapPin, Trophy, UserRound } from "lucide-react";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
@@ -104,19 +104,15 @@ export function EmbeddedBody({
     <div className="flex flex-col">
       {/* When and where, the way in, and what else you can do with it. */}
       <div className="flex flex-col gap-3 pb-4">
-      <div className="flex items-center gap-3.5">
-        {/* The day, to be found at a glance in a card of small print. */}
-        <div className="flex size-14 shrink-0 flex-col items-center justify-center rounded-xl bg-muted" aria-hidden>
-          <span className="text-[0.65rem] font-semibold uppercase leading-none tracking-wide text-muted-foreground">
-            {format(parseISO(event.startDate), "LLL", { locale: df })}
-          </span>
-          <span className="mt-1 text-2xl font-semibold leading-none tabular-nums">{format(parseISO(event.startDate), "d")}</span>
-        </div>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <time className="text-base font-semibold leading-snug tabular-nums first-letter:uppercase" dateTime={event.startDate}>
+      <div className="flex flex-col gap-1">
+        <p className="flex items-center gap-2 text-base font-medium">
+          <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
             {dateLabel}
           </time>
-        <p className="text-sm">
+        </p>
+        <p className="flex items-start gap-2 text-sm">
+          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
           <span className="min-w-0 flex-1 break-words">
             <span className="font-medium">{placeLabel || "—"}</span>
             {discChips.length > 0 ? (
@@ -128,7 +124,6 @@ export function EmbeddedBody({
             ) : null}
           </span>
         </p>
-        </div>
       </div>
 
       <RaceActions
@@ -190,7 +185,7 @@ export function EmbeddedBody({
           </MetaRow>
         ) : null}
         {weatherAt ? (
-          <RaceWeather key={event.id} lat={weatherAt.lat} lng={weatherAt.lng} date={event.startDate} locale={locale} hideLink compact />
+          <RaceWeather key={event.id} lat={weatherAt.lat} lng={weatherAt.lng} date={event.startDate} locale={locale} hideLink />
         ) : null}
       </CardSection>
 
