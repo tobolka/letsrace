@@ -156,7 +156,7 @@ export function EmbeddedBody({
       {card ? (
         // The desktop card's actions are the race page's buttons — the same
         // outline look and the same icon-then-label order.
-        <div className="grid grid-cols-2 gap-2 [&>:nth-child(odd):last-child]:col-span-2">
+        <div className="grid grid-cols-2 gap-2 [&>:first-child]:col-span-2 [&>:nth-child(even):last-child]:col-span-2">
           <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" className="w-full" />
           {onMap ? (
             <Button asChild variant="outline" className="w-full">
