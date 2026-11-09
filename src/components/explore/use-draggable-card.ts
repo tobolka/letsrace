@@ -103,9 +103,8 @@ export function useDraggableCard({
     return () => window.removeEventListener("resize", onResize);
   }, [embedded, anchored]);
 
-  // Brief y-axis hop when the selected race changes — same card, new content.
-  // Skip in the mobile sheet: Vaul already moved it, and a keyframe hop on
-  // every pin tap fights the sheet and restarts from zero mid-browse.
+  // A short fade-in when the selected race changes — same card, new content.
+  // Skip in the mobile sheet: Vaul already moved it.
   useEffect(() => {
     if (embedded || anchored) return;
     const el = cardRef.current;
@@ -113,21 +112,18 @@ export function useDraggableCard({
     if (prevEventIdRef.current === eventId) return;
     prevEventIdRef.current = eventId;
     if (dragging || dragRef.current) return;
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-    el.classList.remove("event-detail-jump");
+    el.classList.remove("event-detail-swap");
     // Restart the keyframes even when the class was already applied.
     void el.offsetWidth;
-    el.classList.add("event-detail-jump");
+    el.classList.add("event-detail-swap");
   }, [eventId, dragging, embedded, anchored]);
 
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
     const onEnd = (e: AnimationEvent) => {
-      if (e.animationName !== "event-detail-jump") return;
-      el.classList.remove("event-detail-jump");
+      if (e.animationName !== "event-detail-swap") return;
+      el.classList.remove("event-detail-swap");
     };
     el.addEventListener("animationend", onEnd);
     return () => el.removeEventListener("animationend", onEnd);
@@ -148,7 +144,7 @@ export function useDraggableCard({
     e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
     // Don't let a leftover jump transform fight the drag translate.
-    cardRef.current?.classList.remove("event-detail-jump");
+    cardRef.current?.classList.remove("event-detail-swap");
   }
 
   function onHeaderPointerMove(e: PointerEvent<HTMLDivElement>) {

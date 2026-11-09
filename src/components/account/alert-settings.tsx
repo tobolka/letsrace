@@ -152,7 +152,7 @@ export function AlertSettings({
               {t.alertAddAnother}
             </Button>
           </CollapsibleTrigger>
-          <CollapsibleContent>
+          <CollapsibleContent className="collapsible-animated">
             <Panel className="mt-3">
               <PlacePicker
                 locale={locale}

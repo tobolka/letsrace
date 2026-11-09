@@ -19,25 +19,42 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-09",
+    items: {
+      cs: [
+        "Na telefonu se karta závodu už nepřekrývá se seznamem.",
+        "Po klepnutí na závod v mapě už nezůstane viset jeho název.",
+        "Závod ze seznamu nebo kalendáře ukážeš jedním tlačítkem na mapě.",
+        "Na tabletu se stránka při psaní do pole už nepřibližuje.",
+      ],
+      en: [
+        "On a phone, the race card no longer overlaps the list.",
+        "Tapping a race on the map no longer leaves its name hanging.",
+        "One button shows a race from the list or calendar on the map.",
+        "On a tablet, the page no longer zooms in when you type into a field.",
+      ],
+    },
+  },
+  {
     date: "2026-11-08",
     items: {
       cs: [
-        "Když na mapě poprvé otevřeš závod, mapa zůstane, kde byla, a neodskočí jinam.",
-        "Seznam závodů vedle mapy schováš tlačítkem u loga; zůstane z něj malá lišta s filtry, ze které ho zase otevřeš.",
-        "Karta závodu na mapě je širší a ukáže víc: program, startovné, kategorie, tratě, areál a pořadatele, když je pořadatel uvádí.",
-        "Celý detail závodu otevřeš tlačítkem, které je na kartě vždy dole, a odkazy na web, propozice i předpověď počasí jsou pohromadě v jednom seznamu.",
-        "Karta na mapě i stránka závodu řadí údaje stejně a stejně vypadají, takže je najdeš na stejném místě.",
-        "Stránka seriálu má tlačítko na web seriálu, pokud ho známe.",
-        "Na stránce seriálu hned vidíš, pro koho je, jaké disciplíny a úroveň má, o jaký seriál jde a odkud údaje máme.",
+        "Mapa zůstane na místě, když na ní otevřeš závod.",
+        "Seznam vedle mapy schováš tlačítkem u loga; filtry zůstanou po ruce.",
+        "Karta závodu je širší a ukáže program, startovné, kategorie, tratě, areál i pořadatele.",
+        "Celý detail závodu otevřeš tlačítkem dole na kartě; web, propozice a počasí jsou v jednom seznamu.",
+        "Karta na mapě i stránka závodu mají údaje ve stejném pořadí.",
+        "Stránka seriálu odkazuje na jeho web, pokud ho známe.",
+        "Stránka seriálu ukáže, pro koho je, jeho disciplíny, úroveň a zdroj údajů.",
       ],
       en: [
-        "Opening a race on the map for the first time leaves the map where it was instead of jumping elsewhere.",
-        "The race list beside the map hides with the button by the logo, leaving a small bar with the filters that brings it back.",
-        "The race card on the map is wider and shows more: the schedule, fees, categories, routes, venue and organiser, when the organiser gives them.",
-        "A button always at the foot of the race card opens the full race page, and the links to the website, regulations and weather forecast sit together in one list.",
-        "The race card on the map and the race page order and show the details the same way, so you find them in the same place.",
-        "A series page has a button to the series' own website, when we know it.",
-        "A series page shows at a glance who it is for, its disciplines and level, what kind of series it is and where our details come from.",
+        "The map stays put when you open a race on it.",
+        "Hide the list beside the map with the button by the logo; the filters stay at hand.",
+        "The race card is wider and shows the schedule, fees, categories, routes, venue and organiser.",
+        "A button at the foot of the card opens the full race page; website, regulations and weather sit in one list.",
+        "The map card and the race page show details in the same order.",
+        "A series page links to the series' website, when we know it.",
+        "A series page shows who it is for, its disciplines, level and where our details come from.",
       ],
     },
   },

@@ -61,6 +61,20 @@ export function looksLikeRunningEvent(name: string): boolean {
   return false;
 }
 
+/**
+ * Indoor cycling: cycle-ball and artistic cycling, played in a sports hall.
+ * They are cycling, but not the racing Let's Race lists — no course, no entry
+ * for a rider who turns up — so they stay out even though the name says
+ * "cyklistika". The national calendars mix them in beside road and MTB.
+ */
+const INDOOR_CYCLING =
+  /\b(salov\w* cykli\w*|kolova|kolove|krasojizd\w*|cycle ?-?ball|radball\w*|kunstrad\w*|hallenrad\w*|kolarstw\w* (halow|artystyczn)\w*|artistic cycling|indoor cycling|kerekpar ?labda|cyklistika salova)\b/;
+
+/** True for cycle-ball, artistic cycling and the other hall disciplines. */
+export function isIndoorCycling(text: string | null | undefined): boolean {
+  return Boolean(text) && INDOOR_CYCLING.test(fold(text));
+}
+
 /** True when the text carries a positive cycling marker. */
 export function hasCyclingSignal(text: string | null | undefined): boolean {
   if (!text) return false;
@@ -82,6 +96,8 @@ export function isNonCyclingEventName(
   extraText?: string | null,
 ): boolean {
   const blob = `${name} ${extraText ?? ""}`;
+  // A hall discipline is out whatever else the name says.
+  if (isIndoorCycling(blob)) return true;
   if (hasCyclingSignal(blob)) return false;
   const t = fold(blob);
   if (OTHER_SPORT.test(t)) return true;

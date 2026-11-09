@@ -240,7 +240,7 @@ export function RaceForm({ locale, slug, onDone }: { locale: string; slug?: stri
         {editing ? (
           <Field label={c.raceStatus}>
             <select
-              className="h-9 rounded-md border bg-background px-3 text-sm"
+              className="h-9 rounded-md border bg-background px-3 text-base [@media(pointer:fine)]:text-sm"
               value={["postponed", "cancelled"].includes(values.status) ? values.status : "scheduled"}
               onChange={(e) => set("status", e.target.value)}
             >

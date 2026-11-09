@@ -34,6 +34,7 @@ export function EventDetailPanel({
   onSelectSeries,
   embedded = false,
   onExpand,
+  showOnMap = false,
   anchored = false,
   dockRight = false,
   dockTop = 64,
@@ -48,6 +49,8 @@ export function EventDetailPanel({
   embedded?: boolean;
   /** The sheet is at its preview height: a button beside the cross raises it. */
   onExpand?: () => void;
+  /** Opened from the list or the calendar: offer the way to the map. */
+  showOnMap?: boolean;
   /**
    * The map's card, held by something else — a popover over a calendar day.
    * Same header, close button and footer, but it neither drags nor places
@@ -266,6 +269,7 @@ export function EventDetailPanel({
           trustText={m.trustText}
           trustLow={m.trust === "low"}
           checkedText={m.checkedText && event.lastSeenAt ? m.checkedText : null}
+          showOnMap={showOnMap}
         />
       </CardContent>
 

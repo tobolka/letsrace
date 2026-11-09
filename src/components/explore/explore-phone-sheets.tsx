@@ -76,6 +76,7 @@ export function ExplorePhoneSheets({
         title={messages.racesCount}
         handleLabel={listSnap === LIST_PEEK ? messages.sheetExpand : messages.sheetCollapse}
         mapLabel={messages.navMap}
+        covered={Boolean(selected)}
       >
         <MobileTopBar
           className="-mt-1"

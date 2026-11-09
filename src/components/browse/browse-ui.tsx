@@ -83,7 +83,7 @@ export function TileGrid({ title, children, className }: { title?: string; child
 }
 
 const TILE =
-  "browse-tile group flex items-center gap-3 rounded-xl border bg-card p-4 transition-[background-color,border-color] duration-150 hover:border-foreground/20 hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none";
+  "browse-tile group flex items-center gap-3 rounded-xl border bg-card p-4 transition-[background-color,border-color] duration-150 [@media(hover:hover)_and_(pointer:fine)]:hover:border-foreground/20 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 motion-reduce:transition-none";
 
 function TileText({ name, count }: { name: string; count: string }) {
   return (
@@ -92,7 +92,7 @@ function TileText({ name, count }: { name: string; count: string }) {
         <span className="text-[15px] font-semibold leading-tight">{name}</span>
         <span className="mt-1 text-xs text-muted-foreground tabular-nums">{count}</span>
       </span>
-      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-foreground" aria-hidden />
+      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 [@media(hover:hover)_and_(pointer:fine)]:group-hover:text-foreground" aria-hidden />
     </>
   );
 }
@@ -142,7 +142,7 @@ export function SeriesCard({ href, name, meta }: { href: string; name: string; m
         <span className="line-clamp-2 text-[15px] font-semibold leading-tight">{name}</span>
         <span className="text-xs text-muted-foreground tabular-nums">{meta}</span>
       </span>
-      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-foreground" aria-hidden />
+      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 [@media(hover:hover)_and_(pointer:fine)]:group-hover:text-foreground" aria-hidden />
     </Link>
   );
 }

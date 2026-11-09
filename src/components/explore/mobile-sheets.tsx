@@ -116,16 +116,24 @@ function Visible({
   viewportH,
   handleLabel,
   compactHandle = false,
+  className,
+  inert,
   children,
 }: {
   snap: number | string;
   viewportH: number;
   handleLabel: string;
   compactHandle?: boolean;
+  className?: string;
+  inert?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className={CARD} style={{ height: visibleContentHeight(snap, viewportH) }}>
+    <div
+      className={cn(CARD, className)}
+      style={{ height: visibleContentHeight(snap, viewportH) }}
+      inert={inert || undefined}
+    >
       <GrabZone label={handleLabel} compact={compactHandle} />
       <div className="flex min-h-0 flex-1 flex-col">
         {children}
@@ -180,6 +188,7 @@ export function MobileListSheet({
   title,
   handleLabel,
   mapLabel,
+  covered = false,
   children,
 }: {
   snap: number | string;
@@ -188,6 +197,14 @@ export function MobileListSheet({
   title: string;
   handleLabel: string;
   mapLabel: string;
+  /**
+   * A race card is open on top. The card starts at the screen's foot and the
+   * list at the tab bar's top, so at the same stop the list's edge — its
+   * grabber and half its filter chips — showed above the card, as if two
+   * sheets had been dealt one on the other. While covered the list steps
+   * down out of sight, and comes back where it was when the card goes.
+   */
+  covered?: boolean;
   children: ReactNode;
 }) {
   useUnlockBody(true);
@@ -222,7 +239,16 @@ export function MobileListSheet({
     >
       <DrawerContent showOverlay={false} style={FRAME_STYLE} className={cn(FRAME, LIST_FRAME, "z-20")}>
         <DrawerTitle className="sr-only">{title}</DrawerTitle>
-        <Visible snap={snap} viewportH={viewportH} handleLabel={handleLabel}>
+        <Visible
+          snap={snap}
+          viewportH={viewportH}
+          handleLabel={handleLabel}
+          inert={covered}
+          className={cn(
+            "transition-[translate,opacity] duration-200 ease-out motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
+            covered && "pointer-events-none translate-y-6 opacity-0",
+          )}
+        >
           {children}
           {/*
             With the list at full height the map is a strip at the top of the
@@ -233,7 +259,7 @@ export function MobileListSheet({
             the screen at every snap point.
           */}
           {snap === FULL ? (
-            <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
+            <div className="map-pill-in pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
               <Button
                 type="button"
                 size="lg"

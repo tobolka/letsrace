@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useSwapClass } from "@/hooks/use-swap-class";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { CalendarCheck, CalendarPlus } from "lucide-react";
@@ -45,7 +46,14 @@ export function SaveRaceButton({
   const [authOpen, setAuthOpen] = useState(false);
   const added = ids.has(eventId);
   const label = added ? t.suggestAdded : t.suggestAdd;
-  const icon = busy ? <Spinner /> : added ? <CalendarCheck /> : <CalendarPlus />;
+  const iconId = busy ? "busy" : added ? "added" : "add";
+  const swap = useSwapClass(iconId);
+  // Keyed by state, so a change mounts a new icon and the swap plays.
+  const icon = (
+    <span key={iconId} className={cn("inline-flex", swap)}>
+      {busy ? <Spinner /> : added ? <CalendarCheck /> : <CalendarPlus />}
+    </span>
+  );
   const size = variant === "icon" ? "icon-sm" : "default";
 
   if (variant === "tile") {
@@ -86,7 +94,11 @@ export function SaveRaceButton({
 
   if (variant === "row") {
     // The icon is drawn by the stylesheet, not repeated as markup on every row.
-    const rowIcon = busy ? <Spinner /> : <span aria-hidden className="race-row-save-icon" />;
+    const rowIcon = (
+      <span key={iconId} className={cn("inline-flex", swap)}>
+        {busy ? <Spinner /> : <span aria-hidden className="race-row-save-icon" />}
+      </span>
+    );
     return (
       <>
         {added ? (

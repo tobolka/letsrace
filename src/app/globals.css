@@ -85,6 +85,9 @@ html[data-welcome-seen="1"] #letsrace-welcome {
   --radius-2xl: calc(var(--radius) + 8px);
   /* What slides up from the bottom of a phone: the race card, the list, the filters. */
   --shadow-sheet: 0 -4px 28px rgb(28 25 23 / 0.16);
+  /* Tailwind's own ease-out (0, 0, 0.2, 1) barely leans; this one starts
+     fast, so a press or an opening answers the moment it happens. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   /* System mono — Geist Mono was ~70 KB on every explore visit for one label. */
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -112,6 +115,31 @@ html[data-welcome-seen="1"] #letsrace-welcome {
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * Controls act on the press, not after the double-tap-zoom wait, and a held
+ * finger does not select their labels the way it selects text. Words people
+ * may want to copy — race names, addresses — are content, and stay selectable.
+ */
+a,
+button,
+label,
+summary,
+[role="button"],
+[role="tab"],
+[role="option"],
+[role="menuitem"] {
+  touch-action: manipulation;
+}
+button,
+summary,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[data-vaul-handle] {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* A two-tone indicator stays visible on light and dark controls. Unlayered so
@@ -201,6 +229,14 @@ body {
 @layer base {
   * {
     @apply border-border;
+  }
+  /* Tailwind 4 gives buttons the plain arrow; links get the hand. Anything
+     you can press shows the hand, so the save and share tiles read as
+     pressable as the link tiles beside them. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
   }
 }
 
@@ -303,29 +339,23 @@ time,
     --rdp-animation_duration: 0s;
   }
 
-  .event-detail-jump {
-    animation: none !important;
-  }
 }
 
 /*
- * Desktop race card: a short upward hop when you pick another pin / list row,
- * so the panel reads as “new race” without remounting (which would reset drag).
+ * Desktop race card: when you pick another pin or row, the same card brightens
+ * in from a little faded, so it reads as “new race” without remounting (which
+ * would reset drag). It used to hop up 6px; a card you switch dozens of times
+ * a visit should not bounce each time. Opacity only, so it stays for reduced
+ * motion too.
  */
-@keyframes event-detail-jump {
-  0% {
-    transform: translateY(0);
-  }
-  45% {
-    transform: translateY(-6px);
-  }
-  100% {
-    transform: translateY(0);
+@keyframes event-detail-swap {
+  from {
+    opacity: 0.55;
   }
 }
 
-.event-detail-jump {
-  animation: event-detail-jump 200ms cubic-bezier(0.23, 1, 0.32, 1);
+.event-detail-swap {
+  animation: event-detail-swap 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /*
@@ -374,8 +404,8 @@ time,
 @keyframes teaser-rise {
   from {
     opacity: 0;
-    filter: blur(6px);
-    transform: translateY(14px) scale(0.97);
+    filter: blur(4px);
+    transform: translateY(12px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -397,11 +427,11 @@ time,
 @keyframes teaser-pop {
   0% {
     opacity: 0;
-    transform: scale(0.2);
+    transform: scale(0.6);
   }
   70% {
     opacity: 1;
-    transform: scale(1.25);
+    transform: scale(1.08);
   }
   100% {
     opacity: 1;
@@ -447,11 +477,11 @@ time,
 }
 .teaser-rise {
   animation:
-    teaser-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both,
-    teaser-drift 7s ease-in-out 1100ms infinite;
+    teaser-rise 500ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    teaser-drift 7s ease-in-out 600ms infinite;
 }
 .teaser-pop {
-  animation: teaser-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: teaser-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 .teaser-pulse {
   animation: teaser-pulse 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
@@ -464,10 +494,19 @@ time,
 }
 .teaser-ring {
   transform-origin: 50% 10%;
-  animation: teaser-ring 3.2s ease-in-out 1.4s infinite;
+  /* Twice, to say "something new", then still: a bell that never stops
+     pulls the eye off the words beside it. */
+  animation: teaser-ring 3.2s ease-in-out 1.4s 2;
 }
 .teaser-fill {
   animation: teaser-fill 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Nobody is watching a picture scrolled out of view. */
+[data-offscreen] .teaser-rise,
+[data-offscreen] .teaser-pulse,
+[data-offscreen] .teaser-sweep,
+[data-offscreen] .teaser-ring {
+  animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
   .teaser-rise,
@@ -551,4 +590,122 @@ time,
 }
 @media (prefers-reduced-motion: reduce) {
   .map-list-bar-in { animation: none; }
+}
+
+/*
+ * An icon that changes meaning — saved, link copied — arrives instead of
+ * blinking over. Only on a real change (see `useSwapClass`), never when a card
+ * simply opens with a race already saved. Less motion keeps the fade.
+ */
+@keyframes icon-swap-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+    filter: blur(2px);
+  }
+}
+.icon-swap-in {
+  animation: icon-swap-in 200ms var(--ease-out) both;
+}
+
+/* The setup's tick: the one moment worth a small bounce. */
+@keyframes icon-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.icon-pop-in {
+  animation: icon-pop-in 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/*
+ * Plan setup finished on the page: a beat to see the last tick, then the card
+ * fades, settles back a touch and folds its height away, so the plan below
+ * slides up rather than jumping.
+ */
+@keyframes plan-setup-leave {
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+.plan-setup-leave {
+  display: grid;
+  grid-template-rows: 1fr;
+  transform-origin: top center;
+  animation: plan-setup-leave 300ms var(--ease-out) 700ms forwards;
+}
+
+/* The "Add another place" form opens and closes instead of shoving the page. */
+@keyframes collapsible-open {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+@keyframes collapsible-close {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+.collapsible-animated {
+  overflow: hidden;
+}
+.collapsible-animated[data-state="open"] {
+  animation: collapsible-open 200ms var(--ease-out);
+}
+.collapsible-animated[data-state="closed"] {
+  animation: collapsible-close 150ms var(--ease-out);
+}
+
+/* The phone list's "Map" pill rises in once the sheet has reached the top. */
+@keyframes map-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.map-pill-in {
+  animation: map-pill-in 200ms var(--ease-out) 150ms backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-swap-in,
+  .icon-pop-in,
+  .map-pill-in {
+    animation-name: fade-only;
+  }
+  /* Same name, so the card still hears that it ended and leaves. */
+  @keyframes plan-setup-leave {
+    to {
+      opacity: 0;
+    }
+  }
+  .collapsible-animated[data-state="open"],
+  .collapsible-animated[data-state="closed"] {
+    animation: none;
+  }
+}
+@keyframes fade-only {
+  from {
+    opacity: 0;
+  }
 }

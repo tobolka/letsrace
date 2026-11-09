@@ -483,8 +483,13 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           </section>
         ) : null}
 
-        {nearby.length > 0 ? (
-          <section className="mt-10">
+      </div>
+
+      {/* Other races, not this one: a grey band across the whole page says the
+          race ends here, and the white rows on it are something else. */}
+      {nearby.length > 0 ? (
+        <section className="bg-muted/60 [&_.race-list]:bg-card">
+          <div className="mx-auto max-w-3xl px-4 pt-10 pb-12 sm:px-6">
             <h2 className="mb-3 text-lg font-semibold">{rc.nearbySimilar}</h2>
             <RaceLinkList
               events={nearby.map((n) => n.event)}
@@ -492,10 +497,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               locale={locale}
               groupByMonth={false}
             />
-          </section>
-        ) : null}
-
-      </div>
+          </div>
+        </section>
+      ) : null}
 
     </article>
   );

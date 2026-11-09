@@ -326,6 +326,9 @@ export function LightRaceMap(props: RaceMapProps) {
 function MapControlTip({ label, children }: { label: string; children: ReactElement }) {
   return <Tooltip><TooltipTrigger asChild>{children}</TooltipTrigger><TooltipContent side="left">{label}</TooltipContent></Tooltip>;
 }
+function coarsePointer(): boolean {
+  return typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+}
 function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [number, number], count: number, props: RaceMapProps, onClick: () => void) {
   const messages = messagesFor(props.locale ?? "en");
   const label = count > 1 ? `${count} ${messages.racesCount} · ${e.location?.municipality ?? e.name}` : e.name;
@@ -333,7 +336,11 @@ function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [n
   const marker = L.marker(point, { title: label, alt: label, keyboard: true, riseOnHover: true, bubblingMouseEvents: false,
     zIndexOffset: e.id === props.selectedId ? 1000 : 0,
     icon: L.divIcon({ html: pin(e, count, e.id === props.selectedId), className: "fast-marker", iconSize: [40, 40], iconAnchor: [20, 20] }),
-  }).addTo(layer).on("click", onClick).bindTooltip(tooltip, { direction: "top", offset: [0, -16], opacity: 1 });
+  }).addTo(layer).on("click", onClick);
+  // A name on hover is for a mouse. On a phone a tap counts as the hover, so
+  // the label stuck on after the card had opened with the same name, and a
+  // pin near the edge pushed it off the screen.
+  if (!coarsePointer()) marker.bindTooltip(tooltip, { direction: "top", offset: [0, -16], opacity: 1 });
   const el = marker.getElement();
   if (el) {
     el.setAttribute("role", "button"); el.setAttribute("aria-label", label);

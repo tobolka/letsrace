@@ -221,7 +221,7 @@ export function MobileTabBar({ locale }: { locale: string }) {
   const moreBadge = counts.action + counts.alerts;
   const tabClass = (active: boolean) =>
     cn(
-      "relative flex min-w-0 flex-col items-center justify-center gap-1 transition-[color,scale] duration-150 ease-out touch-manipulation active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
+      "relative flex min-w-0 flex-col items-center justify-center gap-1 transition-[color,scale] duration-150 ease-out touch-manipulation select-none [-webkit-touch-callout:none] active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100",
       active ? "text-brand" : "text-muted-foreground",
     );
   const badge = (n: number) =>

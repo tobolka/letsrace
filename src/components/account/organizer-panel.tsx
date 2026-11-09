@@ -259,7 +259,7 @@ function RaceEditor({ locale, eventId, onDone }: { locale: string; eventId: stri
         </Field>
         <Field label={c.raceStatus}>
           <select
-            className="h-9 rounded-md border bg-background px-3 text-sm"
+            className="h-9 rounded-md border bg-background px-3 text-base [@media(pointer:fine)]:text-sm"
             value={form.status === "postponed" || form.status === "cancelled" ? form.status : "scheduled"}
             onChange={(e) => set("status", e.target.value)}
           >

@@ -190,6 +190,7 @@ export function ScheduleView({ locale }: { locale: string }) {
                   event={event}
                   locale={locale}
                   anchored
+                  showOnMap
                   onClose={close}
                   onSelectSeries={(slug) => {
                     close();

@@ -25,6 +25,9 @@ export const rootViewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Android's keyboard shrinks the layout the way iOS's does, so the sheets
+  // sized in dvh and the fields at their foot stay above it.
+  interactiveWidget: "resizes-content",
   themeColor: "#fafaf9",
 };
 

@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { DISCIPLINE_FAMILY_COLORS as C } from "@/lib/map-visuals";
 import type { TeaserKey, teaserMessagesFor } from "@/lib/i18n/teasers";
 import { cn } from "@/lib/utils";
+import { PauseOffscreen } from "@/components/account/teasers/pause-offscreen";
 
 type Art = ReturnType<typeof teaserMessagesFor>["art"];
 
 /** Start an animation `ms` in — and, for rising cards, offset its drift too. */
-const at = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms, ${ms + 1000}ms` });
+const at = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms, ${ms + 600}ms` });
 const after = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms` });
 
 /**
@@ -34,7 +35,7 @@ export function TeaserArt({
   month: string;
 }) {
   return (
-    <div
+    <PauseOffscreen
       aria-hidden
       className="@container relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-muted/40 select-none"
     >
@@ -45,7 +46,7 @@ export function TeaserArt({
         {kind === "discover" ? <DiscoverArt art={art} /> : null}
         {kind === "riders" ? <RidersArt art={art} /> : null}
       </div>
-    </div>
+    </PauseOffscreen>
   );
 }
 

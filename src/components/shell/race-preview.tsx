@@ -48,6 +48,7 @@ export function RacePreview({
             event={shown}
             locale={locale}
             embedded
+            showOnMap
             onClose={onClose}
             onSelectSeries={onSelectSeries}
           />
@@ -68,6 +69,7 @@ export function RacePreview({
         // Below the header, the filters and the sort row, so none of the
         // list's own controls end up under it.
         dockTop={168}
+        showOnMap
         onClose={onClose}
         onSelectSeries={onSelectSeries}
       />

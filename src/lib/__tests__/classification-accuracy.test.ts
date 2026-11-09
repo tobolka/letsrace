@@ -51,6 +51,11 @@ describe("sport gate", () => {
     "1. Crosslauf Flachslanden",
     "Sudety Ultra Trail",
     "Triatlon Decimuž",
+    // Hall cycling is cycling, but not racing we list.
+    "Sálová cyklistika - Kolová - II.Liga elite - 3.kolo",
+    "Krasojízda - Mistrovství ČR",
+    "Radball Bundesliga 2. Spieltag",
+    "Kunstradsport Landesmeisterschaft",
   ];
   for (const name of notBikeRaces) {
     it(`rejects "${name.slice(0, 40)}"`, () => {
@@ -71,6 +76,9 @@ describe("sport gate", () => {
     // Ordinary races that happen to carry a trail/marathon word.
     "Trailpark Klínovec Enduro",
     "Nationalpark Bike-Marathon",
+    // "Kolo" is a round and a bike; neither is cycle-ball.
+    "Cyklokros Tábor - 3. kolo",
+    "Kolem Kolína 2026",
   ];
   for (const name of bikeRaces) {
     it(`keeps "${name.slice(0, 40)}"`, () => {

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { messagesFor } from "@/lib/i18n/messages";
 import { cn } from "@/lib/utils";
+import { useSwapClass } from "@/hooks/use-swap-class";
 import { localePath } from "@/lib/localized-paths";
 
 /**
@@ -35,7 +36,13 @@ export function PlanSetup({
 }) {
   const t = messagesFor(locale);
   const [pickingPlace, setPickingPlace] = useState(false);
-  if (hasPeople && hasPlace && hasRace) return null;
+  const complete = hasPeople && hasPlace && hasRace;
+  // Finished on this page: the last tick lands, then the card folds away
+  // instead of vanishing in the same frame and yanking the plan up under you.
+  // Finished elsewhere (a race saved on the map), it is simply not there.
+  const [startedIncomplete] = useState(!complete);
+  const [gone, setGone] = useState(false);
+  if (complete && (!startedIncomplete || gone)) return null;
 
   const steps: {
     done: boolean;
@@ -80,7 +87,13 @@ export function PlanSetup({
   const done = steps.filter((s) => s.done).length;
 
   return (
-    <div className={className}>
+    <div
+      className={cn(className, complete && "plan-setup-leave")}
+      onAnimationEnd={(e) => {
+        if (e.animationName === "plan-setup-leave") setGone(true);
+      }}
+    >
+    <div className="min-h-0 overflow-hidden">
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{t.planSetupTitle}</CardTitle>
@@ -94,7 +107,7 @@ export function PlanSetup({
           {steps.map((s) => (
             <div key={s.title} className="flex flex-col gap-2">
               <Item variant="outline" size="sm" className={cn(s.done && "opacity-60")}>
-                <ItemMedia variant="icon">{s.done ? <Check /> : <s.icon />}</ItemMedia>
+                <ItemMedia variant="icon"><StepIcon done={s.done} icon={s.icon} /></ItemMedia>
                 <ItemContent className="min-w-0">
                   <ItemTitle className="w-full min-w-0">
                     <span className="truncate">{s.title}</span>
@@ -124,5 +137,16 @@ export function PlanSetup({
       </CardContent>
     </Card>
     </div>
+    </div>
+  );
+}
+
+/** A step's icon; when it turns into a tick on this page, the tick pops in. */
+function StepIcon({ done, icon: Icon }: { done: boolean; icon: React.ElementType }) {
+  const pop = useSwapClass(done ? "done" : "todo");
+  return (
+    <span key={done ? "done" : "todo"} className={cn("inline-flex", pop && "icon-pop-in")}>
+      {done ? <Check /> : <Icon />}
+    </span>
   );
 }

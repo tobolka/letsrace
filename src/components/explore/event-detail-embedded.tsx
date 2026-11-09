@@ -1,9 +1,12 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { Calendar, ChartNoAxesColumnIncreasing, Check, ExternalLink, MapPin, Maximize2, Navigation, Share, Trophy, UserRound } from "lucide-react";
+import { Calendar, ChartNoAxesColumnIncreasing, Check, ExternalLink, Map as MapIcon, MapPin, Maximize2, Navigation, Share, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSwapClass } from "@/hooks/use-swap-class";
 import { track } from "@/lib/analytics";
+import { carryFilterQuery } from "@/lib/explore-params";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
@@ -52,9 +55,12 @@ export function EmbeddedBody({
   trustText,
   trustLow,
   checkedText,
+  showOnMap = false,
   variant = "sheet",
 }: {
   variant?: "sheet" | "card";
+  /** Opened from the list or the calendar: a tile takes the race to the map. */
+  showOnMap?: boolean;
   event: EventListItem;
   locale: string;
   placeLabel: string;
@@ -76,6 +82,12 @@ export function EmbeddedBody({
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
+  const router = useRouter();
+  const shareSwap = useSwapClass(linkCopied ? "copied" : "share");
+  const onMap = showOnMap && event.location?.lat != null && event.location?.lng != null;
+  // The map with this race open; the map flies to a race it is opened with.
+  const mapHref = `${localePath(locale)}?e=${encodeURIComponent(event.slug)}`;
+  const tileCount = 3 + (variant === "card" ? 0 : 1) + (onMap ? 1 : 0);
   const dateLabel =
     format(parseISO(event.startDate), "EEE d. MMMM yyyy", { locale: df }) +
     (event.endDate && event.endDate !== event.startDate
@@ -141,7 +153,7 @@ export function EmbeddedBody({
         <p className="text-sm text-muted-foreground">{t.noOnlineEntry}</p>
       )}
 
-      <div className={cn("grid gap-2", card ? "grid-cols-3" : "grid-cols-4")}>
+      <div className={cn("grid gap-2", tileCount === 5 ? "grid-cols-5" : tileCount === 4 ? "grid-cols-4" : "grid-cols-3")}>
         {directionsUrl ? (
           <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile} onClick={() => trackEnter("directions")}>
             <Navigation aria-hidden />
@@ -163,9 +175,32 @@ export function EmbeddedBody({
             if (!linkCopied) onShare();
           }}
         >
-          {linkCopied ? <Check aria-hidden /> : <Share aria-hidden />}
+          <span key={linkCopied ? "copied" : "share"} className={cn("inline-flex", shareSwap)}>
+            {linkCopied ? <Check aria-hidden /> : <Share aria-hidden />}
+          </span>
           <span>{linkCopied ? t.linkCopied : t.actionShare}</span>
         </button>
+        {onMap ? (
+          <Link
+            href={mapHref}
+            aria-label={t.showOnMap}
+            title={t.showOnMap}
+            onClick={(e) => {
+              track("cta_click", { slug: event.slug, location: "race_panel", source: "show_on_map" });
+              // The list's filters go along, so the map shows the same races
+              // around this one. Read at the click, like the rail's links.
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+              const carry = carryFilterQuery(new URLSearchParams(window.location.search));
+              if (!carry) return;
+              e.preventDefault();
+              router.push(`${localePath(locale)}${carry}&e=${encodeURIComponent(event.slug)}`);
+            }}
+            className={tile}
+          >
+            <MapIcon aria-hidden />
+            <span>{t.navMap}</span>
+          </Link>
+        ) : null}
         {card ? null : (
           <Link
             href={eventPagePath(locale, event.slug)}
