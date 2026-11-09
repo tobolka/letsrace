@@ -108,9 +108,9 @@ export function EmbeddedBody({
   return (
     <div className="flex flex-col">
       {/* When and where, the way in, and what else you can do with it. */}
-      <div className="-mx-4 -mt-3 flex flex-col gap-3 bg-muted/50 px-4 pt-3 pb-4">
-      <div className="flex flex-col gap-1">
-        <p className="flex items-center gap-2 text-base font-medium">
+      <div className="-mx-4 -mt-3 flex flex-col gap-3 bg-muted/50 px-4 py-4">
+      <div className="flex flex-col gap-1.5">
+        <p className="flex items-center gap-2 text-sm font-medium">
           <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
             {dateLabel}
@@ -157,7 +157,7 @@ export function EmbeddedBody({
       </div>
 
       {/* Who it is for and what kind of race it is. */}
-      <CardSection className="flex flex-col gap-2 py-3.5">
+      <CardSection className="flex flex-col gap-2.5 py-4">
         <MetaRow icon={<UserRound />} label={t.audience}>
           {whoChips.length > 0 ? (
             <>
@@ -209,7 +209,7 @@ export function EmbeddedBody({
       <RaceMoreDetails event={event} locale={locale} links={links} onLink={trackEnter} />
 
       {trustText || checkedText ? (
-        <CardSection className="pt-3">
+        <CardSection className="pt-4">
         <p
           className={cn("text-xs leading-snug", trustLow ? "text-destructive" : "text-muted-foreground")}
           title={t.trustExplanation}

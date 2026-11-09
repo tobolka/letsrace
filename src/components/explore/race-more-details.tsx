@@ -81,9 +81,9 @@ export function RaceMoreDetails({
     <>
       {linkSection}
       {rows.length ? (
-        <CardSection className="py-1">
+        <CardSection className="divide-y divide-border/60">
           {rows.map((row) => (
-            <FactRow key={row.key} icon={row.icon} label={row.label}>
+            <FactRow key={row.key} icon={row.icon} label={row.label} className="py-4">
               {row.body}
             </FactRow>
           ))}
@@ -100,7 +100,7 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
   const facts: PracticalDetails = full.practicalDetails ?? {};
   const fullHref = eventPagePath(locale, event.slug);
   const more = (n: number) => (
-    <Link href={fullHref} className="mt-1.5 inline-block text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground">
+    <Link href={fullHref} className="mt-2 inline-block text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground">
       {c.more.replace("{n}", String(n))}
     </Link>
   );

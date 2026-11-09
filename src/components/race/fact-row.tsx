@@ -51,7 +51,7 @@ export type FactListRow = { key: string | number; label: ReactNode; value?: Reac
 /** A list inside a fact: a time or the name on the left, its figure on the right. */
 export function FactList({ rows }: { rows: FactListRow[] }) {
   return (
-    <ul className="flex flex-col gap-1">
+    <ul className="flex flex-col gap-1.5">
       {rows.map((row) => (
         <li key={row.key} className="flex min-w-0 items-baseline gap-3">
           {row.lead ? <span className="shrink-0 font-medium tabular-nums">{row.lead}</span> : null}

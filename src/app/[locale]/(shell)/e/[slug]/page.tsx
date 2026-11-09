@@ -268,7 +268,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         </header>
 
         {/* The same rows and badges as the race card on the map. */}
-        <div className="mt-5 flex flex-col gap-2">
+        <div className="mt-5 flex flex-col gap-2.5">
           <MetaRow icon={<UserRound />} label={t.audience}>
             {whoChips.length > 0 ? (
               <>
@@ -348,9 +348,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         <RaceLinkRows
           links={pageLinks}
           analytics={{ raceId: event.id, slug: event.slug, location: "race_page", presentation: "page" }}
-          className="mt-4 divide-y divide-border/60 overflow-hidden rounded-xl border"
+          className="mt-5 divide-y divide-border/60 overflow-hidden rounded-xl border"
         />
-        <p className="mt-2 text-xs text-muted-foreground">
+        <p className="mt-3 text-xs text-muted-foreground">
           {event.organizerVerified ? (
             // Ownership is not a claim that every displayed fact was checked.
             <span className="inline-flex items-center gap-1 font-medium text-foreground" title={oc.badgeHelp}>

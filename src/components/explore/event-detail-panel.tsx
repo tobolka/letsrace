@@ -181,7 +181,8 @@ export function EventDetailPanel({
           id="race-detail-title"
           className={cn(
             "flex min-w-0 flex-1 items-stretch gap-2.5 leading-snug",
-            embedded ? "text-[17px] font-semibold" : "text-base",
+            "font-semibold",
+            embedded ? "text-[17px]" : "text-base",
           )}
         >
           {/* The same rule the list card wears, so a race looks like itself
