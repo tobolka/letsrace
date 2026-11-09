@@ -156,10 +156,10 @@ export function EmbeddedBody({
       {card ? (
         // The desktop card's actions are the race page's buttons — the same
         // outline look and the same icon-then-label order.
-        <div className="flex flex-wrap gap-2">
-          <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" />
+        <div className="grid grid-cols-2 gap-2 [&>:nth-child(odd):last-child]:col-span-2">
+          <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" className="w-full" />
           {onMap ? (
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="w-full">
               <Link
                 href={mapHref}
                 onClick={(e) => {
@@ -177,7 +177,7 @@ export function EmbeddedBody({
             </Button>
           ) : null}
           {directionsUrl ? (
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="w-full">
               <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} onClick={() => trackEnter("directions")}>
                 <Navigation data-icon="inline-start" />
                 {t.directions}
@@ -187,6 +187,7 @@ export function EmbeddedBody({
           <Button
             type="button"
             variant="outline"
+            className="w-full"
             aria-label={linkCopied ? t.linkCopied : t.shareRace}
             onClick={(e) => {
               // The label stays put, so the row does not reflow; only the icon
@@ -198,9 +199,6 @@ export function EmbeddedBody({
             {linkCopied ? <Check data-icon="inline-start" /> : <Share data-icon="inline-start" />}
             {t.actionShare}
           </Button>
-          <p className="sr-only" aria-live="polite">
-            {linkCopied ? t.linkCopied : ""}
-          </p>
         </div>
       ) : (
       <div className={cn("grid gap-2", tileCount === 5 ? "grid-cols-5" : tileCount === 4 ? "grid-cols-4" : "grid-cols-3")}>
