@@ -66,7 +66,7 @@ export function EventDetailPanel({
   topY?: number;
 }) {
   const t = messagesFor(locale);
-  const { cardRef, offset, dragging, headerProps } = useDraggableCard({
+  const { cardRef, offset, dragging, resizing, size, docked, snapRect, startResize, resetSize, headerProps } = useDraggableCard({
     eventId: event.id,
     embedded,
     anchored,
@@ -129,6 +129,15 @@ export function EventDetailPanel({
   }
 
   return (
+    <>
+    {snapRect ? (
+      // Where the card will settle if it is let go here.
+      <div
+        aria-hidden
+        className="pointer-events-none absolute z-30 rounded-xl bg-foreground/10"
+        style={{ left: snapRect.x, top: snapRect.y, width: snapRect.w, height: snapRect.h }}
+      />
+    ) : null}
     <Card
       ref={cardRef}
       role="region"
@@ -139,7 +148,7 @@ export function EventDetailPanel({
         // overflow-x-hidden: long series chips / nowrap buttons used to force a
         // horizontal scrollbar while the card was dragged around the map.
         "pointer-events-auto w-full gap-0 overflow-x-hidden overflow-y-hidden py-0",
-        dragging && "select-none",
+        (dragging || resizing) && "select-none",
         embedded
           ? "flex h-full min-h-0 max-w-none flex-col border-0 shadow-none"
           : anchored
@@ -152,7 +161,14 @@ export function EventDetailPanel({
           : {
               left: offset.x,
               top: offset.y,
-              width: `min(${RACE_CARD_W}px, calc(100% - 1.5rem))`,
+              width: `min(${(docked ? null : size.w) ?? RACE_CARD_W}px, calc(100% - 1.5rem))`,
+              // Snapped to a side: the map's whole height. Stretched: as tall as it was
+              // made, no taller than the map. Otherwise as tall as its content.
+              height: docked
+                ? `calc(100% - ${offset.y + 12}px)`
+                : size.h != null
+                  ? `min(${size.h}px, calc(100% - ${offset.y + 12}px))`
+                  : undefined,
               // Down to the map's foot, never past it: the card scrolls inside.
               maxHeight: `calc(100% - ${offset.y + 12}px)`,
             }
@@ -287,6 +303,37 @@ export function EventDetailPanel({
         </CardFooter>
       )}
 
+      {embedded || anchored ? null : (
+        // Stretch it from a side or a bottom corner; a double click puts the
+        // size back. Thin, so they do not take the scrollbar's place.
+        <>
+          {(["w", "e"] as const).map((edge) => (
+            <div
+              key={edge}
+              aria-hidden
+              onPointerDown={(e) => startResize(edge, e)}
+              onDoubleClick={resetSize}
+              className={cn("absolute inset-y-3 z-20 w-1 cursor-ew-resize touch-none hover:bg-border", edge === "w" ? "left-0" : "right-0")}
+            />
+          ))}
+          <div
+            aria-hidden
+            onPointerDown={(e) => startResize("s", e)}
+            onDoubleClick={resetSize}
+            className="absolute inset-x-3 bottom-0 z-20 h-1 cursor-ns-resize touch-none hover:bg-border"
+          />
+          {(["sw", "se"] as const).map((edge) => (
+            <div
+              key={edge}
+              aria-hidden
+              onPointerDown={(e) => startResize(edge, e)}
+              onDoubleClick={resetSize}
+              className={cn("absolute bottom-0 z-20 size-3 touch-none", edge === "sw" ? "left-0 cursor-nesw-resize" : "right-0 cursor-nwse-resize")}
+            />
+          ))}
+        </>
+      )}
     </Card>
+    </>
   );
 }

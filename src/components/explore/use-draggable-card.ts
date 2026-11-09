@@ -9,6 +9,39 @@ export const DEFAULT_CARD_X = DEFAULT_PANEL_W + 12;
 const DEFAULT_Y = 12;
 const DRAG_MARGIN = 12;
 
+/** The card's own size, kept by the browser: someone who stretched it wants it stretched. */
+const SIZE_KEY = "letsrace:race-card-size";
+const MIN_W = 320;
+const MAX_W = 720;
+const MIN_H = 280;
+/** How near the map's side the pointer must come for the card to snap to it. */
+const SNAP_ZONE = 24;
+
+export type CardSize = { w: number | null; h: number | null };
+export type CardEdge = "e" | "w" | "s" | "se" | "sw";
+export type CardSide = "left" | "right";
+export type SnapRect = { x: number; y: number; w: number; h: number };
+
+function readSize(): CardSize {
+  try {
+    const raw = JSON.parse(window.localStorage.getItem(SIZE_KEY) ?? "null") as Partial<CardSize> | null;
+    const w = typeof raw?.w === "number" ? Math.min(MAX_W, Math.max(MIN_W, raw.w)) : null;
+    const h = typeof raw?.h === "number" ? Math.max(MIN_H, raw.h) : null;
+    return { w, h };
+  } catch {
+    return { w: null, h: null };
+  }
+}
+
+function saveSize(size: CardSize) {
+  try {
+    if (size.w == null && size.h == null) window.localStorage.removeItem(SIZE_KEY);
+    else window.localStorage.setItem(SIZE_KEY, JSON.stringify(size));
+  } catch {}
+}
+
+const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
+
 /**
  * The room the card floats in — the map's own box, not the window. With a rail
  * down the left edge the map is narrower than the window, and a card placed by
@@ -75,10 +108,22 @@ export function useDraggableCard({
     startY: number;
     origX: number;
     origY: number;
+    /** It was snapped to a side when picked up; true once it has been pulled away. */
+    wasDocked: boolean;
+    pulledAway: boolean;
   } | null>(null);
   const offsetRef = useRef({ x: DEFAULT_CARD_X, y: DEFAULT_Y });
   const [offset, setOffset] = useState({ x: DEFAULT_CARD_X, y: DEFAULT_Y });
   const [dragging, setDragging] = useState(false);
+  // What the reader stretched the card to; null is the default on that side.
+  const [size, setSizeState] = useState<CardSize>({ w: null, h: null });
+  const sizeRef = useRef<CardSize>({ w: null, h: null });
+  // Snapped to a side of the map: the default width, the map's whole height.
+  // The size the reader made is left alone, so pulling the card away gives it back.
+  const [docked, setDocked] = useState<CardSide | null>(null);
+  const dockedRef = useRef<CardSide | null>(null);
+  const [snapRect, setSnapRect] = useState<(SnapRect & { side: CardSide }) | null>(null);
+  const [resizing, setResizing] = useState(false);
   const prevEventIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -95,13 +140,21 @@ export function useDraggableCard({
   useEffect(() => {
     if (embedded || anchored) return;
     const onResize = () => {
+      const side = dockedRef.current;
+      if (side) {
+        const rect = dockRect(side);
+        offsetRef.current = { x: rect.x, y: rect.y };
+        setOffset(offsetRef.current);
+        return;
+      }
       const next = clampPanelPos(offsetRef.current.x, offsetRef.current.y, cardRef.current);
       offsetRef.current = next;
       setOffset(next);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [embedded, anchored]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dockRect reads these props and refs only.
+  }, [embedded, anchored, dockRight, dockTop, leftX, topY]);
 
   // A short fade-in when the selected race changes — same card, new content.
   // Skip in the mobile sheet: Vaul already moved it.
@@ -129,6 +182,122 @@ export function useDraggableCard({
     return () => el.removeEventListener("animationend", onEnd);
   }, []);
 
+  function setSize(next: CardSize, persist = true) {
+    sizeRef.current = next;
+    setSizeState(next);
+    if (persist) saveSize(next);
+  }
+
+  function setDock(side: CardSide | null) {
+    dockedRef.current = side;
+    setDocked(side);
+  }
+
+  useEffect(() => {
+    if (embedded || anchored) return;
+    // The saved size is only known in the browser, after the first paint.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSize(readSize(), false);
+  }, [embedded, anchored]);
+
+  /** Where a card snapped to a side sits and how big it is. */
+  function dockRect(side: CardSide): SnapRect {
+    const stage = stageSize(cardRef.current);
+    const w = Math.min(RACE_CARD_W, stage.w - 2 * DRAG_MARGIN);
+    const y = dockRight ? dockTop : topY;
+    return {
+      x: side === "left" ? leftX : Math.max(DRAG_MARGIN, stage.w - w - DRAG_MARGIN),
+      y,
+      w,
+      h: Math.max(MIN_H, stage.h - y - DRAG_MARGIN),
+    };
+  }
+
+  /** The side of the map the pointer is at, if it is at one. */
+  function sideAt(clientX: number): CardSide | null {
+    const el = cardRef.current;
+    const stage = el?.offsetParent as HTMLElement | null;
+    if (!stage) return null;
+    const px = clientX - stage.getBoundingClientRect().left;
+    if (px <= leftX + 8) return "left";
+    if (px >= stage.clientWidth - SNAP_ZONE) return "right";
+    return null;
+  }
+
+  function dock(side: CardSide) {
+    const rect = dockRect(side);
+    setDock(side);
+    offsetRef.current = { x: rect.x, y: rect.y };
+    setOffset({ x: rect.x, y: rect.y });
+  }
+
+  /** The default size back, as when the card was first opened. */
+  function resetSize() {
+    setDock(null);
+    setSize({ w: null, h: null });
+    const next = clampPanelPos(offsetRef.current.x, offsetRef.current.y, cardRef.current);
+    offsetRef.current = next;
+    setOffset(next);
+  }
+
+  /** Stretch the card from one of its edges or corners. */
+  function startResize(edge: CardEdge, e: PointerEvent<HTMLElement>) {
+    const el = cardRef.current;
+    if (embedded || anchored || e.button !== 0 || !el) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const handle = e.currentTarget;
+    handle.setPointerCapture(e.pointerId);
+    const stage = stageSize(el);
+    const start = {
+      x: e.clientX,
+      y: e.clientY,
+      w: el.offsetWidth,
+      h: el.offsetHeight,
+      left: offsetRef.current.x,
+      top: offsetRef.current.y,
+    };
+    const live = { w: start.w, h: start.h, x: start.left };
+    const stretchesHeight = edge.includes("s");
+    // Docked or not, from here on the reader sets the size.
+    setDock(null);
+    setSnapRect(null);
+    setResizing(true);
+
+    const move = (ev: globalThis.PointerEvent) => {
+      if (ev.pointerId !== e.pointerId) return;
+      const dx = ev.clientX - start.x;
+      const dy = ev.clientY - start.y;
+      let w = start.w;
+      if (edge.includes("e")) w = start.w + dx;
+      if (edge.includes("w")) w = start.w - dx;
+      const room = edge.includes("w") ? start.left + start.w - DRAG_MARGIN : stage.w - start.left - DRAG_MARGIN;
+      w = clamp(w, MIN_W, Math.max(MIN_W, Math.min(MAX_W, room)));
+      live.w = w;
+      live.x = edge.includes("w") ? start.left + start.w - w : start.left;
+      el.style.width = `${w}px`;
+      el.style.left = `${live.x}px`;
+      if (stretchesHeight) {
+        live.h = clamp(start.h + dy, MIN_H, Math.max(MIN_H, stage.h - start.top - DRAG_MARGIN));
+        el.style.height = `${live.h}px`;
+      }
+    };
+    const end = (ev: globalThis.PointerEvent) => {
+      if (ev.pointerId !== e.pointerId) return;
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", end);
+      handle.removeEventListener("pointercancel", end);
+      if (handle.hasPointerCapture(ev.pointerId)) handle.releasePointerCapture(ev.pointerId);
+      offsetRef.current = { x: live.x, y: start.top };
+      setOffset(offsetRef.current);
+      setSize({ w: Math.round(live.w), h: stretchesHeight ? Math.round(live.h) : sizeRef.current.h });
+      setResizing(false);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", end);
+    handle.addEventListener("pointercancel", end);
+  }
+
   function onHeaderPointerDown(e: PointerEvent<HTMLDivElement>) {
     if (embedded || anchored || e.button !== 0) return;
     if ((e.target as HTMLElement).closest("button, a, input")) return;
@@ -139,6 +308,8 @@ export function useDraggableCard({
       startY: e.clientY,
       origX: pos.x,
       origY: pos.y,
+      wasDocked: dockedRef.current != null,
+      pulledAway: false,
     };
     setDragging(true);
     e.preventDefault();
@@ -150,37 +321,68 @@ export function useDraggableCard({
   function onHeaderPointerMove(e: PointerEvent<HTMLDivElement>) {
     const drag = dragRef.current;
     if (!drag || e.pointerId !== drag.pointerId) return;
-    const next = clampPanelPos(
-      drag.origX + (e.clientX - drag.startX),
-      drag.origY + (e.clientY - drag.startY),
-      cardRef.current,
-    );
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+    // A snapped card holds until it is pulled a few pixels. Whatever its size,
+    // it keeps it while it is carried; a snapped card gets the size it had
+    // before only when it is let go away from the side.
+    if (drag.wasDocked && !drag.pulledAway) {
+      if (Math.hypot(dx, dy) < 6) return;
+      drag.pulledAway = true;
+    }
+    const next = clampPanelPos(drag.origX + dx, drag.origY + dy, cardRef.current);
     const el = cardRef.current;
     if (el) el.style.transform = `translate(${next.x - drag.origX}px, ${next.y - drag.origY}px)`;
+    const side = sideAt(e.clientX);
+    if (!side) {
+      if (snapRect) setSnapRect(null);
+    } else if (snapRect?.side !== side) {
+      setSnapRect({ ...dockRect(side), side });
+    }
   }
 
   function endHeaderDrag(e: PointerEvent<HTMLDivElement>) {
     const drag = dragRef.current;
     if (!drag || e.pointerId !== drag.pointerId) return;
-    const next = clampPanelPos(
-      drag.origX + (e.clientX - drag.startX),
-      drag.origY + (e.clientY - drag.startY),
-      cardRef.current,
-    );
     dragRef.current = null;
-    offsetRef.current = next;
-    setOffset(next);
     setDragging(false);
     const el = cardRef.current;
     if (el) el.style.transform = "";
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
+    const side = e.type === "pointerup" ? sideAt(e.clientX) : null;
+    setSnapRect(null);
+    // A click on a snapped card's header is not a move.
+    if (drag.wasDocked && !drag.pulledAway) return;
+    if (side) {
+      dock(side);
+      return;
+    }
+    const next = clampPanelPos(
+      drag.origX + (e.clientX - drag.startX),
+      drag.origY + (e.clientY - drag.startY),
+      cardRef.current,
+    );
+    if (drag.wasDocked) {
+      // Back to its own size, which may be wider than the snapped one: keep it on the map.
+      setDock(null);
+      const room = stageSize(cardRef.current).w - (sizeRef.current.w ?? RACE_CARD_W) - DRAG_MARGIN;
+      next.x = Math.min(next.x, Math.max(DRAG_MARGIN, room));
+    }
+    offsetRef.current = next;
+    setOffset(next);
   }
   return {
     cardRef,
     offset,
     dragging,
+    resizing,
+    size,
+    docked,
+    snapRect,
+    startResize,
+    resetSize,
     headerProps: {
       onPointerDown: onHeaderPointerDown,
       onPointerMove: onHeaderPointerMove,
