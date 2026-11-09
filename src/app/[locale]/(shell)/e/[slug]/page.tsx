@@ -159,10 +159,10 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
     return [ageCategoryHelp(id, locale), years ? fill(rc.bornIn, { years }) : null].filter(Boolean).join(" · ");
   };
   const discChips = event.disciplines.slice(0, 4).map((d) => disciplineLabel(d, locale)).filter(Boolean);
-  // Entry first — it is what the page is for — then the organiser's own pages.
+  // The organiser's own page first, then the entry form and the other pages.
   const actionLinks = [
-    event.registrationUrl ? { href: event.registrationUrl, label: t.register, kind: "register" } : null,
     event.websiteUrl && event.websiteUrl !== event.registrationUrl ? { href: event.websiteUrl, label: rc.website, kind: "website" } : null,
+    event.registrationUrl ? { href: event.registrationUrl, label: t.register, kind: "register" } : null,
     event.regulationsUrl ? { href: event.regulationsUrl, label: rc.regulations, kind: "regulations" } : null,
     event.resultsUrl ? { href: event.resultsUrl, label: t.results, kind: "results" } : null,
     !event.registrationUrl && !event.websiteUrl && event.listingUrl ? { href: event.listingUrl, label: t.calendarListing, kind: "listing" } : null,

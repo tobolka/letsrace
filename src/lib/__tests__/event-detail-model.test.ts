@@ -26,12 +26,12 @@ describe("buildDetailModel", () => {
 
   it("names the place by municipality then country", () => expect(build({}).placeLabel).toBe("Brno · CZ"));
 
-  it("leads with registration, then lists the other pages once each", () => {
+  it("leads with the race website, then lists the other pages once each", () => {
     const m = build({
       registrationUrl: "https://reg", websiteUrl: "https://web", regulationsUrl: "https://web", resultsUrl: "https://res",
     });
     expect(m.actionLinks.map((l) => [l.kind, l.href])).toEqual([
-      ["register", "https://reg"], ["website", "https://web"], ["results", "https://res"],
+      ["website", "https://web"], ["register", "https://reg"], ["results", "https://res"],
     ]);
   });
 

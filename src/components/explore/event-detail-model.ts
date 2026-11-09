@@ -82,18 +82,23 @@ export function buildDetailModel(
     event.listingUrl !== registerUrl
       ? event.listingUrl
       : null;
-  const primaryEnter = registerUrl || websiteUrl || listingUrl;
-  const primaryEnterLabel = registerUrl
-    ? t.register
-    : websiteUrl
-      ? t.openWebsite
-      : listingUrl
-        ? t.calendarListing
-        : null;
+  // The organiser's own page leads; the entry form is one click further, in the
+  // list of links. (When the two are the same address it is the entry.)
+  const websiteFirst = Boolean(websiteUrl && websiteUrl !== registerUrl);
+  const primaryEnter = websiteFirst ? websiteUrl : registerUrl || websiteUrl || listingUrl;
+  const primaryEnterLabel = websiteFirst
+    ? t.openWebsite
+    : registerUrl
+      ? t.register
+      : websiteUrl
+        ? t.openWebsite
+        : listingUrl
+          ? t.calendarListing
+          : null;
 
   const extraLinks: DetailLink[] = [];
-  if (registerUrl && websiteUrl && websiteUrl !== registerUrl) {
-    extraLinks.push({ href: websiteUrl, label: t.openWebsite, kind: "website" });
+  if (websiteFirst && registerUrl) {
+    extraLinks.push({ href: registerUrl, label: t.register, kind: "register" });
   }
   if (
     event.regulationsUrl &&
@@ -134,10 +139,12 @@ export function buildDetailModel(
 
   const primaryHref = primaryEnter || event.regulationsUrl;
   const primaryLabel = primaryEnterLabel ?? (event.regulationsUrl ? t.regulations : null);
-  const primaryKind = registerUrl
-    ? "register"
-    : websiteUrl
-      ? "website"
+  const primaryKind = websiteFirst
+    ? "website"
+    : registerUrl
+      ? "register"
+      : websiteUrl
+        ? "website"
       : listingUrl
         ? "listing"
         : "regulations";
