@@ -140,7 +140,7 @@ export function EmbeddedBody({
       </div>
 
       {/* Who it is for and what kind of race it is. */}
-      <CardSection className="flex flex-col gap-2 py-3.5">
+      <CardSection className="flex flex-col gap-2 bg-muted/50 py-3.5">
         <MetaRow icon={<UserRound />} label={t.audience}>
           {whoChips.length > 0 ? (
             <>
