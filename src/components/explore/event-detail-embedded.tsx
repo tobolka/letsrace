@@ -1,7 +1,7 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { Calendar, ChartNoAxesColumnIncreasing, Check, ExternalLink, Map as MapIcon, MapPin, Maximize2, Navigation, Share, Trophy, UserRound } from "lucide-react";
+import { Calendar, ChartNoAxesColumnIncreasing, Check, ExternalLink, Map as MapIcon, MapPin, MapPinned, Maximize2, Navigation, Share, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSwapClass } from "@/hooks/use-swap-class";
@@ -177,8 +177,8 @@ export function EmbeddedBody({
                   router.push(`${localePath(locale)}${carry}&e=${encodeURIComponent(event.slug)}`);
                 }}
               >
-                <MapIcon data-icon="inline-start" />
-                {t.showOnMap}
+                <MapPinned data-icon="inline-start" />
+                {t.viewOnMap}
               </Link>
             </Button>
           ) : null}
