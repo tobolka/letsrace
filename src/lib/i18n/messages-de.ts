@@ -242,7 +242,7 @@ export const de = {
   planAllStatuses: "Alle Status",
   planFilterEmpty: "Keine Rennen entsprechen diesen Filtern.",
   planRaceColumn: "Rennen",
-  directions: "Route",
+  directions: "Navigieren",
   directionsHelp: "Google Maps mit der Route von deinem Standort öffnen",
   planColRace: "Rennen",
   planAddPeople: "Fahrer hinzufügen",
