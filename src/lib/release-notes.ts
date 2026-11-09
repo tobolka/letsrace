@@ -23,7 +23,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       cs: [
         "Kartu závodu na mapě si můžeš roztáhnout za okraje a rohy; velikost si pamatuje, dvojklik na okraj ji vrátí.",
-        "Kartu přetáhneš k pravému nebo levému okraji mapy a přichytí se na celou výšku; odtažením se vrátí do tvé velikosti.",
+        "Kartu přetáhneš k pravému nebo levému okraji mapy a přichytí se na celou výšku; odtažením zůstane v úzké šířce a má zase svou výšku.",
         "Tlačítka u závodu vypadají a fungují stejně na kartě, na telefonu i na stránce závodu; stránka má teď taky Sdílet a Navigovat.",
         "Velké tlačítko na kartě a na stránce závodu vede na web závodu, registrace je hned pod ním.",
         "Tlačítko k cestě se jmenuje Navigovat, aby se nepletlo s trasou závodu.",
@@ -37,7 +37,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
       ],
       en: [
         "You can stretch the race card on the map by its sides and corners; it remembers the size, and a double click on an edge puts it back.",
-        "Drag the card to the right or left edge of the map and it snaps to the full height; pull it away and it returns to your size.",
+        "Drag the card to the right or left edge of the map and it snaps to the full height; pull it away and it stays at that narrow width with its own height again.",
         "A race's buttons look and work the same on the card, on a phone and on its page; the page now has Share and Directions too.",
         "The big button on the card and on a race's page opens the race website, with registration right below it.",
         "The route button is called Directions, so it is not mistaken for the race's course.",

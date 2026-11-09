@@ -323,9 +323,8 @@ export function useDraggableCard({
     if (!drag || e.pointerId !== drag.pointerId) return;
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
-    // A snapped card holds until it is pulled a few pixels. Whatever its size,
-    // it keeps it while it is carried; a snapped card gets the size it had
-    // before only when it is let go away from the side.
+    // A snapped card holds until it is pulled a few pixels. Carried, it keeps
+    // the width it had when picked up, and keeps it when let go.
     if (drag.wasDocked && !drag.pulledAway) {
       if (Math.hypot(dx, dy) < 6) return;
       drag.pulledAway = true;
@@ -365,10 +364,10 @@ export function useDraggableCard({
       cardRef.current,
     );
     if (drag.wasDocked) {
-      // Back to its own size, which may be wider than the snapped one: keep it on the map.
+      // Let go away from the side: it keeps the width it had while carried (the
+      // snapped one), and its height is its own again.
       setDock(null);
-      const room = stageSize(cardRef.current).w - (sizeRef.current.w ?? RACE_CARD_W) - DRAG_MARGIN;
-      next.x = Math.min(next.x, Math.max(DRAG_MARGIN, room));
+      setSize({ w: null, h: sizeRef.current.h });
     }
     offsetRef.current = next;
     setOffset(next);
