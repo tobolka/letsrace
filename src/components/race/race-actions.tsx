@@ -96,11 +96,7 @@ export function RaceActions({
 
   const way = wants("primary") ? (
     primary ? (
-      <Button
-        asChild
-        size={layout === "row" ? "default" : "lg"}
-        className={layout === "row" ? undefined : "h-12 w-full text-base"}
-      >
+      <Button asChild className={layout === "row" ? undefined : "w-full"}>
         <a href={primary.href} target="_blank" rel="noopener noreferrer" onClick={() => trackEnter(primary.kind)}>
           <ExternalLink data-icon="inline-start" />
           <span className="truncate">{primary.label}</span>
