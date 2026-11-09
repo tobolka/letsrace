@@ -103,7 +103,7 @@ export function EmbeddedBody({
   return (
     <div className="flex flex-col">
       {/* When and where, the way in, and what else you can do with it. */}
-      <div className="-mx-4 -mt-3 flex flex-col gap-3 bg-muted px-4 pt-3 pb-4">
+      <div className="-mx-4 -mt-3 flex flex-col gap-3 bg-muted/50 px-4 pt-3 pb-4">
       <div className="flex flex-col gap-1">
         <p className="flex items-center gap-2 text-base font-medium">
           <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
