@@ -22,6 +22,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-09",
     items: {
       cs: [
+        "Karta závodu na mapě se čte líp: den závodu je vidět na první pohled a počasí je velkou teplotou s deštěm a větrem vedle ní.",
         "Tlačítka u závodu vypadají a fungují stejně na kartě, na telefonu i na stránce závodu; stránka má teď taky Sdílet a Trasu.",
         "Na telefonu se karta závodu už nepřekrývá se seznamem.",
         "Po klepnutí na závod v mapě už nezůstane viset jeho název.",
@@ -29,6 +30,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Na tabletu se stránka při psaní do pole už nepřibližuje.",
       ],
       en: [
+        "The race card on the map reads better: the race day stands out at a glance, and the weather is a large temperature with rain and wind beside it.",
         "A race's buttons look and work the same on the card, on a phone and on its page; the page now has Share and Directions too.",
         "On a phone, the race card no longer overlaps the list.",
         "Tapping a race on the map no longer leaves its name hanging.",
