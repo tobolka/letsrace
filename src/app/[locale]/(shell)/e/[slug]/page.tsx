@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
-import { BadgeCheck, Bike, CalendarHeart, ChartNoAxesColumnIncreasing, ExternalLink, MapPinned, Trophy, UserRound } from "lucide-react";
+import { BadgeCheck, Bike, CalendarHeart, ChartNoAxesColumnIncreasing, Trophy, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
@@ -35,11 +35,11 @@ import { PracticalRaceFacts } from "@/components/race/practical-race-facts";
 import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
 import { DOCUMENT_KINDS } from "@/lib/race-fact-copy";
 import { RacePageView } from "@/components/analytics/race-page-view";
-import { OutboundTrackLink } from "@/components/seo/outbound-track-link";
 import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
 import { RaceDetailMap } from "@/components/race/race-detail-map";
-import { SaveRaceButton } from "@/components/race/save-race-button";
+import { RaceActions } from "@/components/race/race-actions";
+import { googleDirectionsUrl } from "@/components/explore/event-detail-model";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
 import { racePlace } from "@/lib/race-place";
@@ -333,29 +333,17 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           ) : null}
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          {actionLinks.slice(0, 1).map((link, index) => (
-            <OutboundTrackLink
-              key={link.href}
-              href={link.href}
-              eventName={link.kind === "register" ? "race_registration_start" : "outbound_click"}
-              eventProps={{ race_id: event.id, slug: event.slug, kind: link.kind, location: "race_page", presentation: "page" }}
-              variant={index === 0 ? "default" : "outline"}
-              size="default"
-            >
-              <ExternalLink data-icon="inline-start" />
-              {link.label}
-            </OutboundTrackLink>
-          ))}
-          {isPast ? null : <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" />}
-          <Button asChild variant="outline">
-            <Link href={mapHref}>
-              <MapPinned data-icon="inline-start" />
-              {t.viewOnMap}
-            </Link>
-          </Button>
-        </div>
-        {actionLinks.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">{t.noOnlineEntry}</p> : null}
+        <RaceActions
+          className="mt-5"
+          event={event}
+          locale={locale}
+          layout="row"
+          location="race_page"
+          show={isPast ? ["primary", "map", "directions", "share"] : ["primary", "plan", "map", "directions", "share"]}
+          primary={actionLinks[0] ?? null}
+          directionsUrl={googleDirectionsUrl(here, "")}
+          mapHref={mapHref}
+        />
         {/* The organiser's other pages and documents: one list, the same rows as the map's race card. */}
         <RaceLinkRows
           links={pageLinks}

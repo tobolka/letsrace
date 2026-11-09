@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
 import { buildDetailModel } from "@/components/explore/event-detail-model";
 import { EmbeddedBody } from "@/components/explore/event-detail-embedded";
 import { RACE_CARD_W } from "@/components/explore/panel-resize";
-import { useShareLink } from "@/components/explore/use-share-link";
 import { DEFAULT_CARD_X, useDraggableCard } from "@/components/explore/use-draggable-card";
 import { eventPagePath } from "@/lib/event-url";
 import { focusKeyboardItem, visibleKeyboardItems } from "@/lib/keyboard-navigation";
@@ -67,7 +66,6 @@ export function EventDetailPanel({
   topY?: number;
 }) {
   const t = messagesFor(locale);
-  const { linkCopied, copyShareLink } = useShareLink(event, locale);
   const { cardRef, offset, dragging, headerProps } = useDraggableCard({
     eventId: event.id,
     embedded,
@@ -264,8 +262,6 @@ export function EventDetailPanel({
           discChips={m.discChips}
           onSelectSeries={onSelectSeries}
           trackEnter={trackEnter}
-          linkCopied={linkCopied}
-          onShare={() => void copyShareLink()}
           trustText={m.trustText}
           trustLow={m.trust === "low"}
           checkedText={m.checkedText && event.lastSeenAt ? m.checkedText : null}

@@ -1,20 +1,14 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
-import { Calendar, ChartNoAxesColumnIncreasing, Check, ExternalLink, Map as MapIcon, MapPin, MapPinned, Maximize2, Navigation, Share, Trophy, UserRound } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSwapClass } from "@/hooks/use-swap-class";
-import { track } from "@/lib/analytics";
-import { carryFilterQuery } from "@/lib/explore-params";
+import { Calendar, ChartNoAxesColumnIncreasing, MapPin, Trophy, UserRound } from "lucide-react";
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { CardSection, RaceMoreDetails, type CardLink } from "@/components/explore/race-more-details";
 import { RaceWeather, windyLabel, windyUrl } from "@/components/race/race-weather";
-import { SaveRaceButton } from "@/components/race/save-race-button";
+import { RaceActions } from "@/components/race/race-actions";
 import { Button } from "@/components/ui/button";
-import { eventPagePath } from "@/lib/event-url";
 import type { EventListItem } from "@/lib/events";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -50,8 +44,6 @@ export function EmbeddedBody({
   discChips,
   onSelectSeries,
   trackEnter,
-  linkCopied,
-  onShare,
   trustText,
   trustLow,
   checkedText,
@@ -74,20 +66,15 @@ export function EmbeddedBody({
   discChips: string[];
   onSelectSeries?: (slug: string) => void;
   trackEnter: (kind: string) => void;
-  linkCopied: boolean;
-  onShare: () => void;
   trustText: string | null;
   trustLow: boolean;
   checkedText: string | null;
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
-  const router = useRouter();
-  const shareSwap = useSwapClass(linkCopied ? "copied" : "share");
   const onMap = showOnMap && event.location?.lat != null && event.location?.lng != null;
   // The map with this race open; the map flies to a race it is opened with.
   const mapHref = `${localePath(locale)}?e=${encodeURIComponent(event.slug)}`;
-  const tileCount = 3 + (variant === "card" ? 0 : 1) + (onMap ? 1 : 0);
   const dateLabel =
     format(parseISO(event.startDate), "EEE d. MMMM yyyy", { locale: df }) +
     (event.endDate && event.endDate !== event.startDate
@@ -113,9 +100,6 @@ export function EmbeddedBody({
       : []),
     ...(weatherAt ? [{ href: windyUrl(weatherAt.lat, weatherAt.lng), label: windyLabel(locale), kind: "weather", external: true }] : []),
   ];
-  const tile =
-    "flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-xl bg-muted/70 px-1 text-xs font-medium text-foreground touch-manipulation transition-colors active:bg-muted disabled:opacity-60 [&_svg]:size-5 [&>span]:max-w-full [&>span]:truncate";
-
   return (
     <div className="flex flex-col">
       {/* When and where, the way in, and what else you can do with it. */}
@@ -142,135 +126,17 @@ export function EmbeddedBody({
         </p>
       </div>
 
-      {primary ? (
-        <Button asChild size="lg" className="h-12 w-full text-base">
-          <a href={primary.href} target="_blank" rel="noopener noreferrer" onClick={() => trackEnter(primary.kind)}>
-            <ExternalLink data-icon="inline-start" />
-            <span className="truncate">{primary.label}</span>
-          </a>
-        </Button>
-      ) : (
-        <p className="text-sm text-muted-foreground">{t.noOnlineEntry}</p>
-      )}
-
-      {card ? (
-        // The desktop card's actions are the race page's buttons — the same
-        // outline look and the same icon-then-label order.
-        <div
-          className={cn(
-            "grid grid-cols-2 gap-2",
-            // Four make an even grid; fewer lead with the plan across the width.
-            (onMap ? 1 : 0) + (directionsUrl ? 1 : 0) < 2 && "[&>:first-child]:col-span-2 [&>:nth-child(even):last-child]:col-span-2",
-          )}
-        >
-          <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" className="w-full" />
-          {onMap ? (
-            <Button asChild variant="outline" className="w-full">
-              <Link
-                href={mapHref}
-                onClick={(e) => {
-                  track("cta_click", { slug: event.slug, location: "race_panel", source: "show_on_map" });
-                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-                  const carry = carryFilterQuery(new URLSearchParams(window.location.search));
-                  if (!carry) return;
-                  e.preventDefault();
-                  router.push(`${localePath(locale)}${carry}&e=${encodeURIComponent(event.slug)}`);
-                }}
-              >
-                <MapPinned data-icon="inline-start" />
-                {t.viewOnMap}
-              </Link>
-            </Button>
-          ) : null}
-          {directionsUrl ? (
-            <Button asChild variant="outline" className="w-full">
-              <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} onClick={() => trackEnter("directions")}>
-                <Navigation data-icon="inline-start" />
-                {t.directions}
-              </a>
-            </Button>
-          ) : null}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            aria-label={linkCopied ? t.linkCopied : t.shareRace}
-            onClick={(e) => {
-              // The label stays put, so the row does not reflow; only the icon
-              // says it worked (and the live region below says it aloud).
-              e.currentTarget.blur();
-              if (!linkCopied) onShare();
-            }}
-          >
-            {linkCopied ? <Check data-icon="inline-start" /> : <Share data-icon="inline-start" />}
-            {t.actionShare}
-          </Button>
-        </div>
-      ) : (
-      <div className={cn("grid gap-2", tileCount === 5 ? "grid-cols-5" : tileCount === 4 ? "grid-cols-4" : "grid-cols-3")}>
-        {directionsUrl ? (
-          <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile} onClick={() => trackEnter("directions")}>
-            <Navigation aria-hidden />
-            <span>{t.directions}</span>
-          </a>
-        ) : (
-          <span aria-hidden className={cn(tile, "opacity-40")}>
-            <Navigation />
-            <span>{t.directions}</span>
-          </span>
-        )}
-        <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="tile" className={tile} />
-        <button
-          type="button"
-          aria-label={linkCopied ? t.linkCopied : t.shareRace}
-          aria-pressed={linkCopied}
-          className={cn(tile, linkCopied && "bg-primary text-primary-foreground active:bg-primary")}
-          onClick={() => {
-            if (!linkCopied) onShare();
-          }}
-        >
-          <span key={linkCopied ? "copied" : "share"} className={cn("inline-flex", shareSwap)}>
-            {linkCopied ? <Check aria-hidden /> : <Share aria-hidden />}
-          </span>
-          <span>{linkCopied ? t.linkCopied : t.actionShare}</span>
-        </button>
-        {onMap ? (
-          <Link
-            href={mapHref}
-            aria-label={t.showOnMap}
-            title={t.showOnMap}
-            onClick={(e) => {
-              track("cta_click", { slug: event.slug, location: "race_panel", source: "show_on_map" });
-              // The list's filters go along, so the map shows the same races
-              // around this one. Read at the click, like the rail's links.
-              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-              const carry = carryFilterQuery(new URLSearchParams(window.location.search));
-              if (!carry) return;
-              e.preventDefault();
-              router.push(`${localePath(locale)}${carry}&e=${encodeURIComponent(event.slug)}`);
-            }}
-            className={tile}
-          >
-            <MapIcon aria-hidden />
-            <span>{t.navMap}</span>
-          </Link>
-        ) : null}
-        {card ? null : (
-          <Link
-            href={eventPagePath(locale, event.slug)}
-            aria-label={t.openRaceDetail}
-            onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
-            className={tile}
-          >
-            <Maximize2 aria-hidden />
-            <span>{t.actionDetail}</span>
-          </Link>
-        )}
-        <p className="sr-only" aria-live="polite">
-          {linkCopied ? t.linkCopied : ""}
-        </p>
-      </div>
-      )}
+      <RaceActions
+        event={event}
+        locale={locale}
+        layout={card ? "grid" : "tiles"}
+        location="race_panel"
+        show={card ? ["primary", "plan", "map", "directions", "share"] : ["primary", "directions", "plan", "share", "map", "detail"]}
+        primary={primary}
+        directionsUrl={directionsUrl}
+        mapHref={onMap ? mapHref : ""}
+        carryFilters
+      />
       </div>
 
       {/* Who it is for and what kind of race it is. */}
