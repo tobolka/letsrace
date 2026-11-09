@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+import { messagesFor } from "@/lib/i18n/messages";
 import { useEffect, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import type { EventListItem } from "@/lib/events";
@@ -26,6 +28,8 @@ export function useShareLink(event: EventListItem, locale: string) {
       }
       await navigator.clipboard.writeText(url);
       setLinkCopied(true);
+      // The Share button keeps its label, so this is what says it worked.
+      toast.success(messagesFor(locale).linkCopied);
       track("share_link", { slug: event.slug });
       if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current);
       copyTimerRef.current = window.setTimeout(() => setLinkCopied(false), 1800);
