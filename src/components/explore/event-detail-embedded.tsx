@@ -153,6 +153,53 @@ export function EmbeddedBody({
         <p className="text-sm text-muted-foreground">{t.noOnlineEntry}</p>
       )}
 
+      {card ? (
+        // The desktop card's actions are the race page's buttons — the same
+        // outline look and the same icon-then-label order.
+        <div className="flex flex-wrap gap-2">
+          <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="full" />
+          {onMap ? (
+            <Button asChild variant="outline">
+              <Link
+                href={mapHref}
+                onClick={(e) => {
+                  track("cta_click", { slug: event.slug, location: "race_panel", source: "show_on_map" });
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                  const carry = carryFilterQuery(new URLSearchParams(window.location.search));
+                  if (!carry) return;
+                  e.preventDefault();
+                  router.push(`${localePath(locale)}${carry}&e=${encodeURIComponent(event.slug)}`);
+                }}
+              >
+                <MapIcon data-icon="inline-start" />
+                {t.showOnMap}
+              </Link>
+            </Button>
+          ) : null}
+          {directionsUrl ? (
+            <Button asChild variant="outline">
+              <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} onClick={() => trackEnter("directions")}>
+                <Navigation data-icon="inline-start" />
+                {t.directions}
+              </a>
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            variant="outline"
+            aria-pressed={linkCopied}
+            onClick={() => {
+              if (!linkCopied) onShare();
+            }}
+          >
+            {linkCopied ? <Check data-icon="inline-start" /> : <Share data-icon="inline-start" />}
+            {linkCopied ? t.linkCopied : t.actionShare}
+          </Button>
+          <p className="sr-only" aria-live="polite">
+            {linkCopied ? t.linkCopied : ""}
+          </p>
+        </div>
+      ) : (
       <div className={cn("grid gap-2", tileCount === 5 ? "grid-cols-5" : tileCount === 4 ? "grid-cols-4" : "grid-cols-3")}>
         {directionsUrl ? (
           <a href={directionsUrl} target="_blank" rel="noopener noreferrer" title={t.directionsHelp} className={tile} onClick={() => trackEnter("directions")}>
@@ -216,6 +263,7 @@ export function EmbeddedBody({
           {linkCopied ? t.linkCopied : ""}
         </p>
       </div>
+      )}
       </div>
 
       {/* Who it is for and what kind of race it is. */}

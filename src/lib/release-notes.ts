@@ -22,12 +22,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: "2026-11-09",
     items: {
       cs: [
+        "Tlačítka na kartě závodu na mapě vypadají stejně jako na stránce závodu.",
         "Na telefonu se karta závodu už nepřekrývá se seznamem.",
         "Po klepnutí na závod v mapě už nezůstane viset jeho název.",
         "Závod ze seznamu nebo kalendáře ukážeš jedním tlačítkem na mapě.",
         "Na tabletu se stránka při psaní do pole už nepřibližuje.",
       ],
       en: [
+        "The buttons on the map's race card look the same as on the race's page.",
         "On a phone, the race card no longer overlaps the list.",
         "Tapping a race on the map no longer leaves its name hanging.",
         "One button shows a race from the list or calendar on the map.",
