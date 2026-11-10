@@ -66,7 +66,7 @@ export function EventDetailPanel({
   topY?: number;
 }) {
   const t = messagesFor(locale);
-  const { cardRef, offset, dragging, resizing, size, docked, snapRect, startResize, resetSize, headerProps } = useDraggableCard({
+  const { cardRef, offset, dragging, resizing, resizable, size, docked, snapRect, startResize, resetSize, headerProps } = useDraggableCard({
     eventId: event.id,
     embedded,
     anchored,
@@ -303,7 +303,7 @@ export function EventDetailPanel({
         </CardFooter>
       )}
 
-      {embedded || anchored ? null : (
+      {!resizable ? null : (
         // Stretch it from a side or a bottom corner; a double click puts the
         // size back. Thin, so they do not take the scrollbar's place.
         <>

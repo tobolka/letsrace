@@ -193,12 +193,16 @@ export function useDraggableCard({
     setDocked(side);
   }
 
+  // Only the map's own card is stretched and snapped. In the list it sits in a
+  // strip at the right, and a size made on the map would not fit there.
+  const resizable = !embedded && !anchored && !dockRight;
+
   useEffect(() => {
-    if (embedded || anchored) return;
+    if (!resizable) return;
     // The saved size is only known in the browser, after the first paint.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSize(readSize(), false);
-  }, [embedded, anchored]);
+  }, [resizable]);
 
   /** Where a card snapped to a side sits and how big it is. */
   function dockRect(side: CardSide): SnapRect {
@@ -215,6 +219,7 @@ export function useDraggableCard({
 
   /** The side of the map the pointer is at, if it is at one. */
   function sideAt(clientX: number): CardSide | null {
+    if (!resizable) return null;
     const el = cardRef.current;
     const stage = el?.offsetParent as HTMLElement | null;
     if (!stage) return null;
@@ -243,7 +248,7 @@ export function useDraggableCard({
   /** Stretch the card from one of its edges or corners. */
   function startResize(edge: CardEdge, e: PointerEvent<HTMLElement>) {
     const el = cardRef.current;
-    if (embedded || anchored || e.button !== 0 || !el) return;
+    if (!resizable || e.button !== 0 || !el) return;
     e.preventDefault();
     e.stopPropagation();
     const handle = e.currentTarget;
@@ -377,6 +382,7 @@ export function useDraggableCard({
     offset,
     dragging,
     resizing,
+    resizable,
     size,
     docked,
     snapRect,
