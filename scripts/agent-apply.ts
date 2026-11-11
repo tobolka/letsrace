@@ -10,6 +10,7 @@
  *   - the document is about this race by the same test the readers use, and
  *   - it is not simply the race's own page, which we already hold.
  */
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -108,18 +109,35 @@ async function main() {
       note(row.case, "merged", null, `${keep.id}<-${drop.id}`);
     }
     for (const row of calendars) {
-      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { source: string; races: { name: string; start_date: string; end_date: string | null; place: string | null; url: string; quote: string }[] };
-      let saved = 0;
+      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { source: string; races: { name: string; start_date: string; end_date: string | null; place: string | null; country?: string | null; discipline?: string | null; url: string; quote: string }[] };
+      // Only a national federation's own calendar may speak for a race without a person looking.
+      const sourceKind = (() => { try { return JSON.parse(readFileSync(join(answers, "..", "cases", `${row.case}.json`), "utf8")).source?.kind as string | undefined; } catch { return undefined; } })();
+      let saved = 0, published = 0;
       for (const index of row.verifiedRaces ?? []) {
         const race = answer.races[index]; if (!race) continue;
         if (!apply) { saved++; continue; }
         const text = (await readDocument(race.url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "";
         // A candidate is a lead for the existing review, not a race: nothing is published from here.
-        const event = { externalId: `agent:${createHash("md5").update(`${race.name}|${race.start_date}`).digest("hex").slice(0, 12)}`, name: race.name, startDate: race.start_date, ...(race.end_date ? { endDate: race.end_date } : {}), placeText: race.place ?? "", sourceUrl: race.url, evidence: { quote: race.quote, version: AGENT_VERSION } };
-        await saveCandidate(db, event as never, { sourceUrl: race.url, documentHash: createHash("sha256").update(text).digest("hex"), reason: "agent_found_in_calendar" });
+        const event = { externalId: `agent:${createHash("md5").update(`${race.name}|${race.start_date}`).digest("hex").slice(0, 12)}`, name: race.name, startDate: race.start_date, ...(race.end_date ? { endDate: race.end_date } : {}), placeText: race.place ?? "",
+          ...(race.country ? { countryHint: race.country } : {}), ...(race.discipline ? { discipline: [race.discipline] } : {}), sourceUrl: race.url, evidence: { quote: race.quote, sourceUrl: race.url, method: AGENT_READER, version: AGENT_VERSION } };
+        const candidate = await saveCandidate(db, event as never, { sourceUrl: race.url, documentHash: createHash("sha256").update(text).digest("hex"), reason: "agent_found_in_calendar", ...(race.country ? { country: race.country } : {}) });
         saved++;
+        // Published only through the existing reviewed-candidate path, which fetches the source again, checks the
+        // quote, the date with its year, the place, and refuses a race the catalogue already holds. Everything
+        // short of that stays a lead for a later look.
+        if (candidate.rejected || sourceKind !== "federation" || !race.country || !race.discipline || !race.place || !race.quote.includes(race.start_date.slice(0, 4))) continue;
+        const near = await db.from("events").select("id,name,start_date").is("merged_into_id", null).gte("start_date", new Date(Date.parse(race.start_date) - 86_400_000).toISOString().slice(0, 10)).lte("start_date", new Date(Date.parse(race.start_date) + 86_400_000).toISOString().slice(0, 10));
+        if (near.error) throw Error(near.error.message);
+        const words = distinctiveWords(race.name);
+        if ((near.data ?? []).some(known => { const other = distinctiveWords(known.name); return words.length > 0 && words.filter(word => other.includes(word)).length >= Math.min(2, words.length); })) continue;
+        const { data: stored } = await db.from("pipeline_candidates").select("id,evidence_hash,status").eq("candidate_key", candidate.candidate_key).eq("evidence_hash", candidate.evidence_hash).maybeSingle();
+        if (!stored || !["pending", "waiting"].includes(stored.status)) continue;
+        const manifest = join(answers, `decision-${stored.id}.json`);
+        writeFileSync(manifest, JSON.stringify([{ id: stored.id, evidenceHash: stored.evidence_hash, action: "publish", reason: "Agent found it on the national federation's calendar; the quote, date, year and place were found on the page again", expectedEventId: null, authority: "national_federation", checked: { identity: true, date: true, place: true, discipline: true, authority: true } }]));
+        const ran = spawnSync(process.execPath, [resolve(__dirname, "..", "node_modules/tsx/dist/cli.mjs"), resolve(__dirname, "review-discovery-candidates.ts"), `--decisions=${manifest}`, "--apply"], { cwd: resolve(__dirname, ".."), encoding: "utf8", timeout: 240_000 });
+        if (ran.status === 0) published++; else console.warn(`Kandidát ${race.name} nezveřejněn: ${(ran.stderr || ran.stdout).split("\n").filter(Boolean).at(-1)?.slice(0, 200)}`);
       }
-      note(row.case, apply ? "candidates_saved" : "would_save_candidates", String(saved));
+      note(row.case, apply ? "candidates_saved" : "would_save_candidates", `${saved} saved, ${published} published`);
     }
   }
   if (apply) writeFileSync(doneFile, JSON.stringify(done, null, 1));

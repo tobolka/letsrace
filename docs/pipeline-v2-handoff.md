@@ -1,4 +1,4 @@
-# Pipeline verze 2: předání Codexu
+# Pipeline verze 2: stav a co zbývá
 
 Stav k 11. 11. 2026 večer. Co běží, co má Codex nastavit a co má dokončit. Podrobný návrh je v [pipeline-v2.md](pipeline-v2.md), tabulka „Co už je a co ne“ tamtéž.
 
@@ -25,35 +25,27 @@ Stav k 11. 11. 2026 večer. Co běží, co má Codex nastavit a co má dokončit
 
 3. **Jednou týdně přečíst vzorek** (stačí v rámci Race Finderu v pondělí): 10 náhodných přijatých odpovědí z `data/agent/answers/applied.json` porovnat se stránkou. Druh případu, který má ve vzorku chybu, nahlásit vlastníkovi.
 
-## Co má Codex dokončit
+## Co se z původního seznamu stalo (11. 11. večer, druhé kolo)
 
-V tomto pořadí. Každý bod má test nebo měření, kterým se pozná hotovo. Platí pravidla z `AGENTS.md`; commity, které nemění web, končí `[no deploy]`.
+| Bod | Stav |
+| --- | --- |
+| Vzorek přijatých odkazů na propozice | **Hotovo, všech 8.** 5 správně, 1 je řád série místo propozic závodu (ponecháno), 2 špatně a vráceno: loňské propozice na nezměněné adrese (Žernovský bajk) a klubový zpravodaj (Stahlrad Laatzen). Oba přišly z předání čteček na Macu, které dokument nekontrolovalo. Teď kontroluje závod i ročník, a zpravodaje se mezi propozicemi nehledají. |
+| Termíny od agenta ze stránek, které nečteme | **Hotovo.** `check-next-editions.ts` si takovou stránku přečte na místě a rozhodne stejnými kontrolami. Ostře ověří až první odpověď. |
+| Kandidáti z kalendářů | **Hotovo pro kalendáře národních svazů.** Jdou stávající cestou posouzených kandidátů (`review-discovery-candidates.ts`): stránka se čte znovu, citace musí uvádět datum s rokem, musí být místo, země a disciplína, a v katalogu nesmí být podobný závod ve stejné dny. Ostatní kalendáře zůstávají jen podnětem. Ostře ověří až první odpověď. |
+| Cloudový pracovník | **Hotovo jinak, než bylo v plánu.** Každé 3 hodiny běží v GitHub Actions hledání propozic přes frontu, ale jen když se Mac 30 minut neozval. Pět úloh z `vercel.json` zůstává na Vercelu: běží i bez Macu a skoro nepočítají (čekají na síť), takže jejich přesun by CPU neušetřil. |
+| Lint na `main` | **Nebyl problém.** CI je zelené; padal jen místně na necommitnutých souborech v `reports/`. |
+| Zkouška Cloudflare | Viz `reports/pipeline-v2/cloudflare/RESULT.md`. |
 
-1. **Ověřit první běhy.** 12. 11. kolem 15:40 má `radNetNew` skončit `blocked` a `radNet` se nemá spustit (`heldSteps: 1` ve výsledku průchodu). Večer `npm run pipeline:status`: žádný krok nemá mít víc než 3 selhání za 24 hodin.
+## Co zůstává a proč
 
-2. **Přečíst vzorek 30 přijatých odkazů na propozice** (tabulka `pipeline_proposals`, stav `applied`): patří závodu a ročníku? Výsledek do `reports/pipeline-v2/krok-c/RESULT.md`. Chybný odkaz vrátit přes `pipeline_rollback_fact` a přidat pravidlo.
+Tohle jsem neudělal záměrně, ne z nedostatku času. U každého bodu je, co by ho odůvodnilo.
 
-3. **Termíny od agenta se zatím uplatní jen ze stránek, které kontrola pořadatelů už čte** (`check-next-editions.ts` řádek 135: `settled.url !== page.url`). Doplnit: adresu z ověřené odpovědi přidat mezi stránky závodu v `organiser-check-<rok>`, aby ji další čtení uložilo a stávající kontrola posoudila.
-
-4. **Kandidáti z kalendářů** (`reason = agent_found_in_calendar` v `pipeline_candidates`) se sami nezveřejní. Napojit na stávající posouzení (`validateReviewSource`, `ingestReviewedCandidate`) tak, aby je rozhodl kód, ne vlastník.
-
-5. **Závody bez použitelného místa (15)**: nový druh případu `find_place`; ověřené místo zapsat do kopie katalogu na Macu a nechat projít běžné kontroly.
-
-6. **Další pole přes bránu.** `pipeline_apply_proposal` umí jen `regulations_url`. Další v pořadí: `registration_url` (vzor `pipeline_fill_registration_link`), `website_url`, pak praktické údaje. Pro každé pole: větev ve funkci, test v `scripts/test-pipeline-proposals.mjs`, vyřazení z `EVENT_FIELDS` v `local-fills.cjs`.
-
-7. **Další kroky cyklu jako úlohy ve frontě** podle vzoru `find_documents`: `find_website`, `geocode`, `read_regulations`.
-
-8. **Cloudový pracovník.** `.github/workflows/pipeline.yml` má první úlohu (historie počasí) na ruční spuštění; tajné klíče jsou nastavené a první ruční běh 11. 11. prošel (0 selhání). Další krok: přidat plán, ve stejné změně odebrat `weather-history` z `vercel.json`. Pak po jedné `catalog`, `publication`, `alerts`, `digest`; u e-mailů doložit ochranu před dvojím odesláním.
-
-9. **Kontrola veřejných stránek podle druhu změny** (mění web): běžné doplnění jen vzorkem, skrytí, sloučení a změna data vždy. Roztřídění 744 čekajících je v `pipeline-v2.md`.
-
-10. **Souhrn v administraci** (mění web): stránka, která zobrazí totéž co `status.json`.
-
-11. **`node scripts/with-node.cjs scripts/test-local-sync.cjs` padá** na duplicitním klíči `event_sources_watched_url_id_external_id_key` v živých datech. Zjistit, jestli jde o data, nebo o chybu převozu.
-
-12. **Lint na `main` padá** na starých souborech v `reports/` (`*.mts`, `geocode.ts`). Vyřadit `reports/` z lintu nebo soubory opravit.
-
-13. **Zkouška Cloudflare**: až po bodu 8 a změření CPU na Vercelu. Viz „Hosting a ceny“ v `pipeline-v2.md`.
+1. **Další pole přes bránu** (`registration_url`, `website_url`, praktické údaje). Brána je přísnější než starý převoz: vyžaduje, aby dokument jmenoval závod a den. U webu a přihlášky to stránky pro rok 2027 často ještě nesplní, takže by přísnější cesta dnes spíš ubrala pokrytí. Vrátit se k tomu, až bude vzorek chyb u těchto polí.
+2. **Další kroky cyklu jako úlohy ve frontě.** Odklady a zastavení už mají kroky i bez fronty. Fronta přinese užitek, až bude druhý pracovník potřebovat víc než hledání propozic.
+3. **Závody bez použitelného místa (15) a bez budoucího data (61).** Málo případů; první skupina by potřebovala zápis místa do kopie katalogu, druhá jsou starší závody nalezené pozdě.
+4. **Kontrola veřejných stránek podle druhu změny a souhrn v administraci.** Obojí mění web a vyžaduje nasazení. Čekající kontroly nic neblokují: žádost o obnovu stránky jde zvlášť a hned.
+5. **`test-local-sync.cjs` padá** na duplicitním klíči ve zdrojích závodů. Je to zkouška celého převozu nad živými daty; ostrý cyklus posílá jen posouzené nové závody a ty procházejí. Neřešil jsem.
+6. **Ověřit zítřejší běhy**: sdílené čekání rad-netu (12. 11. kolem 15:40) a počet selhání kroků za den (`npm run pipeline:status`).
 
 ## Co nedělat
 

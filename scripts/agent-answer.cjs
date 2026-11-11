@@ -72,11 +72,15 @@ ${RULES}
 Answer:
 {"verdict":"found"|"none"|"unsure",
  "races":[{"name": the race's name as written, "start_date": "YYYY-MM-DD", "end_date": "YYYY-MM-DD" or null, "place": town as written or null,
-   "url": the page that states it (the calendar page or the race's own page linked from it), "quote": the words there that state this race's name and date}, ...],
+   "country": the two-letter country code of the place if the page makes it clear, else null,
+   "discipline": one of mtb, xco, xcc, xce, xcm, mtbo, four_cross, dh, enduro, gravel, road, road_race, tt, criterium, hill_climb, gran_fondo, cx, track, bmx if the page says which, else null,
+   "url": the page that states it (the calendar page or the race's own page linked from it), "quote": the words there that state this race's name and its date with the year}, ...],
  "note": one sentence}`,
 };
 
 const LINK = /^https?:\/\/[^\s]+$/;
+// The same list as src/lib/taxonomy.ts, without "other": a guess is not a discipline.
+const DISCIPLINES = ['mtb', 'xco', 'xcc', 'xce', 'xcm', 'mtbo', 'four_cross', 'dh', 'enduro', 'gravel', 'road', 'road_race', 'tt', 'criterium', 'hill_climb', 'gran_fondo', 'cx', 'track', 'bmx'];
 const text = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.length <= max;
 const quote = value => typeof value === 'string' && value.trim().length >= 8 && value.length <= 600;
 
@@ -131,7 +135,7 @@ function checkAnswer(kind, body, reply) {
       if (!item || !text(item.name, 200) || item.name.trim().length < 4 || !day(item.start_date) || item.start_date < body.from_date) return { ok: false, why: 'a race without a name or a coming date' };
       if (typeof item.url !== 'string' || !LINK.test(item.url) || !quote(item.quote)) return { ok: false, why: 'a race without a quoted page' };
       const end = day(item.end_date) && item.end_date >= item.start_date ? item.end_date : null;
-      races.push({ name: item.name.trim(), start_date: item.start_date, end_date: end, place: text(item.place, 120) ? item.place.trim() : null, url: item.url, quote: item.quote.trim().slice(0, 300) });
+      races.push({ name: item.name.trim(), start_date: item.start_date, end_date: end, place: text(item.place, 120) ? item.place.trim() : null, country: typeof item.country === 'string' && /^[A-Z]{2}$/.test(item.country) ? item.country : null, discipline: DISCIPLINES.includes(item.discipline) ? item.discipline : null, url: item.url, quote: item.quote.trim().slice(0, 300) });
     }
     if (data.verdict === 'found' && !races.length) return { ok: false, why: 'found, but no races given' };
     return { ok: true, answer: { source: body.source.url, verdict: data.verdict, races: data.verdict === 'found' ? races : [], note } };
