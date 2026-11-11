@@ -9,7 +9,7 @@ import { isAggregatorUrl, isCalendarPage, isDumpListingUrl } from "@/lib/watcher
 export type SiteDocument = { url: string; date?: string };
 
 const folded = (text: string) => { let t = text; try { t = decodeURIComponent(text); } catch { /* as written */ } return t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); };
-const NOT_FOR_RACE = /certifi|privacy|gdpr|beitritt|aufnahme|satzung|stanovy|statut|menu|magazin|ergebnis|vysledk|wyniki|risultati|classifica|startlist|meldeliste|rechnung|faktur|idoneita|scan\d|logo|sponzor|sponsor|plakat|poster|flyer|letak/;
+const NOT_FOR_RACE = /depesche|newsletter|rundbrief|vereinszeitung|zpravodaj|certifi|privacy|gdpr|beitritt|aufnahme|satzung|stanovy|statut|menu|magazin|ergebnis|vysledk|wyniki|risultati|classifica|startlist|meldeliste|rechnung|faktur|idoneita|scan\d|logo|sponzor|sponsor|plakat|poster|flyer|letak/;
 const REGULATIONS = /propoz|rozpis|regulamin|regolament|reglement|ausschreib|pokyn|race[-_ ]?guide|technical[-_ ]?guide|guida|informator|organizac/;
 
 /** The PDFs in a page's code: links, embeds, viewers and script strings alike. */

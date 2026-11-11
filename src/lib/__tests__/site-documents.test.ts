@@ -19,6 +19,8 @@ describe("which files may be a race's regulations", () => {
   });
   it("leaves out forms, results and posters", () => {
     expect(regulationsCandidates(list("https://a.cz/Certificato-Modello-C.pdf", "https://a.de/Aufnahmeantrag.pdf", "https://a.cz/ergebnis-upcycle.pdf", "https://a.cz/plakat-upcycle.pdf"), race)).toEqual([]);
+    // A club's newsletter mentions the race and is not its regulations (Stahlrad Laatzen, 11 Nov 2026).
+    expect(regulationsCandidates(list("https://a.de/Depesche-02.2026-upcycle.pdf", "https://a.cz/zpravodaj-upcycle-2026.pdf", "https://a.de/Newsletter-Upcycle-2026.pdf"), race)).toEqual([]);
   });
 });
 

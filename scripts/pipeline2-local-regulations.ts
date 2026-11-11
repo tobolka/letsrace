@@ -12,6 +12,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parse } from "dotenv";
+import { documentIsAboutRace } from "../src/lib/catalog/race-completeness";
 import { readDocument } from "../src/lib/catalog/regulation-ages";
 
 const BIN = process.env.LOCAL_PG_BIN ?? "/opt/homebrew/opt/postgresql@17/bin";
@@ -21,10 +22,10 @@ const READERS = /^(?:site_documents|calendar_row|search_verified|practical_detai
 
 async function main() {
   const apply = process.argv.includes("--apply"), max = Number(arg("max") ?? 60);
-  type Held = { id: string; url: string; method: string | null; version: string | null; source_url: string | null; quote: string | null };
+  type Held = { id: string; url: string; name: string; start_date: string; municipality: string | null; method: string | null; version: string | null; source_url: string | null; quote: string | null };
   const filled = local<Held[]>(`select coalesce(json_agg(t),'[]') from (
-    select e.id, e.regulations_url url, f.method, f.version, f.source_url, f.quote
-    from public.events e left join lateral (select method, version, source_url, quote from public.event_facts x where x.event_id=e.id and x.field='regulations_url' and x.status='active' and x.value #>> '{}' = e.regulations_url order by x.created_at desc limit 1) f on true
+    select e.id, e.regulations_url url, e.name, e.start_date, l.municipality, f.method, f.version, f.source_url, f.quote
+    from public.events e left join public.locations l on l.id=e.location_id left join lateral (select method, version, source_url, quote from public.event_facts x where x.event_id=e.id and x.field='regulations_url' and x.status='active' and x.value #>> '{}' = e.regulations_url order by x.created_at desc limit 1) f on true
     where e.regulations_url ~ '^https?://' and e.visibility='public' and e.merged_into_id is null and e.start_date>=current_date order by e.start_date) t`);
   for (const [key, value] of Object.entries(parse(readFileSync(resolve(__dirname, "..", ".env.local"), "utf8")))) process.env[key] ??= value;
   const { createServerSupabase } = await import("../src/lib/supabase/server");
@@ -40,12 +41,12 @@ async function main() {
   const todo = filled.filter(row => empty.has(row.id)).slice(0, max);
   const totals: Record<string, number> = {}; const add = (key: string) => { totals[key] = (totals[key] ?? 0) + 1; };
   for (const row of todo) {
-    let quote = row.quote && row.quote.trim().length >= 8 ? row.quote : null;
-    if (!quote) {
-      // The reader left no words behind; take them from the document itself, or leave the link where it is.
-      const text = (await readDocument(row.url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "";
-      quote = text.replace(/\s+/g, " ").trim().slice(0, 300); if (quote.length < 8) { add("held_unreadable_document"); continue; }
-    }
+    // Whatever reader put the link here, the document itself must be about this race in this year.
+    // Last year's regulations on an unchanged address, and a club newsletter, both got through before this (11 Nov 2026).
+    const text = (await readDocument(row.url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "";
+    if (text.replace(/\s+/g, " ").trim().length < 8) { add("held_unreadable_document"); continue; }
+    if (!documentIsAboutRace(text, { name: row.name, start_date: row.start_date, municipality: row.municipality })) { add("held_not_clearly_this_race_and_year"); continue; }
+    const quote = row.quote && row.quote.trim().length >= 8 ? row.quote : text.replace(/\s+/g, " ").trim().slice(0, 300);
     const reader = row.method && READERS.test(row.method) ? row.method : "federation_page";
     if (!apply) { add(`would_propose_${reader}`); continue; }
     const submitted = await call("pipeline_submit_proposal", { p_event: row.id, p_field: "regulations_url", p_value: row.url, p_source: row.source_url && /^https?:\/\//.test(row.source_url) ? row.source_url : row.url, p_quote: quote.slice(0, 500), p_reader: reader, p_version: row.version ?? "1", p_task: "local_copy" });

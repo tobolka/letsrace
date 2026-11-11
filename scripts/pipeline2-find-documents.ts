@@ -46,9 +46,19 @@ async function main() {
   if (arg("psql")) db = psqlDb(arg("psql")!);
   else if (process.argv.includes("--server")) {
     const { parse } = await import("dotenv");
-    for (const [key, value] of Object.entries(parse(await readFile(join(root, ".env.local"), "utf8")))) process.env[key] ??= value;
+    // On the Mac the values are in .env.local; a cloud runner has them in its environment already.
+    for (const [key, value] of Object.entries(parse(await readFile(join(root, ".env.local"), "utf8").catch(() => "")))) process.env[key] ??= value;
     const { createServerSupabase } = await import("../src/lib/supabase/server");
-    db = serverDb(createServerSupabase() as never);
+    const client = createServerSupabase();
+    db = serverDb(client as never);
+    // A second worker stands in only while the first is silent: --unless-heard=mac:30 does nothing if "mac" reported within 30 minutes.
+    const guard = arg("unless-heard")?.split(":");
+    if (guard?.[0]) {
+      const { data, error } = await (client as unknown as { from(table: string): { select(columns: string): { eq(column: string, value: string): { maybeSingle(): PromiseLike<{ data: { heartbeat_at: string | null; paused: boolean | null } | null; error: { message: string } | null }> } } } }).from("pipeline_workers").select("heartbeat_at,paused").eq("key", guard[0]).maybeSingle();
+      if (error) throw Error(error.message);
+      const silentMinutes = data?.heartbeat_at ? (Date.now() - Date.parse(data.heartbeat_at)) / 60_000 : Infinity;
+      if (silentMinutes < Number(guard[1] ?? 30)) { console.log(JSON.stringify({ ran: false, why: `${guard[0]} reported ${Math.round(silentMinutes)} minutes ago` })); return; }
+    }
   } else throw Error("Say where: --psql=<scratch database on this Mac> or --server");
 
   const limit = Number(arg("sites") ?? 20), days = Number(arg("days") ?? 0);

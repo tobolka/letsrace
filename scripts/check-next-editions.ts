@@ -96,12 +96,21 @@ async function main() {
   const cachePath = `tmp/next-editions/answers-${target}.json`;
   const cache = (existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, "utf8")) : {}) as Record<string, import("../src/lib/catalog/next-edition").EditionAnswer>;
   const files = readdirSync(join(archive, "pages"));
+  const live = new Map<string, { title: string; text: string }>();
   const pageText = (url: string) => {
     const prefix = hash(url).slice(0, 20), file = files.find(name => name.startsWith(prefix));
-    return file ? readFileSync(join(archive, "pages", file), "utf8") : "";
+    return file ? readFileSync(join(archive, "pages", file), "utf8") : live.get(url)?.text ?? "";
   };
 
   const reviewed = (answersFile ? JSON.parse(readFileSync(answersFile, "utf8")) : {}) as Record<string, { url: string; startDate: string; endDate?: string | null; quote: string }>;
+  // A reviewed date may stand on a page the organiser check has never saved (a series' or federation's page the
+  // agent found). Such a page is read now, so the same checks decide on it as on a saved one.
+  for (const settled of Object.values(reviewed)) {
+    const prefix = hash(settled.url).slice(0, 20);
+    if (files.some(name => name.startsWith(prefix)) || live.has(settled.url)) continue;
+    try { const source = await fetchPage(settled.url, { fresh: true }); const read = pageAsText(source.html, settled.url); live.set(settled.url, { title: /<title[^>]*>([^<]{0,200})/i.exec(source.html)?.[1]?.trim() ?? "", text: read.text }); }
+    catch { /* Unreadable now: the race waits as before. */ }
+  }
   const rows: Row[] = [];
   const proposals: { row: Row; event: import("../src/lib/domain").ParsedEvent; answer: import("../src/lib/catalog/next-edition").EditionAnswer; candidate: import("../src/lib/catalog/next-edition").EditionRace; pageInput: import("../src/lib/catalog/next-edition").EditionPage; raceName: string; raceId: string; sharedHost: boolean; country: string; readerSettled: boolean }[] = [];
   let asked = 0, aiStopped = false;
@@ -114,11 +123,16 @@ async function main() {
     const here = { id: race.id, name: race.name, start_date: race.start_date, series_id: race.series_id, disciplines: race.disciplines, location: race.location };
     const next_ = identity.findNextEdition(here, upcoming);
     if (next_) { rows.push({ ...base, state: next_.visibility === "public" ? "found" : "waiting", reason: next_.visibility === "public" ? undefined : "next_edition_is_hidden", eventId: next_.id, date: next_.start_date }); continue; }
-    if (review.reviewStatus === "no_website") { rows.push({ ...base, state: "no_website" }); continue; }
-    if (review.reviewStatus === "unreadable") { rows.push({ ...base, state: "unreadable" }); continue; }
-    if (review.reviewStatus === "platform_page_only") { rows.push({ ...base, state: "platform_page_only" }); continue; }
-    if (review.reviewStatus === "year_mentioned_without_full_date") { rows.push({ ...base, state: "year_only" }); continue; }
-    const pages = (review.candidatePages ?? []).filter(page => hostOf(page.url) === hostOf(review.website_url)).slice(0, 3);
+    // A reviewed date on a page read just now takes the race past these stops: what was missing has been found.
+    const reviewedLive = reviewed[review.id] && live.has(reviewed[review.id]!.url) ? reviewed[review.id]! : null;
+    if (!reviewedLive) {
+      if (review.reviewStatus === "no_website") { rows.push({ ...base, state: "no_website" }); continue; }
+      if (review.reviewStatus === "unreadable") { rows.push({ ...base, state: "unreadable" }); continue; }
+      if (review.reviewStatus === "platform_page_only") { rows.push({ ...base, state: "platform_page_only" }); continue; }
+      if (review.reviewStatus === "year_mentioned_without_full_date") { rows.push({ ...base, state: "year_only" }); continue; }
+    }
+    const pages = reviewedLive ? [{ url: reviewedLive.url, title: live.get(reviewedLive.url)!.title }] as typeof review.candidatePages & object
+      : (review.candidatePages ?? []).filter(page => hostOf(page.url) === hostOf(review.website_url)).slice(0, 3);
     if (!pages.length) { rows.push({ ...base, state: review.candidatePages?.length ? "waiting" : "not_announced", reason: review.candidatePages?.length ? "date_only_on_another_site" : undefined }); continue; }
 
     const candidate = { id: race.id, name: race.name, start_date: race.start_date, website_url: review.website_url, disciplines: race.disciplines, municipality: race.location?.municipality ?? null, country: raceCountry, lat: race.location?.lat, lng: race.location?.lng, event_type: race.event_type };
