@@ -53,3 +53,8 @@ scripts/.tmp/
 /tmp/
 /reports/*/sources/
 /reports/*/pages/
+
+# Cloudflare trial build
+.open-next/
+.wrangler/
+.wrangler-dry/

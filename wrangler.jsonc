@@ -1,0 +1,8 @@
+{
+  // Trial of the web on Cloudflare Workers. Nothing here is live: see reports/pipeline-v2/cloudflare/RESULT.md.
+  "name": "letsrace",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" }
+}
