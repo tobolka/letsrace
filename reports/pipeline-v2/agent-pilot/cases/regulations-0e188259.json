@@ -1,0 +1,21 @@
+{
+ "case": "regulations-0e188259",
+ "kind": "find_regulations",
+ "race": {
+  "id": "0e188259-8d61-4a00-81cd-285e8fc420c5",
+  "name": "Breuls Euregio Classic",
+  "date": "2026-11-14",
+  "end_date": "2026-11-14",
+  "place": "Campus De Helix, Maasmechelen",
+  "country": "BE",
+  "disciplines": [
+   "mtb"
+  ],
+  "series": null,
+  "website": "https://www.kwtcdetoekomstrekem.be/mtb-gravel-2026/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/27897"
+  ]
+ }
+}

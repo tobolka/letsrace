@@ -1,0 +1,48 @@
+{
+ "case": "duplicate-3565e0ad",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "3565e0ad-c9b9-43aa-8e82-841dc26959b9",
+  "name": "Mountainbike JUNIOR Festival Graz/Stattegg, UCI C3",
+  "date": "2027-07-08",
+  "end_date": "2027-07-08",
+  "place": "Graz",
+  "country": "AT",
+  "disciplines": [
+   "xco"
+  ],
+  "series": null,
+  "website": "https://www.bike09.at/",
+  "registration": null,
+  "found_on": [
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=5BDC35F00A1D48CE8384BA0AB473587E&filter=page=5"
+  ]
+ },
+ "b": {
+  "id": "d509ca92-051c-4bb2-b50e-cd97dae3b13a",
+  "name": "Mountainbike JUNIOR Festival Graz/Stattegg, UCI C3",
+  "date": "2027-07-09",
+  "end_date": "2027-07-10",
+  "place": "Graz/Stattegg",
+  "country": "AT",
+  "disciplines": [
+   "xco"
+  ],
+  "series": null,
+  "website": "https://www.bike09.at/",
+  "registration": null,
+  "found_on": [
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=34991E7717B841EDB615854BCAB9DED5&filter=page=4",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=34991E7717B841EDB615854BCAB9DED5&filter=page=5",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=34991E7717B841EDB615854BCAB9DED5&filter=view=events&page=2",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=34991E7717B841EDB615854BCAB9DED5&filter=view=events&page=3",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=5BDC35F00A1D48CE8384BA0AB473587E&filter=page=4",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=5BDC35F00A1D48CE8384BA0AB473587E&filter=view=events&page=2"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "same_canonical_name"
+ ]
+}

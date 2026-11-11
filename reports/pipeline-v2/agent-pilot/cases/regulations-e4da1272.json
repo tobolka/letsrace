@@ -1,0 +1,21 @@
+{
+ "case": "regulations-e4da1272",
+ "kind": "find_regulations",
+ "race": {
+  "id": "e4da1272-00ac-4ed0-92da-67c573dcee9b",
+  "name": "Polish National Championships - Park",
+  "date": "2026-11-13",
+  "end_date": "2026-11-13",
+  "place": "Białystok, Poland",
+  "country": "PL",
+  "disciplines": [
+   "bmx"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://eventivsport.com/events/polish-national-championships-park"
+  ]
+ }
+}

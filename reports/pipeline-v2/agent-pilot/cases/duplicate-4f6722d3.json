@@ -1,0 +1,46 @@
+{
+ "case": "duplicate-4f6722d3",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "4f6722d3-0b53-4a8d-8e48-9a34eefc380f",
+  "name": "ČP MTB XCM - Rallye Sudety",
+  "date": "2027-09-11",
+  "end_date": "2027-09-11",
+  "place": "Teplice nad Metují",
+  "country": "CZ",
+  "disciplines": [
+   "mtb",
+   "xcm"
+  ],
+  "series": null,
+  "website": "https://redpointteam.cz/",
+  "registration": null,
+  "found_on": [
+   "https://redpointteam.cz/"
+  ]
+ },
+ "b": {
+  "id": "f705559e-8c58-4a50-b10b-340ba19e0c52",
+  "name": "Český pohár MTBO — Jedovnice",
+  "date": "2027-09-11",
+  "end_date": "2027-09-12",
+  "place": "Jedovnice",
+  "country": "CZ",
+  "disciplines": [
+   "mtb",
+   "mtbo"
+  ],
+  "series": "Český pohár MTBO",
+  "website": "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/",
+  "registration": null,
+  "found_on": [
+   "https://mtbo.ceskyorientak.cz/vyberove-rizeni-na-poradatele-cp-mtbo-2027-je-u-konce/"
+  ]
+ },
+ "why_unsure": [
+  "same_day",
+  "series_alias_weak",
+  "name_sim_mid",
+  "needs_place_or_url"
+ ]
+}

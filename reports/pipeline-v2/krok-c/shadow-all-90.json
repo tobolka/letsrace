@@ -1,0 +1,613 @@
+{
+ "at": "2026-11-11T15:11:39.873Z",
+ "racesWanted": 106,
+ "sitesKnown": 46,
+ "sitesAsked": 46,
+ "queued": 40,
+ "tasks": [
+  {
+   "site": "http://www.dirtyrace.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "http://www.gerhardczerner.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 8.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "http://www.rsv-rheinzabern.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 2.4,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://b4sportonline.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 1,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.4,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://competit.pl",
+   "races": 2,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 2,
+    "documents": 1,
+    "read": 1,
+    "found": 0
+   },
+   "seconds": 1.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://dostartu.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.8,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://mrsv.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 20,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 3.3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://mtbbeachrace.nl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 2.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://radsport-lueneburg.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 42,
+    "read": 1,
+    "found": 0
+   },
+   "seconds": 1.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://radsport.unterelbe.net",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://radsportgemeinschaft-hannover.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 97,
+    "read": 4,
+    "found": 0
+   },
+   "seconds": 5.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://sixdaysweekend.ventiq.io",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 1,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://stayhappening.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.4,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://team-bikestore.sportunion.at",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 2,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 6.3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://tomexgravel.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 6,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://tvlorsbach.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 98,
+    "read": 3,
+    "found": 0
+   },
+   "seconds": 6.4,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://watahaultrarace.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.7,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://westfalen-winter-bike-trophy.org",
+   "races": 6,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 6,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 29.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://witoor.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 80,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 6,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.bikestats.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.6,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.braunschweiger-cross-serie-cx-niedersachsen.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.cyklokros.cz",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 14,
+    "read": 5,
+    "found": 0
+   },
+   "seconds": 5.6,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.dimb.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 98,
+    "read": 5,
+    "found": 0
+   },
+   "seconds": 8.8,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.dsergebnis.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.gpgrootegmondpieregmond.nl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.gravelland.it",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 3,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.hallzigexpress.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.kwtcdetoekomstrekem.be",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 3,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 5.2,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.lartica.it",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.limburgcross.nl",
+   "races": 2,
+   "outcome": "failed",
+   "reason": "http_error",
+   "stats": {
+    "races": 2,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 15.5,
+   "nextTryInSeconds": 3600,
+   "failures": 1
+  },
+  {
+   "site": "https://www.lrv-salzburg.at",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 17,
+    "read": 1,
+    "found": 0
+   },
+   "seconds": 4.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.murowana-goslina.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.8,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.nltourrides.nl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 30,
+    "read": 2,
+    "found": 0
+   },
+   "seconds": 17.3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.radrenngemeinschaft-osnabrueck.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 2,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.rc-lambach.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 2.3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.rsv-finsterwalde.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 9,
+    "read": 3,
+    "found": 0
+   },
+   "seconds": 5.2,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.rvc-reute.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 7,
+    "read": 3,
+    "found": 0
+   },
+   "seconds": 9.1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.sixdays.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 1,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 8.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.vc1899darmstadt.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 2,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.4,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://youb.app",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.4,
+   "accepted": true,
+   "decisions": []
+  }
+ ],
+ "totals": {
+  "task_waiting": 39,
+  "task_failed": 1
+ }
+}

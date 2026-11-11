@@ -1,0 +1,87 @@
+{
+ "at": "2026-11-11T15:11:23.322Z",
+ "racesWanted": 14,
+ "sitesKnown": 5,
+ "sitesAsked": 5,
+ "queued": 5,
+ "tasks": [
+  {
+   "site": "https://mtbteam.cyklokyjovsky.cz",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 6,
+    "read": 4,
+    "found": 0
+   },
+   "seconds": 4.1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://racetime.sk",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://tbcserie.cz",
+   "races": 4,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 4,
+    "documents": 3,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.sacbela.cz",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 5,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.4,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.stupavskymaraton.sk",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.7,
+   "accepted": true,
+   "decisions": []
+  }
+ ],
+ "totals": {
+  "task_waiting": 5
+ }
+}

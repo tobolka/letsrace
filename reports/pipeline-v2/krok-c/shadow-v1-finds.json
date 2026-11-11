@@ -1,0 +1,179 @@
+{
+ "at": "2026-11-11T15:08:41.435Z",
+ "racesWanted": 9,
+ "sitesKnown": 7,
+ "sitesAsked": 7,
+ "queued": 7,
+ "tasks": [
+  {
+   "site": "https://4joursdegeneve.ch",
+   "races": 1,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 1,
+    "documents": 49,
+    "read": 1,
+    "found": 1
+   },
+   "seconds": 77.8,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "0da1c52c4123911a3bf742644b563609",
+     "fact": "db6978c2-5636-40a6-a919-8bb497eeddbf",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  },
+  {
+   "site": "https://motz-chautagnetour.com",
+   "races": 1,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 1,
+    "documents": 50,
+    "read": 1,
+    "found": 1
+   },
+   "seconds": 20.1,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "6b24888e65587baaf1f85e586d7c295e",
+     "fact": "5aa7ceb4-b9db-46f9-8feb-76d680fc4790",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  },
+  {
+   "site": "https://pzkol.pl",
+   "races": 3,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 3,
+    "documents": 3,
+    "read": 3,
+    "found": 3
+   },
+   "seconds": 2.6,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "a7a1a75c7122d5782fbda0e4da19e8c4",
+     "fact": "17efac42-b59f-41ab-a9c8-d463658dc6db",
+     "reason": null,
+     "status": "applied"
+    },
+    {
+     "key": "8de43ad092c11907f69b904867078a8b",
+     "fact": "366e9194-f2ff-4849-b611-345e284f96d0",
+     "reason": null,
+     "status": "applied"
+    },
+    {
+     "key": "aaae3b9dbb7734dfd2eb80335b988173",
+     "fact": "2a10f03d-499c-4a00-8393-bfe053f75a06",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  },
+  {
+   "site": "https://stahlradlaatzen.de",
+   "races": 1,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 1,
+    "documents": 24,
+    "read": 2,
+    "found": 1
+   },
+   "seconds": 44.5,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "949b93b3306df0f0255fed1fb0929d77",
+     "fact": "07e41929-4962-4ad4-b583-464d8bb05876",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  },
+  {
+   "site": "https://ultraraceseries.pl",
+   "races": 1,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 1,
+    "documents": 27,
+    "read": 1,
+    "found": 1
+   },
+   "seconds": 2.5,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "f7095c87230698be25a30481dae21f92",
+     "fact": "3ecd6356-39f0-4e03-af0d-1be394137cc6",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  },
+  {
+   "site": "https://www.granfondobgy.it",
+   "races": 1,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 1,
+    "documents": 100,
+    "read": 1,
+    "found": 1
+   },
+   "seconds": 3.1,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "4cdedd0faafbfd1687192ce1471e09bd",
+     "fact": "9c204a19-1d1c-4f01-b63a-499cd67c677c",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  },
+  {
+   "site": "https://www.vchittnau.ch",
+   "races": 1,
+   "outcome": "done",
+   "reason": null,
+   "stats": {
+    "races": 1,
+    "documents": 90,
+    "read": 1,
+    "found": 1
+   },
+   "seconds": 2.7,
+   "accepted": true,
+   "decisions": [
+    {
+     "key": "0b4bf19c3ed3a088afabd5e84ed40463",
+     "fact": "9b4906ea-4268-4e65-9067-cce3bd36d10f",
+     "reason": null,
+     "status": "applied"
+    }
+   ]
+  }
+ ],
+ "totals": {
+  "task_done": 7,
+  "proposal_applied": 9
+ }
+}

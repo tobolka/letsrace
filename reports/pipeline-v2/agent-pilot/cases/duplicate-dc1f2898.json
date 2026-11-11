@@ -1,0 +1,46 @@
+{
+ "case": "duplicate-dc1f2898",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "dc1f2898-c81c-4cb4-a2d7-4f5b9db9c3db",
+  "name": "Motz-Chautagne Tour Einzelzeitfahren",
+  "date": "2027-04-17",
+  "end_date": "2027-04-17",
+  "place": "Espace Sports et Nature, Motz",
+  "country": "FR",
+  "disciplines": [
+   "tt",
+   "road"
+  ],
+  "series": null,
+  "website": "https://motz-chautagnetour.com/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/27467"
+  ]
+ },
+ "b": {
+  "id": "1edb775a-0e3b-4ba6-ad40-283541c7f5a8",
+  "name": "Motz-Chautagne Tour",
+  "date": "2027-04-18",
+  "end_date": "2027-04-18",
+  "place": "Espace Sports et Nature de Fier-Motz, Motz",
+  "country": "FR",
+  "disciplines": [
+   "road",
+   "gran_fondo"
+  ],
+  "series": null,
+  "website": "https://motz-chautagnetour.com/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/27469"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_mid",
+  "name_substring"
+ ]
+}

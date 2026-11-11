@@ -1,0 +1,43 @@
+{
+ "case": "duplicate-a63c4eb3",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "a63c4eb3-5e53-4660-aad9-19b2bc086da6",
+  "name": "29° TROFEO COMUNE DI VERTOVA - 24° MEM. PIETRO - GIOVANNI MERELLI",
+  "date": "2027-08-28",
+  "end_date": "2027-08-28",
+  "place": "VERTOVA",
+  "country": "IT",
+  "disciplines": [
+   "road"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://members.federciclismo.it/race/detail/183239"
+  ]
+ },
+ "b": {
+  "id": "f4da9062-e3d7-4b76-b061-4376d65cac9e",
+  "name": "55° TROFEO EMILIO PAGANESSI",
+  "date": "2027-08-29",
+  "end_date": "2027-08-29",
+  "place": "VERTOVA",
+  "country": "IT",
+  "disciplines": [
+   "road"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://members.federciclismo.it/race/detail/183240"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_low"
+ ]
+}

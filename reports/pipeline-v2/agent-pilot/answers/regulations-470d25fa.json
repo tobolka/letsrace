@@ -1,0 +1,22 @@
+{
+ "case": "regulations-470d25fa",
+ "kind": "find_regulations",
+ "at": "2026-11-11T15:29:43.366Z",
+ "seconds": 39.6,
+ "usd": 0.0734299,
+ "turns": 8,
+ "answer": {
+  "race": "470d25fa-a905-48c0-a5d5-59941ffbf011",
+  "verdict": "found",
+  "url": "https://www.ceskakolova.cz/turnaj/2026-11-14-i-liga-3-kolo-nezamyslice/",
+  "quote": "14. 11. 2026 · Nezamyslice · pořádá Prima Nezamyslice",
+  "organiser_site": "https://www.ceskakolova.cz",
+  "looked_at": [
+   "https://kalendar.winspace.cz/kalendar/2026-kolova-iliga-elite-3kolo-c6f33763",
+   "https://kalendar.winspace.cz/",
+   "https://www.ceskakolova.cz",
+   "https://www.ceskakolova.cz/turnaj/2026-11-14-i-liga-3-kolo-nezamyslice/"
+  ],
+  "note": "The ceskakolova.cz tournament page has a 'Rozpis turnaje' section for I. liga 3. kolo in Nezamyslice on 14.11.2026, with the rozpis written on the page itself and an empty protocol XLSX attached."
+ }
+}

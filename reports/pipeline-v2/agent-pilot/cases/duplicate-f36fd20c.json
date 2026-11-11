@@ -1,0 +1,45 @@
+{
+ "case": "duplicate-f36fd20c",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "f36fd20c-8942-43ba-81ed-b4d0e53caefe",
+  "name": "Schleizer Dreieck Jedermann",
+  "date": "2027-07-18",
+  "end_date": "2027-07-18",
+  "place": "Schleiz",
+  "country": "DE",
+  "disciplines": [
+   "road",
+   "gran_fondo"
+  ],
+  "series": null,
+  "website": "http://www.schleizer-dreieck-jedermann.de/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/320"
+  ]
+ },
+ "b": {
+  "id": "e87c9dde-62af-459d-be91-9a36a10668b7",
+  "name": "Schleizer Dreieck Jedermann RTF",
+  "date": "2027-07-17",
+  "end_date": "2027-07-17",
+  "place": "Schleiz",
+  "country": "DE",
+  "disciplines": [
+   "road"
+  ],
+  "series": null,
+  "website": "http://www.schleizer-dreieck-jedermann.de/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/306"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_high",
+  "name_substring"
+ ]
+}

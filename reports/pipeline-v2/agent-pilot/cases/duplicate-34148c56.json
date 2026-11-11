@@ -1,0 +1,43 @@
+{
+ "case": "duplicate-34148c56",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "34148c56-64dd-4bd9-9915-feea63ffcd70",
+  "name": "CAMPIONATO ITALIANO TEAM RELAY CICLOCROSS 2027 - GIOVANILE",
+  "date": "2027-01-05",
+  "end_date": "2027-01-05",
+  "place": "CATTOLICA e MISANO ADRIATICO",
+  "country": "IT",
+  "disciplines": [
+   "cx"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://members.federciclismo.it/race/detail/183189"
+  ]
+ },
+ "b": {
+  "id": "d3d5a3ea-1322-433f-a07e-d919ac08237c",
+  "name": "CAMPIONATO ITALIANO CICLOCROSS 2027 - GIOVANILE",
+  "date": "2027-01-06",
+  "end_date": "2027-01-06",
+  "place": "CATTOLICA e MISANO ADRIATICO RN",
+  "country": "IT",
+  "disciplines": [
+   "cx"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://members.federciclismo.it/race/detail/183190"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_mid"
+ ]
+}

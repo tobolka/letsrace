@@ -1,0 +1,26 @@
+{
+ "case": "regulations-3dadbafa",
+ "kind": "find_regulations",
+ "race": {
+  "id": "3dadbafa-c27c-4280-b0ee-f22f50088661",
+  "name": "Žabácký cyklokros 2026 – Memoriál Rudolfa Bartoše",
+  "date": "2026-11-22",
+  "end_date": "2026-11-22",
+  "place": "Sedlčany",
+  "country": "CZ",
+  "disciplines": [
+   "cx"
+  ],
+  "series": "TBC série",
+  "website": "https://tbcserie.cz/kalendar-2026/zavod-201/",
+  "registration": "https://maraton.cz/terminovka/entry/373",
+  "found_on": [
+   "https://hynekmusil.cz",
+   "https://hynekmusil.cz/?serialosss=tbc",
+   "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-0a7f07df",
+   "https://kalendar.winspace.cz/kalendar/2026-zabacky-cyklokros-2026-memorial-rudolfa-bartose-af8f9c5f",
+   "https://maraton.cz/terminovka",
+   "https://maraton.cz/terminovka/entry/520"
+  ]
+ }
+}

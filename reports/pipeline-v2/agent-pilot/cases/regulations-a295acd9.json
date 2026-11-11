@@ -1,0 +1,21 @@
+{
+ "case": "regulations-a295acd9",
+ "kind": "find_regulations",
+ "race": {
+  "id": "a295acd9-6926-43ef-a9bd-c0dbea9de410",
+  "name": "ANTONIANA GRAVEL",
+  "date": "2026-11-14",
+  "end_date": "2026-11-14",
+  "place": "Padova",
+  "country": "IT",
+  "disciplines": [
+   "gravel"
+  ],
+  "series": null,
+  "website": "https://stayhappening.com/e/l%E2%80%99antoniana-2026-gravel-andamp-ciclostorica-padovana-E2IT01SDPXP",
+  "registration": null,
+  "found_on": [
+   "https://rideandrest.net/manifestazione/antoniana-gravel/"
+  ]
+ }
+}

@@ -1,0 +1,87 @@
+[
+ {
+  "case": "duplicate-a63c4eb3",
+  "kind": "decide_duplicate",
+  "verdict": "different",
+  "verified": true,
+  "checks": [
+   {
+    "url": "https://members.federciclismo.it/race/detail/183239",
+    "read": true,
+    "quoteFound": true
+   },
+   {
+    "url": "https://members.federciclismo.it/race/detail/183240",
+    "read": true,
+    "quoteFound": true
+   }
+  ],
+  "seconds": 9.4,
+  "usd": 0.0220677
+ },
+ {
+  "case": "duplicate-f36fd20c",
+  "kind": "decide_duplicate",
+  "verdict": "different",
+  "verified": false,
+  "checks": [
+   {
+    "url": "https://radsport-events.de/events/320",
+    "read": true,
+    "quoteFound": false
+   },
+   {
+    "url": "https://radsport-events.de/events/306",
+    "read": true,
+    "quoteFound": false
+   }
+  ],
+  "seconds": 9.2,
+  "usd": 0.022548700000000005
+ },
+ {
+  "case": "regulations-3a10adcc",
+  "kind": "find_regulations",
+  "verdict": "found",
+  "verified": true,
+  "checks": [
+   {
+    "url": "https://cxprachatice.cz/wp-content/uploads/2026/11/CyklokrosPT_2026.pdf",
+    "read": true,
+    "quoteFound": true
+   }
+  ],
+  "seconds": 29.9,
+  "usd": 0.0500612
+ },
+ {
+  "case": "regulations-470d25fa",
+  "kind": "find_regulations",
+  "verdict": "found",
+  "verified": true,
+  "checks": [
+   {
+    "url": "https://www.ceskakolova.cz/turnaj/2026-11-14-i-liga-3-kolo-nezamyslice/",
+    "read": true,
+    "quoteFound": true
+   }
+  ],
+  "seconds": 39.6,
+  "usd": 0.0734299
+ },
+ {
+  "case": "regulations-de1bbff1",
+  "kind": "find_regulations",
+  "verdict": "found",
+  "verified": true,
+  "checks": [
+   {
+    "url": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+    "read": true,
+    "quoteFound": true
+   }
+  ],
+  "seconds": 11.9,
+  "usd": 0.025874499999999995
+ }
+]

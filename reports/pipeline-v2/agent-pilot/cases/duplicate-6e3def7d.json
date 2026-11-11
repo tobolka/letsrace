@@ -1,0 +1,43 @@
+{
+ "case": "duplicate-6e3def7d",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "6e3def7d-3218-4594-a5cd-43185782e6be",
+  "name": "BRM 200 DONAUKINDER",
+  "date": "2027-04-17",
+  "end_date": "2027-04-17",
+  "place": "Buch SH",
+  "country": "CH",
+  "disciplines": [
+   "gravel"
+  ],
+  "series": null,
+  "website": "https://www.audaxsuisse.ch/brevets/brm-200-donaukinder/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/27035"
+  ]
+ },
+ "b": {
+  "id": "8c14bc8b-c257-452a-8564-5a2fcfd1c198",
+  "name": "BRM 400 Wasserkinder",
+  "date": "2027-04-16",
+  "end_date": "2027-04-16",
+  "place": "Turnhalle, Buch SH",
+  "country": "CH",
+  "disciplines": [
+   "gravel"
+  ],
+  "series": null,
+  "website": "https://www.audax-suisse.ch/brevets/brm-400-wasserkinder/",
+  "registration": null,
+  "found_on": [
+   "https://radsport-events.de/events/27034"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_low"
+ ]
+}

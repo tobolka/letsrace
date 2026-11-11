@@ -1,0 +1,24 @@
+{
+ "case": "duplicate-f36fd20c",
+ "kind": "decide_duplicate",
+ "at": "2026-11-11T15:30:34.408Z",
+ "seconds": 9.2,
+ "usd": 0.022548700000000005,
+ "turns": 4,
+ "answer": {
+  "a": "f36fd20c-8942-43ba-81ed-b4d0e53caefe",
+  "b": "e87c9dde-62af-459d-be91-9a36a10668b7",
+  "verdict": "different",
+  "evidence": [
+   {
+    "url": "https://radsport-events.de/events/320",
+    "quote": "Sonntag, 18. Juli 2027"
+   },
+   {
+    "url": "https://radsport-events.de/events/306",
+    "quote": "eine Radtouristikfahrt durch die Region rund um Schleiz."
+   }
+  ],
+  "note": "Entry a is the Jedermann race on Sunday 18 July 2027 (35/70/112 km), while entry b is a separate RTF touring ride on Saturday 17 July 2027 (76 km)."
+ }
+}

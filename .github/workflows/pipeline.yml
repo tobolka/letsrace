@@ -1,0 +1,45 @@
+name: Pipeline (cloud worker)
+
+# The pipeline's work that must go on while the Mac is shut. One job at a time moves here from
+# vercel.json; a job has exactly one scheduler, so its line leaves vercel.json in the same change
+# that gives it a schedule here. See docs/pipeline-v2.md, part 6.
+#
+# Started by hand only, until the secrets exist and one manual run has passed:
+#   gh workflow run pipeline.yml -f job=weather-history
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Which job to run
+        required: true
+        default: weather-history
+        type: choice
+        options: [weather-history]
+
+concurrency:
+  group: pipeline-${{ inputs.job }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  weather-history:
+    if: inputs.job == 'weather-history'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      # The script reads .env.local when there is one; here the values come from the secrets below.
+      - run: touch .env.local
+      - name: Warm weather history
+        run: npx tsx scripts/warm-weather-history.ts 150
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

@@ -1,0 +1,43 @@
+{
+ "case": "duplicate-d9dcd3d5",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "d9dcd3d5-e476-444e-99ea-7a408bd07a76",
+  "name": "RACA 500 East-West",
+  "date": "2027-08-26",
+  "end_date": "2027-08-26",
+  "place": "Kötschach / Mauthen",
+  "country": "AT",
+  "disciplines": [
+   "road"
+  ],
+  "series": null,
+  "website": "https://www.raceacrossaustria.com/raca-500ew",
+  "registration": null,
+  "found_on": [
+   "https://www.raceacrossaustria.com/raca-500ew"
+  ]
+ },
+ "b": {
+  "id": "a6c06bf0-38c2-476c-b783-6b129b8a3caf",
+  "name": "RACA 1000 East-West",
+  "date": "2027-08-24",
+  "end_date": "2027-08-28",
+  "place": "Nickelsdorf",
+  "country": "AT",
+  "disciplines": [
+   "road"
+  ],
+  "series": null,
+  "website": "https://www.raceacrossaustria.com/raca-1000ew",
+  "registration": "https://www.raceacrossaustria.com/raca-1000ew",
+  "found_on": [
+   "https://radsport-events.de/events/27010"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "name_sim_mid",
+  "needs_place_or_url"
+ ]
+}

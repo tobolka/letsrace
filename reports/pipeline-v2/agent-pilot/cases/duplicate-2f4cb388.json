@@ -1,0 +1,47 @@
+{
+ "case": "duplicate-2f4cb388",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "2f4cb388-56b1-413f-a2af-3216baef3da3",
+  "name": "UCI Gran Fondo TT Burgenland",
+  "date": "2027-04-24",
+  "end_date": "2027-04-24",
+  "place": "Mörbisch am See",
+  "country": "AT",
+  "disciplines": [
+   "tt",
+   "gran_fondo"
+  ],
+  "series": null,
+  "website": "https://www.neusiedlersee-radmarathon.com/",
+  "registration": null,
+  "found_on": [
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=9894A8599A9648B2A50CD400199BB356&filter=page=2",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=9894A8599A9648B2A50CD400199BB356&filter=view=events"
+  ]
+ },
+ "b": {
+  "id": "62b01e54-0b97-4114-b60d-079015e96b86",
+  "name": "UCI Gran Fondo Burgenland",
+  "date": "2027-04-25",
+  "end_date": "2027-04-25",
+  "place": "Mörbisch am See",
+  "country": "AT",
+  "disciplines": [
+   "road",
+   "gran_fondo"
+  ],
+  "series": null,
+  "website": "https://www.neusiedlersee-radmarathon.com/",
+  "registration": null,
+  "found_on": [
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=53639D94C1644F02BC9A0EACF02F1DDF&filter=page=2",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=53639D94C1644F02BC9A0EACF02F1DDF&filter=view=events"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_high"
+ ]
+}

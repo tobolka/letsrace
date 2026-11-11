@@ -1,0 +1,42 @@
+{
+ "case": "duplicate-e5b98fde",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "e5b98fde-a82f-4f0e-96aa-748e489ed4b1",
+  "name": "SENSOR Cyklo Maštale Gravel",
+  "date": "2027-06-19",
+  "end_date": "2027-06-19",
+  "place": "Maštale",
+  "country": "CZ",
+  "disciplines": [
+   "gravel"
+  ],
+  "series": null,
+  "website": "https://www.cyklomastale.cz/cs",
+  "registration": null,
+  "found_on": [
+   "https://www.cyklomastale.cz/cs"
+  ]
+ },
+ "b": {
+  "id": "ff8a5e8a-b90d-412f-b0b4-c431a2398d08",
+  "name": "Sensor Cyklo Maštale",
+  "date": "2027-06-19",
+  "end_date": "2027-06-19",
+  "place": "Proseč",
+  "country": "CZ",
+  "disciplines": [
+   "mtb"
+  ],
+  "series": null,
+  "website": "https://www.cyklomastale.cz/cs",
+  "registration": null,
+  "found_on": [
+   "https://www.cyklomastale.cz/cs",
+   "https://www.cyklomastale.cz/cs/25-rocnik-zavodu-se-bude-konat-19-cervna-2027"
+  ]
+ },
+ "why_unsure": [
+  "discipline_conflict"
+ ]
+}

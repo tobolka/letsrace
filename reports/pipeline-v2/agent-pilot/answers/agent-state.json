@@ -1,0 +1,57 @@
+{
+ "lastRunAt": "2026-11-11T15:30:25.246Z",
+ "runs": [
+  {
+   "at": "2026-11-11T15:27:02.885Z",
+   "limits": {
+    "max": 5,
+    "seconds": 240,
+    "usd": 0.4,
+    "runUsd": 4,
+    "model": "sonnet"
+   },
+   "asked": 1,
+   "answered": 0,
+   "refused": 0,
+   "timedOut": 0,
+   "usd": 0,
+   "seconds": 1,
+   "stopped": "the agent cannot work: Not logged in · Please run /login"
+  },
+  {
+   "at": "2026-11-11T15:29:03.727Z",
+   "limits": {
+    "max": 3,
+    "seconds": 240,
+    "usd": 0.4,
+    "runUsd": 4,
+    "model": "sonnet"
+   },
+   "asked": 3,
+   "answered": 3,
+   "refused": 0,
+   "timedOut": 0,
+   "usd": 0.149,
+   "seconds": 81,
+   "stopped": null
+  },
+  {
+   "at": "2026-11-11T15:30:25.246Z",
+   "limits": {
+    "max": 2,
+    "seconds": 240,
+    "usd": 0.4,
+    "runUsd": 4,
+    "model": "sonnet"
+   },
+   "asked": 2,
+   "answered": 2,
+   "refused": 0,
+   "timedOut": 0,
+   "usd": 0.045,
+   "seconds": 19,
+   "stopped": null
+  }
+ ],
+ "lastRunDay": "2026-11-11"
+}

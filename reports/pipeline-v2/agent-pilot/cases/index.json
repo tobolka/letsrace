@@ -1,0 +1,134 @@
+[
+ {
+  "case": "regulations-470d25fa",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-de1bbff1",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-3a10adcc",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-f9a8bbe8",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-935e390a",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-0a6fd206",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-df4a6b29",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-ecbdc2bb",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-3dadbafa",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-802e6719",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-74b2961f",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-534f2a66",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-c9d62999",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-d3e0bac7",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-f2164309",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-a5234242",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-e4da1272",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-0e188259",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-33c5ef9a",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "regulations-a295acd9",
+  "kind": "find_regulations"
+ },
+ {
+  "case": "duplicate-f36fd20c",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-a63c4eb3",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-d9dcd3d5",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-498a8c91",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-e5b98fde",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-6e3def7d",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-2f4cb388",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-1a57b5a6",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-3565e0ad",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-34148c56",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-94b12208",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-dc1f2898",
+  "kind": "decide_duplicate"
+ },
+ {
+  "case": "duplicate-4f6722d3",
+  "kind": "decide_duplicate"
+ }
+]

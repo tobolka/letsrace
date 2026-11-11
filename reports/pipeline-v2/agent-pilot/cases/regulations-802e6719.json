@@ -1,0 +1,22 @@
+{
+ "case": "regulations-802e6719",
+ "kind": "find_regulations",
+ "race": {
+  "id": "802e6719-df22-4c2f-bafe-1d230219092b",
+  "name": "Cyklokros Slavkov u Brna 2026",
+  "date": "2026-11-22",
+  "end_date": "2026-11-22",
+  "place": "Slavkov u Brna",
+  "country": "CZ",
+  "disciplines": [
+   "cx"
+  ],
+  "series": null,
+  "website": "https://mtbteam.cyklokyjovsky.cz/akce/cyklokros-slavkov-u-brna-2026/",
+  "registration": "https://mtbteam.cyklokyjovsky.cz/akce/cyklokros-slavkov-u-brna-2026/",
+  "found_on": [
+   "https://mtbteam.cyklokyjovsky.cz/akce/cyklokros-slavkov-u-brna-2026/",
+   "https://portal.czechcyclingfederation.com/RaceDetail/Race/1827"
+  ]
+ }
+}

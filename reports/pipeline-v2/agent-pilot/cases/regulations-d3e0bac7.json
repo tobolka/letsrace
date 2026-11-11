@@ -1,0 +1,22 @@
+{
+ "case": "regulations-d3e0bac7",
+ "kind": "find_regulations",
+ "race": {
+  "id": "d3e0bac7-179a-49d1-adb2-bb3232a90e9c",
+  "name": "Mikulášský cyklokros — Břeccross",
+  "date": "2026-12-05",
+  "end_date": "2026-12-05",
+  "place": "Břeclav",
+  "country": "CZ",
+  "disciplines": [
+   "cx"
+  ],
+  "series": null,
+  "website": "https://kalendar.winspace.cz/kalendar/2026-mikulassky-cyklokros-breccross-2025-cx-pohar-jmk-vi-dc330c9c",
+  "registration": null,
+  "found_on": [
+   "https://kalendar.winspace.cz/kalendar/2026-mikulassky-cyklokros-breccross-2025-cx-pohar-jmk-vi-dc330c9c",
+   "https://portal.czechcyclingfederation.com/RaceDetail/Race/1574"
+  ]
+ }
+}

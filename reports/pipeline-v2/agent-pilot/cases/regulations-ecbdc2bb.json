@@ -1,0 +1,21 @@
+{
+ "case": "regulations-ecbdc2bb",
+ "kind": "find_regulations",
+ "race": {
+  "id": "ecbdc2bb-7804-474e-b095-5731a26d4e2a",
+  "name": "Sálová cyklistika — Kolová - II.Liga elite - 3.kolo",
+  "date": "2026-11-21",
+  "end_date": "2026-11-21",
+  "place": "Chrastava",
+  "country": "CZ",
+  "disciplines": [
+   "other"
+  ],
+  "series": "Sálová cyklistika",
+  "website": "https://kalendar.winspace.cz/kalendar/2026-kolova-iiliga-elite-3kolo-13fbaa44",
+  "registration": null,
+  "found_on": [
+   "https://kalendar.winspace.cz/kalendar/2026-kolova-iiliga-elite-3kolo-13fbaa44"
+  ]
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "case": "duplicate-498a8c91",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "498a8c91-38e2-4f70-8963-ad6d44ff08de",
+  "name": "Internationale KTM Kamptal Trophy",
+  "date": "2027-04-03",
+  "end_date": "2027-04-04",
+  "place": "Langenlois / Zöbing, Niederösterreich",
+  "country": "AT",
+  "disciplines": [
+   "xco",
+   "xcc"
+  ],
+  "series": null,
+  "website": "https://kamptaltrophy.at/",
+  "registration": null,
+  "found_on": [
+   "https://kamptaltrophy.at/"
+  ]
+ },
+ "b": {
+  "id": "abe0fbad-bfe5-4274-bf39-beaefcbaae67",
+  "name": "35. KTM Kamptal Trophy - UCI XCO C1",
+  "date": "2027-04-04",
+  "end_date": "2027-04-04",
+  "place": "Zöbing",
+  "country": "AT",
+  "disciplines": [
+   "xco"
+  ],
+  "series": "KTM Kamptal Trophy",
+  "website": "https://www.urc-langenlois.at/",
+  "registration": null,
+  "found_on": [
+   "https://bikeboard.at/termine/35-ktm-kamptal-trophy-uci-xco-c1-termin16257",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=084A53BF1AF64FFE8BA58D855E127EAD",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=084A53BF1AF64FFE8BA58D855E127EAD&filter=view=events"
+  ]
+ },
+ "why_unsure": [
+  "weekend",
+  "same_place",
+  "name_sim_mid"
+ ]
+}

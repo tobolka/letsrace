@@ -1,0 +1,21 @@
+{
+ "case": "regulations-df4a6b29",
+ "kind": "find_regulations",
+ "race": {
+  "id": "df4a6b29-fdf5-4bde-8b21-8768d4ed79b3",
+  "name": "Babinského bloudění 2026",
+  "date": "2026-11-21",
+  "end_date": "2026-11-21",
+  "place": "Braňka",
+  "country": "CZ",
+  "disciplines": [
+   "other"
+  ],
+  "series": null,
+  "website": "https://www.sacbela.cz",
+  "registration": "https://www.sacbela.cz/propozice_sac.php?prop_zavod_sac=5",
+  "found_on": [
+   "https://mtbs.cz/clanek/babinskeho-bloudeni-2026-75927/kategorie/mtbo"
+  ]
+ }
+}

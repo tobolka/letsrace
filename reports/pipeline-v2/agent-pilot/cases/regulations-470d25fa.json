@@ -1,0 +1,21 @@
+{
+ "case": "regulations-470d25fa",
+ "kind": "find_regulations",
+ "race": {
+  "id": "470d25fa-a905-48c0-a5d5-59941ffbf011",
+  "name": "Sálová cyklistika — Kolová - I.Liga elite - 3.kolo",
+  "date": "2026-11-14",
+  "end_date": "2026-11-14",
+  "place": "Nezamyslice",
+  "country": "CZ",
+  "disciplines": [
+   "other"
+  ],
+  "series": "Sálová cyklistika",
+  "website": "https://kalendar.winspace.cz/kalendar/2026-kolova-iliga-elite-3kolo-c6f33763",
+  "registration": null,
+  "found_on": [
+   "https://kalendar.winspace.cz/kalendar/2026-kolova-iliga-elite-3kolo-c6f33763"
+  ]
+ }
+}

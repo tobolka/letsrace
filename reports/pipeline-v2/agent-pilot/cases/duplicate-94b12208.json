@@ -1,0 +1,47 @@
+{
+ "case": "duplicate-94b12208",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "94b12208-272e-43ed-8c01-df37508e4363",
+  "name": "13° TROFEO CITTA' DI SAN FIOR - 7° MEMORIAL A. LOT",
+  "date": "2026-12-27",
+  "end_date": "2026-12-27",
+  "place": "San Fior",
+  "country": "IT",
+  "disciplines": [
+   "cx"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://www.trevisomtb.it/Raggruppamenti.aspx?IDEvento=15378"
+  ]
+ },
+ "b": {
+  "id": "8c8cb575-9b21-4a5e-aa92-66cce402e460",
+  "name": "GARA NAZIONALE CICLOCROSS CX - SAN FIOR TV",
+  "date": "2026-12-27",
+  "end_date": "2026-12-27",
+  "place": "SAN FIOR TV",
+  "country": "IT",
+  "disciplines": [
+   "cx"
+  ],
+  "series": null,
+  "website": "https://rideandrest.net/manifestazione/cx-san-fior/",
+  "registration": null,
+  "found_on": [
+   "https://members.federciclismo.it/race/detail/182524",
+   "https://members.federciclismo.it/race/detail/182964",
+   "https://rideandrest.net/manifestazione/cx-san-fior/",
+   "https://rideandrest.net/manifestazione/gara-nazionale-ciclocross-cx-san-fior-tv/"
+  ]
+ },
+ "why_unsure": [
+  "same_day",
+  "same_place",
+  "name_sim_low",
+  "same_discipline"
+ ]
+}

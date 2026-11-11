@@ -1,0 +1,21 @@
+{
+ "case": "regulations-935e390a",
+ "kind": "find_regulations",
+ "race": {
+  "id": "935e390a-2d03-4d55-b390-7ed2ebd6262b",
+  "name": "STŘEDEČNÍ DRÁHOVÝ POHÁR",
+  "date": "2026-11-18",
+  "end_date": "2026-11-18",
+  "place": "Praha Motol",
+  "country": "CZ",
+  "disciplines": [
+   "track"
+  ],
+  "series": null,
+  "website": null,
+  "registration": null,
+  "found_on": [
+   "https://portal.czechcyclingfederation.com/RaceDetail/Race/1830"
+  ]
+ }
+}

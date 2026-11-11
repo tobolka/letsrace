@@ -1,0 +1,22 @@
+{
+ "case": "regulations-0a6fd206",
+ "kind": "find_regulations",
+ "race": {
+  "id": "0a6fd206-1327-48aa-af4d-ae29d46121ff",
+  "name": "ZH Cross #8",
+  "date": "2026-11-21",
+  "end_date": "2026-11-21",
+  "place": "Zlaté Hory",
+  "country": "CZ",
+  "disciplines": [
+   "cx"
+  ],
+  "series": "ZH Cross",
+  "website": "https://kalendar.winspace.cz/kalendar/2026-zh-cross-8-a92e53f9",
+  "registration": null,
+  "found_on": [
+   "https://kalendar.winspace.cz/kalendar/2026-zh-cross-8-a92e53f9",
+   "https://portal.czechcyclingfederation.com/RaceDetail/Race/1792"
+  ]
+ }
+}

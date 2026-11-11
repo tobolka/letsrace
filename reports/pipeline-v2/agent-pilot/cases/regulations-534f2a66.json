@@ -1,0 +1,21 @@
+{
+ "case": "regulations-534f2a66",
+ "kind": "find_regulations",
+ "race": {
+  "id": "534f2a66-5796-4d96-a208-7f5259e46cc5",
+  "name": "Sálová cyklistika — Kolová - Kvalifikace o II.Ligu 2027",
+  "date": "2026-11-28",
+  "end_date": "2026-11-28",
+  "place": "Olomouc",
+  "country": "CZ",
+  "disciplines": [
+   "other"
+  ],
+  "series": "Sálová cyklistika",
+  "website": "https://kalendar.winspace.cz/kalendar/2026-kolova-kvalifikace-o-iiligu-2027-5851b433",
+  "registration": null,
+  "found_on": [
+   "https://kalendar.winspace.cz/kalendar/2026-kolova-kvalifikace-o-iiligu-2027-5851b433"
+  ]
+ }
+}

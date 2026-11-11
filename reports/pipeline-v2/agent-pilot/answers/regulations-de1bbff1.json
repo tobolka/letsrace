@@ -1,0 +1,20 @@
+{
+ "case": "regulations-de1bbff1",
+ "kind": "find_regulations",
+ "at": "2026-11-11T15:29:55.296Z",
+ "seconds": 11.9,
+ "usd": 0.025874499999999995,
+ "turns": 4,
+ "answer": {
+  "race": "de1bbff1-20a7-403b-9528-39d79aa3bed8",
+  "verdict": "found",
+  "url": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+  "quote": "Závodí se dle pravidel TBC série 2026 a tohoto rozpisu.",
+  "organiser_site": "https://tbcserie.cz",
+  "looked_at": [
+   "https://tbcserie.cz/kalendar-2026/zavod-211/",
+   "https://maraton.cz/terminovka/entry/695"
+  ],
+  "note": "The TBC série race page for Vimperk on 14. 11. 2026 holds the race's own rozpis (date, rules section) but links no separate PDF; the registration page has no regulations link."
+ }
+}

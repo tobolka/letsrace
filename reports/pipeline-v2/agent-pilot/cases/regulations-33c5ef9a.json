@@ -1,0 +1,21 @@
+{
+ "case": "regulations-33c5ef9a",
+ "kind": "find_regulations",
+ "race": {
+  "id": "33c5ef9a-41f5-4c81-9693-d2201c0421a1",
+  "name": "2. Gravelride ds VFL Stade",
+  "date": "2026-11-14",
+  "end_date": "2026-11-14",
+  "place": "Vereinsheim VfL-Stade, Stade",
+  "country": "DE",
+  "disciplines": [
+   "gravel"
+  ],
+  "series": null,
+  "website": "https://radsport.unterelbe.net/termine/gravelride-2026/",
+  "registration": "https://my.raceresult.com/427991/registration",
+  "found_on": [
+   "https://radsport-events.de/events/27663"
+  ]
+ }
+}

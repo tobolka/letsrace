@@ -1,0 +1,23 @@
+{
+ "case": "regulations-3a10adcc",
+ "kind": "find_regulations",
+ "at": "2026-11-11T15:30:25.176Z",
+ "seconds": 29.9,
+ "usd": 0.0500612,
+ "turns": 8,
+ "answer": {
+  "race": "3a10adcc-1cb1-4abf-b0a4-7b58a0c9cf2d",
+  "verdict": "found",
+  "url": "https://cxprachatice.cz/wp-content/uploads/2026/11/CyklokrosPT_2026.pdf",
+  "quote": "9. závod TBC SÉRIE 2026",
+  "organiser_site": "https://cxprachatice.cz/",
+  "looked_at": [
+   "https://tbcserie.cz/kalendar-2026/zavod-216/",
+   "https://maraton.cz/terminovka/entry/713",
+   "https://cxprachatice.cz/",
+   "https://cxprachatice.cz/zavody/",
+   "https://cxprachatice.cz/wp-content/uploads/2026/11/CyklokrosPT_2026.pdf"
+  ],
+  "note": "The organiser's propozice PDF for Cyklokros Prachatice, the 9th TBC SÉRIE 2026 race, gives the date as 15.11.2026 and covers the categories and schedule."
+ }
+}

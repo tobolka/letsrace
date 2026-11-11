@@ -1,0 +1,26 @@
+{
+ "case": "regulations-f2164309",
+ "kind": "find_regulations",
+ "race": {
+  "id": "f2164309-a63d-4a2a-85d9-44bc25de7a20",
+  "name": "TBC — VESELÍ NAD LUŽNICÍ",
+  "date": "2026-12-06",
+  "end_date": "2026-12-06",
+  "place": "Veselí nad Lužnicí",
+  "country": "CZ",
+  "disciplines": [
+   "cx"
+  ],
+  "series": "TBC série",
+  "website": "https://tbcserie.cz/kalendar-2026/zavod-214/",
+  "registration": null,
+  "found_on": [
+   "https://hynekmusil.cz",
+   "https://hynekmusil.cz/?serialosss=tbc",
+   "https://kalendar.winspace.cz/kalendar/2026-tbc-serie-2026-94312255",
+   "https://portal.czechcyclingfederation.com/RaceDetail/Race/1813",
+   "https://sumator.cz/race/veselsky-cyklokros-6-12-2026",
+   "https://tbcserie.cz/kalendar-2026/zavod-214/"
+  ]
+ }
+}

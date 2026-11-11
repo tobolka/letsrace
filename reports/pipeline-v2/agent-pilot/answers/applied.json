@@ -1,0 +1,18 @@
+{
+ "regulations-3a10adcc": {
+  "at": "2026-11-11T15:39:07.361Z",
+  "outcome": "applied",
+  "reason": null,
+  "key": "578954f0215741be186ad0b4c5bc8d92"
+ },
+ "regulations-470d25fa": {
+  "at": "2026-11-11T15:39:07.691Z",
+  "outcome": "held",
+  "reason": "not_clearly_this_race"
+ },
+ "regulations-de1bbff1": {
+  "at": "2026-11-11T15:39:07.770Z",
+  "outcome": "skipped",
+  "reason": "same_as_website"
+ }
+}

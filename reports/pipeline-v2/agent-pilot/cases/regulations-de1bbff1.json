@@ -1,0 +1,26 @@
+{
+ "case": "regulations-de1bbff1",
+ "kind": "find_regulations",
+ "race": {
+  "id": "de1bbff1-20a7-403b-9528-39d79aa3bed8",
+  "name": "TBC — VIMPERK",
+  "date": "2026-11-14",
+  "end_date": "2026-11-14",
+  "place": "Vimperk",
+  "country": "CZ",
+  "disciplines": [
+   "cx"
+  ],
+  "series": "TBC série",
+  "website": "https://tbcserie.cz/kalendar-2026/zavod-211/",
+  "registration": "https://maraton.cz/terminovka/entry/695",
+  "found_on": [
+   "https://maraton.cz/terminovka",
+   "https://maraton.cz/terminovka/entry/520",
+   "https://maraton.cz/terminovka/entry/571",
+   "https://maraton.cz/terminovka/entry/594",
+   "https://sumator.cz/race/cyklokros-na-vodniku-vimperk-14-11-2026",
+   "https://tbcserie.cz/kalendar-2026/zavod-211/"
+  ]
+ }
+}

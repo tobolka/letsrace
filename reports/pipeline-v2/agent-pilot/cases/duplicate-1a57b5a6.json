@@ -1,0 +1,44 @@
+{
+ "case": "duplicate-1a57b5a6",
+ "kind": "decide_duplicate",
+ "a": {
+  "id": "1a57b5a6-8643-42a1-9915-8801333bd1ee",
+  "name": "Kärntner Nachwuchscup Griffen XCE",
+  "date": "2027-05-22",
+  "end_date": "2027-05-22",
+  "place": "Untergreutschach 57",
+  "country": "AT",
+  "disciplines": [
+   "xcc",
+   "xce"
+  ],
+  "series": "Österreichischer MTB Nachwuchscup",
+  "website": "https://www.facebook.com/RadclubARBOEGriffen",
+  "registration": null,
+  "found_on": [
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=67E7B02F53CB45F6856EC753904249D4&filter=page=2",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=67E7B02F53CB45F6856EC753904249D4&filter=view=events"
+  ]
+ },
+ "b": {
+  "id": "d2c005e9-ec25-47a7-80d9-3db1daafb7bd",
+  "name": "Kärntner Nachwuchscup Griffen XCO",
+  "date": "2027-05-22",
+  "end_date": "2027-05-22",
+  "place": "Untergreutschach 57",
+  "country": "AT",
+  "disciplines": [
+   "xco"
+  ],
+  "series": "Österreichischer MTB Nachwuchscup",
+  "website": "https://www.facebook.com/RadclubARBOEGriffen",
+  "registration": null,
+  "found_on": [
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=3CAED2A89E784FFBA7A5FC471FE1CC2B&filter=page=3",
+   "https://www.cyclingaustria.at/index.php?option=com_events&view=event&id=3CAED2A89E784FFBA7A5FC471FE1CC2B&filter=view=events"
+  ]
+ },
+ "why_unsure": [
+  "format_conflict"
+ ]
+}

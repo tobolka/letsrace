@@ -1,0 +1,162 @@
+{
+ "at": "2026-11-11T15:40:59.124Z",
+ "racesWanted": 117,
+ "sitesKnown": 56,
+ "sitesAsked": 10,
+ "queued": 10,
+ "tasks": [
+  {
+   "site": "http://www.gerhardczerner.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 3.9,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://competit.pl",
+   "races": 2,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 2,
+    "documents": 1,
+    "read": 1,
+    "found": 0
+   },
+   "seconds": 1.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://dostartu.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.8,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://radsport.unterelbe.net",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://stayhappening.com",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.6,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://tbcserie.cz",
+   "races": 3,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 3,
+    "documents": 3,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 0.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://tomexgravel.pl",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 0,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 6,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://tvlorsbach.de",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 98,
+    "read": 3,
+    "found": 0
+   },
+   "seconds": 6.5,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.gravelland.it",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 3,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 1.3,
+   "accepted": true,
+   "decisions": []
+  },
+  {
+   "site": "https://www.kwtcdetoekomstrekem.be",
+   "races": 1,
+   "outcome": "waiting",
+   "reason": "no_document_yet",
+   "stats": {
+    "races": 1,
+    "documents": 3,
+    "read": 0,
+    "found": 0
+   },
+   "seconds": 8.3,
+   "accepted": true,
+   "decisions": []
+  }
+ ],
+ "totals": {
+  "task_waiting": 10
+ }
+}

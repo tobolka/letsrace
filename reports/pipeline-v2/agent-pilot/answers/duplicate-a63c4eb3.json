@@ -1,0 +1,24 @@
+{
+ "case": "duplicate-a63c4eb3",
+ "kind": "decide_duplicate",
+ "at": "2026-11-11T15:30:43.852Z",
+ "seconds": 9.4,
+ "usd": 0.0220677,
+ "turns": 4,
+ "answer": {
+  "a": "a63c4eb3-5e53-4660-aad9-19b2bc086da6",
+  "b": "f4da9062-e3d7-4b76-b061-4376d65cac9e",
+  "verdict": "different",
+  "evidence": [
+   {
+    "url": "https://members.federciclismo.it/race/detail/183239",
+    "quote": "29° TROFEO COMUNE DI VERTOVA - 24° MEM. PIETRO - GIOVANNI MERELLI"
+   },
+   {
+    "url": "https://members.federciclismo.it/race/detail/183240",
+    "quote": "55° TROFEO EMILIO PAGANESSI"
+   }
+  ],
+  "note": "They are two separate races in Vertova on consecutive days (28 and 29 August 2027), with different names and edition numbers."
+ }
+}
