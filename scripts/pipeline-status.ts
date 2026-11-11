@@ -5,6 +5,7 @@ import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {readdirSync,readFileSync,writeFileSync,renameSync} from 'node:fs';
 import {summarise,type CycleResult} from '../src/lib/pipeline2/status';
+import {dayRow,historyTable,withDay,type AgentCounts,type DayRow,type GateCounts} from '../src/lib/pipeline2/history';
 const read=async(p:string)=>{try{return JSON.parse(await readFile(p,'utf8'));}catch{return null;}};
 async function main(){
  const base=join(homedir(),'Library/Application Support/LetsRace');
@@ -31,6 +32,27 @@ async function main(){
  const now=new Date();
  const summary=summarise({cycles,now,macReportAt:monitor?.at??null,aiLedger:await read(join(data,'llm-budget.json')),aiDay:new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(now)});
  if(!process.argv.includes('--no-write')){try{const file=join(data,'status.json');writeFileSync(`${file}.${process.pid}.tmp`,JSON.stringify(summary,null,2),{mode:0o600});renameSync(`${file}.${process.pid}.tmp`,file);}catch(e){console.warn(`Souhrn se nepodařilo uložit: ${(e as Error).message}`);}}
+ // One row a day of the numbers version 2 is judged by.
+ const historyFile=join(data,'v2-history.json');const history:DayRow[]=(await read(historyFile))??[];
+ if(process.argv.includes('--history')){for(const line of historyTable(history,Number(process.argv.find(a=>a.startsWith('--days='))?.slice(7)??14)))console.log(line);return;}
+ if(!process.argv.includes('--no-write')){
+  const day=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+  // What the agent's desk holds, read from the answers the cycle has checked.
+  let agent:AgentCounts|null=null;
+  const checked=await read(join(data,'agent','answers','verified.json')) as {verified:boolean|null}[]|null;
+  if(Array.isArray(checked))agent={answers:checked.length,verified:checked.filter(r=>r.verified===true).length,unverified:checked.filter(r=>r.verified===false).length,undecided:checked.filter(r=>r.verified==null).length};
+  // What the gate on the server decided so far. Unreadable is left unknown, never written as zero.
+  let gate:GateCounts|null=null;
+  try{
+   const {parse}=await import('dotenv');for(const [key,value] of Object.entries(parse(readFileSync(join(process.cwd(),'.env.local'),'utf8'))))process.env[key]??=value;
+   const {createServerSupabase}=await import('../src/lib/supabase/server');
+   const {data:rows,error}=await (createServerSupabase() as unknown as {from(table:string):{select(columns:string):PromiseLike<{data:{status:string;reason:string|null}[]|null;error:{message:string}|null}>}}).from('pipeline_proposals').select('status,reason');
+   if(error)throw Error(error.message);
+   const count=(test:(row:{status:string;reason:string|null})=>boolean)=>(rows??[]).filter(test).length;
+   gate={applied:count(r=>r.status==='applied'),held:count(r=>r.status==='held'),rejected:count(r=>r.status==='rejected'&&!r.reason?.startsWith('rolled_back')),superseded:count(r=>r.status==='superseded'),rolledBack:count(r=>Boolean(r.reason?.startsWith('rolled_back')))};
+  }catch(e){if(!process.argv.includes('--summary'))console.warn(`Stav brány nezjištěn: ${(e as Error).message.slice(0,120)}`);}
+  try{writeFileSync(`${historyFile}.${process.pid}.tmp`,JSON.stringify(withDay(history,dayRow(day,summary,{gate,agent})),null,1),{mode:0o600});renameSync(`${historyFile}.${process.pid}.tmp`,historyFile);}catch(e){console.warn(`Denní čísla se nepodařilo uložit: ${(e as Error).message}`);}
+ }
  if(process.argv.includes('--summary')){console.log(JSON.stringify(summary,null,2));return;}
  if(process.argv.includes('--json'))console.log(JSON.stringify({...status,summary},null,2));
  else {
