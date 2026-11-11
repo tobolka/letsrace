@@ -29,7 +29,7 @@ Rezerva velikosti je malá (7,2 z 10 MB). Oddělení kódu pipeline od webu by j
 
 ## Co je potřeba od vlastníka
 
-1. V Terminálu ve složce projektu: `npx wrangler login` (otevře prohlížeč a požádá o souhlas).
+1. Přihlášení není potřeba: `wrangler` je na Macu přihlášený k účtu Tobolka Account.
 2. V Cloudflare zapnout Workers Paid (5 USD měsíčně). Bez něj se balík nenahraje.
 3. Tajné klíče webu zadat příkazem `wrangler secret put`, stejně jako u GitHubu.
 
