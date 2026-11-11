@@ -9,7 +9,7 @@ import { thisWeekendRange } from "@/lib/date-presets";
 import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { absoluteUrl, brandedTitle, counted, fillCopy, hubCopy, inCountry, localeAlternates, localeOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
-import { hubPath, localePath } from "@/lib/localized-paths";
+import { hubPath } from "@/lib/localized-paths";
 import {
   disciplineCopy,
   disciplineLeaves,
@@ -19,8 +19,9 @@ import {
 } from "@/lib/discipline-hubs";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { MapPinned } from "lucide-react";
-import { BrowseHeader, BrowseIntro, SeriesCard, TileGrid } from "@/components/browse/browse-ui";
-import { addDaysIso, fill, raceCopy, seasonLabel, seriesIn, shortDate } from "@/lib/seo-race-copy";
+import { BrowseHeader, BrowseIntro, SeriesCard } from "@/components/browse/browse-ui";
+import { SeriesGrid } from "@/components/browse/series-grid";
+import { addDaysIso, fill, raceCopy, seasonLabel } from "@/lib/seo-race-copy";
 import { RaceLinkList } from "@/components/seo/race-link-list";
 import { HubJsonLd } from "@/components/seo/hub-json-ld";
 import { Button } from "@/components/ui/button";
@@ -126,9 +127,8 @@ async function DisciplineHub({
   const heading = fillCopy(copy.title, { in: where });
   const countryHeading = fillCopy(hubCopy[locale].countryTitle, { in: where });
   const weekend = thisWeekendRange();
-  const series = seriesIn(events);
+  const hasSeries = events.some((e) => e.series);
   const outside = paginated.events.filter((e) => !e.series);
-  const nextOf = (slug: string) => events.find((e) => e.series?.slug === slug)?.startDate;
 
   return (
     <article className="min-h-full bg-background">
@@ -163,24 +163,13 @@ async function DisciplineHub({
           </Button>
         </BrowseIntro>
 
-        {series.length > 0 && (
-          <TileGrid title={rc.series} className="mt-8">
-            {series.map((s) => {
-              const next = nextOf(s.slug);
-              return (
-                <SeriesCard
-                  key={s.slug}
-                  href={localePath(locale, `series/${s.slug}`)}
-                  name={s.name}
-                  meta={[counted(s.rounds, "round", locale), next ? fill(rc.nextRound, { date: shortDate(next, locale) }) : null].filter(Boolean).join(" · ")}
-                />
-              );
-            })}
-            {outside.length > 0 && (
-              <SeriesCard href="#outside-series" name={rc.outsideSeries} meta={fill(rc.outsideSeriesBody, { count: outside.length })} />
-            )}
-          </TileGrid>
-        )}
+        <SeriesGrid
+          events={events}
+          locale={locale}
+          title={rc.series}
+          className="mt-8"
+          extra={outside.length > 0 ? <SeriesCard href="#outside-series" name={rc.outsideSeries} meta={fill(rc.outsideSeriesBody, { count: outside.length })} /> : null}
+        />
 
         {events.length ? (
           <section className="mt-10">
@@ -190,7 +179,7 @@ async function DisciplineHub({
           </section>
         ) : null}
 
-        {series.length > 0 && outside.length > 0 && (
+        {hasSeries && outside.length > 0 && (
           <section id="outside-series" className="mt-10 scroll-mt-4">
             <h2 className="mb-3 text-lg font-semibold">{rc.outsideSeries}</h2>
             <RaceLinkList events={outside} locale={locale} headingLevel="h3" />

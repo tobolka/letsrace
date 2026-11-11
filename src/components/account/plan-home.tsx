@@ -479,7 +479,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
           locale={locale}
           userId={userId}
           plannedEventIds={suggestCtx.plannedEventIds}
-          onAdd={(eventId) => onAddRounds([eventId])}
+          onSaved={load}
         />
       ) : null}
       <div className="flex flex-col gap-8 [&>*]:min-w-0">
@@ -499,16 +499,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
                     )
                   : t.suggestSoon
               }
-              onAdd={async (eventId) => {
-                const supabase = createBrowserSupabase();
-                const { data: auth } = await supabase.auth.getUser();
-                if (!auth.user) return;
-                if (!(await ensureFavorite(supabase, auth.user.id, eventId, false))) {
-                  toast.error(t.saveFailed);
-                  return;
-                }
-                await load();
-              }}
+              onSaved={load}
             />
           ) : null}
 

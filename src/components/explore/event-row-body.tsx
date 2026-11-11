@@ -9,6 +9,15 @@ import { compactRaceDates } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
 import { ExplainedHint } from "@/components/explore/explained-badge";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
+
+export type RaceRowEvent = Pick<EventListItem, "id" | "slug" | "name" | "startDate" | "disciplines"> & {
+  endDate?: string | null;
+  ageMatch?: EventListItem["ageMatch"];
+  location?: { name: string | null; municipality: string | null; countryCode: string | null } | null;
+  series?: Pick<NonNullable<EventListItem["series"]>, "name"> | null;
+  uciClass?: string | null;
+};
 
 /** The row classes of a race in any list — the app's list and the browse pages alike. */
 export const EVENT_ROW_CLASS =
@@ -27,9 +36,10 @@ export function EventRowBody({
   wrapName = false,
   compact = false,
   factsLabel,
+  tags,
   seriesRound = false,
 }: {
-  event: EventListItem;
+  event: RaceRowEvent;
   locale: string;
   distanceKm?: number | null;
   /**
@@ -40,6 +50,7 @@ export function EventRowBody({
    */
   compact?: boolean;
   factsLabel?: string;
+  tags?: ReactNode;
   seriesRound?: boolean;
   /**
    * Up to two lines for the name. The list page has no map rebuilding it
@@ -52,7 +63,7 @@ export function EventRowBody({
   const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
   const dateLabel = compactRaceDates(event, locale);
-  const placeLabel = [event.location?.municipality || event.location?.name || "—", event.location?.countryCode].filter(Boolean).join(" · ");
+  const placeLabel = [event.location?.municipality || event.location?.name, event.location?.countryCode].filter(Boolean).join(" · ");
   // The UCI class is what a licensed rider looks for first: "C1", "1.2".
   const uciLabel = event.uciClass ? `UCI ${UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}` : null;
   const extraLabel = [uciLabel, discLabel, event.series?.name].filter(Boolean).join(" · ");
@@ -67,6 +78,7 @@ export function EventRowBody({
           <span className="race-row-meta" data-series-race={seriesRound ? event.slug : undefined}>
             <time dateTime={event.startDate} className="race-row-date">{dateLabel}</time>
             {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
+            {tags}
             <span className="race-row-place" title={metadataLabel}>{metadataLabel}</span>
             {distanceLabel ? (
               <ExplainedHint explanation={t.distanceFromOrigin} className="race-row-distance">

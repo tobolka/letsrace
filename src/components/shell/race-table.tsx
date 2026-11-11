@@ -223,6 +223,7 @@ const Row = memo(function Row({
               i === 0 && "pl-4",
               i === columns.length - 1 && "pr-4",
               col === "name" ? "font-medium" : "text-muted-foreground",
+              col === "name" && planned && "pr-8",
               (col === "date" || col === "distance") && "tabular-nums",
               col === "date" && "text-foreground",
             )}
@@ -234,7 +235,7 @@ const Row = memo(function Row({
                 style={{ background: disciplineColor(event.disciplines) }}
               />
             ) : null}
-            {col === "name" && planned ? <PlannedRaceMarker locale={locale} /> : null}
+            {col === "name" && planned ? <PlannedRaceMarker locale={locale} iconClassName="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" /> : null}
             {col === "name" || (!columns.includes("name") && i === 0) ? (
               <button
                 type="button"

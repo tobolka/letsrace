@@ -27,6 +27,8 @@ export function SaveRaceButton({
   locale,
   variant = "icon",
   className,
+  inPlan,
+  onSaved,
 }: {
   eventId: string;
   raceName: string;
@@ -39,12 +41,14 @@ export function SaveRaceButton({
   /** "row": a bare button with one short class, for the long server-rendered race lists. */
   variant?: "icon" | "full" | "tile" | "row";
   className?: string;
+  inPlan?: boolean;
+  onSaved?: () => Promise<void> | void;
 }) {
   const t = messagesFor(locale);
   const { ids } = useSyncExternalStore(subscribeSavedRaces, getSavedRaces, getServerSavedRaces);
   const [busy, setBusy] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const added = ids.has(eventId);
+  const added = inPlan || ids.has(eventId);
   const label = added ? t.suggestAdded : t.suggestAdd;
   const iconId = busy ? "busy" : added ? "added" : "add";
   const swap = useSwapClass(iconId);
@@ -117,7 +121,9 @@ export function SaveRaceButton({
               e.stopPropagation();
               setBusy(true);
               try {
-                if ((await saveRace({ eventId, name: raceName, locale })) === "auth") setAuthOpen(true);
+                const result = await saveRace({ eventId, name: raceName, locale });
+                if (result === "auth") setAuthOpen(true);
+                else if (result === "saved") await onSaved?.();
               } finally {
                 setBusy(false);
               }

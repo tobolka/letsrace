@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BellRing, Check } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { BellRing } from "lucide-react";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
-import { AddToPlanButton, RaceItem, type RaceItemData } from "@/components/race/race-item";
+import { RaceItem } from "@/components/race/race-item";
+import type { RaceRowEvent } from "@/components/explore/event-row-body";
+import { eventMapPath } from "@/lib/event-url";
 import { repairText } from "@/lib/text";
 
-type Hit = RaceItemData;
+type Hit = RaceRowEvent & { distanceKm: number | null };
 
 function unwrap<T>(v: T | T[] | null | undefined): T | null {
   if (!v) return null;
@@ -24,11 +25,11 @@ function unwrap<T>(v: T | T[] | null | undefined): T | null {
  * e-mail is impossible to trust; showing the last fortnight of matches — and
  * letting one go straight into the plan — makes the setting answerable.
  */
-export function AlertInbox({ locale, userId, plannedEventIds, onAdd }: {
+export function AlertInbox({ locale, userId, plannedEventIds, onSaved }: {
   locale: string;
   userId: string;
   plannedEventIds: ReadonlySet<string>;
-  onAdd: (eventId: string) => Promise<void>;
+  onSaved: () => Promise<void>;
 }) {
   const t = messagesFor(locale);
   const [hits, setHits] = useState<Hit[] | null>(null);
@@ -52,7 +53,7 @@ export function AlertInbox({ locale, userId, plannedEventIds, onAdd }: {
       const { data } = await supabase
         .from("race_alert_deliveries")
         .select(
-          "distance_km, event:events(id, name, slug, start_date, end_date, disciplines, location:locations(name, municipality, country_code))",
+          "distance_km, event:events(id, name, slug, start_date, end_date, disciplines, location:locations(name, municipality, country_code), series:series!events_series_id_fkey(name))",
         )
         .in(
           "alert_id",
@@ -77,8 +78,8 @@ export function AlertInbox({ locale, userId, plannedEventIds, onAdd }: {
           slug: ev.slug,
           startDate: ev.start_date,
           endDate: ev.end_date,
-          place: loc?.municipality || loc?.name || null,
-          countryCode: loc?.country_code ?? null,
+          location: loc && { name: loc.name, municipality: loc.municipality, countryCode: loc.country_code },
+          series: unwrap(ev.series),
           disciplines: ev.disciplines ?? [],
           distanceKm: row.distance_km,
         });
@@ -91,15 +92,15 @@ export function AlertInbox({ locale, userId, plannedEventIds, onAdd }: {
   }, [userId]);
 
   return (
-    <Panel title={t.discoverNewTitle} description={t.discoverNewBody} bodyClassName="p-2">
+    <Panel title={t.discoverNewTitle} description={t.discoverNewBody} bodyClassName="p-0">
       <>
         {hits === null ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-2">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
           </div>
         ) : hits.length === 0 ? (
-          <Empty className="border-0 p-0">
+          <Empty className="border-0 p-4">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <BellRing />
@@ -110,25 +111,16 @@ export function AlertInbox({ locale, userId, plannedEventIds, onAdd }: {
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="flex flex-col">
+          <div role="list" className="flex flex-col">
             {hits.map((h) => (
               <RaceItem
                 key={h.id}
                 race={h}
                 locale={locale}
-                action={plannedEventIds.has(h.id) ? (
-                  <Badge variant="secondary">
-                    <Check aria-hidden />
-                    {t.suggestAdded}
-                  </Badge>
-                ) : (
-                  <AddToPlanButton
-                    locale={locale}
-                    raceName={h.name}
-                    added={false}
-                    onAdd={() => onAdd(h.id)}
-                  />
-                )}
+                href={eventMapPath(locale, h)}
+                distanceKm={h.distanceKm}
+                inPlan={plannedEventIds.has(h.id)}
+                onSaved={onSaved}
               />
             ))}
           </div>

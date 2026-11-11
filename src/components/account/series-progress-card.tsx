@@ -10,7 +10,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Spinner } from "@/components/ui/spinner";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { Panel } from "@/components/account/panel";
-import { RaceItem } from "@/components/race/race-item";
 import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
 import { eventMapPath } from "@/lib/event-url";
@@ -54,29 +53,25 @@ export function SeriesProgressCard({
             .filter(Boolean)
             .join(" · ");
           return (
-            <RaceItem
-              key={s.seriesId}
-              locale={locale}
-              // The same row as a race, with a cup where the date would be,
-              // so a series sits in the feed as one of its own.
-              leading={
-                <span className="flex h-[42px] w-11 shrink-0 items-center justify-center rounded-md border border-l-[3px] border-l-brand bg-background">
-                  <Trophy className="size-4 text-muted-foreground" aria-hidden />
-                </span>
-              }
-              title={
-                s.seriesSlug ? (
+            <div key={s.seriesId} className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-muted/50">
+              <span className="flex h-[42px] w-11 shrink-0 items-center justify-center rounded-md border border-l-[3px] border-l-brand bg-background">
+                <Trophy className="size-4 text-muted-foreground" aria-hidden />
+              </span>
+              <div className="min-w-0 flex-1">
+                {s.seriesSlug ? (
                   <Link href={localePath(locale, `series/${s.seriesSlug}`)} className="block truncate text-sm font-medium hover:underline">
                     {s.seriesName}
                   </Link>
                 ) : (
                   <span className="block truncate text-sm font-medium">{s.seriesName}</span>
-                )
-              }
-              tags={<RoundPips locale={locale} rounds={s.rounds} plannedEventIds={plannedEventIds} />}
-              meta={<span className="tabular-nums">{progress}</span>}
-              action={
-                remaining === 0 ? (
+                )}
+                <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+                  <RoundPips locale={locale} rounds={s.rounds} plannedEventIds={plannedEventIds} />
+                  <span className="truncate tabular-nums">{progress}</span>
+                </div>
+              </div>
+              <div className="shrink-0">
+                {remaining === 0 ? (
                   <Badge variant="secondary">
                     <Check className="size-3" aria-hidden /> {s.next ? t.seriesAllIn : t.seriesDone}
                   </Badge>
@@ -98,9 +93,9 @@ export function SeriesProgressCard({
                     {busy ? <Spinner /> : <Plus />}
                     <span className="tabular-nums">{t.seriesRoundsLeft.replace("{n}", String(remaining))}</span>
                   </Button>
-                )
-              }
-            />
+                )}
+              </div>
+            </div>
           );
         })}
       </div>

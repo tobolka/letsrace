@@ -135,11 +135,13 @@ export function DisciplineTile({ href, family, name, count }: { href: string; fa
 }
 
 /** A series: its name, how many rounds, when the next one is. */
-export function SeriesCard({ href, name, meta }: { href: string; name: string; meta: string }) {
+export function SeriesCard({ href, name, meta, size = "default" }: {
+  href: string; name: string; meta: string; size?: "default" | "compact";
+}) {
   return (
-    <Link href={href} className={TILE}>
+    <Link href={href} className={cn(TILE, size === "compact" && "gap-2 rounded-lg px-3 py-2")}>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="line-clamp-2 text-[15px] font-semibold leading-tight">{name}</span>
+        <span className={cn("line-clamp-2 font-semibold leading-tight", size === "compact" ? "text-sm" : "text-[15px]")}>{name}</span>
         <span className="text-xs text-muted-foreground tabular-nums">{meta}</span>
       </span>
       <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 [@media(hover:hover)_and_(pointer:fine)]:group-hover:text-foreground" aria-hidden />

@@ -74,6 +74,7 @@ export function MonthCalendar({
   dayInfo,
   selectedDay,
   onPickDay,
+  renderDayActions,
   fill = false,
   day: dayProp,
   onDay,
@@ -89,6 +90,8 @@ export function MonthCalendar({
   selectedDay?: string | null;
   /** Clicking a day itself — the plan uses it to block or note a day. */
   onPickDay?: (iso: string) => void;
+  /** Optional actions the plan opens next to the selected day. */
+  renderDayActions?: (iso: string) => ReactNode;
   /** Stretch the rows to fill the height the calendar is given. */
   fill?: boolean;
   /**
@@ -198,19 +201,35 @@ export function MonthCalendar({
           const shown = isMobile ? [] : list.slice(0, PER_CELL);
           const extra = list.length - shown.length;
           const openDay = () => setOpen({ kind: "day", iso: day.iso, detailId: null });
+          const dayLabel = format(parseISO(day.iso), "PPPP", { locale: df });
+          const togglePlanDay = () => {
+            if (dayOpen) {
+              close();
+              return;
+            }
+            if (day.iso !== selectedDay) onPickDay?.(day.iso);
+            openDay();
+          };
+          const restoreDayFocus = (e: Event) => {
+            const trigger = calendarRef.current?.querySelector<HTMLButtonElement>(`button[data-calendar-day="${day.iso}"]`);
+            if (trigger) { e.preventDefault(); trigger.focus(); }
+          };
 
           if (isMobile) {
             const picked = day.iso === activeDay;
-            return (
+            const dayButton = (
               <button
                 key={day.iso}
                 type="button"
                 data-calendar-day={day.iso}
                 aria-describedby="calendar-keyboard-help"
                 aria-pressed={picked}
-                aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
+                aria-label={dayLabel}
+                aria-haspopup={renderDayActions ? "dialog" : undefined}
+                aria-expanded={renderDayActions ? dayOpen : undefined}
                 onClick={() => {
-                  onPickDay?.(day.iso);
+                  if (renderDayActions) togglePlanDay();
+                  else onPickDay?.(day.iso);
                   if (onDay) onDay(day.iso);
                   else setOwnDay(day.iso);
                   setPhoneDetail(null);
@@ -246,6 +265,21 @@ export function MonthCalendar({
                 ) : null}
               </button>
             );
+            if (!renderDayActions) return dayButton;
+            return (
+              <Popover key={day.iso} open={dayOpen} onOpenChange={(next) => !next && close()}>
+                <PopoverAnchor asChild>{dayButton}</PopoverAnchor>
+                <PopoverContent
+                  aria-label={dayLabel}
+                  side="bottom"
+                  collisionPadding={12}
+                  className="w-auto p-0"
+                  onCloseAutoFocus={restoreDayFocus}
+                >
+                  {dayOpen ? renderDayActions(day.iso) : null}
+                </PopoverContent>
+              </Popover>
+            );
           }
 
           return (
@@ -254,8 +288,8 @@ export function MonthCalendar({
                 <div
                   data-calendar-date={day.iso}
                   onClick={() => {
-                    onPickDay?.(day.iso);
-                    if (isMobile && list.length > 0) openDay();
+                    if (renderDayActions) togglePlanDay();
+                    else onPickDay?.(day.iso);
                   }}
                   className={cn(
                     "flex min-w-0 flex-col gap-0.5 overflow-hidden border-r border-b p-1 transition-colors",
@@ -275,10 +309,13 @@ export function MonthCalendar({
                     aria-describedby="calendar-keyboard-help"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (onPickDay) onPickDay(day.iso);
+                      if (renderDayActions) togglePlanDay();
+                      else if (onPickDay) onPickDay(day.iso);
                       else if (list.length > 0) openDay();
                     }}
-                    aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
+                    aria-label={dayLabel}
+                    aria-haspopup={renderDayActions ? "dialog" : undefined}
+                    aria-expanded={renderDayActions ? dayOpen : undefined}
                     aria-current={day.isToday ? "date" : undefined}
                     aria-pressed={onPickDay ? selectedDay === day.iso : undefined}
                     className={cn(
@@ -359,17 +396,14 @@ export function MonthCalendar({
               </PopoverAnchor>
 
               <PopoverContent
-                aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
+                aria-label={dayLabel}
                 align="start"
                 side={isMobile ? "bottom" : "right"}
                 collisionPadding={12}
                 className="w-auto overflow-hidden p-0"
                 onClick={(e) => e.stopPropagation()}
                 onInteractOutside={keepOpenForOtherRaces}
-                onCloseAutoFocus={(e) => {
-                  const trigger = calendarRef.current?.querySelector<HTMLButtonElement>(`button[data-calendar-day="${day.iso}"]`);
-                  if (trigger) { e.preventDefault(); trigger.focus(); }
-                }}
+                onCloseAutoFocus={restoreDayFocus}
               >
                 {dayOpen && open.detailId && byId.has(open.detailId) ? (
                   <div className="flex flex-col">
@@ -386,13 +420,18 @@ export function MonthCalendar({
                     {renderDetail(open.detailId, close)}
                   </div>
                 ) : (
-                  <DayList
-                    iso={day.iso}
-                    locale={locale}
-                    items={list}
-                    plannedIds={plannedIds}
-                    onPick={(id) => setOpen({ kind: "day", iso: day.iso, detailId: id })}
-                  />
+                  <>
+                    {dayOpen ? renderDayActions?.(day.iso) : null}
+                    {(!renderDayActions || list.length > 0) && (
+                      <DayList
+                        iso={day.iso}
+                        locale={locale}
+                        items={list}
+                        plannedIds={plannedIds}
+                        onPick={(id) => setOpen({ kind: "day", iso: day.iso, detailId: id })}
+                      />
+                    )}
+                  </>
                 )}
               </PopoverContent>
             </Popover>

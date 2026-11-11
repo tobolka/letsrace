@@ -85,7 +85,7 @@ export const EventCard = memo(function EventCard({
         className="relative w-full scroll-my-2 text-left touch-manipulation"
       >
         <EventRowBody event={event} locale={locale} distanceKm={km} wrapName={wrapName} />
-        {planned ? <PlannedRaceMarker locale={locale} /> : null}
+        {planned ? <PlannedRaceMarker locale={locale} iconClassName="ml-auto" /> : null}
       </button>
     </Item>
   );

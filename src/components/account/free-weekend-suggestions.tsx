@@ -5,7 +5,8 @@ import { MapPin, Repeat } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Panel } from "@/components/account/panel";
-import { AddToPlanButton, RaceItem } from "@/components/race/race-item";
+import { RaceItem } from "@/components/race/race-item";
+import { eventMapPath } from "@/lib/event-url";
 import { messagesFor } from "@/lib/i18n/messages";
 import {
   rankSuggestions,
@@ -27,7 +28,7 @@ export function FreeWeekendSuggestions({
   context,
   title,
   actions,
-  onAdd,
+  onSaved,
 }: {
   locale: string;
   /** The span being filled — one day when a day was picked, else the month ahead. */
@@ -37,11 +38,10 @@ export function FreeWeekendSuggestions({
   title?: string;
   /** Controls in the section's title bar — the day picker. */
   actions?: React.ReactNode;
-  onAdd: (eventId: string) => Promise<void> | void;
+  onSaved: () => Promise<void> | void;
 }) {
   const t = messagesFor(locale);
   const [items, setItems] = useState<Suggestion[] | null>(null);
-  const [added, setAdded] = useState<Set<string>>(new Set());
   const hasHome = context.home != null;
   // No place, no suggestions: forget the last ones rather than show them again
   // when a place comes back.
@@ -103,17 +103,17 @@ export function FreeWeekendSuggestions({
   if (!hasHome) return null;
 
   return (
-    <Panel title={title ?? t.suggestTitle} description={t.suggestBody} actions={actions} bodyClassName="p-2">
+    <Panel title={title ?? t.suggestTitle} description={t.suggestBody} actions={actions} bodyClassName="p-0">
       <>
         {items === null ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-2">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
           </div>
         ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t.suggestNone}</p>
+          <p className="px-4 py-3 text-sm text-muted-foreground">{t.suggestNone}</p>
         ) : (
-          <div className="flex flex-col">
+          <div role="list" className="flex flex-col">
             {items.map((s) => {
               const Icon = ReasonIcon[s.reason];
               return (
@@ -126,26 +126,17 @@ export function FreeWeekendSuggestions({
                     name: s.name,
                     startDate: s.startDate,
                     endDate: s.endDate,
-                    place: s.place,
-                    countryCode: s.countryCode,
+                    location: { name: s.place, municipality: s.place, countryCode: s.countryCode },
                     disciplines: s.disciplines,
-                    distanceKm: s.distanceKm,
+                    series: s.seriesName ? { name: s.seriesName } : null,
                   }}
+                  href={eventMapPath(locale, s)}
+                  distanceKm={s.distanceKm}
+                  onSaved={onSaved}
                   tags={
                     <Badge variant={s.reason === "series" ? "default" : "secondary"} className="shrink-0">
                       <Icon className="size-3" aria-hidden /> {reasonLabel[s.reason]}
                     </Badge>
-                  }
-                  action={
-                    <AddToPlanButton
-                      locale={locale}
-                      raceName={s.name}
-                      added={added.has(s.id)}
-                      onAdd={async () => {
-                        await onAdd(s.id);
-                        setAdded((prev) => new Set(prev).add(s.id));
-                      }}
-                    />
                   }
                 />
               );

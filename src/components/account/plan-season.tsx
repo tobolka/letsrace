@@ -116,16 +116,18 @@ export function PlanSeason({
             blocked={blocked}
             selectedDay={selected}
             onPickDay={onSelectDay}
+            renderDayActions={(day) => (
+              <DayBar
+                key={day}
+                locale={locale}
+                day={day}
+                note={blocked[day]?.note ?? null}
+                onSetNote={(note) => onSetNote(day, note)}
+                floating
+              />
+            )}
             fill
           />
-          {selected ? (
-            <DayBar
-              locale={locale}
-              day={selected}
-              note={blocked[selected]?.note ?? null}
-              onSetNote={(note) => onSetNote(selected, note)}
-            />
-          ) : null}
         </>
       ) : (
         <PlanRaces
@@ -154,11 +156,13 @@ function DayBar({
   day,
   note,
   onSetNote,
+  floating = false,
 }: {
   locale: string;
   day: string;
   note: string | null;
   onSetNote: (note: string) => Promise<void> | void;
+  floating?: boolean;
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
@@ -167,11 +171,11 @@ function DayBar({
   const [editing, setEditing] = useState(false);
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-t px-4 py-2 text-sm">
+    <div className={floating ? "flex w-64 max-w-[calc(100vw-1.5rem)] flex-col gap-1 p-2 text-sm" : "flex flex-wrap items-center gap-2 border-t px-4 py-2 text-sm"}>
       <span className="tabular-nums text-muted-foreground first-letter:uppercase">
         {format(parseISO(day), "EEEE d. MMMM", { locale: df })}
       </span>
-      <Button asChild variant="outline" size="sm">
+      <Button asChild variant={floating ? "ghost" : "outline"} size="sm" className={floating ? "justify-start" : undefined}>
         <Link href={`/${locale}?${mapParams}`}>
           <MapPinned data-icon="inline-start" aria-hidden />
           {t.planFindRacesOnMap}
@@ -203,7 +207,7 @@ function DayBar({
             <CalendarOff className="size-3.5" aria-hidden />
             {note}
           </span>
-          <Button type="button" variant="outline" size="sm" onClick={() => void onSetNote("")}>
+          <Button type="button" variant={floating ? "ghost" : "outline"} size="sm" className={floating ? "justify-start" : undefined} onClick={() => void onSetNote("")}>
             <Undo2 data-icon="inline-start" />
             {t.weekendFreeAgain}
           </Button>
@@ -211,7 +215,8 @@ function DayBar({
       ) : (
         <Button
           type="button"
-          variant="outline"
+          variant={floating ? "ghost" : "outline"}
+          className={floating ? "justify-start" : undefined}
           size="sm"
           onClick={() => {
             setDraft("");

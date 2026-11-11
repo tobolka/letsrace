@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
-import { localePath } from "@/lib/localized-paths";
+import { SeriesGrid } from "@/components/browse/series-grid";
 import { raceMonthHref } from "@/lib/race-list-pagination";
 
 const copy = {
@@ -14,7 +14,6 @@ const copy = {
 
 export function SeasonOverview({ events, locale, path, page }: { events: EventListItem[]; locale: Locale; path: string; page: number }) {
   const c = copy[locale];
-  const series = [...new Map(events.flatMap(event => event.series ? [[event.series.id, event.series] as const] : [])).values()].sort((a, b) => a.name.localeCompare(b.name, locale));
   return <section className="mt-7 space-y-4" aria-labelledby="season-overview"><h2 id="season-overview" className="text-lg font-semibold">{c.months}</h2><ul className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-6">{Array.from({ length: 12 }, (_, month) => {
     const key = `2027-${String(month + 1).padStart(2, "0")}`;
     const count = events.filter(event => event.startDate.startsWith(key)).length;
@@ -24,6 +23,6 @@ export function SeasonOverview({ events, locale, path, page }: { events: EventLi
     const content = <><span className="block text-xs text-muted-foreground">{label}</span><span className="mt-1 block font-semibold tabular-nums">{count}</span></>;
     return <li key={key} className="bg-background">{href ? <Link href={href} prefetch={false} aria-label={`${fullLabel} · ${count}`} className="block px-3 py-2 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">{content}</Link> : <div className="px-3 py-2 text-muted-foreground">{content}</div>}</li>;
   })}</ul><p className="text-xs text-muted-foreground">{c.note}</p>
-    {series.length > 0 && <div><h3 className="mb-2 text-sm font-medium">{c.series}</h3><ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{series.map(item => <li key={item.id}><Link className="underline underline-offset-4" href={localePath(locale, `series/${item.slug}`)}>{item.name}</Link></li>)}</ul></div>}
+    <SeriesGrid events={events} locale={locale} title={c.series} size="compact" />
   </section>;
 }

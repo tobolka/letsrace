@@ -636,15 +636,17 @@ export function addDaysIso(iso: string, days: number): string {
 }
 
 /** The series running in a set of races, most rounds first. */
-export function seriesIn(events: EventListItem[]): { slug: string; name: string; rounds: number }[] {
-  const by = new Map<string, { slug: string; name: string; rounds: number }>();
+export function seriesIn(events: EventListItem[], locale?: Locale): { slug: string; name: string; rounds: number; next: string | null }[] {
+  const today = new Date().toISOString().slice(0, 10);
+  const by = new Map<string, { slug: string; name: string; rounds: number; next: string | null }>();
   for (const e of events) {
     if (!e.series) continue;
-    const s = by.get(e.series.slug) ?? { slug: e.series.slug, name: e.series.name, rounds: 0 };
+    const s = by.get(e.series.slug) ?? { slug: e.series.slug, name: e.series.name, rounds: 0, next: null };
     s.rounds += 1;
+    if (e.startDate >= today && (!s.next || e.startDate < s.next)) s.next = e.startDate;
     by.set(e.series.slug, s);
   }
-  return [...by.values()].sort((a, b) => b.rounds - a.rounds || a.name.localeCompare(b.name));
+  return [...by.values()].sort((a, b) => b.rounds - a.rounds || a.name.localeCompare(b.name, locale));
 }
 
 /** A country's flag from its two letters, as the regional-indicator emoji pair. */

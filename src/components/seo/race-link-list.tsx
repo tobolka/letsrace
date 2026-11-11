@@ -1,12 +1,9 @@
-import Link from "next/link";
 import type { EventListItem } from "@/lib/events";
 import type { Locale } from "@/lib/i18n/messages";
 import { eventPagePath } from "@/lib/event-url";
 import { monthHeading, routeSummary } from "@/lib/seo-race-copy";
 import { ageCategoryLabel } from "@/lib/i18n/taxonomy";
-import { EventRowBody } from "@/components/explore/event-row-body";
-import { PlannedRaceRow } from "@/components/race/planned-race-row";
-import { SaveRaceButton } from "@/components/race/save-race-button";
+import { RaceItem } from "@/components/race/race-item";
 
 /**
  * Races as links a crawler can follow, grouped by month, each row the same as
@@ -53,13 +50,15 @@ export function RaceLinkList({
           {/* Short class names from globals.css: these rows are sent twice, as HTML and as page data. */}
           <div role="list" className="race-list">
             {list.map((event) => (
-              <PlannedRaceRow eventId={event.id} key={event.id} className="race-row">
-                <Link href={eventPagePath(locale, event.slug)} className="race-row-link" data-series-round={seriesSlug}>
-                  <EventRowBody event={event} locale={locale} seriesRound={Boolean(seriesSlug)} distanceKm={distances?.get(event.id)} factsLabel={showFacts ? [...routeSummary(event, locale), ...(event.ageConfidence === "explicit" ? event.ageCategories.map(age => ageCategoryLabel(age, locale)) : [])].join(" · ") : undefined} compact />
-                </Link>
-                {/* Beside the link, not in it: a crawler follows the row, a rider saves it. */}
-                <SaveRaceButton eventId={event.id} raceName={event.name} locale={locale} variant="row" />
-              </PlannedRaceRow>
+              <RaceItem
+                key={event.id}
+                race={event}
+                locale={locale}
+                href={eventPagePath(locale, event.slug)}
+                seriesSlug={seriesSlug}
+                distanceKm={distances?.get(event.id)}
+                factsLabel={showFacts ? [...routeSummary(event, locale), ...(event.ageConfidence === "explicit" ? event.ageCategories.map(age => ageCategoryLabel(age, locale)) : [])].join(" · ") : undefined}
+              />
             ))}
           </div>
         </section>

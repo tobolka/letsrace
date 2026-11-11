@@ -23,6 +23,7 @@ import { MapPinned } from "lucide-react";
 import { BrowseHeader, BrowseIntro, DisciplineTile, TileGrid } from "@/components/browse/browse-ui";
 import { Button } from "@/components/ui/button";
 import { CollectionGrid } from "@/components/browse/collection-grid";
+import { SeriesGrid } from "@/components/browse/series-grid";
 import { HubSkeleton } from "./hub-skeleton";
 import {
   Empty,
@@ -171,6 +172,8 @@ async function CountryHub({
             </EmptyHeader>
           </Empty>
         )}
+
+        <SeriesGrid events={events} locale={locale} title={rc.series} className="mt-8" />
 
         {/* The list the comment above promises. Without it the races were only in
             the JSON-LD, and most race pages had no link in from anywhere. */}

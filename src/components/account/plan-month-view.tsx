@@ -32,6 +32,7 @@ export function PlanMonthView({
   blocked,
   selectedDay,
   onPickDay,
+  renderDayActions,
   fill = false,
 }: {
   locale: string;
@@ -43,6 +44,7 @@ export function PlanMonthView({
   blocked: Record<string, BlockedDay>;
   selectedDay: string | null;
   onPickDay: (iso: string) => void;
+  renderDayActions: (iso: string) => React.ReactNode;
   fill?: boolean;
 }) {
   const t = messagesFor(locale);
@@ -63,6 +65,7 @@ export function PlanMonthView({
       items={items}
       selectedDay={selectedDay}
       onPickDay={onPickDay}
+      renderDayActions={renderDayActions}
       fill={fill}
       dayInfo={(iso) => {
         const taken = blocked[iso];
