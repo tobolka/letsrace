@@ -45,7 +45,8 @@ Tohle jsem neudělal záměrně, ne z nedostatku času. U každého bodu je, co 
 3. **Závody bez použitelného místa (15) a bez budoucího data (61).** Málo případů; první skupina by potřebovala zápis místa do kopie katalogu, druhá jsou starší závody nalezené pozdě.
 4. **Kontrola veřejných stránek podle druhu změny a souhrn v administraci.** Obojí mění web a vyžaduje nasazení. Čekající kontroly nic neblokují: žádost o obnovu stránky jde zvlášť a hned.
 5. **`test-local-sync.cjs` padá** na duplicitním klíči ve zdrojích závodů. Je to zkouška celého převozu nad živými daty; ostrý cyklus posílá jen posouzené nové závody a ty procházejí. Neřešil jsem.
-6. **Ověřit zítřejší běhy**: sdílené čekání rad-netu (12. 11. kolem 15:40) a počet selhání kroků za den (`npm run pipeline:status`).
+6. **Týden měřit, pak pokračovat.** Denní čísla: `npm run pipeline:status -- --history`. Další stavba (nové závody přes bránu a konec dvojího katalogu) má začít až s týdnem dat.
+7. **Ověřit zítřejší běhy**: sdílené čekání rad-netu (12. 11. kolem 15:40) a počet selhání kroků za den (`npm run pipeline:status`).
 
 ## Co nedělat
 

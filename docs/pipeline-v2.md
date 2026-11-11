@@ -308,6 +308,10 @@ Kandidáti, v pořadí, jak je dnes odhaduji. Každý má vlastní zadání až 
 | Widget (část 9) | souhrn z kroku A je týden pravdivý |
 | Zkouška Cloudflare | po přesunu úloh z Vercelu, pokud CPU veřejných stránek samo přesahuje 4 h |
 
+## Denní čísla
+
+Od 11. 11. 2026 se po každém průchodu ukládá jeden řádek za den do `v2-history.json` ve složce dat: nové a doplněné závody, zadržené závody, selhávající a čekající kroky, co brána přijala, zadržela a co se vrátilo, a kolik odpovědí agenta prošlo ověřením. Zobrazí je `npm run pipeline:status -- --history`. Dobu od nálezu po zveřejnění zatím neměříme.
+
 ## Co zůstává otevřené
 
 - rad-net je zavřený kontrolou robotů. Verze 2 to neřeší a řešit nemá.
