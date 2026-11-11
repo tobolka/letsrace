@@ -474,7 +474,14 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
   if (section === "recommendations") return (
     <div className="flex w-full flex-col gap-8">
       <PlanSetup locale={locale} hasPeople={members.length > 0} hasPlace={Boolean(suggestCtx?.home)} hasRace={plans.length > 0} onSetHome={onSetHome} />
-      {userId ? <AlertInbox locale={locale} userId={userId} /> : null}
+      {userId && suggestCtx ? (
+        <AlertInbox
+          locale={locale}
+          userId={userId}
+          plannedEventIds={suggestCtx.plannedEventIds}
+          onAdd={(eventId) => onAddRounds([eventId])}
+        />
+      ) : null}
       <div className="flex flex-col gap-8 [&>*]:min-w-0">
           {suggestCtx ? (
             <FreeWeekendSuggestions

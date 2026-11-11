@@ -7,6 +7,7 @@ import type { MapBounds, BoundsChangeReason, RaceMapProps } from "./types";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
 import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_ICONS } from "@/lib/map-visuals";
 import { messagesFor } from "@/lib/i18n/messages";
+import { racePlace } from "@/lib/race-place";
 import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Marker, type Circle } from "./leaflet-runtime";
 import { attachSmoothWheelZoom, type WheelMap } from "./smooth-wheel-zoom";
 import { clusterAction } from "./cluster-action";
@@ -15,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import "./light-race-map.css";
 
 const defaultPadding = { top: 16, right: 56, bottom: 56, left: 48 };
-function pin(event: EventListItem, count: number, selected: boolean) {
+function pin(event: EventListItem, count: number, selected: boolean, place: string | null) {
   const root = document.createElement("div");
   root.className = `fast-pin${selected ? " fast-pin-selected" : ""}`;
   root.style.setProperty("--pin-color", disciplineColor(event.disciplines));
@@ -26,6 +27,13 @@ function pin(event: EventListItem, count: number, selected: boolean) {
     disc.append(img);
   }
   root.append(disc);
+  if (place) {
+    const caption = document.createElement("span");
+    caption.className = "fast-pin-place";
+    caption.textContent = place;
+    caption.setAttribute("aria-hidden", "true");
+    root.append(caption);
+  }
   if (count > 1) {
     const badge = document.createElement("span"); badge.className = "fast-pin-count"; badge.textContent = String(count); root.append(badge);
   }
@@ -264,7 +272,7 @@ export function LightRaceMap(props: RaceMapProps) {
     return () => { disposed = true; cleanup?.(); };
   }, []);
 
-  useEffect(() => { redraw.current(); }, [props.events, props.selectedId]);
+  useEffect(() => { redraw.current(); }, [props.events, props.selectedId, props.embedded]);
   useEffect(() => { highlight.current(); }, [props.hoveredId]);
   useEffect(() => {
     const map = mapRef.current, L = apiRef.current, area = props.radiusArea;
@@ -331,11 +339,12 @@ function coarsePointer(): boolean {
 }
 function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [number, number], count: number, props: RaceMapProps, onClick: () => void) {
   const messages = messagesFor(props.locale ?? "en");
-  const label = count > 1 ? `${count} ${messages.racesCount} · ${e.location?.municipality ?? e.name}` : e.name;
-  const tooltip = document.createElement("div"); tooltip.textContent = label;
+  const place = props.embedded && props.events.length === 1 ? racePlace(e) : null;
+  const label = count > 1 ? `${count} ${messages.racesCount} · ${e.location?.municipality ?? e.name}` : [e.name, place].filter(Boolean).join(" · ");
+  const tooltip = document.createElement("div"); tooltip.textContent = place ? e.name : label;
   const marker = L.marker(point, { title: label, alt: label, keyboard: true, riseOnHover: true, bubblingMouseEvents: false,
     zIndexOffset: e.id === props.selectedId ? 1000 : 0,
-    icon: L.divIcon({ html: pin(e, count, e.id === props.selectedId), className: "fast-marker", iconSize: [40, 40], iconAnchor: [20, 20] }),
+    icon: L.divIcon({ html: pin(e, count, e.id === props.selectedId, place), className: "fast-marker", iconSize: [40, 40], iconAnchor: [20, 20] }),
   }).addTo(layer).on("click", onClick);
   // A name on hover is for a mouse. On a phone a tap counts as the hover, so
   // the label stuck on after the card had opened with the same name, and a

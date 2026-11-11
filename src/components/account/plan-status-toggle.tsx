@@ -2,7 +2,7 @@
 
 import { Check, CreditCard, User } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { messagesFor } from "@/lib/i18n/messages";
+import { messagesFor, type Messages } from "@/lib/i18n/messages";
 import { PLAN_MEMBER_STATUSES, type PlanMemberStatus } from "@/lib/planner";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,10 @@ export function planStatusRank(status: PlanMemberStatus): number {
   return RANK[status] ?? 0;
 }
 
+export function planStatusLabels(t: Messages): Record<PlanMemberStatus, string> {
+  return { none: t.planNotGoing, going: t.planGoing, registered: t.planRegistered, paid: t.planPaid };
+}
+
 export function PlanStatusToggle({
   locale,
   value,
@@ -41,12 +45,7 @@ export function PlanStatusToggle({
   className?: string;
 }) {
   const t = messagesFor(locale);
-  const label: Record<PlanMemberStatus, string> = {
-    none: t.planNotGoing,
-    going: t.planGoing,
-    registered: t.planRegistered,
-    paid: t.planPaid,
-  };
+  const label = planStatusLabels(t);
   const Icon: Record<PlanMemberStatus, typeof User | null> = {
     none: null,
     going: User,

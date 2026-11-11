@@ -286,6 +286,7 @@ export const de = {
   weekendFree: "frei",
   weekendTaken: "Etwas anderes geplant",
   weekendTakenAction: "Etwas anderes geplant",
+  planFindRacesOnMap: "Rennen auf der Karte finden",
   weekendTakenNote: "Was steht an? (optional)",
   weekendTakenSave: "Als belegt markieren",
   weekendFreeAgain: "Wieder freigeben",

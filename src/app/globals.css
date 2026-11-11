@@ -144,10 +144,15 @@ summary,
 
 /* A two-tone indicator stays visible on light and dark controls. Unlayered so
    component outline-none utilities cannot hide keyboard focus. */
-:focus-visible {
+:focus-visible:not(:where(#main-content, #race-list)) {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
   box-shadow: inset 0 0 0 4px Canvas;
+}
+
+/* These containers receive focus to position keyboard navigation. */
+:is(#main-content, #race-list):focus {
+  outline: none;
 }
 
 @media (forced-colors: active) {

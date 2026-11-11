@@ -14,6 +14,20 @@ export function dateFnsLocale(locale: string) {
 
 export type DateFnsLocale = (typeof DATE_FNS_LOCALES)[Locale];
 
+export function planRaceDates(
+  { startDate, endDate }: { startDate: string; endDate: string | null },
+  locale: string,
+  width: "short" | "long",
+) {
+  const formatter = new Intl.DateTimeFormat(asLocale(locale), {
+    weekday: width, day: "numeric", month: width,
+  });
+  const start = parseISO(startDate);
+  return endDate && endDate > startDate
+    ? formatter.formatRange(start, parseISO(endDate))
+    : formatter.format(start);
+}
+
 export function compactRaceDates(event: { startDate: string; endDate?: string | null }, locale: string) {
   const date = (value: string) => format(parseISO(value), "d MMM", { locale: dateFnsLocale(locale) });
   return date(event.startDate) + (event.endDate && event.endDate !== event.startDate ? `–${date(event.endDate)}` : "");

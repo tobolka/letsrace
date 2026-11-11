@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
-import { Check, MapPin, X } from "lucide-react";
+import { MapPin, X } from "lucide-react";
+import { planStatusLabels } from "@/components/account/plan-status-toggle";
+import { memberLabel } from "@/components/account/race-plan-controls";
 import { MonthCalendar, type CalendarItem } from "@/components/calendar/month-calendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { dateFnsLocale } from "@/lib/i18n/dates";
+import { planRaceDates } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -90,14 +91,11 @@ function PlanRaceCard({
   onClose: () => void;
 }) {
   const t = messagesFor(locale);
-  const df = dateFnsLocale(locale);
   const { event } = plan;
-  const going = members.filter((m) => plan.goingMemberIds.includes(m.id));
-  const date =
-    format(parseISO(event.startDate), "EEEE d. MMMM", { locale: df }) +
-    (event.endDate && event.endDate !== event.startDate
-      ? ` – ${format(parseISO(event.endDate), "d. MMMM", { locale: df })}`
-      : "");
+  const labels = planStatusLabels(t);
+  const attendees = members
+    .map((member) => ({ member, status: plan.memberStatus[member.id] ?? "none" }))
+    .filter(({ status }) => status !== "none");
 
   return (
     <Card className="w-80 gap-0 border-0 py-0 shadow-none">
@@ -117,33 +115,24 @@ function PlanRaceCard({
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-3 px-4 py-3 text-sm">
-        <p className="first-letter:uppercase">{date}</p>
+        <p className="first-letter:uppercase">{planRaceDates(event, locale, "long")}</p>
         {event.place ? (
           <p className="flex items-center gap-1.5 text-muted-foreground">
             <MapPin className="size-4" aria-hidden />
             {[event.place, event.countryCode].filter(Boolean).join(" · ")}
           </p>
         ) : null}
-        {going.length > 0 ? (
+        {attendees.length > 0 ? (
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">{t.planGoing}:</span>
-            {going.map((m) => (
-              <Badge key={m.id} variant="secondary">
-                {m.name}
+            {attendees.map(({ member, status }) => (
+              <Badge key={member.id} variant="secondary">
+                {memberLabel(member, t)} · {labels[status]}
               </Badge>
             ))}
           </div>
+        ) : members.length > 0 ? (
+          <p className="text-xs text-muted-foreground">{t.planNotGoing}</p>
         ) : null}
-        <div className="flex flex-wrap gap-1.5">
-          <Badge variant={plan.registered ? "secondary" : "outline"} className="gap-1">
-            {plan.registered ? <Check className="text-emerald-600" /> : null}
-            {t.planRegistered}
-          </Badge>
-          <Badge variant={plan.paid ? "secondary" : "outline"} className="gap-1">
-            {plan.paid ? <Check className="text-emerald-600" /> : null}
-            {t.planPaid}
-          </Badge>
-        </div>
       </CardContent>
       <CardFooter className="border-t px-4 py-2 [.border-t]:pt-2">
         <Button asChild variant="outline" size="sm" className="w-full">

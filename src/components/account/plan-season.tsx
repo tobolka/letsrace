@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { CalendarDays, CalendarOff, History, List, Sheet, Undo2 } from "lucide-react";
+import { CalendarDays, CalendarOff, History, List, MapPinned, Sheet, Undo2 } from "lucide-react";
 import { PlanAgenda } from "@/components/account/plan-agenda";
 import { PlanMonthView } from "@/components/account/plan-month-view";
 import { PlanFeedSubscribe } from "@/components/account/plan-feed-subscribe";
@@ -146,9 +147,7 @@ export function PlanSeason({
 }
 
 /**
- * The day you just clicked, and the one thing you might want to say about it:
- * that it is already taken. Typed here rather than hidden in a popover on a
- * tile, which is where nobody found it.
+ * Actions for the selected day, including days with nothing in the plan yet.
  */
 function DayBar({
   locale,
@@ -163,6 +162,7 @@ function DayBar({
 }) {
   const t = messagesFor(locale);
   const df = dateFnsLocale(locale);
+  const mapParams = new URLSearchParams({ dateFrom: day, dateTo: day });
   const [draft, setDraft] = useState(note ?? "");
   const [editing, setEditing] = useState(false);
 
@@ -171,6 +171,12 @@ function DayBar({
       <span className="tabular-nums text-muted-foreground first-letter:uppercase">
         {format(parseISO(day), "EEEE d. MMMM", { locale: df })}
       </span>
+      <Button asChild variant="outline" size="sm">
+        <Link href={`/${locale}?${mapParams}`}>
+          <MapPinned data-icon="inline-start" aria-hidden />
+          {t.planFindRacesOnMap}
+        </Link>
+      </Button>
       {editing ? (
         <input
           autoFocus

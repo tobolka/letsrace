@@ -223,6 +223,7 @@ export function PlanAgenda({
                       className={cn(
                         CELL,
                         "text-xs whitespace-nowrap text-muted-foreground first-letter:uppercase",
+                        weekend && "font-semibold",
                       )}
                     >
                       {format(d, "EEEE", { locale: df })}

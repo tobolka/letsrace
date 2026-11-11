@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type PointerEvent } from "react";
 import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
 import { MetaRow } from "@/components/explore/meta-row";
 import { ExplainedHint } from "@/components/explore/explained-badge";
@@ -379,6 +379,7 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
  * and wind (with gusts and an arrow the way it blows).
  */
 function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHour[]; date: string; locale: string; lat: number; lng: number }) {
+  const [highlightedHour, setHighlightedHour] = useState<number | null>(null);
   const c = copy[asLocale(locale)];
   const n = hours.length;
   const temps = hours.map((h) => h.temp);
@@ -390,6 +391,11 @@ function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHou
   const x = (i: number) => ((i + 0.5) / n) * 100;
   const line = hours.map((h, i) => `${x(i)},${y(h.temp)}`).join(" ");
   const cols = { gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` };
+  function highlightColumn(event: PointerEvent<HTMLDivElement>) {
+    const { left, width } = event.currentTarget.getBoundingClientRect();
+    const index = Math.floor(((event.clientX - left) / width) * n);
+    setHighlightedHour(hours[index]?.hour ?? null);
+  }
   return (
     <div className="rounded-xl border bg-card p-4 sm:p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -405,10 +411,26 @@ function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHou
         </a>
       </div>
 
-      <div className="mt-4" aria-hidden>
+      <div
+        className="relative isolate mt-4"
+        aria-hidden
+        onPointerMove={(event) => {
+          if (event.pointerType !== "touch") highlightColumn(event);
+        }}
+        onPointerDown={highlightColumn}
+        onPointerLeave={(event) => {
+          if (event.pointerType !== "touch") setHighlightedHour(null);
+        }}
+        onPointerCancel={() => setHighlightedHour(null)}
+      >
+        <div className="pointer-events-none absolute inset-x-0 -inset-y-1.5 -z-10 grid" style={cols}>
+          {hours.map((h) => (
+            <div key={h.hour} className={h.hour === highlightedHour ? "rounded-lg bg-muted" : undefined} />
+          ))}
+        </div>
         <div className="grid text-center text-xs tabular-nums text-muted-foreground" style={cols}>
           {hours.map((h) => (
-            <span key={h.hour}>{h.hour}:00</span>
+            <span key={h.hour} className={h.hour === highlightedHour ? "font-semibold text-foreground" : undefined}>{h.hour}:00</span>
           ))}
         </div>
         <div className="mt-1.5 grid justify-items-center text-foreground [&_svg]:size-6 [&_svg]:stroke-[1.5]" style={cols}>

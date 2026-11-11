@@ -275,11 +275,12 @@ export function MonthCalendar({
                     aria-describedby="calendar-keyboard-help"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (list.length > 0) openDay();
-                      else onPickDay?.(day.iso);
+                      if (onPickDay) onPickDay(day.iso);
+                      else if (list.length > 0) openDay();
                     }}
                     aria-label={format(parseISO(day.iso), "PPPP", { locale: df })}
                     aria-current={day.isToday ? "date" : undefined}
+                    aria-pressed={onPickDay ? selectedDay === day.iso : undefined}
                     className={cn(
                       "flex size-6 items-center justify-center rounded-full text-xs tabular-nums transition-colors hover:bg-accent max-md:self-center md:self-start",
                       !day.inMonth && "text-muted-foreground",

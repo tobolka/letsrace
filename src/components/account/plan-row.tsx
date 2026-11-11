@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
 import { ExternalLink } from "lucide-react";
 import { PlanDiscardButton } from "@/components/account/plan-discard-button";
 import { PlanStatusToggle } from "@/components/account/plan-status-toggle";
 import { memberLabel } from "@/components/account/race-plan-controls";
 import { Button } from "@/components/ui/button";
-import { dateFnsLocale } from "@/lib/i18n/dates";
+import { planRaceDates } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import { eventMapPath } from "@/lib/event-url";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -53,11 +52,10 @@ export function PlanRow({
   onDiscard: () => void;
 }) {
   const t = messagesFor(locale);
-  const df = dateFnsLocale(locale);
   const disc =
     disciplineLabel(plan.event.disciplines[0] ?? "", locale);
   const meta = [
-    showDate ? format(parseISO(plan.event.startDate), "EEE d. M.", { locale: df }) : null,
+    showDate ? planRaceDates(plan.event, locale, "short") : null,
     [plan.event.place, plan.event.countryCode].filter(Boolean).join(" · "),
     disc,
   ]

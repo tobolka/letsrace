@@ -19,6 +19,27 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-11",
+    items: {
+      cs: [
+        "Z vybraného dne v plánu otevřeš mapu se závody na tento den.",
+        "V plánu je celý termín vícedenního závodu, karta v kalendáři ukazuje stav jednotlivých jezdců a víkendy jsou v tabulce výraznější.",
+        "V Objevovat je u uloženého závodu štítek V plánu.",
+        "Mapa na detailu závodu ukazuje název místa přímo u značky.",
+        "V hodinové předpovědi se při najetí zvýrazní celý sloupec.",
+        "Po přechodu na jinou stránku už v Safari nepřekáží modrý rámeček kolem celého panelu.",
+      ],
+      en: [
+        "Pick a day in your plan to open the map filtered to that date.",
+        "Your plan shows the full dates of multi-day races, the calendar card shows each rider’s status, and weekends stand out in the sheet.",
+        "Discover labels races you’ve already saved as In the plan.",
+        "The map on a race page shows the location name next to the pin.",
+        "Hover over the hourly forecast to highlight that hour’s entire column.",
+        "Safari no longer draws a blue outline around the whole panel after you navigate to another page.",
+      ],
+    },
+  },
+  {
     date: "2026-11-09",
     items: {
       cs: [

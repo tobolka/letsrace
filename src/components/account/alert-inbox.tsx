@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BellRing } from "lucide-react";
+import { BellRing, Check } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { Panel } from "@/components/account/panel";
 import { messagesFor } from "@/lib/i18n/messages";
-import { ensureFavorite } from "@/lib/planner-db";
 import { todayIso } from "@/lib/date-presets";
-import { toast } from "sonner";
 import { AddToPlanButton, RaceItem, type RaceItemData } from "@/components/race/race-item";
 import { repairText } from "@/lib/text";
 
@@ -25,10 +24,14 @@ function unwrap<T>(v: T | T[] | null | undefined): T | null {
  * e-mail is impossible to trust; showing the last fortnight of matches — and
  * letting one go straight into the plan — makes the setting answerable.
  */
-export function AlertInbox({ locale, userId }: { locale: string; userId: string }) {
+export function AlertInbox({ locale, userId, plannedEventIds, onAdd }: {
+  locale: string;
+  userId: string;
+  plannedEventIds: ReadonlySet<string>;
+  onAdd: (eventId: string) => Promise<void>;
+}) {
   const t = messagesFor(locale);
   const [hits, setHits] = useState<Hit[] | null>(null);
-  const [added, setAdded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let alive = true;
@@ -113,21 +116,19 @@ export function AlertInbox({ locale, userId }: { locale: string; userId: string 
                 key={h.id}
                 race={h}
                 locale={locale}
-                action={
+                action={plannedEventIds.has(h.id) ? (
+                  <Badge variant="secondary">
+                    <Check aria-hidden />
+                    {t.suggestAdded}
+                  </Badge>
+                ) : (
                   <AddToPlanButton
                     locale={locale}
                     raceName={h.name}
-                    added={added.has(h.id)}
-                    onAdd={async () => {
-                      const supabase = createBrowserSupabase();
-                      if (await ensureFavorite(supabase, userId, h.id, false)) {
-                        setAdded((prev) => new Set(prev).add(h.id));
-                      } else {
-                        toast.error(t.saveFailed);
-                      }
-                    }}
+                    added={false}
+                    onAdd={() => onAdd(h.id)}
                   />
-                }
+                )}
               />
             ))}
           </div>
