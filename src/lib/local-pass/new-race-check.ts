@@ -27,8 +27,15 @@ function officialPage(url: string | null | undefined): string | null {
   try { const u = new URL(url!); return u.hostname.replace(/^www\./, "") + u.pathname.replace(/\/$/, "") + u.search; } catch { return null; }
 }
 
-/** Reasons to hold this race back; empty means it is ready to send. */
-export function newRaceProblems(race: NewRace, place: Place | null | undefined, catalogue: KnownRace[], today: string): string[] {
+/** One key for a pair of races, whichever way round it is asked. */
+export const pairKey = (a: string, b: string) => [a, b].sort().join("|");
+
+/**
+ * Reasons to hold this race back; empty means it is ready to send.
+ * `separate` holds pairs already judged to be two different races, with the pages quoted
+ * (see scripts/agent-daily.cjs). Such a listed race no longer counts as a possible double.
+ */
+export function newRaceProblems(race: NewRace, place: Place | null | undefined, catalogue: KnownRace[], today: string, separate?: ReadonlySet<string>): string[] {
   const problems: string[] = [];
   const name = race.name?.trim() ?? "";
   if (name.length < 4 || isWeakRaceName(name) || ONLY_GENERIC_WORDS.test(name)) problems.push("name_says_too_little");
@@ -42,6 +49,7 @@ export function newRaceProblems(race: NewRace, place: Place | null | undefined, 
   const incoming = asDedup(race, place);
   for (const known of catalogue) {
     if (known.id === race.id) continue;
+    if (separate?.has(pairKey(race.id, known.id))) continue;
     if (!datesCompatible({ startDate: known.start_date, endDate: known.end_date }, { startDate: race.start_date, endDate: race.end_date }, 1)) continue;
     // A broad calendar title can label a CX event MTB/road/gravel. Conflicting
     // discipline tags must not silently resurrect a previously merged alias.

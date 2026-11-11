@@ -170,6 +170,9 @@ describe("last look at new races", () => {
     const same = { id: "old", name: "Bike Maraton Kněžice", start_date: "2027-05-29", disciplines: ["mtb_marathon"], place };
     const other = { id: "other", name: "Gravel Třeboň", start_date: "2027-05-29", disciplines: ["gravel"], place: { municipality: "Třeboň", country_code: "CZ", lat: 49, lng: 14.77 } };
     expect(check({}, place, [same])).toContain("may_already_be_listed");
+    // Judged two different races, with quoted pages: that listed race no longer holds this one back.
+    expect(newRaceProblems({ ...race }, place, [same], "2026-11-05", new Set([[race.id, same.id].sort().join("|")]))).not.toContain("may_already_be_listed");
+    expect(newRaceProblems({ ...race }, place, [same], "2026-11-05", new Set(["someone|else"]))).toContain("may_already_be_listed");
     expect(check({}, place, [other])).toEqual([]);
   });
   it("does not resurrect a merged event under a long title with wrong discipline tags", () => {

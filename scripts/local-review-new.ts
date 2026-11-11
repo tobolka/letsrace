@@ -12,7 +12,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { radsportEventToParsed } from "../src/lib/watcher/extractors/radsport";
 import { load } from "cheerio";
@@ -20,7 +20,7 @@ import { fetchPage } from "../src/lib/watcher/http";
 import { mapPool } from "../src/lib/watcher/pool";
 import { pageAsText } from "../src/lib/watcher/extractors/llm-calendar";
 import { quoteStatesDate } from "../src/lib/catalog/quoted-date";
-import { newRaceProblems, type KnownRace, type NewRace, type Place } from "../src/lib/local-pass/new-race-check";
+import { newRaceProblems, pairKey, type KnownRace, type NewRace, type Place } from "../src/lib/local-pass/new-race-check";
 
 const given = process.argv.find(value => value.startsWith("--plan="))?.slice(7);
 if (!given) throw Error("Use --plan=DIR");
@@ -69,6 +69,11 @@ function sourcePath(id: string): { problem: string } | { use: string; carry?: So
 }
 const sourced = new Set(changes.filter(change => change.tab === "public.event_sources" && change.op === "insert").map(change => change.owner ?? change.after?.event_id));
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Prague" });
+// Pairs judged to be two different races, each with quoted pages that were found there again.
+const separateFile = process.argv.find(value => value.startsWith("--separate="))?.slice(11);
+const racesFile = process.argv.find(value => value.startsWith("--races="))?.slice(8);
+const confirmedRaces = new Set<string>(racesFile && existsSync(racesFile) ? (JSON.parse(readFileSync(racesFile, "utf8")) as { id: string }[]).map(item => item.id) : []);
+const separate = new Set<string>(separateFile && existsSync(separateFile) ? (JSON.parse(readFileSync(separateFile, "utf8")) as { a: string; b: string }[]).map(pair => pairKey(pair.a, pair.b)) : []);
 
 /** Read the source again and require the date on it, not just a row claiming to come from it. */
 const rideSources = new Set<string>();
@@ -106,7 +111,7 @@ for (const change of changes) {
   const race = change.after as unknown as NewRace;
   const place = fromCopy.get(race.id) ?? (race.location_id ? inserted.get(race.location_id) : null);
   // Already hidden by the collector: it cannot reach the map, so there is nothing to hold.
-  const problems = race.visibility === "public" ? newRaceProblems(race, place, known, today) : [];
+  const problems = race.visibility === "public" ? newRaceProblems(race, place, known, today, separate) : [];
   // A race must come with the source row that states it, whatever else looks right.
   if (race.visibility === "public" && !sourced.has(race.id)) problems.push("no_source_read_in_this_pass");
   if (race.visibility === "public" && onTarget) {
@@ -126,6 +131,8 @@ await mapPool(checked.filter(item => item.race.visibility === "public" && !item.
 for (const { race, place, problems } of checked) {
   const dateSeen = dateSeenOn.get(race.id) ?? null;
   if(rideSources.has(sourceUrls.get(race.id) ?? ""))problems.push("listed_as_a_ride");
+  // Judged a race with a ranking, from its own pages: the source's "ride" label no longer holds it.
+  if(confirmedRaces.has(race.id))for(let i=problems.length-1;i>=0;i--)if(problems[i]==="listed_as_a_ride")problems.splice(i,1);
   if (problems.length) {
     reasons.set(race.id, problems);
     heldRaces.push({ name: race.name, date: race.start_date, because: problems });

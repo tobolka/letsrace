@@ -53,3 +53,14 @@ The hosting plan allows 4 hours of function CPU a month, and every production de
 - Never check hundreds of live pages to confirm a change; check a handful.
 - Page refreshes past the daily allowance need the owner's say each time.
 - When CPU rises, look first at Firewall → Traffic (top user agents) and deployments per day.
+
+## Agent for unresolved races: only through the desk
+
+An AI agent looks for missing regulations and judges possible duplicates the readers could not settle. Its definition for Codex is `.codex/agents/race-finder.toml`; the design is in `docs/pipeline-v2.md`, part 7.
+
+- The agent works only through `scripts/agent-desk.cjs` (`status`, `next`, `answer`). It never writes to the catalogue, the database or project files.
+- The desk allows 20 answers a day and checks each answer's shape. The Mac's cycle then fetches each quoted page again (`scripts/agent-verify.ts`); only an answer whose quote is found there goes on, as a proposal to the gate (`scripts/agent-apply.ts`, `pipeline_apply_proposal`).
+- A page with a robot check or a sign-in is never read, by any means.
+- A second agent, `.codex/agents/reader-repair.toml`, repairs one reader a run in a branch `agent/reader-<site>`. Nobody reviews it by hand: `scripts/reader-accept.cjs` merges the branch only if it touches readers, their tests and saved pages alone, deletes no test, and types and the whole suite pass on the merged result. Otherwise the branch stays unmerged with the reason.
+- The agent does not run in the Mac's cycle on the Claude subscription unless the owner sets `AGENT_IN_CYCLE=1`; the owner chose Codex for it on 2026-11-11.
+
