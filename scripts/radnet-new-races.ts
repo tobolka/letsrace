@@ -39,6 +39,7 @@ async function main() {
     if (seen.has(url)) continue;
     seen.add(url);
     const page = await read(url);
+    if (!page && seen.size === 1) { console.error("rad-net: kalendář vypsaných závodů nejde přečíst (web žádá ověření návštěvníka); nic nebylo přidáno"); console.log('step_outcome ' + JSON.stringify({ outcome: "blocked", reason: "robot_check" })); process.exitCode = 1; return; }
     if (!page) continue;
     rows.push(...radNetFullRows(page.text));
     for (const next of radNetCalendarPages([...page.links])) if (!seen.has(next)) queue.push(next);

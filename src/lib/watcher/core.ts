@@ -1,3 +1,5 @@
+import { fold } from "@/lib/text-match";
+import { datesInLine } from "@/lib/catalog/next-edition-literal";
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { extractJsonLdEvents } from "@/lib/watcher/extractors/jsonld";
@@ -12,7 +14,9 @@ export { fetchPage, type FetchResult } from "@/lib/watcher/http";
 export const WATCH_READER_VERSION = "pipeline-v8";
 /** Re-read only sources affected by a reader change, including unchanged documents. */
 export function watchReaderVersion(url: string) {
-  return /^(?:www\.)?(?:uci\.org|fullgazrace\.de)$/.test(new URL(url).hostname)
+  const host = new URL(url).hostname;
+  if (/^(?:www\.)?iprimacup\.cz$/.test(host)) return `${WATCH_READER_VERSION}:prima-v3`;
+  return /^(?:www\.)?(?:uci\.org|fullgazrace\.de)$/.test(host)
     ? `${WATCH_READER_VERSION}:official-v3` : WATCH_READER_VERSION;
 }
 
@@ -217,6 +221,26 @@ export function seasonGuessLanded(
  * Upcoming race → existing 1–7 day cadence.
  * Season over → every 3 weeks, weekly in the Oct–Feb publish window.
  */
+/**
+ * How many different days still ahead a page states in full. A calendar page that states several
+ * and from which the reader took no race has not gone quiet for the winter: its reader no longer
+ * fits it. Prima CUP's 2027 season stood on a watched page as nine dated cards while the source
+ * was recorded as "off season".
+ */
+export function comingDatesOnPage(text: string, now = new Date()): number {
+  const today = now.toISOString().slice(0, 10), folded = fold(text), found = new Set<string>();
+  for (const year of [now.getUTCFullYear(), now.getUTCFullYear() + 1]) {
+    if (!folded.includes(String(year))) continue;
+    for (const date of datesInLine(folded, year)) if (date.start > today) found.add(date.start);
+  }
+  return found.size;
+}
+/** From this many stated coming days, an empty read of a calendar is a reader's failure. */
+export const SILENT_CALENDAR_DATES = 3;
+
+/** How often an empty calendar is asked again from October to February. */
+export const EMPTY_CALENDAR_DAYS_WHILE_PUBLISHING = 2;
+
 export function sourcePollAt(
   events: { startDate: string; endDate?: string }[],
   now = new Date(),
@@ -238,7 +262,9 @@ export function sourcePollAt(
     if (daysAgo < 14) return new Date(now.getTime() + DAY_MS);
   }
 
-  const days = isCalendarPublishWindow(now) ? 7 : 21;
+  // A calendar with nothing in it yet is where the next season appears. While organisers are
+  // publishing, a week is long: Prima CUP's 2027 dates stood on a page we watch for days unread.
+  const days = isCalendarPublishWindow(now) ? EMPTY_CALENDAR_DAYS_WHILE_PUBLISHING : 21;
   return new Date(now.getTime() + days * DAY_MS);
 }
 

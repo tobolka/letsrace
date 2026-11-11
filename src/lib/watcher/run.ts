@@ -21,6 +21,8 @@ import {
   sourcePollAt,
   isPendingSeasonUrl,
   seasonGuessLanded,
+  comingDatesOnPage,
+  SILENT_CALENDAR_DATES,
 } from "@/lib/watcher/core";
 import { belongsToThisWorker, hostnameOf, mapPool } from "@/lib/watcher/pool";
 import { looksLikeIndependentRaceUrl, queueDiscoveredLink } from "@/lib/watcher/explore";
@@ -1246,10 +1248,13 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
         ? (await sourceHasAnyEvents(supabase, row.id)) &&
           !(await sourceHasUpcomingEvents(supabase, row.id))
         : false;
-    const offSeasonEmpty =
+    // Nothing read from a calendar whose page states several coming days: the reader, not the season.
+    const statedDates = calendarKind && extracted.events.length === 0 ? comingDatesOnPage((await import("@/lib/watcher/registration-deadline")).visibleText(fetched.html)) : 0;
+    const silentCalendar = statedDates >= SILENT_CALENDAR_DATES;
+    const offSeasonEmpty = !silentCalendar && (
       (calendarKind && extracted.events.length === 0 && !stillHasUpcoming) ||
       raceSeasonOver ||
-      seasonMismatch;
+      seasonMismatch);
     const emptyButLive = calendarKind && extracted.events.length === 0 && stillHasUpcoming;
     const pending = [...progress.values()].filter(entry => entry.conflicts > 0);
     const incomplete = extracted.complete === false || writeBacklog || writeFailures.length > 0 || pending.length > 0;
@@ -1302,7 +1307,7 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
       last_error: incomplete ? issues.join("; ").slice(0, 2000) || "incomplete_extraction" : emptyButLive
         ? "empty read of a source with upcoming races"
         : needsReview
-          ? "low confidence or empty extract"
+          ? silentCalendar ? `no race read from a page that states ${statedDates} coming dates; the reader no longer fits it` : "low confidence or empty extract"
           : null,
       last_extract_status: incomplete ? "needs_review" : offSeasonEmpty
         ? "off_season"

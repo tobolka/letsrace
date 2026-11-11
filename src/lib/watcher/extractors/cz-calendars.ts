@@ -145,10 +145,55 @@ const PRIMA_COURSE_TOWNS: Record<string, string> = {
   "mtb trilogy": "Teplice nad Metují",
   "ceskopetrovicka koolna": "České Petrovice",
   "harrachov": "Harrachov",
+  "koolna": "České Petrovice",
+  "trilogy": "Teplice nad Metují",
 };
+
+/**
+ * Prima Cup listing from the 2027 season on: every round is a card with its name in a heading
+ * and its date beside it, linked to /27-xx/. The 2026 listing had only links, with the date on
+ * each race's page, so the reader below found nothing here and the new season read as empty.
+ */
+export function parsePrimaListing(url: string, html: string): ParsedEvent[] {
+  const $ = cheerio.load(html);
+  const events: ParsedEvent[] = [];
+  const seen = new Set<string>();
+  $('[class*="-card"]').each((_, card) => {
+    const title = $(card).find("h2, h3, h4").first().text().replace(/\s+/g, " ").trim();
+    const dates = parseCzIso($(card).find("strong, b, time").first().text());
+    const href = absHref($(card).find("a[href]").first().attr("href"), url);
+    if (!title || !dates || !href || !/^https?:\/\/(www\.)?iprimacup\.cz\//i.test(href)) return;
+    const name = title.replace(/\s*20\d{2}\s*$/, "").trim();
+    if (name.length < 4 || seen.has(`${name}|${dates.start}`)) return;
+    seen.add(`${name}|${dates.start}`);
+    const key = normalizeName(name);
+    const course = Object.entries(PRIMA_COURSE_TOWNS).find(([known]) => key.includes(known))?.[1];
+    const place = course ?? name;
+    events.push({
+      externalId: `prima-${key}-${dates.start}`,
+      // A round titled with nothing but its town ("Sázava 2027") is named the way other series' rounds are.
+      name: /maraton|trilogy|koolna|schody|race|cup|bike/.test(key) ? name : `Prima CUP — ${name}`,
+      startDate: dates.start,
+      endDate: dates.end && dates.end !== dates.start ? dates.end : undefined,
+      placeText: place.slice(0, 80),
+      countryHint: "CZ",
+      discipline: ["xcm"],
+      audience: "mixed",
+      seriesName: "Prima Cup",
+      seriesSlug: "primacup",
+      seriesWebsite: "https://www.iprimacup.cz/",
+      sourceUrl: href,
+      websiteUrl: href,
+      confidence: 0.88,
+    });
+  });
+  return events;
+}
 
 /** Prima Cup listing (`/zavody-2026/`) — dates live on each race page. */
 export async function parsePrimaCup(url: string, html: string): Promise<ParsedEvent[]> {
+  const listed = parsePrimaListing(url, html);
+  if (listed.length) return listed;
   const $ = cheerio.load(html);
   const cards: { href: string; name: string }[] = [];
   const seen = new Set<string>();

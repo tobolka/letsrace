@@ -83,13 +83,16 @@ if (existsSync(ledger)) for (const line of readFileSync(ledger, "utf8").trim().s
 }
 for (const page of pages.values()) if (page.error === READING) failures.set(page.url, (failures.get(page.url) ?? 0) + 1);
 const HOUR = 3600_000, DAY = 24 * HOUR;
+/** How long a page read without trouble rests before it is read again. */
+const REREAD_DAYS = 5;
 /** When this page is worth reading again: a site that keeps failing is asked ever more rarely. */
 function rereadAt(page: Page): number {
   const at = Date.parse(page.at);
   if (page.requestAttempted === false) return at + 7 * DAY; // The site itself asked us to stop.
   if (page.needsBrowser && !page.error) return page.rendered ? at + 14 * DAY : at; // Seen through a browser, or not yet.
   if (isFailure(page)) return at + Math.min(14 * DAY, 6 * HOUR * 2 ** Math.max(0, (failures.get(page.url) ?? 1) - 1));
-  return at + 14 * DAY;
+  // An organiser's page that said nothing about next year is the one most likely to say it soon.
+  return at + REREAD_DAYS * DAY;
 }
 for (const page of pages.values()) {
   const stale = option("out") && Date.now() >= rereadAt(page);

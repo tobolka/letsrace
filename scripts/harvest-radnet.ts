@@ -32,6 +32,9 @@ async function main() {
     if (seen.has(url)) continue;
     seen.add(url);
     const page = await read(url);
+    // An empty answer for the calendar itself is a closed door, not "no races": say so and fail,
+    // so the cycle shows it. Since 8 Nov 2026 rad-net asks every visitor to prove it is not a robot.
+    if (!page && url === first) { console.error("rad-net: kalendář vypsaných závodů nejde přečíst (web žádá ověření návštěvníka); nic nebylo změněno"); console.log('step_outcome ' + JSON.stringify({ outcome: "blocked", reason: "robot_check" })); process.exitCode = 1; return; }
     if (!page) { console.log(`nečitelné: ${url.slice(-60)}`); continue; }
     rows.push(...radNetCalendarRows(page.text));
     console.log(`strana ${seen.size}: ${radNetCalendarRows(page.text).length} / odkazů dál ${radNetCalendarPages(page.links).length}`);

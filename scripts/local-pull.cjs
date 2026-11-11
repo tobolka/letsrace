@@ -16,7 +16,7 @@ const COPY = ['events', 'locations', 'series', 'event_sources', 'event_series', 
   'extraction_profiles', 'pipeline_extraction_cache', 'pipeline_refresh_receipts', 'pipeline_jobs', 'pipeline_workers'];
 const LEAVE_OUT = ['profiles', 'family_members', 'admin_users', 'admin_notifications', 'feedback_requests', 'organizer_claims', 'organizer_edits', 'race_submissions',
   'race_alerts', 'race_alert_deliveries', 'event_favorites', 'event_attendance', 'event_plan_changes', 'plan_change_deliveries', 'plan_digest_deliveries', 'blocked_days', 'blocked_weekends',
-  'pipeline_merge_history', 'pipeline_owner_decisions', 'pipeline_sync_batches', 'weather_history', 'weather_history_attempts', 'weather_provider_requests', 'weather_provider_usage', 'weather_provider_backoff', 'spatial_ref_sys'];
+  'pipeline_merge_history', 'pipeline_owner_decisions', 'pipeline_sync_batches', 'pipeline_proposals', 'weather_history', 'weather_history_attempts', 'weather_provider_requests', 'weather_provider_usage', 'weather_provider_backoff', 'spatial_ref_sys'];
 
 /**
  * What sending compares against. event_facts is the largest table here and is append-only, so a
