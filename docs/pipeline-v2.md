@@ -36,7 +36,7 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | | Kontrola HTML podle druhu změny | ⬜ | dnes každá stránka, 60 denně |
 | | Roztřídění čekajících kontrol stránek | 🔶 | 744: 647 běžných s podanou žádostí o obnovu, 41 bez žádosti, 32 skrytých, 24 sloučených. Nic neuzavřeno; změna kontroly vyžaduje úpravu webu |
 | **Pracovníci** | Mac se správcem a panelem v liště | ✅ | z verze 1 |
-| | Cloudový pracovník | 🔶 | `.github/workflows/pipeline.yml` připravený pro první úlohu (historie počasí), jen ruční spuštění; chybí tajné klíče a push |
+| | Cloudový pracovník | 🔶 | `.github/workflows/pipeline.yml`: historie počasí, ruční spuštění; první běh 11. 11. prošel. Plán a odebrání z Vercelu ještě ne |
 | **Agent** | Agent je Codex, pracuje přes přepážku (`scripts/agent-desk.cjs`) | ✅ | definice `.codex/agents/race-finder.toml`; strop 20 odpovědí denně; Claude v cyklu vypnutý |
 | | Spouštění přímo z cyklu (Claude nebo jiný příkaz) | 🔶 | napsáno a vyzkoušeno na 5 případech, **vypnuto** (`AGENT_IN_CYCLE=1` ho zapne) |
 | | Denní příprava případů, opakování nevyřešených po týdnu | ✅ | krok cyklu po 6 hodinách |

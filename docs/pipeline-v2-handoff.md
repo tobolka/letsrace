@@ -43,7 +43,7 @@ V tomto pořadí. Každý bod má test nebo měření, kterým se pozná hotovo.
 
 7. **Další kroky cyklu jako úlohy ve frontě** podle vzoru `find_documents`: `find_website`, `geocode`, `read_regulations`.
 
-8. **Cloudový pracovník.** `.github/workflows/pipeline.yml` má první úlohu (historie počasí) na ruční spuštění; tajné klíče jsou nastavené. Po úspěšném běhu: přidat plán, ve stejné změně odebrat `weather-history` z `vercel.json`. Pak po jedné `catalog`, `publication`, `alerts`, `digest`; u e-mailů doložit ochranu před dvojím odesláním.
+8. **Cloudový pracovník.** `.github/workflows/pipeline.yml` má první úlohu (historie počasí) na ruční spuštění; tajné klíče jsou nastavené a první ruční běh 11. 11. prošel (0 selhání). Další krok: přidat plán, ve stejné změně odebrat `weather-history` z `vercel.json`. Pak po jedné `catalog`, `publication`, `alerts`, `digest`; u e-mailů doložit ochranu před dvojím odesláním.
 
 9. **Kontrola veřejných stránek podle druhu změny** (mění web): běžné doplnění jen vzorkem, skrytí, sloučení a změna data vždy. Roztřídění 744 čekajících je v `pipeline-v2.md`.
 
