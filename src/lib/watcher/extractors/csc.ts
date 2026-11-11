@@ -48,11 +48,7 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
     try {
       const host = new URL(url).hostname.replace(/^www\./, "");
       if (isCscPortalHost(host)) {
-        const { renderCscPublicCalendar } = await import(
-          /* webpackIgnore: true */
-          /* turbopackIgnore: true */
-          "./csc-render"
-        );
+        const { renderCscPublicCalendar } = await import("@/lib/watcher/extractors/csc-render");
         pageHtml = await renderCscPublicCalendar(url);
       }
     } catch (e) {
@@ -64,11 +60,7 @@ export async function parseCscCalendar(url: string, html: string): Promise<Parse
   // The portal opens on the current year, so next season never reaches the default grid.
   // Failing here fails the read: an incomplete pair must not look like races that vanished.
   if (hasCscPublicGrid(pageHtml) && !hasCscPublicGrid(html) && process.env.NEXT_PHASE !== "phase-production-build" && !process.env.VERCEL) {
-    const { renderCscPublicCalendar } = await import(
-      /* webpackIgnore: true */
-      /* turbopackIgnore: true */
-      "./csc-render"
-    );
+    const { renderCscPublicCalendar } = await import("@/lib/watcher/extractors/csc-render");
     const next = await renderCscPublicCalendar(url, { year: new Date().getFullYear() + 1 });
     const known = new Set(events.map(event => event.externalId));
     for (const event of parseCscPublicGrid(url, next)) if (!known.has(event.externalId)) events.push(event);
