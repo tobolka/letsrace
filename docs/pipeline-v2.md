@@ -36,7 +36,7 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | | Kontrola HTML podle druhu změny | ⬜ | dnes každá stránka, 60 denně |
 | | Roztřídění čekajících kontrol stránek | 🔶 | 744: 647 běžných s podanou žádostí o obnovu, 41 bez žádosti, 32 skrytých, 24 sloučených. Nic neuzavřeno; změna kontroly vyžaduje úpravu webu |
 | **Pracovníci** | Mac se správcem a panelem v liště | ✅ | z verze 1 |
-| | Cloudový pracovník | 🔶 | `.github/workflows/pipeline.yml`: historie počasí, ruční spuštění; první běh 11. 11. prošel. Plán a odebrání z Vercelu ještě ne |
+| | Cloudový pracovník | ✅ | GitHub Actions každé 3 hodiny hledá propozice, jen když Mac 30 minut mlčí. Úlohy z Vercelu se nepřesouvají: běží i bez Macu a CPU neberou |
 | **Agent** | Agent je Codex, pracuje přes přepážku (`scripts/agent-desk.cjs`) | ✅ | definice `.codex/agents/race-finder.toml`; strop 20 odpovědí denně; Claude v cyklu vypnutý |
 | | Spouštění přímo z cyklu (Claude nebo jiný příkaz) | 🔶 | napsáno a vyzkoušeno na 5 případech, **vypnuto** (`AGENT_IN_CYCLE=1` ho zapne) |
 | | Denní příprava případů, opakování nevyřešených po týdnu | ✅ | krok cyklu po 6 hodinách |
@@ -48,8 +48,8 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | **Přehled** | Panel v liště | ✅ | z verze 1; nový souhrn zatím nečte |
 | | Okno se souhrnem na ploše | ⬜ | zkusil jsem 11. 11., vlastník ho odmítl a je odstraněné; souhrn zůstává v `npm run pipeline:status` |
 | | Souhrn v administraci | ⬜ | vyžaduje změnu webu a nasazení |
-| **Hosting** | Měření CPU po přesunu úloh z Vercelu | ⬜ | |
-| | Zkouška Cloudflare | ⬜ | |
+| **Hosting** | Měření CPU na Vercelu po úpravách z 6. 11. | ⬜ | přečíst z přehledu Vercelu; přesun úloh by ho nezměnil |
+| | Zkouška Cloudflare | ✅ | web dnes nasadit nejde: přibaluje si kód pipeline a potřebuje novější Next.js. Doporučení zůstat na Vercelu; [výsledek](../reports/pipeline-v2/cloudflare/RESULT.md) |
 
 ## Co verze 1 ukázala
 
