@@ -45,6 +45,9 @@ export function GET() {
     "User-agent: Amzn-SearchBot",
     "Disallow: /",
     "",
+    // Backlink crawlers for SEO tools: two of them made 40% of a day's requests on 11 Nov 2026.
+    // The firewall also turns them away; this tells the polite ones not to come.
+    ...["SERankingBacklinksBot", "MJ12bot", "AhrefsBot", "DotBot", "BLEXBot", "DataForSeoBot"].flatMap(bot => [`User-agent: ${bot}`, "Disallow: /", ""]),
     // A comment, not a directive: "Agentmap:" is not part of the robots.txt
     // grammar and validators read it as a malformed file. The catalogue is
     // already announced properly by the Link headers and under /.well-known.
