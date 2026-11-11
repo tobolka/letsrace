@@ -7,7 +7,7 @@ Stav k 11. 11. 2026 večer. Co běží, co má Codex nastavit a co má dokončit
 - **Cyklus na Macu** (launchd, `scripts/local-cycle.cjs`): kroky hlásí, jak skončily; po selhání čekají 1 h až 7 dní a po pátém se zastaví; zavřený web se nezkouší pořád dokola.
 - **Brána na produkci** (`pipeline_proposals`, `pipeline_apply_proposal`): odkaz na propozice jde do katalogu jen jako návrh s citací. Posílají ho tři cesty: fronta úloh na weby závodů (`pipeline2-find-documents.ts`), čtečky na Macu (`pipeline2-local-regulations.ts`) a agent (`agent-apply.ts`).
 - **Agent přes přepážku** (`scripts/agent-desk.cjs`): cyklus každých 6 hodin připraví případy, ověří citace v odpovědích (`agent-verify.ts`) a ověřené předá dál.
-- **Souhrn stavu**: `npm run pipeline:status`, soubor `status.json` ve složce dat, okno na ploše.
+- **Souhrn stavu**: `npm run pipeline:status` a soubor `status.json` ve složce dat. Okno na ploše vlastník odmítl; nepřidávat ho znovu.
 
 ## Co má Codex nastavit
 
@@ -71,5 +71,4 @@ V tomto pořadí. Každý bod má test nebo měření, kterým se pozná hotovo.
 | Vypnout slučování od agenta | `AGENT_MERGES=0` |
 | Vypnout agenta úplně | smazat složku `agent/cases` ve složce dat |
 | Uvolnit zastavený krok | `npm run pipeline:status -- --retry=<krok>` |
-| Vypnout okno na ploše | `defaults write cz.letsrace.monitor desktopSummary -bool false` |
 | Vrátit přijatý odkaz | `pipeline_rollback_fact(<id z pipeline_proposals.fact_id>)` |

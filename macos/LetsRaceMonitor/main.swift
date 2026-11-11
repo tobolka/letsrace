@@ -134,85 +134,7 @@ struct MonitorOverview: Codable {
 }
 
 @MainActor
-/// The summary scripts/pipeline-status.ts writes to status.json; only what the desktop window shows.
-struct PipelineSummary: Decodable {
-    struct Mac: Decodable { let reportAgeMinutes: Int?; let lastCycleAt: String?; let cycles24h: Int }
-    struct Delivered: Decodable { let newRaces24h: Int; let newRaces7d: Int; let updatedRaces24h: Int; let updatedRaces7d: Int }
-    struct Stuck: Decodable { let step: String; let outcome: String; let reason: String?; let stopped: Bool? }
-    let at: String; let tone: String; let headline: String; let mac: Mac; let delivered: Delivered; let heldRaces: Int?; let stuck: [Stuck]
-}
-
-/// A small window that lies on the desktop, under every other window, and says how the pipeline is doing.
-/// It takes no clicks and no focus. Switch it off with: defaults write cz.letsrace.monitor desktopSummary -bool false
-final class DesktopSummary {
-    private let window: NSWindow
-    private let label = NSTextField(wrappingLabelWithString: "")
-    private let dot = NSView(frame: NSRect(x: 14, y: 0, width: 10, height: 10))
-    static let size = NSSize(width: 300, height: 156)
-
-    init() {
-        window = NSWindow(contentRect: NSRect(origin: .zero, size: DesktopSummary.size), styleMask: .borderless, backing: .buffered, defer: false)
-        window.isOpaque = false; window.backgroundColor = .clear; window.hasShadow = false; window.ignoresMouseEvents = true
-        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) - 1)
-        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
-        let box = NSVisualEffectView(frame: NSRect(origin: .zero, size: DesktopSummary.size))
-        box.material = .hudWindow; box.blendingMode = .behindWindow; box.state = .active
-        box.wantsLayer = true; box.layer?.cornerRadius = 14; box.layer?.masksToBounds = true
-        dot.wantsLayer = true; dot.layer?.cornerRadius = 5; dot.frame.origin.y = DesktopSummary.size.height - 27
-        label.frame = NSRect(x: 32, y: 10, width: DesktopSummary.size.width - 44, height: DesktopSummary.size.height - 20)
-        label.maximumNumberOfLines = 9; label.isSelectable = false
-        box.addSubview(dot); box.addSubview(label); window.contentView = box
-    }
-
-    static func color(_ tone: String) -> NSColor {
-        switch tone { case "green": return .systemGreen; case "yellow": return .systemYellow; case "orange": return .systemOrange; default: return .systemRed }
-    }
-
-    /// What the window says for a summary, or for none. Separate from drawing so it can be checked without a screen.
-    static func text(_ summary: PipelineSummary?, now: Date = Date()) -> (tone: String, title: String, lines: [String]) {
-        guard let summary else { return ("red", "Stav sběru není k dispozici", ["Soubor se souhrnem chybí nebo nejde přečíst."]) }
-        let formatter = ISO8601DateFormatter(); formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let written = formatter.date(from: summary.at) ?? ISO8601DateFormatter().date(from: summary.at)
-        let age = written.map { Int(now.timeIntervalSince($0) / 60) } ?? 0
-        // The summary is written at the end of each cycle; an old one is said to be old, not shown as today's truth.
-        if age > 8 * 60 { return ("red", "Souhrn je \(age / 60) h starý", ["Sběr na Macu od té doby nedoběhl."]) }
-        var lines = ["24 h: \(summary.delivered.newRaces24h) nových · \(summary.delivered.updatedRaces24h) doplněných", "7 dní: \(summary.delivered.newRaces7d) nových · \(summary.delivered.updatedRaces7d) doplněných"]
-        if let held = summary.heldRaces { lines.append("Zadrženo: \(held) závodů") }
-        for item in summary.stuck.prefix(3) { lines.append("• \(item.step): \(item.stopped == true ? "zastaveno" : item.outcome)\(item.reason.map { " (\($0))" } ?? "")") }
-        if summary.stuck.count > 3 { lines.append("… a další \(summary.stuck.count - 3)") }
-        return (summary.tone, summary.headline, lines)
-    }
-
-    func show(_ summary: PipelineSummary?) {
-        let content = DesktopSummary.text(summary)
-        dot.layer?.backgroundColor = DesktopSummary.color(content.tone).cgColor
-        let text = NSMutableAttributedString(string: content.title + "\n", attributes: [.font: NSFont.systemFont(ofSize: 13, weight: .semibold), .foregroundColor: NSColor.labelColor])
-        text.append(NSAttributedString(string: content.lines.joined(separator: "\n"), attributes: [.font: NSFont.systemFont(ofSize: 11.5), .foregroundColor: NSColor.secondaryLabelColor]))
-        label.attributedStringValue = text
-        if let screen = NSScreen.main {
-            let area = screen.visibleFrame
-            window.setFrameOrigin(NSPoint(x: area.maxX - DesktopSummary.size.width - 24, y: area.minY + 24))
-        }
-        window.orderFront(nil)
-    }
-    func hide() { window.orderOut(nil) }
-
-    static func load(_ url: URL) -> PipelineSummary? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(PipelineSummary.self, from: data)
-    }
-
-    func savePreview(_ summary: PipelineSummary?, to path: String) throws {
-        show(summary); window.orderOut(nil)
-        guard let view = window.contentView, let image = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { throw NSError(domain: "preview", code: 1) }
-        view.cacheDisplay(in: view.bounds, to: image)
-        guard let png = image.representation(using: .png, properties: [:]) else { throw NSError(domain: "preview", code: 2) }
-        try png.write(to: URL(fileURLWithPath: path))
-    }
-}
-
 final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    private var desktop: DesktopSummary?
     private let logger = Logger(subsystem: "cz.letsrace.monitor", category: "menu")
     private let dataURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/LetsRace/data")
     private var item: NSStatusItem!
@@ -242,7 +164,6 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         popover.behavior = .transient; popover.appearance = NSAppearance(named: .aqua)
         popover.contentViewController = NSViewController()
         popover.contentViewController?.view = NSView(frame: NSRect(x: 0, y: 0, width: 360, height: 400))
-        if UserDefaults.standard.object(forKey: "desktopSummary") as? Bool ?? true { desktop = DesktopSummary() }
         refresh()
         timer = Timer(timeInterval: 10, target: self, selector: #selector(refresh), userInfo: nil, repeats: true)
         if let timer { RunLoop.main.add(timer, forMode: .common) }
@@ -275,7 +196,6 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             snapshot = try JSONDecoder().decode(MonitorSnapshot.self, from: Data(contentsOf: previewSnapshotURL ?? dataURL.appendingPathComponent("monitor.json")))
             snapshotError = nil
         } catch { snapshot = nil; snapshotError = "Stav zatím není dostupný." }
-        if previewSnapshotURL == nil { desktop?.show(DesktopSummary.load(dataURL.appendingPathComponent("status.json"))) }
         if let button = item?.button {
             let image = NSImage(systemSymbolName: "bicycle", accessibilityDescription: headline)
             image?.isTemplate = true
@@ -756,18 +676,6 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let value = try JSONEncoder().encode(MonitorOverview(snapshot: snapshot, now: now))
                 print(String(decoding: value, as: UTF8.self))
             } catch { fputs("Snapshot test failed: \(error)\n", stderr); exit(1) }
-            return
-        }
-        if args.count >= 3 && args[1] == "--widget-text" {
-            // What the desktop window would say for a saved summary, as JSON, for tests without a screen.
-            let content = DesktopSummary.text(DesktopSummary.load(URL(fileURLWithPath: args[2])), now: args.count >= 4 ? (ISO8601DateFormatter().date(from: args[3]) ?? Date()) : Date())
-            let value = try? JSONSerialization.data(withJSONObject: ["tone": content.tone, "title": content.title, "lines": content.lines])
-            print(String(decoding: value ?? Data(), as: UTF8.self)); return
-        }
-        if args.count >= 3 && args[1] == "--render-widget" {
-            let app = NSApplication.shared; app.setActivationPolicy(.prohibited)
-            do { try DesktopSummary().savePreview(args.count >= 4 ? DesktopSummary.load(URL(fileURLWithPath: args[3])) : nil, to: args[2]) }
-            catch { fputs("Widget preview failed: \(error)\n", stderr); exit(1) }
             return
         }
         if args.count >= 3 && args[1] == "--render-preview" {

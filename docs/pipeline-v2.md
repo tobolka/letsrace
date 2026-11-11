@@ -14,8 +14,8 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | | Průchod se selhaným krokem se nejmenuje hotový | ✅ | krok A |
 | | Souhrn složený z uložených výsledků, s barvou | ✅ | krok A, `npm run pipeline:status` |
 | | Zavřený web se nezkouší při každém průchodu | ✅ | krok A, čeká svůj obvyklý interval |
-| **Odklady** | Odklad po selhání 1 h až 7 dní, zastavení po pátém, týdenní pokus | 🔶 | krok B, nainstalováno; v provozu ještě žádné selhání nenastalo |
-| | Sdílený odklad pro tentýž web | 🔶 | krok B, pro rad-net; poprvé se projeví 12. 11. odpoledne |
+| **Odklady** | Odklad po selhání 1 h až 7 dní, zastavení po pátém, týdenní pokus | 🔶 | krok B, testy prošly a první průchod po instalaci v 17:06 SEČ měl 0 selhání kroků. Měření za 24 h čeká na 12. 11. večer. [Bod 1](../reports/pipeline-v2/krok-b/OVERENI-PROVOZU.md) |
+| | Sdílený odklad pro tentýž web | 🔶 | krok B, test prošel. První provozní zkouška rad-netu čeká na průchod 12. 11. kolem 15:40 SEČ. [Bod 1](../reports/pipeline-v2/krok-b/OVERENI-PROVOZU.md) |
 | | Vypršený čas během spánku Macu se nepočítá jako selhání | ✅ | krok B |
 | | Ruční obnova kroku | ✅ | `npm run pipeline:status -- --retry=<krok>` |
 | **Fronta** | Převzetí s pronájmem, dokončení jen platným pokusem, historie pokusů | ✅ | z verze 1, migrace od 2. 11. |
@@ -46,7 +46,7 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | | Agent pro opravu čteček | 🔶 | `.codex/agents/reader-repair.toml`, seznam 238 zdrojů přes `agent-desk.cjs repairs`; neběžel |
 | | Vyhodnocení správnosti na vzorku | 🔶 | Claude 5 případů bez chyby; Codex 20 odpovědí: 15 ověřených citací, 2 neověřené, 3 „nevím“. Ruční čtení vzorku Codexu ještě ne |
 | **Přehled** | Panel v liště | ✅ | z verze 1; nový souhrn zatím nečte |
-| | Okno se souhrnem na ploše | ✅ | ve stávající aplikaci, vpravo dole, pod ostatními okny; vypnutí: `defaults write cz.letsrace.monitor desktopSummary -bool false` |
+| | Okno se souhrnem na ploše | ⬜ | zkusil jsem 11. 11., vlastník ho odmítl a je odstraněné; souhrn zůstává v `npm run pipeline:status` |
 | | Souhrn v administraci | ⬜ | vyžaduje změnu webu a nasazení |
 | **Hosting** | Měření CPU po přesunu úloh z Vercelu | ⬜ | |
 | | Zkouška Cloudflare | ⬜ | |
