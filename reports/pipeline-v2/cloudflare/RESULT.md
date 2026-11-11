@@ -1,23 +1,44 @@
-# Zkouška Cloudflare: web dnes nasadit nejde
+# Zkouška Cloudflare: web se pro Workers sestaví
 
-11. 11. 2026. Zkusil jsem web sestavit pro Cloudflare Workers adaptérem OpenNext (`@opennextjs/cloudflare` 1.20.16) v oddělené kopii. Nic se nenasazovalo a v účtu Cloudflare jsem nic neměnil.
+11. 11. 2026, druhé kolo. Web jsem sestavil pro Cloudflare Workers adaptérem OpenNext (`@opennextjs/cloudflare`). Nic se nenasadilo a v účtu Cloudflare jsem nic neměnil.
 
 ## Co vyšlo
 
 | Krok | Výsledek |
 | --- | --- |
-| Instalace adaptéru | Neprošla s Next.js 16.4.2. Adaptér vyžaduje 16.4.5 nebo novější. |
-| Sestavení Next.js 16.4.6 | Prošlo: 155 statických stránek, bez chyb. |
-| Balík pro Workers | **Selhal.** Web si přes `src/lib/watcher/run.ts` přibaluje čtečky pipeline včetně čtení přes Chrome (`csc-render`), které na Cloudflare neexistuje. |
-| Velikost serverové části | 71 MB před zabalením. Limit Workers je 10 MB po kompresi; s kódem pipeline uvnitř se do něj nejspíš nevejde. |
-| Middleware | Adaptér hlásí, že middleware v Node.js je na Cloudflare experimentální a neudržované. |
+| Next.js | Adaptér vyžaduje 16.4.5 nebo novější. S 16.4.6 se web sestavil bez chyb (155 statických stránek). |
+| Balík pro Workers | **Prošel** po opravě jednoho importu: čtení přes Chrome se v `csc.ts` načítalo způsobem, který adaptér neuměl zabalit. Oprava je na `main`. |
+| Velikost | 29,6 MB, po kompresi **7,2 MB**. Limit placeného tarifu je 10 MB, bezplatného 3 MB. Vejde se tedy jen do placeného (5 USD měsíčně). |
+| Zkouška nasazení nanečisto | `wrangler deploy --dry-run` prošel. |
+| Middleware | Adaptér hlásí, že middleware v Node.js je na Cloudflare experimentální. Neověřeno za běhu. |
 
-## Co z toho plyne
+První pokus ten den selhal, protože jsem zkoušel původní kód s Next.js 16.4.2. Tvrzení z první verze tohoto souboru, že web „nasadit nejde“, tím neplatí.
 
-- Přesun není otázka nastavení, ale práce: nejdřív oddělit kód pipeline od webu (cesty v `/api/cron`, `/api/ops` a administraci, které importují `watcher/run`), povýšit Next.js o opravnou verzi a ověřit middleware.
-- Oddělení pipeline od webu dává smysl i bez Cloudflare: web by se sestavoval menší a rychleji.
-- **Doporučení: zůstat na Vercelu.** K přesunu se vrátit, jen když CPU zůstane nad 4 hodinami měsíčně i po úpravách z 6. 11., nebo když se Let's Race stane komerčním. Ceny jsou v `docs/pipeline-v2.md`, oddíl „Hosting a ceny“.
+Nastavení zkoušky je ve větvi `cloudflare-trial` (Next.js 16.4.6, `wrangler.jsonc`, `open-next.config.ts`). Na `main` Next.js povýšený není.
 
-## Co jsem nezkoušel
+## Co ještě nevíme
 
-Běh na adrese `workers.dev`, obnovu stránek po značkách, obrázky pro sdílení, přihlášení a skutečnou spotřebu CPU. Bez sestaveného balíku to změřit nejde.
+Tohle ukáže až skutečné nasazení na zkušební adresu `workers.dev`:
+
+- jestli funguje middleware, přihlášení, mapa a obrázky pro sdílení,
+- kolik CPU stojí jedna stránka závodu,
+- jak se chová mezipaměť stránek. Zkušební nastavení žádnou sdílenou nemá; pro ostrý provoz je potřeba úložiště R2 a ověřit obnovu stránek po značkách,
+- jak přenést pět plánovaných úloh z `vercel.json` (Cloudflare má vlastní plánovač).
+
+Rezerva velikosti je malá (7,2 z 10 MB). Oddělení kódu pipeline od webu by ji zvětšilo; samo o sobě ale nasazení neblokuje.
+
+## Co je potřeba od vlastníka
+
+1. V Terminálu ve složce projektu: `npx wrangler login` (otevře prohlížeč a požádá o souhlas).
+2. V Cloudflare zapnout Workers Paid (5 USD měsíčně). Bez něj se balík nenahraje.
+3. Tajné klíče webu zadat příkazem `wrangler secret put`, stejně jako u GitHubu.
+
+## Srovnání
+
+| | Měsíčně | CPU | Přenos dat |
+| --- | --- | --- | --- |
+| Vercel Hobby (dnes, přes limit ve třech položkách) | 0 | 4 h; teď 10 h 21 min | 10 GB; teď 18 GB |
+| Vercel Pro | 20 USD | víc, další se připlácí | 1 TB |
+| Cloudflare Workers Paid | 5 USD | 8,3 h v ceně, další hodina asi 0,07 USD | neúčtuje se |
+
+Při dnešní spotřebě by Cloudflare vyšel zhruba na 5,15 USD měsíčně.

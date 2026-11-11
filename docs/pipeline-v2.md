@@ -48,8 +48,8 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | **Přehled** | Panel v liště | ✅ | z verze 1; nový souhrn zatím nečte |
 | | Okno se souhrnem na ploše | ⬜ | zkusil jsem 11. 11., vlastník ho odmítl a je odstraněné; souhrn zůstává v `npm run pipeline:status` |
 | | Souhrn v administraci | ⬜ | vyžaduje změnu webu a nasazení |
-| **Hosting** | Měření CPU na Vercelu po úpravách z 6. 11. | ⬜ | přečíst z přehledu Vercelu; přesun úloh by ho nezměnil |
-| | Zkouška Cloudflare | ✅ | web dnes nasadit nejde: přibaluje si kód pipeline a potřebuje novější Next.js. Doporučení zůstat na Vercelu; [výsledek](../reports/pipeline-v2/cloudflare/RESULT.md) |
+| **Hosting** | Stav na Vercelu 11. 11. | ✅ | přes limit ve třech položkách: CPU 10 h 21 min ze 4 h, přenos 18 z 10 GB, úložiště nasazení 10,4 z 10 GB |
+| | Zkouška Cloudflare | 🔶 | web se pro Workers sestaví (7,2 MB z 10 MB, jen placený tarif); nasazení na zkušební adresu čeká na přihlášení a placený tarif; [výsledek](../reports/pipeline-v2/cloudflare/RESULT.md) |
 
 ## Co verze 1 ukázala
 

@@ -34,7 +34,7 @@ Stav k 11. 11. 2026 večer. Co běží, co má Codex nastavit a co má dokončit
 | Kandidáti z kalendářů | **Hotovo pro kalendáře národních svazů.** Jdou stávající cestou posouzených kandidátů (`review-discovery-candidates.ts`): stránka se čte znovu, citace musí uvádět datum s rokem, musí být místo, země a disciplína, a v katalogu nesmí být podobný závod ve stejné dny. Ostatní kalendáře zůstávají jen podnětem. Ostře ověří až první odpověď. |
 | Cloudový pracovník | **Hotovo jinak, než bylo v plánu.** Každé 3 hodiny běží v GitHub Actions hledání propozic přes frontu, ale jen když se Mac 30 minut neozval. Pět úloh z `vercel.json` zůstává na Vercelu: běží i bez Macu a skoro nepočítají (čekají na síť), takže jejich přesun by CPU neušetřil. |
 | Lint na `main` | **Nebyl problém.** CI je zelené; padal jen místně na necommitnutých souborech v `reports/`. |
-| Zkouška Cloudflare | Viz `reports/pipeline-v2/cloudflare/RESULT.md`. |
+| Zkouška Cloudflare | **Web se sestaví** (větev `cloudflare-trial`). Nasazení na zkušební adresu čeká na `wrangler login` a placený tarif. Viz `reports/pipeline-v2/cloudflare/RESULT.md`. |
 
 ## Co zůstává a proč
 
