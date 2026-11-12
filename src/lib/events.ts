@@ -569,7 +569,8 @@ function mapPublicEventDetail(row: unknown): EventListItem | null {
 }
 
 /** Public race by slug for SEO pages and deep links. */
-async function loadPublicEventBySlug(slug: string): Promise<EventListItem | null> {
+async function loadPublicEventBySlug(slug: string, prepared?: EventListItem): Promise<EventListItem | null> {
+  if (prepared) return prepared;
   const supabase = createServerSupabase("public-web");
   const { data, error } = await publicEventDetailQuery(supabase).eq("slug", slug).maybeSingle();
   if (error) throw new Error(error.message);
@@ -595,10 +596,11 @@ async function loadPublicEventBySlug(slug: string): Promise<EventListItem | null
   return mapPublicEventDetail(data);
 }
 
-// Publication supplies a fresh row to the same cache entry a visitor reads.
-// Keep the prepared value in the closure so it does not change the cache key.
+// Next hashes the callback's source as well as these key parts. A bound
+// function has the same native source in the API and page bundles, even when
+// the bundler gives the loader different names. Keep the slug in the key.
 const publicEventDetailCache = (slug: string, prepared?: EventListItem) => unstable_cache(
-  async () => prepared ?? loadPublicEventBySlug(slug), ["public-event-by-slug-v8", slug],
+  loadPublicEventBySlug.bind(null, slug, prepared), ["public-event-by-slug-v9", slug],
   { revalidate: 7 * 24 * 60 * 60, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
 )();
 
