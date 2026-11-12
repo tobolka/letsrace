@@ -7,7 +7,8 @@ let cityData: Promise<City[]> | undefined;
 export function loadCities() {
   // GeoNames country membership follows borders, unlike market camera boxes.
   // Keep all countries in the asset so promoting a market needs no data rebuild.
-  return cityData ??= fetch("/maps/light-v1/cities.json").then((r) => {
+  // Version the URL when the tuple schema changes. The asset is cached as immutable.
+  return cityData ??= fetch("/maps/light-v1/cities.json?v=2").then((r) => {
     if (!r.ok) throw new Error("City labels unavailable");
     return r.json() as Promise<City[]>;
   }).then((cities) => cities.filter((city) => isPublicMapMarket(city[5])))

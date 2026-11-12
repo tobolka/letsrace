@@ -16,9 +16,11 @@ describe("map city coverage", () => {
   });
 
   it("loads labels only for public markets while retaining every covered city", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => cities }));
+    const fetchCities = vi.fn().mockResolvedValue({ ok: true, json: async () => cities });
+    vi.stubGlobal("fetch", fetchCities);
     const { loadCities } = await import("@/components/map/light-basemap");
     const labels = await loadCities();
+    expect(fetchCities).toHaveBeenCalledWith("/maps/light-v1/cities.json?v=2");
     expect(new Set(labels.map((city) => city[5]))).toEqual(new Set(PUBLIC_MAP_CODES));
     expect(labels).toEqual(cities.filter((city) => PUBLIC_MAP_CODES.includes(String(city[5]))));
     expect(labels.some((city) => city[0] === "Kehl")).toBe(true);

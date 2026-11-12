@@ -25,11 +25,13 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Klikni na den v kalendáři plánu a rovnou najdi závody na mapě nebo označ den jako obsazený.",
         "Závody v plánu poznáš podle modrého řádku a kalendáře s fajfkou.",
         "Seriály najdeš v přehledech zemí i kolekcích, seřazené podle počtu závodů.",
+        "Názvy měst se na mapě zobrazují i po aktualizaci webu.",
       ],
       en: [
         "Select a day in your plan calendar to find races on the map or mark the day as busy.",
         "Spot races in your plan by the blue row and checked calendar icon.",
         "Browse series by number of races on country and collection pages.",
+        "City names stay visible on the map after a site update.",
       ],
     },
   },
