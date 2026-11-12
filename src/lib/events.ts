@@ -594,7 +594,7 @@ async function loadPublicEventBySlug(
 }
 export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
   () => loadPublicEventBySlug(slug), ["public-event-by-slug-v7", slug],
-  { revalidate: 3600, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
+  { revalidate: 7 * 24 * 60 * 60, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
 )());
 
 /**
@@ -1178,7 +1178,7 @@ const upcomingRacesByOrganiserHost = unstable_cache(async (host: string, today: 
   if (error) throw new Error(error.message);
   if (!data || data.length > ORGANISER_MAX_RACES) return [];
   return data.map(row => mapEventRow(row as unknown as Record<string, unknown>));
-}, ["public-organiser-races-v1"], { revalidate: 900, tags: [PUBLIC_CATALOGUE_TAG] });
+}, ["public-organiser-races-v1"], { revalidate: 6 * 60 * 60, tags: [PUBLIC_CATALOGUE_TAG] });
 
 /**
  * Other upcoming races on the same organiser's website, outside the race's

@@ -12,6 +12,7 @@ try {
  await db.exec(await readFile('supabase/migrations/20261103090530_separate_public_refresh_requests.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261104123851_check_only_requested_race_revisions.sql','utf8'));
  await db.exec(await readFile('supabase/migrations/20261104183754_reissue_stale_publication_once.sql','utf8'));
+ await db.exec(await readFile('supabase/migrations/20261112131336_hourly_public_cache_expiration.sql','utf8'));
  await db.exec(`set role service_role;insert into events(id,name,slug,start_date) select gen_random_uuid(),'Race '||n,'race-'||n,current_date+30 from generate_series(1,205) n;`);
  const claim=async kind=>(await db.query('select * from pipeline_claim_tasks($1,array[\'web\'],1)',[kind])).rows[0];
  assert.equal(await claim('public_refresh'),undefined,'unrequested revisions cannot consume the daily check budget');
@@ -62,7 +63,9 @@ try {
  await db.exec("update pipeline_task_attempts set started_at=now()-interval '2 hours' where kind='public_expire'");
  assert(await claim('public_expire'));
  await db.exec("update pipeline_task_attempts set started_at=now()-interval '2 hours' where kind='public_expire'; insert into pipeline_task_attempts(token,task_key,kind,started_at) select gen_random_uuid(),'publication:expire','public_expire',now()-interval '2 hours' from generate_series(1,2)");
- assert.equal(await claim('public_expire'),undefined);
+ await db.exec("update pipeline_tasks set lease_until=now()-interval '1 minute' where key='publication:expire'");
+ assert(await claim('public_expire'),'four earlier batches do not block a later hour');
+ assert.equal(await claim('public_expire'),undefined,'the hourly batch limit still applies');
  for(const role of ['anon','authenticated']) {await db.exec(`reset role;set role ${role}`);await assert.rejects(db.query('select * from pipeline_refresh_receipts'),/permission denied/);await assert.rejects(db.query('select pipeline_record_expirations($1,$2)',[task.token,batch.map(t=>({key:t.key,revision:t.payload.revision}))]),/permission denied/);}
- console.log('PASS: bounded 200-row requests, private receipts, receipt-gated 60/day checks, four/24h and one/hour caps, concurrent revisions, expired claims, no false completion');
+ console.log('PASS: bounded 200-row requests, private receipts, receipt-gated 60/day checks, one expiration batch per hour, concurrent revisions, expired claims, no false completion');
 } finally { await db.close(); }

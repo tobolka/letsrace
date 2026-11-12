@@ -1,0 +1,26 @@
+name: Refresh public race pages
+
+on:
+  schedule:
+    - cron: "23,53 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: public-race-refresh
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Request pending cache refreshes
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$CRON_SECRET"
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            --request POST --header "Authorization: Bearer $CRON_SECRET" \
+            https://letsrace.cz/api/cron/public-refresh
