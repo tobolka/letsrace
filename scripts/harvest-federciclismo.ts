@@ -1,5 +1,5 @@
 /** Reads the Italian federation's page of each upcoming race that came from it, nearest first. Dry unless --apply. */
-import { appendFileSync, readFileSync } from "node:fs";
+import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parse } from "dotenv";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -15,6 +15,7 @@ async function main() {
   const { verifyPracticalExtraction } = await import("../src/lib/catalog/practical-extraction");
   const { savePracticalDetails, saveFoundLinks } = await import("../src/lib/catalog/practical-enrichment");
   const { registrationLinkIn } = await import("../src/lib/catalog/race-completeness");
+  const { quoteStatesDate } = await import("../src/lib/catalog/quoted-date");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
   const today = new Date().toISOString().slice(0, 10), until = new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
@@ -25,6 +26,7 @@ async function main() {
   const freshAfter = new Date(Date.now() - 14 * 86_400_000).toISOString();
   const due = (data ?? []).filter(event => process.argv.includes("--force") || !(event.practical_details?.organizer?.sourceUrl?.includes("federciclismo") && (event.practical_details.organizer.checkedAt ?? "") > freshAfter));
   const stats = { races: data?.length ?? 0, due: due.length, read: 0, saved: 0, unreadable: 0, fields: {} as Record<string, number>, refused: {} as Record<string, number> };
+  const dateDiffers: { id: string; name: string; ours: string; federation: string; url: string }[] = [];
   for (const event of due.slice(0, max)) {
     if (Date.now() > deadline) break;
     const url = event.sources[0]!.source_url;
@@ -34,6 +36,10 @@ async function main() {
     // Some pages sit behind the federation's sign-in; those stay unread.
     const page = pageAsText(doc.html, url), document = { url, text: page.text, links: [...page.links] };
     stats.read++;
+    // The federation's page for this very race states its day. When that is no longer the day we hold, say so:
+    // an organiser moved the race (Monastir, 13 → 20 Dec 2026) and nothing here changes a date on its own.
+    const stated = /Data:\s*([^\n]{4,40})/.exec(page.text)?.[1]?.trim();
+    if (stated && /\b20\d{2}\b/.test(stated) && !quoteStatesDate(stated, event.start_date)) dateDiffers.push({ id: event.id, name: event.name, ours: event.start_date, federation: stated, url });
     const raw = federciclismoFacts(document) as { facts: Record<string, { value: unknown }> };
     if (raw.facts.schedule) raw.facts.schedule.value = (raw.facts.schedule.value as { date: string }[]).map(item => ({ ...item, date: event.start_date }));
     const checked = verifyPracticalExtraction(raw, { name: event.name, startDate: event.start_date, endDate: event.end_date, knownVenue: event.location?.venue ?? undefined, municipality: event.location?.municipality ?? null, ownUrls: [url], documents: [document], documentSettled: true });
@@ -71,6 +77,8 @@ async function main() {
       if (ledger) appendFileSync(ledger, `${JSON.stringify({ id: event.id, name: event.name, start_date: event.start_date, how: "rideandrest", documents: [event.website_url], expected: Object.fromEntries(Object.keys(checked.details).map(key => [key, true])) })}\n`);
     }
   }
-  console.log(JSON.stringify({ ...stats, calendar }));
+  const report = process.argv.find(value => value.startsWith("--date-report="))?.slice(14);
+  if (report) writeFileSync(report, JSON.stringify({ at: new Date().toISOString(), differs: dateDiffers }, null, 1));
+  console.log(JSON.stringify({ ...stats, calendar, federationDateDiffers: dateDiffers.length }));
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

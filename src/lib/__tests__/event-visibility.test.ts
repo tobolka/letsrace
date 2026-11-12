@@ -140,6 +140,9 @@ describe("public map quality gate", () => {
 describe("non-race listings", () => {
   it("hides awards nights and ceremonies", () => {
     expect(isNonRaceEventName("Slavnostní večer")).toBe(true);
+    // Headings of a Kolo pro život race page that an old read turned into races.
+    for (const heading of ["Partneři závodu Mladá Boleslav Tour ŠKODA AUTO", "Partneři Závodu DIRECT Bikemaraton Beroun", "Partnerská akce - Salzkammergut Trophy 18/7", "ODERSKÁ MLÝNICE VEOLIA Proběhl"]) expect(isNonRaceEventName(heading)).toBe(true);
+    for (const race of ["Mladá Boleslav Tour", "Oderská mlýnice", "Bikemaraton Beroun"]) expect(isNonRaceEventName(race)).toBe(false);
     expect(isNonRaceEventName("Slavnostní vyhlášení")).toBe(true);
     expect(shouldHideFromMap("Slavnostní večer", "scheduled", "public")).toBe(true);
     expect(isNonRaceEventName("Siegerehrung Pražský pohár MTB")).toBe(true);

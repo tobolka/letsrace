@@ -14,7 +14,7 @@ const outcome = (kind, reason) => console.log('step_outcome ' + JSON.stringify({
 // An answer that settled nothing ("not published yet", "unsure", refused) is asked again after a week.
 const AGAIN_AFTER_MS = 7 * 24 * 3600_000;
 if (fs.existsSync(answers)) for (const name of fs.readdirSync(answers).filter(file => /^[a-z]+-[0-9a-f]{8}\.json$/.test(file))) {
-  try { const saved = JSON.parse(fs.readFileSync(path.join(answers, name), 'utf8')); const settled = ['found', 'same', 'different', 'race', 'ride', 'announced'].includes(saved.answer?.verdict);
+  try { const saved = JSON.parse(fs.readFileSync(path.join(answers, name), 'utf8')); const settled = ['found', 'same', 'different', 'race', 'ride', 'announced', 'not_a_race'].includes(saved.answer?.verdict);
     // A calendar is never settled: new races keep being added to it.
     const calendar = saved.kind === 'find_races';
     if ((!settled || calendar) && Date.now() - Date.parse(saved.at) > (calendar && saved.answer?.verdict === 'found' ? 2 : 1) * AGAIN_AFTER_MS) { fs.mkdirSync(path.join(answers, 'earlier'), { recursive: true }); fs.renameSync(path.join(answers, name), path.join(answers, 'earlier', `${saved.at.slice(0, 10)}-${name}`)); }
@@ -54,6 +54,9 @@ if ((run.ran && run.asked) || lastAnswer > newest(path.join(answers, 'verified.j
   // Judged a race, not a ride, with the quotes found: the cycle stops holding it for its source's label.
   const races = rows.filter(row => row.kind === 'decide_ride' && row.verdict === 'race' && row.verified === true).map(row => ({ id: answerOf(row)?.race, case: row.case })).filter(item => item.id);
   fs.writeFileSync(path.join(data, 'agent', 'races.json'), JSON.stringify(races, null, 1)); run.confirmedRaces = races.length;
+  // Entries judged rides without a result, with the quote found on the page. Kept as a list: nothing is hidden from here.
+  const rides = rows.filter(row => row.verified === true && (row.kind === 'decide_ride' && row.verdict === 'ride' || row.kind === 'find_regulations' && row.verdict === 'not_a_race')).map(row => ({ id: answerOf(row)?.race, case: row.case, note: answerOf(row)?.note ?? null })).filter(item => item.id);
+  fs.writeFileSync(path.join(data, 'agent', 'rides.json'), JSON.stringify(rides, null, 1)); run.judgedRides = rides.length;
   // An announced date, quoted in full on a page that was read again, joins the reviewed answers.
   // The cycle's own check (check-next-editions --answers) still decides whether a new edition is made.
   let dates = 0;

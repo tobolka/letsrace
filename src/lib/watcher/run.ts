@@ -1251,6 +1251,9 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
     // Nothing read from a calendar whose page states several coming days: the reader, not the season.
     const statedDates = calendarKind && extracted.events.length === 0 ? comingDatesOnPage((await import("@/lib/watcher/registration-deadline")).visibleText(fetched.html)) : 0;
     const silentCalendar = statedDates >= SILENT_CALENDAR_DATES;
+    // An address derived for next season that the site does not have yet answers 404 with a page of its own.
+    // That is "not published", not "off season": said so, and asked for once a week.
+    const missingPage = (fetched.status === 404 || fetched.status === 410) && extracted.events.length === 0;
     const offSeasonEmpty = !silentCalendar && (
       (calendarKind && extracted.events.length === 0 && !stillHasUpcoming) ||
       raceSeasonOver ||
@@ -1308,7 +1311,7 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
         ? "empty read of a source with upcoming races"
         : needsReview
           ? silentCalendar ? `no race read from a page that states ${statedDates} coming dates; the reader no longer fits it` : "low confidence or empty extract"
-          : null,
+          : missingPage ? `page does not exist (HTTP ${fetched.status})` : null,
       last_extract_status: incomplete ? "needs_review" : offSeasonEmpty
         ? "off_season"
         : needsReview
@@ -1325,6 +1328,7 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
           errorPollAt(1).toISOString()
         : needsReview
         ? reviewPollAt().toISOString()
+        : missingPage ? new Date(Date.now() + 7 * 24 * 60 * 60_000).toISOString()
         : extracted.strategy?.includes("fci")
           ? // Rotate month windows every ~2h until season is filled
             new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()

@@ -109,7 +109,8 @@ import {
 import { parseUciMtbWorldSeries } from "@/lib/watcher/extractors/uciws";
 import { parseFullgazHomepage } from "@/lib/watcher/extractors/fullgaz";
 import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
-import { parseSwissCycling } from "@/lib/watcher/extractors/swisscycling";
+import { parseSwissCycling, swissNextSeasonUrl } from "@/lib/watcher/extractors/swisscycling";
+import { fetchText } from "@/lib/watcher/http";
 import {
   parseBikeKingdomKidsCup,
   parseBundiKidsCup,
@@ -692,8 +693,15 @@ export async function extractWithAdapter(
     if (!/\/kalender/i.test(url)) {
       return { events: [], strategy: "adapter:swiss-skip" };
     }
+    const rows = parseSwissCycling(url, html);
+    const nextSeason = swissNextSeasonUrl(url);
+    if (nextSeason) {
+      const page = await fetchText(nextSeason, { timeoutMs: 20_000 }).catch(() => null);
+      const seen = new Set(rows.map(row => row.externalId));
+      if (page?.ok) for (const row of parseSwissCycling(nextSeason, page.text)) if (!seen.has(row.externalId)) rows.push(row);
+    }
     return {
-      events: await enrichDeAtRacePages(parseSwissCycling(url, html)),
+      events: await enrichDeAtRacePages(rows),
       strategy: "adapter:swiss-cycling",
     };
   }

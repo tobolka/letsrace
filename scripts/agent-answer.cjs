@@ -19,9 +19,11 @@ Look where a person would: the race's own page, the series' page, the national f
 
 ${RULES}
 
+If the pages show that this is not a race at all (a brevet, RTF, CTF, tour or ride with no timing and no ranking), do not look for regulations: answer "not_a_race" with the page and the words that say so. A timed and ranked marathon or gran fondo is a race.
+
 Answer:
-{"verdict":"found"|"not_published"|"unsure",
- "url": the address of the regulations document or page (only with "found"),
+{"verdict":"found"|"not_published"|"not_a_race"|"unsure",
+ "url": the address of the regulations document or page (with "found"), or of the page that shows it is not a race (with "not_a_race"),
  "quote": the words in that document that state this race's date, with day and month; only if it gives no date, the words that name the race (only with "found"),
  "organiser_site": the organiser's or race's own website if you found one, else null,
  "looked_at": up to 8 addresses you read,
@@ -29,7 +31,7 @@ Answer:
 
   decide_duplicate: `You are helping a cycling race calendar. Two entries, "a" and "b", may be the same race listed twice, or two different races. Decide which.
 
-They are the same race only if they are one event: same edition, same place, same day or days. They are different when they are separate races on one weekend (a time trial and a road race, a relay and an individual race, two distances started separately, different rounds of a series, a ride and a race), even with the same organiser and place. Read the pages they were found on before deciding. A shared name is not proof.
+They are the same race only if they are one event: same edition, same place, same day or days. One event with several start places (a ride or race whose regulations list starts in different towns and one shared finish, programme and organiser) is one event, however many entries its starts were given: do not call the entries different because their towns differ. Read the regulations before deciding that. They are different when they are separate races on one weekend (a time trial and a road race, a relay and an individual race, two distances started separately, different rounds of a series, a ride and a race), even with the same organiser and place. Read the pages they were found on before deciding. A shared name is not proof.
 
 ${RULES}
 
@@ -97,9 +99,13 @@ function checkAnswer(kind, body, reply) {
   const data = firstObject(String(reply ?? '')); if (!data) return { ok: false, why: 'no JSON object in the answer' };
   const note = text(data.note, 600) ? data.note.trim() : null;
   if (kind === 'find_regulations') {
-    if (!['found', 'not_published', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
+    if (!['found', 'not_published', 'not_a_race', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
     const lookedAt = Array.isArray(data.looked_at) ? data.looked_at.filter(url => typeof url === 'string' && LINK.test(url)).slice(0, 8) : [];
     const site = typeof data.organiser_site === 'string' && LINK.test(data.organiser_site) ? data.organiser_site : null;
+    if (data.verdict === 'not_a_race') {
+      if (typeof data.url !== 'string' || !LINK.test(data.url) || !quote(data.quote)) return { ok: false, why: 'not a race, but without a quoted page' };
+      return { ok: true, answer: { race: body.race.id, verdict: 'not_a_race', url: data.url, quote: data.quote.trim().slice(0, 300), looked_at: lookedAt, note } };
+    }
     if (data.verdict !== 'found') return { ok: true, answer: { race: body.race.id, verdict: data.verdict, organiser_site: site, looked_at: lookedAt, note } };
     if (typeof data.url !== 'string' || !LINK.test(data.url) || data.url.length > 2000) return { ok: false, why: 'found, but the address is not a link' };
     if (!quote(data.quote)) return { ok: false, why: 'found, but without a quote' };

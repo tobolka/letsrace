@@ -11,6 +11,8 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { assessDuplicate, datesCompatible, type DedupEvent } from "../src/lib/dedup";
+import { isNonRaceEventName } from "../src/lib/event-visibility";
+import { looksLikeRide } from "../src/lib/pipeline2/rides";
 
 const BIN = process.env.LOCAL_PG_BIN ?? "/opt/homebrew/opt/postgresql@17/bin";
 const sql = <T>(query: string): T => JSON.parse(execFileSync(`${BIN}/psql`, ["-h", "127.0.0.1", "-p", "54329", "-U", "postgres", "-d", "letsrace", "-qAt", "-v", "ON_ERROR_STOP=1", "-c", query], { encoding: "utf8", maxBuffer: 2 ** 28 }).trim() || "null");
@@ -45,12 +47,17 @@ function main() {
   const cases: object[] = [];
   // A case that already has an answer is not asked again; --skip names the folder of answers.
   const skip = arg("skip"); const answered = (name: string) => Boolean(skip) && existsSync(join(skip!, `${name}.json`));
+  const answeredAs = (name: string, verdict: string) => { try { return answered(name) && JSON.parse(readFileSync(join(skip!, `${name}.json`), "utf8")).answer?.verdict === verdict; } catch { return false; } };
 
   // Regulations: the nearest races first, Czech and Slovak ones ahead of the rest.
   const wantRegulations = Number(arg("regulations") ?? 20);
   const missing = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date+2 and current_date+60 and e.regulations_url is null and coalesce(e.status,'') not in ('cancelled','completed')
-    order by (l.country_code in ('CZ','SK')) desc, e.start_date, e.id limit ${wantRegulations * 4}`).filter(race => !answered(`regulations-${race.id.slice(0, 8)}`)).slice(0, wantRegulations);
-  for (const race of missing) cases.push({ case: `regulations-${race.id.slice(0, 8)}`, kind: "find_regulations", race: shown(race) });
+    order by (l.country_code in ('CZ','SK')) desc, e.start_date, e.id limit ${wantRegulations * 6}`).filter(race => !answered(`regulations-${race.id.slice(0, 8)}`));
+  // An entry that is, or reads like, a ride without a result is first asked "ride or race?"; regulations are looked for only for races.
+  const rideLike = missing.filter(race => race.event_type === "ride" || looksLikeRide(race.name));
+  const realRaces = missing.filter(race => !rideLike.includes(race) && !answeredAs(`ride-${race.id.slice(0, 8)}`, "ride")).slice(0, wantRegulations);
+  for (const race of realRaces) cases.push({ case: `regulations-${race.id.slice(0, 8)}`, kind: "find_regulations", race: shown(race) });
+  for (const race of rideLike.filter(race => !answered(`ride-${race.id.slice(0, 8)}`)).slice(0, 10)) cases.push({ case: `ride-${race.id.slice(0, 8)}`, kind: "decide_ride", in_catalogue: true, race: shown(race) });
 
   // Duplicates: the held new races, each with the listed race the cycle's own check stumbled on.
   const wantDuplicates = Number(arg("duplicates") ?? 20);
@@ -100,7 +107,7 @@ function main() {
       .sort((a, b) => Number(["CZ", "SK"].includes(b.location?.country_code ?? "")) - Number(["CZ", "SK"].includes(a.location?.country_code ?? "")) || a.start_date.slice(5).localeCompare(b.start_date.slice(5)));
     for (const race of waiting) {
       if (editions >= wantEditions) break;
-      if (answered(`nextdate-${race.id.slice(0, 8)}`)) continue;
+      if (answered(`nextdate-${race.id.slice(0, 8)}`) || isNonRaceEventName(race.name) || looksLikeRide(race.name)) continue;
       cases.push({ case: `nextdate-${race.id.slice(0, 8)}`, kind: "find_next_date", wanted_year: status.summary.season,
         race: { id: race.id, name: race.name, last_date: race.start_date, place: race.location?.municipality ?? null, country: race.location?.country_code ?? null, website: race.website_url, pages_we_read: (race.checkedUrls ?? []).slice(0, 5) } });
       editions++;
@@ -112,7 +119,9 @@ function main() {
   const calendars = sql<{ id: string; url: string; kind: string; have: { name: string; date: string }[] | null }[]>(`select coalesce(json_agg(t),'[]') from (
     select w.id, w.url, w.kind, (select json_agg(json_build_object('name', e.name, 'date', e.start_date) order by e.start_date) from public.event_sources x join public.events e on e.id=x.event_id
       where x.watched_url_id=w.id and e.start_date>=current_date and e.merged_into_id is null) have
-    from public.watched_urls w where w.status='active' and w.kind in ('calendar','federation') order by w.last_fetched_at desc nulls last) t`);
+    from public.watched_urls w where w.status='active' and w.kind in ('calendar','federation') and coalesce(w.http_status,200) < 400
+      and w.url not ilike '%portal.czechcyclingfederation.com%' -- drawn by a script in the browser; the Mac reads it through Chrome, an agent's fetch sees an empty page
+    order by w.last_fetched_at desc nulls last) t`);
   let asked = 0;
   for (const calendar of calendars) {
     if (asked >= wantCalendars) break;
@@ -123,7 +132,8 @@ function main() {
   // Doubles inside the catalogue: two public coming races the rules could neither join nor tell apart.
   const wantPairs = Number(arg("pairs") ?? 10);
   if (wantPairs) {
-    const coming = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date + 240 and coalesce(e.status,'') not in ('cancelled','completed') order by e.start_date, e.id`);
+    // Rides are not judged as doubles: several starts of one ride look like separate entries, and none of them belongs in the catalogue.
+    const coming = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date + 240 and coalesce(e.status,'') not in ('cancelled','completed','hidden') and coalesce(e.event_type,'') <> 'ride' order by e.start_date, e.id`).filter(race => !looksLikeRide(race.name));
     const known = new Set(sql<string[]>(`select coalesce(json_agg(left_id||'|'||right_id),'[]') from public.duplicate_reviews`));
     let pairs = 0;
     for (let i = 0; i < coming.length && pairs < wantPairs; i++) for (let j = i + 1; j < coming.length && pairs < wantPairs; j++) {

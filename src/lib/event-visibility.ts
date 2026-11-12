@@ -79,6 +79,10 @@ export function isNonRaceEventName(name: string): boolean {
 
   if (isJunkListingName(name)) return true;
 
+  // Headings of a race page read as races: "Partneři závodu …" (its sponsors), "Partnerská akce - …"
+  // (someone else's event it advertises), and a title with the page's "Proběhl" (took place) badge stuck to it.
+  if (/^partneri zavodu\b|^partnerska akce\b|\bprobehl$/.test(t.trim())) return true;
+
   // "Kemp Ejpovice - GOLF OPEN BIKE RACE - Časovka": the camp site is the
   // venue, and the rest of the name says it is a race.
   if (/\bkemp\b/.test(t) && /\b(race|xco|xcc|xcm|casovka|zavod)\b/.test(t)) return false;

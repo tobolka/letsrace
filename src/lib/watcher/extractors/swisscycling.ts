@@ -59,6 +59,21 @@ function swissSeriesFields(name: string): Partial<ParsedEvent> {
 }
 
 /**
+ * The calendar shows one year at a time and opens on the current one. From September the next
+ * season is published behind `y=<year>`; without asking for it the reader saw an empty table
+ * all autumn and called it off season (22 races of 2027 were there on 12 Nov 2026).
+ */
+export function swissNextSeasonUrl(url: string, now = new Date()): string | null {
+  try {
+    const next = new URL(url);
+    if (!/\/kalender/i.test(next.pathname) || next.searchParams.has("y") || next.searchParams.has("race") || now.getUTCMonth() < 8) return null;
+    next.searchParams.delete("save");
+    next.searchParams.set("y", String(now.getUTCFullYear() + 1));
+    return next.toString();
+  } catch { return null; }
+}
+
+/**
  * Swiss Cycling MTB calendar table
  * (`swiss-cycling.ch/de/veranstaltungen/kalender/?discipline=mtb`).
  */
