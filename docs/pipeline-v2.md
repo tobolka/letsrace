@@ -33,8 +33,8 @@ Stav k 11. 11. 2026 večer. ✅ je a běží · 🔶 je zčásti · ⬜ není.
 | **Ročníky** | Pravidla a cesta pro nový ročník | ✅ | z verze 1, `decideEdition`; agent k ní dodává oznámené termíny (jen ze stránek, které kontrola pořadatelů čte) |
 | | Přehrání zadržených „proběhl → plánovaný“ | ✅ | 97 případů: 95 byly proběhlé závody a jen zastaralá kopie na Macu. Kopie je teď uzavírá sama; zbyly 2 |
 | **Zveřejnění** | Žádost o obnovu stránky oddělená od kontroly HTML | ✅ | z verze 1 |
-| | Kontrola HTML podle druhu změny | ⬜ | dnes každá stránka, 60 denně |
-| | Roztřídění čekajících kontrol stránek | 🔶 | 744: 647 běžných s podanou žádostí o obnovu, 41 bez žádosti, 32 skrytých, 24 sloučených. Nic neuzavřeno; změna kontroly vyžaduje úpravu webu |
+| | Kontrola HTML podle druhu změny | ✅ | důležité změny a vzorek přibližně 10 % běžných doplnění; společný strop 60 pokusů denně |
+| | Roztřídění čekajících kontrol stránek | ✅ | běžná doplnění mimo vzorek se uzavřou po zapsání žádosti o obnovu aktuální revize; výsledek je označený jako neověřený |
 | **Pracovníci** | Mac se správcem a panelem v liště | ✅ | z verze 1 |
 | | Cloudový pracovník | ✅ | GitHub Actions každé 3 hodiny hledá propozice, jen když Mac 30 minut mlčí. Úlohy z Vercelu se nepřesouvají: běží i bez Macu a CPU neberou |
 | **Agent** | Agent je Codex, pracuje přes přepážku (`scripts/agent-desk.cjs`) | ✅ | definice `.codex/agents/race-finder.toml`; strop 20 odpovědí denně; Claude v cyklu vypnutý |
@@ -163,7 +163,7 @@ Přechod „proběhl → plánovaný“ může být nový ročník, chybná vazb
 
 Co se mění:
 
-- **Kontrola HTML podle druhu změny.** Běžné doplnění pole: denní vzorek. Skrytí, sloučení, změna data, změna adresy stránky: kontrola konkrétních dotčených výstupů, tedy nová i stará adresa, jazykové verze, stránka série a katalog, kde se změna projeví.
+- **Kontrola HTML podle druhu změny.** U běžného doplnění se podle revize vybírá přibližně 10 % k ověření. U důležitých změn se kontrolují všechny jazykové verze detailu včetně dřívější adresy po přejmenování nebo sloučení. Seriál a společný katalog mají vlastní kontroly.
 - **742 čekajících kontrol se nejdřív roztřídí.** Dnešní stav: 724 má žádost o obnovu, z toho 705 pro aktuální revizi; 18 žádost nemá; 24 patří sloučeným závodům. Uzavřít lze jen běžná doplnění s potvrzenou žádostí pro aktuální revizi. Ostatní se dokončí. Administrativní uzavření se nepočítá mezi vyřešené případy.
 - **Dvě měření místo jednoho:** čas od přijetí návrhu do žádosti o obnovu, a čas do ověřené změny na webu.
 - **Cíl podle toho, kdo běží.** S běžícím Macem do hodiny po žádost o obnovu. Bez Macu podle plánu cloudu, viz níže; hodinu tam neslibuji.

@@ -1,6 +1,14 @@
 import { checkPublicationLocales, publicationLocaleWaves } from "@/lib/pipeline/publication-locales";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { StalePublication, publicationPayload, publicationLocation, publicationIsVisible, verifyPublicRevision } from "@/lib/pipeline/publication";
+import { localePath } from "@/lib/localized-paths";
+import { getSiteUrl } from "@/lib/seo";
+
+export async function closeUnsampledRaceChecks() {
+  const { data, error } = await createServerSupabase().rpc("pipeline_close_unsampled_race_checks");
+  if (error) throw error;
+  return data;
+}
 
 /** Verify ordinary public responses after the matching revision was refreshed. */
 export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs }: { maxChecks: number; deadline: number; timeoutMs: number }) {
@@ -27,10 +35,26 @@ export async function checkPublicRaceRevisions({ maxChecks, deadline, timeoutMs 
       if (currentError) throw currentError;
       if (current.public_revision !== target.revision) throw Error("Race changed while checking publication");
       target = { ...target, expected: { ...target.expected, public_location: publicationLocation(current) } };
-      const checkedLocales = await checkPublicationLocales(`e/${payload.slug}`, timeoutMs, (html, status) => {
-        verifyPublicRevision(html, status, target, publicationIsVisible(target.expected, current.location?.country_code ?? null));
+      const visible = publicationIsVisible(target.expected, current.location?.country_code ?? null);
+      const formerSlugs = [...new Set([payload.slug, ...(payload.previousSlugs ?? [])])].filter(slug => slug !== target.slug);
+      const checkedLocales = await checkPublicationLocales(`e/${target.slug}`, timeoutMs, (html, status, locale, finalUrl) => {
+        if (visible && status === 200 && finalUrl !== `${getSiteUrl()}${localePath(locale, `e/${target.slug}`)}`) {
+          throw new StalePublication("Current race address led to a different page");
+        }
+        verifyPublicRevision(html, status, target, visible);
       });
-      const { data: finished, error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { verifiedAt: new Date().toISOString(), revision: payload.revision, locales: checkedLocales } });
+      for (const slug of formerSlugs) {
+        if (Date.now() + publicationLocaleWaves.length * timeoutMs + 2000 >= deadline) throw Error("Publication check needs another time slot");
+        await checkPublicationLocales(`e/${slug}`, timeoutMs, (html, status, locale, finalUrl) => {
+          const mustRedirect = visible && slug === payload.slug && Boolean(expected.merged_into_id);
+          if (!mustRedirect && (status === 404 || status === 410)) return;
+          if (status === 200 && finalUrl !== `${getSiteUrl()}${localePath(locale, `e/${target.slug}`)}`) {
+            throw new StalePublication("Former race address did not lead to the current race");
+          }
+          verifyPublicRevision(html, status, target, visible);
+        });
+      }
+      const { data: finished, error } = await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { verifiedAt: new Date().toISOString(), revision: payload.revision, locales: checkedLocales, formerSlugs } });
       if (error) throw error;
       if (finished) verified++; else deferredInBatch++;
     } catch (error) {

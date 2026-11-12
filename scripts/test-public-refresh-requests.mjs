@@ -67,5 +67,41 @@ try {
  assert(await claim('public_expire'),'four earlier batches do not block a later hour');
  assert.equal(await claim('public_expire'),undefined,'the hourly batch limit still applies');
  for(const role of ['anon','authenticated']) {await db.exec(`reset role;set role ${role}`);await assert.rejects(db.query('select * from pipeline_refresh_receipts'),/permission denied/);await assert.rejects(db.query('select pipeline_record_expirations($1,$2)',[task.token,batch.map(t=>({key:t.key,revision:t.payload.revision}))]),/permission denied/);}
+
+ await db.exec('reset role; alter table events add column description text;');
+ await db.exec(await readFile('supabase/migrations/20261112150337_sample_routine_race_publication_checks.sql','utf8'));
+ await db.exec(`set role service_role;
+   insert into events(id,slug,name,start_date) select gen_random_uuid(),'sample-'||n,'Sample '||n,current_date+10 from generate_series(1,30) n;
+   update pipeline_tasks set status='done' where payload->>'slug' like 'sample-%';
+   update events set description='More details' where slug like 'sample-%';
+   update events set start_date=current_date+11 where slug='sample-1';
+   update events set description='Edited again' where slug='sample-1';
+   update events set slug='sample-renamed' where slug='sample-2';
+   update events set visibility='hidden' where slug='sample-3';
+   update events set merged_into_id=(select id from events where slug='sample-1') where slug='sample-4';
+   insert into pipeline_refresh_receipts(task_key,revision,requested_at)
+   select key,case when payload->>'slug'='sample-6' then 'old-revision' else payload->>'revision' end,now()
+   from pipeline_tasks where payload->>'slug' like 'sample-%' and payload->>'slug'<>'sample-5';`);
+ const selected=await db.query(`select key,payload->>'slug' as slug,priority,payload->>'htmlCheck' as policy,
+   mod(hashtextextended(key||':'||(payload->>'revision'),0),10) as bucket
+   from pipeline_tasks where payload->>'slug' like 'sample-%'`);
+ for (const slug of ['sample-1','sample-renamed','sample-3','sample-4']) {
+   assert.equal(selected.rows.find(row=>row.slug===slug)?.policy,'required');
+ }
+ const outside=new Set(selected.rows.filter(row=>row.policy==='sample' && !['sample-5','sample-6'].includes(row.slug) && Number(row.bucket)!==0).map(row=>row.key));
+ const close=async()=>(await db.query('select pipeline_close_unsampled_race_checks() as n')).rows[0].n;
+ assert.equal(await close(),outside.size);
+ assert.equal(await close(),0,'retries cannot close the same revision twice');
+ const dispositions=await db.query("select key,status,result from pipeline_tasks where payload->>'slug' like 'sample-%'");
+ for (const row of dispositions.rows) {
+   if (!outside.has(row.key)) assert.equal(row.status,'pending');
+   else {
+     assert.equal(row.result.verified,false);
+     assert.equal(row.result.verification,'outside_sample');
+     assert.equal(row.result.verifiedAt,undefined);
+   }
+ }
+ await db.exec('reset role; set role anon;');
+ await assert.rejects(close(),/permission denied/);
  console.log('PASS: bounded 200-row requests, private receipts, receipt-gated 60/day checks, one expiration batch per hour, concurrent revisions, expired claims, no false completion');
 } finally { await db.close(); }
