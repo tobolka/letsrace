@@ -546,12 +546,8 @@ export async function getEventBySlug(slug: string) {
   return data;
 }
 
-/** Public race by slug for SEO pages and deep links. */
-async function loadPublicEventBySlug(
-  slug: string,
-): Promise<EventListItem | null> {
-  const supabase = createServerSupabase("public-web");
-  const { data, error } = await supabase
+function publicEventDetailQuery(supabase: ReturnType<typeof createServerSupabase>) {
+  return supabase
     .from("events")
     .select(
       `${EVENT_LIST_COLUMNS}, description, public_revision, organizer_verified_at, practical_details,
@@ -560,10 +556,22 @@ async function loadPublicEventBySlug(
        sources:event_sources(source_url, kind),
        categories:event_categories(id, name, age_min, age_max, distance_km, audience)`,
     )
-    .eq("slug", slug)
     .eq("visibility", PUBLIC_VISIBILITY)
-    .in("status", [...PUBLIC_EVENT_STATUSES])
-    .maybeSingle();
+    .in("status", [...PUBLIC_EVENT_STATUSES]);
+}
+
+function mapPublicEventDetail(row: unknown): EventListItem | null {
+  const event = mapEventRow(row as Record<string, unknown>);
+  // A cancelled race leaves the map, but its detail must explain cancellation.
+  if (shouldHideFromMap(event.name, event.status === "cancelled" ? "scheduled" : event.status, event.visibility)) return null;
+  const cc = event.location?.countryCode;
+  return cc && !isListedCountry(cc) ? null : event;
+}
+
+/** Public race by slug for SEO pages and deep links. */
+async function loadPublicEventBySlug(slug: string): Promise<EventListItem | null> {
+  const supabase = createServerSupabase("public-web");
+  const { data, error } = await publicEventDetailQuery(supabase).eq("slug", slug).maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) {
     const { data: alias, error: aliasError } = await supabase
@@ -584,18 +592,36 @@ async function loadPublicEventBySlug(
     if (!canonical?.slug || canonical.slug === slug || canonical.merged_into_id) return null;
     return getPublicEventBySlug(canonical.slug);
   }
-  // `organizer_verified_at` is newer than the generated types; the row is read loosely.
-  const event = mapEventRow(data as unknown as Record<string, unknown>);
-  // A cancelled race leaves the map, but its detail must explain cancellation.
-  if (shouldHideFromMap(event.name, event.status === "cancelled" ? "scheduled" : event.status, event.visibility)) return null;
-  const cc = event.location?.countryCode;
-  if (cc && !isListedCountry(cc)) return null;
-  return event;
+  return mapPublicEventDetail(data);
 }
-export const getPublicEventBySlug = cache((slug: string) => unstable_cache(
-  () => loadPublicEventBySlug(slug), ["public-event-by-slug-v7", slug],
+
+// Publication supplies a fresh row to the same cache entry a visitor reads.
+// Keep the prepared value in the closure so it does not change the cache key.
+const publicEventDetailCache = (slug: string, prepared?: EventListItem) => unstable_cache(
+  async () => prepared ?? loadPublicEventBySlug(slug), ["public-event-by-slug-v8", slug],
   { revalidate: 7 * 24 * 60 * 60, tags: [PUBLIC_CATALOGUE_TAG, publicEventTag(slug)] },
-)());
+)();
+
+export const getPublicEventBySlug = cache((slug: string) => publicEventDetailCache(slug));
+
+export async function preparePublicRaceDetails(batch: { slugs: string[] } | { after: string; limit: number }) {
+  const query = publicEventDetailQuery(createServerSupabase("publication"));
+  const { data, error } = await ("slugs" in batch
+    ? query.in("slug", batch.slugs)
+    : query.gt("slug", batch.after).order("slug").limit(batch.limit));
+  if (error) throw new Error(error.message);
+  const rows = data ?? [];
+  const events = rows.flatMap(row => {
+    const event = mapPublicEventDetail(row);
+    return event ? [event] : [];
+  });
+  for (let from = 0; from < events.length; from += 16) {
+    await Promise.all(events.slice(from, from + 16).map(event => publicEventDetailCache(event.slug, event)));
+  }
+  const lastRow = rows.at(-1) as { slug: string } | undefined;
+  const next = "limit" in batch && rows.length === batch.limit ? lastRow?.slug ?? null : null;
+  return { prepared: events.length, next };
+}
 
 /**
  * Races an address no race has may mean: the one to send it to, when the

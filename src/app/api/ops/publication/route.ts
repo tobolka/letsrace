@@ -19,8 +19,10 @@ export const POST = withCron(async req => {
     const { data: items, error: candidateError } = await db.rpc("pipeline_expiration_candidates", { p_token: input.token! });
     if (candidateError) throw candidateError;
     const tags = new Set<string>();
+    const raceSlugs = new Set<string>();
     for (const item of items) {
       const payload = publicationPayload(item.payload);
+      if (item.key.startsWith("public:")) raceSlugs.add(payload.slug);
       for (const slug of [payload.slug, ...(payload.previousSlugs ?? [])]) {
         if (!slug || slug.length > 200 || slug.includes("/")) throw Error("Invalid race slug in publication");
         tags.add(item.key.startsWith("series:") ? publicSeriesTag(slug) : publicEventTag(slug));
@@ -29,7 +31,7 @@ export const POST = withCron(async req => {
     for (const tag of tags) revalidateTag(tag, { expire: 0 });
     // Receipts are recorded by the worker only after this response completes,
     // so a failed framework flush cannot strand a falsely acknowledged revision.
-    return NextResponse.json({ items: items.map(item => ({ key: item.key, revision: publicationPayload(item.payload).revision })), verified: false }, { headers: { "Cache-Control": "private, no-store" } });
+    return NextResponse.json({ items: items.map(item => ({ key: item.key, revision: publicationPayload(item.payload).revision })), raceSlugs: [...raceSlugs], verified: false }, { headers: { "Cache-Control": "private, no-store" } });
   }
   if (data.kind === "catalogue_refresh") {
     const payload = data.payload as { revision?: string };

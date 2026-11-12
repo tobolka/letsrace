@@ -17,7 +17,7 @@ export async function requestPublicRefreshes() {
       body: JSON.stringify({ key: task.key, token: task.token, revision: payload.revision }), signal: AbortSignal.timeout(20_000),
     });
     if (!response.ok) throw Error(`Refresh service returned HTTP ${response.status}`);
-    const result = await response.json() as { items?: { key: string; revision: string }[]; verified?: boolean };
+    const result = await response.json() as { items?: { key: string; revision: string }[]; raceSlugs?: string[]; verified?: boolean };
     if (!Array.isArray(result.items) || result.items.length > 200 || result.items.some(item => typeof item.key !== "string" || typeof item.revision !== "string") || result.verified !== false) throw Error("Invalid refresh receipt");
     const saved = await db.rpc("pipeline_record_expirations", { p_token: task.token!, p_items: result.items });
     if (saved.error) throw saved.error;
@@ -28,6 +28,19 @@ export async function requestPublicRefreshes() {
       ? await db.rpc("pipeline_retry_task", { p_key: task.key, p_token: task.token!, p_error: "Next bounded refresh batch remains due", p_delay_seconds: 3600 })
       : await db.rpc("pipeline_finish_task", { p_key: task.key, p_token: task.token!, p_payload: task.payload, p_result: { requested: saved.data, requestedAt: new Date().toISOString(), verified: false } });
     if (finished.error) throw finished.error;
+    if (result.raceSlugs?.length) {
+      // Run in a new request so Next has flushed the preceding tag expirations.
+      // If warming fails, the normal public loader still reads the fresh row.
+      try {
+        const prepared = await fetch(`${getSiteUrl()}/api/ops/public-race-cache`, {
+          method: "POST", redirect: "error", headers: { Authorization: `Bearer ${process.env.CRON_SECRET}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ slugs: result.raceSlugs }), signal: AbortSignal.timeout(25_000),
+        });
+        if (!prepared.ok) console.warn("public_race_cache_prepare_failed", { status: prepared.status });
+      } catch {
+        console.warn("public_race_cache_prepare_failed");
+      }
+    }
     return { status: more ? "partial" : finished.data ? "requested" : "superseded", requested: saved.data, verified: false };
   } catch (error) {
     const retry = await db.rpc("pipeline_retry_task", { p_key: task.key, p_token: task.token!, p_error: error instanceof Error ? error.message : "Refresh request failed", p_delay_seconds: 3600 });
