@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { isDistancePlaceholder, positiveCategoryDistance } from "@/lib/category-distance";
-import { PUBLIC_CATALOGUE_TAG, publicEventTag, publicSeriesTag } from "@/lib/catalogue-cache";
+import { PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG, publicEventTag, publicSeriesTag } from "@/lib/catalogue-cache";
 import { refreshPublicCatalogue } from "@/lib/refresh-public-catalogue";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
@@ -1159,9 +1159,9 @@ const listCalendarHosts = unstable_cache(async function listCalendarHosts(): Pro
   return [...new Set((data ?? []).map((row) => hostOfUrl(row.url)).filter((h): h is string => Boolean(h)))];
 }, ["calendar-hosts-v1"], { revalidate: 86_400 });
 
-const upcomingRacesByOrganiserHost = unstable_cache(async (host: string, today: string) => {
+const upcomingRacesByOrganiserHost = unstable_cache(async (today: string) => {
   const supabase = createServerSupabase("public-web");
-  const { data, error } = await supabase
+  const query = supabase
     .from("events")
     .select(
       `${EVENT_LIST_COLUMNS},
@@ -1172,13 +1172,26 @@ const upcomingRacesByOrganiserHost = unstable_cache(async (host: string, today: 
     .is("merged_into_id", null)
     .in("status", [...PUBLIC_EVENT_STATUSES])
     .gte("start_date", today)
-    .or(`website_url.ilike.%://${host}%,website_url.ilike.%://www.${host}%`)
+    .not("website_url", "is", null)
     .order("start_date")
-    .limit(ORGANISER_MAX_RACES + 1);
-  if (error) throw new Error(error.message);
-  if (!data || data.length > ORGANISER_MAX_RACES) return [];
-  return data.map(row => mapEventRow(row as unknown as Record<string, unknown>));
-}, ["public-organiser-races-v1"], { revalidate: 6 * 60 * 60, tags: [PUBLIC_CATALOGUE_TAG] });
+    .order("id");
+  const rows = await readAllRows((from, to) => query.range(from, to), { throwOnError: true });
+  const byHost = new Map<string, EventListItem[]>();
+  for (const row of rows) {
+    const host = hostOfUrl(row.website_url);
+    if (!host || PLATFORM_HOSTS.includes(host)) continue;
+    const races = byHost.get(host) ?? [];
+    if (races.length > ORGANISER_MAX_RACES) continue;
+    const race = mapEventRow(row as unknown as Record<string, unknown>);
+    if (hostOfUrl(race.websiteUrl) !== host) continue;
+    races.push(race);
+    byHost.set(host, races);
+  }
+  return Object.fromEntries([...byHost].filter(([, races]) => races.length <= ORGANISER_MAX_RACES));
+}, ["public-organiser-races-by-host-v1"], {
+  revalidate: 6 * 60 * 60,
+  tags: [PUBLIC_CATALOGUE_TAG, PUBLIC_CATALOGUE_VIEWS_TAG],
+});
 
 /**
  * Other upcoming races on the same organiser's website, outside the race's
@@ -1190,7 +1203,9 @@ export async function listOrganiserRaces(event: EventListItem, limit = 6): Promi
   if (!host || PLATFORM_HOSTS.includes(host)) return [];
   if ((await listCalendarHosts()).includes(host)) return [];
   const today = new Date().toISOString().slice(0, 10);
-  return (await upcomingRacesByOrganiserHost(host, today))
-    .filter((e) => e.id !== event.id && hostOfUrl(e.websiteUrl) === host && (!event.series || e.series?.id !== event.series.id))
+  const byHost = await upcomingRacesByOrganiserHost(today);
+  if (!Object.hasOwn(byHost, host)) return [];
+  return byHost[host]!
+    .filter((e) => e.id !== event.id && (!event.series || e.series?.id !== event.series.id))
     .slice(0, limit);
 }
