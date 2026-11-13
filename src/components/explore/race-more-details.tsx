@@ -15,7 +15,7 @@ import type { PracticalDetails } from "@/lib/practical-details";
 
 export type CardLink = RaceLink;
 
-/** A group of the card, set off by a line from edge to edge. */
+/** A group of the card, set off by a line from edge to edge — no boxes, no room wasted. */
 export function CardSection({ children, className }: { children: ReactNode; className?: string }) {
   return <section className={`-mx-4 border-t px-4 ${className ?? ""}`}>{children}</section>;
 }
@@ -57,7 +57,7 @@ export function RaceMoreDetails({
   const allLinks = [...links.filter((l) => !ours(l)), ...documents, ...links.filter(ours)];
 
   const linkSection = allLinks.length ? (
-    <CardSection className="py-1">
+    <CardSection className="py-3">
       <RaceLinkRows links={allLinks} onLink={onLink} bleed />
     </CardSection>
   ) : null;
@@ -83,7 +83,7 @@ export function RaceMoreDetails({
       {rows.length ? (
         <CardSection className="divide-y divide-border/60">
           {rows.map((row) => (
-            <FactRow key={row.key} icon={row.icon} label={row.label} className="py-4">
+            <FactRow key={row.key} icon={row.icon} label={row.label} className="py-5">
               {row.body}
             </FactRow>
           ))}

@@ -31,6 +31,10 @@
 .fast-city-label { display: block; text-align: center; white-space: nowrap; font: 500 12px/20px Arial, sans-serif; color: #405c78; text-shadow: 1px 0 #faf9f5, -1px 0 #faf9f5, 0 1px #faf9f5, 0 -1px #faf9f5, 0 0 4px #faf9f5; }
 .fast-city-major { text-transform: uppercase; font-weight: 600; }
 .fast-map .leaflet-tooltip { border: 1px solid #e4e1dd; border-radius: 9px; box-shadow: 0 3px 10px #00000012; padding: 8px 12px; font-size: 12px; color: #1c1917; max-width: min(18rem, calc(100vw - 2rem)); overflow: hidden; text-overflow: ellipsis; }
+/* A long race name wraps to a second line, and past that ends in an ellipsis,
+   instead of running out of the box. Short names keep the box snug. */
+.fast-map .leaflet-tooltip { white-space: normal; width: max-content; }
+.fast-map .fast-tooltip-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .fast-map-controls { position: absolute; right: 12px; bottom: 38px; z-index: 600; display: grid; gap: 12px; }
 .fast-map-controls button { display: grid; place-items: center; width: 44px; height: 44px; background: #fff; color: #292524; border-radius: 50%; box-shadow: 0 1px 5px #00000016; cursor: pointer; }
 .fast-map-controls > button { color: #3778d7; }

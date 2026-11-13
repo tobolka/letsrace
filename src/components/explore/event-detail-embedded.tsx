@@ -13,21 +13,21 @@ import type { EventListItem } from "@/lib/events";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
+import { daysUntilLabel } from "@/lib/race-countdown";
 import { cn } from "@/lib/utils";
 
 /**
  * The race on a phone, in the order it is read: when and where and what kind
  * of racing — one line each, under the name — then the way in, then the rest.
  *
- * The way in is one wide button of its own. Everything else you can do with
- * the race sits under it as a row of equal tiles — directions, save, share,
- * the full page — the shape a maps app gives a place, so four small things
- * are not crowded against the one big one. The organiser's other pages are
- * rows of a list at the foot, not more buttons in the pile.
+ * What you can do with the race is a row of equal tiles — directions, save,
+ * share, the full page — the shape a maps app gives a place. The way in (the
+ * registration or the organiser's page) leads the list of links further down,
+ * with the organiser's other pages, rather than being a button of its own.
  *
- * The desktop's floating card is the same body (`variant="card"`): there the
- * full page has a button of its own at the card's foot, so the tiles are
- * three, and the weather and the series' page join the facts. Under them both
+ * The desktop's floating card is the same body (`variant="card"`), with the
+ * same tiles — the full page among them — and the weather and the series'
+ * page join the facts. Under them both
  * comes the rest of what the race page knows, as it arrives.
  */
 export function EmbeddedBody({
@@ -81,6 +81,7 @@ export function EmbeddedBody({
       ? ` – ${format(parseISO(event.endDate), "d. MMMM", { locale: df })}`
       : "");
   const card = variant === "card";
+  const countdown = event.status === "cancelled" ? null : daysUntilLabel(event.startDate, locale);
   // The place itself on Google Maps (the Navigate button plans the drive).
   const lat = event.location?.lat;
   const lng = event.location?.lng;
@@ -99,6 +100,8 @@ export function EmbeddedBody({
   // Every way off the card, one list, one look: the organiser's pages, the
   // series' page, the forecast.
   const links: CardLink[] = [
+    // The way in leads the list: the registration, else the organiser's page.
+    ...(primary ? [{ ...primary, external: true }] : []),
     ...secondaryLinks.map((link) => ({ ...link, external: true })),
     ...(event.series
       ? [{ href: localePath(locale, `series/${event.series.slug}`), label: event.series.name, kind: "series", external: false }]
@@ -107,14 +110,22 @@ export function EmbeddedBody({
   ];
   return (
     <div className="flex flex-col">
-      {/* When and where, the way in, and what else you can do with it. */}
-      <div className="-mx-4 -mt-3 flex flex-col gap-3 bg-muted/50 px-4 py-4">
+      {/* When and where, then what you can do with it. */}
+      <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
       <div className="flex flex-col gap-1.5">
-        <p className="flex items-center gap-2 text-sm font-medium">
+        <p className="flex items-center gap-2 text-sm font-semibold">
           <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
-            {dateLabel}
-          </time>
+          <span className="min-w-0">
+            <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
+              {dateLabel}
+            </time>
+            {countdown ? (
+              <span className="font-normal text-brand" suppressHydrationWarning>
+                <span aria-hidden> · </span>
+                {countdown}
+              </span>
+            ) : null}
+          </span>
         </p>
         <p className="flex items-start gap-2 text-sm">
           <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -124,13 +135,13 @@ export function EmbeddedBody({
                 href={placeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium underline-offset-4 hover:underline"
+                className="underline-offset-4 hover:underline"
                 onClick={() => trackEnter("place")}
               >
                 {placeLabel}
               </a>
             ) : (
-              <span className="font-medium">{placeLabel || "—"}</span>
+              <span>{placeLabel || "—"}</span>
             )}
             {discChips.length > 0 ? (
               <span className="text-muted-foreground">
@@ -146,9 +157,9 @@ export function EmbeddedBody({
       <RaceActions
         event={event}
         locale={locale}
-        layout={card ? "grid" : "tiles"}
+        layout="tiles"
         location="race_panel"
-        show={card ? ["primary", "plan", "map", "directions", "share"] : ["primary", "directions", "plan", "share", "map", "detail"]}
+        show={["directions", "plan", "share", "map", "detail"]}
         primary={primary}
         directionsUrl={directionsUrl}
         mapHref={onMap ? mapHref : ""}
@@ -157,7 +168,7 @@ export function EmbeddedBody({
       </div>
 
       {/* Who it is for and what kind of race it is. */}
-      <CardSection className="flex flex-col gap-2.5 py-4">
+      <CardSection className="flex flex-col gap-2.5 py-5">
         <MetaRow icon={<UserRound />} label={t.audience}>
           {whoChips.length > 0 ? (
             <>
@@ -209,7 +220,7 @@ export function EmbeddedBody({
       <RaceMoreDetails event={event} locale={locale} links={links} onLink={trackEnter} />
 
       {trustText || checkedText ? (
-        <CardSection className="pt-4">
+        <CardSection className="pt-5">
         <p
           className={cn("text-xs leading-snug", trustLow ? "text-destructive" : "text-muted-foreground")}
           title={t.trustExplanation}

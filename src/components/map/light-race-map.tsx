@@ -341,7 +341,7 @@ function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [n
   const messages = messagesFor(props.locale ?? "en");
   const place = props.embedded && props.events.length === 1 ? racePlace(e) : null;
   const label = count > 1 ? `${count} ${messages.racesCount} · ${e.location?.municipality ?? e.name}` : [e.name, place].filter(Boolean).join(" · ");
-  const tooltip = document.createElement("div"); tooltip.textContent = place ? e.name : label;
+  const tooltip = document.createElement("div"); tooltip.className = "fast-tooltip-text"; tooltip.textContent = place ? e.name : label;
   const marker = L.marker(point, { title: label, alt: label, keyboard: true, riseOnHover: true, bubblingMouseEvents: false,
     zIndexOffset: e.id === props.selectedId ? 1000 : 0,
     icon: L.divIcon({ html: pin(e, count, e.id === props.selectedId, place), className: "fast-marker", iconSize: [40, 40], iconAnchor: [20, 20] }),

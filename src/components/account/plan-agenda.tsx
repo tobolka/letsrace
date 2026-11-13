@@ -5,7 +5,7 @@ import Link from "next/link";
 import { addDays, format, parseISO } from "date-fns";
 import { Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PLAN_COLHEAD, PLAN_MONTH_BAND } from "@/components/account/plan-chrome";
+import { PLAN_COLHEAD, PLAN_MONTH_BAND, PLAN_MONTH_STICKY } from "@/components/account/plan-chrome";
 import { memberLabel } from "@/components/account/race-plan-controls";
 import { Input } from "@/components/ui/input";
 import { dateFnsLocale } from "@/lib/i18n/dates";
@@ -192,7 +192,7 @@ export function PlanAgenda({
                     <tr>
                       <td
                         colSpan={4 + members.length}
-                        className={PLAN_MONTH_BAND}
+                        className={cn(PLAN_MONTH_BAND, PLAN_MONTH_STICKY)}
                       >
                         {format(d, "LLLL yyyy", { locale: df })}
                       </td>
@@ -202,8 +202,9 @@ export function PlanAgenda({
                     onClick={() => onSelectDay(day)}
                     className={cn(
                       "group/row cursor-default align-middle",
-                      weekend && "bg-muted/40",
                       (note || busy) && "bg-muted/70",
+                      // Weekends are when riders race: tinted enough to find at a glance.
+                      weekend && "bg-muted",
                       past && "opacity-55",
                       selected === day && "bg-brand/8 inset-ring inset-ring-brand/40",
                       "hover:bg-accent/60",
@@ -214,7 +215,7 @@ export function PlanAgenda({
                       className={cn(
                         CELL,
                         "px-3 text-right text-xs font-normal tabular-nums whitespace-nowrap",
-                        isToday ? "font-semibold text-brand" : "text-muted-foreground",
+                        isToday ? "font-semibold text-brand" : weekend ? "font-semibold text-foreground" : "text-muted-foreground",
                       )}
                     >
                       {format(d, "d. M.", { locale: df })}
@@ -223,7 +224,7 @@ export function PlanAgenda({
                       className={cn(
                         CELL,
                         "text-xs whitespace-nowrap text-muted-foreground first-letter:uppercase",
-                        weekend && "font-semibold",
+                        weekend && "font-semibold text-foreground",
                       )}
                     >
                       {format(d, "EEEE", { locale: df })}

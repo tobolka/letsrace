@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { ArrowRight, ChevronUp, X } from "lucide-react";
-import Link from "next/link";
+import { ChevronUp, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import { messagesFor } from "@/lib/i18n/messages";
 import { disciplineColor } from "@/lib/map-visuals";
@@ -11,7 +10,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -22,7 +20,6 @@ import { buildDetailModel } from "@/components/explore/event-detail-model";
 import { EmbeddedBody } from "@/components/explore/event-detail-embedded";
 import { RACE_CARD_W } from "@/components/explore/panel-resize";
 import { DEFAULT_CARD_X, useDraggableCard } from "@/components/explore/use-draggable-card";
-import { eventPagePath } from "@/lib/event-url";
 import { focusKeyboardItem, visibleKeyboardItems } from "@/lib/keyboard-navigation";
 
 
@@ -286,22 +283,6 @@ export function EventDetailPanel({
         />
       </CardContent>
 
-      {embedded ? null : (
-        // The way to the race's own page, always in sight at the card's foot
-        // however far its facts are scrolled. It used to be a small icon among
-        // three others, and people did not know the card had a bigger version.
-        <CardFooter className="shrink-0 border-t p-2 [.border-t]:pt-2" inert={dragging || undefined}>
-          <Button asChild variant="secondary" className="w-full justify-between">
-            <Link
-              href={eventPagePath(locale, event.slug)}
-              onClick={() => track("cta_click", { slug: event.slug, location: "race_panel", source: "full_detail" })}
-            >
-              {t.openRaceDetail}
-              <ArrowRight data-icon="inline-end" />
-            </Link>
-          </Button>
-        </CardFooter>
-      )}
 
       {!resizable ? null : (
         // Stretch it from a side or a bottom corner; a double click puts the

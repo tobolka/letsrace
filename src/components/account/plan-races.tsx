@@ -5,7 +5,8 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { CalendarPlus, Compass, History, MapPinned } from "lucide-react";
 import { PlanRow, planColumns } from "@/components/account/plan-row";
-import { PLAN_COLHEAD, PLAN_MONTH_BAND } from "@/components/account/plan-chrome";
+import { PLAN_COLHEAD, PLAN_MONTH_BAND, PLAN_MONTH_STICKY } from "@/components/account/plan-chrome";
+import { cn } from "@/lib/utils";
 import { memberLabel } from "@/components/account/race-plan-controls";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
@@ -114,7 +115,7 @@ export function PlanRaces({
         return (
           <Fragment key={plan.event.id}>
             {newMonth ? (
-              <h3 className={`${PLAN_MONTH_BAND} [&:not(:first-child)]:border-t`}>
+              <h3 className={cn(PLAN_MONTH_BAND, "sticky top-0 z-[5]", PLAN_MONTH_STICKY, i > 0 && "border-t")}>
                 {format(parseISO(plan.event.startDate), "LLLL yyyy", { locale: df })}
               </h3>
             ) : (

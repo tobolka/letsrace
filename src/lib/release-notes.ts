@@ -19,6 +19,21 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-13",
+    items: {
+      cs: [
+        "V plánu zůstává název měsíce nahoře, dokud jím listuješ, a víkendy v přehledu dní hned poznáš.",
+        "Dlouhé názvy závodů se na mapě po najetí myší vejdou do bublinky.",
+        "Na kartě závodu vidíš u data, za kolik dní závod je, a tlačítka máš v jedné řadě stejně jako na stránce závodu.",
+      ],
+      en: [
+        "Keep the month in view as you scroll your plan, and spot weekends at a glance in the sheet.",
+        "Long race names fit in the label when you hover over a race on the map.",
+        "See how many days are left to a race on its card, with the actions in one row as on the race page.",
+      ],
+    },
+  },
+  {
     date: "2026-11-12",
     items: {
       cs: [

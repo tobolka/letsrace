@@ -172,7 +172,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
   // documents, are the list of links under it.
   const documentNames = DOCUMENT_KINDS[locale];
   const pageLinks: RaceLink[] = [
-    ...actionLinks.slice(1).map((l) => ({ ...l, external: true })),
+    ...actionLinks.map((l) => ({ ...l, external: true })),
     ...(event.practicalDetails?.documents?.value ?? [])
       .filter((doc) => !actionLinks.some((l) => l.href === doc.url))
       .map((doc) => ({ href: doc.url, label: documentNames[doc.kind], kind: doc.kind, external: true })),
@@ -337,9 +337,9 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           className="mt-5"
           event={event}
           locale={locale}
-          layout="row"
+          layout="tiles"
           location="race_page"
-          show={isPast ? ["primary", "map", "directions", "share"] : ["primary", "plan", "map", "directions", "share"]}
+          show={isPast ? ["directions", "share", "map"] : ["directions", "plan", "share", "map"]}
           primary={actionLinks[0] ?? null}
           directionsUrl={googleDirectionsUrl(here, "")}
           mapHref={mapHref}

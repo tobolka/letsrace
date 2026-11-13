@@ -22,14 +22,20 @@ export type RaceAction = "primary" | "plan" | "map" | "directions" | "share" | "
  * How they are laid out:
  * - `row`: the race page's wrapping row of buttons;
  * - `grid`: the desktop card's — the way in across the width, the rest in two columns;
- * - `tiles`: the phone sheet's — the way in across the width, the rest as equal tiles.
+ * - `tiles`: the way in across the width, the rest as round icons with a label
+ *   under each — the phone's sheet, the map's card and the race page alike.
  */
 export type RaceActionsLayout = "row" | "grid" | "tiles";
 
 const PRESENTATION = { row: "page", grid: "panel", tiles: "sheet" } as const;
 
+// A flat, softly shaded tile, icon over a one-word label, all in one row of
+// equal widths — the way Apple Maps lines up what you can do with a place, so
+// the actions sit quietly under the race instead of shouting over it. Links,
+// buttons and the save button alike get it from this one class.
 const TILE =
-  "flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-xl bg-muted/70 px-1 text-xs font-medium text-foreground touch-manipulation transition-colors active:bg-muted disabled:opacity-60 [&_svg]:size-5 [&>span]:max-w-full [&>span]:truncate";
+  "flex h-[3.25rem] min-w-0 flex-col items-center justify-center gap-1 rounded-lg bg-foreground/[0.055] px-1 text-[11px] leading-none font-medium text-foreground outline-none touch-manipulation transition-[background-color,scale] duration-150 hover:bg-foreground/10 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 [&_svg]:size-[18px] [&>span:last-child]:max-w-full [&>span:last-child]:truncate [&>span:last-child]:py-px";
+const TILE_BAR = "grid gap-1.5";
 
 /**
  * Everything you can do with a race, in one place: go to its entry page, put
@@ -96,7 +102,7 @@ export function RaceActions({
 
   const way = wants("primary") ? (
     primary ? (
-      <Button asChild className={layout === "row" ? undefined : "w-full"}>
+      <Button asChild className={layout === "row" ? undefined : cn("w-full", tiles && "rounded-xl")}>
         <a href={primary.href} target="_blank" rel="noopener noreferrer" onClick={() => trackEnter(primary.kind)}>
           <ExternalLink data-icon="inline-start" />
           <span className="truncate">{primary.label}</span>
@@ -165,7 +171,7 @@ export function RaceActions({
             type="button"
             aria-label={linkCopied ? t.linkCopied : t.shareRace}
             aria-pressed={linkCopied}
-            className={cn(TILE, linkCopied && "bg-primary text-primary-foreground active:bg-primary")}
+            className={cn(TILE, linkCopied && "border-primary bg-primary text-primary-foreground hover:bg-primary")}
             onClick={press}
           >
             <span key={linkCopied ? "copied" : "share"} className={cn("inline-flex", shareSwap)}>
@@ -234,7 +240,9 @@ export function RaceActions({
     return (
       <div className={cn("flex flex-col gap-3", className)}>
         {way}
-        <div className={cn("grid gap-2", buttons.length >= 5 ? "grid-cols-5" : buttons.length === 4 ? "grid-cols-4" : "grid-cols-3")}>{buttons}</div>
+        <div className={TILE_BAR} style={{ gridTemplateColumns: `repeat(${buttons.length}, minmax(0, 1fr))` }}>
+          {buttons}
+        </div>
       </div>
     );
   }

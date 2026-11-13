@@ -39,7 +39,7 @@ export function FactRow({
         {icon}
       </span>
       <div className="min-w-0">
-        <h3 className="mb-1.5 text-xs font-medium text-muted-foreground">{label}</h3>
+        <h3 className="mb-2 text-[13px] font-semibold text-foreground">{label}</h3>
         {children}
       </div>
     </div>
