@@ -70,6 +70,11 @@ export type ParsedEvent = {
   lat?: number;
   lng?: number;
   confidence: number;
+  /**
+   * Something the source states that contradicts itself and that a person should look at, such as a
+   * date whose weekday the page gives as another day. The race is still read as stated.
+   */
+  sourceWarnings?: string[];
   /** Only when a source explicitly states cancellation for this race. */
   status?: "cancelled";
   childUrls?: string[];

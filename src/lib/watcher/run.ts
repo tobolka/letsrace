@@ -30,7 +30,7 @@ import { looksLikeTextFragment } from "@/lib/text";
 import { dedupeCommaParts, isGarbagePlace } from "@/lib/dedup";
 import { freeEventSlug } from "@/lib/event-slug";
 import { mergeStatedAges } from "@/lib/catalog/merge-category-evidence";
-import { chooseEventType, isDayOfStoredRace, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
+import { chooseEventType, placeCorrectedByHand, isDayOfStoredRace, isDifferentDatedRace, isSameCalendarOtherRace, isSamePlace, preserveUnstatedDisciplines, protectOfficialFields, protectSpecificFacts, type PlaceFacts } from "@/lib/watcher/update-policy";
 import { calendarRowHash, calendarRowProgress, isEventWriteConflict, MAX_CALENDAR_PROGRESS_ROWS, readCalendarProgress } from "@/lib/watcher/calendar-progress";
 import { isBudgetDeferral } from "@/lib/watcher/run-summary";
 import { withDatabaseDeadline, withDatabaseRequestCounts, withDatabaseWorkload } from "@/lib/supabase/request-budget";
@@ -766,7 +766,8 @@ async function readClaimedSource(row: SourceReadInput, database: { attempts: num
           ) {
             try {
               const path = new URL(child).pathname.replace(/\/$/, "") || "/";
-              if (path !== "/" && path !== "/index.html" && path !== "/ppk-races.js") {
+              // The season is read from the rules page and the race cards; ppk-races.js is gone.
+              if (path !== "/" && path !== "/index.html") {
                 continue;
               }
             } catch {
@@ -2410,6 +2411,12 @@ async function upsertParsedEvent(
         .maybeSingle();
       if (placeError) throw new Error(`Reading current place: ${placeError.message}`);
       keepCurrentPlace = isSamePlace(held as PlaceFacts | null, { query: dedupeCommaParts(ev.placeText), country: ingestCountry, lat: resolvedLat, lng: resolvedLng });
+      if (!keepCurrentPlace) {
+        const { data: placeFacts, error: factError } = await supabase.from("event_facts").select("field, method")
+          .eq("event_id", existingId).in("field", ["location_id", "venue_coordinates", "practical.venue"]);
+        if (factError) throw new Error(`Reading place history: ${factError.message}`);
+        keepCurrentPlace = placeCorrectedByHand(placeFacts);
+      }
     }
     if (!keepCurrentPlace) payload.location_id = locationId;
   }

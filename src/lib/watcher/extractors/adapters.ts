@@ -1,3 +1,4 @@
+import { parsePpkBike } from "@/lib/watcher/extractors/ppkbike";
 import { parseRaceTime } from "@/lib/watcher/extractors/racetime";
 import { isNakoleUrl, parseNakole } from "@/lib/watcher/extractors/nakole";
 import type { ParsedEvent } from "@/lib/domain";
@@ -91,7 +92,6 @@ import {
   parseMaratonTerminovka,
   parsePoharMtb,
   parsePekloSeveru,
-  parsePpkBike,
   parsePrahaMtb,
   parsePrimaCup,
   parseVelkyHaj,
