@@ -52,10 +52,12 @@ if ((run.ran && run.asked) || lastAnswer > newest(path.join(answers, 'verified.j
   run.separatePairs = separate.length;
   const answerOf = row => { try { return JSON.parse(fs.readFileSync(path.join(answers, `${row.case}.json`), 'utf8')).answer; } catch { return null; } };
   // Judged a race, not a ride, with the quotes found: the cycle stops holding it for its source's label.
-  const races = rows.filter(row => row.kind === 'decide_ride' && row.verdict === 'race' && row.verified === true).map(row => ({ id: answerOf(row)?.race, case: row.case })).filter(item => item.id);
+  // An answer about one record of a race is filed for its other records too (same_race_ids).
+  const everyRecord = answer => [answer?.race, ...(answer?.same_race_ids ?? [])].filter(Boolean);
+  const races = rows.filter(row => row.kind === 'decide_ride' && row.verdict === 'race' && row.verified === true).flatMap(row => everyRecord(answerOf(row)).map(id => ({ id, case: row.case })));
   fs.writeFileSync(path.join(data, 'agent', 'races.json'), JSON.stringify(races, null, 1)); run.confirmedRaces = races.length;
   // Entries judged rides without a result, with the quote found on the page. Kept as a list: nothing is hidden from here.
-  const rides = rows.filter(row => row.verified === true && (row.kind === 'decide_ride' && row.verdict === 'ride' || row.kind === 'find_regulations' && row.verdict === 'not_a_race')).map(row => ({ id: answerOf(row)?.race, case: row.case, note: answerOf(row)?.note ?? null })).filter(item => item.id);
+  const rides = rows.filter(row => row.verified === true && (row.kind === 'decide_ride' && row.verdict === 'ride' || row.kind === 'find_regulations' && row.verdict === 'not_a_race')).flatMap(row => everyRecord(answerOf(row)).map(id => ({ id, case: row.case, note: answerOf(row)?.note ?? null })));
   fs.writeFileSync(path.join(data, 'agent', 'rides.json'), JSON.stringify(rides, null, 1)); run.judgedRides = rides.length;
   // An announced date, quoted in full on a page that was read again, joins the reviewed answers.
   // The cycle's own check (check-next-editions --answers) still decides whether a new edition is made.
@@ -65,8 +67,8 @@ if ((run.ran && run.asked) || lastAnswer > newest(path.join(answers, 'verified.j
     if (!answer || !body?.wanted_year) continue;
     const file = path.join(data, `organiser-check-${body.wanted_year}`, 'reviewed-answers.json'); if (!fs.existsSync(path.dirname(file))) continue;
     const reviewed = (() => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return {}; } })();
-    if (reviewed[answer.race]) continue;
-    reviewed[answer.race] = { url: answer.url, startDate: answer.start_date, endDate: answer.end_date ?? null, quote: answer.quote, name: body.race?.name ?? null, reviewedBy: `agent ${new Date().toISOString().slice(0, 10)}` };
+    const fresh = everyRecord(answer).filter(id => !reviewed[id]); if (!fresh.length) continue;
+    for (const id of fresh) reviewed[id] = { url: answer.url, startDate: answer.start_date, endDate: answer.end_date ?? null, quote: answer.quote, name: body.race?.name ?? null, reviewedBy: `agent ${new Date().toISOString().slice(0, 10)}` };
     fs.writeFileSync(`${file}.tmp`, JSON.stringify(reviewed, null, 1)); fs.renameSync(`${file}.tmp`, file); dates++;
   }
   run.announcedDates = dates;

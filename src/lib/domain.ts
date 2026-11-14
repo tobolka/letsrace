@@ -76,7 +76,7 @@ export type ParsedEvent = {
   /** A field supplied by another explicitly read official document. */
   fieldEvidence?: { field: "placeText"; value: string; sourceUrl: string; quote: string; documentHash: string }[];
   /** Verified extraction evidence, retained in the source snapshot. */
-  evidence?: { quote: string; sourceUrl: string; method: string; version: string; model?: string };
+  evidence?: { quote: string; sourceUrl: string; method: string; version: string; model?: string; /** Other pages that list the same race (another filter of one calendar). */ alsoListedAt?: string[] };
 };
 
 /** Words that vary between sources for the same race and carry no identity. */

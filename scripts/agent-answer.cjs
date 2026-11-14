@@ -67,6 +67,7 @@ Answer:
 
   find_races: `You are helping a cycling race calendar. The page below is a calendar of races (a federation, a series, a region). "we_have" lists the races from it that we already hold. Read the page and say which coming races on it we are missing.
 
+If "source" has "also", those are other views of the same calendar (another filter, region or page): read them too, and report each race once, with the page that states it.
 Report only what the page states: a race with a name and a full date on or after "from_date". Leave out rides without a result (RTF, CTF, brevet, tour), meetings, courses and anything already in "we_have" under a slightly different name or one day apart. At most 15 races; the nearest first. If the page does not list races for the coming period, or cannot be read, report none.
 
 ${RULES}
@@ -95,7 +96,15 @@ function firstObject(reply) {
   return null;
 }
 
+/** Other records of the same race (scripts/agent-cases.ts groups them): one answer is filed for all of them. */
+const sameRace = body => Array.isArray(body?.race?.same_race_ids) && body.race.same_race_ids.length ? { same_race_ids: body.race.same_race_ids.filter(id => typeof id === 'string') } : {};
+
 function checkAnswer(kind, body, reply) {
+  const checked = checkAnswerShape(kind, body, reply);
+  return checked.ok && checked.answer.race ? { ok: true, answer: { ...checked.answer, ...sameRace(body) } } : checked;
+}
+
+function checkAnswerShape(kind, body, reply) {
   const data = firstObject(String(reply ?? '')); if (!data) return { ok: false, why: 'no JSON object in the answer' };
   const note = text(data.note, 600) ? data.note.trim() : null;
   if (kind === 'find_regulations') {

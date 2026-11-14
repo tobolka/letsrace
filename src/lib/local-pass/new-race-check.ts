@@ -28,8 +28,8 @@ function officialPage(url: string | null | undefined): string | null {
   try { const u = new URL(url!); return u.hostname.replace(/^www\./, "") + u.pathname.replace(/\/$/, "") + u.search; } catch { return null; }
 }
 
-/** One key for a pair of races, whichever way round it is asked. */
-export const pairKey = (a: string, b: string) => [a, b].sort().join("|");
+export { pairKey } from "@/lib/pipeline2/agent-case-groups";
+import { pairKey } from "@/lib/pipeline2/agent-case-groups";
 
 /**
  * Reasons to hold this race back; empty means it is ready to send.
