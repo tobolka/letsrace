@@ -14,7 +14,7 @@ describe("identical agent cases are asked once", () => {
   it("folds Malevil's two records (hyphen and en dash) into one date search", () => {
     const grouped = groupSameRace([malevil("5d532221-f028", "ČP MTB XCM - Malevil cup", "https://www.malevilcup.cz/"), malevil("ed231780-dcd8", "ČP MTB XCM — Malevil Cup", "https://malevilcup.cz/")]);
     expect(grouped).toHaveLength(1);
-    expect(grouped[0]!.race.same_race_ids).toEqual(["ed231780-dcd8"]);
+    expect((grouped[0]!.race as { same_race_ids?: string[] }).same_race_ids).toEqual(["ed231780-dcd8"]);
     expect(grouped[0]!.race.pages_we_read).toContain("https://malevilcup.cz/");
   });
 
@@ -46,7 +46,7 @@ describe("identical agent cases are asked once", () => {
       view("https://www.radsport-events.de/kalender", []),
     ]);
     expect(grouped).toHaveLength(2);
-    expect(grouped[0]!.source.also).toEqual(["https://www.cyclingaustria.at/kalender?view=events&page=3"]);
+    expect((grouped[0]!.source as { also?: string[] }).also).toEqual(["https://www.cyclingaustria.at/kalender?view=events&page=3"]);
     expect(grouped[0]!.we_have.map(race => race.name)).toEqual(["Kriterium Graz", "Glocknerkönig"]);
   });
 

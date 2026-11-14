@@ -21,7 +21,9 @@ import { defaultEditionSeason } from "../src/lib/catalog/edition-season";
 
 type Page = { url: string; title?: string; dates?: string[]; textFile?: string };
 type Review = { id: string; name: string; start_date: string; website_url: string | null; reviewStatus: string; candidatePages?: Page[] };
-type Row = { race: string; name: string; state: string; reason?: string; url?: string; date?: string; eventId?: string };
+type Row = { race: string; name: string; state: string; reason?: string; url?: string; date?: string; eventId?: string; quote?: string };
+/** A planned date for the next edition, kept with its page until the organiser confirms it. */
+type Provisional = { name: string; url: string; startDate: string; endDate: string | null; quote: string; firstSeen: string; lastSeen: string; by?: "agent" };
 
 const arg = (name: string) => process.argv.find(value => value.startsWith(`--${name}=`))?.slice(name.length + 3);
 const country = (arg("country") ?? "CZ").toUpperCase();
@@ -40,6 +42,8 @@ const season = Number(arg("season") ?? defaultEditionSeason()), target = season 
 const ignored = new Set((arg("ignore-event") ?? "").split(",").filter(Boolean));
 if (apply && ignored.size) throw Error("--ignore-event is for dry runs only");
 const hash = (text: string) => createHash("sha256").update(text).digest("hex");
+/** A regulations page by its address or title: propozice, Ausschreibung, regulamin, regolamento, rozpis, race guide. */
+const isRegulationsPage = (page: { url: string; title?: string }) => /propozic|ausschreibung|regulamin|regolamento|rozpis|reglement|race[- ]?guide|race[- ]?manual|pravidla/i.test(`${decodeURIComponent(page.url)} ${page.title ?? ""}`);
 /** The visible text with blocks on their own lines, the way the organiser reading saves a page. */
 function readerText(html: string) {
   const $ = load(html);
@@ -112,6 +116,17 @@ async function main() {
     catch { /* Unreadable now: the race waits as before. */ }
   }
   const rows: Row[] = [];
+  // Planned dates seen on organiser pages: kept with the page, so a later reading can confirm or drop them.
+  const provisionalFile = join(archive, "provisional-dates.json");
+  const provisional = (existsSync(provisionalFile) ? JSON.parse(readFileSync(provisionalFile, "utf8")) : {}) as Record<string, Provisional>;
+  const seenProvisional = new Set<string>();
+  const keepProvisional = (base: { race: string; name: string }, url: string, answer: import("../src/lib/catalog/next-edition").EditionAnswer): Row => {
+    const startDate = String(answer.startDate), quote = String(answer.quote ?? "");
+    const before = provisional[base.race];
+    provisional[base.race] = { name: base.name, url, startDate, endDate: typeof answer.endDate === "string" ? answer.endDate : null, quote, firstSeen: before?.startDate === startDate ? before.firstSeen : today, lastSeen: today };
+    seenProvisional.add(base.race);
+    return { ...base, state: "provisional", reason: "planned_date", url, date: startDate, quote };
+  };
   const proposals: { row: Row; event: import("../src/lib/domain").ParsedEvent; answer: import("../src/lib/catalog/next-edition").EditionAnswer; candidate: import("../src/lib/catalog/next-edition").EditionRace; pageInput: import("../src/lib/catalog/next-edition").EditionPage; raceName: string; raceId: string; sharedHost: boolean; country: string; readerSettled: boolean }[] = [];
   let asked = 0, aiStopped = false;
   for (const review of reviews) {
@@ -131,8 +146,10 @@ async function main() {
       if (review.reviewStatus === "platform_page_only") { rows.push({ ...base, state: "platform_page_only" }); continue; }
       if (review.reviewStatus === "year_mentioned_without_full_date") { rows.push({ ...base, state: "year_only" }); continue; }
     }
+    // The regulations first: they state the race day, where a homepage may lead with the opening of registration.
     const pages = reviewedLive ? [{ url: reviewedLive.url, title: live.get(reviewedLive.url)!.title }] as typeof review.candidatePages & object
-      : (review.candidatePages ?? []).filter(page => hostOf(page.url) === hostOf(review.website_url)).slice(0, 3);
+      : (review.candidatePages ?? []).filter(page => hostOf(page.url) === hostOf(review.website_url))
+        .sort((a, b) => Number(isRegulationsPage(b)) - Number(isRegulationsPage(a))).slice(0, 3);
     if (!pages.length) { rows.push({ ...base, state: review.candidatePages?.length ? "waiting" : "not_announced", reason: review.candidatePages?.length ? "date_only_on_another_site" : undefined }); continue; }
 
     const candidate = { id: race.id, name: race.name, start_date: race.start_date, website_url: review.website_url, disciplines: race.disciplines, municipality: race.location?.municipality ?? null, country: raceCountry, lat: race.location?.lat, lng: race.location?.lng, event_type: race.event_type };
@@ -152,6 +169,7 @@ async function main() {
         // The saved file opens with its address and title, which are not page text.
         const read = literalEditionAnswer({ race: { ...candidate, end_date: race.end_date }, page: { ...pageInput, text: text.split("\n").slice(3).join("\n") }, year: target, ownPage: isOwnPage(page.url, review) });
         if (read.state === "answer") answer = read.answer;
+        else if (read.state === "provisional") { outcome = keepProvisional(base, page.url, read.answer); continue; }
         // What plain reading cannot settle goes to the model only when one was allowed for this pass.
         else if (!maxAiGiven || !modelCanSettle(read.reason)) { outcome ??= { ...base, state: read.reason === "literal_no_race_date_on_page" ? "not_announced" : "waiting", reason: read.reason, url: page.url }; continue; }
       }
@@ -176,6 +194,7 @@ async function main() {
       // A reader settled which race this is, which is what the shared-site check stands in for.
       if (settled) sharedHost = false;
       const decision = next.decideEdition({ race: candidate, page: pageInput, answer, year: target, today, sharedHost, readerSettled: Boolean(settled) });
+      if (decision.state === "wait" && decision.reason === "tentative_date") { outcome = keepProvisional(base, page.url, answer); continue; }
       if (decision.state === "wait") { outcome ??= { ...base, state: decision.reason === "not_announced_on_page" ? "not_announced" : "waiting", reason: decision.reason, url: page.url }; continue; }
       const existing = next.matchAnnouncedEdition(decision.event, upcoming);
       if (existing.state === "ambiguous") { outcome = { ...base, state: "waiting", reason: "next_edition_identity_ambiguous", url: page.url, date: decision.event.startDate }; break; }
@@ -242,6 +261,13 @@ async function main() {
     }
   }
 
+  // A planned date no longer on its page, or now published as an edition, is not kept.
+  // One the agent found stays until the edition exists: this check may not read the page it stands on.
+  for (const row of rows) {
+    const kept = provisional[row.race]; if (!kept || seenProvisional.has(row.race)) continue;
+    if (["found", "published"].includes(row.state) || kept.by !== "agent" && row.state !== "waiting") delete provisional[row.race];
+  }
+  writeFileSync(provisionalFile, JSON.stringify(provisional, null, 1));
   const counts: Record<string, number> = {};
   for (const row of rows) counts[row.state] = (counts[row.state] ?? 0) + 1;
   const reasons: Record<string, number> = {};

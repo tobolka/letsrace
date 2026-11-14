@@ -10,7 +10,7 @@ import type { EditionAnswer, EditionPage, EditionRace } from "@/lib/catalog/next
  * answered only when one date stands out for this race; anything else waits, and a
  * waiting race has lost nothing but time.
  */
-export type LiteralEdition = { state: "answer"; answer: EditionAnswer } | { state: "wait"; reason: string };
+export type LiteralEdition = { state: "answer"; answer: EditionAnswer } | { state: "provisional"; answer: EditionAnswer } | { state: "wait"; reason: string };
 
 const MONTHS: Record<string, number> = {};
 [
@@ -30,7 +30,13 @@ const MONTHS: Record<string, number> = {};
 const MONTH = Object.keys(MONTHS).sort((a, b) => b.length - a.length).join("|");
 
 /** A date in the coming year that belongs to something other than the race itself. */
-const NOT_THE_RACE = /registrac|registration|anmeld|iscrizion|inscription|prihlas|uzaverk|startovn|deadline|entry fee|payment|platba|sleva|early ?bird|fruhbucher|zapis|zgloszen|meldeschluss|nennung|nennschluss|vyhlasen|galavecer|valna hromada|schuze|hauptversammlung|assemblea|kurz|workshop|webinar|soustreden|trainingslager|\bcamp\b|oboz|ples\b|voucher|poukaz|gultig|platn[ey]\b|valid|predprodej|vorverkauf|after ?party|\bparty\b|predbez|tbc|planovan|pripravuj|upresn|provisional|tentative|geplant|vorlaufig|voraussichtlich|prevista|provvisori|przewidywan|orientacn/;
+const NOT_THE_RACE = /registrac|registration|anmeld|iscrizion|inscription|prihlas|uzaverk|startovn|deadline|entry fee|payment|platba|sleva|early ?bird|fruhbucher|zapis|zgloszen|meldeschluss|nennung|nennschluss|vyhlasen|galavecer|valna hromada|schuze|hauptversammlung|assemblea|kurz|workshop|webinar|soustreden|trainingslager|\bcamp\b|oboz|ples\b|voucher|poukaz|gultig|platn[ey]\b|valid|predprodej|vorverkauf|after ?party|\bparty\b/;
+/**
+ * A date the organiser gives as planned: "se plánuje na sobotu 12.června 2027", "voraussichtlich", "TBC".
+ * Not an announcement, but not nothing either: it is kept as a provisional date with its page, and a later
+ * reading of the page confirms it once the word is gone.
+ */
+export const TENTATIVE_DATE = /predbez|\btbc\b|\btba\b|planovan|planuj|planned|pripravuj|upresn|provisional|tentative|geplant|vorlaufig|voraussichtlich|prevista|provvisori|przewidywan|planowan|orientacn|predpoklad/;
 /** A sentence about something the organiser merely mentions; the race must then be named in it. */
 const ANOTHER_ORGANISER = /poradaji?\b|poradat?el|spolupor|partner|veranstaltet|organizuje|organizza/;
 /** A sentence pointing at the next edition, which may leave the name to the page around it. */
@@ -85,8 +91,8 @@ export function datesInLine(folded: string, year: number): Found[] {
   // 18.4.2027, 3.-10.4.2027. A slash could be American order, so it never counts.
   scan(new RegExp(`(?<![\\d./])(?:(\\d{1,2})\\.?\\s*[-–—&]\\s*)?(\\d{1,2})\\.\\s*(\\d{1,2})\\.\\s*${y}(?!\\d)`, "g"),
     m => m[1] ? add(m.index, iso(year, num(m[3]), num(m[1])), iso(year, num(m[3]), num(m[2]))) : add(m.index, iso(year, num(m[3]), num(m[2]))));
-  // 18. dubna 2027, 10 - 12 settembre 2027, 3. und 4. April 2027
-  scan(new RegExp(`(?<![\\d.])(?:(\\d{1,2})\\.?\\s*(?:[-–—&+]|und|and|a|i|e|et)\\s*)?(\\d{1,2})(?:st|nd|rd|th)?\\.?\\s+(?:of\\s+)?(${MONTH})\\.?\\s*,?\\s*${y}(?!\\d)`, "g"),
+  // 18. dubna 2027, 12.června 2027, 10 - 12 settembre 2027, 3. und 4. April 2027
+  scan(new RegExp(`(?<![\\d.])(?:(\\d{1,2})\\.?\\s*(?:[-–—&+]|und|and|a|i|e|et)\\s*)?(\\d{1,2})(?:st|nd|rd|th)?(?:\\.\\s*|\\s+)(?:of\\s+)?(${MONTH})\\.?\\s*,?\\s*${y}(?!\\d)`, "g"),
     m => m[1] ? add(m.index, iso(year, MONTHS[m[3]!]!, num(m[1])), iso(year, MONTHS[m[3]!]!, num(m[2]))) : add(m.index, iso(year, MONTHS[m[3]!]!, num(m[2]))));
   // April 18, 2027
   scan(new RegExp(`(?<![a-z])(${MONTH})\\.?\\s+(?:(\\d{1,2})\\s*[-–—]\\s*)?(\\d{1,2})(?:st|nd|rd|th)?\\s*,?\\s*${y}(?!\\d)`, "g"),
@@ -127,7 +133,7 @@ export function literalEditionAnswer(input: { race: EditionRace & { end_date?: s
   if (!ownPage && ROUND_OF_SERIES.test(fold(race.name))) return { state: "wait", reason: "literal_round_of_a_series" };
 
   type Line = { text: string; date: Found };
-  const lines: Line[] = [];
+  const lines: Line[] = [], planned: Line[] = [];
   const rawLines = page.text.split("\n").map(raw => raw.replace(/\s+/g, " ").trim()).filter(Boolean);
   for (const [index, text] of rawLines.entries()) {
     if (text.length > USABLE_LINE || !text.includes(String(year))) continue;
@@ -136,10 +142,18 @@ export function literalEditionAnswer(input: { race: EditionRace & { end_date?: s
     const around = text.length <= BARE_DATE_LINE ? fold(`${rawLines[index - 1] ?? ""} ${rawLines[index + 1] ?? ""}`) : "";
     for (const date of datesInLine(folded, year)) {
       if (NOT_THE_RACE.test(folded) || NOT_THE_RACE.test(around) || BOUNDARY_BEFORE.test(folded.slice(0, date.at))) continue;
-      lines.push({ text, date });
+      (TENTATIVE_DATE.test(folded) || TENTATIVE_DATE.test(around) ? planned : lines).push({ text, date });
     }
   }
-  if (!lines.length) return { state: "wait", reason: "literal_no_race_date_on_page" };
+  if (!lines.length) {
+    // Only a planned date: kept as provisional when it is this race's one date, as near last year's as an announcement must be.
+    if (!planned.length || new Set(planned.map(line => line.date.start)).size !== 1) return { state: "wait", reason: "literal_no_race_date_on_page" };
+    const line = planned[0]!;
+    const anniversary = new Date(`${race.start_date}T00:00:00Z`); anniversary.setUTCFullYear(year);
+    if (!(Math.abs(Date.parse(`${line.date.start}T00:00:00Z`) - anniversary.getTime()) / 86_400_000 <= MAX_DRIFT_DAYS)) return { state: "wait", reason: "literal_no_race_date_on_page" };
+    if (!named(words, fold(`${page.title ?? ""} ${line.text} ${path}`)) && !(ownPage || path === "/" || path === "")) return { state: "wait", reason: "literal_no_race_date_on_page" };
+    return { state: "provisional", answer: { sameRace: true, cycling: true, announced: false, startDate: line.date.start, endDate: line.date.end ?? null, quote: quoteFrom(line.text, year), newPlace: null } };
+  }
 
   // A range and the days inside it are one date; several separate dates are a calendar.
   const widest = [...lines].sort((a, b) => Number(Boolean(b.date.end)) - Number(Boolean(a.date.end)))[0]!;

@@ -53,16 +53,17 @@ Answer:
 
   find_next_date: `You are helping a cycling race calendar. The race below took place on the date given. Find out whether the date of its next edition, in the year given as "wanted_year", has been announced, and where.
 
-Look at the race's own site first, then its series, its federation, its sign-up portal and the organising club; search the web only after those. The date must be stated for that year on a page about this race. A date worked out from last year's weekday, a "save the date" without a day, a provisional or "planned" date, a registration deadline and another race's date are not an answer. A date announced on a calendar of someone else's making counts only if that page names this race and the year.
+Look at the race's own site first, then its series, its federation, its sign-up portal and the organising club; search the web only after those. Open the regulations (propozice, Ausschreibung, regulamin) as well as the homepage: a homepage often leads with when registration opens, while the regulations state the race day. The date must be stated for that year on a page about this race. A date worked out from last year's weekday, a "save the date" without a day, a registration deadline or opening and another race's date are not an answer. A date announced on a calendar of someone else's making counts only if that page names this race and the year.
+A full date the page gives as planned or provisional ("se plánuje na", "předběžně", "voraussichtlich", "TBC") is answered as "planned", with the same date, url and quote: it is kept as provisional until the organiser confirms it.
 
 ${RULES}
 
 Answer:
-{"verdict":"announced"|"not_announced"|"unsure",
- "start_date": "YYYY-MM-DD" (only with "announced"),
+{"verdict":"announced"|"planned"|"not_announced"|"unsure",
+ "start_date": "YYYY-MM-DD" (only with "announced" or "planned"),
  "end_date": "YYYY-MM-DD" or null,
- "url": the page that states it (only with "announced"),
- "quote": the words on that page that state the full date, with day and month (only with "announced"),
+ "url": the page that states it (only with "announced" or "planned"),
+ "quote": the words on that page that state the full date, with day and month (only with "announced" or "planned"),
  "note": one sentence}`,
 
   find_races: `You are helping a cycling race calendar. The page below is a calendar of races (a federation, a series, a region). "we_have" lists the races from it that we already hold. Read the page and say which coming races on it we are missing.
@@ -134,14 +135,14 @@ function checkAnswerShape(kind, body, reply) {
     return { ok: true, answer: { race: body.race.id, verdict: data.verdict, evidence, note } };
   }
   if (kind === 'find_next_date') {
-    if (!['announced', 'not_announced', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
-    if (data.verdict !== 'announced') return { ok: true, answer: { race: body.race.id, verdict: data.verdict, note } };
+    if (!['announced', 'planned', 'not_announced', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
+    if (!['announced', 'planned'].includes(data.verdict)) return { ok: true, answer: { race: body.race.id, verdict: data.verdict, note } };
     if (!day(data.start_date) || data.start_date.slice(0, 4) !== String(body.wanted_year)) return { ok: false, why: 'the date is not a day in the wanted year' };
     const end = data.end_date == null ? null : data.end_date;
     if (end !== null && (!day(end) || end < data.start_date || Date.parse(end) - Date.parse(data.start_date) > 16 * 86_400_000)) return { ok: false, why: 'the end date does not fit the start' };
     if (typeof data.url !== 'string' || !LINK.test(data.url) || data.url.length > 2000) return { ok: false, why: 'announced, but the address is not a link' };
     if (!quote(data.quote)) return { ok: false, why: 'announced, but without a quote' };
-    return { ok: true, answer: { race: body.race.id, verdict: 'announced', start_date: data.start_date, end_date: end, url: data.url, quote: data.quote.trim().slice(0, 300), note } };
+    return { ok: true, answer: { race: body.race.id, verdict: data.verdict, start_date: data.start_date, end_date: end, url: data.url, quote: data.quote.trim().slice(0, 300), note } };
   }
   if (kind === 'find_races') {
     if (!['found', 'none', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };

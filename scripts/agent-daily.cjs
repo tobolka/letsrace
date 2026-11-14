@@ -72,6 +72,19 @@ if ((run.ran && run.asked) || lastAnswer > newest(path.join(answers, 'verified.j
     fs.writeFileSync(`${file}.tmp`, JSON.stringify(reviewed, null, 1)); fs.renameSync(`${file}.tmp`, file); dates++;
   }
   run.announcedDates = dates;
+  // A planned date, quoted on a page read again, is kept as provisional beside the check's own: never as an announcement.
+  let planned = 0;
+  for (const row of rows.filter(item => item.kind === 'find_next_date' && item.verdict === 'planned' && item.verified === true)) {
+    const answer = answerOf(row), body = (() => { try { return JSON.parse(fs.readFileSync(path.join(cases, `${row.case}.json`), 'utf8')); } catch { return null; } })();
+    if (!answer || !body?.wanted_year) continue;
+    const file = path.join(data, `organiser-check-${body.wanted_year}`, 'provisional-dates.json'); if (!fs.existsSync(path.dirname(file))) continue;
+    const kept = (() => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return {}; } })();
+    const day = new Date().toISOString().slice(0, 10);
+    const fresh = everyRecord(answer).filter(id => !kept[id]); if (!fresh.length) continue;
+    for (const id of fresh) kept[id] = { name: body.race?.name ?? null, url: answer.url, startDate: answer.start_date, endDate: answer.end_date ?? null, quote: answer.quote, firstSeen: day, lastSeen: day, by: 'agent' };
+    fs.writeFileSync(`${file}.tmp`, JSON.stringify(kept, null, 1)); fs.renameSync(`${file}.tmp`, file); planned++;
+  }
+  run.plannedDates = planned;
 }
 const left = (() => { try { return JSON.parse(fs.readFileSync(path.join(cases, 'index.json'), 'utf8')).filter(item => !fs.existsSync(path.join(answers, `${item.case}.json`))).length; } catch { return null; } })();
 console.log('agent_daily ' + JSON.stringify({ ...run, casesLeft: left }));

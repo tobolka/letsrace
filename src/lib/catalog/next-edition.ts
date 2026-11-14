@@ -25,7 +25,7 @@ export type EditionDecision = { state: "publish"; event: ParsedEvent } | { state
 
 const SHARED_SITES = /(?:^|\.)(?:bikeboard\.at|sumator\.cz|winspace\.cz|nazavody\.cz|sportchallenge\.cz|sportsoft\.cz|raceresult\.com|kalendarzrowerowy\.pl|facebook\.com|instagram\.com|cyklokros\.cz|bikeri\.cz|cykloman\.cz)$/i;
 const NOT_THE_RACE_DATE = /registrac|registration|anmeld|iscrizion|inscription|prihlas|uzaverk|startovn|deadline|entry fee|payment|platba|sleva/;
-const TENTATIVE = /predbez|tbc|planovan|pripravuj|upresn|provisional|tentative|voraussichtlich/;
+import { TENTATIVE_DATE as TENTATIVE } from "@/lib/catalog/next-edition-literal";
 const MULTISPORT = /triatlon|triathlon|duatlon|duathlon|\bbeh\s*[·,/–-]|[·,/–-]\s*beh\b|\bvoda\s*[·,/–-]|[·,/–-]\s*voda\b/;
 
 const hostOf = (url: string | null | undefined) => {

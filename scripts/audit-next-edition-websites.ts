@@ -134,12 +134,15 @@ function dateSignals(text: string): string[] {
   const patterns = [
     `${y}[-/.]\\d{1,2}[-/.]\\d{1,2}`,
     `${firstDay}\\d{1,2}[-./]\\s*\\d{1,2}[-./]\\s*${y}`,
-    `${firstDay}${day}\\.?\\s+${month}\\.?\\s*,?\\s*${y}`,
+    // "12. června 2027" and "12.června 2027"
+    `${firstDay}${day}(?:\\.\\s*|\\s+)${month}\\.?\\s*,?\\s*${y}`,
     `${month}\\s+${firstDay}${day}\\s*,?\\s*${y}`,
   ];
   const dates = new RegExp(`(?<![\\p{L}\\p{N}])(?:${patterns.join("|")})(?![\\p{L}\\p{N}])`, "giu");
   return [...new Set([...text.matchAll(dates)].map(m => m[0]))];
 }
+/** A link to the race's regulations: propozice, Ausschreibung, regulamin, regolamento, rozpis, race guide. */
+const REGULATIONS_LINK = /propozic|ausschreibung|regulamin|regolamento|rozpis|reglement|race[- ]?guide|race[- ]?manual/i;
 const requestFailed = (page: Page) => Boolean(page.error || page.requestAttempted === false || !page.status || page.status < 200 || page.status >= 300);
 const unreadable = (page: Page) => requestFailed(page) || Boolean(page.needsBrowser);
 const hasDate = (page: Page) => !requestFailed(page) && Boolean(page.dateSignals?.length || page.structuredEvents?.length);
@@ -161,10 +164,13 @@ async function inspect(job: Job, viaBrowser = false): Promise<Page> {
       const href = $(el).attr("href")!; let url: URL;
       try { url = new URL(href, response.finalUrl ?? job.url); } catch { return; }
       if (hostnameOf(url.href) !== hostnameOf(response.finalUrl ?? job.url) || !/^https?:$/.test(url.protocol)) return;
-      const label = $(el).text().replace(/\s+/g, " ").trim(); const blob = `${url.pathname} ${label}`;
-      if (!new RegExp(`\\b${target}\\b`).test(blob) || /\.(?:jpg|png|webp|zip|ics|mp4)$/i.test(url.pathname)) return;
-      if (/result|ergebnis|výsled|vysled|foto|photo|galer|archiv/i.test(blob)) return;
-      url.hash = ""; follow.push({ url: url.href, score: label.includes(String(target)) ? 2 : 1 });
+      const label = $(el).text().replace(/\s+/g, " ").trim(); const blob = `${decodeURIComponent(url.pathname)} ${label}`;
+      if (/\.(?:jpg|png|webp|zip|ics|mp4)$/i.test(url.pathname) || /result|ergebnis|výsled|vysled|foto|photo|galer|archiv/i.test(blob)) return;
+      // The regulations state the race day; the homepage may lead with something else, such as when registration opens.
+      // Followed without the year in the link, unless the link names another year.
+      const regulations = REGULATIONS_LINK.test(blob) && ![...blob.matchAll(/\b20\d{2}\b/g)].some(match => Number(match[0]) !== target);
+      if (!regulations && !new RegExp(`\\b${target}\\b`).test(blob)) return;
+      url.hash = ""; follow.push({ url: url.href, score: regulations ? 3 : label.includes(String(target)) ? 2 : 1 });
     });
     const structuredEvents = extractJsonLdEvents(response.finalUrl ?? job.url, response.html).filter(e => e.startDate.startsWith(`${target}-`));
     $("script,style,noscript,svg,footer,nav,aside").remove();

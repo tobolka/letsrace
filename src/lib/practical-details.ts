@@ -1,3 +1,4 @@
+import { quoteIsNotTheStart } from "@/lib/catalog/place-roles";
 import { z } from "zod";
 
 const text = z.string().trim().min(1).max(200);
@@ -45,6 +46,9 @@ export function practicalDetailsForEvent(value: unknown, startDate: string, endD
   for (const field of Object.keys(details) as PracticalField[]) {
     if (details[field]?.editionYear !== year) delete details[field];
   }
+  // A venue quoted from a depot, a stage end, the finish or the club's seat is not where the race is held
+  // ("Konec E1: Depo Olomouc" for a race that starts in Dolní Morava). Such facts read before this check stay stored but unshown.
+  if (details.venue && quoteIsNotTheStart(details.venue.quote)) delete details.venue;
   if (details.schedule) {
     const items = details.schedule.value.filter(item => item.date >= startDate && item.date <= (endDate ?? startDate));
     if (items.length) details.schedule = { ...details.schedule, value: items };
