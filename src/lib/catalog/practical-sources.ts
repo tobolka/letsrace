@@ -90,8 +90,14 @@ export function posterImages(html: string, pageUrl: string): string[] {
   return [...new Set(found)].slice(0, 3);
 }
 
-/** A page that asks to verify the visitor is not ours to pass, in any browser. */
-export const asksToVerifyVisitor = (text: string) => /just a moment|checking your browser|verifying (?:your browser|you)|security checkpoint|attention required|ověřujeme váš|captcha/i.test(text);
+const VISITOR_CHECK = /just a moment|checking your browser|verifying (?:your browser|you)|security checkpoint|attention required|ověřujeme váš|verify (?:that )?you are (?:a )?human|are you a robot/i;
+/** A page that asks to verify the visitor is not ours to pass, in any browser.
+ * A reCAPTCHA line in a contact form or cookie list does not make an ordinary page one:
+ * the word alone counts only on a short page that has little else to say. */
+export const asksToVerifyVisitor = (text: string) => {
+  const flat = text.replace(/\s+/g, " ");
+  return VISITOR_CHECK.test(flat) || (/captcha/i.test(flat) && flat.length < 800);
+};
 /** Built with JavaScript alone: nothing to read until a browser runs it, and no one asked us to prove anything. */
 export const onlyInBrowser = (html: string, text: string) => text.replace(/\s+/g, " ").length < 400 && !asksToVerifyVisitor(`${text} ${html.slice(0, 4000)}`) && /<script/i.test(html) && /doesn't work properly without javascript|enable javascript|id="(?:app|root|__next)"|wixsite|wix\.com|data-reactroot/i.test(html);
 

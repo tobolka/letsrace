@@ -15,6 +15,7 @@ import { editionKey } from "../src/lib/catalog/previous-edition";
 import { defaultEditionSeason } from "../src/lib/catalog/edition-season";
 import { isDumpListingUrl } from "../src/lib/watcher/public-url";
 import { isRegistrationPlatformUrl } from "../src/lib/watcher/registration-url";
+import { asksToVerifyVisitor } from "../src/lib/catalog/practical-sources";
 
 type Race = { id: string; slug: string; name: string; start_date: string; website_url: string | null; location: { municipality: string | null; country_code: string | null } | null };
 type RaceSnapshot = { year: number; target: number; old: Race[]; existing: Race[] };
@@ -69,7 +70,8 @@ const hostStarts = new Map<string, number>();
 const ledger = join(archive, "pages.jsonl");
 if (replay && !existsSync(ledger)) throw new Error("Replay archive is missing pages.jsonl");
 const browserOff = args.includes("--no-browser");
-const asksForVerification = (text: string) => /just a moment|checking your browser|verifying (?:your browser|you)|security checkpoint|attention required|ověřujeme váš|captcha/i.test(text);
+const asksForVerification = asksToVerifyVisitor;
+const wantsScript = (flat: string) => flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)/i.test(flat);
 const BROWSER_READS_PER_PASS = 40;
 let browserReads = 0;
 const failures = new Map<string, number>();
@@ -82,6 +84,12 @@ if (existsSync(ledger)) for (const line of readFileSync(ledger, "utf8").trim().s
   if (page.error !== READING) failures.set(page.url, isFailure(page) ? (failures.get(page.url) ?? 0) + 1 : 0);
 }
 for (const page of pages.values()) if (page.error === READING) failures.set(page.url, (failures.get(page.url) ?? 0) + 1);
+// A page once taken for a robot check is judged again from its saved text, so an improved check applies without a new request.
+for (const page of pages.values()) if (page.asksVerification && !page.rendered && page.textFile && existsSync(join(archive, page.textFile))) {
+  const flat = readFileSync(join(archive, page.textFile), "utf8").split("\n").slice(1).join(" ").replace(/\s+/g, " ");
+  page.asksVerification = asksForVerification(flat);
+  page.needsBrowser = page.asksVerification || wantsScript(flat);
+}
 const HOUR = 3600_000, DAY = 24 * HOUR;
 /** How long a page read without trouble rests before it is read again. */
 const REREAD_DAYS = 5;
@@ -89,7 +97,10 @@ const REREAD_DAYS = 5;
 function rereadAt(page: Page): number {
   const at = Date.parse(page.at);
   if (page.requestAttempted === false) return at + 7 * DAY; // The site itself asked us to stop.
-  if (page.needsBrowser && !page.error) return page.rendered ? at + 14 * DAY : at; // Seen through a browser, or not yet.
+  // A robot check is never passed, so asking again soon only repeats the refusal.
+  if (page.asksVerification && !page.error) return at + 7 * DAY;
+  // Seen through a browser, or not yet: the browser has a per-pass allowance, so a page left over waits a little, not a whole cycle each time.
+  if (page.needsBrowser && !page.error) return page.rendered ? at + 14 * DAY : at + 6 * HOUR;
   if (isFailure(page)) return at + Math.min(14 * DAY, 6 * HOUR * 2 ** Math.max(0, (failures.get(page.url) ?? 1) - 1));
   // An organiser's page that said nothing about next year is the one most likely to say it soon.
   return at + REREAD_DAYS * DAY;
@@ -180,7 +191,7 @@ async function inspect(job: Job, viaBrowser = false): Promise<Page> {
     return { ...base, status: response.status, finalUrl: response.finalUrl, title, textLength: flat.length, textFile,
       snippets: yearSnippets(flat), dateSignals: dateSignals(flat), structuredEvents, asksVerification: asksForVerification(flat),
       // Seen through a browser, a short page simply is short. It has been read; only a page asking to verify the visitor has not.
-      rendered: viaBrowser, needsBrowser: asksForVerification(flat) || (viaBrowser ? flat.length < 40 : flat.length < 300 || /enable javascript|javascript (?:is required|aktivieren)/i.test(flat)),
+      rendered: viaBrowser, needsBrowser: asksForVerification(flat) || (viaBrowser ? flat.length < 40 : wantsScript(flat)),
       follow: [...new Set(follow.sort((a, b) => b.score - a.score).map(x => x.url))].slice(0, 3) };
   } catch (error) { return { ...base, error: error instanceof Error ? error.message : String(error) }; }
 }
