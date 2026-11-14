@@ -68,6 +68,17 @@ function sourcePath(id: string): { problem: string } | { use: string; carry?: So
   return sameUrl.status === "active" || evidenceOnly(sameUrl) ? { use: sameUrl.id } : { problem: "source_paused_on_server" };
 }
 const sourced = new Set(changes.filter(change => change.tab === "public.event_sources" && change.op === "insert").map(change => change.owner ?? change.after?.event_id));
+/**
+ * A new race here whose own source row (the same watched address and the same id there) already
+ * belongs to a race on the server is that race, made on the server first (by hand, or by an earlier
+ * send this copy has not caught up with). It is not a possible double for the agent to judge.
+ */
+const sourceKey = (watched: unknown, external: unknown) => `${String(watched)}|${String(external)}`;
+const onServerBySource = new Set<string>(target ? (JSON.parse(execFileSync(PSQL, ["-h","127.0.0.1","-p","54329","-U","postgres","-d",target,"-qAt","-c",
+  "select coalesce(json_agg(watched_url_id::text||'|'||external_id),'[]') from public.event_sources x join public.events e on e.id=x.event_id where x.watched_url_id is not null and x.external_id is not null and e.start_date>=current_date-2"],
+  { encoding: "utf8", maxBuffer: 2 ** 30, env: { ...process.env, NODE_OPTIONS: "" } })) as string[]) : []);
+const madeOnServer = new Set(changes.filter(change => change.tab === "public.event_sources" && change.op === "insert" && onServerBySource.has(sourceKey(change.after?.watched_url_id, change.after?.external_id)))
+  .map(change => change.owner ?? change.after?.event_id));
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Prague" });
 // Pairs judged to be two different races, each with quoted pages that were found there again.
 const separateFile = process.argv.find(value => value.startsWith("--separate="))?.slice(11);
@@ -127,6 +138,8 @@ for (const change of changes) {
   const problems = race.visibility === "public" ? newRaceProblems(race, place, known, today, separate) : [];
   // A race must come with the source row that states it, whatever else looks right.
   if (race.visibility === "public" && !sourced.has(race.id)) problems.push("no_source_read_in_this_pass");
+  // Already on the server under this very source row: held as that, never as a possible double.
+  if (race.visibility === "public" && madeOnServer.has(race.id)) { const at = problems.indexOf("may_already_be_listed"); if (at >= 0) problems.splice(at, 1); problems.push("already_on_server"); }
   if (race.visibility === "public" && onTarget) {
     const links = changes.filter(c=>c.tab==="public.event_sources" && (c.owner ?? c.after?.event_id)===race.id);
     for (const link of links) {
