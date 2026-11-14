@@ -43,6 +43,13 @@ function recreate(name, template) {
 
   recreate(TARGET, 'letsrace_baseline');
   execFileSync('/opt/homebrew/opt/postgresql@17/bin/psql', ['-h', '127.0.0.1', '-p', '54329', '-U', 'postgres', '-d', TARGET, '-q', '-v', 'ON_ERROR_STOP=1', '-f', 'supabase/migrations/20261105150000_pipeline_sync_batches.sql'], { env: { ...process.env, LC_ALL: 'en_US.UTF-8' } });
+  // The server knows every source the Mac reads before a race from it is sent (a race whose source it
+  // lacks is held by local-review-new.ts, which this rehearsal skips). The stand-in must know them too,
+  // or the copies drifting apart since the baseline leaves those races waiting.
+  const sourcesFile = join(directory, 'sources.json');
+  require('node:fs').writeFileSync(sourcesFile, psql('letsrace', 'select coalesce(json_agg(w), \'[]\') from public.watched_urls w'));
+  const sourceColumns = one(TARGET, "select string_agg(quote_ident(column_name), ',' order by ordinal_position) from information_schema.columns where table_schema = 'public' and table_name = 'watched_urls' and is_generated = 'NEVER'");
+  psql(TARGET, `insert into public.watched_urls (${sourceColumns}) select ${sourceColumns} from json_populate_recordset(null::public.watched_urls, pg_read_file('${sourcesFile}')::json) on conflict (id) do nothing`);
 
   // Pick real rows the pass changed, then have "someone else" touch them first.
   const changes = require('node:fs').readFileSync(planned.file, 'utf8').split('\n').map(JSON.parse);
@@ -80,6 +87,8 @@ function recreate(name, template) {
   console.log('Tables', JSON.stringify(real.byTable));
   const failures = real.problems.filter(problem => problem.state === 'failed');
   if (failures.length) console.log('Failed sample', JSON.stringify(failures.slice(0, 4)));
+  const waiting = real.problems.filter(problem => problem.state === 'pending');
+  if (waiting.length) console.log('Waiting sample', JSON.stringify(waiting.slice(0, 4)));
   check('nothing is left waiting', real.totals.pending === 0, real.totals);
 
   const find = (row, state) => real.problems.find(problem => problem.pk.id === row.pk.id && problem.state === state);
@@ -97,6 +106,7 @@ function recreate(name, template) {
 
   const afterFirst = sorted(TARGET);
   const again = apply({ file: planned.file, target: TARGET, journalOut: join(directory, 'second.ndjson') });
+  if (again.totals.applied) console.log('Applied again', require('node:fs').readFileSync(join(directory, 'second.ndjson'), 'utf8').split('\n').filter(Boolean).slice(0, 8).map(line => { const c = JSON.parse(line); return `${c.tab} ${c.op} ${JSON.stringify(c.pk)} owner=${c.owner} cols=${Object.keys(c.after ?? {}).join(',')}`; }).join('\n'));
   check('sending the same results again changes nothing', again.totals.applied === 0 && again.totals.failed === real.totals.failed && again.totals.conflict === real.totals.conflict && JSON.stringify(sorted(TARGET)) === JSON.stringify(afterFirst), again.totals);
 
   const undo = apply({ file: journal, target: TARGET, exact: true });

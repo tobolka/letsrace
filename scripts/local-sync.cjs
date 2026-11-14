@@ -130,6 +130,8 @@ function apply({ file, target, dryRun = false, batch = 500, exact = false, journ
   const started = Date.now();
   const sha = planSha ?? createHash('sha256').update(lines.join('\n')).digest('hex');
   let transactions = 0, remaining = lines, batchNumber = 0;
+  // Why a row still waits after its last round: the database's own words, for the report.
+  const waitingWhy = new Map();
   try {
     // A child held back by a later batch gets another round; a real problem stays reported.
     for (let round = 0; round < 3 && remaining.length; round++) {
@@ -187,7 +189,7 @@ ${dryRun ? 'rollback' : 'commit'};
         transactions++;
         if (crashAfterBatch === batchNumber) throw Error('rehearsed crash after commit');
         for (const row of readFileSync(output, 'utf8').split('\n').filter(Boolean).map(JSON.parse)) {
-          if (row.state === 'pending') { held.push(JSON.stringify(row.raw)); continue; }
+          if (row.state === 'pending') { held.push(JSON.stringify(row.raw)); waitingWhy.set(JSON.stringify(row.raw), { tab: row.tab, pk: row.pk, op: row.op, state: 'pending', reason: row.reason }); continue; }
           totals[row.state]++;
           const entry = byTable[row.tab] ??= { applied: 0, unchanged: 0, conflict: 0, failed: 0 };
           entry[row.state]++;
@@ -199,6 +201,17 @@ ${dryRun ? 'rollback' : 'commit'};
       remaining = held;
     }
     totals.pending = remaining.length;
+    // A key still taken after every round is a real duplicate: its row failed, the rest of its race was held.
+    const duplicateGroups = new Set(remaining.filter(line => waitingWhy.get(line)?.reason?.startsWith('unique:')).map(line => { const change = JSON.parse(line); return change.owner ?? `${change.tab}${JSON.stringify(change.pk)}`; }));
+    for (const line of remaining) {
+      const why = waitingWhy.get(line), change = JSON.parse(line), group = change.owner ?? `${change.tab}${JSON.stringify(change.pk)}`;
+      if (!duplicateGroups.has(group)) { if (why) problems.push(why); continue; }
+      const state = why?.reason?.startsWith('unique:') ? 'failed' : 'group_held';
+      totals.pending--; totals[state]++;
+      const entry = byTable[change.tab] ??= { applied: 0, unchanged: 0, conflict: 0, failed: 0 };
+      if (state === 'failed') { entry.failed++; problems.push({ ...why, state, reason: why.reason.slice(7) }); }
+      else entry.group_held = (entry.group_held ?? 0) + 1;
+    }
   } finally { rmSync(work, { recursive: true, force: true }); }
   // A convenience copy: the target's pipeline_sync_batches is the record that counts.
   if (journalOut) writeFileSync(journalOut, journal.slice().reverse().join('\n'));
