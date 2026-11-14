@@ -1,3 +1,4 @@
+import { startPlace, withoutOtherPlaces } from "@/lib/catalog/place-roles";
 import * as cheerio from "cheerio";
 import type { ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
@@ -43,7 +44,11 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
     $("title").text().trim();
   $("script,style,noscript,nav,header,footer,aside,time[datetime],[class*=sidebar],[class*=calendar-widget]").remove();
   const content = $("main,article,[role=main]").first();
-  const text = (content.length ? content : $("body")).text().replace(/\s+/g, " ");
+  const root = content.length ? content : $("body");
+  const text = root.text().replace(/\s+/g, " ");
+  // Lines kept apart, so a place is read with its own label: "Start …", "Depo …", "Cíl …".
+  root.find("br,p,div,section,article,h1,h2,h3,h4,h5,h6,tr,li,dt,dd").append("\n");
+  const lines = root.text().replace(/[ \t\r]+/g, " ").replace(/ *\n */g, "\n");
 
   const validDay = (day: string): boolean => {
     const parsed = new Date(`${day}T12:00:00Z`);
@@ -89,7 +94,7 @@ export function extractGeneric(url: string, html: string): ParsedEvent[] {
       externalId: `generic-${normalizeName(title)}-${startDate}`,
       name,
       startDate,
-      placeText: guessPlace(text) || "Unknown",
+      placeText: guessPlace(lines) || "Unknown",
       countryHint: guessCountry(url, text),
       discipline: disciplines?.length ? disciplines : undefined,
       audience,
@@ -159,7 +164,10 @@ function isStaleDate(startDate: string, now = new Date()): boolean {
 }
 
 function guessPlace(text: string): string | null {
-  const m = text.match(
+  // A point-to-point race names its depots and finish too, and the club its seat: the start is where it is held.
+  const start = startPlace(text);
+  if (start) return start;
+  const m = withoutOtherPlaces(text).match(
     /\b(Hradec Králové|Praha|Brno|Ostrava|Plzeň|Liberec|Olomouc|Pardubice|Klatovy|Sušice|Karlovy Vary|Bratislava|Wien|Dresden|Kraków)\b/,
   );
   return m?.[1] ?? null;

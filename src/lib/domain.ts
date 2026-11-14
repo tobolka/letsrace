@@ -70,13 +70,18 @@ export type ParsedEvent = {
   lat?: number;
   lng?: number;
   confidence: number;
+  /**
+   * Something the source states that contradicts itself and that a person should look at, such as a
+   * date whose weekday the page gives as another day. The race is still read as stated.
+   */
+  sourceWarnings?: string[];
   /** Only when a source explicitly states cancellation for this race. */
   status?: "cancelled";
   childUrls?: string[];
   /** A field supplied by another explicitly read official document. */
   fieldEvidence?: { field: "placeText"; value: string; sourceUrl: string; quote: string; documentHash: string }[];
   /** Verified extraction evidence, retained in the source snapshot. */
-  evidence?: { quote: string; sourceUrl: string; method: string; version: string; model?: string };
+  evidence?: { quote: string; sourceUrl: string; method: string; version: string; model?: string; /** Other pages that list the same race (another filter of one calendar). */ alsoListedAt?: string[] };
 };
 
 /** Words that vary between sources for the same race and carry no identity. */

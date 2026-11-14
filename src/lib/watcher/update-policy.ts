@@ -131,3 +131,11 @@ export function isSamePlace(current: PlaceFacts | null | undefined, incoming: { 
   }
   return true;
 }
+
+/**
+ * A place someone corrected by hand ("Touškovská rokle" for a card's "Město Touškov, les za rybníkem")
+ * is not moved by a reader that states it less exactly. Only another hand correction moves it.
+ */
+export function placeCorrectedByHand(facts: { field: string; method: string | null }[] | null | undefined): boolean {
+  return (facts ?? []).some(fact => ["location_id", "venue_coordinates", "practical.venue"].includes(fact.field) && /^manual/i.test(fact.method ?? ""));
+}

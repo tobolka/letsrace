@@ -6,7 +6,7 @@ import { fold } from "@/lib/text-match";
 const race: EditionRace = { id: "a4639a53-0e95-4bed-a234-efe70a9ad186", name: "HSF System Bike Čeladná 2026", start_date: "2026-08-22", website_url: "https://bikeceladna.cz/", disciplines: ["xco"], municipality: "Čeladná", country: "CZ", event_type: "race" };
 const read = (text: string, over: Partial<EditionRace & { end_date: string | null }> = {}, url = "https://bikeceladna.cz/", title = "HSF System Bike Čeladná", ownPage = false) =>
   literalEditionAnswer({ race: { ...race, ...over }, page: { url, title, text }, year: 2027, ownPage });
-const start = (result: ReturnType<typeof read>) => result.state === "answer" ? result.answer.startDate : result.reason;
+const start = (result: ReturnType<typeof read>) => result.state === "wait" ? result.reason : result.state === "answer" ? result.answer.startDate : `provisional ${String(result.answer.startDate)}`;
 
 describe("dates stated in a line", () => {
   it.each([
@@ -49,7 +49,7 @@ describe("reading an announcement without a model", () => {
     ["deadline after a preposition", "Cena platí do 21.8.2027", "literal_no_race_date_on_page"],
     ["a bare date beside the opening of entries", "Anmeldung 2027\n21.8.2027\n+++ONLINE-ANMELDESTART+++", "literal_no_race_date_on_page"],
     ["afterparty", "Termín pro afterparty 2027 je 21.8.2027", "literal_no_race_date_on_page"],
-    ["a date marked as expected", "Termin 2027: voraussichtlich 21.08.2027", "literal_no_race_date_on_page"],
+    ["a date marked as expected, kept as provisional", "Termin 2027: voraussichtlich 21.08.2027", "provisional 2027-08-21"],
     ["a calendar that does not say which date is this race's", "5.6.2027 Závod A\n21.8.2027 Závod B", "literal_several_dates_on_page"],
     ["a date far from last year's", "Další závod: 3.4.2027", "literal_date_far_from_last_edition"],
     ["someone else's event in a sentence", "21. 8. 2027 – náš spolupořadatel Jan Novák pořádá v rodném městě už 4. ročník jiné soutěže na kolech.", "literal_sentence_about_something_else"],

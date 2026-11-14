@@ -40,7 +40,7 @@ async function main() {
       rows.push({ case: saved.case, kind: saved.kind, verdict: answer.verdict, verified: answer.verdict === "found" ? kept.length > 0 : null, verifiedRaces: kept, checks });
       continue;
     }
-    const single = saved.kind === "find_regulations" ? ["found", "not_a_race"].includes(answer.verdict) : saved.kind === "find_next_date" ? answer.verdict === "announced" : false;
+    const single = saved.kind === "find_regulations" ? ["found", "not_a_race"].includes(answer.verdict) : saved.kind === "find_next_date" ? ["announced", "planned"].includes(answer.verdict) : false;
     const evidence: { url: string; quote: string }[] = single ? [{ url: answer.url, quote: answer.quote }] : answer.evidence ?? [];
     const checks = [];
     for (const item of evidence) { const text = await page(item.url); checks.push({ url: item.url, read: text.length > 0, quoteFound: quoteIsOn(text, item.quote) }); }

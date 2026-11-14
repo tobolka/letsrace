@@ -19,6 +19,17 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-14",
+    items: {
+      cs: [
+        "Závod, který startuje v jednom městě a končí v jiném, má na stránce závodu místo startu, ne depo ani cíl.",
+      ],
+      en: [
+        "A race that starts in one town and finishes in another shows its start on the race page, not a depot or the finish.",
+      ],
+    },
+  },
+  {
     date: "2026-11-13",
     items: {
       cs: [

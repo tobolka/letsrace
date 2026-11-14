@@ -1372,43 +1372,6 @@ export function parseKonarovickyKoren(url: string, html: string): ParsedEvent[] 
   ];
 }
 
-const PPK_REGISTRATION =
-  "https://hynekmusil.cz/resreg/?designindex=data/registry.php&seiresepyt=ppk&dohzormhenyh=&swordssapll=&rebmunyavd=0&langtext=";
-
-function parsePpkRacesJs(sourceUrl: string, js: string): ParsedEvent[] {
-  const events: ParsedEvent[] = [];
-  const seen = new Set<string>();
-  const re =
-    /\{\s*day:\s*'[^']*'\s*,\s*month:\s*'[^']*'\s*,\s*date:\s*'(20\d{2}-\d{2}-\d{2})'\s*,\s*name:\s*'([^']+)'\s*\}/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(js))) {
-    const startDate = m[1]!;
-    const place = m[2]!.replace(/\s+/g, " ").trim();
-    if (!place) continue;
-    if (/večírek|vecirek|vyhlášení|vyhlaseni|párty|party/i.test(place)) continue;
-    const externalId = `ppkbike-${startDate}-${normalizeName(place)}`;
-    if (seen.has(externalId)) continue;
-    seen.add(externalId);
-    events.push({
-      externalId,
-      name: `PPKBIKE — ${place}`,
-      startDate,
-      placeText: place,
-      countryHint: "CZ",
-      discipline: ["xco"],
-      audience: "mixed",
-      seriesName: "PPKBIKE",
-      seriesSlug: "ppkbike",
-      seriesWebsite: "https://ppkbike.cz/",
-      sourceUrl,
-      websiteUrl: "https://ppkbike.cz/",
-      registrationUrl: PPK_REGISTRATION,
-      confidence: 0.9,
-    });
-  }
-  return events;
-}
-
 function pekloDate(raw: string): { start: string; end?: string } | null {
   return parseCzIso(raw) ?? (parseCzNamed(raw) ? { start: parseCzNamed(raw)! } : null);
 }
@@ -1658,15 +1621,6 @@ export function parseJesenickySnek(url: string, html: string): ParsedEvent[] {
   return events;
 }
 
-/**
- * Pohár Plzeňského kraje MTB XCO — dates live in `ppk-races.js` (homepage grid is JS-rendered).
- */
-export async function parsePpkBike(url: string, html: string): Promise<ParsedEvent[]> {
-  if (/PPK_RACES\s*=/.test(html)) return parsePpkRacesJs(url, html);
-  const fetched = await fetchText("https://ppkbike.cz/ppk-races.js");
-  if (!fetched.ok || !fetched.text) return [];
-  return parsePpkRacesJs(url, fetched.text);
-}
 
 const BMTB_SITE = "https://bratislavskymtbmaraton.biker.sk";
 const BMTB_MARATHON = `${BMTB_SITE}/preteky/maraton`;

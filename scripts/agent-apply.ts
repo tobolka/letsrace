@@ -18,6 +18,7 @@ import { parse } from "dotenv";
 import { distinctiveWords, documentIsAboutRace } from "../src/lib/catalog/race-completeness";
 import { quoteStatesDate } from "../src/lib/catalog/quoted-date";
 import { readDocument } from "../src/lib/catalog/regulation-ages";
+import { mergeFoundRaces, type FoundRace } from "../src/lib/pipeline2/agent-case-groups";
 
 export const AGENT_READER = "agent", AGENT_VERSION = "agent-1";
 const arg = (key: string) => process.argv.find(value => value.startsWith(`--${key}=`))?.slice(key.length + 3);
@@ -42,8 +43,10 @@ async function main() {
     // The generated types do not know the two new functions yet.
     const call = (name: string, params: object) => (db as unknown as { rpc(name: string, params: object): PromiseLike<{ data: unknown; error: { message: string } | null }> }).rpc(name, params);
     for (const row of todo) {
-      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { race: string; url: string; quote: string };
-      const { data: race, error } = await db.from("events").select("id,name,start_date,website_url,regulations_url,location:locations(municipality)").eq("id", answer.race).maybeSingle();
+      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { race: string; same_race_ids?: string[]; url: string; quote: string };
+      // One search for several records of one race (agent-cases groups them): each record gets the same proposal.
+      for (const raceId of [answer.race, ...(answer.same_race_ids ?? [])]) {
+      const { data: race, error } = await db.from("events").select("id,name,start_date,website_url,regulations_url,location:locations(municipality)").eq("id", raceId).maybeSingle();
       if (error) throw Error(error.message);
       // A race the Mac knows and the server does not is not ours to fill yet.
       if (!race) { note(row.case, "skipped", "race_not_on_server"); continue; }
@@ -69,6 +72,7 @@ async function main() {
       if (decided.error) throw Error(decided.error.message);
       const decision = decided.data as { status: string; reason: string | null };
       note(row.case, decision.status, decision.reason, submitted.data as string);
+      }
     }
   }
   if (pairs.length || calendars.length) {
@@ -108,20 +112,25 @@ async function main() {
       await mergeEventPair(keep.id, drop.id);
       note(row.case, "merged", null, `${keep.id}<-${drop.id}`);
     }
-    for (const row of calendars) {
-      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { source: string; races: { name: string; start_date: string; end_date: string | null; place: string | null; country?: string | null; discipline?: string | null; url: string; quote: string }[] };
+    // The same race found on two views of one calendar is one lead with every page that lists it.
+    const caseKind = (name: string) => { try { return JSON.parse(readFileSync(join(answers, "..", "cases", `${name}.json`), "utf8")).source?.kind as string | undefined; } catch { return undefined; } };
+    const found = calendars.flatMap(row => {
+      const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { races: FoundRace[] };
+      return (row.verifiedRaces ?? []).map(index => answer.races[index]).filter((race): race is FoundRace => Boolean(race)).map(race => ({ ...race, from: row.case, sourceKind: caseKind(row.case) }));
+    });
+    const tally = new Map<string, { saved: number; published: number }>(calendars.map(row => [row.case, { saved: 0, published: 0 }]));
+    for (const race of mergeFoundRaces(found)) {
+      const count = (field: "saved" | "published") => { for (const name of race.from_cases) tally.get(name)![field]++; };
       // Only a national federation's own calendar may speak for a race without a person looking.
-      const sourceKind = (() => { try { return JSON.parse(readFileSync(join(answers, "..", "cases", `${row.case}.json`), "utf8")).source?.kind as string | undefined; } catch { return undefined; } })();
-      let saved = 0, published = 0;
-      for (const index of row.verifiedRaces ?? []) {
-        const race = answer.races[index]; if (!race) continue;
-        if (!apply) { saved++; continue; }
+      const sourceKind = found.some(item => race.from_cases.includes(item.from!) && item.sourceKind === "federation") ? "federation" : undefined;
+      {
+        if (!apply) { count("saved"); continue; }
         const text = (await readDocument(race.url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "";
         // A candidate is a lead for the existing review, not a race: nothing is published from here.
         const event = { externalId: `agent:${createHash("md5").update(`${race.name}|${race.start_date}`).digest("hex").slice(0, 12)}`, name: race.name, startDate: race.start_date, ...(race.end_date ? { endDate: race.end_date } : {}), placeText: race.place ?? "",
-          ...(race.country ? { countryHint: race.country } : {}), ...(race.discipline ? { discipline: [race.discipline] } : {}), sourceUrl: race.url, evidence: { quote: race.quote, sourceUrl: race.url, method: AGENT_READER, version: AGENT_VERSION } };
+          ...(race.country ? { countryHint: race.country } : {}), ...(race.discipline ? { discipline: [race.discipline] } : {}), sourceUrl: race.url, evidence: { quote: race.quote, sourceUrl: race.url, method: AGENT_READER, version: AGENT_VERSION, ...(race.urls.length > 1 ? { alsoListedAt: race.urls.filter(url => url !== race.url) } : {}) } };
         const candidate = await saveCandidate(db, event as never, { sourceUrl: race.url, documentHash: createHash("sha256").update(text).digest("hex"), reason: "agent_found_in_calendar", ...(race.country ? { country: race.country } : {}) });
-        saved++;
+        count("saved");
         // Published only through the existing reviewed-candidate path, which fetches the source again, checks the
         // quote, the date with its year, the place, and refuses a race the catalogue already holds. Everything
         // short of that stays a lead for a later look.
@@ -135,10 +144,10 @@ async function main() {
         const manifest = join(answers, `decision-${stored.id}.json`);
         writeFileSync(manifest, JSON.stringify([{ id: stored.id, evidenceHash: stored.evidence_hash, action: "publish", reason: "Agent found it on the national federation's calendar; the quote, date, year and place were found on the page again", expectedEventId: null, authority: "national_federation", checked: { identity: true, date: true, place: true, discipline: true, authority: true } }]));
         const ran = spawnSync(process.execPath, [resolve(__dirname, "..", "node_modules/tsx/dist/cli.mjs"), resolve(__dirname, "review-discovery-candidates.ts"), `--decisions=${manifest}`, "--apply"], { cwd: resolve(__dirname, ".."), encoding: "utf8", timeout: 240_000 });
-        if (ran.status === 0) published++; else console.warn(`Kandidát ${race.name} nezveřejněn: ${(ran.stderr || ran.stdout).split("\n").filter(Boolean).at(-1)?.slice(0, 200)}`);
+        if (ran.status === 0) count("published"); else console.warn(`Kandidát ${race.name} nezveřejněn: ${(ran.stderr || ran.stdout).split("\n").filter(Boolean).at(-1)?.slice(0, 200)}`);
       }
-      note(row.case, apply ? "candidates_saved" : "would_save_candidates", `${saved} saved, ${published} published`);
     }
+    for (const row of calendars) { const { saved, published } = tally.get(row.case)!; note(row.case, apply ? "candidates_saved" : "would_save_candidates", `${saved} saved, ${published} published`); }
   }
   if (apply) writeFileSync(doneFile, JSON.stringify(done, null, 1));
   console.log("agent_apply " + JSON.stringify({ apply, considered: todo.length + pairs.length + calendars.length, ...totals }));

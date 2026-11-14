@@ -88,6 +88,7 @@ export async function extractEvents(url: string, html: string, opts?: { ai?: boo
       confidence: adapted.events.length
         ? Math.min(...adapted.events.map((e) => e.confidence))
         : 0,
+      ...(adapted.events.some(e => e.sourceWarnings?.length) ? { issues: adapted.events.flatMap(e => (e.sourceWarnings ?? []).map(warning => `${warning} (${e.externalId})`)) } : {}),
     };
   }
 

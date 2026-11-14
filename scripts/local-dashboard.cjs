@@ -18,7 +18,7 @@ const reportFile = arg('report') ?? join(DATA, 'local-pass-run', 'report.json');
 const readJson = file => { try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; } };
 const escape = value => String(value ?? '–').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const reasonNames = {
-  name_says_too_little: 'Název nic neříká', not_a_cycling_race: 'Není to cyklistický závod', listed_as_a_ride: 'Je vedený jako vyjížďka',
+  name_says_too_little: 'Název nic neříká', not_a_cycling_race: 'Není to cyklistický závod', listed_as_a_ride: 'Je vedený jako vyjížďka', already_on_server: 'Už je na serveru',
   no_future_date: 'Bez budoucího termínu', no_usable_place: 'Bez použitelného místa', place_not_on_the_map: 'Místo nejde na mapu',
   may_already_be_listed: 'Možná už v katalogu je', no_source_read_in_this_pass: 'Bez přečteného zdroje', date_not_found_on_source: 'Termín na zdroji nenalezen',
   start_date: 'Změna termínu', end_date: 'Změna konce', name: 'Změna názvu', status: 'Změna stavu', merged_into_id: 'Sloučení',

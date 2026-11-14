@@ -136,8 +136,22 @@ function apply({ file, target, dryRun = false, batch = 500, exact = false, journ
       const held = [];
       // A race and its rows stay in one batch, so a package cannot be split across transactions.
       const groups = new Map();
-      for (const line of remaining) {
-        const change = JSON.parse(line), key = change.owner ?? `${change.tab}:${JSON.stringify(change.pk)}`;
+      // A new place travels with the first new race that stands on it: in another batch it would
+      // be committed, or in a rehearsal rolled back, apart from the race that needs it.
+      // Every race on that place travels in the same batch too.
+      const newPlaces = new Set(), placeOwner = new Map(), raceGroup = new Map();
+      const parsed = remaining.map(line => JSON.parse(line));
+      for (const change of parsed) if (change.tab === 'public.locations' && change.op === 'insert') newPlaces.add(change.pk?.id);
+      for (const change of parsed) {
+        const place = change.after?.location_id, race = change.owner ?? `${change.tab}:${JSON.stringify(change.pk)}`;
+        if (change.tab !== 'public.events' || change.op !== 'insert' || !newPlaces.has(place)) continue;
+        if (!placeOwner.has(place)) placeOwner.set(place, race);
+        raceGroup.set(race, placeOwner.get(place));
+      }
+      for (const [index, line] of remaining.entries()) {
+        const change = parsed[index];
+        const key = change.tab === 'public.locations' && change.op === 'insert' && placeOwner.get(change.pk?.id)
+          || (change.owner && raceGroup.get(change.owner)) || change.owner || `${change.tab}:${JSON.stringify(change.pk)}`;
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(line);
       }

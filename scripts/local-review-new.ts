@@ -14,7 +14,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { radsportEventToParsed } from "../src/lib/watcher/extractors/radsport";
+import { radsportEventToParsed, radsportRideJudgement } from "../src/lib/watcher/extractors/radsport";
 import { load } from "cheerio";
 import { fetchPage } from "../src/lib/watcher/http";
 import { mapPool } from "../src/lib/watcher/pool";
@@ -68,6 +68,17 @@ function sourcePath(id: string): { problem: string } | { use: string; carry?: So
   return sameUrl.status === "active" || evidenceOnly(sameUrl) ? { use: sameUrl.id } : { problem: "source_paused_on_server" };
 }
 const sourced = new Set(changes.filter(change => change.tab === "public.event_sources" && change.op === "insert").map(change => change.owner ?? change.after?.event_id));
+/**
+ * A new race here whose own source row (the same watched address and the same id there) already
+ * belongs to a race on the server is that race, made on the server first (by hand, or by an earlier
+ * send this copy has not caught up with). It is not a possible double for the agent to judge.
+ */
+const sourceKey = (watched: unknown, external: unknown) => `${String(watched)}|${String(external)}`;
+const onServerBySource = new Set<string>(target ? (JSON.parse(execFileSync(PSQL, ["-h","127.0.0.1","-p","54329","-U","postgres","-d",target,"-qAt","-c",
+  "select coalesce(json_agg(watched_url_id::text||'|'||external_id),'[]') from public.event_sources x join public.events e on e.id=x.event_id where x.watched_url_id is not null and x.external_id is not null and e.start_date>=current_date-2"],
+  { encoding: "utf8", maxBuffer: 2 ** 30, env: { ...process.env, NODE_OPTIONS: "" } })) as string[]) : []);
+const madeOnServer = new Set(changes.filter(change => change.tab === "public.event_sources" && change.op === "insert" && onServerBySource.has(sourceKey(change.after?.watched_url_id, change.after?.external_id)))
+  .map(change => change.owner ?? change.after?.event_id));
 const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Prague" });
 // Pairs judged to be two different races, each with quoted pages that were found there again.
 const separateFile = process.argv.find(value => value.startsWith("--separate="))?.slice(11);
@@ -76,7 +87,18 @@ const confirmedRaces = new Set<string>(racesFile && existsSync(racesFile) ? (JSO
 const separate = new Set<string>(separateFile && existsSync(separateFile) ? (JSON.parse(readFileSync(separateFile, "utf8")) as { a: string; b: string }[]).map(pair => pairKey(pair.a, pair.b)) : []);
 
 /** Read the source again and require the date on it, not just a row claiming to come from it. */
-const rideSources = new Set<string>();
+const rideSources = new Set<string>(), settledRideSources = new Set<string>();
+/** Is a radsport listing a ride its own organiser text settles? Read when the race is held as a ride. */
+async function radsportRideSettled(url: string): Promise<boolean> {
+  const id = /^https?:\/\/(?:www\.)?radsport-events\.de\/events\/(\d+)(?:[/?#]|$)/i.exec(url)?.[1];
+  if (!id) return false;
+  try {
+    const response = await fetch(`https://api.radsport-events.de/api/v1/events/${id}`, { signal: AbortSignal.timeout(15000) });
+    if (!response.ok) return false;
+    const event = await response.json();
+    return String(event.id) === id && radsportRideJudgement(event).kind === "ride";
+  } catch { return false; }
+}
 async function dateIsOnSource(url: string, date: string) {
   try {
     const radsport = /^https?:\/\/(?:www\.)?radsport-events\.de\/events\/(\d+)(?:[/?#]|$)/i.exec(url);
@@ -84,7 +106,9 @@ async function dateIsOnSource(url: string, date: string) {
       const response=await fetch(`https://api.radsport-events.de/api/v1/events/${radsport[1]}`,{signal:AbortSignal.timeout(15000)});
       if(!response.ok)return false;
       const event=await response.json();if(String(event.id)!==radsport[1])return false;
-      const parsed=radsportEventToParsed(event);if(parsed?.eventType==='ride')rideSources.add(url);
+      const parsed=radsportEventToParsed(event);
+      // A ride the listing itself settles (BREVET, RTF, "kein Wettrennen") goes out as a ride; an unsure one waits.
+      if(parsed?.eventType==='ride'){if(radsportRideJudgement(event).kind==='ride')settledRideSources.add(url);else rideSources.add(url);}
       return parsed?.startDate===date;
     }
     const page = await fetchPage(url, { fresh: true, timeoutMs: 20_000, retries: 1 });
@@ -114,6 +138,8 @@ for (const change of changes) {
   const problems = race.visibility === "public" ? newRaceProblems(race, place, known, today, separate) : [];
   // A race must come with the source row that states it, whatever else looks right.
   if (race.visibility === "public" && !sourced.has(race.id)) problems.push("no_source_read_in_this_pass");
+  // Already on the server under this very source row: held as that, never as a possible double.
+  if (race.visibility === "public" && madeOnServer.has(race.id)) { const at = problems.indexOf("may_already_be_listed"); if (at >= 0) problems.splice(at, 1); problems.push("already_on_server"); }
   if (race.visibility === "public" && onTarget) {
     const links = changes.filter(c=>c.tab==="public.event_sources" && (c.owner ?? c.after?.event_id)===race.id);
     for (const link of links) {
@@ -128,11 +154,16 @@ const dateSeenOn = new Map<string, boolean>();
 await mapPool(checked.filter(item => item.race.visibility === "public" && !item.problems.length), 8, async ({ race }) => {
   dateSeenOn.set(race.id, await dateIsOnSource(sourceUrls.get(race.id)!, race.start_date));
 });
+// Held as a ride only because its name did not settle it: the radsport listing's own text may.
+await mapPool(checked.filter(item => item.race.visibility === "public" && item.problems.includes("listed_as_a_ride") && /radsport-events\.de\/events\//.test(sourceUrls.get(item.race.id) ?? "")), 8, async ({ race }) => {
+  const url = sourceUrls.get(race.id)!;
+  if (await radsportRideSettled(url)) settledRideSources.add(url);
+});
 for (const { race, place, problems } of checked) {
   const dateSeen = dateSeenOn.get(race.id) ?? null;
   if(rideSources.has(sourceUrls.get(race.id) ?? ""))problems.push("listed_as_a_ride");
   // Judged a race with a ranking, from its own pages: the source's "ride" label no longer holds it.
-  if(confirmedRaces.has(race.id))for(let i=problems.length-1;i>=0;i--)if(problems[i]==="listed_as_a_ride")problems.splice(i,1);
+  if(confirmedRaces.has(race.id) || race.event_type==="ride" && settledRideSources.has(sourceUrls.get(race.id) ?? ""))for(let i=problems.length-1;i>=0;i--)if(problems[i]==="listed_as_a_ride")problems.splice(i,1);
   if (problems.length) {
     reasons.set(race.id, problems);
     heldRaces.push({ name: race.name, date: race.start_date, because: problems });

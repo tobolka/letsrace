@@ -1,6 +1,7 @@
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { isRegistrationPlatformUrl } from "@/lib/watcher/registration-url";
 import { isDistancePlaceholder, positiveCategoryDistance } from "@/lib/category-distance";
+import { judgeRide, looksLikeRide, type RideJudgement } from "@/lib/pipeline2/rides";
 
 export type ApiEvent = {
   id: number;
@@ -63,18 +64,15 @@ const EVENT_TYPE_DISCIPLINE: Record<string, Discipline[]> = {
   BMX: ["bmx"],
 };
 
-/** Event types that are rides or tours rather than competition. */
-const RIDE_EVENT_TYPES = new Set([
-  "BREVET",
-  "GRAVEL_BREVET",
-  "RTF",
-  "CTF",
-  "GRAVEL_TOUR",
-  "GRAVEL_RIDE",
-  "TOUR",
-  "AUSFAHRT",
-  "RADTOURISTIK",
-]);
+/**
+ * Ride or race for one listing: the organiser's description first, then the event type,
+ * then the name (see `judgeRide`). A BREVET or RTF is settled here; a GRAVEL_TOUR whose
+ * text says nothing either way is still listed as a ride but marked unsure, so the cycle
+ * holds it for a look instead of publishing it as settled.
+ */
+export function radsportRideJudgement(ev: Pick<ApiEvent, "title" | "eventType" | "description">): RideJudgement {
+  return judgeRide({ name: ev.title ?? "", eventType: ev.eventType, text: ev.description });
+}
 
 /**
  * Event types that say, in the German calendar's own vocabulary, that anybody
@@ -185,6 +183,7 @@ export function radsportEventToParsed(ev: ApiEvent): ParsedEvent | null {
   const detailUrl = `https://radsport-events.de/events/${ev.id}`;
   const organizer = (ev.organizerUrl || "").trim() || undefined;
   const type = (ev.eventType || "").toUpperCase().replace(/[\s-]+/g, "_");
+  const ride = radsportRideJudgement(ev);
 
   return {
     externalId: `radsport-${ev.id}-${startDate}`,
@@ -208,7 +207,9 @@ export function radsportEventToParsed(ev: ApiEvent): ParsedEvent | null {
     registrationUrl: organizer && isRegistrationPlatformUrl(organizer) ? organizer : undefined,
     // RTF and CTF are organised rides, a fifth of this calendar. The source
     // says so outright, which beats inferring it from a German title.
-    eventType: RIDE_EVENT_TYPES.has(type) ? "ride" : undefined,
+    // An unsure listing that the source or its name calls a ride stays a ride until someone
+    // reads its page; the cycle holds it (scripts/local-review-new.ts) rather than publishing.
+    eventType: ride.kind === "ride" || ride.kind === "unsure" && (/TOUR|RIDE|BREVET|RTF|CTF|RADTOUR|AUSFAHRT/.test(type) || looksLikeRide(ev.title)) ? "ride" : undefined,
     ageCategories: OPEN_EVENT_TYPES.has(type) ? ["amateur"] : undefined,
     lat: ev.latitude ?? undefined,
     lng: ev.longitude ?? undefined,
