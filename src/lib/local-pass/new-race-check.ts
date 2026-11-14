@@ -8,6 +8,7 @@ import { assessDuplicate, datesCompatible, isGarbagePlace, isWeakRaceName, type 
 import { isNonRaceEventName } from "@/lib/event-visibility";
 import { isNonCyclingEventName } from "@/lib/sport-gate";
 import { normalizeName } from "@/lib/domain";
+import { judgeRide } from "@/lib/pipeline2/rides";
 
 export type NewRace = {
   id: string; name: string; start_date: string; end_date?: string | null; visibility?: string | null; event_type?: string | null;
@@ -40,7 +41,9 @@ export function newRaceProblems(race: NewRace, place: Place | null | undefined, 
   const name = race.name?.trim() ?? "";
   if (name.length < 4 || isWeakRaceName(name) || ONLY_GENERIC_WORDS.test(name)) problems.push("name_says_too_little");
   if (isNonRaceEventName(name) || isNonCyclingEventName(name, "")) problems.push("not_a_cycling_race");
-  if (race.event_type === "ride") problems.push("listed_as_a_ride");
+  // A ride settled by what it is (a brevet, an RTF) goes out as a ride, which race views do not
+  // show; one listed as a ride for a vaguer reason waits for its page to be read.
+  if (race.event_type === "ride" && judgeRide({ name }).kind !== "ride") problems.push("listed_as_a_ride");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(race.start_date ?? "") || race.start_date < today) problems.push("no_future_date");
   const town = place?.municipality ?? place?.name;
   if (!place?.country_code || !town || isGarbagePlace(town)) problems.push("no_usable_place");

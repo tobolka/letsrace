@@ -57,7 +57,8 @@ function main() {
   const rideLike = missing.filter(race => race.event_type === "ride" || looksLikeRide(race.name));
   const realRaces = missing.filter(race => !rideLike.includes(race) && !answeredAs(`ride-${race.id.slice(0, 8)}`, "ride")).slice(0, wantRegulations);
   for (const race of realRaces) cases.push({ case: `regulations-${race.id.slice(0, 8)}`, kind: "find_regulations", race: shown(race) });
-  for (const race of rideLike.filter(race => !answered(`ride-${race.id.slice(0, 8)}`)).slice(0, 10)) cases.push({ case: `ride-${race.id.slice(0, 8)}`, kind: "decide_ride", in_catalogue: true, race: shown(race) });
+  // A race already typed a ride is settled; only a race whose name says ride but whose type does not is worth a look.
+  for (const race of rideLike.filter(race => race.event_type !== "ride" && !answered(`ride-${race.id.slice(0, 8)}`)).slice(0, 10)) cases.push({ case: `ride-${race.id.slice(0, 8)}`, kind: "decide_ride", in_catalogue: true, race: shown(race) });
 
   // Duplicates: the held new races, each with the listed race the cycle's own check stumbled on.
   const wantDuplicates = Number(arg("duplicates") ?? 20);
