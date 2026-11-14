@@ -142,6 +142,10 @@ begin
         -- A parent may arrive later in this batch; a child may still be holding a delete back.
         when foreign_key_violation then
           update _cs set reason = sqlerrm where grp = g.grp and state = 'pending';
+        -- A key another change in this send may still free (a merged race giving up its source): try again
+        -- after the others; it fails only if nothing else moved.
+        when unique_violation then
+          update _cs set reason = 'unique:' || left(sqlerrm, 290) where seq = culprit;
         when others then
           update _cs set state = 'failed', reason = left(sqlerrm, 300) where seq = culprit;
           update _cs set state = 'group_held', reason = 'another_change_for_this_race_stopped' where grp = g.grp and seq <> culprit and state = 'pending';
@@ -150,5 +154,7 @@ begin
     end loop;
     exit when not progressed or not exists (select 1 from _cs where state = 'pending');
   end loop;
+  -- A key still taken stays waiting with its race: a later batch of this send may free it, and
+  -- scripts/local-sync.cjs reports it as failed if it is still taken after the last round.
 end
 $engine$;
