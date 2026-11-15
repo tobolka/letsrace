@@ -179,13 +179,17 @@ async function main(){
  const started=Date.now(),runId=new Date().toISOString().replace(/[:.]/g,'-'),directory=path.join(data,'local-cycles',runId);fs.mkdirSync(directory,{recursive:true,mode:0o700});
  const report={version:2,id:runId,startedAt:new Date().toISOString(),state:'running',stage:'Příprava',publishedNewRaces:0,updatedRaces:0,heldRaces:0,readSources:0,readAttempts:0,localDatabaseRequests:0,publicChecks:[],sourceFailures:0,aiCostUsd:0,deferredNewRaces:0,problems:[],targetRead:false,moreWork:false,nextWorkAt:null};
  const save=()=>{atomic(path.join(directory,'result.json'),report);atomic(path.join(data,'local-cycle-latest.json'),report);};
- const stage=text=>{report.stage=text;save();console.log(`=== ${text} (${new Date().toISOString()})`);};
+ // On macOS the process clock stands still while the Mac sleeps and the wall clock does not; the gap is the sleep.
+ let stageWall=Date.now(),stageMono=process.hrtime.bigint();
+ const sleptInStage=()=>Date.now()-stageWall-Number((process.hrtime.bigint()-stageMono)/1_000_000n)>60_000;
+ const stage=text=>{report.stage=text;stageWall=Date.now();stageMono=process.hrtime.bigint();save();console.log(`=== ${text} (${new Date().toISOString()})`);};
  const node=(file,args=[],options)=>run(process.execPath,['scripts/with-node.cjs',file,...args],options);
  const local=(args,options)=>run('/bin/bash',['scripts/local-run.sh',process.execPath,...args],options);
  const stateFile=path.join(data,'local-cycle-state.json');const state=json(stateFile,{});const saveState=()=>atomic(stateFile,state);
  const season=editionSeason(),archive=path.join(data,`organiser-check-${season+1}`);const organiser={read:0,attempted:0,proposed:0,published:0,deferred:false};report.organiser=organiser;
  let remote,failed=null;
- const note=e=>{failed??=e.message;console.error(`!!! ${e.message}`);};
+ // A step cut off because the Mac fell asleep did not fail; it simply runs again on the next cycle.
+ const note=e=>{if(sleptInStage()){(report.sleptDuring??=[]).push(report.stage);console.warn(`Krok „${report.stage}“ přerušil spánek Macu: ${e.message}`);return;}failed??=e.message;console.error(`!!! ${e.message}`);};
  try{
   stage('Zjišťuji, co je potřeba udělat');
   await run('/bin/bash',['scripts/local-db.sh','start']);
@@ -410,7 +414,7 @@ async function main(){
   // The summary the panel and the desktop window read, made from what the cycles saved.
   try{await node(tsx,['scripts/pipeline-status.ts','--summary'],{timeout:60_000});}catch(e){console.warn(`Souhrn se nepodařilo obnovit: ${e.message}`);}
   report.failedSteps=report.failedUpkeep?.length??0;
-  report.state=report.unfinishedSources||report.failedSteps?'attention':'finished';report.stage=report.state==='finished'?'Hotovo':report.failedSteps?`Nedokončené kroky: ${report.failedUpkeep.join(', ')}`:'Část práce nemá dokončený výsledek';
+  report.state=report.unfinishedSources||report.failedSteps?'attention':'finished';report.stage=report.state==='finished'?(report.sleptDuring?.length?'Hotovo, část práce přerušil spánek Macu':'Hotovo'):report.failedSteps?`Nedokončené kroky: ${report.failedUpkeep.join(', ')}`:'Část práce nemá dokončený výsledek';
   if(report.state==='attention')process.exitCode=1;
  }catch(e){report.state='attention';report.error=e.message;if(!failed)console.error(`!!! ${e.message}`);process.exitCode=1;}
  finally{

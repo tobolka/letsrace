@@ -38,7 +38,7 @@ function serverEnvironment() {
 
 function run(tool, args, env) {
   try { return execFileSync(`${BIN}/${tool}`, args, { encoding: 'utf8', env, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 2 ** 28 }); }
-  catch (error) { throw Error(`${tool} failed: ${String(error.stderr ?? error.message).replaceAll(env.PGPASSWORD, '***').slice(0, 400)}`); }
+  catch (error) { throw Error(`${tool} failed: ${String(error.stderr ?? error.message).replaceAll(env.PGPASSWORD, '***').split("\n").filter(line => !/^pg_dump: (?:warning|detail|hint):/.test(line)).join("\n").slice(0, 600)}`); }
 }
 
 function copyTarget() {
