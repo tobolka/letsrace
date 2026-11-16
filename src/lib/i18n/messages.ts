@@ -502,6 +502,8 @@ export const messages = {
     moreTitle: "More",
     moreAccount: "Account",
     moreApp: "Let's Race",
+    installApp: "Add to home screen",
+    installAppHint: "iPhone: tap Share, then “Add to Home Screen”. Android: open the browser menu, then “Install app”.",
     submit: "Submit",
   },
   cs: {
@@ -999,6 +1001,8 @@ export const messages = {
     moreTitle: "Více",
     moreAccount: "Můj účet",
     moreApp: "Let's Race",
+    installApp: "Přidat na plochu",
+    installAppHint: "iPhone: klepni na Sdílet a pak na „Přidat na plochu“. Android: otevři nabídku prohlížeče a zvol „Instalovat aplikaci“.",
     submit: "Odeslat",
   },
   pl: {
@@ -1496,6 +1500,8 @@ export const messages = {
     moreTitle: "Więcej",
     moreAccount: "Moje konto",
     moreApp: "Let's Race",
+    installApp: "Dodaj do ekranu głównego",
+    installAppHint: "iPhone: stuknij Udostępnij, a potem „Do ekranu początkowego”. Android: otwórz menu przeglądarki i wybierz „Zainstaluj aplikację”.",
     submit: "Wyślij",
   },
   sk: {
@@ -1993,6 +1999,8 @@ export const messages = {
     moreTitle: "Viac",
     moreAccount: "Môj účet",
     moreApp: "Let's Race",
+    installApp: "Pridať na plochu",
+    installAppHint: "iPhone: ťukni na Zdieľať a potom na „Pridať na plochu“. Android: otvor ponuku prehliadača a zvoľ „Inštalovať aplikáciu“.",
     submit: "Odoslať",
   },
   de,

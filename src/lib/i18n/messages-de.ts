@@ -498,5 +498,7 @@ export const de = {
   moreTitle: "Mehr",
   moreAccount: "Mein Konto",
   moreApp: "Let's Race",
+  installApp: "Zum Home-Bildschirm hinzufügen",
+  installAppHint: "iPhone: Tippe auf Teilen und dann auf „Zum Home-Bildschirm“. Android: Öffne das Browsermenü und wähle „App installieren“.",
   submit: "Senden",
 } as const;

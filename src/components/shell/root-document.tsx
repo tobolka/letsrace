@@ -52,6 +52,9 @@ export const rootMetadata: Metadata = {
   },
   description: en.description,
   applicationName: SITE_NAME,
+  // Added to an iPhone's home screen, the site opens full screen under its own
+  // name. The opaque status bar keeps the top of the page clear of the clock.
+  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
   keywords: [
     "cycling races",
     "race calendar",

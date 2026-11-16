@@ -4,10 +4,11 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronRight, CirclePlus, Info, LogIn, LogOut, MessageSquare, X } from "lucide-react";
+import { ChevronDown, ChevronRight, CirclePlus, Info, LogIn, LogOut, MessageSquare, Smartphone, X } from "lucide-react";
 import { signOutAndRefresh } from "@/components/explore/map-account-button";
 import { MODAL_SURFACE } from "@/components/explore/mobile-sheets";
 import { profileNav } from "@/components/shell/nav-items";
+import { promptInstall, useInstallState } from "@/components/shell/use-install-prompt";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerHandle, DrawerTitle } from "@/components/ui/drawer";
 import { locales, messagesFor, type Locale } from "@/lib/i18n/messages";
@@ -58,6 +59,8 @@ export function MoreSheet({
   const [dialog, setDialog] = useState<"auth" | "submit" | "feedback" | null>(null);
   const pages = profileNav(locale, t, pathname, counts, authed);
   const aboutHref = localePath(locale, "about");
+  const install = useInstallState();
+  const [installHelp, setInstallHelp] = useState(false);
 
   function openDialog(next: "auth" | "submit" | "feedback") {
     onOpenChange(false);
@@ -121,6 +124,31 @@ export function MoreSheet({
 
             <section aria-label={t.moreApp} className="mt-3">
               <ul className="border-y">
+                {install !== "installed" ? (
+                  <li className="border-b">
+                    <button
+                      type="button"
+                      className={row}
+                      aria-expanded={install === "manual" ? installHelp : undefined}
+                      onClick={() => {
+                        if (install === "prompt") void promptInstall();
+                        else setInstallHelp((shown) => !shown);
+                      }}
+                    >
+                      <Smartphone aria-hidden />
+                      <span className="min-w-0 flex-1 truncate">{t.installApp}</span>
+                      {install === "manual" ? (
+                        <ChevronDown
+                          className={cn("size-4! text-muted-foreground/60 transition-transform", installHelp && "rotate-180")}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </button>
+                    {install === "manual" && installHelp ? (
+                      <p className="px-4 pb-3 pl-12 text-sm text-muted-foreground select-text">{t.installAppHint}</p>
+                    ) : null}
+                  </li>
+                ) : null}
                 <li className="border-b">
                   <button type="button" className={row} onClick={() => openDialog("submit")}>
                     <CirclePlus aria-hidden />

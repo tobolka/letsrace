@@ -19,6 +19,17 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-16",
+    items: {
+      cs: [
+        "Let's Race si přidáš na plochu telefonu a otevřeš ho jako aplikaci, přes celou obrazovku a s vlastní ikonou. Návod najdeš v nabídce Více.",
+      ],
+      en: [
+        "Add Let's Race to your phone's home screen and open it like an app, full screen with its own icon. Find out how under More.",
+      ],
+    },
+  },
+  {
     date: "2026-11-14",
     items: {
       cs: [
