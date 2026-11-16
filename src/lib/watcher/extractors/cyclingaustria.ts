@@ -113,15 +113,25 @@ function caSeries(
   return undefined;
 }
 
+/**
+ * The last page a calendar page's own pagination names, or undefined when it names none.
+ * The whole calendar ran to 8 pages in Nov 2026 (Sept–Oct 2027 on pages 6–8), so a fixed
+ * five never read those months and races moved into them never reached the catalogue.
+ */
+export function cyclingAustriaLastPage(html: string): number | undefined {
+  const pages = [...html.matchAll(/[?&](?:amp;)?page=(\d+)/g)].map((m) => Number(m[1]));
+  return pages.length ? Math.min(30, Math.max(...pages)) : undefined;
+}
+
 /** Clean `?page=2` siblings — the site's own pagination hrefs are malformed. */
-export function cyclingAustriaPageUrls(url: string): string[] {
+export function cyclingAustriaPageUrls(url: string, lastPage = 5): string[] {
   try {
     const u = new URL(url);
     if (!/kalender/i.test(u.pathname)) return [];
     const page = Number(u.searchParams.get("page") || "1");
     if (page !== 1) return [];
     const out: string[] = [];
-    for (let p = 2; p <= 5; p++) {
+    for (let p = 2; p <= lastPage; p++) {
       const next = new URL(u.toString());
       if (!next.searchParams.get("view")) next.searchParams.set("view", "events");
       next.searchParams.set("page", String(p));
@@ -235,7 +245,7 @@ export function parseCyclingAustria(url: string, html: string): ParsedEvent[] {
     });
   });
 
-  const pages = cyclingAustriaPageUrls(url);
+  const pages = cyclingAustriaPageUrls(url, cyclingAustriaLastPage(html));
   if (pages.length && events[0]) {
     events[0] = {
       ...events[0],

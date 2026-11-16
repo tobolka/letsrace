@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseCubeCup } from "@/lib/watcher/extractors/cubecup";
 import {
+  cyclingAustriaLastPage,
   cyclingAustriaPageUrls,
   parseCyclingAustria,
   parseCyclingAustriaCups,
@@ -271,6 +272,15 @@ describe("Cycling Austria", () => {
         expect.stringContaining("sparten=cyclocross"),
       ]),
     );
+  });
+
+  it("follows every page the calendar's own pagination names", () => {
+    const links = [1, 2, 8].map((n) => `<a href="/kalender?view=events&amp;page=${n}&amp;kalender?view=events&amp;page=1">${n}</a>`).join("");
+    const html = `<div data-date="2026-11-21" class="Wien"><a class="om_card" href="/kalender/event?id=AB12CD34"><h3>Crosslauf Wien</h3></a></div>${links}`;
+    const [first] = parseCyclingAustria("https://www.cyclingaustria.at/kalender?view=events", html);
+    const pages = (first?.childUrls ?? []).filter((u) => /[?&]page=\d/.test(u)).map((u) => new URL(u).searchParams.get("page"));
+    expect(pages).toEqual(["2", "3", "4", "5", "6", "7", "8"]);
+    expect(cyclingAustriaLastPage("<p>no pagination</p>")).toBeUndefined();
   });
 });
 

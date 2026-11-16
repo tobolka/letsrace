@@ -181,8 +181,9 @@ export async function readOervCalendar(
     const got = await fetchHtml(pageUrl(n));
     if (got.status !== 200) return { complete: false, reason: `page ${n} answered ${got.status}`, pages: n - 1 };
     if (n === 1) {
-      last = Math.max(1, ...[...got.html.matchAll(/[?&](?:amp;)?page=(\d+)/g)].map((m) => Number(m[1])));
-      if (last > maxPages) return { complete: false, reason: `calendar claims ${last} pages`, pages: 0 };
+      const named = Math.max(1, ...[...got.html.matchAll(/[?&](?:amp;)?page=(\d+)/g)].map((m) => Number(m[1])));
+      if (named > maxPages) return { complete: false, reason: `calendar claims ${named} pages`, pages: 0 };
+      last = named;
     }
     const rows = (got.html.match(/data-date="20\d{2}-\d{2}-\d{2}/g) ?? []).length;
     if (n > last) {
