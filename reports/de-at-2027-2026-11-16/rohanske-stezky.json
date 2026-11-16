@@ -1,0 +1,288 @@
+[
+ {
+  "id": "ad9ff574-89b8-40ef-a362-37a1f0709546",
+  "how": "propozice na webu závodu (zadáno vlastníkem)",
+  "links": {
+   "website": "https://rohanskestezky.cz/mtb-zavod/",
+   "regulations": "https://rohanskestezky.cz/mtb-zavod/propozice/"
+  },
+  "documents": [
+   "https://rohanskestezky.cz/mtb-zavod/propozice/"
+  ],
+  "facts": {
+   "venue": {
+    "value": {
+     "name": "Lyžařský areál",
+     "streetAddress": "V Popelkách 1247",
+     "locality": "Lomnice nad Popelkou",
+     "countryCode": "CZ",
+     "precision": "venue"
+    },
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "Lyžařský areál - V Popelkách 1247, Lomnice nad Popelkou",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   },
+   "organizer": {
+    "value": {
+     "name": "Rohanské stezky, z.s.",
+     "contactName": "Michal Vlášek",
+     "phone": "776 251 005",
+     "email": "poradatel@rohanskestezky.cz"
+    },
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "Rohanské stezky, z.s. Kontakt: Michal Vlášek, tel.: 776 251 005, email: poradatel@rohanskestezky.cz",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   },
+   "parking": {
+    "value": {
+     "note": "Vyhrazená parkoviště před lyžařským areálem"
+    },
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "Vyhrazená parkoviště před lyžařským areálem",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   },
+   "categories": {
+    "value": [
+     {
+      "label": "Juniorky (jen 25 km)",
+      "birthYears": "2009 a mladší",
+      "sourceQuote": "ŽJ Juniorky (2009 a mladší) pouze na trase 25 km"
+     },
+     {
+      "label": "Junioři",
+      "birthYears": "2009 a mladší",
+      "sourceQuote": "MJ Junioři (2009 a mladší)"
+     },
+     {
+      "label": "Ženy 19-39",
+      "birthYears": "1988-2008",
+      "sourceQuote": "Ž39 Ženy 19-39 (1988-2008)"
+     },
+     {
+      "label": "Ženy 40+",
+      "birthYears": "1987 a dříve",
+      "sourceQuote": "Ž40 Ženy 40+ (1987 a dříve narozené)"
+     },
+     {
+      "label": "Muži 19-29",
+      "birthYears": "1998-2008",
+      "sourceQuote": "M29 Muži 19-29 (1998-2008)"
+     },
+     {
+      "label": "Muži 30-39",
+      "birthYears": "1988-1997",
+      "sourceQuote": "M39 Muži 30-39 (1988-1997)"
+     },
+     {
+      "label": "Muži 40-49",
+      "birthYears": "1978-1987",
+      "sourceQuote": "M49 Muži 40-49 (1978-1987)"
+     },
+     {
+      "label": "Muži 50-59",
+      "birthYears": "1968-1977",
+      "sourceQuote": "M59 Muži 50-59 (1968-1977)"
+     },
+     {
+      "label": "Muži 60+",
+      "birthYears": "1967 a dříve",
+      "sourceQuote": "M60 Muži 60+ (1967 a dříve narození)"
+     },
+     {
+      "label": "Žáci a žákyně starší",
+      "birthYears": "2013–2014",
+      "sourceQuote": "Žáci a žákyně starší - roč. 2013–2014"
+     },
+     {
+      "label": "Žáci a žákyně mladší",
+      "birthYears": "2015–2016",
+      "sourceQuote": "Žáci a žákyně mladší - ročník 2015–2016"
+     },
+     {
+      "label": "Předžáci a předžákyně",
+      "birthYears": "2017–2018",
+      "sourceQuote": "Předžáci a předžákyně - ročník 2017–2018"
+     },
+     {
+      "label": "Minižáci a minižákyně",
+      "birthYears": "2019–2020",
+      "sourceQuote": "Minižáci a minižákyně - ročník 2019–2020"
+     },
+     {
+      "label": "Chlapci a dívky",
+      "birthYears": "2021–2022",
+      "sourceQuote": "Chlapci a dívky - ročník 2021–2022"
+     },
+     {
+      "label": "Děti",
+      "birthYears": "2023 a mladší",
+      "sourceQuote": "Děti - ročník 2023 a mladší"
+     }
+    ],
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "Kategorie",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   },
+   "schedule": {
+    "value": [
+     {
+      "label": "Prezentace hlavního závodu",
+      "date": "2027-06-19",
+      "time": "08:00",
+      "sourceQuote": "Sobota 19. 6. 2027 (8:00 hod. - 10:40 hod.)"
+     },
+     {
+      "label": "Start dětských závodů (žáci starší a mladší)",
+      "date": "2027-06-19",
+      "time": "09:00",
+      "sourceQuote": "start v 9:00 hod."
+     },
+     {
+      "label": "Start předžáků",
+      "date": "2027-06-19",
+      "time": "09:30",
+      "sourceQuote": "start v 9:30 hod."
+     },
+     {
+      "label": "Start minižáků",
+      "date": "2027-06-19",
+      "time": "09:50",
+      "sourceQuote": "start v 9:50 hod."
+     },
+     {
+      "label": "Start chlapci a dívky 2021–2022",
+      "date": "2027-06-19",
+      "time": "10:05",
+      "sourceQuote": "start v 10:05 hod."
+     },
+     {
+      "label": "Start děti 2023 a mladší",
+      "date": "2027-06-19",
+      "time": "10:20",
+      "sourceQuote": "start v 10:20 hod."
+     },
+     {
+      "label": "Vyhlášení dětských závodů",
+      "date": "2027-06-19",
+      "time": "11:10",
+      "sourceQuote": "V 11:10 hod., kategorie 2023 a mladší bez vyhlášení."
+     },
+     {
+      "label": "Start hlavního závodu 25 a 50 km",
+      "date": "2027-06-19",
+      "time": "11:00",
+      "sourceQuote": "Společný pro trasu 25 i 50 km v 11:00 hod."
+     },
+     {
+      "label": "Vyhlášení 25 km",
+      "date": "2027-06-19",
+      "time": "15:00",
+      "sourceQuote": "Trasa 25 km v 15:00 hod."
+     },
+     {
+      "label": "Vyhlášení 50 km",
+      "date": "2027-06-19",
+      "time": "15:15",
+      "sourceQuote": "Trasa 50 km v 15:15 hod."
+     }
+    ],
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "Společný pro trasu 25 i 50 km v 11:00 hod.",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   },
+   "fees": {
+    "value": [
+     {
+      "label": "25 km, platba do 31. 3. 2027",
+      "amount": 550,
+      "currency": "CZK",
+      "sourceQuote": "platba do 31. 3. 2027 - 550 Kč",
+      "validUntil": "2027-03-31"
+     },
+     {
+      "label": "25 km, platba do 15. 6. 2027",
+      "amount": 650,
+      "currency": "CZK",
+      "sourceQuote": "platba do 15. 6. 2027 – 650 Kč",
+      "validUntil": "2027-06-15"
+     },
+     {
+      "label": "25 km, na místě",
+      "amount": 750,
+      "currency": "CZK",
+      "sourceQuote": "platba na místě 19. 6. 2027 - 750 Kč"
+     },
+     {
+      "label": "50 km, platba do 31. 3. 2027",
+      "amount": 600,
+      "currency": "CZK",
+      "sourceQuote": "platba do 31. 3. 2027 - 600 Kč",
+      "validUntil": "2027-03-31"
+     },
+     {
+      "label": "50 km, platba do 15. 6. 2027",
+      "amount": 700,
+      "currency": "CZK",
+      "sourceQuote": "platba do 15. 6. 2027 – 700 Kč",
+      "validUntil": "2027-06-15"
+     },
+     {
+      "label": "50 km, na místě",
+      "amount": 800,
+      "currency": "CZK",
+      "sourceQuote": "platba na místě 19. 6. 2027 - 800 Kč"
+     },
+     {
+      "label": "Dětské závody předem",
+      "amount": 100,
+      "currency": "CZK",
+      "sourceQuote": "platba do 15. 6. 2027 - 100 Kč",
+      "validUntil": "2027-06-15"
+     },
+     {
+      "label": "Dětské závody na místě",
+      "amount": 150,
+      "currency": "CZK",
+      "sourceQuote": "platba na místě - 150 Kč"
+     }
+    ],
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "Startovné 25 km",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   },
+   "routes": {
+    "value": [
+     {
+      "name": "50 km",
+      "distanceKm": 50,
+      "elevationM": 1190,
+      "sourceQuote": "50 km s převýšením 1190 m"
+     },
+     {
+      "name": "25 km",
+      "distanceKm": 25,
+      "elevationM": 595,
+      "sourceQuote": "25 km s převýšením 595 m"
+     }
+    ],
+    "source_url": "https://rohanskestezky.cz/mtb-zavod/propozice/",
+    "quote": "50 km s převýšením 1190 m 25 km s převýšením 595 m",
+    "identity_quote": "Rohanské stezky nabízí tratě 25 nebo 50 km",
+    "edition_quote": "Sobota 19. 6. 2027",
+    "status": "current"
+   }
+  }
+ }
+]

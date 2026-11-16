@@ -16,6 +16,14 @@ describe("RaceResult events listing", () => {
     expect(event.lat).toBeUndefined();
     expect(event.lng).toBeUndefined();
   });
+  it("reads a Radmarathon or a road-filed marathon as a gran fondo and a bike marathon as XCM", () => {
+    const events = parseRaceresultListPayload([{ Events: [
+      { id: 900101, name: "Fichtelberg Radmarathon", dateFrom: "2027-06-06", countryCode: "DE", eventType: 11 },
+      { id: 900102, name: "Spreewald Marathon", dateFrom: "2027-04-24", countryCode: "DE", eventType: 22 },
+      { id: 900103, name: "Kufstein Bike Marathon", dateFrom: "2027-05-15", countryCode: "AT", eventType: 2 },
+    ] }], "https://my.raceresult.com/events/");
+    expect(events.map((e) => e.discipline)).toEqual([["road", "gran_fondo"], ["road", "gran_fondo"], ["xcm"]]);
+  });
   it("keeps cycling events in CZ/DE/SK/AT/PL and skips other countries and old years", () => {
     const payload = [
       {

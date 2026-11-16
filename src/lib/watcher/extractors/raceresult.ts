@@ -105,6 +105,11 @@ function mapDisc(row: RrEvent): Discipline[] {
   if (/\bdownhill|\bdh\b/.test(blob)) return ["dh"];
   if (/\benduro\b/.test(blob)) return ["enduro"];
   if (/\bgravel\b/.test(blob)) return ["gravel"];
+  // A "Radmarathon", or a marathon filed under road cycling, is a road gran fondo, not an MTB marathon.
+  if (/radmarathon|rad-marathon|rennrad|gran.?fondo|jedermann/.test(blob)) return ["road", "gran_fondo"];
+  if (/marathon/.test(blob) && !/\bmtb\b|mountain|bike[\s-]?marathon/.test(blob) && (row.eventType === 11 || row.eventType === 22)) {
+    return ["road", "gran_fondo"];
+  }
   if (/\bxcm|marathon|bike[\s-]?marathon/.test(blob)) return ["xcm"];
   if (/\bxco|cross[\s-]?country/.test(blob)) return ["xco"];
   return fromType ?? ["mtb"];

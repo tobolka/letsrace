@@ -27,6 +27,10 @@ function mapDisc(raw: string): Discipline[] {
   if (/\benduro\b/.test(t)) return ["enduro"];
   if (/\bdownhill|\bdh\b/.test(t)) return ["dh"];
   if (/\bgravel\b/.test(t)) return ["gravel"];
+  // A "Radmarathon" is a road gran fondo; so is any marathon the calendar files under road.
+  if (/radmarathon|rad-marathon|rennrad|gran.?fondo/.test(t) || (/marathon/.test(t) && /stra(?:ß|ss)e/.test(t))) {
+    return ["road", "gran_fondo"];
+  }
   if (/\bxcm|marathon|maraton/.test(t)) return ["xcm"];
   if (/\bxcc|short.?track|eliminator/.test(t)) return ["xcc"];
   if (/\bxco|cross.?country/.test(t)) return ["xco"];

@@ -1,0 +1,6 @@
+{
+  "merges": [
+    { "keep": "9c5e925b-e00d-455e-857e-374a53c242b1", "drop": "252420fe-5303-4ab8-90dc-dc08b0e91705", "name": "Int. Radkriterium", "why": "Cycling Austria event 31486DA390B141148B7C6ED881A0F1AC now reads 'Sa, 19. Juni 2027'; the 3 July row is the same federation event at an earlier-listed date." },
+    { "keep": "3c1059ee-eb2d-4092-adbc-2c135b36f619", "drop": "baf2ddb8-9637-4818-bddc-942d45fccfce", "name": "65.Int. Raiffeisen Kirschblütenrennen", "why": "Cycling Austria event 61328196B9204EA8AB7C2E570BF6AF80 now reads 'So, 2. Mai 2027'; the 25 April row is the same federation event at an earlier-listed date." }
+  ]
+}

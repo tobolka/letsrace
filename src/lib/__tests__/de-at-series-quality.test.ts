@@ -222,6 +222,25 @@ describe("Cycling Austria", () => {
     );
   });
 
+  it("reads a Radmarathon as a road gran fondo, not an MTB marathon", () => {
+    const html = `
+      <div data-date="2027-06-06" class="Kärnten">
+        <div class="uk-heading-small">So, 6. Juni 2027</div>
+        <a class="om_card" href="/kalender/event?id=KRM1"><h3>ARBÖ Kärnten Radmarathon Bad Kleinkirchheim 2027</h3></a>
+      </div>
+      <div data-date="2027-07-10" data-disziplin="Straße" class="Oberösterreich">
+        <div class="uk-heading-small">Sa, 10. Juli 2027</div>
+        <a class="om_card" href="/kalender/event?id=RMG1"><h3>24h Marathon Grieskirchen</h3></a>
+      </div>
+      <div data-date="2027-05-15" data-disziplin="MTB" class="Tirol">
+        <div class="uk-heading-small">Sa, 15. Mai 2027</div>
+        <a class="om_card" href="/kalender/event?id=MTB1"><h3>Kufstein Bike Marathon</h3></a>
+      </div>
+    `;
+    const events = parseCyclingAustria("https://www.cyclingaustria.at/kalender?view=events", html);
+    expect(events.map((e) => e.discipline)).toEqual([["road", "gran_fondo"], ["road", "gran_fondo"], ["xcm"]]);
+  });
+
   it("tags cup series and skips track/pumptrack", () => {
     const html = `
       <div data-date="2026-09-05" data-disziplin="Downhill" class="Niederösterreich">

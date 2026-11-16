@@ -15,6 +15,7 @@ import { parseChotebuz } from "@/lib/watcher/extractors/chotebuz";
 import { isPzkolHost, parsePzkolSeasons } from "@/lib/watcher/extractors/pzkol";
 import { isDostartuHost, parseDostartu } from "@/lib/watcher/extractors/dostartu";
 import { isBikeboardHost, parseBikeboardCalendar } from "@/lib/watcher/extractors/bikeboard";
+import { isEndureHost, parseEndureEvents } from "@/lib/watcher/extractors/endure";
 import { isTurboSportHost, parseTurboSport } from "@/lib/watcher/extractors/turbosport";
 import {
   isKalendarzRowerowyHost,
@@ -214,6 +215,7 @@ type AdapterResult = { events: ParsedEvent[]; strategy: string };
 export const WHOLE_CALENDAR_HOSTS = [
   "mtbs.cz",
   "radsport-events.de",
+  "events.endure-cycling.com",
   "nazavody.cz",
   "sportt.cz",
   "pzkol.pl",
@@ -631,6 +633,11 @@ export async function extractWithAdapter(
   }
   if (isTurboSportHost(host)) {
     return { events: parseTurboSport(url, html), strategy: "adapter:turbo-sport" };
+  }
+  if (isEndureHost(host)) {
+    // The whole calendar is one file; its listing pages say less and would only cost a model read.
+    if (new URL(url).pathname !== "/events.json") return { events: [], strategy: "adapter:endure-skip" };
+    return { events: parseEndureEvents(html), strategy: "adapter:endure" };
   }
   if (isBikeboardHost(host)) {
     return {

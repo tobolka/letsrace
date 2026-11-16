@@ -1,0 +1,191 @@
+[
+ {
+  "slug": "24h-radmarathon-grieskirchen-2027",
+  "id": "24h-radmarathon-grieskirchen-2027",
+  "name": "24h Radmarathon Grieskirchen",
+  "sport": "cycling",
+  "categories": [
+   "Radmarathon"
+  ],
+  "country": "AT",
+  "dates": {
+   "start": "2027-07-10T00:00:00.000Z",
+   "end": "2027-07-11T00:00:00.000Z",
+   "confirmed": true
+  },
+  "location": {
+   "name": "Grieskirchen",
+   "lat": 48.2341,
+   "lng": 13.8373,
+   "region": "Oberösterreich"
+  },
+  "websiteUrl": "http://rmg.rc-grieskirchen.at/",
+  "description": "Der 24h Rad Marathon Grieskirchen des RC Grieskirchen steigt 2027 am Wochenende vom 10. auf 11. Juli im oberösterreichischen Hausruckviertel. Gefahren wird wieder auf dem 21,5 Kilometer langen Rundkurs mit 173 Höhenmetern pro Runde, der rund um Grieskirchen durch die hügelige Agrarlandschaft führt. "
+ },
+ {
+  "slug": "3rides-gran-fondo-weinstrasse-2027",
+  "id": "3rides-gran-fondo-weinstrasse-2027",
+  "name": "3Rides Gran Fondo Südliche Weinstraße",
+  "sport": "cycling",
+  "categories": [
+   "Gran Fondo"
+  ],
+  "country": "DE",
+  "dates": {
+   "start": "2027-04-10T00:00:00.000Z",
+   "confirmed": false
+  },
+  "location": {
+   "name": "Schweigen-Rechtenbach",
+   "lat": 49.0397,
+   "lng": 8.0839,
+   "region": "Rheinland-Pfalz"
+  },
+  "websiteUrl": "https://3rides.de/suedliche-weinstrasse",
+  "description": "Das 3Rides Gran Fondo an der Südlichen Weinstraße ist ein Qualifikationsrennen der UCI Gran Fondo World Series mit Start und Ziel am Deutschen Weintor in Schweigen-Rechtenbach in der Pfalz. Die Hauptstrecke misst rund 100 km mit etwa 600 Höhenmetern und führt durch die Weindörfer an der Grenze zum E",
+  "distanceKm": 100,
+  "elevationGainM": 600
+ },
+ {
+  "slug": "alpentour-trophy-2027",
+  "id": "alpentour-trophy-2027",
+  "name": "Alpentour Trophy",
+  "sport": "cycling",
+  "categories": [
+   "Etappenrennen",
+   "Berg"
+  ],
+  "country": "AT",
+  "dates": {
+   "start": "2027-06-17T00:00:00.000Z",
+   "end": "2027-06-20T00:00:00.000Z",
+   "confirmed": true
+  },
+  "location": {
+   "name": "Schladming",
+   "lat": 47.392,
+   "lng": 13.687,
+   "region": "Steiermark"
+  },
+  "websiteUrl": "https://alpen-tour.at",
+  "description": "Die 28. Alpentour Trophy führt vom 17. bis 20. Juni 2027 wieder durch die Region Schladming-Dachstein in der Obersteiermark. Das UCI-klassifizierte MTB-Etappenrennen verteilt an vier Renntagen rund 200 Kilometer und etwa 8.570 Höhenmeter auf die Bergarenen rund um Hauser Kaibling, Ramsau am Dachstei",
+  "distanceKm": 200,
+  "elevationGainM": 8570
+ },
+ {
+  "slug": "chiemgau-bike-trophy-ruhpolding-2027",
+  "id": "chiemgau-bike-trophy-ruhpolding-2027",
+  "name": "Chiemgau Bike Trophy",
+  "sport": "cycling",
+  "categories": [
+   "RTF",
+   "Gravel"
+  ],
+  "country": "DE",
+  "dates": {
+   "start": "2027-06-11T00:00:00.000Z",
+   "end": "2027-06-12T00:00:00.000Z",
+   "confirmed": true
+  },
+  "location": {
+   "name": "Inzell",
+   "lat": 47.7633,
+   "lng": 12.7492,
+   "region": "Bayern"
+  },
+  "websiteUrl": "https://www.chiemgaubiketrophy.de",
+  "description": "Die Chiemgau Bike Trophy findet am 11. und 12. Juni 2027 statt und hat ihr Zentrum diesmal in Inzell in den Chiemgauer Alpen. Das Event versteht sich ausdrücklich als Genussveranstaltung: Es gibt keine Zeitnahme und keinen Wettkampf, im Mittelpunkt stehen Landschaft, regionale Produkte und Gemeinsch",
+  "distanceKm": 85,
+  "elevationGainM": 1500
+ },
+ {
+  "slug": "eschborn-frankfurt-jedermann-2027",
+  "id": "eschborn-frankfurt-jedermann-2027",
+  "name": "Eschborn–Frankfurt Jedermannrennen",
+  "sport": "cycling",
+  "categories": [
+   "Radmarathon"
+  ],
+  "country": "DE",
+  "dates": {
+   "start": "2027-05-01T00:00:00.000Z",
+   "confirmed": true
+  },
+  "location": {
+   "name": "Eschborn",
+   "lat": 50.1428,
+   "lng": 8.5713,
+   "region": "Hessen"
+  },
+  "websiteUrl": "https://www.eschborn-frankfurt.de",
+  "registrationUrl": "https://in.timeto.com/adac-velotour-2027",
+  "description": "Am 1. Mai 2027 rollt wieder die ADAC Velotour im Rahmen von Eschborn–Frankfurt – das Jedermannrennen zum einzigen deutschen UCI-WorldTour-Klassiker. Drei Strecken stehen zur Wahl: Skyline (ca. 40 km, flach durch die Skyline-Kulisse), Taunus Express (ca. 85 km) und Taunus Classic (ca. 97 km) mit dem ",
+  "distanceKm": 97,
+  "elevationGainM": 1400,
+  "distances": [
+   {
+    "name": "Taunus Classic",
+    "km": 97
+   },
+   {
+    "name": "Taunus Express",
+    "km": 85
+   },
+   {
+    "name": "Skyline",
+    "km": 40
+   }
+  ],
+  "entryFee": "Festpreis ab 89 € (Skyline) bzw. 129 € (Taunus-Strecken), p. P. zzgl. MwSt.",
+  "startTime": "08:45"
+ },
+ {
+  "slug": "mecklenburger-seen-runde-2027",
+  "id": "mecklenburger-seen-runde-2027",
+  "name": "Mecklenburger Seen Runde",
+  "sport": "cycling",
+  "categories": [
+   "Radmarathon"
+  ],
+  "country": "DE",
+  "dates": {
+   "start": "2027-05-28T00:00:00.000Z",
+   "end": "2027-05-29T00:00:00.000Z",
+   "confirmed": true
+  },
+  "location": {
+   "name": "Neubrandenburg",
+   "lat": 53.5553,
+   "lng": 13.2611,
+   "region": "Mecklenburg-Vorpommern"
+  },
+  "websiteUrl": "https://mecklenburger-seen-runde.de",
+  "description": "Die 13. Mecklenburger Seen Runde findet am 28. und 29. Mai 2027 mit Start und Ziel in Neubrandenburg statt. Das Aushängeschild ist die MSR 300 über 300 Kilometer durch die Mecklenburgische Seenplatte, kürzere Varianten beginnen bei rund 100 Kilometern. Die Strecken führen über ruhige Landstraßen vor",
+  "distanceKm": 300,
+  "elevationGainM": 2000
+ },
+ {
+  "slug": "aarau-triathlon-2027",
+  "id": "aarau-triathlon-2027",
+  "name": "11. Tempo-Sport Aarau Triathlon",
+  "sport": "triathlon",
+  "categories": [
+   "Sprintdistanz",
+   "Duathlon"
+  ],
+  "country": "CH",
+  "dates": {
+   "start": "2027-09-19T00:00:00.000Z",
+   "end": "2027-09-19T00:00:00.000Z",
+   "confirmed": false
+  },
+  "location": {
+   "name": "Aarau",
+   "lat": 47.3924,
+   "lng": 8.0448
+  },
+  "websiteUrl": "https://triclubaarau.clubdesk.com/aarautriathlon",
+  "description": "Der 11. Tempo-Sport Aarau Triathlon findet laut „Save the Date“ des Veranstalters voraussichtlich am 19. September 2027 statt und bildet wieder den nordschweizerischen Saisonabschluss. Wettkampfgelände ist der Aarauer Schachen: rund 400 m Schwimmen in der Aare, 20 km Radfahren und 5 km Laufen. Seit ",
+  "distanceKm": 25
+ }
+]
