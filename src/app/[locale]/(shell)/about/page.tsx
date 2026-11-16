@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { DOC_WIDTH } from "@/components/account/panel";
 import { asLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { RELEASE_NOTES, releaseNoteHeadings, releaseNoteItems, type ReleaseNote } from "@/lib/release-notes";
-import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME, SITE_PROFILES } from "@/lib/seo";
 
 const CONTACT = "info@letsrace.cz";
 const UPDATED = RELEASE_NOTES[0]!.date;
@@ -268,6 +268,7 @@ export default async function AboutPage({ params }: Props) {
       name: SITE_NAME,
       url: site,
       email: CONTACT,
+      sameAs: SITE_PROFILES.map(profile => profile.url),
       founder: { "@type": "Person", name: SITE_AUTHOR.name, url: SITE_AUTHOR.url },
     },
   };
@@ -334,6 +335,9 @@ export default async function AboutPage({ params }: Props) {
         <p className="border-t pt-5 text-xs text-muted-foreground">
           {doc.updated}: {UPDATED} · <a href={`mailto:${CONTACT}`} className="underline underline-offset-2">{CONTACT}</a> ·{" "}
           <a href={SITE_AUTHOR.url} className="underline underline-offset-2">{SITE_AUTHOR.url.replace(/^https?:\/\//, "")}</a>
+          {SITE_PROFILES.map(profile => (
+            <span key={profile.url}> · <a href={profile.url} rel="me" className="underline underline-offset-2">{profile.name}</a></span>
+          ))}
         </p>
       </article>
     </article>

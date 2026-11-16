@@ -11,6 +11,12 @@ it("keeps Polish Sobótka separate from Czech Sobotka and respects a stated coun
   expect(geocodeFromGazetteer("Sobotka", "PL")).toBeNull();
 });
 
+it("names a country outside Europe instead of taking the Czech default", () => {
+  expect(cleanGeocodeQuery("Dubai (United Arab Emirates)").countryCode).toBe("AE");
+  expect(cleanGeocodeQuery("Perth, Australia").countryCode).toBe("AU");
+  expect(cleanGeocodeQuery("Sobotka").countryCode).toBe("CZ");
+});
+
 describe("country-only race venues", () => {
   it.each(["CZ", "SK", "DE", "AT", "PL", "Austria", "Germany", "Slovakia"])(
     "does not geocode %s as a race start", async (place) => {

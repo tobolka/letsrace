@@ -1282,6 +1282,18 @@ const COUNTRY_WORDS: { re: RegExp; cc: string }[] = [
   { re: /\b(luxembourg|luxemburg|lucembursko)\b/i, cc: "LU" },
   { re: /\b(cyprus|kypr)\b/i, cc: "CY" },
   { re: /\b(estonia|estonsko)\b/i, cc: "EE" },
+  // Gran fondo world series and travel calendars list rounds outside Europe. Unnamed, such a
+  // place took the Czech default: Dubai stood among the races in Czechia.
+  { re: /\b(united arab emirates|uae|spojené arabské emiráty)\b/i, cc: "AE" },
+  { re: /\b(australia|austrálie)\b/i, cc: "AU" },
+  { re: /\b(new zealand)\b/i, cc: "NZ" },
+  { re: /\b(argentina)\b/i, cc: "AR" },
+  { re: /\b(brazil|brasil|brazílie)\b/i, cc: "BR" },
+  { re: /\b(mexico|méxico|mexiko)\b/i, cc: "MX" },
+  { re: /\b(colombia|kolumbie)\b/i, cc: "CO" },
+  { re: /\b(thailand|thajsko)\b/i, cc: "TH" },
+  { re: /\b(oman|omán)\b/i, cc: "OM" },
+  { re: /\b(qatar|katar)\b/i, cc: "QA" },
 ];
 
 /** Longest gazetteer keys first — used to pull a town out of an event title. */

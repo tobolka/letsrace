@@ -30,6 +30,12 @@ export function getSiteUrl(): string {
 
 export const SITE_NAME = "Let's Race";
 
+/** The site's own profiles elsewhere; they tell search engines these accounts are Let's Race. */
+export const SITE_PROFILES = [
+  { name: "Strava", url: "https://www.strava.com/clubs/2419371" },
+  { name: "Facebook", url: "https://www.facebook.com/profile.php?id=61596533256165" },
+] as const;
+
 export const SITE_AUTHOR = {
   name: "Radek Tobolka",
   url: "https://radektobolka.com",
