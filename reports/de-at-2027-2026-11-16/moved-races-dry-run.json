@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "dry": true,
+  "pages": 8,
+  "listed": 154,
+  "racesWithIds": 211,
+  "moves": [],
+  "merged": 0,
+  "failed": [],
+  "heldBack": [
+    {
+      "id": "DF98C632E3FF4186A58052A958675F7E",
+      "eventId": "0769002c-1c63-4a48-b298-bc7c6cc2f266",
+      "name": "BIKE INFECTION XC-BATTLE",
+      "oldDate": "2027-09-24",
+      "reason": "new_day_not_in_catalogue",
+      "detail": "2027-09-25"
+    },
+    {
+      "id": "5907A8A0DBE94053B8228E1ABAF1D428",
+      "eventId": "e724c8bf-5329-478e-949a-9ff4c24132db",
+      "name": "Cyclo Cross Mittelkärnten",
+      "oldDate": "2027-11-20",
+      "reason": "new_day_not_in_catalogue",
+      "detail": "2027-10-23"
+    }
+  ]
+}

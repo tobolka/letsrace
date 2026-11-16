@@ -301,6 +301,10 @@ async function main(){
   await upkeep('federciclismo','federciclismoAt',24*HOUR,'Čtu italské závody ze stránek federace',['scripts/harvest-federciclismo.ts','--apply','--seconds=480',`--date-report=${path.join(data,'federation-date-differences.json')}`],540);
   await upkeep('radNetNew','radNetNewAt',24*HOUR,'Přidávám chybějící vypsané německé závody',['scripts/radnet-new-races.ts','--apply','--skip=3 Rosen Cross,Meisterschaft der Nordverbände'],360);
   await upkeep('radNet','radNetAt',24*HOUR,'Čtu německé závody z rad-net',['scripts/harvest-radnet.ts','--apply'],540);
+  // Cycling Austria keys a race by federation id and day, so a moved race comes back as a second race. One full read of
+  // its calendar folds the old-day race into the new-day one, only under the same name (dated-id-moves.ts). On the server,
+  // because the copy here holds every merge for review; each merge is audited and can be undone (restore-event-merge.ts).
+  await upkeep('movedRaces','movedRacesAt',24*HOUR,'Slučuji rakouské závody přesunuté na jiný den',['scripts/merge-moved-races.ts','--apply',`--out=${path.join(directory,'moved-races.json')}`],300,{},true);
   // The one step allowed the AI key, and only within the shared limits the step itself enforces.
   await upkeep('regulations','regulationsAt',REGULATIONS_EVERY_MS,'Čtu propozice a doplňuji údaje o závodech',['scripts/enrich-practical-details.ts','--apply','--max=40','--minutes=12','--tolerate-unreadable',`--search-ledger=${path.join(data,'search-budget.json')}`],780,{LOCAL_ALLOW_AI:'1',BRAVE_SEARCH_LIMIT:'60',LLM_LEDGER_PATH:path.join(data,'llm-budget.json'),LLM_EXTRACTION_CACHE_DIR:path.join(data,'extraction-cache')});
   // Nothing found above leaves the Mac until this reader has confirmed it against its source.
