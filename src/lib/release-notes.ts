@@ -23,9 +23,11 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     items: {
       cs: [
         "Let's Race si přidáš na plochu telefonu a otevřeš ho jako aplikaci, přes celou obrazovku a s vlastní ikonou. Návod najdeš v nabídce Více.",
+        "Otevřená z plochy iPhonu se aplikace spouští s logem Let's Race a mapa nahoře nemizí do bílé.",
       ],
       en: [
         "Add Let's Race to your phone's home screen and open it like an app, full screen with its own icon. Find out how under More.",
+        "Opened from an iPhone's home screen, the app starts with the Let's Race logo, and the top of the map no longer fades into white.",
       ],
     },
   },

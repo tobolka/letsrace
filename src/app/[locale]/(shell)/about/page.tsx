@@ -8,7 +8,7 @@ import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME } fro
 const CONTACT = "info@letsrace.cz";
 const UPDATED = RELEASE_NOTES[0]!.date;
 // Snapshot of distinct fetched watched_urls hosts and public, unmerged 2026 events.
-const SEASON_SNAPSHOT = { sites: 214, races: 4563, nextRaces: 660 } as const;
+const SEASON_SNAPSHOT = { sites: 225, races: 4739, nextRaces: 1278 } as const;
 
 type Doc = {
   title: string;
@@ -32,7 +32,7 @@ const DOCS: Record<Locale, Doc> = {
     title: "O projektu",
     intro: "Cyklistické závody z různých zdrojů na jedné mapě. Vzniklo to z docela obyčejné otázky: kam pojedeme o víkendu závodit?",
     updated: "Poslední změna",
-    season: "Sezóna 2026 · stav k 17. 10. 2026",
+    season: "Sezóna 2026 · stav k 16. 11. 2026",
     sites: "načtených webů",
     races: "závodů v katalogu",
     nextRaces: "Na rok 2027 už je v katalogu {n} plánovaných závodů. Další kalendáře průběžně přibývají.",
@@ -68,7 +68,7 @@ const DOCS: Record<Locale, Doc> = {
     title: "About",
     intro: `${SITE_NAME} puts the bike races of Central Europe in one place, on a map and in a calendar.`,
     updated: "Last updated",
-    season: "2026 season · as of 17 October 2026",
+    season: "2026 season · as of 16 November 2026",
     sites: "websites read",
     races: "races in the catalogue",
     nextRaces: "The 2027 catalogue already has {n} scheduled races. More calendars are being published.",
@@ -104,7 +104,7 @@ const DOCS: Record<Locale, Doc> = {
     title: "O projekcie",
     intro: `${SITE_NAME} zbiera wyścigi rowerowe z Europy Środkowej w jednym miejscu, na mapie i w kalendarzu.`,
     updated: "Ostatnia zmiana",
-    season: "Sezon 2026 · stan na 17.10.2026",
+    season: "Sezon 2026 · stan na 16.11.2026",
     sites: "przeczytanych serwisów",
     races: "wyścigów w katalogu",
     nextRaces: "W katalogu na 2027 rok jest już {n} zaplanowanych wyścigów. Kolejne kalendarze stopniowo się pojawiają.",
@@ -140,7 +140,7 @@ const DOCS: Record<Locale, Doc> = {
     title: "O projekte",
     intro: `${SITE_NAME} dáva cyklistické preteky zo strednej Európy na jedno miesto, na mapu a do kalendára.`,
     updated: "Posledná zmena",
-    season: "Sezóna 2026 · stav k 17. 10. 2026",
+    season: "Sezóna 2026 · stav k 16. 11. 2026",
     sites: "prečítaných webov",
     races: "pretekov v katalógu",
     nextRaces: "V katalógu na rok 2027 je už {n} plánovaných pretekov. Ďalšie kalendáre postupne pribúdajú.",
@@ -176,7 +176,7 @@ const DOCS: Record<Locale, Doc> = {
     title: "Über das Projekt",
     intro: `${SITE_NAME} bringt die Radrennen Mitteleuropas an einen Ort, auf eine Karte und in einen Kalender.`,
     updated: "Zuletzt geändert",
-    season: "Saison 2026 · Stand 17.10.2026",
+    season: "Saison 2026 · Stand 16.11.2026",
     sites: "gelesene Websites",
     races: "Rennen im Katalog",
     nextRaces: "Für 2027 stehen bereits {n} geplante Rennen im Katalog. Weitere Kalender kommen nach und nach hinzu.",

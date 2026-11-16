@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Umami } from "@/components/analytics/umami";
 import { DeferredVitals } from "@/components/perf/deferred-vitals";
 import { WebMcpTools } from "@/components/agent/webmcp-tools";
+import { IPHONE_LAUNCH_SCREENS } from "@/lib/launch-screens";
 import { getSiteUrl, seoCopy, SITE_AUTHOR, SITE_NAME, socialCard } from "@/lib/seo";
 import { WELCOME_SEEN_BOOT_SCRIPT } from "@/lib/welcome";
 import "@/app/globals.css";
@@ -54,7 +55,12 @@ export const rootMetadata: Metadata = {
   applicationName: SITE_NAME,
   // Added to an iPhone's home screen, the site opens full screen under its own
   // name. The opaque status bar keeps the top of the page clear of the clock.
-  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    statusBarStyle: "default",
+    startupImage: IPHONE_LAUNCH_SCREENS,
+  },
   keywords: [
     "cycling races",
     "race calendar",

@@ -444,7 +444,17 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         </Suspense>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between p-3">
+      {/*
+        Opened from an iPhone's home screen, iOS draws its own band behind the
+        clock and fills it from the top edge of the page. Over the map that was
+        a washed-out strip of map fading into white. A solid edge here gives
+        the band a solid colour to take, and the map starts under a clean line.
+      */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden h-3 border-b bg-background md:hidden [@media(display-mode:standalone)]:max-md:block"
+      />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between p-3 [@media(display-mode:standalone)]:max-md:top-3">
         {/*
           On a phone the sheet is the page, and the wordmark inside it spent a
           row of a small screen saying where you already are. Over the map it is
