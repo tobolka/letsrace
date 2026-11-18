@@ -15,6 +15,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -59,6 +60,36 @@ import { asRiderGender, type RiderGender } from "@/lib/rider-category";
 const GENDER_COPY: Record<string, { label: string; none: string; female: string; male: string; hint: string }> = {
   cs: { label: "Pohlaví", none: "Neuvedeno", female: "Dívka / žena", male: "Chlapec / muž", hint: "Podle něj ukážeme jen dívčí, nebo jen chlapeckou kategorii." },
   en: { label: "Gender", none: "Not given", female: "Girl / woman", male: "Boy / man", hint: "Used to show only the girls' or only the boys' category." },
+};
+
+/** Deleting the account, in Settings. Czech and English by hand. */
+const DELETE_COPY: Record<string, {
+  title: string;
+  body: string;
+  button: string;
+  confirmTitle: string;
+  confirmBody: string;
+  confirm: string;
+  failed: string;
+}> = {
+  cs: {
+    title: "Smazat účet",
+    body: "Smaže účet i všechno, co je v něm uložené. Vrátit to nejde.",
+    button: "Smazat účet",
+    confirmTitle: "Opravdu smazat účet?",
+    confirmBody: "Smažeme jezdce, plán závodů, oblíbené, hlídání a nastavení e-mailů a odhlásíme vás. Vrátit to nejde.",
+    confirm: "Smazat natrvalo",
+    failed: "Účet se nepodařilo smazat. Zkuste to prosím znovu.",
+  },
+  en: {
+    title: "Delete account",
+    body: "Deletes the account and everything saved in it. This cannot be undone.",
+    button: "Delete account",
+    confirmTitle: "Delete your account?",
+    confirmBody: "Your riders, race plan, favourites, alerts and email settings will be deleted and you will be signed out. This cannot be undone.",
+    confirm: "Delete for good",
+    failed: "The account could not be deleted. Please try again.",
+  },
 };
 
 type Member = {
@@ -280,6 +311,24 @@ export function AccountPanel({
     window.location.href = `/${locale}`;
   }
 
+  const d = DELETE_COPY[locale] ?? DELETE_COPY.en;
+  const [deleting, setDeleting] = useState(false);
+
+  async function deleteAccount() {
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/account", { method: "DELETE" });
+      if (!res.ok) throw new Error(String(res.status));
+      // The sign-in is gone on the server; drop the one this browser still holds.
+      await createBrowserSupabase().auth.signOut({ scope: "local" }).catch(() => {});
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.href = `/${locale}`;
+    } catch {
+      setDeleting(false);
+      toast.error(d.failed);
+    }
+  }
+
   async function removeMember(id: string) {
     const supabase = createBrowserSupabase();
     await persist(supabase.from("family_members").delete().eq("id", id), { locale });
@@ -374,6 +423,40 @@ export function AccountPanel({
               </SettingsSection>
             </>
           ) : null}
+          <SettingsSection title={d.title} description={d.body}>
+            <div className="rounded-xl border p-4">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="destructive" size="sm">
+                    <Trash2 data-icon="inline-start" />
+                    {d.button}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{d.confirmTitle}</AlertDialogTitle>
+                    <AlertDialogDescription>{d.confirmBody}</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={deleting}>{t.cancel}</AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      disabled={deleting}
+                      aria-busy={deleting}
+                      onClick={(e) => {
+                        // Stay open until the account is gone, so a failure is seen here.
+                        e.preventDefault();
+                        void deleteAccount();
+                      }}
+                    >
+                      {deleting ? <Spinner data-icon="inline-start" /> : null}
+                      {d.confirm}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </SettingsSection>
         </div>
       </div>
     );

@@ -31,6 +31,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "U jezdce teď můžeš vyplnit pohlaví. U závodu se ti pak ukáže jen jeho kategorie, dívčí, nebo chlapecká.",
         "Ve filtrech si můžeš vybrat jednoho ze svých jezdců. Mapa, seznam i kalendář pak ukážou závody pro jeho věk a jeho oblíbené disciplíny.",
         "Když máš na stejný den v plánu jiný závod nebo sis ten den označil jako obsazený, upozorní tě na to u závodu žlutá bublina.",
+        "V Nastavení si teď můžeš smazat účet i se vším, co je v něm uložené.",
       ],
       en: [
         "When races from different disciplines meet on the map, each discipline has its own coloured bubble. The bigger the bubble, the more races in it.",
@@ -42,6 +43,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "You can now give a rider a gender, and a race then shows only their category, the girls' or the boys'.",
         "Pick one of your riders in the filters, and the map, list and calendar show races for their age and the disciplines they like.",
         "If your plan already has another race that day, or you marked the day as taken, a yellow bubble on the race tells you.",
+        "You can now delete your account, with everything saved in it, from Settings.",
       ],
     },
   },
