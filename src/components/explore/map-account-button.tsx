@@ -12,7 +12,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
-import { locales, type Locale, type Messages } from "@/lib/i18n/messages";
+import { asLocale, locales, type Locale, type Messages } from "@/lib/i18n/messages";
+import { LEGAL_PAGES, LEGAL_TITLES } from "@/lib/legal";
 import { rememberLocale } from "@/lib/i18n/locale-preference";
 import { translatePathname, localePath } from "@/lib/localized-paths";
 
@@ -155,6 +156,16 @@ export function AccountMenuItems({
           </DropdownMenuItem>
         </>
       ) : null}
+
+      {/* The legal pages, quietly at the foot. */}
+      <DropdownMenuSeparator />
+      <div className="flex items-center px-1 pb-0.5">
+        {LEGAL_PAGES.map((page) => (
+          <DropdownMenuItem key={page} asChild className="px-1 py-1 text-xs text-muted-foreground">
+            <Link href={localePath(locale, page)}>{LEGAL_TITLES[asLocale(locale)][page]}</Link>
+          </DropdownMenuItem>
+        ))}
+      </div>
     </>
   );
 }

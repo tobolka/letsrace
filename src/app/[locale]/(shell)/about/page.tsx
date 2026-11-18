@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DOC_WIDTH } from "@/components/account/panel";
+import { LegalLinks } from "@/components/legal/legal-doc";
 import { asLocale, locales, type Locale } from "@/lib/i18n/messages";
 import { RELEASE_NOTES, releaseNoteHeadings, releaseNoteItems, type ReleaseNote } from "@/lib/release-notes";
 import { absoluteUrl, getSiteUrl, localeAlternates, SITE_AUTHOR, SITE_NAME, SITE_PROFILES } from "@/lib/seo";
@@ -338,6 +339,8 @@ export default async function AboutPage({ params }: Props) {
           {SITE_PROFILES.map(profile => (
             <span key={profile.url}> · <a href={profile.url} rel="me" className="underline underline-offset-2">{profile.name}</a></span>
           ))}
+          {" · "}
+          <LegalLinks locale={locale} />
         </p>
       </article>
     </article>

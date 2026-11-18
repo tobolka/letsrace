@@ -281,10 +281,19 @@ export function AuthForm({
         </FieldGroup>
       </form>
       <p className="text-xs text-muted-foreground">
-        {t.authPrivacyNote}{" "}
-        <Link href={`/${locale}/privacy`} className="underline underline-offset-2 hover:text-foreground">
-          {t.privacyLink}
-        </Link>
+        {t.authPrivacyNote.split(/(\{terms\}|\{privacy\})/).map((part, i) =>
+          part === "{terms}" ? (
+            <Link key={i} href={`/${locale}/terms`} className="underline underline-offset-2 hover:text-foreground">
+              {t.termsLink}
+            </Link>
+          ) : part === "{privacy}" ? (
+            <Link key={i} href={`/${locale}/privacy`} className="underline underline-offset-2 hover:text-foreground">
+              {t.privacyLink}
+            </Link>
+          ) : (
+            part
+          ),
+        )}
       </p>
     </div>
   );

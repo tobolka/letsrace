@@ -32,6 +32,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Ve filtrech si můžeš vybrat jednoho ze svých jezdců. Mapa, seznam i kalendář pak ukážou závody pro jeho věk a jeho oblíbené disciplíny.",
         "Když máš na stejný den v plánu jiný závod nebo sis ten den označil jako obsazený, upozorní tě na to u závodu žlutá bublina.",
         "V Nastavení si teď můžeš smazat účet i se vším, co je v něm uložené.",
+        "Nové Podmínky užití a doplněná Ochrana soukromí ve všech jazycích webu: kdo web provozuje, odkud jsou údaje o závodech a co se děje s tvými daty. Odkazy najdeš dole na stránce O projektu.",
       ],
       en: [
         "When races from different disciplines meet on the map, each discipline has its own coloured bubble. The bigger the bubble, the more races in it.",
@@ -44,6 +45,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Pick one of your riders in the filters, and the map, list and calendar show races for their age and the disciplines they like.",
         "If your plan already has another race that day, or you marked the day as taken, a yellow bubble on the race tells you.",
         "You can now delete your account, with everything saved in it, from Settings.",
+        "New Terms of use and a fuller Privacy page in every language of the site: who runs it, where the race details come from and what happens to your data. The links are at the bottom of the About page.",
       ],
     },
   },

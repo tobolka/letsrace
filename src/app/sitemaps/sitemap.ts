@@ -73,6 +73,8 @@ export default async function sitemap(props: { id: Promise<string> }): Promise<M
 
   add((l) => hubPath(l), undefined, "daily", 0.9);
   add("about", new Date("2026-10-10"), "monthly", 0.5);
+  add("privacy", new Date("2026-11-18"), "yearly", 0.2);
+  add("terms", new Date("2026-11-18"), "yearly", 0.2);
   for (const code of PUBLIC_COUNTRY_CODES) add((l) => hubPath(l, code), undefined, "daily", 0.8);
 
   {

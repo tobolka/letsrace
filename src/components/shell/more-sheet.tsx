@@ -11,9 +11,10 @@ import { profileNav } from "@/components/shell/nav-items";
 import { promptInstall, useInstallState } from "@/components/shell/use-install-prompt";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerContent, DrawerHandle, DrawerTitle } from "@/components/ui/drawer";
-import { locales, messagesFor, type Locale } from "@/lib/i18n/messages";
+import { asLocale, locales, messagesFor, type Locale } from "@/lib/i18n/messages";
 import { rememberLocale } from "@/lib/i18n/locale-preference";
 import { localePath, translatePathname } from "@/lib/localized-paths";
+import { LEGAL_PAGES, LEGAL_TITLES } from "@/lib/legal";
 import { cn } from "@/lib/utils";
 
 const SubmitRaceModal = dynamic(() =>
@@ -210,6 +211,19 @@ export function MoreSheet({
                 </button>
               </div>
             ) : null}
+
+            <p className="mt-4 flex gap-4 px-4 pb-2 text-xs text-muted-foreground">
+              {LEGAL_PAGES.map((page) => (
+                <Link
+                  key={page}
+                  href={localePath(locale, page)}
+                  onClick={() => onOpenChange(false)}
+                  className="py-2 underline-offset-2 hover:underline"
+                >
+                  {LEGAL_TITLES[asLocale(locale)][page]}
+                </Link>
+              ))}
+            </p>
           </div>
         </DrawerContent>
       </Drawer>
