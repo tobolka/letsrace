@@ -26,7 +26,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
         "Máš-li u jezdců vyplněný rok narození, ukáže ti karta i stránka závodu pod tlačítky a plán u každého závodu, do které kategorie každý z nich patří a kolik stojí startovné, třeba „Ela → holky 7-8 · 200 Kč“.",
         "U jezdce můžeš vyplnit pohlaví a u závodu pak uvidíš jen jeho kategorii, dívčí, nebo chlapeckou. Když ho nevyplníš, ukážeme obě.",
         "Přihlášení si ve filtrech vyberou jezdce a mapa, seznam i kalendář pak ukážou závody pro jeho věk a jeho oblíbené disciplíny.",
-        "Když máš v plánu jiný závod ve stejný den nebo sis ten den označil jako obsazený, upozorní tě na to žlutý rámeček na kartě i stránce závodu.",
+        "Když máš v plánu jiný závod ve stejný den nebo sis ten den označil jako obsazený, upozorní tě na to žlutá bublina na kartě i stránce závodu.",
       ],
       en: [
         "When races from different disciplines are grouped on the map, each discipline has its own colored bubble, and the bigger the bubble, the more races it holds.",
