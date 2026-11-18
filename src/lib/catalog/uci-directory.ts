@@ -9,7 +9,8 @@ import { AGE_CATEGORIES, audienceFromAgeCategories } from "@/lib/taxonomy";
  * on the same host; the API is what this reads.
  */
 export const UCI_DIRECTORY = "https://uci-competition.tech.uci.ch";
-export const UCI_DIRECTORY_COUNTRIES: Record<string, string> = { CZE: "CZ", SVK: "SK", GER: "DE", POL: "PL", AUT: "AT", ITA: "IT" };
+/** The UCI's codes for the countries on our map (`PUBLIC_MAP_CODES`). */
+export const UCI_DIRECTORY_COUNTRIES: Record<string, string> = { CZE: "CZ", SVK: "SK", GER: "DE", POL: "PL", AUT: "AT", ITA: "IT", SUI: "CH" };
 
 export type UciDirectoryRace = { name?: string | null; categoryCode?: string | null; categoryName?: string | null; raceTypeCode?: string | null; startDate?: string | null; endDate?: string | null };
 export type UciDirectoryCompetition = {

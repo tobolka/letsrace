@@ -86,6 +86,7 @@ async function main() {
   const normalized = (text: string) => fold(text).replace(/[^a-z0-9]+/g, " ").replace(/\b(20\d\d|uci)\b/g, " ").replace(/\s+/g, " ").trim();
 
   const report: Record<string, unknown>[] = [];
+  const publishedThisRun = new Set<string>();
   /** Unresolved: into the shared review queue, unpublished, with what a person has to settle. */
   const queue = async (event: import("../src/lib/domain").ParsedEvent, competition: import("../src/lib/catalog/uci-directory").UciDirectoryCompetition, reason: string) => {
     if (!apply) return;
@@ -180,6 +181,10 @@ async function main() {
       console.log(`  ? ${start} ${event.name.slice(0, 50)} — možná už je jako: ${sameDay.map((r) => r.slug).join(", ")}`);
       continue;
     }
+    // Two directory entries for one race (the men's and the women's) are one new race.
+    const runKey = `${normalized(event.name)}|${start}`;
+    if (publishedThisRun.has(runKey)) { report.push({ ...line, outcome: "same-run-duplicate" }); continue; }
+    publishedThisRun.add(runKey);
     // Not in the catalogue: publish it through the same gates every reviewed source passes.
     console.log(`  + ${start} ${event.name.slice(0, 50)} | ${event.placeText} ${cc} | ${competition.classCode}${apply ? "" : " (suchý běh)"}`);
     report.push({ ...line, outcome: apply ? "publishing" : "new" });
@@ -230,7 +235,10 @@ async function main() {
       // those govern the set.
       const massStart = (event!.discipline ?? []).some((d) => ["xcm", "gran_fondo", "gravel"].includes(d)) || /marathon|maraton|fondo|gravel/i.test(`${event!.name} ${r.name}`);
       const regulationsRead = ["categories", "schedule", "fees"].some((k) => (r.practical_details ?? {})[k] && !String(((r.practical_details ?? {})[k] as { quote?: string }).quote ?? "").startsWith("UCI Competition Directory"));
-      const dropped = guessed && licensedOnly && !massStart && !regulationsRead ? ["amateur", "masters", "kids", "u7", "u9", "u11"] : [];
+      // At a world cup or a championship the youth classes are guessed too: such a meeting runs the UCI's categories.
+      const championship = levelAtLeast(ucd.uciDirectoryLevel(competition.classCode) === "international" ? r.level : ucd.uciDirectoryLevel(competition.classCode), "world_cup");
+      const dropped = guessed && licensedOnly && !massStart && !regulationsRead
+        ? ["amateur", "masters", "kids", "u7", "u9", "u11", ...(championship ? ["youth", "u13", "u15", "u17"] : [])] : [];
       const merged = AGE_CATEGORIES.filter((a) => (previous.includes(a) && !dropped.includes(a)) || ages.includes(a));
       // Every class shown is one the UCI lists for this competition: that is the organiser's word, not a guess.
       const accounted = ages.length > 0 && merged.every((a) => ages.includes(a));
