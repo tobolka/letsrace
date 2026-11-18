@@ -122,10 +122,9 @@ export function PlanRow({
           </span>
           {categoryLines.map((line) => (
             <span key={line.id} className="mt-0.5 block text-xs leading-snug" data-rider-categories>
-              <span className="font-medium">{line.name}</span>
-              <span aria-hidden className="text-muted-foreground"> → </span>
-              <span className="sr-only">: </span>
-              {line.text}
+              <span className="font-medium text-sky-700 dark:text-sky-300">{line.name}</span>{" "}
+              <span className="text-muted-foreground">{line.categories}</span>
+              {line.fee ? <span className="text-muted-foreground"> · {line.fee}</span> : null}
             </span>
           ))}
         </div>

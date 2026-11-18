@@ -266,20 +266,6 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             </span>
           </p>
           {isPast ? <p className="mt-2 text-sm font-medium">{rc.taken}</p> : null}
-          {isPast ? null : (
-            <RiderCategoryLine
-              className="mt-3"
-              locale={locale}
-              race={{
-                startDate: event.startDate,
-                disciplines: event.disciplines,
-                categories: event.practicalDetails?.categories?.value.map(({ label, birthYears }) => ({ label, ...(birthYears ? { birthYears } : {}) })),
-                fees: event.practicalDetails?.fees?.value.map(({ label, amount, currency, validUntil }) => ({ label, amount, currency, ...(validUntil ? { validUntil } : {}) })),
-                ageCategories: event.ageCategories,
-                ageConfidence: event.ageConfidence,
-              }}
-            />
-          )}
         </header>
 
         {/* The same rows and badges as the race card on the map. */}
@@ -359,6 +345,20 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           directionsUrl={googleDirectionsUrl(here, "")}
           mapHref={mapHref}
         />
+        {isPast ? null : (
+          <RiderCategoryLine
+            className="mt-4"
+            locale={locale}
+            race={{
+              startDate: event.startDate,
+              disciplines: event.disciplines,
+              categories: event.practicalDetails?.categories?.value.map(({ label, birthYears }) => ({ label, ...(birthYears ? { birthYears } : {}) })),
+              fees: event.practicalDetails?.fees?.value.map(({ label, amount, currency, validUntil }) => ({ label, amount, currency, ...(validUntil ? { validUntil } : {}) })),
+              ageCategories: event.ageCategories,
+              ageConfidence: event.ageConfidence,
+            }}
+          />
+        )}
         {/* The organiser's other pages and documents: one list, the same rows as the map's race card. */}
         <RaceLinkRows
           links={pageLinks}

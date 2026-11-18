@@ -114,7 +114,6 @@ export function EmbeddedBody({
     <div className="flex flex-col">
       {/* When and where, then what you can do with it. */}
       <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
-      <CardRiderLine event={event} locale={locale} />
       <div className="flex flex-col gap-1.5">
         <p className="flex items-center gap-2 text-sm font-semibold">
           <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -168,6 +167,7 @@ export function EmbeddedBody({
         mapHref={onMap ? mapHref : ""}
         carryFilters
       />
+      <CardRiderLine event={event} locale={locale} />
       </div>
 
       {/* Who it is for and what kind of race it is. */}
