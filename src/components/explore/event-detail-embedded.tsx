@@ -269,6 +269,7 @@ function CardRiderLineLoaded({ event, locale }: { event: EventListItem; locale: 
         fees: facts?.fees?.value,
         ageCategories: event.ageCategories,
         ageConfidence: event.ageConfidence,
+        listedCategories: (full?.categories ?? event.categories)?.map(({ name, ageMin, ageMax }) => ({ name, ageMin, ageMax })),
       }}
     />
   );

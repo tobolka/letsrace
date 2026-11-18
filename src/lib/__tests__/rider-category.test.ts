@@ -177,3 +177,27 @@ describe("matchRiderCategories with a gender", () => {
     expect(matchRiderCategories(2019, race, { ...opts, gender: "female" }).map((m) => m.label)).toEqual(["Děti", "kadeti, kadetky"]);
   });
 });
+
+describe("matchRiderCategories from a listed category set", () => {
+  const race = {
+    startDate: "2027-06-05",
+    disciplines: ["mtb"],
+    listedCategories: [
+      { name: "Odrážedla", ageMin: null, ageMax: 4 },
+      { name: "Kluci 7–8 let", ageMin: 7, ageMax: 8 },
+      { name: "Holky 7–8 let", ageMin: 7, ageMax: 8 },
+      { name: "Kluci 7–8 let", ageMin: 7, ageMax: 8 },
+      { name: "Hlavní závod", ageMin: null, ageMax: null },
+      { name: "Veteráni", ageMin: 40, ageMax: null },
+    ],
+  };
+  it("uses the listed ages when the regulations give none", () => {
+    expect(matchRiderCategories(2019, race)).toEqual([{ label: "Kluci 7–8 let" }, { label: "Holky 7–8 let" }]);
+    expect(matchRiderCategories(2019, race, { gender: "female" })).toEqual([{ label: "Holky 7–8 let" }]);
+    expect(matchRiderCategories(1980, race)).toEqual([{ label: "Veteráni" }]);
+    expect(matchRiderCategories(2014, race)).toEqual([]);
+  });
+  it("prefers the regulations when they give ages", () => {
+    expect(matchRiderCategories(2019, { ...race, categories: [{ label: "Děti", birthYears: "2018-2020" }] })).toEqual([{ label: "Děti", birthYears: "2018-2020" }]);
+  });
+});

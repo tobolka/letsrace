@@ -43,7 +43,7 @@ import { asRiderGender, riderFactsFromStored } from "@/lib/rider-category";
 import { toast } from "sonner";
 
 const EVENT_EMBED =
-  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, age_categories, age_confidence, rider_categories:practical_details->categories, rider_fees:practical_details->fees, location:locations(name, municipality, country_code)";
+  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, age_categories, age_confidence, rider_categories:practical_details->categories, rider_fees:practical_details->fees, rider_listed:event_categories(name, age_min, age_max), location:locations(name, municipality, country_code)";
 
 type EventEmbed = {
   id: string;
@@ -63,6 +63,7 @@ type EventEmbed = {
   /** Only the regulations' categories and fees, for the riders' line. */
   rider_categories: unknown;
   rider_fees: unknown;
+  rider_listed: { name: string; age_min: number | null; age_max: number | null }[] | null;
   location:
     | { name: string | null; municipality: string | null; country_code: string | null }
     | { name: string | null; municipality: string | null; country_code: string | null }[]
@@ -100,6 +101,7 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
     riderFacts: {
       ...riderFactsFromStored({ categories: row.rider_categories, fees: row.rider_fees }, row.start_date),
       ageCategories: row.age_categories ?? [],
+      listedCategories: (row.rider_listed ?? []).map((c) => ({ name: c.name, ageMin: c.age_min, ageMax: c.age_max })),
       ageConfidence: AGE_CONFIDENCE.has(row.age_confidence ?? "") ? (row.age_confidence as "explicit" | "previous" | "default") : null,
     },
   };

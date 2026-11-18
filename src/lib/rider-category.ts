@@ -149,6 +149,8 @@ export type RiderRaceFacts = {
   fees?: RiderFeeRow[];
   ageCategories?: string[];
   ageConfidence?: "explicit" | "previous" | "default" | null;
+  /** Categories with ages from a calendar or sign-up list, for a race whose regulations have not been read. */
+  listedCategories?: { name: string; ageMin: number | null; ageMax: number | null }[];
 };
 
 const within = (year: number, b: BirthYearBounds) => (b.from == null || year >= b.from) && (b.to == null || year <= b.to);
@@ -200,6 +202,11 @@ export function matchRiderCategories(
   { today = new Date().toISOString().slice(0, 10), gender = null }: { today?: string; gender?: RiderGender | null } = {},
 ): RiderCategoryMatch[] {
   const ref = referenceYear(race.startDate, race.disciplines);
+  const fitsGender = (label: string) => {
+    if (!gender) return true;
+    const of = categoryGender(label);
+    return of == null || of === "mixed" || of === gender;
+  };
   const rows = race.categories ?? [];
   const read = rows.map((row) => ({
     row,
@@ -209,17 +216,23 @@ export function matchRiderCategories(
     const labels = rows.map((r) => r.label);
     return read
       .filter((r) => r.bounds && within(birthYear, r.bounds))
-      .filter(({ row }) => {
-        if (!gender) return true;
-        const of = categoryGender(row.label);
-        return of == null || of === "mixed" || of === gender;
-      })
+      .filter(({ row }) => fitsGender(row.label))
       .map(({ row }) => {
         const fee = race.fees?.length ? feeForCategory(row.label, race.fees, labels, today) : undefined;
         return { label: row.label, ...(row.birthYears ? { birthYears: row.birthYears } : {}), ...(fee ? { fee } : {}) };
       });
   }
-  // No ages in the regulations: the race's own age groups, only when a source named them.
+  // No ages in the regulations: the categories a calendar or sign-up list gives with ages.
+  const listed = (race.listedCategories ?? []).filter((c) => c.ageMin != null || c.ageMax != null);
+  if (listed.length) {
+    const seen = new Set<string>();
+    return listed
+      .filter((c) => within(birthYear, { from: c.ageMax == null ? null : ref - c.ageMax, to: c.ageMin == null ? null : ref - c.ageMin }))
+      .filter((c) => fitsGender(c.name))
+      .filter((c) => !seen.has(c.name.trim().toLowerCase()) && Boolean(seen.add(c.name.trim().toLowerCase())))
+      .map((c) => ({ label: c.name.trim() }));
+  }
+  // Nothing with ages from the race itself: its age groups, only when a source named them.
   if (race.ageConfidence !== "explicit" && race.ageConfidence !== "previous") return [];
   const out: RiderCategoryMatch[] = [];
   for (const id of race.ageCategories ?? []) {

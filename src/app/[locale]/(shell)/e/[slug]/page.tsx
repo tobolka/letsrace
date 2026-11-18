@@ -356,6 +356,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
               fees: event.practicalDetails?.fees?.value.map(({ label, amount, currency, validUntil }) => ({ label, amount, currency, ...(validUntil ? { validUntil } : {}) })),
               ageCategories: event.ageCategories,
               ageConfidence: event.ageConfidence,
+              listedCategories: categories.filter((c) => c.ageMin != null || c.ageMax != null).map(({ name, ageMin, ageMax }) => ({ name, ageMin, ageMax })),
             }}
           />
         )}
