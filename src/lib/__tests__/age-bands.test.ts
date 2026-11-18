@@ -86,3 +86,48 @@ it("keeps every admitted child band for an open upper age limit", () => {
   expect(ageCategoriesFromList([{name:"2018 a mladší"}],{refYear:2026})).toEqual(["u7","u9","kids"]);
   expect(names(["Laufradrennen"])).toEqual(["kids"]);
 });
+
+describe("class names read from regulations", () => {
+  const one = (name: string) => ageCategoriesFromList([{ name }], { refYear: 2027 });
+  it("reads an age after an adult class as masters, not the open race", () => {
+    expect(one("muži 40")).toEqual(["masters"]);
+    expect(one("Muži 50")).toEqual(["masters"]);
+    expect(one("ženy 40")).toEqual(["masters"]);
+    expect(one("K50, M50")).toEqual(["masters"]);
+    expect(one("ženy")).toEqual(["elite"]);
+  });
+  it("reads bare masters age bands", () => {
+    expect(one("40-44")).toEqual(["masters"]);
+    expect(one("75-79")).toEqual(["masters"]);
+  });
+  it("reads Slovak pupils", () => {
+    expect(one("Mladší žiaci")).toEqual(["u13", "youth"]);
+    expect(one("Starší žiaci")).toEqual(["u15", "youth"]);
+    expect(one("Žiačky")).toEqual(["u13", "u15", "youth"]);
+  });
+  it("reads Polish federation classes", () => {
+    expect(one("Żakini")).toEqual(["u13", "youth"]);
+    expect(one("Młodziczka")).toEqual(["u15", "youth"]);
+    expect(one("Orlik")).toEqual(["u23"]);
+    expect(one("Orliczka")).toEqual(["u23"]);
+    expect(one("Amator M/K")).toEqual(["amateur"]);
+  });
+  it("reads abbreviations and Italian classes", () => {
+    expect(one("Jun.")).toEqual(["junior"]);
+    expect(one("JUN M/F")).toEqual(["junior"]);
+    expect(one("ESO M/F")).toEqual(["u13", "u15", "youth"]);
+    expect(one("ALL M/F")).toEqual(["u17", "youth"]);
+    expect(one("AMATORI TUTTI")).toEqual(["amateur"]);
+    expect(one("MU15/WU17")).toEqual(["u15", "u17", "youth"]);
+    expect(one("GIOCOCICLISMO per NON tesserati da 5 a 12 anni di età")).toEqual(["u7", "u9", "u11", "u13", "kids", "youth"]);
+    expect(one("Jedermensch-Rennen")).toEqual(["amateur"]);
+  });
+  it("reads a Slovak age range", () => {
+    expect(one("Detské preteky 1 až 12 rokov")).toEqual(["u7", "u9", "u11", "u13", "kids", "youth"]);
+  });
+  it("still places nothing for fees and courses", () => {
+    expect(one("Startgeld")).toEqual([]);
+    expect(one("90 km MTB")).toEqual([]);
+    expect(one("Early Bird")).toEqual([]);
+  });
+});

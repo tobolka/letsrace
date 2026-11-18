@@ -58,8 +58,11 @@ export function ageCategoriesFromList(
 /** Ages written out: "15-35 let", "36 let - 60 let", "40 a více let". */
 function agesInText(rawName: string): { ageMin?: number; ageMax?: number } {
   const name = rawName.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
-  const range = name.match(/(?<![\d.])(\d{1,2})\s*(?:let\s*)?(?:[-–]|bis)\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahren?)\b/);
+  const range = name.match(/(?<![\d.])(\d{1,2})\s*(?:let\s*)?(?:[-–]|bis|az|a)\s*(\d{1,2})\s*(?:let|lat|rokov|rokú|years|jahren?|anni)\b/);
   if (range) return { ageMin: Number(range[1]), ageMax: Number(range[2]) };
+  // A masters list writes the bands bare: "40-44", "75-79".
+  const bare = name.match(/^\s*([2-8]\d)\s*[-–]\s*([2-8]\d)\s*$/);
+  if (bare) return { ageMin: Number(bare[1]), ageMax: Number(bare[2]) };
   const plus = name.match(/(?<![\d.])(\d{1,2})\s*(?:\+|a\s*vice|let\s*a\s*vice|and\s*over|und\s*alter)/);
   if (plus) return { ageMin: Number(plus[1]) };
   const upper = name.match(/\b(?:do|up to|bis)\s*(\d{1,2})\s*(?:let|lat|rokov|years|jahre)\b/);
@@ -113,7 +116,9 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   // elite are adults, masters are adults of a given age.
   if (/\bu\s*23\b|under\s*23/.test(name)) return ["u23"];
   // "Hobby Frauen" is a hobby class, not the women's open race.
-  if (/hobby|jedermann|amat[ae]ur|amater|cicloturist|\bfun\b|funklasse/.test(name)) return ["amateur"];
+  if (/hobby|jedermann|jedermensch|amat[ae]ur|amater|amator|cicloturist|\bfun\b|funklasse/.test(name)) return ["amateur"];
+  // Polish under-23 riders.
+  if (/\borli(k|czk)/.test(name)) return ["u23"];
   if (/\belit[ea]?\b/.test(name)) return ["elite"];
   if (/\bmasters?\b|\bveteran|\bsenior/.test(name)) return ["masters"];
 
@@ -138,15 +143,14 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   if (ageMin != null && ageMax != null && ageMax > 18) return ageMin >= 35 ? ["masters"] : ["amateur"];
 
   // U-numbers: "U11", "U 13", "U-15".
-  const u = name.match(/\bu\s*-?\s*(\d{1,2})\b/);
-  if (u) {
-    const band = bandForAge(Number(u[1]) - 1);
-    if (band) return [band];
-  }
+  // "MU15/WU17": a gender letter glued to the U-number, and more than one per name.
+  const us = [...name.matchAll(/(?:\b|(?<=\b[mwfkd]))u\s*-?\s*(\d{1,2})\b/g)].map((m) => bandForAge(Number(m[1]) - 1)).filter((b): b is AgeCategory => Boolean(b));
+  if (us.length) return [...new Set(us)];
 
   // Czech and Slovak federation classes, with the forms' abbreviations:
   // "ml. žáci", "st. žákyně".
-  const pupils = /\bza(ci|kyne|k|cky|kyn)\b/;
+  // Slovak writes them "žiaci", "žiačky".
+  const pupils = /\bz(?:a|ia)(ci|kyne|k|cky|kyn)\b/;
   if (/odrazed|\bsnec|mini\s*za|benjam/.test(name)) return ["u7", "u9"];
   if (/predza|pripravk/.test(name)) return ["u11"];
   if (pupils.test(name) && /mlad|\bml\b\.?/.test(name)) return ["u13"];
@@ -156,11 +160,11 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   // Other federations' youth classes.
   if (/laufrad/.test(name)) return ["kids"];
   if (/giovanissim|poussin|pupil/.test(name)) return ["u7", "u9", "u11"];
-  if (/\bzak\b|\bzacy\b/.test(name)) return ["u13"];
-  if (/mlodzik|minime/.test(name)) return ["u15"];
-  if (/esordient|benjamin|aspirant|schuler/.test(name)) return ["u13", "u15"];
-  if (/alliev[ie]|nieuwelingen|cadet|jugend\b|junior mlodszy|mlodsi junior/.test(name)) return ["u17"];
-  if (/juniores|junioren|juniorinnen|juniori\b|juniorky|junior/.test(name)) return ["junior"];
+  if (/\bzak\b|\bzacy\b|\bzakin/.test(name)) return ["u13"];
+  if (/mlodzik|mlodzicz|minime/.test(name)) return ["u15"];
+  if (/esordient|\beso\b|benjamin|aspirant|schuler/.test(name)) return ["u13", "u15"];
+  if (/alliev[ie]|\ball\s*m\s*\/\s*f\b|nieuwelingen|cadet|jugend\b|junior mlodszy|mlodsi junior/.test(name)) return ["u17"];
+  if (/juniores|junioren|juniorinnen|juniori\b|juniorky|junior|\bjun\b/.test(name)) return ["junior"];
   if (/junior/.test(name)) return ["junior"];
 
   // BMX and kids' cups list ages bare: "Boys 9-10", "Chlapci 7 a mladší",
@@ -178,6 +182,8 @@ function bandsFor(rawName: string, ageMin?: number, ageMax?: number): AgeCategor
   }
   if (/cruiser/.test(name)) return ["amateur"];
 
+  // An adult class with an age is a masters class: "muži 40", "K50, M50".
+  if (/\b(muzi|zeny|men|women|herren|damen|manner|frauen|[mk])\s*([3-8]\d)\b(?!\s*(km|m\b|min))/.test(name)) return ["masters"];
   // Adult open classes.
   if (/\bmuzi\b|\bzeny\b|\bmen\b|\bwomen\b|\bherren\b|\bdamen\b|\bmanner\b|\bfrauen\b|\bhommes\b|\bfemmes\b|\buomini\b|\bdonne\b|\bmezczyzni\b|\bkobiety\b/.test(name)) return ["elite"];
   if (/hobby|amater|prichozi|\bopen\b/.test(name)) return ["amateur"];

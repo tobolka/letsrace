@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { resolveEventOutboundUrls } from "@/lib/watcher/public-url";
 
 describe("organiser site over a calendar page", () => {
   it("keeps the organiser's site when a calendar is read again", async () => {
@@ -68,5 +69,25 @@ describe("the results link", () => {
     const { resolveEventOutboundUrls } = await import("@/lib/watcher/public-url");
     expect(resolveEventOutboundUrls({ registrationUrl: "https://maraton.cz/x", resultsUrl: "https://a.cz/vysledky", startDate: "2026-01-01", today: "2026-11-06" }).resultsUrl).toBe("https://a.cz/vysledky");
     expect(resolveEventOutboundUrls({ registrationUrl: "https://klub.cz/prihlaska", startDate: "2026-01-01", today: "2026-11-06" }).resultsUrl).toBeNull();
+  });
+});
+
+describe("a race with no organiser page", () => {
+  it("links the federation's race page or the calendar it was stored with", () => {
+    const out = resolveEventOutboundUrls({
+      websiteUrl: "https://rideandrest.net/manifestazione/campionato-mondiale-master-ciclocross-2026/",
+      regulationsUrl: "https://members.federciclismo.it/race/detail/182526",
+    });
+    expect(out.websiteUrl).toBeNull();
+    expect(out.listingUrl).toBe("https://members.federciclismo.it/race/detail/182526");
+  });
+  it("links the UCI's page for the competition", () => {
+    const out = resolveEventOutboundUrls({ websiteUrl: "https://www.uci.org/competition-details/2027/PIS/80865" });
+    expect(out.websiteUrl).toBeNull();
+    expect(out.listingUrl).toBe("https://www.uci.org/competition-details/2027/PIS/80865");
+  });
+  it("links a stored calendar page when it is the only address", () => {
+    const out = resolveEventOutboundUrls({ websiteUrl: "https://rideandrest.net/manifestazione/some-race-2026/" });
+    expect(out.listingUrl).toBe("https://rideandrest.net/manifestazione/some-race-2026/");
   });
 });

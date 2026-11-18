@@ -180,7 +180,9 @@ export function EmbeddedBody({
       {trustText || checkedText ? (
         <CardSection className="pt-5">
         <p
-          className={cn("text-xs leading-snug", trustLow ? "text-destructive" : "text-muted-foreground")}
+          // Quiet even when unverified: it is a footnote, not a warning.
+          className="text-xs leading-snug text-muted-foreground"
+          data-trust={trustLow ? "low" : undefined}
           title={t.trustExplanation}
         >
           {trustText}
