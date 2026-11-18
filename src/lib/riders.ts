@@ -11,16 +11,22 @@ import { asRiderGender, type RiderGender } from "@/lib/rider-category";
  * The auth client is fetched after the page is up, as for the plan buttons.
  */
 export type Rider = { id: string; name: string; birthYear: number; isSelf: boolean; gender?: RiderGender | null };
+/** Anyone in the family, with what the race filter can use: the birth year and the disciplines they ride. */
+export type FamilyRider = Omit<Rider, "birthYear"> & { birthYear: number | null; disciplines: string[] };
 
 const EMPTY: Rider[] = [];
+const NO_FAMILY: FamilyRider[] = [];
 let riders: Rider[] = EMPTY;
+let family: FamilyRider[] = NO_FAMILY;
 let started = false;
 let userId: string | null = null;
 const listeners = new Set<() => void>();
 let reload: (() => void) | null = null;
 
-function set(next: Rider[]) {
-  riders = next;
+function set(next: FamilyRider[]) {
+  family = next.length ? next : NO_FAMILY;
+  const withYear = next.filter((m): m is FamilyRider & { birthYear: number } => m.birthYear != null).map(({ disciplines: _d, ...m }) => m);
+  riders = withYear.length ? withYear : EMPTY;
   listeners.forEach((l) => l());
 }
 
@@ -33,18 +39,22 @@ function start() {
       const client = createBrowserSupabase();
       const load = async (id: string | null) => {
         userId = id;
-        if (!id) return set(EMPTY);
+        if (!id) return set(NO_FAMILY);
         const { data } = await client
           .from("family_members")
-          .select("id, name, birth_year, is_self, gender")
+          .select("id, name, birth_year, is_self, gender, preferred_disciplines")
           .eq("user_id", id)
-          .not("birth_year", "is", null)
           .order("created_at");
         if (userId !== id) return;
         set(
-          (data ?? [])
-            .filter((m) => typeof m.birth_year === "number")
-            .map((m) => ({ id: m.id, name: m.name, birthYear: m.birth_year as number, isSelf: Boolean(m.is_self), gender: asRiderGender(m.gender) })),
+          (data ?? []).map((m) => ({
+            id: m.id,
+            name: m.name,
+            birthYear: typeof m.birth_year === "number" ? m.birth_year : null,
+            isSelf: Boolean(m.is_self),
+            gender: asRiderGender(m.gender),
+            disciplines: Array.isArray(m.preferred_disciplines) ? m.preferred_disciplines.filter((d): d is string => typeof d === "string") : [],
+          })),
         );
       };
       reload = () => void load(userId);
@@ -57,7 +67,7 @@ function start() {
         setTimeout(() => void load(id), 0);
       });
     } catch {
-      set(EMPTY);
+      set(NO_FAMILY);
     }
   })();
 }
@@ -76,4 +86,9 @@ export function refreshRiders() {
 /** The family's riders with a birth year; empty until known, and for visitors. */
 export function useRiders(): Rider[] {
   return useSyncExternalStore(subscribe, () => riders, () => EMPTY);
+}
+
+/** Everyone in the signed-in family, for the race filter; empty for visitors. */
+export function useFamilyRiders(): FamilyRider[] {
+  return useSyncExternalStore(subscribe, () => family, () => NO_FAMILY);
 }

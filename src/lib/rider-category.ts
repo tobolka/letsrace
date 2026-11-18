@@ -268,3 +268,43 @@ export function riderFactsFromStored(raw: unknown, startDate: string): Pick<Ride
     .map((f) => ({ label: f.label, amount: f.amount, currency: f.currency, ...(typeof f.validUntil === "string" ? { validUntil: f.validUntil } : {}) }));
   return { ...(categories?.length ? { categories } : {}), ...(fees?.length ? { fees } : {}) };
 }
+
+/**
+ * The race filter's age groups for a rider: the band their racing age falls
+ * in (U9 for an eight-year-old), juniors, and for adults the open classes plus
+ * masters from 35. Empty for a rider with no birth year.
+ */
+export function riderFilterCategories(birthYear: number | null, refYear: number): string[] {
+  if (birthYear == null) return [];
+  const age = refYear - birthYear;
+  if (age < 0) return [];
+  if (age <= 6) return ["u7"];
+  if (age <= 8) return ["u9"];
+  if (age <= 10) return ["u11"];
+  if (age <= 12) return ["u13"];
+  if (age <= 14) return ["u15"];
+  if (age <= 16) return ["u17"];
+  if (age <= 18) return ["junior"];
+  if (age <= 22) return ["u23", "elite", "amateur"];
+  return age >= 35 ? ["elite", "amateur", "masters"] : ["elite", "amateur"];
+}
+
+/** What choosing a rider in the filter sets: their age groups and the disciplines they ride. */
+export function riderFilter(rider: { birthYear: number | null; disciplines: string[] }, refYear: number) {
+  return { categories: riderFilterCategories(rider.birthYear, refYear), disciplines: [...rider.disciplines] };
+}
+
+const sameSet = (a: string[], b: string[]) => a.length === b.length && a.every((x) => b.includes(x));
+
+/** The rider whose filter is the one on now, if any. */
+export function activeRiderId<T extends { id: string; birthYear: number | null; disciplines: string[] }>(
+  riders: T[],
+  current: { categories: string[]; disciplines: string[] },
+  refYear: number,
+): string | null {
+  for (const rider of riders) {
+    const f = riderFilter(rider, refYear);
+    if ((f.categories.length || f.disciplines.length) && sameSet(f.categories, current.categories) && sameSet(f.disciplines, current.disciplines)) return rider.id;
+  }
+  return null;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { categoryGender, feeForCategory, matchRiderCategories, parseBirthYears, riderFactsFromStored } from "@/lib/rider-category";
+import { activeRiderId, categoryGender, feeForCategory, riderFilter, riderFilterCategories, matchRiderCategories, parseBirthYears, riderFactsFromStored } from "@/lib/rider-category";
 
 const REF = 2027;
 
@@ -199,5 +199,30 @@ describe("matchRiderCategories from a listed category set", () => {
   });
   it("prefers the regulations when they give ages", () => {
     expect(matchRiderCategories(2019, { ...race, categories: [{ label: "Děti", birthYears: "2018-2020" }] })).toEqual([{ label: "Děti", birthYears: "2018-2020" }]);
+  });
+});
+
+describe("riderFilter", () => {
+  it("picks the age band for the race year", () => {
+    expect(riderFilterCategories(2019, 2027)).toEqual(["u9"]);
+    expect(riderFilterCategories(2021, 2027)).toEqual(["u7"]);
+    expect(riderFilterCategories(2009, 2027)).toEqual(["junior"]);
+    expect(riderFilterCategories(1987, 2027)).toEqual(["elite", "amateur", "masters"]);
+    expect(riderFilterCategories(2000, 2027)).toEqual(["elite", "amateur"]);
+    expect(riderFilterCategories(null, 2027)).toEqual([]);
+  });
+  it("adds the disciplines the rider rides", () => {
+    expect(riderFilter({ birthYear: 2019, disciplines: ["mtb", "cx"] }, 2027)).toEqual({ categories: ["u9"], disciplines: ["mtb", "cx"] });
+  });
+  it("knows which rider's filter is on", () => {
+    const riders = [
+      { id: "a", birthYear: 2019, disciplines: ["mtb"] },
+      { id: "b", birthYear: 1987, disciplines: [] },
+      { id: "c", birthYear: null, disciplines: [] },
+    ];
+    expect(activeRiderId(riders, { categories: ["u9"], disciplines: ["mtb"] }, 2027)).toBe("a");
+    expect(activeRiderId(riders, { categories: ["masters", "elite", "amateur"], disciplines: [] }, 2027)).toBe("b");
+    expect(activeRiderId(riders, { categories: ["u9"], disciplines: [] }, 2027)).toBeNull();
+    expect(activeRiderId(riders, { categories: [], disciplines: [] }, 2027)).toBeNull();
   });
 });

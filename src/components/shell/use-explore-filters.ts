@@ -56,6 +56,7 @@ export function useExploreFilters() {
     onClearDisciplines: () => void apply({ disciplines: [] }, "discipline"),
     onClearLevels: () => void apply({ levels: [] }, "level"),
     onClearCategories: () => void apply({ categories: [] }, "category"),
+    onRiderFilter: (categories: string[], disciplines: string[]) => void apply({ categories, disciplines }, "rider"),
     onSeries: (slug: string) => void apply({ series: filters.series === slug ? "" : slug }, "series"),
     onCountry: (code: string) => {
       const { country, dropSeries } = countryChange(filters, toggleIn(filters.country, code), seriesList);

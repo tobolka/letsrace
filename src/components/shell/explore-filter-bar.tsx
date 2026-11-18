@@ -187,6 +187,7 @@ function MobileFilterRow({
           onClearDisciplines={actions.onClearDisciplines}
           onClearLevels={actions.onClearLevels}
           onClearCategories={actions.onClearCategories}
+          onRiderFilter={actions.onRiderFilter}
           onSeries={actions.onSeries}
           onCountry={actions.onCountry}
           onClearCountries={actions.onClearCountries}

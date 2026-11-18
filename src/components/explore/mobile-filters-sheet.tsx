@@ -30,6 +30,7 @@ import {
   RACE_LEVELS,
 } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+import { RIDER_FILTER_COPY, useRiderFilterOptions, type OnRiderFilter } from "@/components/explore/rider-filter";
 import type { DateRange } from "react-day-picker";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 
@@ -98,6 +99,7 @@ export function MobileFiltersSheet({
   onSeries,
   onCountry,
   onClearCountries,
+  onRiderFilter,
   onReset,
   hideDate = false,
   customDate = false,
@@ -138,6 +140,8 @@ export function MobileFiltersSheet({
   onSeries: (slug: string) => void;
   onCountry: (code: string) => void;
   onClearCountries: () => void;
+  /** Choosing one of the family's riders sets their age group and disciplines; signed-in only. */
+  onRiderFilter?: OnRiderFilter;
   onReset: () => void;
 }) {
   const [customOpen, setCustomOpen] = useState(customDate);
@@ -289,6 +293,14 @@ export function MobileFiltersSheet({
 
             {hideDate || !customOpen ? null : <Separator />}
 
+            <RiderSection
+              locale={locale}
+              categories={categories}
+              disciplines={disciplines}
+              dateFrom={dateFrom}
+              onApply={onRiderFilter}
+            />
+
             <Section title={messages.typeFilter}>
               <div className="flex flex-wrap gap-2">
                 <Chip active={disciplines.length === 0} onClick={onClearDisciplines}>
@@ -435,5 +447,36 @@ export function MobileFiltersSheet({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+/** The family's riders at the top of the phone's filters, one chip each. */
+function RiderSection({
+  locale,
+  categories,
+  disciplines,
+  dateFrom,
+  onApply,
+}: {
+  locale: string;
+  categories: string[];
+  disciplines: string[];
+  dateFrom: string;
+  onApply?: OnRiderFilter;
+}) {
+  const { options } = useRiderFilterOptions(locale, { categories, disciplines, dateFrom }, onApply);
+  if (!options.length) return null;
+  const c = RIDER_FILTER_COPY[locale] ?? RIDER_FILTER_COPY.en;
+  return (
+    <Section title={c.label}>
+      <p className="-mt-1 text-xs text-muted-foreground">{c.hint}</p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => (
+          <Chip key={o.id} active={o.active} onClick={o.apply}>
+            {o.name}
+          </Chip>
+        ))}
+      </div>
+    </Section>
   );
 }
