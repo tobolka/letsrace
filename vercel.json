@@ -9,6 +9,10 @@
       "schedule": "15 5 * * *"
     },
     {
+      "path": "/api/cron/public-refresh",
+      "schedule": "30 5 * * *"
+    },
+    {
       "path": "/api/cron/alerts",
       "schedule": "45 5 * * *"
     },
