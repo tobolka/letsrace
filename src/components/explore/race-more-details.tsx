@@ -56,10 +56,11 @@ export function RaceMoreDetails({
   const ours = (link: CardLink) => link.kind === "series" || link.kind === "weather";
   const allLinks = [...links.filter((l) => !ours(l)), ...documents, ...links.filter(ours)];
 
+  // The frame sets the list apart from the facts above; a rule below closes it off from the details.
   const linkSection = allLinks.length ? (
-    <CardSection className="py-3">
+    <div className="pb-5">
       <RaceLinkRows links={allLinks} onLink={onLink} bleed />
-    </CardSection>
+    </div>
   ) : null;
 
   if (full === undefined) {

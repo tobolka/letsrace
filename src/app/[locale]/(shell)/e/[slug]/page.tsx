@@ -368,7 +368,7 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
         <RaceLinkRows
           links={pageLinks}
           analytics={{ raceId: event.id, slug: event.slug, location: "race_page", presentation: "page" }}
-          className="mt-5 divide-y divide-border/60 overflow-hidden rounded-xl border"
+          className="mt-5"
         />
         <p className="mt-3 text-xs text-muted-foreground">
           {event.organizerVerified ? (
