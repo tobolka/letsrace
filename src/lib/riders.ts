@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { asRiderGender, type RiderGender } from "@/lib/rider-category";
 
 /**
  * The signed-in family's riders who have a birth year: what the race card and
@@ -9,7 +10,7 @@ import { useSyncExternalStore } from "react";
  *
  * The auth client is fetched after the page is up, as for the plan buttons.
  */
-export type Rider = { id: string; name: string; birthYear: number; isSelf: boolean };
+export type Rider = { id: string; name: string; birthYear: number; isSelf: boolean; gender?: RiderGender | null };
 
 const EMPTY: Rider[] = [];
 let riders: Rider[] = EMPTY;
@@ -35,7 +36,7 @@ function start() {
         if (!id) return set(EMPTY);
         const { data } = await client
           .from("family_members")
-          .select("id, name, birth_year, is_self")
+          .select("id, name, birth_year, is_self, gender")
           .eq("user_id", id)
           .not("birth_year", "is", null)
           .order("created_at");
@@ -43,7 +44,7 @@ function start() {
         set(
           (data ?? [])
             .filter((m) => typeof m.birth_year === "number")
-            .map((m) => ({ id: m.id, name: m.name, birthYear: m.birth_year as number, isSelf: Boolean(m.is_self) })),
+            .map((m) => ({ id: m.id, name: m.name, birthYear: m.birth_year as number, isSelf: Boolean(m.is_self), gender: asRiderGender(m.gender) })),
         );
       };
       reload = () => void load(userId);

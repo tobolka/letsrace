@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { feeForCategory, matchRiderCategories, parseBirthYears, riderFactsFromStored } from "@/lib/rider-category";
+import { categoryGender, feeForCategory, matchRiderCategories, parseBirthYears, riderFactsFromStored } from "@/lib/rider-category";
 
 const REF = 2027;
 
@@ -80,22 +80,22 @@ const golf = {
 
 describe("matchRiderCategories", () => {
   it("shows every category the year fits, girls' and boys' alike, with its own fee", () => {
-    expect(matchRiderCategories(2019, golf, "2027-01-01")).toEqual([
+    expect(matchRiderCategories(2019, golf, { today: "2027-01-01" })).toEqual([
       { label: "holky 7-8", birthYears: "2019-2020", fee: { amount: 200, currency: "CZK" } },
       { label: "kluci 7-8", birthYears: "2019-2020", fee: { amount: 200, currency: "CZK" } },
     ]);
   });
 
   it("shows no fee the list does not name", () => {
-    expect(matchRiderCategories(1982, golf, "2027-01-01")).toEqual([
+    expect(matchRiderCategories(1982, golf, { today: "2027-01-01" })).toEqual([
       { label: "ženy", birthYears: "<= 2008", fee: { amount: 350, currency: "CZK" } },
       { label: "muži 40", birthYears: "1978-1987" },
     ]);
   });
 
   it("shows nothing for a rider who fits no category", () => {
-    expect(matchRiderCategories(2017, golf, "2027-01-01")).toEqual([]);
-    expect(matchRiderCategories(2025, golf, "2027-01-01")).toEqual([]);
+    expect(matchRiderCategories(2017, golf, { today: "2027-01-01" })).toEqual([]);
+    expect(matchRiderCategories(2025, golf, { today: "2027-01-01" })).toEqual([]);
   });
 
   it("falls back to the race's age groups only when the regulations give no ages", () => {
@@ -137,5 +137,43 @@ describe("riderFactsFromStored", () => {
     };
     expect(riderFactsFromStored(stored, "2027-05-15")).toEqual({ categories: [{ label: "holky 7-8", birthYears: "2019-2020" }] });
     expect(riderFactsFromStored(null, "2027-05-15")).toEqual({});
+  });
+});
+
+describe("categoryGender", () => {
+  it.each([
+    ["holky 7-8", "female"], ["kluci 7-8", "male"], ["dívky", "female"], ["chlapci", "male"],
+    ["ženy", "female"], ["muži 40", "male"], ["žákyně I", "female"], ["žáci II", "male"],
+    ["kadetky", "female"], ["junioři", "male"], ["Girls U9", "female"], ["Boys U9", "male"],
+    ["Schülerinnen U11", "female"], ["Schüler U11", "male"], ["Jugend weiblich U17", "female"], ["Jugend männlich U17", "male"],
+    ["WU15", "female"], ["Elita Kobiet", "female"], ["M5", "male"],
+    ["kadeti, kadetky", "mixed"], ["Masters Men / Women", "mixed"], ["OPEN M/F", "mixed"], ["4er-Team (Damen, Herren, Mixed)", "mixed"],
+    ["Děti", null], ["Elite", null], ["U13", null],
+  ])("%s", (label, expected) => {
+    expect(categoryGender(label)).toBe(expected);
+  });
+});
+
+describe("matchRiderCategories with a gender", () => {
+  const opts = { today: "2027-01-01" };
+  it("shows only the girls' category for a girl and the boys' for a boy", () => {
+    expect(matchRiderCategories(2019, golf, { ...opts, gender: "female" }).map((m) => m.label)).toEqual(["holky 7-8"]);
+    expect(matchRiderCategories(2019, golf, { ...opts, gender: "male" }).map((m) => m.label)).toEqual(["kluci 7-8"]);
+    expect(matchRiderCategories(1982, golf, { ...opts, gender: "male" }).map((m) => m.label)).toEqual(["muži 40"]);
+  });
+  it("shows every match when the gender is not given", () => {
+    expect(matchRiderCategories(2019, golf, { ...opts, gender: null }).map((m) => m.label)).toEqual(["holky 7-8", "kluci 7-8"]);
+  });
+  it("keeps mixed and unnamed categories", () => {
+    const race = {
+      startDate: "2027-05-15",
+      disciplines: ["mtb"],
+      categories: [
+        { label: "Děti", birthYears: "2018-2020" },
+        { label: "kadeti, kadetky", birthYears: "2018-2020" },
+        { label: "kluci", birthYears: "2018-2020" },
+      ],
+    };
+    expect(matchRiderCategories(2019, race, { ...opts, gender: "female" }).map((m) => m.label)).toEqual(["Děti", "kadeti, kadetky"]);
   });
 });

@@ -63,7 +63,7 @@ export function PlanRow({
     .filter(Boolean)
     .join(" · ");
   // Which category each rider starts in and what it costs, under the race's name.
-  const riders = members.flatMap((m) => (m.birthYear ? [{ id: m.id, name: m.name, birthYear: m.birthYear, isSelf: m.isSelf }] : []));
+  const riders = members.flatMap((m) => (m.birthYear ? [{ id: m.id, name: m.name, birthYear: m.birthYear, isSelf: m.isSelf, gender: m.gender ?? null }] : []));
   const categoryLines = plan.event.riderFacts && riders.length
     ? riderLines(riders, { ...plan.event.riderFacts, startDate: plan.event.startDate, disciplines: plan.event.disciplines }, locale)
     : [];

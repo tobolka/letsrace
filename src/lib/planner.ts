@@ -27,6 +27,7 @@ export type PlannerMember = {
   relationship: string;
   isSelf: boolean;
   birthYear?: number | null;
+  gender?: "female" | "male" | null;
 };
 
 export type PlannerAttendance = {

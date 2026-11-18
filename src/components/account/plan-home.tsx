@@ -39,7 +39,7 @@ import {
 } from "@/lib/planner-db";
 import type { SuggestionContext } from "@/lib/plan-suggestions";
 import { persist } from "@/lib/account/save";
-import { riderFactsFromStored } from "@/lib/rider-category";
+import { asRiderGender, riderFactsFromStored } from "@/lib/rider-category";
 import { toast } from "sonner";
 
 const EVENT_EMBED =
@@ -157,7 +157,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
       ] = await Promise.all([
         supabase
           .from("family_members")
-          .select("id, name, relationship, is_self, birth_year")
+          .select("id, name, relationship, is_self, birth_year, gender")
           .eq("user_id", user.id)
           .order("created_at").throwOnError(),
         supabase
@@ -215,6 +215,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
           relationship: m.relationship,
           isSelf: Boolean(m.is_self),
           birthYear: m.birth_year ?? null,
+          gender: asRiderGender(m.gender),
         })),
       );
       setEventsById(nextEvents);

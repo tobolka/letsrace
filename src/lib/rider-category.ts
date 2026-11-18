@@ -153,8 +153,52 @@ export type RiderRaceFacts = {
 
 const within = (year: number, b: BirthYearBounds) => (b.from == null || year >= b.from) && (b.to == null || year <= b.to);
 
-/** Every category a rider born in `birthYear` fits, in the organiser's order; [] when none. */
-export function matchRiderCategories(birthYear: number, race: RiderRaceFacts, today = new Date().toISOString().slice(0, 10)): RiderCategoryMatch[] {
+export type RiderGender = "female" | "male";
+
+/** A stored gender as the matcher takes it; anything else is "not given". */
+export function asRiderGender(value: unknown): RiderGender | null {
+  return value === "female" || value === "male" ? value : null;
+}
+
+const FEMALE = new Set([
+  "holky", "holka", "dívky", "divky", "dívka", "ženy", "zeny", "žena", "žákyně", "zakyne", "kadetky", "juniorky", "veteránky", "dorostenky", "mladší žákyně",
+  "girls", "girl", "women", "woman", "ladies", "female", "wu", "f",
+  "damen", "frauen", "mädchen", "juniorinnen", "schülerinnen", "weiblich", "weibl",
+  "kobiety", "kobiet", "dziewczęta", "dziewczynki", "juniorki", "młodziczki", "kadetki", "żaczki",
+  "donne", "femminile", "ragazze", "esordienti donne", "allieve",
+  "dievčatá", "žiačky", "kadetky", "ž",
+]);
+const MALE = new Set([
+  "kluci", "kluk", "chlapci", "chlapec", "muži", "muzi", "muž", "žáci", "zaci", "kadeti", "junioři", "juniori", "veteráni", "dorostenci",
+  "boys", "boy", "men", "man", "male", "m", "mu",
+  "herren", "männer", "buben", "jungen", "junioren", "schüler", "männlich", "maennlich", "männl",
+  "mężczyźni", "mężczyzn", "chłopcy", "juniorzy", "młodzicy", "kadeci", "żacy",
+  "uomini", "maschile", "ragazzi", "allievi",
+  "žiaci",
+]);
+const MIXED = /\b(mixed?|mix|smíšen|smisen|mieszan|misto|gemischt|open)\b/i;
+
+/**
+ * Whose category a name describes: "holky 7-8" female, "kluci 7-8" male,
+ * "kadeti, kadetky" or "Masters Men / Women" mixed, "Děti" neither (null).
+ */
+export function categoryGender(label: string): RiderGender | "mixed" | null {
+  if (MIXED.test(label)) return "mixed";
+  const tokens = label.normalize("NFKC").toLowerCase().split(/[^\p{L}]+/u).filter(Boolean);
+  const female = tokens.some((t) => FEMALE.has(t)), male = tokens.some((t) => MALE.has(t));
+  return female && male ? "mixed" : female ? "female" : male ? "male" : null;
+}
+
+/**
+ * Every category a rider born in `birthYear` fits, in the organiser's order; [] when none.
+ * With the rider's gender known, the other gender's categories are left out;
+ * mixed and unnamed ones stay.
+ */
+export function matchRiderCategories(
+  birthYear: number,
+  race: RiderRaceFacts,
+  { today = new Date().toISOString().slice(0, 10), gender = null }: { today?: string; gender?: RiderGender | null } = {},
+): RiderCategoryMatch[] {
   const ref = referenceYear(race.startDate, race.disciplines);
   const rows = race.categories ?? [];
   const read = rows.map((row) => ({
@@ -165,6 +209,11 @@ export function matchRiderCategories(birthYear: number, race: RiderRaceFacts, to
     const labels = rows.map((r) => r.label);
     return read
       .filter((r) => r.bounds && within(birthYear, r.bounds))
+      .filter(({ row }) => {
+        if (!gender) return true;
+        const of = categoryGender(row.label);
+        return of == null || of === "mixed" || of === gender;
+      })
       .map(({ row }) => {
         const fee = race.fees?.length ? feeForCategory(row.label, race.fees, labels, today) : undefined;
         return { label: row.label, ...(row.birthYears ? { birthYears: row.birthYears } : {}), ...(fee ? { fee } : {}) };

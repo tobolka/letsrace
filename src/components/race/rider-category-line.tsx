@@ -36,7 +36,7 @@ export function riderMatchText(matches: RiderCategoryMatch[], locale: string): s
 export function riderLines(riders: Rider[], race: RiderRaceFacts, locale: string) {
   const t = messagesFor(locale);
   return riders.flatMap((rider) => {
-    const matches = matchRiderCategories(rider.birthYear, race);
+    const matches = matchRiderCategories(rider.birthYear, race, { gender: rider.gender ?? null });
     return matches.length ? [{ id: rider.id, name: rider.isSelf ? t.planSelf : rider.name, text: riderMatchText(matches, locale) }] : [];
   });
 }
