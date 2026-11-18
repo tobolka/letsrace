@@ -1,29 +1,36 @@
 {
-  "crons": [
-    {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "schedules": {
+    "publication": {
+      "schedule": "40 5 * * *",
       "path": "/api/cron/publication",
-      "schedule": "40 5 * * *"
+      "requestMethod": "GET"
     },
-    {
+    "catalog": {
+      "schedule": "15 5 * * *",
       "path": "/api/cron/catalog",
-      "schedule": "15 5 * * *"
+      "requestMethod": "GET"
     },
-    {
+    "public-refresh": {
+      "schedule": "30 5 * * *",
       "path": "/api/cron/public-refresh",
-      "schedule": "30 5 * * *"
+      "requestMethod": "GET"
     },
-    {
+    "alerts": {
+      "schedule": "45 5 * * *",
       "path": "/api/cron/alerts",
-      "schedule": "45 5 * * *"
+      "requestMethod": "GET"
     },
-    {
+    "digest": {
+      "schedule": "0 4 * * 3",
       "path": "/api/cron/digest",
-      "schedule": "0 4 * * 3"
+      "requestMethod": "GET"
     },
-    {
+    "weather-history": {
+      "schedule": "10 4 * * *",
       "path": "/api/cron/weather-history",
-      "schedule": "10 4 * * *"
+      "requestMethod": "GET"
     }
-  ],
+  },
   "ignoreCommand": "case \"$VERCEL_GIT_COMMIT_MESSAGE\" in *\"[no deploy]\"*) exit 0;; *) exit 1;; esac"
 }

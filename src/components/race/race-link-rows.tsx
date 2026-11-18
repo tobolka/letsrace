@@ -65,7 +65,7 @@ export function RaceLinkRows({
       {links.map((link) => {
         const inner = (
           <>
-            <span className="flex size-4 items-center justify-center text-muted-foreground [&_svg]:size-4" aria-hidden>
+            <span className="flex size-4 items-center justify-center text-primary [&_svg]:size-4" aria-hidden>
               {LINK_ICONS[link.kind] ?? <Globe />}
             </span>
             <span className="min-w-0 truncate">{link.label}</span>

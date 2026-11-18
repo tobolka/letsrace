@@ -1,0 +1,77 @@
+{
+    "id": "9b7c3477-6b8f-43b5-815a-8016b9d55e43",
+    "code": "BFR_2027_1_000747",
+    "name": "Einfach Extrem Essen",
+    "seasonYear": 2027,
+    "disciplineCode": "BFR",
+    "disciplineName": "BMX Freestyle",
+    "classCode": "1",
+    "className": "Class 1",
+    "countryCode": "GER",
+    "countryName": "GERMANY",
+    "continentCode": "EUR",
+    "venue": "Kennedyplatz",
+    "startDate": "2027-06-18",
+    "endDate": "2027-06-20",
+    "v1Code": "D2CP80620",
+    "website": null,
+    "email": "william.gothe@pulsepublishing.de",
+    "categoryCodes": [
+        "ME",
+        "WE"
+    ],
+    "raceTypes": [
+        {
+            "code": "PRK",
+            "name": "Park"
+        }
+    ],
+    "raceCount": 2,
+    "races": [
+        {
+            "id": "367568ee-4118-408f-a027-4da2e7644395",
+            "name": "Park Men Elite",
+            "code": "BFR_2027_1_000747_ME_PRK",
+            "categoryCode": "ME",
+            "categoryName": "Men Elite",
+            "classCode": "1",
+            "className": "Class 1",
+            "raceTypeCode": "PRK",
+            "raceTypeName": "Park",
+            "sequence": 1,
+            "startDate": "2027-06-18",
+            "endDate": "2027-06-18",
+            "v1Code": "D2RC282653",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": null,
+            "endVenueName": null,
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": []
+        },
+        {
+            "id": "ec57ef33-c90f-405d-9698-b549e739052b",
+            "name": "Park Women Elite",
+            "code": "BFR_2027_1_000747_WE_PRK",
+            "categoryCode": "WE",
+            "categoryName": "Women Elite",
+            "classCode": "1",
+            "className": "Class 1",
+            "raceTypeCode": "PRK",
+            "raceTypeName": "Park",
+            "sequence": 2,
+            "startDate": "2027-06-18",
+            "endDate": "2027-06-18",
+            "v1Code": "D2RC282654",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": null,
+            "endVenueName": null,
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": []
+        }
+    ],
+    "officials": []
+}

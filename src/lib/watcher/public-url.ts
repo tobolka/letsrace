@@ -175,9 +175,10 @@ export function preferDeeperOfficialUrl(
  * an Italian race with no organiser link got *no* link at all, when the FCI's
  * own race page is public and carries the date, venue, class, admitted
  * categories and organiser. A detail page is a listing, so let it be one.
+ * The UCI's page for one competition is the same kind of page.
  */
 const FEDERATION_RACE_PAGE =
-  /members\.federciclismo\.it\/race\/detail\/\d+|federciclismo\.it\/.*\/gara\//i;
+  /members\.federciclismo\.it\/race\/detail\/\d+|federciclismo\.it\/.*\/gara\/|uci\.org\/competition-details\/\d{4}\/[a-z]+\/\d+/i;
 
 /** True for a federation's public page about one specific race. */
 export function isFederationRacePage(url: string | null | undefined): boolean {
@@ -191,7 +192,8 @@ export function calendarListingUrl(
     .map((c) => (c || "").trim())
     .filter((u) => u && isHttpUrl(u) && (isFederationRacePage(u) || !HUB_OR_LOGIN.test(u)));
   if (!urls.length) return null;
-  urls.sort((a, b) => scoreListing(b) - scoreListing(a));
+  // The federation's own page about the race before any calendar's.
+  urls.sort((a, b) => Number(isFederationRacePage(b)) - Number(isFederationRacePage(a)) || scoreListing(b) - scoreListing(a));
   return urls[0] ?? null;
 }
 
@@ -272,8 +274,13 @@ export function resolveEventOutboundUrls(input: {
   }
 
   const websiteClean = websiteUrl;
+  // With nothing of the organiser's, a page that carries the race is better than no link at all.
+  // The stored addresses count too: a website slot holding a calendar's page or a federation's
+  // race page is rejected as the organiser's site, and the map's list has no sources to fall back on.
   const listingUrl =
-    websiteClean || registrationUrl ? null : calendarListingUrl(...sources);
+    websiteClean || registrationUrl
+      ? null
+      : calendarListingUrl(input.websiteUrl, input.regulationsUrl, input.registrationUrl, ...sources);
   if (regulationsUrl && regulationsUrl === listingUrl) regulationsUrl = null;
   return { websiteUrl: websiteClean, registrationUrl, listingUrl, regulationsUrl, resultsUrl };
 }

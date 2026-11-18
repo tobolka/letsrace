@@ -718,7 +718,8 @@ function addAgeDefaults(
     return;
   }
   if (NATIONAL_MTB_ALL_AGES.test(t)) {
-    found.add("kids");
+    // A national cup runs children's races; an international round almost never does, unless it says so.
+    if (!isInternationalLevel(opts.level)) found.add("kids");
     found.add("youth");
     found.add("junior");
     found.add("u23");
@@ -798,6 +799,16 @@ export const RACE_LEVELS = [
 ] as const;
 
 export type RaceLevel = (typeof RACE_LEVELS)[number];
+
+/** Whether `level` is at least `min` in {@link RACE_LEVELS}' order (unknown levels count as local). */
+export function levelAtLeast(level: string | null | undefined, min: RaceLevel): boolean {
+  return Math.max(0, RACE_LEVELS.indexOf(level as RaceLevel)) >= RACE_LEVELS.indexOf(min);
+}
+
+/** Beyond one country's own calendar: continental and above, as the map's "international and higher" filter reads it. */
+export function isInternationalLevel(level: string | null | undefined): boolean {
+  return levelAtLeast(level, "continental");
+}
 
 export const RACE_LEVEL_LABELS: Record<RaceLevel, string> = {
   local: "Local",

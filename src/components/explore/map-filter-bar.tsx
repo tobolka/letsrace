@@ -13,7 +13,7 @@ import {
 import { FilterValues } from "@/components/explore/filter-values";
 import { ACTIVE_CHIP, itemClass } from "@/components/explore/filter-styles";
 import { PlaceSearch } from "@/components/explore/place-search";
-import { RiderFilterChip, type OnRiderFilter } from "@/components/explore/rider-filter";
+import { RiderFilterChip, RiderFilterSubmenu, type OnRiderFilter } from "@/components/explore/rider-filter";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -272,6 +272,7 @@ export function MapFilterBar({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56" collisionPadding={12}>
               {menuExtra}
+              <RiderFilterSubmenu locale={locale} categories={categories} disciplines={disciplines} dateFrom={dateFrom} onApply={onRiderFilter} />
               {menuFilters.map((id) => {
                 const Icon = FILTER_ICONS[id];
                 const active = hasValue(id);
