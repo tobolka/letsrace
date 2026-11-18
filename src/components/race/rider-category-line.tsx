@@ -64,7 +64,7 @@ export function RiderCategoryLine({ race, locale, className }: { race: RiderRace
   return (
     <section
       className={cn(
-        "rounded-xl border border-sky-200/70 bg-sky-50 px-3.5 py-3 text-sm dark:border-sky-900/60 dark:bg-sky-950/40",
+        "rounded-xl bg-sky-50 px-3.5 py-3 text-sm dark:bg-sky-950/40",
         className,
       )}
       aria-label={TITLE[locale] ?? TITLE.en}
