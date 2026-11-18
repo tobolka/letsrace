@@ -598,7 +598,7 @@ export function AccountPanel({
                   </Button>
                 </DialogClose>
                 <Button type="submit" disabled={busy || !name.trim()} aria-busy={busy}>
-                  {busy ? <Spinner data-icon="inline-start" /> : editing ? null : <Plus data-icon="inline-start" />}
+                  {busy ? <Spinner data-icon="inline-start" /> : null}
                   {editing ? t.ridersSave : t.profilesAdd}
                 </Button>
               </DialogFooter>
