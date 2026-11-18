@@ -5,7 +5,9 @@ import { LocateFixed, Minus, Plus, X } from "lucide-react";
 import type { EventListItem } from "@/lib/events";
 import type { MapBounds, BoundsChangeReason, RaceMapProps } from "./types";
 import { EUROPE_CAMERA_BOUNDS, isInEuropeMap } from "@/lib/geo/europe";
-import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_ICONS } from "@/lib/map-visuals";
+import { disciplineColor, disciplineIcon, DISCIPLINE_FAMILY_COLORS, DISCIPLINE_FAMILY_ICONS } from "@/lib/map-visuals";
+import { canonicalEventDisciplines, disciplineFamily } from "@/lib/taxonomy";
+import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { messagesFor } from "@/lib/i18n/messages";
 import { racePlace } from "@/lib/race-place";
 import { loadLeaflet, type LeafletMap, type LeafletApi, type LayerGroup, type Marker, type Circle } from "./leaflet-runtime";
@@ -16,17 +18,77 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import "./light-race-map.css";
 
 const defaultPadding = { top: 16, right: 56, bottom: 56, left: 48 };
-function pin(event: EventListItem, count: number, selected: boolean, place: string | null) {
+function clusterFamilies(events: EventListItem[]) {
+  const counts = new Map<string, number>();
+  for (const event of events) {
+    const known = canonicalEventDisciplines(event.disciplines)
+      .map(disciplineFamily)
+      .filter((family) => family !== "other");
+    const families = known.length === 0 ? ["other"] : [...new Set(known)];
+    for (const family of families) counts.set(family, (counts.get(family) ?? 0) + 1);
+  }
+  // Keep a discipline in the same position when the results are resorted.
+  return Object.keys(DISCIPLINE_FAMILY_COLORS)
+    .filter((family) => counts.has(family))
+    .map((family) => ({ family, count: counts.get(family)! }));
+}
+
+type FamilyShare = ReturnType<typeof clusterFamilies>[number];
+
+// A loose bunch of bubbles, the biggest first. Hand-placed so the group looks
+// tossed rather than lined up, with the top right left free for the count;
+// px from the marker's centre.
+const BUBBLE_SPOTS: [number, number][][] = [
+  [],
+  [[0, 0]],
+  [[-3, -2], [8, 6]],
+  [[-2, -3], [9, 6], [-8, 8]],
+  [[-1, -3], [10, 6], [-10, 4], [-1, 11]],
+  [[-1, -3], [10, 6], [-10, 3], [-1, 11], [-9, -10]],
+  [[-1, -3], [10, 6], [-10, 3], [-1, 11], [-9, -10], [-11, 13]],
+  [[-1, -3], [10, 6], [-10, 3], [-1, 11], [-9, -10], [-11, 13], [10, 15]],
+];
+
+function rosette(shares: FamilyShare[]) {
+  const root = document.createElement("span");
+  root.className = "fast-pin-rosette";
+  root.setAttribute("aria-hidden", "true");
+  const most = Math.max(...shares.map((share) => share.count));
+  const crowded = shares.length > 4;
+  const [small, big] = crowded ? [11, 17] : [14, 21];
+  const spots = BUBBLE_SPOTS[Math.min(shares.length, 7)];
+  // Bigger bubble, more races of that discipline.
+  [...shares].sort((a, b) => b.count - a.count).forEach(({ family, count }, index) => {
+    const size = Math.round(small + (big - small) * Math.sqrt(count / most));
+    const [x, y] = spots[index] ?? [0, 0];
+    const dot = document.createElement("span");
+    dot.className = "fast-pin-rosette-dot";
+    dot.style.setProperty("--dot-size", `${size}px`);
+    dot.style.setProperty("--dot-x", `${x}px`);
+    dot.style.setProperty("--dot-y", `${y}px`);
+    dot.style.setProperty("--dot-color", DISCIPLINE_FAMILY_COLORS[family]);
+    // The biggest bubble sits on top of the smaller ones.
+    dot.style.zIndex = String(shares.length - index);
+    root.append(dot);
+  });
+  return root;
+}
+
+function pin(event: EventListItem, count: number, selected: boolean, place: string | null, shares: FamilyShare[]) {
   const root = document.createElement("div");
   root.className = `fast-pin${selected ? " fast-pin-selected" : ""}`;
-  root.style.setProperty("--pin-color", disciplineColor(event.disciplines));
-  const disc = document.createElement("span"); disc.className = "fast-pin-disc";
-  const icon = DISCIPLINE_FAMILY_ICONS[disciplineIcon(event.disciplines)];
-  if (icon) {
-    const img = document.createElement("img"); img.src = icon; img.alt = ""; img.width = 16; img.height = 16;
-    disc.append(img);
+  if (shares.length > 1) {
+    root.append(rosette(shares));
+  } else {
+    root.style.setProperty("--pin-color", disciplineColor(event.disciplines));
+    const disc = document.createElement("span"); disc.className = "fast-pin-disc";
+    const icon = DISCIPLINE_FAMILY_ICONS[disciplineIcon(event.disciplines)];
+    if (icon) {
+      const img = document.createElement("img"); img.src = icon; img.alt = ""; img.width = 16; img.height = 16;
+      disc.append(img);
+    }
+    root.append(disc);
   }
-  root.append(disc);
   if (place) {
     const caption = document.createElement("span");
     caption.className = "fast-pin-place";
@@ -159,11 +221,11 @@ export function LightRaceMap(props: RaceMapProps) {
             events.forEach((e, i) => {
               const angle = i / events.length * Math.PI * 2 - Math.PI / 2;
               const p = map.containerPointToLatLng([x + Math.cos(angle) * radius, y + Math.sin(angle) * radius]);
-              const marker = addMarker(L, markers, e, [p.lat, p.lng], 1, latest.current, () => latest.current.onSelect(e.id));
+              const marker = addMarker(L, markers, e, [p.lat, p.lng], [e], latest.current, () => latest.current.onSelect(e.id));
               rendered.push({ marker, ids: [e.id], active: false });
             });
           } else {
-            const marker = addMarker(L, markers, chosen, point, events.length, latest.current, () => {
+            const marker = addMarker(L, markers, chosen, point, events, latest.current, () => {
               if (events.length > 1) {
                 const action = clusterAction(events.map((e) => ({ lat: Number(e.location!.lat), lng: Number(e.location!.lng) })), map.getZoom());
                 if (action.type === "expand") { expanded = bucket; draw(); }
@@ -337,14 +399,21 @@ function MapControlTip({ label, children }: { label: string; children: ReactElem
 function coarsePointer(): boolean {
   return typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
 }
-function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [number, number], count: number, props: RaceMapProps, onClick: () => void) {
-  const messages = messagesFor(props.locale ?? "en");
+function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [number, number], events: EventListItem[], props: RaceMapProps, onClick: () => void) {
+  const locale = props.locale ?? "en";
+  const messages = messagesFor(locale);
+  const count = events.length;
+  const shares = count > 1 ? clusterFamilies(events) : [];
+  const families = shares.map((share) => share.family);
   const place = props.embedded && props.events.length === 1 ? racePlace(e) : null;
   const label = count > 1 ? `${count} ${messages.racesCount} · ${e.location?.municipality ?? e.name}` : [e.name, place].filter(Boolean).join(" · ");
-  const tooltip = document.createElement("div"); tooltip.className = "fast-tooltip-text"; tooltip.textContent = place ? e.name : label;
-  const marker = L.marker(point, { title: label, alt: label, keyboard: true, riseOnHover: true, bubblingMouseEvents: false,
+  const accessibleLabel = families.length > 1
+    ? `${label} · ${families.map((family) => disciplineLabel(family, locale)).join(", ")}`
+    : label;
+  const tooltip = document.createElement("div"); tooltip.className = "fast-tooltip-text"; tooltip.textContent = place ? e.name : accessibleLabel;
+  const marker = L.marker(point, { title: accessibleLabel, alt: accessibleLabel, keyboard: true, riseOnHover: true, bubblingMouseEvents: false,
     zIndexOffset: e.id === props.selectedId ? 1000 : 0,
-    icon: L.divIcon({ html: pin(e, count, e.id === props.selectedId, place), className: "fast-marker", iconSize: [40, 40], iconAnchor: [20, 20] }),
+    icon: L.divIcon({ html: pin(e, count, e.id === props.selectedId, place, shares), className: "fast-marker", iconSize: [40, 40], iconAnchor: [20, 20] }),
   }).addTo(layer).on("click", onClick);
   // A name on hover is for a mouse. On a phone a tap counts as the hover, so
   // the label stuck on after the card had opened with the same name, and a
@@ -352,7 +421,7 @@ function addMarker(L: LeafletApi, layer: LayerGroup, e: EventListItem, point: [n
   if (!coarsePointer()) marker.bindTooltip(tooltip, { direction: "top", offset: [0, -16], opacity: 1 });
   const el = marker.getElement();
   if (el) {
-    el.setAttribute("role", "button"); el.setAttribute("aria-label", label);
+    el.setAttribute("role", "button"); el.setAttribute("aria-label", accessibleLabel);
     if (count > 1) el.setAttribute("aria-expanded", "false");
     el.addEventListener("keydown", (event) => { if (event.key === " ") { event.preventDefault(); onClick(); } });
   }

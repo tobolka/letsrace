@@ -19,6 +19,13 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    date: "2026-11-18",
+    items: {
+      cs: ["Když se na mapě seskupí závody různých disciplín, každá má vlastní barevnou bublinu a čím je bublina větší, tím víc v ní je závodů."],
+      en: ["When races from different disciplines are grouped on the map, each discipline has its own colored bubble, and the bigger the bubble, the more races it holds."],
+    },
+  },
+  {
     date: "2026-11-16",
     items: {
       cs: [
