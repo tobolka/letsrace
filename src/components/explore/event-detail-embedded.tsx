@@ -7,6 +7,7 @@ import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { CardSection, RaceMoreDetails, useFullRace, type CardLink } from "@/components/explore/race-more-details";
 import { RiderCategoryLine } from "@/components/race/rider-category-line";
+import { SameDayNote } from "@/components/race/same-day-note";
 import { useRiders } from "@/lib/riders";
 import { RaceWeather, windyLabel, windyUrl } from "@/components/race/race-weather";
 import { RaceActions } from "@/components/race/race-actions";
@@ -168,6 +169,7 @@ export function EmbeddedBody({
         carryFilters
       />
       <CardRiderLine event={event} locale={locale} />
+      {event.status === "cancelled" ? null : <SameDayNote race={event} locale={locale} />}
       </div>
 
       {/* Who it is for and what kind of race it is. */}
