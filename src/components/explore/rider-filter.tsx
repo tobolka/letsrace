@@ -8,6 +8,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { todayIso } from "@/lib/date-presets";
@@ -56,7 +60,7 @@ export function useRiderFilterOptions(
   return { options, activeName: options.find((o) => o.active)?.name ?? null, clear: () => onApply?.([], []) };
 }
 
-/** The chip on the filter bar, after the date. */
+/** The chip on the filter bar, after the date: only while a rider is chosen, like every other filter. */
 export function RiderFilterChip({
   locale,
   categories,
@@ -71,7 +75,7 @@ export function RiderFilterChip({
   onApply?: OnRiderFilter;
 }) {
   const { options, activeName, clear } = useRiderFilterOptions(locale, { categories, disciplines, dateFrom }, onApply);
-  if (!options.length) return null;
+  if (!options.length || !activeName) return null;
   const c = RIDER_FILTER_COPY[locale] ?? RIDER_FILTER_COPY.en;
   return (
     <div className="inline-flex h-full max-w-full shrink-0 items-center">
@@ -111,5 +115,42 @@ export function RiderFilterChip({
         </Button>
       ) : null}
     </div>
+  );
+}
+
+/** The riders in the bar's "add a filter" menu, where a rider is chosen while none is. */
+export function RiderFilterSubmenu({
+  locale,
+  categories,
+  disciplines,
+  dateFrom,
+  onApply,
+}: {
+  locale: string;
+  categories: string[];
+  disciplines: string[];
+  dateFrom: string;
+  onApply?: OnRiderFilter;
+}) {
+  const { options, activeName } = useRiderFilterOptions(locale, { categories, disciplines, dateFrom }, onApply);
+  if (!options.length || activeName) return null;
+  const c = RIDER_FILTER_COPY[locale] ?? RIDER_FILTER_COPY.en;
+  return (
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger className={itemClass}>
+        <UsersRound />
+        <span className="min-w-0 truncate">{c.label}</span>
+      </DropdownMenuSubTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuSubContent className="w-56">
+          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">{c.hint}</DropdownMenuLabel>
+          {options.map((o) => (
+            <DropdownMenuItem key={o.id} className={itemClass} onSelect={o.apply}>
+              <span className="min-w-0 flex-1 truncate">{o.name}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuSubContent>
+      </DropdownMenuPortal>
+    </DropdownMenuSub>
   );
 }

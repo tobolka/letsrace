@@ -222,11 +222,23 @@ async function main() {
       // The UCI's categories are official; they add to a race's set and never take from it.
       const ages = event!.ageCategories ?? [];
       const previous = r.age_categories ?? [];
-      if (ages.length && !AGE_FIELDS.some((f) => locked.has(f)) && ages.some((a) => !previous.includes(a))) {
-        const merged = AGE_CATEGORIES.filter((a) => previous.includes(a) || ages.includes(a));
-        update.age_categories = merged; update.audience = audienceFromAgeCategories(merged);
-        if (!previous.length) update.age_confidence = "default";
-        changes.push(`kategorie +${ages.filter((a) => !previous.includes(a)).join("/")}`);
+      // A guessed set loses the open and children's classes when the UCI names only licensed ones (a ProSeries
+      // stage race has no amateur race); a confirmed set only gains.
+      const guessed = r.age_confidence !== "explicit" && r.age_confidence !== "previous";
+      const licensedOnly = ages.length > 0 && ages.every((a) => ["elite", "u23", "junior"].includes(a));
+      // Not where amateurs ride beside the UCI race (marathons, gran fondos), nor where the regulations were read:
+      // those govern the set.
+      const massStart = (event!.discipline ?? []).some((d) => ["xcm", "gran_fondo", "gravel"].includes(d)) || /marathon|maraton|fondo|gravel/i.test(`${event!.name} ${r.name}`);
+      const regulationsRead = ["categories", "schedule", "fees"].some((k) => (r.practical_details ?? {})[k] && !String(((r.practical_details ?? {})[k] as { quote?: string }).quote ?? "").startsWith("UCI Competition Directory"));
+      const dropped = guessed && licensedOnly && !massStart && !regulationsRead ? ["amateur", "masters", "kids", "u7", "u9", "u11"] : [];
+      const merged = AGE_CATEGORIES.filter((a) => (previous.includes(a) && !dropped.includes(a)) || ages.includes(a));
+      // Every class shown is one the UCI lists for this competition: that is the organiser's word, not a guess.
+      const accounted = ages.length > 0 && merged.every((a) => ages.includes(a));
+      const confidence = accounted ? "explicit" : previous.length ? r.age_confidence : "default";
+      const agesChange = merged.length !== previous.length || merged.some((a) => !previous.includes(a));
+      if (ages.length && !AGE_FIELDS.some((f) => locked.has(f)) && (agesChange || confidence !== r.age_confidence)) {
+        if (agesChange) { update.age_categories = merged; update.audience = audienceFromAgeCategories(merged); changes.push(`kategorie ${previous.join("/")} → ${merged.join("/")}`); }
+        if (confidence !== r.age_confidence) { update.age_confidence = confidence ?? "default"; changes.push(confidence === "explicit" ? "kategorie potvrzené UCI" : "kategorie odhad"); }
       }
       const hasSource = r.sources.some((s) => s.external_id === event!.externalId || ucd.uciDirectoryId(s.source_url) === competition.id);
       if (!hasSource) changes.push("zdroj UCI");

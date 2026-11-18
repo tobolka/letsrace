@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, CircleHelp } from "lucide-react";
 import { eventPagePath } from "@/lib/event-url";
 import { useMyDays } from "@/lib/my-days";
 import { sameDayConflicts } from "@/lib/same-day";
@@ -65,6 +65,26 @@ export function SameDayNote({
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+const UNVERIFIED: Record<string, { title: string; body: string }> = {
+  cs: { title: "Kategorie je nutné ověřit", body: "Závod odpovídá zvolenému věku jen podle našeho odhadu. Než vyrazíš, ověř si kategorie v propozicích pořadatele." },
+  sk: { title: "Kategórie treba overiť", body: "Pretek zodpovedá zvolenému veku len podľa nášho odhadu. Pred cestou si over kategórie v propozíciách organizátora." },
+  en: { title: "Check the categories", body: "This race matches the chosen age only by our estimate. Check the categories in the organiser's regulations before you go." },
+};
+
+/** The same yellow note, when an age filter lets a race through only on guessed categories. */
+export function UnverifiedAgesNote({ locale, className }: { locale: string; className?: string }) {
+  const c = UNVERIFIED[locale] ?? UNVERIFIED.en;
+  return (
+    <section className={cn("rounded-xl bg-amber-50 px-3.5 py-3 text-sm dark:bg-amber-950/40", className)} aria-label={c.title} data-unverified-ages>
+      <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-amber-800 dark:text-amber-300">
+        <CircleHelp className="size-3.5 shrink-0" aria-hidden />
+        {c.title}
+      </p>
+      <p className="text-pretty">{c.body}</p>
     </section>
   );
 }

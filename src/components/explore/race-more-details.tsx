@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { FACT_ICONS, FactList, FactRow, type FactListRow } from "@/components/race/fact-row";
 import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
 import { Skeleton } from "@/components/ui/skeleton";
+import { categoryBandLabel } from "@/lib/category-band";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
 import type { EventListItem } from "@/lib/events";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
@@ -103,6 +104,11 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
   const money = (amount: number, currency: string) =>
     new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 2 }).format(amount);
   const rows: { key: string; icon: ReactNode; label: string; body: ReactNode }[] = [];
+  const refYear = Number(event.startDate.slice(0, 4));
+  const withBand = (label: string, birthYears?: string) => {
+    const band = categoryBandLabel(label, birthYears, refYear, locale);
+    return band ? `${label} (${band})` : label;
+  };
   function list<T>(items: T[], toRow: (item: T, i: number) => FactListRow) {
     return <ExpandableList rows={items.map(toRow)} more={c.more} less={c.less} />;
   }
@@ -140,7 +146,7 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
       key: "categories",
       icon: FACT_ICONS.categories,
       label: c.categories,
-      body: list(own, (item, i) => ({ key: i, label: item.label, value: item.birthYears })),
+      body: list(own, (item, i) => ({ key: i, label: withBand(item.label, item.birthYears), value: item.birthYears })),
     });
   } else if (listed.length) {
     rows.push({

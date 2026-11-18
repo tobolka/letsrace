@@ -7,7 +7,7 @@ import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { CardSection, RaceMoreDetails, useFullRace, type CardLink } from "@/components/explore/race-more-details";
 import { RiderCategoryLine } from "@/components/race/rider-category-line";
-import { SameDayNote } from "@/components/race/same-day-note";
+import { SameDayNote, UnverifiedAgesNote } from "@/components/race/same-day-note";
 import { useRiders } from "@/lib/riders";
 import { RaceWeather, RaceWeatherTab, windyLabel, windyUrl } from "@/components/race/race-weather";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -258,6 +258,7 @@ export function EmbeddedBody({
       />
       <CardRiderLine event={event} locale={locale} />
       {event.status === "cancelled" ? null : <SameDayNote race={event} locale={locale} />}
+      {event.ageMatch === "possible" ? <UnverifiedAgesNote locale={locale} /> : null}
       </div>
 
       {weatherTabAt ? (

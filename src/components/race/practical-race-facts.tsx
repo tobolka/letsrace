@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { FACT_ICONS, FactList, FactRow } from "@/components/race/fact-row";
 import type { EventListItem } from "@/lib/events";
+import { categoryBandLabel } from "@/lib/category-band";
 import { asLocale } from "@/lib/i18n/messages";
 import { practicalCopy, type PracticalDetails } from "@/lib/practical-details";
 import { FACT_COPY } from "@/lib/race-fact-copy";
@@ -50,7 +51,10 @@ export function PracticalRaceFacts({ event, locale }: { event: EventListItem; lo
     {source(facts.fees)}
   </> });
   if (facts.categories) rows.push({ key: "categories", icon: FACT_ICONS.categories, label: names.categories, content: <>
-    <FactList rows={facts.categories.value.map((item, i) => ({ key: i, label: item.label, value: item.birthYears }))} />
+    <FactList rows={facts.categories.value.map((item, i) => {
+      const band = categoryBandLabel(item.label, item.birthYears, Number(event.startDate.slice(0, 4)), locale);
+      return { key: i, label: band ? `${item.label} (${band})` : item.label, value: item.birthYears };
+    })} />
     {source(facts.categories)}
   </> });
   if (facts.routes) rows.push({ key: "routes", icon: FACT_ICONS.routes, label: names.routes, content: <>
