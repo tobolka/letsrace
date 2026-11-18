@@ -110,6 +110,8 @@ const ORDINAL_WORDS: [RegExp, string][] = [
  * we read; numbered rounds are `roundConflict`'s.
  */
 export function differentInstalment(a: string, b: string): boolean {
+  // "Piccolo Trofeo Alfredo Binda" is the junior race alongside the elite race.
+  if (/\bpiccol[oa]\b/i.test(a) !== /\bpiccol[oa]\b/i.test(b)) return true;
   const ords = (s: string) => {
     const t = foldName(s);
     return new Set(ORDINAL_WORDS.filter(([re]) => re.test(t)).map(([, n]) => n));

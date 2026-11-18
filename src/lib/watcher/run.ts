@@ -1979,7 +1979,7 @@ async function upsertParsedEvent(
 
   if (!existingId && ambiguousIdentity) throw new Error("identity_review_required: multiple matching races; source row deferred");
 
-  if (review && (existingId ?? null) !== review.expectedEventId) throw Error("identity_review_required: catalogue changed since the reviewed identity");
+  if (review && (existingId ?? null) !== review.expectedEventId) throw Error(`identity_review_required: catalogue changed since the reviewed identity (expected ${review.expectedEventId ?? "new race"}, matched ${existingId ?? "none"})`);
   let { data: existingFull } = existingId
     ? await supabase
         .from("events")

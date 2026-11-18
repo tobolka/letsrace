@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import { load } from "cheerio";
 import { parseFullgazHomepage } from "@/lib/watcher/extractors/fullgaz";
+import { parseSwissCycling } from "@/lib/watcher/extractors/swisscycling";
+import { parseSportsoftRegistration } from "@/lib/watcher/extractors/sportsoft";
 import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
 import { uciDirectoryApi, uciDirectoryEvent, uciDirectoryId } from "@/lib/catalog/uci-directory";
 import { discoveryUrl } from "./plan";
@@ -26,6 +28,8 @@ async function verifyFieldEvidence(event: ParsedEvent, authorityWebsite: string 
   if (document.status !== 200 || hash(document.html) !== proof.documentHash || !literal(proof.quote).includes(literal(proof.value)) || !visible.includes(literal(proof.quote))) throw Error("Supplementary place evidence changed or is not present");
 }
 
+export class ReviewSourceChangedError extends Error {}
+
 /** The same gate is used for preview and by the reviewed writer before any write. */
 export async function validateReviewSource(row: ReviewRow, decision: ReviewDecision, today: string, read: typeof fetchPage = fetchPage) {
   validateReview(row, decision, today);
@@ -39,8 +43,13 @@ export async function validateReviewSource(row: ReviewRow, decision: ReviewDecis
     if (fresh.status !== 200) throw Error(`Source unavailable: ${row.id} (HTTP ${fresh.status})`);
     let parsed: ParsedEvent | null = null;
     try { parsed = uciDirectoryEvent(JSON.parse(fresh.html)); } catch { parsed = null; }
+    // A venue the directory gives only as a street may be placed by the organiser's own website (the competition's
+    // website host): the proof is checked below; every other fact still has to equal the directory's.
+    const asserted = { ...event } as ParsedEvent; delete asserted.fieldEvidence;
+    if (event.fieldEvidence) asserted.placeText = parsed?.placeText ?? "";
     if (!parsed || parsed.evidence?.quote !== event.evidence?.quote || parsed.evidence?.version !== event.evidence?.version
-      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, row.payload)) throw Error("UCI directory competition differs from the current directory");
+      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, JSON.parse(JSON.stringify(asserted)) as Json)) throw Error("UCI directory competition differs from the current directory");
+    await verifyFieldEvidence(event, parsed.websiteUrl, read);
     return;
   }
   const source = await read(row.source_url, { fresh: true });
@@ -51,8 +60,25 @@ export async function validateReviewSource(row: ReviewRow, decision: ReviewDecis
   const sameDocument = evidence?.textHash && !structured ? hash(text) === evidence.textHash : Boolean(evidence?.documentHash && hash(source.html) === evidence.documentHash);
   // Known deterministic readers re-check their complete assertion below. A changed
   // navigation/script hash alone must not invalidate identical official facts.
-  const recheckedReader = ["uci_competition", "official_annual_announcement"].includes(event.evidence?.method ?? "");
-  if (source.status !== 200 || !sameDocument && !recheckedReader) throw Error(`Source changed or unavailable: ${row.id}; re-read and review`);
+  const recheckedReader = ["uci_competition", "official_annual_announcement", "swiss_cycling_table", "sportsoft_registration"].includes(event.evidence?.method ?? "");
+  if (source.status !== 200) throw Error(`Source unavailable: ${row.id} (HTTP ${source.status})`);
+  if (event.evidence?.method === "sportsoft_registration") {
+    const [parsed] = parseSportsoftRegistration(row.source_url, source.html);
+    if (!parsed || parsed.evidence?.version !== event.evidence.version
+      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, row.payload)) {
+      throw new ReviewSourceChangedError("Sportsoft registration differs from the current event header");
+    }
+    return;
+  }
+  if (!sameDocument && !recheckedReader) throw new ReviewSourceChangedError(`Source changed or unavailable: ${row.id}; re-read and review`);
+  if (event.evidence?.method === "swiss_cycling_table") {
+    const parsed = parseSwissCycling(row.source_url, source.html).find(item => item.externalId === event.externalId);
+    if (!parsed || parsed.evidence?.version !== event.evidence.version
+      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, row.payload)) {
+      throw new ReviewSourceChangedError("Swiss calendar row differs from the current federation calendar");
+    }
+    return;
+  }
   if (event.evidence?.method === "uci_competition") {
     const [parsed] = parseUciCompetition(row.source_url, source.html);
     if (!parsed || parsed.evidence?.quote !== event.evidence.quote || parsed.evidence?.version !== event.evidence.version) throw Error("UCI component evidence changed or is not present");

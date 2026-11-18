@@ -14,6 +14,16 @@ import {
 } from "@/lib/dedup";
 import { fingerprint, fingerprintVariants } from "@/lib/domain";
 
+describe("distinct UCI races at the same venue", () => {
+  it("keeps spectator packages separate from the actual race", () => {
+    const base = { startDate: "2027-03-06", placeText: "Siena", countryCode: "IT", disciplines: ["road"], urls: ["https://strade-bianche.it/"] };
+    expect(scoreDuplicate({ ...base, name: "Strade Bianche" }, { ...base, name: "Strade Bianche Pro Race Viewing Weekend 2027" }).reasons).toContain("format_conflict");
+  });
+  it("keeps BMX racing separate from park and flatland", () => {
+    expect(formatConflict("German National Championships - BMX Racing", "German National Championships - Park & Flatland")).toBe(true);
+  });
+});
+
 describe("url identity", () => {
   it("collapses locale prefixes and directory indexes onto one key", () => {
     const key = "example.at/race/kamptal-trophy";

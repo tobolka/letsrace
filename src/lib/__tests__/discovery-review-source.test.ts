@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { expect, it, vi } from "vitest";
 import { candidateAssertion, type ReviewDecision, type ReviewRow } from "@/lib/discovery/review";
-import { validateReviewSource } from "@/lib/discovery/review-source";
+import { ReviewSourceChangedError, validateReviewSource } from "@/lib/discovery/review-source";
 import { pageAsText } from "@/lib/watcher/extractors/llm-calendar";
 import type { ParsedEvent } from "@/lib/domain";
 import type { fetchPage } from "@/lib/watcher/http";
@@ -35,10 +35,12 @@ it("rejects a year inferred from the date field instead of explicit edition evid
   expect(fixture.read).not.toHaveBeenCalled();
 });
 it("refuses changed facts and unavailable sources despite an old approval", async () => {
-  for (const response of [{ html: html.replace("28. 8.", "29. 8."), status: 200 }, { html, status: 503 }]) {
-    const fixture = setup(); fixture.read.mockResolvedValue({ ...response, hash: hash(html), unchanged: false });
-    await expect(check(fixture)).rejects.toThrow("changed or unavailable");
-  }
+  const changed = setup();
+  changed.read.mockResolvedValue({ html: html.replace("28. 8.", "29. 8."), status: 200 });
+  await expect(check(changed)).rejects.toBeInstanceOf(ReviewSourceChangedError);
+  const unavailable = setup();
+  unavailable.read.mockResolvedValue({ html, status: 503 });
+  await expect(check(unavailable)).rejects.toThrow("Source unavailable");
 });
 it("accepts irrelevant HTML decoration changes when reviewed source text stays identical", async () => {
   const fixture = setup(); fixture.read.mockResolvedValue({ html: html.replace("<h1>", '<h1 class="new-style">'), status: 200, hash: "changed", unchanged: false });
@@ -61,4 +63,42 @@ it("does not let non-publication decisions or missing reviews reach source readi
   const fixture = setup(); fixture.decision.action = "wait";
   await expect(check(fixture)).rejects.toThrow("publish decision");
   expect(fixture.read).not.toHaveBeenCalled();
+});
+
+it("rechecks the complete Swiss federation row when unrelated calendar HTML changes", async () => {
+  const swissUrl = "https://www.swiss-cycling.ch/de/veranstaltungen/kalender/?y=2027";
+  const markup = '<table><tbody><tr id="id-1"><td>28.08.2027</td><td><a href="?race=1&y=2027">Bike-Rennen</a></td><td>Arbon TG</td><td>MTB XCO</td><td>National</td><td>U13, U15, U19 M</td></tr></tbody></table>';
+  const { parseSwissCycling } = await import("@/lib/watcher/extractors/swisscycling");
+  const [event] = parseSwissCycling(swissUrl, markup);
+  const assertion = candidateAssertion(event, { sourceUrl: swissUrl, documentHash: hash(markup), reason: "review" });
+  const fixture = setup();
+  fixture.row = { ...fixture.row, ...assertion };
+  fixture.decision.evidenceHash = assertion.evidence_hash;
+  fixture.read.mockResolvedValue({ html: markup + "<p>Calendar updated today</p>", status: 200 });
+  await expect(check(fixture)).resolves.toBeUndefined();
+  for (const changed of [
+    markup.replace("28.08.2027", "29.08.2027"),
+    markup.replace("Arbon TG", "Basel BS"),
+    markup.replace("MTB XCO", "Strasse"),
+    markup.replace("U13, U15, U19 M", "U19 M"),
+    markup.replace("Bike-Rennen", "Other race"),
+  ]) {
+    fixture.read.mockResolvedValue({ html: changed, status: 200 });
+    await expect(check(fixture)).rejects.toBeInstanceOf(ReviewSourceChangedError);
+  }
+});
+
+it("rechecks Sportsoft's race header independently of changing form state", async () => {
+  const sourceUrl = "https://registrace.sportsoft.cz/registration.aspx?e=3680";
+  const header = '<h1 id="ctl00_LNazev">Gravel Blinduro 2027</h1><span id="ctl00_LDatum">04.09.2027 - 05.09.2027</span><span id="ctl00_LMisto">Albeř</span>';
+  const { parseSportsoftRegistration } = await import("@/lib/watcher/extractors/sportsoft");
+  const [event] = parseSportsoftRegistration(sourceUrl, header);
+  const assertion = candidateAssertion(event, { sourceUrl, documentHash: hash(header), reason: "review" });
+  const fixture = setup();
+  fixture.row = { ...fixture.row, ...assertion };
+  fixture.decision.evidenceHash = assertion.evidence_hash;
+  fixture.read.mockResolvedValue({ html: header + '<input type="hidden" value="new form token">', status: 200 });
+  await expect(check(fixture)).resolves.toBeUndefined();
+  fixture.read.mockResolvedValue({ html: header.replace("04.09.2027", "03.09.2027"), status: 200 });
+  await expect(check(fixture)).rejects.toBeInstanceOf(ReviewSourceChangedError);
 });

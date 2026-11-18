@@ -17,3 +17,11 @@ it("reads Czech nominative month ranges without substituting the closing day", (
   expect(quoteStatesDate("12.-15.srpna2027", "2027-08-15", { role: "end" })).toBe(true);
   expect(quoteStatesDate("30. – 31. únor 2027", "2027-02-28")).toBe(false);
 });
+
+it("verifies both ends of a Swiss full-year date range", () => {
+  const quote = "10.09.2027- 12.09.2027\nEVERESTING SWITZERLAND - TREMOLA";
+  expect(quoteStatesDate(quote, "2027-09-10")).toBe(true);
+  expect(quoteStatesDate(quote, "2027-09-12", { role: "end" })).toBe(true);
+  expect(quoteStatesDate(quote, "2027-09-11", { role: "end" })).toBe(false);
+  expect(quoteStatesDate("31.02.2027 - 01.03.2027", "2027-03-01", { role: "end" })).toBe(false);
+});

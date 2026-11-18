@@ -10,6 +10,11 @@ const SK_PLACE =
 
 function ssDate(raw: string): { start: string; end?: string } | null {
   const t = raw.replace(/\s+/g, " ").trim();
+  const fullRange = t.match(/^(\d{1,2})\.(\d{1,2})\.(20\d{2})\s*[-–]\s*(\d{1,2})\.(\d{1,2})\.(20\d{2})$/);
+  if (fullRange) return {
+    start: `${fullRange[3]}-${fullRange[2]!.padStart(2, "0")}-${fullRange[1]!.padStart(2, "0")}`,
+    end: `${fullRange[6]}-${fullRange[5]!.padStart(2, "0")}-${fullRange[4]!.padStart(2, "0")}`,
+  };
   const range = t.match(
     /^(\d{1,2})\.(\d{1,2})\s*[-–]\s*(\d{1,2})\.(\d{1,2})\.(20\d{2})$/,
   );
@@ -23,6 +28,28 @@ function ssDate(raw: string): { start: string; end?: string } | null {
   const one = t.match(/^(\d{1,2})\.(\d{1,2})\.(20\d{2})$/);
   if (!one) return null;
   return { start: `${one[3]}-${one[2]!.padStart(2, "0")}-${one[1]!.padStart(2, "0")}` };
+}
+
+/** Public registration header. Form options describe entrants, not race categories. */
+export function parseSportsoftRegistration(url: string, html: string): ParsedEvent[] {
+  const address = new URL(url);
+  const id = address.searchParams.get("e");
+  if (address.hostname !== "registrace.sportsoft.cz" || !/^\/(registration|main)\.aspx$/i.test(address.pathname) || !/^\d+$/.test(id ?? "")) return [];
+  const $ = cheerio.load(html);
+  const name = $("#ctl00_LNazev").text().replace(/\s+/g, " ").trim();
+  const date = $("#ctl00_LDatum").text().replace(/\s+/g, " ").trim();
+  const place = $("#ctl00_LMisto").text().replace(/\s+/g, " ").trim();
+  const dates = ssDate(date);
+  if (!name || !place || !dates || dates.end && dates.end < dates.start || !isIngestibleDate(dates.start)
+    || !/gravel|blinduro|enduro|cyklo|cycling|mtb|bike/i.test(name)) return [];
+  const sourceUrl = `https://registrace.sportsoft.cz/registration.aspx?e=${id}`;
+  const website = absHref($("#ctl00_HLPoradatel").attr("href"), sourceUrl);
+  return [{
+    externalId: `ss-registration-${id}`, name, startDate: dates.start, ...(dates.end ? { endDate: dates.end } : {}),
+    placeText: place, countryHint: countryFromPlace(place, name), discipline: disciplinesFor(name, ""), eventType: "race",
+    sourceUrl, registrationUrl: sourceUrl, ...(website ? { websiteUrl: website } : {}), confidence: 0.98,
+    evidence: { sourceUrl, quote: `${name}\n${date}\n${place}`, method: "sportsoft_registration", version: "sportsoft-registration-v1" },
+  }];
 }
 
 function isCyclingRow(sport: string, name: string): boolean {

@@ -94,6 +94,30 @@ export function uciDirectoryAges(codes: string[]): AgeCategory[] {
   return AGE_CATEGORIES.filter((a) => found.has(a));
 }
 
+/** Current UCI categories replace inherited guesses. Current regulations retain their additional classes. */
+export function uciDirectoryCategoryState(event: ParsedEvent, current: {
+  name: string; age_categories: string[] | null; age_confidence: string | null;
+  practical_details: Record<string, unknown> | null;
+}): { ages: AgeCategory[]; confidence: string | null } {
+  const listed = event.ageCategories ?? [];
+  const previous = current.age_categories ?? [];
+  if (!listed.length) return { ages: AGE_CATEGORIES.filter(a => previous.includes(a)), confidence: current.age_confidence };
+  const categories = current.practical_details?.categories as { editionYear?: number; status?: string; sourceUrl?: string; quote?: string } | undefined;
+  const currentRules = categories?.status === "current" && categories.editionYear === Number(event.startDate.slice(0, 4))
+    && !uciDirectoryId(categories.sourceUrl) && !categories.quote?.startsWith("UCI Competition Directory");
+  const massStart = (event.discipline ?? []).some(d => ["xcm", "gran_fondo", "gravel"].includes(d))
+    || /marathon|maraton|fondo|gravel/i.test(`${event.name} ${current.name}`);
+  // A linked UCI race can describe one part of a weekend, or be an incorrect match.
+  // Replacing the entire inherited set requires the same competition identity.
+  const normalizedName = (name: string) => name.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase()
+    .replace(/\b20\d{2}\b/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  const sameName = normalizedName(event.name) === normalizedName(current.name);
+  const keepExisting = currentRules || current.age_confidence === "explicit" || massStart || !sameName;
+  const ages = AGE_CATEGORIES.filter(a => listed.includes(a) || keepExisting && previous.includes(a));
+  const accounted = ages.every(a => listed.includes(a));
+  return { ages, confidence: accounted ? "explicit" : current.age_confidence ?? "default" };
+}
+
 /** "www.cyklokros.cz", "Gpwb.cz" → https URL; anything else is no website. */
 export function uciDirectoryWebsite(raw: string | null | undefined): string | null {
   const text = (raw ?? "").trim().replace(/[\s,;]+$/, "");
@@ -153,8 +177,9 @@ export function uciDirectoryEvent(c: UciDirectoryCompetition): ParsedEvent | nul
   const uciClass = uciDirectoryClass(c.classCode, c.disciplineCode);
   const categories = uciDirectoryCategories(c);
   const url = uciDirectoryPage(c.id);
+  const name = c.disciplineCode === "BMX" && !/\bbmx\b/i.test(c.name) ? `${c.name.trim()} - BMX Racing` : c.name.trim();
   return {
-    externalId: `uci-dir:${c.id}`, name: c.name.trim(), startDate: start, ...(end !== start ? { endDate: end } : {}),
+    externalId: `uci-dir:${c.id}`, name, startDate: start, ...(end !== start ? { endDate: end } : {}),
     placeText: c.venue.trim(), countryHint: country, discipline: disciplines, eventType: "race",
     ...(uciClass ? { uciClass } : {}),
     ...(ages.length ? { ageCategories: ages, audience: audienceFromAgeCategories(ages) } : {}),

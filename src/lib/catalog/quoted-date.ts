@@ -8,6 +8,7 @@ export function quoteStatesDate(quote: string, date: string, options?: { role?: 
   const parsed = new Date(`${date}T00:00:00Z`);
   if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return false;
   const normalized = fold(quote);
+  const fullRange = normalized.match(/\b(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\s*[-–]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
   const numericRange = normalized.match(/\b(\d{1,2})\.\s*(?:(\d{1,2})\.\s*)?[&–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(20\d{2})\b/);
   const namedRange = normalized.match(/\b(\d{1,2})\.?\s*(?:[-–+&]|und|and|a|i|e|et)\s*(\d{1,2})\.?\s*([a-z]+)\s*(20\d{2})\b/);
   const months = ["leden ledna lednu january januar gennaio stycznia", "unor unora unoru february februar febbraio lutego", "brezen brezna breznu march marec marz marzo marca",
@@ -15,7 +16,8 @@ export function quoteStatesDate(quote: string, date: string, options?: { role?: 
     "srpen srpna srpnu august agosto sierpnia augusta", "zari september settembre wrzesnia septembra", "rijen rijna rijnu october oktober ottobre pazdziernika oktobra", "listopad listopadu november novembre listopada novembra", "prosinec prosince prosinci december dezember dicembre grudnia decembra"];
   const iso = (y: string, m: string, d: string) => `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
   let span: [string, string] | null = null;
-  if (numericRange) span = [iso(numericRange[5], numericRange[2] ?? numericRange[4], numericRange[1]), iso(numericRange[5], numericRange[4], numericRange[3])];
+  if (fullRange) span = [iso(fullRange[3], fullRange[2], fullRange[1]), iso(fullRange[6], fullRange[5], fullRange[4])];
+  else if (numericRange) span = [iso(numericRange[5], numericRange[2] ?? numericRange[4], numericRange[1]), iso(numericRange[5], numericRange[4], numericRange[3])];
   else if (namedRange) {
     const month = months.findIndex(words => words.split(" ").includes(namedRange[3]));
     if (month >= 0) span = [iso(namedRange[4], String(month + 1), namedRange[1]), iso(namedRange[4], String(month + 1), namedRange[2])];

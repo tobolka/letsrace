@@ -28,7 +28,7 @@ import { isNaZavodyHost, parseNaZavody } from "@/lib/watcher/extractors/nazavody
 import { isSporttHost, parseSportt } from "@/lib/watcher/extractors/sportt";
 import { parseRaceresultEvents } from "@/lib/watcher/extractors/raceresult";
 import { parseEventinKids } from "@/lib/watcher/extractors/eventin-kids";
-import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
+import { parseKalendarSportsoft, parseSportsoftRegistration } from "@/lib/watcher/extractors/sportsoft";
 import { parseSportBase } from "@/lib/watcher/extractors/sportbase";
 import { isRacementHost, parseRacement } from "@/lib/watcher/extractors/racement";
 import {
@@ -426,6 +426,9 @@ export async function extractWithAdapter(
       return { events: [], strategy: "adapter:sportbase-skip" };
     }
     return { events: parseSportBase(url, html), strategy: "adapter:sportbase" };
+  }
+  if (host === "registrace.sportsoft.cz") {
+    return { events: parseSportsoftRegistration(url, html), strategy: "adapter:sportsoft-registration" };
   }
   if (host.includes("kalendar.sportsoft.cz")) {
     try {

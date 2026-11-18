@@ -630,6 +630,8 @@ export function hasIdentityConflict(reasons: string[]): boolean {
 export function scoreDuplicate(a: DedupEvent, b: DedupEvent): DedupScore {
   a = { ...a, name: raceIdentityName(a.name) };
   b = { ...b, name: raceIdentityName(b.name) };
+  const viewingTrip = /\b(viewing\s+weekend|spectator\s+(?:trip|package)|race\s+viewing)\b/i;
+  if (viewingTrip.test(a.name) !== viewingTrip.test(b.name)) return { score: 0, reasons: ["format_conflict"] };
   const reasons: string[] = [];
   let score = 0;
 
@@ -1021,6 +1023,8 @@ export function roundNumber(name: string): number | null {
  * A format is a group of names for one thing, matched as whole words.
  */
 const FORMAT_ALIASES: { format: string; re: RegExp }[] = [
+  { format: "bmx_racing", re: /\bbmx\s+racing\b/ },
+  { format: "bmx_freestyle", re: /\bfreestyle\b|\bpark\s+(?:and\s+)?flatland\b/ },
   { format: "dh", re: /\b(dh|dhi|downhill|sjezd)\b/ },
   { format: "xcm", re: /\b(xcm|maraton\w*|marathon)\b/ },
   { format: "xco", re: /\b(xco|xcr)\b/ },

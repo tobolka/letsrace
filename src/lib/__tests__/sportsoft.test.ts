@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseKalendarSportsoft } from "@/lib/watcher/extractors/sportsoft";
+import { parseKalendarSportsoft, parseSportsoftRegistration } from "@/lib/watcher/extractors/sportsoft";
 import { normalizeUrlForDedup } from "@/lib/dedup";
 
 const row = (opts: {
@@ -22,6 +22,22 @@ const row = (opts: {
     <td></td>
   </tr>
 `;
+
+describe("Sportsoft public registration header", () => {
+  const url = "https://registrace.sportsoft.cz/registration.aspx?e=3680&fbclid=tracking";
+  const header = '<h1 id="ctl00_LNazev">Gravel Blinduro 2027</h1><span id="ctl00_LDatum">04.09.2027 - 05.09.2027</span><span id="ctl00_LMisto">Albeř</span>';
+  it("reads the full date range and keeps the clean per-event registration", () => {
+    const [event] = parseSportsoftRegistration(url, header + '<select><option>Women</option><option>Junior</option></select>');
+    expect(event).toMatchObject({ name: "Gravel Blinduro 2027", startDate: "2027-09-04", endDate: "2027-09-05", placeText: "Albeř", countryHint: "CZ", registrationUrl: "https://registrace.sportsoft.cz/registration.aspx?e=3680" });
+    expect(event?.discipline).toContain("gravel");
+    expect(event?.categories).toBeUndefined();
+  });
+  it("requires event identity, location, cycling and explicit dates", () => {
+    expect(parseSportsoftRegistration(url, header.replace('id="ctl00_LMisto"', 'id="other"'))).toEqual([]);
+    expect(parseSportsoftRegistration(url, header.replace("Gravel Blinduro", "City Run"))).toEqual([]);
+    expect(parseSportsoftRegistration(url, header.replace("04.09.2027 - 05.09.2027", "04.09 - 05.09"))).toEqual([]);
+  });
+});
 
 describe("SportSoft kalendar", () => {
   it("keeps cycling rows, skips running, and uses the race page as source", () => {

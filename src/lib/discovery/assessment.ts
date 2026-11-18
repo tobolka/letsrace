@@ -14,7 +14,10 @@ export function assessCandidate(event: ParsedEvent, targetCountry = "CZ") {
   if (isSiteIdentityName(event.name) || /^(zavody archiv|v[ií]tejte\b|silnicni zavody pro amatery)/.test(name)) issues.push("generic_name");
   if (!event.evidence?.quote) issues.push("missing_row_evidence");
   if (!country) issues.push("country_needs_verification");
-  const tentative = /pripravuje|pripravujeme/.test(name) || /predbez|provisional|tentative|\btbc\b|upresn|termin[^.\n]{0,35}(?:pripravuje|pripravujeme)/.test(name + " " + (event.evidence?.quote ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase());
+  // The UCI's structured evidence also contains optional website/contact fields.
+  // "website: TBC" does not make its explicitly listed race date tentative.
+  const dateEvidence = event.evidence?.method === "uci_directory" ? event.placeText : event.evidence?.quote ?? "";
+  const tentative = /pripravuje|pripravujeme/.test(name) || /predbez|provisional|tentative|\btbc\b|upresn|termin[^.\n]{0,35}(?:pripravuje|pripravujeme)/.test(name + " " + dateEvidence.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase());
   if (tentative) issues.push("tentative_date");
   return { state: issues.some(i => ["outside_target_country", "other_sport", "generic_name"].includes(i)) ? "out_of_scope" as const : "needs_review" as const,
     dateStatus: tentative ? "tentative" as const : "requires_verification" as const, issues };

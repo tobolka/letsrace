@@ -23,14 +23,14 @@ const GENERIC = new Set(["cross", "cyclo", "cyclocross", "ciclocross", "cyklokro
   "czech", "czechia", "republic", "slovak", "slovakia", "slovensko", "polska", "poland", "polish", "italia", "italy", "italian", "italiana", "austria", "osterreich",
   "germany", "deutschland", "german", "deutsche", "gran", "premio", "festival"]);
 // The amateur ride beside a professional race ("ADAC Velotour Eschborn-Frankfurt") is another event.
-const RIDE = /velotour|jedermann|gran\s*fondo|granfondo|cicloturist|sportive|hobby|rtf\b|ctf\b|volksrad/i;
+const RIDE = /velotour|jedermann|brezel\s+race|gran\s*fondo|granfondo|cicloturist|sportive|hobby|rtf\b|ctf\b|volksrad/i;
 const words = (text: string) => new Set((fold(text).match(/[a-z0-9]{4,}/g) ?? []).filter((w) => !GENERIC.has(w)));
 const AGE_FIELDS = ["age_categories", "age_confidence", "audience"];
 
 type Row = {
   id: string; slug: string; name: string; start_date: string; end_date: string | null; visibility: string; status: string | null; merged_into_id: string | null;
   level: string | null; uci_class: string | null; website_url: string | null; registration_url: string | null; regulations_url: string | null; results_url: string | null;
-  age_categories: string[] | null; age_confidence: string | null; public_revision: string; practical_details: Record<string, unknown> | null;
+  age_categories: string[] | null; age_confidence: string | null; audience: string; public_revision: string; practical_details: Record<string, unknown> | null;
   disciplines: string[] | null; location: { municipality: string | null; country_code: string | null } | null; sources: { source_url: string | null; external_id: string | null }[];
   overrides: { locked_fields: string[] | null } | null;
 };
@@ -41,7 +41,7 @@ async function main() {
   const apply = process.argv.includes("--apply");
   const out = arg("out");
   const ucd = await import("../src/lib/catalog/uci-directory");
-  const { audienceFromAgeCategories, AGE_CATEGORIES, levelAtLeast, eventDisciplineFamily } = await import("../src/lib/taxonomy");
+  const { audienceFromAgeCategories, levelAtLeast, eventDisciplineFamily } = await import("../src/lib/taxonomy");
   const { saveFoundLinks, savePracticalDetails } = await import("../src/lib/catalog/practical-enrichment");
   const { saveCandidate } = await import("../src/lib/discovery/review");
   const { validateReviewSource } = await import("../src/lib/discovery/review-source");
@@ -50,25 +50,31 @@ async function main() {
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
   const countries = (arg("countries") ?? Object.keys(ucd.UCI_DIRECTORY_COUNTRIES).join(",")).split(",");
+  const ids = arg("ids")?.split(",").filter(Boolean);
   const today = new Date().toISOString().slice(0, 10);
   const year = Number(today.slice(0, 4));
 
   // The directory, then each competition's own record with its races.
   const listed: import("../src/lib/catalog/uci-directory").UciDirectoryCompetition[] = [];
-  for (const country of countries) for (const season of [year, year + 1]) {
-    listed.push(...(await ucd.listUciDirectory(season, country)).filter((c) => (c.endDate ?? c.startDate) >= today));
-    await wait(300);
+  if (ids?.length) {
+    for (const id of ids) listed.push(await ucd.readUciDirectoryCompetition(id));
+  } else {
+    for (const country of countries) for (const season of [year, year + 1]) {
+      listed.push(...(await ucd.listUciDirectory(season, country)).filter((c) => (c.endDate ?? c.startDate) >= today));
+      await wait(300);
+    }
   }
   const unique = [...new Map(listed.map((c) => [c.id, c])).values()];
-  console.log(`UCI adresář: ${unique.length} nadcházejících soutěží (${countries.join(", ")})`);
+  console.log(`UCI adresář: ${unique.length} soutěží ke kontrole (${countries.join(", ")})`);
 
   // The catalogue in the same window, hidden and merged races included: someone may have ruled a race out.
   const rows: Row[] = [];
   const last = unique.reduce((max, c) => ((c.endDate ?? c.startDate) > max ? (c.endDate ?? c.startDate) : max), today);
+  const first = unique.reduce((min, c) => c.startDate < min ? c.startDate : min, today);
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db.from("events")
-      .select("id,slug,name,start_date,end_date,visibility,status,merged_into_id,level,uci_class,disciplines,website_url,registration_url,regulations_url,results_url,age_categories,age_confidence,public_revision,practical_details,location:locations(municipality,country_code),sources:event_sources(source_url,external_id),overrides:event_overrides(locked_fields)")
-      .gte("end_date", addDays(today, -40)).lte("start_date", addDays(last, 2)).order("start_date").order("id").range(from, from + 999)
+      .select("id,slug,name,start_date,end_date,visibility,status,merged_into_id,level,uci_class,disciplines,website_url,registration_url,regulations_url,results_url,age_categories,age_confidence,audience,public_revision,practical_details,location:locations(municipality,country_code),sources:event_sources(source_url,external_id),overrides:event_overrides(locked_fields)")
+      .gte("end_date", addDays(first, -40)).lte("start_date", addDays(last, 2)).order("start_date").order("id").range(from, from + 999)
       .returns<Row[]>();
     if (error) throw Error(error.message);
     rows.push(...(data ?? []));
@@ -224,25 +230,9 @@ async function main() {
       if (uciClass && !r.uci_class && !locked.has("uci_class")) { update.uci_class = uciClass; changes.push(`třída ${uciClass}`); }
       const level = ucd.uciDirectoryLevel(competition.classCode);
       if (!locked.has("level") && level !== r.level && levelAtLeast(level, (r.level ?? "local") as never)) { update.level = level; changes.push(`úroveň ${level}`); }
-      // The UCI's categories are official; they add to a race's set and never take from it.
       const ages = event!.ageCategories ?? [];
       const previous = r.age_categories ?? [];
-      // A guessed set loses the open and children's classes when the UCI names only licensed ones (a ProSeries
-      // stage race has no amateur race); a confirmed set only gains.
-      const guessed = r.age_confidence !== "explicit" && r.age_confidence !== "previous";
-      const licensedOnly = ages.length > 0 && ages.every((a) => ["elite", "u23", "junior"].includes(a));
-      // Not where amateurs ride beside the UCI race (marathons, gran fondos), nor where the regulations were read:
-      // those govern the set.
-      const massStart = (event!.discipline ?? []).some((d) => ["xcm", "gran_fondo", "gravel"].includes(d)) || /marathon|maraton|fondo|gravel/i.test(`${event!.name} ${r.name}`);
-      const regulationsRead = ["categories", "schedule", "fees"].some((k) => (r.practical_details ?? {})[k] && !String(((r.practical_details ?? {})[k] as { quote?: string }).quote ?? "").startsWith("UCI Competition Directory"));
-      // At a world cup or a championship the youth classes are guessed too: such a meeting runs the UCI's categories.
-      const championship = levelAtLeast(ucd.uciDirectoryLevel(competition.classCode) === "international" ? r.level : ucd.uciDirectoryLevel(competition.classCode), "world_cup");
-      const dropped = guessed && licensedOnly && !massStart && !regulationsRead
-        ? ["amateur", "masters", "kids", "u7", "u9", "u11", ...(championship ? ["youth", "u13", "u15", "u17"] : [])] : [];
-      const merged = AGE_CATEGORIES.filter((a) => (previous.includes(a) && !dropped.includes(a)) || ages.includes(a));
-      // Every class shown is one the UCI lists for this competition: that is the organiser's word, not a guess.
-      const accounted = ages.length > 0 && merged.every((a) => ages.includes(a));
-      const confidence = accounted ? "explicit" : previous.length ? r.age_confidence : "default";
+      const { ages: merged, confidence } = ucd.uciDirectoryCategoryState(event, r);
       const agesChange = merged.length !== previous.length || merged.some((a) => !previous.includes(a));
       if (ages.length && !AGE_FIELDS.some((f) => locked.has(f)) && (agesChange || confidence !== r.age_confidence)) {
         if (agesChange) { update.age_categories = merged; update.audience = audienceFromAgeCategories(merged); changes.push(`kategorie ${previous.join("/")} → ${merged.join("/")}`); }
@@ -263,14 +253,18 @@ async function main() {
         return changes;
       }
       if (Object.keys(update).length) {
-        const { error } = await db.from("events").update(update).eq("id", r.id).eq("public_revision", r.public_revision);
+        const { data: updated, error } = await db.from("events").update(update).eq("id", r.id).eq("public_revision", r.public_revision).select("id");
         if (error) throw Error(error.message);
+        if (updated?.length !== 1) throw Error("Catalogue changed while enriching the UCI competition");
         const facts = Object.entries(update).map(([field, value]) => ({ event_id: r.id, field, value: value as never, previous: (r as unknown as Record<string, unknown>)[field] as never ?? null,
           source_url: event!.sourceUrl, quote: event!.evidence!.quote.slice(0, 1500), method: "uci_directory", version: "uci-directory-v2" }));
-        await db.from("event_facts").insert(facts);
+        const { error: factError } = await db.from("event_facts").insert(facts);
+        if (factError) throw factError;
       }
       if (!hasSource) await db.from("event_sources").insert({ event_id: r.id, source_url: event!.sourceUrl, external_id: event!.externalId, is_canonical: false, kind: "official" });
-      if (website && (await saveFoundLinks(r, { website }))) changes.push("web");
+      // Only a different site: "https://x.cz" and "https://x.cz/" are one, and rewriting it every run bumps the race's revision.
+      const sameSite = (x: string | null, y: string | null) => Boolean(x && y) && canonicalSite(x!) === canonicalSite(y!);
+      if (website && !sameSite(r.website_url, website) && (await saveFoundLinks(r, { website }))) changes.push("web");
       if (needsCategories || needsOrganizer) {
         const { data: fresh } = await db.from("events").select("public_revision").eq("id", r.id).single();
         const checkedAt = new Date().toISOString(), editionYear = Number(event!.startDate.slice(0, 4));
@@ -295,6 +289,10 @@ function placeLike(raw: string, cc: string, towns: Map<string, Set<string>>): bo
   if (/^(emilia-romagna|piemonte|lombardia|veneto|toscana|liguria|trentino|mazowsze|podlasie|malopolska|slaskie|slovensko|bayern|sachsen|tirol|steiermark|morava|cechy)$/.test(text)) return false;
   // Known towns pass; the checks above run first, because the places table holds a few "TBC"s itself.
   return towns.get(cc)?.has(text) || text.length >= 3;
+}
+
+function canonicalSite(url: string) {
+  return url.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "");
 }
 
 function addDays(date: string, days: number) {

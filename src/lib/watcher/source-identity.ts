@@ -39,7 +39,7 @@ export function calendarRowCandidates<T extends { event: { startDate: string } }
   return sharedCalendar ? candidates.filter(c => c.event.startDate === incomingDate) : candidates;
 }
 
-/** One calendar URL is evidence, never the identity shared by all its rows. */
+/** Dated source assertions must not absorb another race on an adjacent day. */
 export function isSharedCalendarEvidence(event: { sourceUrl: string; evidence?: { method: string; sourceUrl: string } }): boolean {
-  return ["llm_calendar", "structured_calendar"].includes(event.evidence?.method ?? "") && event.sourceUrl === event.evidence?.sourceUrl;
+  return ["llm_calendar", "structured_calendar", "uci_directory", "swiss_cycling_table"].includes(event.evidence?.method ?? "") && event.sourceUrl === event.evidence?.sourceUrl;
 }

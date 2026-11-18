@@ -1,6 +1,8 @@
 import * as cheerio from "cheerio";
 import type { Discipline, ParsedEvent } from "@/lib/domain";
 import { normalizeName } from "@/lib/domain";
+import { ageCategoriesFromList } from "@/lib/age-bands";
+import { audienceFromAgeCategories } from "@/lib/taxonomy";
 
 function parseChDate(raw: string): { start: string; end?: string } | null {
   const t = raw.replace(/\s+/g, " ").trim();
@@ -22,12 +24,19 @@ function parseChDate(raw: string): { start: string; end?: string } | null {
 
 function mapDisc(raw: string): Discipline[] {
   const t = raw.toLowerCase();
+  if (/\bbahn\b/.test(t)) return ["track"];
+  if (/radquer|cyclocross/.test(t)) return ["cx"];
+  if (/\bbmx\b/.test(t)) return ["bmx"];
+  if (/\btrial\b|hallenradsport/.test(t)) return ["other"];
   if (/\benduro\b/.test(t)) return ["enduro"];
   if (/\bdh\b|downhill/.test(t)) return ["dh"];
   if (/\bxcm|marathon/.test(t)) return ["xcm"];
   if (/\bxcc/.test(t)) return ["xcc"];
   if (/\bxco/.test(t)) return ["xco"];
   if (/\bgravel/.test(t)) return ["gravel"];
+  if (/einzelzeitfahren|bergzeitfahren/.test(t)) return ["tt"];
+  if (/kriterium|\bcrit\b/.test(t)) return ["criterium"];
+  if (/\bstrasse\b/.test(t)) return ["road"];
   return ["mtb"];
 }
 
@@ -89,7 +98,7 @@ export function parseSwissCycling(url: string, html: string): ParsedEvent[] {
     const dates = parseChDate($(cells[0]).text());
     if (!dates) return;
     const name = $(cells[1]).text().replace(/\s+/g, " ").trim();
-    if (!name || /achtung:/i.test(name) || /talentsichtung|training|d[eé]tection|selezione dei talenti/i.test(name)) return;
+    if (!name || /achtung:|stadtlauf|crosslauf|laufrennen/i.test(name) || /talentsichtung|training|d[eé]tection|selezione dei talenti/i.test(name)) return;
     const place = $(cells[2]).text().replace(/\s+/g, " ").trim() || "Switzerland";
     const discRaw = $(cells[3]).text() + " " + ($(cells[4]).text() || "");
 
@@ -109,6 +118,13 @@ export function parseSwissCycling(url: string, html: string): ParsedEvent[] {
     seen.add(externalId);
 
     const series = swissSeriesFields(name);
+    const categories = ($(cells[5]).text() || "").split(/[,+]/).map((name) => ({ name: name.trim() })).filter((category) => category.name);
+    // Swiss Cycling's column writes the licence class and the sex: "E M" and "E F" (or "F E") are elite men and
+    // women. The shared reader does not know these codes; the row names stay as the federation wrote them.
+    const ageCategories = ageCategoriesFromList(
+      categories.map((category) => (/^(?:E\s*[MF]|F\s*E)$/i.test(category.name) ? { ...category, name: "Elite" } : category)),
+      { refYear: Number(dates.start.slice(0, 4)) },
+    );
     const raceUrl = websiteUrl;
     events.push({
       externalId,
@@ -123,6 +139,14 @@ export function parseSwissCycling(url: string, html: string): ParsedEvent[] {
       websiteUrl: raceUrl,
       confidence: 0.86,
       ...series,
+      ...(ageCategories.length ? { ageCategories, audience: audienceFromAgeCategories(ageCategories) } : {}),
+      categories,
+      evidence: {
+        sourceUrl: url,
+        quote: cells.map((_, cell) => $(cell).text().replace(/\s+/g, " ").trim()).get().join("\n"),
+        method: "swiss_cycling_table",
+        version: "swiss-cycling-table-v2",
+      },
     });
   });
 

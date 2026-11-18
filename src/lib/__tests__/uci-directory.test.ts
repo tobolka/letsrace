@@ -1,11 +1,34 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { uciDirectoryClass, uciDirectoryEvent, uciDirectoryId, uciDirectoryLevel, uciDirectoryWebsite } from "@/lib/catalog/uci-directory";
+import { uciDirectoryClass, uciDirectoryEvent, uciDirectoryId, uciDirectoryLevel, uciDirectoryWebsite, uciDirectoryCategoryState } from "@/lib/catalog/uci-directory";
 import { quoteStatesDate } from "@/lib/catalog/quoted-date";
 
 const fixture = (id: string) => JSON.parse(readFileSync(`src/lib/__tests__/fixtures/uci-directory/${id}.json`, "utf8"));
 
 describe("UCI Competition Directory", () => {
+  it("identifies BMX racing when the UCI championship title omits its discipline", () => {
+    const c = fixture("4fa9f103-5886-47e0-9ccd-a43ecebb4f5e");
+    expect(uciDirectoryEvent({ ...c, name: "German National Championships", disciplineCode: "BMX" })?.name).toBe("German National Championships - BMX Racing");
+  });
+  it("replaces last year's youth category with this year's confirmed juniors", () => {
+    const event = uciDirectoryEvent(fixture("4fa9f103-5886-47e0-9ccd-a43ecebb4f5e"))!;
+    const current = { name: event.name, age_categories: ["junior", "youth"], age_confidence: "previous", practical_details: null };
+    expect(uciDirectoryCategoryState(event, current)).toEqual({ ages: ["junior"], confidence: "explicit" });
+    expect(uciDirectoryCategoryState(event, { ...current, age_confidence: "default", age_categories: ["junior", "u23", "elite"] })).toEqual({ ages: ["junior"], confidence: "explicit" });
+  });
+
+  it("preserves additional categories explicitly confirmed by current regulations", () => {
+    const event = uciDirectoryEvent(fixture("4fa9f103-5886-47e0-9ccd-a43ecebb4f5e"))!;
+    const current = { name: event.name, age_categories: ["junior", "youth"], age_confidence: "explicit", practical_details: { categories: { status: "current", editionYear: 2027, sourceUrl: "https://gpwb.cz/rules.pdf", quote: "Youth and junior races" } } };
+    expect(uciDirectoryCategoryState(event, current)).toEqual({ ages: ["youth", "junior"], confidence: "explicit" });
+    expect(uciDirectoryCategoryState(event, { ...current, age_confidence: "previous", practical_details: { categories: { ...current.practical_details.categories, editionYear: 2026 } } })).toEqual({ ages: ["junior"], confidence: "explicit" });
+  });
+
+  it("does not replace a whole weekend's categories from a differently named UCI race", () => {
+    const event = uciDirectoryEvent(fixture("4fa9f103-5886-47e0-9ccd-a43ecebb4f5e"))!;
+    expect(uciDirectoryCategoryState(event, { name: "World Cup weekend", age_categories: ["junior", "u23", "elite"], age_confidence: "previous", practical_details: null }))
+      .toEqual({ ages: ["junior", "u23", "elite"], confidence: "previous" });
+  });
   it("reads a junior stage race with its class, website, category and both dates", () => {
     const event = uciDirectoryEvent(fixture("4fa9f103-5886-47e0-9ccd-a43ecebb4f5e"))!;
     expect(event).toMatchObject({ name: "Grand Prix West Bohemia", startDate: "2027-05-01", endDate: "2027-05-02", countryHint: "CZ", uciClass: "2.1", websiteUrl: "https://gpwb.cz/", ageCategories: ["junior"] });

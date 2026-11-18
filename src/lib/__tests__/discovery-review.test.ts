@@ -2,6 +2,13 @@ import { expect, it, vi } from "vitest";
 import { candidateAssertion, sameCandidateFacts, saveCandidate, validateReview, type ReviewRow, type ReviewDecision } from "@/lib/discovery/review";
 import { discoveryPlan } from "@/lib/discovery/plan";
 import { assessCandidate } from "@/lib/discovery/assessment";
+
+it("keeps an explicit UCI date when only the optional website is TBC", () => {
+  const race = { externalId: "uci-dir:race", name: "Giro Della Romagna", startDate: "2027-09-19", placeText: "Lugo", countryHint: "IT", discipline: ["road" as const], sourceUrl: "https://uci-competition.tech.uci.ch/competitions/race", confidence: 0.98,
+    evidence: { sourceUrl: "https://uci-competition.tech.uci.ch/competitions/race", method: "uci_directory", version: "2", quote: '19.9.2027 · {"venue":"Lugo","startDate":"2027-09-19","website":"TBC"}' } };
+  expect(assessCandidate(race, "IT").dateStatus).toBe("requires_verification");
+  expect(assessCandidate({ ...race, placeText: "TBC" }, "IT").dateStatus).toBe("tentative");
+});
 import type { ParsedEvent } from "@/lib/domain";
 const event: ParsedEvent = { externalId: "race", name: "Lesák CUP", startDate: "2027-08-28", placeText: "Červený Kostelec", countryHint: "CZ", discipline: ["mtb"], sourceUrl: "https://lesak-cup.cz/", confidence: 0.9,
   evidence: { quote: "Lesák CUP 28. 8. 2027", sourceUrl: "https://lesak-cup.cz/", method: "llm_calendar", version: "v7" } };

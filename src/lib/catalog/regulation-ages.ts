@@ -7,6 +7,7 @@ import { audienceFromAgeCategories, type AgeCategory } from "@/lib/taxonomy";
 import { ACTIVE_EVENT_STATUSES } from "@/lib/event-visibility";
 import { findRegulationsUrl, isRegulationsUrl } from "@/lib/watcher/regulations-url";
 import { linkLabel } from "@/lib/watcher/link-label";
+import { isOwnDocument, isSeriesDocumentOfRound } from "@/lib/catalog/practical-extraction";
 import { fetchBot } from "@/lib/http/fetch";
 
 const PAGE = 1000;
@@ -369,6 +370,24 @@ export function hintsFor(name: string, startDate: string, municipality: string |
   return [...words, ...(municipality ? [municipality] : []), `${d}. ${m}.`, `${d}.${m}.`, `${d}. ${m}`];
 }
 
+/** Category evidence must belong to this race and edition, including shared series rules. */
+export function currentRegulationText(
+  doc: { url: string; text: string; html?: string | null },
+  race: { name: string; startDate: string; municipality?: string | null; ownUrls?: (string | null | undefined)[] },
+): string | null {
+  let text = doc.text;
+  if (doc.html) {
+    const $ = cheerio.load(doc.html);
+    $("nav,header,footer,aside,script,style,noscript").remove();
+    const content = $(".entry-content").first();
+    text = htmlText(content.length ? $.html(content) : $.html());
+  }
+  if (/\/(?:kalendar|calendar|eventi|terminovka)(?:[/?#-]|$)/i.test(doc.url)) return null;
+  const document = { url: doc.url, text, links: [] };
+  const rules = /propoz|pravidla|regulamin|reglement|regolamento|ausschreibung|rozpis|rules/i.test(doc.url + " " + text.slice(0, 500));
+  return isOwnDocument(document, race) || rules && isSeriesDocumentOfRound(document, race) ? text : null;
+}
+
 /**
  * Read the categories a race's own regulations state.
  *
@@ -474,7 +493,11 @@ export async function fillRegulationAgeCategories(opts?: {
       else doc = await readDocument(url).catch(() => null);
       if (!doc) continue;
       if (doc.thin && !rendered) thinPages.push({ target, url });
-      const read = categoriesFromRegulationsText(doc.text, year);
+      const currentText = currentRegulationText(doc, {
+        name: target.name, startDate: target.startDate, municipality: target.municipality,
+        ownUrls: [target.websiteUrl, target.regulationsUrl],
+      });
+      const read = currentText ? categoriesFromRegulationsText(currentText, year) : { ages: [], quote: "" };
       if (specificBands(read.ages) >= 2) {
         read.ages.forEach((a) => ages.add(a));
         if (!quote) {
