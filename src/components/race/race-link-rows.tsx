@@ -26,7 +26,7 @@ const LINK_ICONS: Record<string, ReactNode> = {
  * arrow that says whether it leaves the site. The map's card and the race page
  * both use it, instead of a mix of buttons, chips and underlined text.
  *
- * `bleed` is kept for callers; the rows sit in one frame inside the card's gutter.
+ * `bleed` is kept for callers; the rows are grey buttons inside the card's gutter.
  */
 export function RaceLinkRows({
   links,
@@ -38,7 +38,7 @@ export function RaceLinkRows({
   onLink?: (kind: string) => void;
   /** For a page that cannot hand down a handler: what to report on a click. */
   analytics?: { raceId: string; slug: string; location: string; presentation: string };
-  /** Kept so callers need not change: the rows sit in a frame inside the gutter now. */
+  /** Kept so callers need not change: the rows are buttons inside the gutter now. */
   bleed?: boolean;
   className?: string;
 }) {
@@ -55,11 +55,11 @@ export function RaceLinkRows({
       });
     }
   }
-  // One framed list, the same on the card and the race page: the frame says "these lead somewhere".
+  // Each link a grey button, as the action buttons above, on the card and the race page alike.
   const row =
-    "grid min-h-11 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center gap-x-3 px-4 text-sm font-medium transition-colors hover:bg-accent active:bg-accent focus-visible:bg-accent focus-visible:outline-none";
+    "grid min-h-11 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center gap-x-3 rounded-lg bg-secondary px-3 text-sm font-medium transition-colors hover:bg-secondary/70 active:bg-secondary/70 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none";
   return (
-    <ul className={cn("divide-y divide-border/60 overflow-hidden rounded-xl border", className)}>
+    <ul className={cn("flex flex-col gap-1.5", className)}>
       {links.map((link) => {
         const inner = (
           <>

@@ -17,7 +17,7 @@ import { roundOf } from "@/lib/series-rounds";
 import { raceHolidays } from "@/lib/holidays";
 import { birthYears } from "@/lib/birth-years";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
-import { defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
+import { asLocale, defaultLocale, locales, messages, type Locale } from "@/lib/i18n/messages";
 import { AGE_CATEGORIES, UCI_CLASS_LABELS, type UciClass, formatEventCategoryLabel } from "@/lib/taxonomy";
 import { ageCategoryHelp, ageCategoryLabel, disciplineLabel, raceLevelLabel, uciClassHelp } from "@/lib/i18n/taxonomy";
 import { absoluteUrl, brandedTitle, fillCopy, hubCopy, localeAlternates, raceOgImagePath, SITE_NAME, socialCard } from "@/lib/seo";
@@ -33,6 +33,7 @@ import { countryDisplayName, isListedCountry } from "@/lib/geo/europe";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { PracticalRaceFacts } from "@/components/race/practical-race-facts";
 import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
+import { FACT_COPY } from "@/lib/race-fact-copy";
 import { DOCUMENT_KINDS } from "@/lib/race-fact-copy";
 import { RacePageView } from "@/components/analytics/race-page-view";
 import { Button } from "@/components/ui/button";
@@ -365,10 +366,10 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           <SameDayNote className="mt-3" locale={locale} race={{ id: event.id, startDate: event.startDate, endDate: event.endDate }} />
         )}
         {/* The organiser's other pages and documents: one list, the same rows as the map's race card. */}
+        {pageLinks.length ? <h2 className="mt-6 mb-2 text-[13px] font-semibold">{FACT_COPY[asLocale(locale)].links}</h2> : null}
         <RaceLinkRows
           links={pageLinks}
           analytics={{ raceId: event.id, slug: event.slug, location: "race_page", presentation: "page" }}
-          className="mt-5"
         />
         <p className="mt-3 text-xs text-muted-foreground">
           {event.organizerVerified ? (

@@ -124,83 +124,8 @@ export function EmbeddedBody({
   ];
   const raceBody = (
     <>
-
-      <RaceMoreDetails
-        event={event}
-        locale={locale}
-        links={links}
-        onLink={trackEnter}
-        lead={weatherAt ? <RaceWeather key={event.id} lat={weatherAt.lat} lng={weatherAt.lng} date={event.startDate} locale={locale} hideLink /> : null}
-      />
-
-      {trustText || checkedText ? (
-        <CardSection className="pt-5">
-        <p
-          // Quiet even when unverified: it is a footnote, not a warning.
-          className="text-xs leading-snug text-muted-foreground"
-          data-trust={trustLow ? "low" : undefined}
-          title={t.trustExplanation}
-        >
-          {trustText}
-          {checkedText ? (
-            <>
-              {trustText ? <span aria-hidden> · </span> : null}
-              <time className="tabular-nums" dateTime={event.lastSeenAt ?? undefined}>
-                {checkedText}
-              </time>
-            </>
-          ) : null}
-        </p>
-        </CardSection>
-      ) : null}
-    </>
-  );
-  return (
-    <div className="flex flex-col">
-      {/* When and where, then what you can do with it. */}
-      <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
-      {/* When, where, who and what level: one group, one rhythm, the text in one column after the icons. */}
-      <div className="flex flex-col gap-2.5">
-        <p className="flex items-center gap-2.5 text-sm font-semibold">
-          <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <span className="min-w-0">
-            <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
-              {dateLabel}
-            </time>
-            {countdown ? (
-              <span className="font-normal text-brand" suppressHydrationWarning>
-                <span aria-hidden> · </span>
-                {countdown}
-              </span>
-            ) : null}
-          </span>
-        </p>
-        <p className="flex items-start gap-2.5 text-sm">
-          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <span className="min-w-0 flex-1 break-words">
-            {placeUrl ? (
-              <a
-                href={placeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline-offset-4 hover:underline"
-                onClick={() => trackEnter("place")}
-              >
-                {placeLabel}
-              </a>
-            ) : (
-              <span>{placeLabel || "—"}</span>
-            )}
-            {discChips.length > 0 ? (
-              <span className="text-muted-foreground">
-                <span aria-hidden> · </span>
-                <span className="sr-only">{t.formatLabel}: </span>
-                {discChips.join(", ")}
-              </span>
-            ) : null}
-          </span>
-        </p>
-        {/* Who it is for and what kind of race it is, above what you can do with it — as on the race page. */}
+      {/* Who it is for and what kind of race it is. */}
+      <CardSection className="flex flex-col gap-2.5 py-5">
         <MetaRow icon={<UserRound />} label={t.audience}>
           {whoChips.length > 0 ? (
             <>
@@ -244,6 +169,79 @@ export function EmbeddedBody({
             )}
           </MetaRow>
         ) : null}
+        {weatherAt ? (
+          <RaceWeather key={event.id} lat={weatherAt.lat} lng={weatherAt.lng} date={event.startDate} locale={locale} hideLink />
+        ) : null}
+      </CardSection>
+
+      <RaceMoreDetails event={event} locale={locale} links={links} onLink={trackEnter} />
+
+      {trustText || checkedText ? (
+        <CardSection className="pt-5">
+        <p
+          // Quiet even when unverified: it is a footnote, not a warning.
+          className="text-xs leading-snug text-muted-foreground"
+          data-trust={trustLow ? "low" : undefined}
+          title={t.trustExplanation}
+        >
+          {trustText}
+          {checkedText ? (
+            <>
+              {trustText ? <span aria-hidden> · </span> : null}
+              <time className="tabular-nums" dateTime={event.lastSeenAt ?? undefined}>
+                {checkedText}
+              </time>
+            </>
+          ) : null}
+        </p>
+        </CardSection>
+      ) : null}
+    </>
+  );
+  return (
+    <div className="flex flex-col">
+      {/* When and where, then what you can do with it. */}
+      <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
+      <div className="flex flex-col gap-1.5">
+        <p className="flex items-center gap-2 text-sm font-semibold">
+          <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="min-w-0">
+            <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
+              {dateLabel}
+            </time>
+            {countdown ? (
+              <span className="font-normal text-brand" suppressHydrationWarning>
+                <span aria-hidden> · </span>
+                {countdown}
+              </span>
+            ) : null}
+          </span>
+        </p>
+        <p className="flex items-start gap-2 text-sm">
+          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="min-w-0 flex-1 break-words">
+            {placeUrl ? (
+              <a
+                href={placeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline-offset-4 hover:underline"
+                onClick={() => trackEnter("place")}
+              >
+                {placeLabel}
+              </a>
+            ) : (
+              <span>{placeLabel || "—"}</span>
+            )}
+            {discChips.length > 0 ? (
+              <span className="text-muted-foreground">
+                <span aria-hidden> · </span>
+                <span className="sr-only">{t.formatLabel}: </span>
+                {discChips.join(", ")}
+              </span>
+            ) : null}
+          </span>
+        </p>
       </div>
 
       <RaceActions

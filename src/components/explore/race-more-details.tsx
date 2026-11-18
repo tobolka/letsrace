@@ -36,15 +36,12 @@ export function RaceMoreDetails({
   locale,
   links = [],
   onLink,
-  lead,
 }: {
   event: EventListItem;
   locale: string;
   /** The links the card already knows; the regulations' other documents join them. */
   links?: CardLink[];
   onLink?: (kind: string) => void;
-  /** A line above the links (the race's usual weather); it takes no room when it has nothing to say. */
-  lead?: ReactNode;
 }) {
   const full = useFullRace(event.slug);
   const t = messagesFor(locale);
@@ -59,12 +56,11 @@ export function RaceMoreDetails({
   const ours = (link: CardLink) => link.kind === "series" || link.kind === "weather";
   const allLinks = [...links.filter((l) => !ours(l)), ...documents, ...links.filter(ours)];
 
-  // The frame sets the list apart from the facts above; a rule below closes it off from the details.
-  const linkSection = allLinks.length || lead ? (
-    <div className="flex flex-col gap-4 py-5">
-      {lead}
-      {allLinks.length ? <RaceLinkRows links={allLinks} onLink={onLink} bleed /> : null}
-    </div>
+  // The framed list, ruled off above and below like every other part of the card.
+  const linkSection = allLinks.length ? (
+    <CardSection className="py-5">
+      <RaceLinkRows links={allLinks} onLink={onLink} bleed />
+    </CardSection>
   ) : null;
 
   if (full === undefined) {
