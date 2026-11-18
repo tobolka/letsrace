@@ -466,7 +466,9 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         <Button
           asChild
           size="icon"
-          className="pointer-events-auto rounded-md bg-brand shadow-md hover:bg-brand/90 md:hidden"
+          // An app icon's corners, not a box's: a continuous curve where the
+          // browser can draw one, and Apple's 22–24 % radius where it cannot.
+          className="pointer-events-auto rounded-[24%] bg-brand shadow-md hover:bg-brand/90 supports-[corner-shape:squircle]:rounded-[45%] supports-[corner-shape:squircle]:[corner-shape:squircle] md:hidden"
         >
           <Link href={`/${locale}`} aria-label={SITE_NAME}>
             <BrandMark mark="lr" size="sm" tone="inverse" className="px-0" />
