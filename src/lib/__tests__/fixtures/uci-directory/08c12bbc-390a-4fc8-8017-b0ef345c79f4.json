@@ -1,0 +1,85 @@
+{
+    "id": "08c12bbc-390a-4fc8-8017-b0ef345c79f4",
+    "code": "ROA_2027_1.UWT_000004",
+    "name": "Eschborn-Frankfurt",
+    "seasonYear": 2027,
+    "disciplineCode": "ROA",
+    "disciplineName": "Road",
+    "classCode": "1.UWT",
+    "className": "1 day - UCI WorldTour",
+    "countryCode": "GER",
+    "countryName": "GERMANY",
+    "continentCode": "EUR",
+    "venue": "Francfort-sur-le-Main",
+    "startDate": "2027-05-01",
+    "endDate": "2027-05-01",
+    "v1Code": "D2CP79692",
+    "website": "https://www.eschborn-frankfurt.de/",
+    "email": "office@aso-germany.de",
+    "categoryCodes": [
+        "ME"
+    ],
+    "raceTypes": [
+        {
+            "code": "IRR",
+            "name": "Individual Road Race"
+        }
+    ],
+    "raceCount": 1,
+    "races": [
+        {
+            "id": "1a38fbe4-b2ff-4268-8cfa-266dec1f7414",
+            "name": "Men Elite - Individual Road Race",
+            "code": "ROA_2027_1.UWT_000004_ME_IRR",
+            "categoryCode": "ME",
+            "categoryName": "Men Elite",
+            "classCode": "1.UWT",
+            "className": "1 day - UCI WorldTour",
+            "raceTypeCode": "IRR",
+            "raceTypeName": "Individual Road Race",
+            "sequence": 1,
+            "startDate": "2027-05-01",
+            "endDate": "2027-05-01",
+            "v1Code": "D2RC289273",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": null,
+            "endVenueName": null,
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": [
+                {
+                    "id": "bfb50e55-f86d-4951-974a-9c6ad53cd844",
+                    "code": "ROA_2027_1.UWT_000004_ME_IRR_FNGE",
+                    "name": "General Classification",
+                    "date": "2027-05-01",
+                    "startTime": null,
+                    "endTime": null,
+                    "parentEventId": null,
+                    "classificationCode": "FNGE",
+                    "classificationName": "General Classification",
+                    "sequence": 1,
+                    "v1Code": "D2EV396904"
+                }
+            ]
+        }
+    ],
+    "officials": [
+        {
+            "firstName": "Bj\u00f6rn",
+            "lastName": "MISSEEUW",
+            "countryCode": "BEL",
+            "roleCode": "COM",
+            "roleName": "Commissaires",
+            "functionName": "Commissaire"
+        },
+        {
+            "firstName": "Christopher",
+            "lastName": "ENZI",
+            "countryCode": "AUT",
+            "roleCode": "COM",
+            "roleName": "Commissaires",
+            "functionName": "President of the Commissaires Panel"
+        }
+    ]
+}

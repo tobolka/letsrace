@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import Link from "next/link";
 import { FACT_ICONS, FactList, FactRow, type FactListRow } from "@/components/race/fact-row";
 import { RaceLinkRows, type RaceLink } from "@/components/race/race-link-rows";
 import { Skeleton } from "@/components/ui/skeleton";
 import { categoryDetail, distinctCategories } from "@/lib/category-detail";
-import { eventPagePath } from "@/lib/event-url";
 import type { EventListItem } from "@/lib/events";
 import { asLocale, messagesFor } from "@/lib/i18n/messages";
 import { DOCUMENT_KINDS, FACT_COPY } from "@/lib/race-fact-copy";
@@ -28,8 +26,9 @@ export function CardSection({ children, className }: { children: ReactNode; clas
  * whole race when it opens and fills them in when it arrives; nothing above
  * waits for it.
  *
- * Long lists are cut short. The card is for deciding whether to go; the race
- * page holds every row, laid out with the same rows (`FactRow`).
+ * Long lists and the description are cut short and open in place: the card is
+ * for deciding whether to go, and nobody should have to leave it to read the
+ * seventh category.
  */
 export function RaceMoreDetails({
   event,
@@ -98,12 +97,6 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
   const t = messagesFor(locale);
   const c = FACT_COPY[asLocale(locale)];
   const facts: PracticalDetails = full.practicalDetails ?? {};
-  const fullHref = eventPagePath(locale, event.slug);
-  const more = (n: number) => (
-    <Link href={fullHref} className="mt-2 inline-block text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground">
-      {c.more.replace("{n}", String(n))}
-    </Link>
-  );
   const date = (day: string) =>
     new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "numeric", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
   const multiDay = Boolean(event.endDate && event.endDate !== event.startDate);
@@ -111,12 +104,7 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
     new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 2 }).format(amount);
   const rows: { key: string; icon: ReactNode; label: string; body: ReactNode }[] = [];
   function list<T>(items: T[], toRow: (item: T, i: number) => FactListRow) {
-    return (
-      <>
-        <FactList rows={items.slice(0, LIMIT).map(toRow)} />
-        {items.length > LIMIT ? more(items.length - LIMIT) : null}
-      </>
-    );
+    return <ExpandableList rows={items.map(toRow)} more={c.more} less={c.less} />;
   }
 
   if (facts.schedule) {
@@ -255,14 +243,48 @@ function raceFactRows(full: EventListItem, event: EventListItem, locale: string)
       key: "about",
       icon: FACT_ICONS.about,
       label: t.raceAbout,
-      body: <p className="line-clamp-4 text-pretty text-muted-foreground">{about}</p>,
+      body: <ExpandableText text={about} more={c.more.replace(/\s*\(?\{n\}\)?\s*/, " ").trim()} less={c.less} />,
     });
   }
   return rows;
 }
 
-/** How many rows of a list the card shows before pointing to the race page. */
+/** How many rows of a list the card shows before the rest is opened. */
 const LIMIT = 6;
+
+const TOGGLE = "mt-2 inline-block text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground";
+
+/** The first rows of a long list, the rest one click away on the card itself. */
+function ExpandableList({ rows, more, less }: { rows: FactListRow[]; more: string; less: string }) {
+  const [open, setOpen] = useState(false);
+  const hidden = rows.length - LIMIT;
+  return (
+    <>
+      <FactList rows={open || hidden <= 0 ? rows : rows.slice(0, LIMIT)} />
+      {hidden > 0 ? (
+        <button type="button" className={TOGGLE} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          {open ? less : more.replace("{n}", String(hidden))}
+        </button>
+      ) : null}
+    </>
+  );
+}
+
+/** A description cut to four lines, opened in place when it runs longer. */
+function ExpandableText({ text, more, less }: { text: string; more: string; less: string }) {
+  const [open, setOpen] = useState(false);
+  const long = text.length > 280 || text.split("\n").length > 4;
+  return (
+    <>
+      <p className={`text-pretty whitespace-pre-line text-muted-foreground ${open ? "" : "line-clamp-4"}`}>{text}</p>
+      {long ? (
+        <button type="button" className={TOGGLE} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          {open ? less : more}
+        </button>
+      ) : null}
+    </>
+  );
+}
 
 /** Whole races already fetched, kept while the page is open: back to a pin is instant. */
 const fetched = new Map<string, Promise<EventListItem | null>>();

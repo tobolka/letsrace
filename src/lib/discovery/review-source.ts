@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { load } from "cheerio";
 import { parseFullgazHomepage } from "@/lib/watcher/extractors/fullgaz";
 import { parseUciCompetition } from "@/lib/watcher/extractors/uci-competition";
+import { uciDirectoryApi, uciDirectoryEvent, uciDirectoryId } from "@/lib/catalog/uci-directory";
 import { discoveryUrl } from "./plan";
 import type { Json } from "@/lib/supabase/database.types";
 import type { ParsedEvent } from "@/lib/domain";
@@ -29,6 +30,19 @@ async function verifyFieldEvidence(event: ParsedEvent, authorityWebsite: string 
 export async function validateReviewSource(row: ReviewRow, decision: ReviewDecision, today: string, read: typeof fetchPage = fetchPage) {
   validateReview(row, decision, today);
   if (decision.action !== "publish") throw Error("Publication requires a publish decision");
+  if ((row.payload as unknown as ParsedEvent).evidence?.method === "uci_directory") {
+    // The directory's pages are an app shell; its API is the document. Re-read it and compare the whole assertion.
+    const event = row.payload as unknown as ParsedEvent;
+    const id = uciDirectoryId(row.source_url);
+    if (!id) throw Error("Not a UCI directory competition");
+    const fresh = await read(uciDirectoryApi(id), { fresh: true, accept: "application/json" });
+    if (fresh.status !== 200) throw Error(`Source unavailable: ${row.id} (HTTP ${fresh.status})`);
+    let parsed: ParsedEvent | null = null;
+    try { parsed = uciDirectoryEvent(JSON.parse(fresh.html)); } catch { parsed = null; }
+    if (!parsed || parsed.evidence?.quote !== event.evidence?.quote || parsed.evidence?.version !== event.evidence?.version
+      || !sameCandidateFacts(JSON.parse(JSON.stringify(parsed)) as Json, row.payload)) throw Error("UCI directory competition differs from the current directory");
+    return;
+  }
   const source = await read(row.source_url, { fresh: true });
   const evidence = row.evidence as { documentHash?: string; textHash?: string } | null;
   const event = row.payload as unknown as ParsedEvent;

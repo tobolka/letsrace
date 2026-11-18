@@ -74,9 +74,13 @@ function specificBands(ages: AgeCategory[]): number {
 }
 
 async function fetchBytes(url: string, requestedMaxBytes = MAX_BYTES): Promise<{ type: string; bytes: Uint8Array } | null> {
-  const maxBytes = Number.isFinite(requestedMaxBytes) ? Math.min(16 * 1024 * 1024, Math.max(1, requestedMaxBytes)) : MAX_BYTES;
+  const limit = Number.isFinite(requestedMaxBytes) ? Math.min(16 * 1024 * 1024, Math.max(1, requestedMaxBytes)) : MAX_BYTES;
   const res = await fetchBot(url, { headers: { accept: "text/html,application/pdf,*/*" } });
   if (!res.ok) return null;
+  // A race guide is a PDF full of photographs: 10 MB is common, and the text in it is what we need.
+  // Pages keep the caller's limit; a PDF may use the whole 16 MB.
+  const pdf = /application\/pdf/i.test(res.headers.get("content-type") ?? "") || /\.pdf(?:$|[?#])/i.test(url);
+  const maxBytes = pdf ? 16 * 1024 * 1024 : limit;
   const len = Number(res.headers.get("content-length") ?? 0);
   if (len > maxBytes) { await res.body?.cancel(); return null; }
   if (!res.body) return null;

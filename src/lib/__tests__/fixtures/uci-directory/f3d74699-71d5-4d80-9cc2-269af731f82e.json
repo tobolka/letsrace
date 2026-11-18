@@ -1,0 +1,107 @@
+{
+    "id": "f3d74699-71d5-4d80-9cc2-269af731f82e",
+    "code": "TRI_2027_CDM_001349",
+    "name": "UCI Trials World Cup",
+    "seasonYear": 2027,
+    "disciplineCode": "TRI",
+    "disciplineName": "Trials",
+    "classCode": "CDM",
+    "className": "UCI World Cup",
+    "countryCode": "GER",
+    "countryName": "GERMANY",
+    "continentCode": "EUR",
+    "venue": "Oberderdingen",
+    "startDate": "2027-09-17",
+    "endDate": "2027-09-19",
+    "v1Code": "D2CP81250",
+    "website": null,
+    "email": null,
+    "categoryCodes": [
+        "ME",
+        "WE"
+    ],
+    "raceTypes": [
+        {
+            "code": "20''",
+            "name": "20-inch Wheel Size"
+        },
+        {
+            "code": "26''",
+            "name": "26-inch Wheel Size"
+        },
+        {
+            "code": "OPN",
+            "name": "Open"
+        }
+    ],
+    "raceCount": 3,
+    "races": [
+        {
+            "id": "39c4c01f-cff1-4a1c-9677-a0c4b12ff985",
+            "name": "Men Elite - 20-inch Wheel Size",
+            "code": "TRI_2027_CDM_001349_ME_20",
+            "categoryCode": "ME",
+            "categoryName": "Men Elite",
+            "classCode": "CDM",
+            "className": "UCI World Cup",
+            "raceTypeCode": "20''",
+            "raceTypeName": "20-inch Wheel Size",
+            "sequence": 1,
+            "startDate": "2027-09-19",
+            "endDate": "2027-09-19",
+            "v1Code": "D2RC288795",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": null,
+            "endVenueName": null,
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": []
+        },
+        {
+            "id": "31b32831-9f39-412a-9d82-694d9d47b676",
+            "name": "Men Elite - 26-inch Wheel Size",
+            "code": "TRI_2027_CDM_001349_ME_26",
+            "categoryCode": "ME",
+            "categoryName": "Men Elite",
+            "classCode": "CDM",
+            "className": "UCI World Cup",
+            "raceTypeCode": "26''",
+            "raceTypeName": "26-inch Wheel Size",
+            "sequence": 2,
+            "startDate": "2027-09-19",
+            "endDate": "2027-09-19",
+            "v1Code": "D2RC288796",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": null,
+            "endVenueName": null,
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": []
+        },
+        {
+            "id": "1b6c33f6-c120-453f-8b2e-843ed3447371",
+            "name": "Women Elite - Open",
+            "code": "TRI_2027_CDM_001349_WE_OPN",
+            "categoryCode": "WE",
+            "categoryName": "Women Elite",
+            "classCode": "CDM",
+            "className": "UCI World Cup",
+            "raceTypeCode": "OPN",
+            "raceTypeName": "Open",
+            "sequence": 3,
+            "startDate": "2027-09-19",
+            "endDate": "2027-09-19",
+            "v1Code": "D2RC288797",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": null,
+            "endVenueName": null,
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": []
+        }
+    ],
+    "officials": []
+}

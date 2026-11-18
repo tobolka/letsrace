@@ -1,0 +1,188 @@
+{
+    "id": "24c0c847-659b-4162-9cd5-2f625e0b232d",
+    "code": "D2CP79080",
+    "name": "International Cyclo-Cross Bad Salzdetfurth #1",
+    "seasonYear": 2027,
+    "disciplineCode": "CRO",
+    "disciplineName": "Cyclo-cross",
+    "classCode": "C2",
+    "className": "Class 2",
+    "countryCode": "GER",
+    "countryName": "GERMANY",
+    "continentCode": "EUR",
+    "venue": "Bad Salzdetfurth",
+    "startDate": "2026-09-19",
+    "endDate": "2026-09-19",
+    "v1Code": "D2CP79080",
+    "website": "https://sportstadt.bad-salzdetfurth.de/",
+    "email": "t.neubauer@bad-salzdetfurth.de",
+    "categoryCodes": [
+        "ME",
+        "MJ",
+        "WE",
+        "WJ"
+    ],
+    "raceTypes": [
+        {
+            "code": "IND",
+            "name": "Individual"
+        }
+    ],
+    "raceCount": 4,
+    "races": [
+        {
+            "id": "d9887dd2-a51a-4a8f-b19d-d291bc1ea802",
+            "name": "Men Elite",
+            "code": "D2RC274706",
+            "categoryCode": "ME",
+            "categoryName": "Men Elite",
+            "classCode": "C2",
+            "className": "Class 2",
+            "raceTypeCode": "IND",
+            "raceTypeName": "Individual",
+            "sequence": 0,
+            "startDate": "2026-09-19",
+            "endDate": "2026-09-19",
+            "v1Code": "D2RC274706",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": "Bad Salzdetfurth",
+            "endVenueName": "Bad Salzdetfurth",
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": [
+                {
+                    "id": "b5eab845-578c-4c22-a2f4-8cdcbb2a8052",
+                    "code": "D2EV387428",
+                    "name": "General Classification",
+                    "date": "2026-09-19",
+                    "startTime": null,
+                    "endTime": null,
+                    "parentEventId": null,
+                    "classificationCode": "GE",
+                    "classificationName": "General Classification",
+                    "sequence": 1,
+                    "v1Code": "D2EV387428"
+                }
+            ]
+        },
+        {
+            "id": "3c96bf61-9484-4423-897b-588f75708be1",
+            "name": "Women Elite",
+            "code": "D2RC274708",
+            "categoryCode": "WE",
+            "categoryName": "Women Elite",
+            "classCode": "C2",
+            "className": "Class 2",
+            "raceTypeCode": "IND",
+            "raceTypeName": "Individual",
+            "sequence": 0,
+            "startDate": "2026-09-19",
+            "endDate": "2026-09-19",
+            "v1Code": "D2RC274708",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": "Bad Salzdetfurth",
+            "endVenueName": "Bad Salzdetfurth",
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": [
+                {
+                    "id": "c14d71ac-88fd-42c0-aeb0-f5973a9ad299",
+                    "code": "D2EV387430",
+                    "name": "General Classification",
+                    "date": "2026-09-19",
+                    "startTime": null,
+                    "endTime": null,
+                    "parentEventId": null,
+                    "classificationCode": "GE",
+                    "classificationName": "General Classification",
+                    "sequence": 1,
+                    "v1Code": "D2EV387430"
+                }
+            ]
+        },
+        {
+            "id": "e0508375-5afc-4f75-afc6-172f1f7ff48b",
+            "name": "Men Junior",
+            "code": "D2RC274707",
+            "categoryCode": "MJ",
+            "categoryName": "Men Junior",
+            "classCode": "C2",
+            "className": "Class 2",
+            "raceTypeCode": "IND",
+            "raceTypeName": "Individual",
+            "sequence": 0,
+            "startDate": "2026-09-19",
+            "endDate": "2026-09-19",
+            "v1Code": "D2RC274707",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": "Bad Salzdetfurth",
+            "endVenueName": "Bad Salzdetfurth",
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": [
+                {
+                    "id": "139cd8e4-7325-464b-9bdc-636e4a0eca88",
+                    "code": "D2EV387429",
+                    "name": "General Classification",
+                    "date": "2026-09-19",
+                    "startTime": null,
+                    "endTime": null,
+                    "parentEventId": null,
+                    "classificationCode": "GE",
+                    "classificationName": "General Classification",
+                    "sequence": 1,
+                    "v1Code": "D2EV387429"
+                }
+            ]
+        },
+        {
+            "id": "8017438f-4cf4-4666-98b9-3a4b843c3917",
+            "name": "Women Junior",
+            "code": "D2RC274709",
+            "categoryCode": "WJ",
+            "categoryName": "Women Junior",
+            "classCode": "C2",
+            "className": "Class 2",
+            "raceTypeCode": "IND",
+            "raceTypeName": "Individual",
+            "sequence": 0,
+            "startDate": "2026-09-19",
+            "endDate": "2026-09-19",
+            "v1Code": "D2RC274709",
+            "paraSportClassCode": null,
+            "paraSportClassName": null,
+            "startVenueName": "Bad Salzdetfurth",
+            "endVenueName": "Bad Salzdetfurth",
+            "classificationTypeId": 1,
+            "classificationTypeCode": "F",
+            "events": [
+                {
+                    "id": "e8be3941-9149-44e5-bf9a-646669d90b8d",
+                    "code": "D2EV387431",
+                    "name": "General Classification",
+                    "date": "2026-09-19",
+                    "startTime": null,
+                    "endTime": null,
+                    "parentEventId": null,
+                    "classificationCode": "GE",
+                    "classificationName": "General Classification",
+                    "sequence": 1,
+                    "v1Code": "D2EV387431"
+                }
+            ]
+        }
+    ],
+    "officials": [
+        {
+            "firstName": "Dario",
+            "lastName": "BASSI",
+            "countryCode": "SUI",
+            "roleCode": "COM",
+            "roleName": "Commissaires",
+            "functionName": "President of the Commissaires Panel"
+        }
+    ]
+}

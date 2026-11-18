@@ -9,21 +9,30 @@ type Field = { value?: Item[]; status?: string; editionYear?: number } | undefin
 
 /** Who one line of the regulations admits: its own name and birth years, else the contest vocabulary. */
 function agesOf(item: Item, refYear: number): AgeCategory[] {
+  // A class its name places ("Mladší žáci", "Muži") is that class: the birth years read beside it are
+  // often cut or shifted ("MUŽI 2008", "MLADŠÍ ŽÁCI 2015–2017") and made juniors of men and children of pupils.
+  const byName = ageCategoriesFromList([{ name: item.label ?? "" }], { refYear });
   const name = [item.label, item.birthYears].filter(Boolean).join(" ");
-  const ages = ageCategoriesFromList([{ name }], { refYear });
-  return ages.length ? ages : parseContestCategories([name], { refYear });
+  const withYears = ageCategoriesFromList([{ name }], { refYear });
+  // Children's and youth classes by their name alone. An adult class ("Muži", "Männer/Frauen") keeps what its
+  // birth years add: in a regional race the men's class is the open one, which the years show.
+  if (byName.length && byName.every((age) => !ADULT.includes(age))) return byName;
+  const ages = AGE_CATEGORIES.filter((age) => byName.includes(age) || (withYears.includes(age) && ADULT.includes(age)));
+  if (ages.length) return ages;
+  return withYears.length ? withYears : parseContestCategories([name], { refYear });
 }
 
-export type RegulationAges = { ages: AgeCategory[]; complete: boolean; labels: string[]; sourceUrl: string | null };
+export type RegulationAges = { ages: AgeCategory[]; byCourse: boolean; labels: string[]; sourceUrl: string | null };
 
 /**
  * The age classes this edition's regulations name, on our own fixed list.
  *
- * The category list, the fee table and the timetable are each judged on their own. One with at
- * least two different lines, every one of them a class we can place, is the organiser's full list
- * of classes. A fee table that prices courses ("90 km MTB") or dates ("Early Bird"), or a
- * timetable with a briefing in it, is not, and it can only add what it does name. A single line
- * ("Kids & juniors courses") says nothing about who else starts.
+ * Read from the category list, the fee table and the timetable together. What they name is
+ * certain. What they leave out is not: the lists read from regulations are often a part of the
+ * field (only the youth races of a cyclo-cross with a UCI elite race, only the children of a
+ * marathon whose adults enter by course), so leaving a class out never by itself means it is not
+ * run. `byCourse` says the fees are priced by course ("90 km MTB"), i.e. an open race no class
+ * names.
  */
 export function regulationAges(details: Record<string, Field> | null, refYear: number): RegulationAges | null {
   const current = (key: string) => {
@@ -32,51 +41,64 @@ export function regulationAges(details: Record<string, Field> | null, refYear: n
     if (field.editionYear && field.editionYear !== refYear) return [];
     return field.value.filter((item) => item.label);
   };
-  const lists = [current("categories"), current("fees"), current("schedule")].filter((list) => list.length);
-  if (!lists.length) return null;
-  const named = new Set<AgeCategory>(), whole = new Set<AgeCategory>();
-  let complete = false;
-  for (const list of lists) {
-    const read = list.map((item) => agesOf(item, refYear));
-    for (const ages of read) for (const age of ages) named.add(age);
-    const distinct = new Set(list.map((item) => item.label!.trim().toLowerCase()));
-    if (distinct.size >= 2 && read.every((ages) => ages.length)) {
-      complete = true;
-      for (const ages of read) for (const age of ages) whole.add(age);
-    }
-  }
-  const all = lists.flat();
+  const all = [...current("categories"), ...current("fees"), ...current("schedule")];
+  if (!all.length) return null;
+  const found = new Set<AgeCategory>();
+  for (const item of all) for (const age of agesOf(item, refYear)) found.add(age);
   return {
-    ages: AGE_CATEGORIES.filter((age) => (complete ? whole : named).has(age)),
-    complete,
+    ages: AGE_CATEGORIES.filter((age) => found.has(age)),
+    byCourse: current("fees").some((item) => !agesOf(item, refYear).length),
     labels: [...new Set(all.map((item) => item.label!))],
     sourceUrl: all.find((item) => item.sourceUrl)?.sourceUrl ?? null,
   };
 }
 
-/** What a race's age classes become once its regulations are read; null when nothing changes. */
+const KIDS: AgeCategory[] = ["kids", "u7", "u9", "u11"];
+const ADULT: AgeCategory[] = ["u23", "elite", "amateur", "masters"];
+const YOUNG_YOUTH: AgeCategory[] = ["u13", "u15"];
+
+/**
+ * What a race's age classes become once its regulations are read; null when nothing changes.
+ *
+ * Every class the regulations name is added. A guessed class goes only where the regulations show
+ * that end of the field and leave it out: children, when the youth ladder starts at U13 or U15
+ * with no children's race. Open adult classes stay: a list of licensed classes says nothing about the
+ * amateur race beside them. A set another source confirmed loses nothing. The set is
+ * confirmed when the regulations account for every class in it (U23 rides with the elite).
+ */
 export function regulationAgePatch(
   row: { age_categories: string[] | null; age_confidence: string | null },
   read: RegulationAges | null,
+  /** The set now stored was written by this reader: an earlier read of the regulations, not another source. */
+  ownPrevious = false,
 ) {
   if (!read?.ages.length) return null;
-  const previous = row.age_categories ?? [];
-  // A full list replaces any guess. It does not narrow a set another source already confirmed:
-  // there both are kept. A partial list adds what it names and confirms nothing.
-  const narrows = read.complete && row.age_confidence === "explicit" && previous.some((age) => !read.ages.includes(age as AgeCategory));
-  const replace = read.complete && !narrows;
-  const ages = replace ? read.ages : AGE_CATEGORIES.filter((age) => previous.includes(age) || read.ages.includes(age));
-  const confidence = read.complete ? "explicit" : (row.age_confidence ?? "default");
+  const previous = (row.age_categories ?? []) as AgeCategory[];
+  const named = new Set(read.ages);
+  const confirmedElsewhere = row.age_confidence === "explicit" && !ownPrevious;
+  const childrenRuledOut = !read.byCourse && YOUNG_YOUTH.some((age) => named.has(age)) && !KIDS.some((age) => named.has(age));
+  const keep = (age: AgeCategory) => {
+    if (named.has(age) || confirmedElsewhere) return true;
+    if (KIDS.includes(age)) return !childrenRuledOut;
+    return true;
+  };
+  const ages = AGE_CATEGORIES.filter((age) => named.has(age) || (previous.includes(age) && keep(age)));
+  const accounted = ages.every((age) => named.has(age) || (age === "u23" && named.has("elite")) || (age === "youth" && YOUNG_YOUTH.concat("u17").some((a) => named.has(a))));
+  const confidence = accounted || confirmedElsewhere ? "explicit" : ownPrevious ? "default" : (row.age_confidence ?? "default");
   if (ages.length === previous.length && ages.every((age) => previous.includes(age)) && confidence === row.age_confidence) return null;
   return { age_categories: ages, age_confidence: confidence, audience: audienceFromAgeCategories(ages) };
 }
 
+/** How this reader's writes are recorded, so its next read may correct them. */
+const OWN_QUOTE = /^(Complete|Partial) list of classes in the regulations|^Categories named in the regulations/;
+
 export async function fillAgesFromRegulations(opts?: { dryRun?: boolean; log?: (line: string) => void }) {
   const db = createServerSupabase();
-  const result = { read: 0, complete: 0, updated: 0 };
+  const result = { read: 0, updated: 0 };
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db.from("events")
-      .select("id,public_revision,name,start_date,age_categories,age_confidence,practical_details,overrides:event_overrides(locked_fields)")
+      .select("id,public_revision,name,start_date,age_categories,age_confidence,practical_details,overrides:event_overrides(locked_fields),facts:event_facts(field,quote,created_at)")
+      .eq("facts.field", "age_categories")
       .eq("visibility", "public").is("merged_into_id", null).in("status", [...ACTIVE_EVENT_STATUSES])
       .gte("start_date", new Date().toISOString().slice(0, 10)).neq("practical_details", "{}")
       .order("start_date").order("id").range(from, from + 999);
@@ -88,16 +110,17 @@ export async function fillAgesFromRegulations(opts?: { dryRun?: boolean; log?: (
       const read = regulationAges(row.practical_details as never, Number(row.start_date.slice(0, 4)));
       if (!read?.ages.length) continue;
       result.read++;
-      if (read.complete) result.complete++;
-      const patch = regulationAgePatch(row, read);
+      const facts = (row.facts as { quote: string | null; created_at: string }[] | null) ?? [];
+      const last = facts.reduce<{ quote: string | null; created_at: string } | null>((a, b) => (!a || b.created_at > a.created_at ? b : a), null);
+      const patch = regulationAgePatch(row, read, OWN_QUOTE.test(last?.quote ?? ""));
       if (!patch) continue;
-      opts?.log?.(`${opts.dryRun ? "DRY " : ""}${read.complete ? "FULL" : "ADD "} ${row.name}: ${(row.age_categories ?? []).join(",")} → ${patch.age_categories.join(",")}`);
+      opts?.log?.(`${opts.dryRun ? "DRY " : ""}${patch.age_confidence === "explicit" ? "OK  " : "PART"} ${row.name}: ${(row.age_categories ?? []).join(",")} → ${patch.age_categories.join(",")}`);
       if (opts?.dryRun) { result.updated++; continue; }
       // The gate lets this reader replace a set another source confirmed, never a locked one.
       const { data: ok, error: e } = await db.rpc("pipeline_apply_periodic_read", {
         p_event: row.id, p_revision: row.public_revision, p_patch: patch,
         p_method: "regulation_categories", p_version: "regulation-categories-v1", p_source: read.sourceUrl ?? undefined,
-        p_quote: `${read.complete ? "Complete" : "Partial"} list of classes in the regulations: ${read.labels.join(" | ")}`.slice(0, 1500),
+        p_quote: `${patch.age_confidence === "explicit" ? "Complete" : "Partial"} list of classes in the regulations: ${read.labels.join(" | ")}`.slice(0, 1500),
       });
       if (e) throw e;
       if (ok?.length) result.updated++;
