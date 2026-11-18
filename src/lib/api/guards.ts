@@ -24,8 +24,9 @@ export function withAdmin<Ctx = unknown>(
 }
 
 /**
- * Run `handler` for Vercel Cron (or anyone holding `CRON_SECRET`). Export it as
- * both `GET` and `POST`: cron calls GET, and a manual run is easier with POST.
+ * Run `handler` for Vercel Schedules (or anyone holding `CRON_SECRET`). Export
+ * it as both `GET` and `POST`: the schedules in `vercel.json` call GET with
+ * `Authorization: Bearer $CRON_SECRET`, and a manual run is easier with POST.
  */
 export function withCron<Ctx = unknown>(handler: Handler<Ctx>, workload?: DatabaseWorkload): Handler<Ctx> {
   return (req, ctx) => {
