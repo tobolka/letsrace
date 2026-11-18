@@ -18,7 +18,7 @@ import {
   type EventSort,
 } from "@/lib/geo/distance";
 import Link from "next/link";
-import { datePresetRanges } from "@/lib/date-presets";
+import { datePresetRanges, isNarrowDateWindow, todayIso } from "@/lib/date-presets";
 import { exploreSearchParams } from "@/lib/explore-params";
 import { useMapCamera } from "@/components/explore/use-map-camera";
 import { useMapFilterActions } from "@/components/explore/use-map-filter-actions";
@@ -466,7 +466,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         <Button
           asChild
           size="icon"
-          className="pointer-events-auto rounded-full bg-brand shadow-md hover:bg-brand/90 md:hidden"
+          className="pointer-events-auto rounded-md bg-brand shadow-md hover:bg-brand/90 md:hidden"
         >
           <Link href={`/${locale}`} aria-label={SITE_NAME}>
             <BrandMark mark="lr" size="sm" tone="inverse" className="px-0" />
@@ -519,6 +519,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           topBar={{
             dateLabel,
             dateCustom: !datePresets.some((p) => p.active),
+            onClearDate: isNarrowDateWindow(filters.dateFrom, filters.dateTo) ? () => setDateRange(todayIso(), "") : undefined,
             dateChoices: datePresets.map((p) => ({
               id: p.id,
               label: presetLabels[p.id],

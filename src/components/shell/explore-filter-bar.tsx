@@ -9,7 +9,7 @@ import { ActiveFilterChips, activeFilterGroups } from "@/components/shell/active
 import { DistanceFilter } from "@/components/shell/distance-filter";
 import type { useExploreFilters } from "@/components/shell/use-explore-filters";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { datePresetRanges, type DatePresetId } from "@/lib/date-presets";
+import { datePresetRanges, isNarrowDateWindow, todayIso, type DatePresetId } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor, type Messages } from "@/lib/i18n/messages";
 
@@ -133,6 +133,7 @@ function MobileFilterRow({
         leading={leading}
         dateLabel={hideDate ? undefined : dateFilterLabel(filters.dateFrom, filters.dateTo, labels, dateFnsLocale(locale))}
         dateCustom={!presets.some((p) => p.active)}
+        onClearDate={isNarrowDateWindow(filters.dateFrom, filters.dateTo) ? () => actions.onPreset(todayIso(), "") : undefined}
         dateChoices={presets.map((p) => ({
           id: p.id,
           label: labels[p.id],

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { DatePresetId } from "@/lib/date-presets";
+import { ACTIVE_CHIP } from "@/components/explore/filter-styles";
 import { cn } from "@/lib/utils";
 
 /**
@@ -20,8 +21,11 @@ import { cn } from "@/lib/utils";
  * thumb uses most, in a row it reaches across; a chip that only lights up on
  * hover gives a finger nothing back at all.
  */
+// The desktop's filter chip on a phone: the same grey, the same corners, a
+// finger's height. A round outlined pill here and a grey chip there read as
+// two different apps.
 export const pillClass =
-  "h-9 shrink-0 gap-1.5 rounded-full border border-border/80 bg-background px-3.5 text-sm font-medium text-foreground shadow-none touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80";
+  "h-11 shrink-0 gap-1.5 px-3 text-sm font-medium touch-manipulation";
 
 export type DateChoice = { id: DatePresetId; label: string; active: boolean; apply: () => void };
 
@@ -37,6 +41,7 @@ export type DateChoice = { id: DatePresetId; label: string; active: boolean; app
 export function MobileTopBar({
   dateLabel,
   dateCustom,
+  onClearDate,
   dateChoices,
   customDateLabel,
   onCustomDate,
@@ -59,6 +64,8 @@ export function MobileTopBar({
   dateLabel?: string;
   /** A range picked by hand rather than a quick choice. */
   dateCustom?: boolean;
+  /** When the date narrows the season: the cross that opens it back up to every race from today. */
+  onClearDate?: () => void;
   dateChoices?: DateChoice[];
   customDateLabel?: string;
   onCustomDate?: () => void;
@@ -140,9 +147,10 @@ export function MobileTopBar({
     <div className={cn("flex h-13 items-center gap-1.5 px-4", className)}>
       {leading}
       {dateLabel && dateChoices ? (
+        <div className="flex min-w-0 shrink items-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="outline" size="sm" className={cn(pillClass, "min-w-0 pr-2.5")}>
+            <Button type="button" variant="secondary" size="sm" className={cn(pillClass, "min-w-0 pr-2.5", onClearDate && cn("rounded-r-none", ACTIVE_CHIP))}>
               <CalendarRange className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
               <span className="truncate">{dateLabel}</span>
               <ChevronDown className="size-3.5 shrink-0 opacity-60" aria-hidden />
@@ -169,12 +177,25 @@ export function MobileTopBar({
             ) : null}
           </DropdownMenuContent>
         </DropdownMenu>
+        {onClearDate ? (
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className={cn("size-11 shrink-0 rounded-l-none touch-manipulation", ACTIVE_CHIP)}
+            aria-label={`${clearLabel} ${dateLabel}`}
+            onClick={onClearDate}
+          >
+            <X className="size-4" aria-hidden />
+          </Button>
+        ) : null}
+        </div>
       ) : null}
       <Button
         type="button"
-        variant="outline"
+        variant="secondary"
         size="sm"
-        className={cn(pillClass, filterCount > 0 && "border-foreground/30")}
+        className={cn(pillClass, filterCount > 0 && ACTIVE_CHIP)}
         aria-label={filterCount > 0 ? `${filtersLabel} (${filterCount})` : filtersLabel}
         onClick={onFilters}
       >
@@ -188,9 +209,9 @@ export function MobileTopBar({
       </Button>
       <Button
         type="button"
-        variant={q.trim() ? "secondary" : "outline"}
+        variant={q.trim() ? "secondary" : "ghost"}
         size="icon"
-        className="ml-auto size-9 shrink-0 rounded-full border-border/80 touch-manipulation transition-[transform,background-color,border-color,color] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 hover:bg-background [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/80"
+        className="ml-auto size-11 shrink-0 touch-manipulation"
         aria-label={searchLabel}
         aria-pressed={Boolean(q.trim())}
         onClick={() => onSearchOpenChange(true)}
