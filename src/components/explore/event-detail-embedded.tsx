@@ -18,7 +18,6 @@ import { dateFnsLocale } from "@/lib/i18n/dates";
 import { asLocale, messagesFor, type Locale } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
 import { daysUntilLabel } from "@/lib/race-countdown";
-import { cn } from "@/lib/utils";
 
 /**
  * The race on a phone, in the order it is read: when and where and what kind

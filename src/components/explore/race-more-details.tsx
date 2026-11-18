@@ -56,8 +56,9 @@ export function RaceMoreDetails({
   const ours = (link: CardLink) => link.kind === "series" || link.kind === "weather";
   const allLinks = [...links.filter((l) => !ours(l)), ...documents, ...links.filter(ours)];
 
+  // The framed list, ruled off above and below like every other part of the card.
   const linkSection = allLinks.length ? (
-    <CardSection className="py-3">
+    <CardSection className="py-5">
       <RaceLinkRows links={allLinks} onLink={onLink} bleed />
     </CardSection>
   ) : null;

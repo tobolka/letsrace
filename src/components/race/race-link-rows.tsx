@@ -26,20 +26,19 @@ const LINK_ICONS: Record<string, ReactNode> = {
  * arrow that says whether it leaves the site. The map's card and the race page
  * both use it, instead of a mix of buttons, chips and underlined text.
  *
- * `bleed` stretches the rows to the edges of a card whose content is inset by
- * a 1rem gutter, so the hover fills the whole row.
+ * `bleed` is kept for callers; the rows are grey buttons inside the card's gutter.
  */
 export function RaceLinkRows({
   links,
   onLink,
   analytics,
-  bleed = false,
   className,
 }: {
   links: RaceLink[];
   onLink?: (kind: string) => void;
   /** For a page that cannot hand down a handler: what to report on a click. */
   analytics?: { raceId: string; slug: string; location: string; presentation: string };
+  /** Kept so callers need not change: the rows are buttons inside the gutter now. */
   bleed?: boolean;
   className?: string;
 }) {
@@ -56,16 +55,15 @@ export function RaceLinkRows({
       });
     }
   }
-  const row = cn(
-    "grid min-h-11 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center gap-x-3 text-sm font-medium transition-colors hover:bg-accent active:bg-accent focus-visible:bg-accent focus-visible:outline-none",
-    bleed ? "-mx-4 px-4" : "px-4",
-  );
+  // Each link a grey button, as the action buttons above, on the card and the race page alike.
+  const row =
+    "grid min-h-11 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center gap-x-3 rounded-lg bg-secondary px-3 text-sm font-medium transition-colors hover:bg-secondary/70 active:bg-secondary/70 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none";
   return (
-    <ul className={className}>
+    <ul className={cn("flex flex-col gap-1.5", className)}>
       {links.map((link) => {
         const inner = (
           <>
-            <span className="flex size-4 items-center justify-center text-primary [&_svg]:size-4" aria-hidden>
+            <span className="flex size-4 items-center justify-center text-muted-foreground [&_svg]:size-4" aria-hidden>
               {LINK_ICONS[link.kind] ?? <Globe />}
             </span>
             <span className="min-w-0 truncate">{link.label}</span>
