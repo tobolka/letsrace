@@ -1,3 +1,4 @@
+import type { RiderRaceFacts } from "@/lib/rider-category";
 import { todayIso } from "@/lib/date-presets";
 
 export type PlannerEvent = {
@@ -16,6 +17,8 @@ export type PlannerEvent = {
   /** The last day entries are open, when the source states one. */
   registrationClosesAt?: string | null;
   seriesId?: string | null;
+  /** The categories, fees and age groups that say which category a rider is in. */
+  riderFacts?: Omit<RiderRaceFacts, "startDate" | "disciplines">;
 };
 
 export type PlannerMember = {
@@ -23,6 +26,7 @@ export type PlannerMember = {
   name: string;
   relationship: string;
   isSelf: boolean;
+  birthYear?: number | null;
 };
 
 export type PlannerAttendance = {

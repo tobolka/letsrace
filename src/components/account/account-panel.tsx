@@ -52,6 +52,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor, type Messages } from "@/lib/i18n/messages";
 import { parseDisciplines, parseWeekdays } from "@/lib/plan-prefs";
+import { refreshRiders } from "@/lib/riders";
 
 type Member = {
   id: string;
@@ -232,6 +233,7 @@ export function AccountPanel({
     if (!ok) return;
     closeDialog(false);
     await load();
+    refreshRiders();
   }
 
   async function addMember(e: React.FormEvent) {
@@ -265,6 +267,7 @@ export function AccountPanel({
     toast.success(t.profilesAdded);
     setAdding(false);
     await load();
+    refreshRiders();
     setBusy(false);
   }
 
@@ -280,6 +283,7 @@ export function AccountPanel({
     const supabase = createBrowserSupabase();
     await persist(supabase.from("family_members").delete().eq("id", id), { locale });
     await load();
+    refreshRiders();
   }
 
   async function patchMember(member: Member, next: Partial<Pick<Member, "busy_weekdays" | "preferred_disciplines">>) {

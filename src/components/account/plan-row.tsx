@@ -13,6 +13,7 @@ import { disciplineColor } from "@/lib/map-visuals";
 import type { EventPlan, PlanMemberStatus, PlannerMember } from "@/lib/planner";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { cn } from "@/lib/utils";
+import { riderLines } from "@/components/race/rider-category-line";
 
 /**
  * One race in the plan, on one row, on every screen.
@@ -61,6 +62,11 @@ export function PlanRow({
   ]
     .filter(Boolean)
     .join(" · ");
+  // Which category each rider starts in and what it costs, under the race's name.
+  const riders = members.flatMap((m) => (m.birthYear ? [{ id: m.id, name: m.name, birthYear: m.birthYear, isSelf: m.isSelf }] : []));
+  const categoryLines = plan.event.riderFacts && riders.length
+    ? riderLines(riders, { ...plan.event.riderFacts, startDate: plan.event.startDate, disciplines: plan.event.disciplines }, locale)
+    : [];
   const href = eventMapPath(locale, {
     slug: plan.event.slug,
     startDate: plan.event.startDate,
@@ -114,6 +120,14 @@ export function PlanRow({
             {note ? <span className="font-medium text-foreground">{note} · </span> : null}
             {meta}
           </span>
+          {categoryLines.map((line) => (
+            <span key={line.id} className="mt-0.5 block text-xs leading-snug" data-rider-categories>
+              <span className="font-medium">{line.name}</span>
+              <span aria-hidden className="text-muted-foreground"> → </span>
+              <span className="sr-only">: </span>
+              {line.text}
+            </span>
+          ))}
         </div>
         <div className="flex shrink-0 items-center sm:hidden">{actions}</div>
       </div>

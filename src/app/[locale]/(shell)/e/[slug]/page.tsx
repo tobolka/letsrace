@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
 import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { RaceActions } from "@/components/race/race-actions";
+import { RiderCategoryLine } from "@/components/race/rider-category-line";
 import { googleDirectionsUrl } from "@/components/explore/event-detail-model";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
@@ -265,6 +266,20 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
             </span>
           </p>
           {isPast ? <p className="mt-2 text-sm font-medium">{rc.taken}</p> : null}
+          {isPast ? null : (
+            <RiderCategoryLine
+              className="mt-3"
+              locale={locale}
+              race={{
+                startDate: event.startDate,
+                disciplines: event.disciplines,
+                categories: event.practicalDetails?.categories?.value.map(({ label, birthYears }) => ({ label, ...(birthYears ? { birthYears } : {}) })),
+                fees: event.practicalDetails?.fees?.value.map(({ label, amount, currency, validUntil }) => ({ label, amount, currency, ...(validUntil ? { validUntil } : {}) })),
+                ageCategories: event.ageCategories,
+                ageConfidence: event.ageConfidence,
+              }}
+            />
+          )}
         </header>
 
         {/* The same rows and badges as the race card on the map. */}

@@ -21,8 +21,14 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     date: "2026-11-18",
     items: {
-      cs: ["Když se na mapě seskupí závody různých disciplín, každá má vlastní barevnou bublinu a čím je bublina větší, tím víc v ní je závodů."],
-      en: ["When races from different disciplines are grouped on the map, each discipline has its own colored bubble, and the bigger the bubble, the more races it holds."],
+      cs: [
+        "Když se na mapě seskupí závody různých disciplín, každá má vlastní barevnou bublinu a čím je bublina větší, tím víc v ní je závodů.",
+        "Máš-li u jezdců vyplněný rok narození, ukáže ti karta i stránka závodu hned nahoře a plán u každého závodu, do které kategorie každý z nich patří a kolik stojí startovné, třeba „Ela → holky 7-8 · 200 Kč“.",
+      ],
+      en: [
+        "When races from different disciplines are grouped on the map, each discipline has its own colored bubble, and the bigger the bubble, the more races it holds.",
+        "When the riders on your account have a year of birth, the race card and race page show at the top, and your plan under each race, which category each of them races in and what the entry costs, such as “Ela → girls 7-8 · 200 CZK”.",
+      ],
     },
   },
   {

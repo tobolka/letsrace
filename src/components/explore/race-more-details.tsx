@@ -282,7 +282,7 @@ function loadFullRace(slug: string): Promise<EventListItem | null> {
 }
 
 /** The whole race: `undefined` while it is on its way, `null` if it could not be had. */
-function useFullRace(slug: string): EventListItem | null | undefined {
+export function useFullRace(slug: string): EventListItem | null | undefined {
   const [result, setResult] = useState<{ slug: string; race: EventListItem | null } | null>(null);
   useEffect(() => {
     let alive = true;

@@ -5,7 +5,9 @@ import { Calendar, ChartNoAxesColumnIncreasing, MapPin, Trophy, UserRound } from
 import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
-import { CardSection, RaceMoreDetails, type CardLink } from "@/components/explore/race-more-details";
+import { CardSection, RaceMoreDetails, useFullRace, type CardLink } from "@/components/explore/race-more-details";
+import { RiderCategoryLine } from "@/components/race/rider-category-line";
+import { useRiders } from "@/lib/riders";
 import { RaceWeather, windyLabel, windyUrl } from "@/components/race/race-weather";
 import { RaceActions } from "@/components/race/race-actions";
 import { Button } from "@/components/ui/button";
@@ -112,6 +114,7 @@ export function EmbeddedBody({
     <div className="flex flex-col">
       {/* When and where, then what you can do with it. */}
       <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
+      <CardRiderLine event={event} locale={locale} />
       <div className="flex flex-col gap-1.5">
         <p className="flex items-center gap-2 text-sm font-semibold">
           <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -238,5 +241,35 @@ export function EmbeddedBody({
         </CardSection>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The family's categories for this race, pinned above the date. The
+ * regulations' lists come with the whole race, which the card asks for anyway;
+ * a visitor with no riders never waits for it.
+ */
+function CardRiderLine({ event, locale }: { event: EventListItem; locale: string }) {
+  const riders = useRiders();
+  if (!riders.length) return null;
+  return <CardRiderLineLoaded event={event} locale={locale} />;
+}
+
+function CardRiderLineLoaded({ event, locale }: { event: EventListItem; locale: string }) {
+  const full = useFullRace(event.slug);
+  if (full === undefined) return null;
+  const facts = full?.practicalDetails ?? event.practicalDetails;
+  return (
+    <RiderCategoryLine
+      locale={locale}
+      race={{
+        startDate: event.startDate,
+        disciplines: event.disciplines,
+        categories: facts?.categories?.value,
+        fees: facts?.fees?.value,
+        ageCategories: event.ageCategories,
+        ageConfidence: event.ageConfidence,
+      }}
+    />
   );
 }
