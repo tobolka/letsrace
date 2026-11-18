@@ -39,6 +39,8 @@ import { Button } from "@/components/ui/button";
 import { eventMapPath } from "@/lib/event-url";
 import { RaceDetailMap } from "@/components/race/race-detail-map";
 import { RaceActions } from "@/components/race/race-actions";
+import { RiderCategoryLine } from "@/components/race/rider-category-line";
+import { SameDayNote } from "@/components/race/same-day-note";
 import { googleDirectionsUrl } from "@/components/explore/event-detail-model";
 import { eventTrustLevel, lastCheckedLabel, trustLabel } from "@/lib/trust";
 import { RaceSkeleton } from "./race-skeleton";
@@ -344,6 +346,24 @@ async function Race({ locale, event }: { locale: Locale; event: EventListItem })
           directionsUrl={googleDirectionsUrl(here, "")}
           mapHref={mapHref}
         />
+        {isPast ? null : (
+          <RiderCategoryLine
+            className="mt-4"
+            locale={locale}
+            race={{
+              startDate: event.startDate,
+              disciplines: event.disciplines,
+              categories: event.practicalDetails?.categories?.value.map(({ label, birthYears }) => ({ label, ...(birthYears ? { birthYears } : {}) })),
+              fees: event.practicalDetails?.fees?.value.map(({ label, amount, currency, validUntil }) => ({ label, amount, currency, ...(validUntil ? { validUntil } : {}) })),
+              ageCategories: event.ageCategories,
+              ageConfidence: event.ageConfidence,
+              listedCategories: categories.filter((c) => c.ageMin != null || c.ageMax != null).map(({ name, ageMin, ageMax }) => ({ name, ageMin, ageMax })),
+            }}
+          />
+        )}
+        {isPast || event.status === "cancelled" ? null : (
+          <SameDayNote className="mt-3" locale={locale} race={{ id: event.id, startDate: event.startDate, endDate: event.endDate }} />
+        )}
         {/* The organiser's other pages and documents: one list, the same rows as the map's race card. */}
         <RaceLinkRows
           links={pageLinks}

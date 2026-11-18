@@ -39,10 +39,11 @@ import {
 } from "@/lib/planner-db";
 import type { SuggestionContext } from "@/lib/plan-suggestions";
 import { persist } from "@/lib/account/save";
+import { asRiderGender, riderFactsFromStored } from "@/lib/rider-category";
 import { toast } from "sonner";
 
 const EVENT_EMBED =
-  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, location:locations(name, municipality, country_code)";
+  "id, name, start_date, end_date, slug, level, class_label, disciplines, series_id, registration_url, registration_closes_at, website_url, age_categories, age_confidence, rider_categories:practical_details->categories, rider_fees:practical_details->fees, rider_listed:event_categories(name, age_min, age_max), location:locations(name, municipality, country_code)";
 
 type EventEmbed = {
   id: string;
@@ -57,6 +58,12 @@ type EventEmbed = {
   registration_url: string | null;
   registration_closes_at: string | null;
   website_url: string | null;
+  age_categories: string[] | null;
+  age_confidence: string | null;
+  /** Only the regulations' categories and fees, for the riders' line. */
+  rider_categories: unknown;
+  rider_fees: unknown;
+  rider_listed: { name: string; age_min: number | null; age_max: number | null }[] | null;
   location:
     | { name: string | null; municipality: string | null; country_code: string | null }
     | { name: string | null; municipality: string | null; country_code: string | null }[]
@@ -91,8 +98,16 @@ function toPlannerEvent(row: EventEmbed): PlannerEvent {
     registrationClosesAt: row.registration_closes_at,
     websiteUrl: row.website_url,
     seriesId: row.series_id,
+    riderFacts: {
+      ...riderFactsFromStored({ categories: row.rider_categories, fees: row.rider_fees }, row.start_date),
+      ageCategories: row.age_categories ?? [],
+      listedCategories: (row.rider_listed ?? []).map((c) => ({ name: c.name, ageMin: c.age_min, ageMax: c.age_max })),
+      ageConfidence: AGE_CONFIDENCE.has(row.age_confidence ?? "") ? (row.age_confidence as "explicit" | "previous" | "default") : null,
+    },
   };
 }
+
+const AGE_CONFIDENCE = new Set(["explicit", "previous", "default"]);
 
 /** Shared account data and persistence for the plan and recommendations routes. */
 export function PlanHome({ locale, section = "plan", day }: { locale: string; section?: "plan" | "recommendations"; day?: string }) {
@@ -144,7 +159,7 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
       ] = await Promise.all([
         supabase
           .from("family_members")
-          .select("id, name, relationship, is_self")
+          .select("id, name, relationship, is_self, birth_year, gender")
           .eq("user_id", user.id)
           .order("created_at").throwOnError(),
         supabase
@@ -201,6 +216,8 @@ export function PlanHome({ locale, section = "plan", day }: { locale: string; se
           name: m.name,
           relationship: m.relationship,
           isSelf: Boolean(m.is_self),
+          birthYear: m.birth_year ?? null,
+          gender: asRiderGender(m.gender),
         })),
       );
       setEventsById(nextEvents);

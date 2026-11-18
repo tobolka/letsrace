@@ -305,6 +305,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
     clearDisciplines,
     clearLevels,
     clearCategories,
+    applyRider,
     resetExploreFilters,
     setSeries,
     applySeries,
@@ -359,6 +360,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         onClearDisciplines={clearDisciplines}
         onClearLevels={clearLevels}
         onClearCategories={clearCategories}
+        onRiderFilter={applyRider}
         onSeries={setSeries}
         onCountry={toggleCountry}
         onClearCountries={clearCountries}
@@ -601,6 +603,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           onClearDisciplines={clearDisciplines}
           onClearLevels={clearLevels}
           onClearCategories={clearCategories}
+          onRiderFilter={applyRider}
           onSeries={setSeries}
           onCountry={toggleCountry}
           onClearCountries={clearCountries}

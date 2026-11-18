@@ -13,6 +13,7 @@ import {
 import { FilterValues } from "@/components/explore/filter-values";
 import { ACTIVE_CHIP, itemClass } from "@/components/explore/filter-styles";
 import { PlaceSearch } from "@/components/explore/place-search";
+import { RiderFilterChip, type OnRiderFilter } from "@/components/explore/rider-filter";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -56,6 +57,7 @@ export function MapFilterBar({
   onSeries,
   onCountry,
   onClearCountries,
+  onRiderFilter,
   q,
   onQ,
   onSearchSubmit,
@@ -87,6 +89,8 @@ export function MapFilterBar({
   onSeries: (slug: string) => void;
   onCountry: (code: string) => void;
   onClearCountries: () => void;
+  /** Choosing one of the family's riders sets their age group and disciplines; signed-in only. */
+  onRiderFilter?: OnRiderFilter;
   q: string;
   onQ: (q: string) => void;
   onSearchSubmit: () => void;
@@ -187,6 +191,13 @@ export function MapFilterBar({
           />
         )}
         {extra}
+        <RiderFilterChip
+          locale={locale}
+          categories={categories}
+          disciplines={disciplines}
+          dateFrom={dateFrom}
+          onApply={onRiderFilter}
+        />
 
         {shownExtras.map((id) => {
           const Icon = FILTER_ICONS[id];

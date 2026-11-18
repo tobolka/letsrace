@@ -52,12 +52,21 @@ import { Spinner } from "@/components/ui/spinner";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { messagesFor, type Messages } from "@/lib/i18n/messages";
 import { parseDisciplines, parseWeekdays } from "@/lib/plan-prefs";
+import { refreshRiders } from "@/lib/riders";
+import { asRiderGender, type RiderGender } from "@/lib/rider-category";
+
+/** The rider's gender: optional, and only used to pick girls' or boys' categories. Czech and English by hand. */
+const GENDER_COPY: Record<string, { label: string; none: string; female: string; male: string; hint: string }> = {
+  cs: { label: "Pohlaví", none: "Neuvedeno", female: "Dívka / žena", male: "Chlapec / muž", hint: "Podle něj ukážeme jen dívčí, nebo jen chlapeckou kategorii." },
+  en: { label: "Gender", none: "Not given", female: "Girl / woman", male: "Boy / man", hint: "Used to show only the girls' or only the boys' category." },
+};
 
 type Member = {
   id: string;
   name: string;
   relationship: string;
   birth_year: number | null;
+  gender: RiderGender | null;
   is_self: boolean;
   busy_weekdays: number[];
   preferred_disciplines: string[];
@@ -99,6 +108,7 @@ function toMember(row: {
   name: string;
   relationship: string;
   birth_year: number | null;
+  gender?: unknown;
   is_self: boolean;
   busy_weekdays?: unknown;
   preferred_disciplines?: unknown;
@@ -108,6 +118,7 @@ function toMember(row: {
     name: row.name,
     relationship: row.relationship,
     birth_year: row.birth_year,
+    gender: asRiderGender(row.gender),
     is_self: Boolean(row.is_self),
     busy_weekdays: parseWeekdays(row.busy_weekdays),
     preferred_disciplines: parseDisciplines(row.preferred_disciplines),
@@ -147,6 +158,8 @@ export function AccountPanel({
   const [name, setName] = useState("");
   const [relationship, setRelationship] = useState("rider");
   const [birthYear, setBirthYear] = useState("");
+  const [gender, setGender] = useState<"none" | RiderGender>("none");
+  const g = GENDER_COPY[locale] ?? GENDER_COPY.en;
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
 
@@ -164,7 +177,7 @@ export function AccountPanel({
     setUserId(auth.user.id);
     const { data } = await supabase
       .from("family_members")
-      .select("id, name, relationship, birth_year, is_self, busy_weekdays, preferred_disciplines")
+      .select("id, name, relationship, birth_year, gender, is_self, busy_weekdays, preferred_disciplines")
       .eq("user_id", auth.user.id)
       .order("created_at");
     setMembers((data ?? []).map(toMember));
@@ -180,6 +193,7 @@ export function AccountPanel({
     setName(m.name);
     setRelationship(m.relationship || "rider");
     setBirthYear(m.birth_year ? String(m.birth_year) : "");
+    setGender(m.gender ?? "none");
   }
 
   function closeDialog(open: boolean) {
@@ -189,6 +203,7 @@ export function AccountPanel({
       setEditing(null);
       setName("");
       setBirthYear("");
+      setGender("none");
       setRelationship("rider");
     }
   }
@@ -208,6 +223,7 @@ export function AccountPanel({
           // Your own row stays "you"; only the others have a role.
           ...(editing.is_self ? {} : { relationship }),
           birth_year: birthYear ? Number(birthYear) : null,
+          gender: gender === "none" ? null : gender,
         })
         .eq("id", editing.id),
       { locale },
@@ -216,6 +232,7 @@ export function AccountPanel({
     if (!ok) return;
     closeDialog(false);
     await load();
+    refreshRiders();
   }
 
   async function addMember(e: React.FormEvent) {
@@ -235,6 +252,7 @@ export function AccountPanel({
         name: trimmed,
         relationship,
         birth_year: birthYear ? Number(birthYear) : null,
+          gender: gender === "none" ? null : gender,
         is_self: false,
       }),
       { locale },
@@ -245,10 +263,12 @@ export function AccountPanel({
     }
     setName("");
     setBirthYear("");
+    setGender("none");
     setRelationship("rider");
     toast.success(t.profilesAdded);
     setAdding(false);
     await load();
+    refreshRiders();
     setBusy(false);
   }
 
@@ -264,6 +284,7 @@ export function AccountPanel({
     const supabase = createBrowserSupabase();
     await persist(supabase.from("family_members").delete().eq("id", id), { locale });
     await load();
+    refreshRiders();
   }
 
   async function patchMember(member: Member, next: Partial<Pick<Member, "busy_weekdays" | "preferred_disciplines">>) {
@@ -530,6 +551,22 @@ export function AccountPanel({
                     placeholder="2016…"
                   />
                 </Field>
+                <Field>
+                  <FieldLabel htmlFor="rider-gender">{g.label}</FieldLabel>
+                  <Select value={gender} onValueChange={(v) => setGender(v as "none" | RiderGender)}>
+                    <SelectTrigger id="rider-gender" className="w-full" aria-describedby="rider-gender-hint">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="none">{g.none}</SelectItem>
+                        <SelectItem value="female">{g.female}</SelectItem>
+                        <SelectItem value="male">{g.male}</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <p id="rider-gender-hint" className="text-xs text-muted-foreground">{g.hint}</p>
+                </Field>
               </div>
               <DialogFooter>
                 <DialogClose asChild>
@@ -538,7 +575,7 @@ export function AccountPanel({
                   </Button>
                 </DialogClose>
                 <Button type="submit" disabled={busy || !name.trim()} aria-busy={busy}>
-                  {busy ? <Spinner data-icon="inline-start" /> : editing ? null : <Plus data-icon="inline-start" />}
+                  {busy ? <Spinner data-icon="inline-start" /> : null}
                   {editing ? t.ridersSave : t.profilesAdd}
                 </Button>
               </DialogFooter>

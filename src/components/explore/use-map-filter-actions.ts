@@ -68,6 +68,12 @@ export function useMapFilterActions({
   }
 
 
+  function applyRider(categories: string[], disciplines: string[]) {
+    track("filter_apply", { filter_type: "rider", location: "explore", ...filterSnapshot({ ...filters, categories, disciplines }) });
+    void setFilters({ categories, disciplines });
+    refetch({ categories, disciplines });
+  }
+
   function clearCategories() {
     track("filter_apply", { filter_type: "category", ...filterSnapshot({ ...filters, categories: [] }) });
     void setFilters({ categories: [] });
@@ -154,6 +160,7 @@ export function useMapFilterActions({
     clearDisciplines,
     clearLevels,
     clearCategories,
+    applyRider,
     resetExploreFilters,
     setSeries,
     applySeries,

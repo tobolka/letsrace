@@ -796,6 +796,7 @@ export type Database = {
           birth_year: number | null
           busy_weekdays: number[]
           created_at: string
+          gender: string | null
           id: string
           is_self: boolean
           name: string
@@ -807,6 +808,7 @@ export type Database = {
           birth_year?: number | null
           busy_weekdays?: number[]
           created_at?: string
+          gender?: string | null
           id?: string
           is_self?: boolean
           name: string
@@ -818,6 +820,7 @@ export type Database = {
           birth_year?: number | null
           busy_weekdays?: number[]
           created_at?: string
+          gender?: string | null
           id?: string
           is_self?: boolean
           name?: string
