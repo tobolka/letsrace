@@ -1,7 +1,11 @@
 import { parseAsArrayOf, parseAsString } from "nuqs";
-import { thisWeekendRange } from "@/lib/date-presets";
+import { todayIso } from "@/lib/date-presets";
 
-const WEEKEND_DEFAULT = thisWeekendRange();
+/**
+ * Every race from today on. The default used to be this weekend, and a parent
+ * planning a season read "2 races" as a nearly empty calendar.
+ */
+const UPCOMING_FROM = todayIso();
 
 /**
  * The filters every view of the race catalogue shares.
@@ -19,8 +23,8 @@ export const filterSearchParams = {
   series: parseAsString.withDefault(""),
   /** One or more ISO codes, comma-separated (`CZ,SK`); a lone code still parses. */
   country: parseAsArrayOf(parseAsString).withDefault([]),
-  dateFrom: parseAsString.withDefault(WEEKEND_DEFAULT.from),
-  dateTo: parseAsString.withDefault(WEEKEND_DEFAULT.to),
+  dateFrom: parseAsString.withDefault(UPCOMING_FROM),
+  dateTo: parseAsString.withDefault(""),
   sort: parseAsString.withDefault(""),
   /** With a category filter on: hide races whose categories are unconfirmed. */
 };

@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import type { EventListItem } from "@/lib/events";
 import { countryDisplayName } from "@/lib/geo/europe";
 import { eventDistanceKm, formatDistanceKm } from "@/lib/geo/distance";
-import { dateFnsLocale } from "@/lib/i18n/dates";
+import { dateFnsLocale, otherYear, raceIsPast } from "@/lib/i18n/dates";
 import { ageCategoryLabel, disciplineLabel, raceLevelLabel } from "@/lib/i18n/taxonomy";
 import { UCI_CLASS_LABELS, type UciClass } from "@/lib/taxonomy";
 import type { ListColumn } from "@/lib/list-columns";
@@ -52,12 +52,14 @@ function cellText(col: ListColumn, event: EventListItem, locale: string, origin:
     case "date": {
       const start = parseISO(event.startDate);
       const day = format(start, "EEEEEE", { locale: df });
-      if (!event.endDate || event.endDate === event.startDate) return `${day} ${format(start, "d. M.")}`;
+      // The year only outside this one: "so 29. 3." from 2025 read as next spring.
+      const year = (iso: string) => (otherYear(iso) ? ` ${iso.slice(0, 4)}` : "");
+      if (!event.endDate || event.endDate === event.startDate) return `${day} ${format(start, "d. M.")}${year(event.startDate)}`;
       const end = parseISO(event.endDate);
       // "so 3.–4. 10." within a month; both months only when it crosses one.
-      return start.getMonth() === end.getMonth()
+      return (start.getMonth() === end.getMonth()
         ? `${day} ${format(start, "d.")}–${format(end, "d. M.")}`
-        : `${day} ${format(start, "d. M.")} – ${format(end, "d. M.")}`;
+        : `${day} ${format(start, "d. M.")} – ${format(end, "d. M.")}`) + year(event.endDate);
     }
     case "name":
       return event.name;
@@ -207,6 +209,8 @@ const Row = memo(function Row({
       onClick={() => onSelect(event.id)}
       className={cn(
         "cursor-pointer border-border/60 outline-none focus-visible:bg-muted",
+        // Already ridden: still there to look back at, but not one to plan.
+        raceIsPast(event) && "opacity-60",
         planned && PLANNED_RACE_SURFACE,
         planned && "focus-visible:bg-blue-100 data-[state=selected]:bg-blue-100 dark:focus-visible:bg-blue-950/60 dark:data-[state=selected]:bg-blue-950/60",
       )}

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented, SegmentedItem } from "@/components/ui/segmented";
 import { messagesFor } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
 
@@ -185,24 +185,19 @@ export function AuthForm({
           {reason ? <p className="text-sm text-muted-foreground">{reason}</p> : null}
         </div>
       ) : null}
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
+      <Segmented
         className="w-full"
         disabled={busy !== null}
         value={mode}
         onValueChange={(v) => {
-          if (v) {
-            setMode(v as "login" | "register");
-            setError("");
-            setInfo("");
-          }
+          setMode(v as "login" | "register");
+          setError("");
+          setInfo("");
         }}
       >
-        <ToggleGroupItem value="login" className="flex-1">{t.signIn}</ToggleGroupItem>
-        <ToggleGroupItem value="register" className="flex-1">{t.createAccount}</ToggleGroupItem>
-      </ToggleGroup>
+        <SegmentedItem value="login">{t.signIn}</SegmentedItem>
+        <SegmentedItem value="register">{t.createAccount}</SegmentedItem>
+      </Segmented>
       <form
         method="post"
         autoComplete="on"

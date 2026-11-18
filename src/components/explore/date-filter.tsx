@@ -3,16 +3,18 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { format, parseISO } from "date-fns";
-import { Calendar, ChevronDown } from "lucide-react";
+import { Calendar, ChevronDown, X } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { isoToRange } from "@/components/explore/date-range";
+import { ACTIVE_CHIP } from "@/components/explore/filter-styles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { datePresetRanges, type DatePresetId } from "@/lib/date-presets";
+import { datePresetRanges, isNarrowDateWindow, type DatePresetId } from "@/lib/date-presets";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import type { Messages } from "@/lib/i18n/messages";
+import { cn } from "@/lib/utils";
 
 const DateRangeCalendar = dynamic(
   () =>
@@ -134,7 +136,13 @@ export function DateFilter({
     },
   ];
 
+  // A weekend or a month narrows the season like any other filter, so it wears
+  // the same filled chip and the same cross — which opens it back up to every
+  // race from today on, not to races already ridden.
+  const narrow = isNarrowDateWindow(dateFrom, dateTo);
+
   return (
+    <div className="inline-flex h-full max-w-full shrink-0 items-center">
     <Popover
       open={dateOpen}
       onOpenChange={(next) => {
@@ -151,7 +159,10 @@ export function DateFilter({
           variant="secondary"
           size="sm"
           aria-pressed={dateOpen}
-          className="h-8 shrink-0 leading-none tabular-nums max-md:h-11 [@media(pointer:coarse)]:h-11"
+          className={cn(
+            "h-8 shrink-0 leading-none tabular-nums max-md:h-11 [@media(pointer:coarse)]:h-11",
+            narrow && cn("rounded-r-none", ACTIVE_CHIP),
+          )}
         >
           <Calendar />
           {dateLabel}
@@ -210,5 +221,18 @@ export function DateFilter({
         </div>
       </PopoverContent>
     </Popover>
+    {narrow ? (
+      <Button
+        type="button"
+        variant="secondary"
+        size="icon-sm"
+        aria-label={`${messages.clearFilter} ${dateLabel}`}
+        className={cn("rounded-l-none max-md:size-11 [@media(pointer:coarse)]:size-11", ACTIVE_CHIP)}
+        onClick={() => applyPreset(today, "")}
+      >
+        <X />
+      </Button>
+    ) : null}
+    </div>
   );
 }

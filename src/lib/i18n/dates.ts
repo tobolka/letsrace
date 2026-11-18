@@ -28,7 +28,29 @@ export function planRaceDates(
     : formatter.format(start);
 }
 
-export function compactRaceDates(event: { startDate: string; endDate?: string | null }, locale: string) {
+/**
+ * "18 May", or "18 May 2025" for a race outside the current year — without the
+ * year, a race from last spring in an any-date list read as one still to come.
+ */
+export function compactRaceDates(
+  event: { startDate: string; endDate?: string | null },
+  locale: string,
+  now = new Date(),
+) {
   const date = (value: string) => format(parseISO(value), "d MMM", { locale: dateFnsLocale(locale) });
-  return date(event.startDate) + (event.endDate && event.endDate !== event.startDate ? `–${date(event.endDate)}` : "");
+  const last = event.endDate && event.endDate !== event.startDate ? event.endDate : event.startDate;
+  const range = date(event.startDate) + (last !== event.startDate ? `–${date(last)}` : "");
+  return otherYear(last, now) ? `${range} ${last.slice(0, 4)}` : range;
+}
+
+/** Whether a date falls outside the current calendar year. */
+export function otherYear(isoDate: string, now = new Date()): boolean {
+  return Number(isoDate.slice(0, 4)) !== now.getFullYear();
+}
+
+/** A race whose last day is before today. */
+export function raceIsPast(event: { startDate: string; endDate?: string | null }, now = new Date()): boolean {
+  const last = event.endDate && event.endDate > event.startDate ? event.endDate : event.startDate;
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return last < today;
 }

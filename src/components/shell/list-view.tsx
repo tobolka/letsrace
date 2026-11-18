@@ -6,7 +6,7 @@ import { ColumnPicker } from "@/components/shell/column-picker";
 import { RaceTable, sortTableEvents, type ListSort } from "@/components/shell/race-table";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { ExploreActiveChips, ExploreFilterBar } from "@/components/shell/explore-filter-bar";
-import { ListMetaRow } from "@/components/shell/active-filters";
+import { ListMetaRow, SortMenu } from "@/components/shell/active-filters";
 import { useLinkedRace, useRaceParam } from "@/components/shell/use-race-param";
 import { RacePreview } from "@/components/shell/race-preview";
 import { SectionHeader } from "@/components/shell/section-header";
@@ -14,10 +14,9 @@ import { useExploreFilters } from "@/components/shell/use-explore-filters";
 import { useResultsAnalytics } from "@/components/analytics/use-results-analytics";
 import { useRaceFeed } from "@/components/shell/use-race-feed";
 import { Button } from "@/components/ui/button";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { Empty, EmptyContent, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { ItemGroup } from "@/components/ui/item";
 import { RaceCount } from "@/components/shell/race-count";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { eventDistanceKm, sortEvents, type EventSort } from "@/lib/geo/distance";
 import { messagesFor } from "@/lib/i18n/messages";
@@ -44,6 +43,7 @@ export function ListView({ locale }: { locale: string }) {
   const t = messagesFor(locale);
   const state = useExploreFilters();
   const { filters, setFilters, ready, reset, near, place } = state;
+  const countDates = { from: filters.dateFrom, to: filters.dateTo };
   const feed = useRaceFeed(filters, ready, near);
   useResultsAnalytics({ query: filters, count: feed.events.length, ready: ready && feed.settled && !feed.loading, failed: feed.failed, scope: near ? "radius" : "global", radius: state.radius });
   const isMobile = useIsMobile();
@@ -117,7 +117,7 @@ export function ListView({ locale }: { locale: string }) {
         </SectionHeader>
 
         <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b px-4 max-md:hidden">
-          <RaceCount count={feed.settled ? rows.length : null} locale={locale} loading={feed.loading} />
+          <RaceCount count={feed.settled ? rows.length : null} dates={countDates} locale={locale} loading={feed.loading} />
           <div className="flex items-center gap-1">
           {isMobile ? null : (
             <ColumnPicker
@@ -130,23 +130,12 @@ export function ListView({ locale }: { locale: string }) {
               onReset={() => setLayout(null)}
             />
           )}
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="xs"
-            value={activeSort.column === "date" || activeSort.column === "distance" ? activeSort.column : ""}
-            onValueChange={(value) => {
-              if (value === "date" || value === "distance") setSort(value);
-            }}
-            aria-label={t.sortBy}
-          >
-            <ToggleGroupItem value="date" className="data-[state=on]:bg-foreground data-[state=on]:text-background">
-              {t.date}
-            </ToggleGroupItem>
-            <ToggleGroupItem value="distance" className="data-[state=on]:bg-foreground data-[state=on]:text-background">
-              {t.sortDistance}
-            </ToggleGroupItem>
-          </ToggleGroup>
+          <SortMenu
+            locale={locale}
+            sort={activeSort.column === "date" || activeSort.column === "distance" ? activeSort.column : null}
+            onSort={setSort}
+            className="-mr-2.5"
+          />
           </div>
         </div>
 
@@ -159,6 +148,7 @@ export function ListView({ locale }: { locale: string }) {
               <ListMetaRow
                 locale={locale}
                 count={feed.settled ? rows.length : null}
+                dates={countDates}
                 loading={feed.loading}
                 sort={activeSort.column === "distance" ? "distance" : "date"}
                 onSort={setSort}
@@ -169,7 +159,6 @@ export function ListView({ locale }: { locale: string }) {
             <Empty className="border-0 p-8">
               <EmptyHeader>
                 <EmptyTitle>{t.noResults}</EmptyTitle>
-                <EmptyDescription>{t.weekendNearYou}</EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
                 <Button type="button" variant="outline" size="sm" onClick={reset}>

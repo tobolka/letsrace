@@ -11,7 +11,7 @@ import { PlanFeedSubscribe } from "@/components/account/plan-feed-subscribe";
 import { MonthToolbar } from "@/components/calendar/month-calendar";
 import { PlanRaces } from "@/components/account/plan-races";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented, SegmentedItem } from "@/components/ui/segmented";
 import { dateFnsLocale } from "@/lib/i18n/dates";
 import { messagesFor } from "@/lib/i18n/messages";
 import { todayIso } from "@/lib/date-presets";
@@ -241,43 +241,35 @@ export function PlanViewToggle({ locale }: { locale: string }) {
   const [view, setView] = useQueryState("view", parseAsStringLiteral(VIEWS).withDefault("upcoming"));
   return (
     <div className="flex items-center gap-2">
-      <ToggleGroup
-        type="single"
-        value={view}
-        onValueChange={(v) => {
-          if (v) void setView(v as (typeof VIEWS)[number]);
-        }}
-        variant="outline"
+      <Segmented
         size="sm"
+        value={view}
+        onValueChange={(v) => void setView(v as (typeof VIEWS)[number])}
       >
-        <ToggleGroupItem value="upcoming" aria-label={t.planViewUpcoming}>
+        <SegmentedItem value="upcoming" aria-label={t.planViewUpcoming}>
           <List data-icon="inline-start" />
           <span className="max-sm:sr-only">{t.planViewUpcoming}</span>
-        </ToggleGroupItem>
-        <ToggleGroupItem value="list" aria-label={t.planViewList}>
+        </SegmentedItem>
+        <SegmentedItem value="list" aria-label={t.planViewList}>
           <Sheet data-icon="inline-start" />
           <span className="max-sm:sr-only">{t.planViewList}</span>
-        </ToggleGroupItem>
-        <ToggleGroupItem value="calendar" aria-label={t.planViewCalendar}>
+        </SegmentedItem>
+        <SegmentedItem value="calendar" aria-label={t.planViewCalendar}>
           <CalendarDays data-icon="inline-start" />
           <span className="max-sm:sr-only">{t.planViewCalendar}</span>
-        </ToggleGroupItem>
-      </ToggleGroup>
+        </SegmentedItem>
+      </Segmented>
       {/* History is the record, not a way of looking at the season: its own group. */}
-      <ToggleGroup
-        type="single"
-        value={view}
-        onValueChange={(v) => {
-          if (v) void setView(v as (typeof VIEWS)[number]);
-        }}
-        variant="outline"
+      <Segmented
         size="sm"
+        value={view}
+        onValueChange={(v) => void setView(v as (typeof VIEWS)[number])}
       >
-        <ToggleGroupItem value="past" aria-label={t.planViewPast}>
+        <SegmentedItem value="past" aria-label={t.planViewPast}>
           <History data-icon="inline-start" />
           <span className="max-sm:sr-only">{t.planViewPast}</span>
-        </ToggleGroupItem>
-      </ToggleGroup>
+        </SegmentedItem>
+      </Segmented>
     </div>
   );
 }

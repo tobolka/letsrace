@@ -149,7 +149,6 @@ export function AccountPanel({
   const [birthYear, setBirthYear] = useState("");
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
-  const [ridesByMember, setRidesByMember] = useState<Record<string, number>>({});
 
   async function load() {
     const supabase = createBrowserSupabase();
@@ -169,21 +168,6 @@ export function AccountPanel({
       .eq("user_id", auth.user.id)
       .order("created_at");
     setMembers((data ?? []).map(toMember));
-
-    // How much racing each of them actually did this year — the one number
-    // that makes a row of names feel like a season rather than a settings list.
-    const year = new Date().getFullYear();
-    const { data: rides } = await supabase
-      .from("event_attendance")
-      .select("member_id, event:events(start_date)")
-      .eq("user_id", auth.user.id);
-    const counts: Record<string, number> = {};
-    for (const row of rides ?? []) {
-      const ev = Array.isArray(row.event) ? row.event[0] : row.event;
-      if (!ev?.start_date?.startsWith(String(year))) continue;
-      counts[row.member_id] = (counts[row.member_id] ?? 0) + 1;
-    }
-    setRidesByMember(counts);
     setReady(true);
   }
 
@@ -422,13 +406,6 @@ export function AccountPanel({
                     .filter(Boolean)
                     .join(" · ") || " "}
                 </p>
-              </div>
-              {/* The year so far, as a number you can read across the grid. */}
-              <div className="shrink-0 text-right">
-                <p className="text-lg font-semibold leading-none tabular-nums">
-                  {ridesByMember[m.id] ?? 0}
-                </p>
-                <p className="mt-1 text-[11px] text-muted-foreground">{t.planStatRidden}</p>
               </div>
               <Button
                 variant="ghost"

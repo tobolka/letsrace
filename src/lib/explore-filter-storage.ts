@@ -106,6 +106,8 @@ export function resolveExploreDatePreset(
       return { from: "", to: "" };
     case "custom":
     default:
+      // A picked range that has ended would open on an empty calendar.
+      if (dateTo && dateTo < todayIso(now)) return { from: todayIso(now), to: "" };
       return { from: dateFrom, to: dateTo };
   }
 }

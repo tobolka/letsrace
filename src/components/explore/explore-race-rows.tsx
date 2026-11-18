@@ -1,7 +1,7 @@
 import { EventCard } from "@/components/explore/event-rows";
 import { ListSkeleton } from "@/components/explore/list-skeleton";
 import { Button } from "@/components/ui/button";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { Empty, EmptyContent, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { ItemGroup } from "@/components/ui/item";
 import { eventDistanceKm } from "@/lib/geo/distance";
 import type { EventListItem } from "@/lib/events";
@@ -53,7 +53,6 @@ export function ExploreRaceRows({
       <Empty className={variant === "panel" ? "border-0 p-6 md:p-8" : "border-0 p-6"}>
         <EmptyHeader>
           <EmptyTitle>{messages.noResults}</EmptyTitle>
-          <EmptyDescription>{messages.weekendNearYou}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           {variant === "panel" ? (

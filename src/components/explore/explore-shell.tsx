@@ -373,6 +373,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
   const df = dateFnsLocale(locale);
   const presetLabels = datePresetLabels(messages);
   const datePresets = datePresetRanges(filters.dateFrom, filters.dateTo);
+  const countDates = { from: filters.dateFrom, to: filters.dateTo };
   const dateLabel = dateFilterLabel(filters.dateFrom, filters.dateTo, presetLabels, df);
   const filterCount = activeFilterGroups({ ...filters, radius: radiusArea ? radius : null });
 
@@ -482,6 +483,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
         listRef={listRef}
         toolbar={{
           count: listSettled ? visibleEvents.length : null,
+          dates: countDates,
           pending: listLoading,
           sort: listSort,
           onSort: setListSort,
@@ -553,6 +555,7 @@ export function ExploreShell({ initialEvents, messages, locale }: Props) {
           }}
           meta={{
             count: listSettled ? visibleEvents.length : null,
+            dates: countDates,
             loading: listLoading,
             sort: listSort,
             onSort: setListSort,

@@ -21,8 +21,20 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   {
     date: "2026-11-18",
     items: {
-      cs: ["Když se na mapě seskupí závody různých disciplín, každá má vlastní barevnou bublinu a čím je bublina větší, tím víc v ní je závodů."],
-      en: ["When races from different disciplines are grouped on the map, each discipline has its own colored bubble, and the bigger the bubble, the more races it holds."],
+      cs: [
+        "Když se na mapě seskupí závody různých disciplín, každá má vlastní barevnou bublinu a čím je bublina větší, tím víc v ní je závodů.",
+        "Mapa i seznam ukazují hned všechny nadcházející závody, ne jen tento víkend, a u počtu vždy krátce stojí, za jaké období je; zvolené datum zrušíš křížkem jako ostatní filtry.",
+        "Odkaz na závod od někoho jiného už ti nepřepíše filtry, které sis nastavil sám.",
+        "Při libovolném datu jsou závody, které už proběhly, zešedlé a s nápisem, a u závodů z jiného roku vidíš i rok.",
+        "Karta závodu na mapě má záložku Počasí s předpovědí po hodinách na den závodu a počasím ve stejném týdnu za posledních deset let.",
+      ],
+      en: [
+        "When races from different disciplines are grouped on the map, each discipline has its own colored bubble, and the bigger the bubble, the more races it holds.",
+        "The map and the list now open on every upcoming race, not just this weekend, and the race count always says briefly which dates it covers; a chosen date can be cleared with its cross like any other filter.",
+        "Opening a race link from someone else no longer replaces the filters you set yourself.",
+        "With any date chosen, races that have already taken place are greyed out and say so, and races from another year show the year.",
+        "The race card on the map has a Weather tab with an hour-by-hour forecast for race day and the same week's weather over the past ten years.",
+      ],
     },
   },
   {

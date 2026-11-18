@@ -14,7 +14,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented, SegmentedItem } from "@/components/ui/segmented";
 import type { Messages } from "@/lib/i18n/messages";
 
 type Kind = "race" | "series";
@@ -71,22 +71,16 @@ export function SubmitRaceModal({
           <FieldGroup className="gap-5">
             <Field>
               <FieldLabel>{messages.submitKindLabel}</FieldLabel>
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                value={kind}
-                onValueChange={(v) => v && setKind(v as Kind)}
-                className="w-full"
-              >
-                <ToggleGroupItem value="race" className="flex-1 data-[state=on]:bg-foreground data-[state=on]:text-background">
+              <Segmented value={kind} onValueChange={(v) => setKind(v as Kind)} className="w-full">
+                <SegmentedItem value="race">
                   <Flag data-icon="inline-start" />
                   {messages.submitKindRace}
-                </ToggleGroupItem>
-                <ToggleGroupItem value="series" className="flex-1 data-[state=on]:bg-foreground data-[state=on]:text-background">
+                </SegmentedItem>
+                <SegmentedItem value="series">
                   <Trophy data-icon="inline-start" />
                   {messages.submitKindSeries}
-                </ToggleGroupItem>
-              </ToggleGroup>
+                </SegmentedItem>
+              </Segmented>
             </Field>
             <Field>
               <FieldLabel htmlFor="missing-race-url">{series ? messages.raceUrlSeries : messages.raceUrl}</FieldLabel>

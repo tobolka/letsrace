@@ -45,7 +45,7 @@ export function ExploreDesktopPanel({
   /** The same filters for the small bar left when the list is put away. */
   compactFilterBar: ReactNode;
   listRef: RefObject<HTMLDivElement | null>;
-  toolbar: Pick<React.ComponentProps<typeof ListToolbar>, "count" | "pending" | "sort" | "onSort">;
+  toolbar: Pick<React.ComponentProps<typeof ListToolbar>, "count" | "dates" | "pending" | "sort" | "onSort">;
   rows: Omit<ExploreRaceRowsProps, "variant" | "locale" | "messages" | "groupClassName">;
   selected: EventListItem | null;
   onCloseDetail: () => void;
@@ -117,7 +117,7 @@ export function ExploreDesktopPanel({
               onClick={() => panel.setCollapsed(false)}
             >
               <PanelLeftOpen />
-              <RaceCount count={toolbar.count} locale={locale} loading={toolbar.pending} className="text-sm text-foreground" />
+              <RaceCount count={toolbar.count} dates={toolbar.dates} locale={locale} loading={toolbar.pending} className="text-sm text-foreground" />
             </Button>
             <div className="relative z-30 flex min-w-0 items-center">{compactFilterBar}</div>
           </div>

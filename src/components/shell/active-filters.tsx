@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { ArrowDownUp, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -145,6 +146,7 @@ export function ActiveFilterChips({
 export function ListMetaRow({
   locale,
   count,
+  dates,
   loading,
   sort,
   onSort,
@@ -153,39 +155,71 @@ export function ListMetaRow({
   locale: string;
   /** `null` while the first answer is still on its way. */
   count: number | null;
+  dates?: ComponentProps<typeof RaceCount>["dates"];
   loading: boolean;
   sort: EventSort;
   onSort: (sort: EventSort) => void;
   className?: string;
 }) {
-  const t = messagesFor(locale);
   return (
     <div className={cn("flex h-10 shrink-0 items-center justify-between gap-2 pl-4 pr-2", className)}>
-      <RaceCount count={count} locale={locale} loading={loading} />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-10 gap-1.5 px-2.5 text-xs font-medium text-muted-foreground touch-manipulation"
-            aria-label={`${t.sortBy}: ${sort === "distance" ? t.sortByDistance : t.sortByDate}`}
-          >
-            <ArrowDownUp className="size-3.5" aria-hidden />
-            {sort === "distance" ? t.sortDistance : t.date}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuRadioGroup
-            value={sort}
-            onValueChange={(value) => {
-              if (value === "date" || value === "distance") onSort(value);
-            }}
-          >
-            <DropdownMenuRadioItem value="date" className="min-h-11">{t.sortByDate}</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="distance" className="min-h-11">{t.sortByDistance}</DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RaceCount count={count} dates={dates} locale={locale} loading={loading} />
+      <SortMenu locale={locale} sort={sort} onSort={onSort} />
     </div>
+  );
+}
+
+/**
+ * How the races are ordered, as the arrows say it: "↕ Datum", opening the
+ * choices. A two-button switch beside the count did not read as an order.
+ * One control on the phone and the desktop alike.
+ */
+export function SortMenu({
+  locale,
+  sort,
+  onSort,
+  distanceEnabled = true,
+  className,
+}: {
+  locale: string;
+  /** `null` when the list is ordered by another column (a table heading). */
+  sort: EventSort | null;
+  onSort: (sort: EventSort) => void;
+  /** The map's list needs the position first; until then distance is offered but off. */
+  distanceEnabled?: boolean;
+  className?: string;
+}) {
+  const t = messagesFor(locale);
+  const label = sort === "distance" ? t.sortDistance : sort === "date" ? t.date : t.sortBy;
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          className={cn("h-8 gap-1.5 px-2.5 text-xs font-medium text-muted-foreground touch-manipulation max-md:h-10", className)}
+          aria-label={`${t.sortBy}: ${sort === "distance" ? t.sortByDistance : sort === "date" ? t.sortByDate : label}`}
+        >
+          <ArrowDownUp className="size-3.5" aria-hidden />
+          {label}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuRadioGroup
+          value={sort ?? ""}
+          onValueChange={(value) => {
+            if (value === "date" || value === "distance") onSort(value);
+          }}
+        >
+          <DropdownMenuRadioItem value="date" className="min-h-11 md:min-h-8">{t.sortByDate}</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="distance" disabled={!distanceEnabled} className="min-h-11 md:min-h-8">
+            <span className="flex flex-col">
+              {t.sortByDistance}
+              {distanceEnabled ? null : <span className="text-xs text-muted-foreground">{t.sortNeedsLocation}</span>}
+            </span>
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

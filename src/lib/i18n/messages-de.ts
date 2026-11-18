@@ -98,6 +98,7 @@ export const de = {
   next30: "Nächste 30 Tage",
   next90: "Nächste 90 Tage",
   anyDate: "Beliebiges Datum",
+  racePast: "Bereits gefahren",
   customDate: "Eigenes",
   racesCount: "Rennen",
   countryFilter: "Land",

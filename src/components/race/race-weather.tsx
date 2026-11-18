@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowUp, Cloud, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudSnow, CloudSun, ExternalLink, Moon, Sun, Thermometer, Wind } from "lucide-react";
 import { MetaRow } from "@/components/explore/meta-row";
 import { ExplainedHint } from "@/components/explore/explained-badge";
@@ -329,7 +329,7 @@ export function RaceWeather({ lat, lng, date, locale, hideLink = false }: Props 
 
 const CHART_W = 520;
 const CHART_H = 112;
-const PAD = { top: 10, bottom: 24, left: 34, right: 6 };
+const PAD = { top: 10, bottom: 28, left: 34, right: 6 };
 
 /** "4. 11." in the reader's language. */
 function shortDay(iso: string, offset: number, locale: string, weekday = false): string {
@@ -373,12 +373,57 @@ export function RaceWeatherSection({ lat, lng, date, locale }: Props) {
   );
 }
 
+const TAB_COPY: Record<Locale, { empty: string; loading: string }> = {
+  cs: { loading: "Načítám počasí…", empty: "Pro tento závod teď počasí nemáme." },
+  sk: { loading: "Načítavam počasie…", empty: "Pre tento pretek teraz počasie nemáme." },
+  pl: { loading: "Wczytuję pogodę…", empty: "Dla tego wyścigu nie mamy teraz pogody." },
+  de: { loading: "Wetter wird geladen…", empty: "Für dieses Rennen haben wir gerade kein Wetter." },
+  en: { loading: "Loading the weather…", empty: "No weather for this race right now." },
+};
+
+/**
+ * The race page's weather, fitted into the race card's second tab: the race
+ * day hour by hour when it is close enough, then the same week in past years,
+ * without the cards around them — the race card is the card.
+ */
+export function RaceWeatherTab({ lat, lng, date, locale }: Props) {
+  const weather = useWeather(lat, lng, date);
+  const c = copy[asLocale(locale)];
+  const tc = TAB_COPY[asLocale(locale)];
+  if (!weather) return <p className="py-6 text-sm text-muted-foreground">{tc.loading}</p>;
+  const hours = weather.forecast?.hours ?? [];
+  const climate = weather.climate;
+  const hasDay = hours.length >= 4;
+  const hasPast = Boolean(climate && climate.byYear.length >= 3);
+  if (!hasDay && !hasPast) {
+    return (
+      <div className="flex flex-col gap-2 py-6 text-sm text-muted-foreground">
+        <p>{tc.empty}</p>
+        <a href={windyUrl(lat, lng)} target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-1 text-xs underline-offset-4 hover:underline">
+          {c.windy}
+          <ExternalLink className="size-3" aria-hidden />
+        </a>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col divide-y">
+      {hasDay ? <div className="pb-7"><RaceDayForecast hours={hours} date={date} locale={locale} lat={lat} lng={lng} flat /></div> : null}
+      {hasPast ? (
+        <div className={hasDay ? "pt-7" : undefined}>
+          <PastYears climate={climate!} date={date} locale={locale} flat />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /**
  * The race day in two-hour steps, read across like a weather app: the hour,
  * the sky, the temperature as a line with its value at each point, then rain
  * and wind (with gusts and an arrow the way it blows).
  */
-function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHour[]; date: string; locale: string; lat: number; lng: number }) {
+function RaceDayForecast({ hours, date, locale, lat, lng, flat = false }: { hours: ForecastHour[]; date: string; locale: string; lat: number; lng: number; flat?: boolean }) {
   const [highlightedHour, setHighlightedHour] = useState<number | null>(null);
   const c = copy[asLocale(locale)];
   const n = hours.length;
@@ -397,7 +442,7 @@ function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHou
     setHighlightedHour(hours[index]?.hour ?? null);
   }
   return (
-    <div className="rounded-xl border bg-card p-4 sm:p-5">
+    <div className={flat ? undefined : "rounded-xl border bg-card p-4 sm:p-5"}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="text-sm font-semibold">{fill(c.dayForecast, { day: shortDay(date, 0, locale, true) })}</p>
         <a
@@ -441,7 +486,7 @@ function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHou
           ))}
         </div>
 
-        <svg viewBox={`0 0 100 ${BAND + 26}`} preserveAspectRatio="none" className="mt-1 h-16 w-full overflow-visible">
+        <svg viewBox={`0 0 100 ${BAND + 26}`} preserveAspectRatio="none" className="mt-5 h-16 w-full overflow-visible">
           <defs>
             <linearGradient id="race-day-temp" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0" className="[stop-color:var(--color-orange-400)]" stopOpacity="0.28" />
@@ -511,8 +556,8 @@ function RaceDayForecast({ hours, date, locale, lat, lng }: { hours: ForecastHou
 
 function Row({ icon, label, cols, children }: { icon: React.ReactNode; label: string; cols: React.CSSProperties; children: React.ReactNode }) {
   return (
-    <div className="mt-3 border-t pt-2">
-      <p className="mb-1 flex items-center gap-1.5 text-[11px] text-muted-foreground [&_svg]:size-3.5">
+    <div className="mt-4 border-t pt-3">
+      <p className="mb-2 flex items-center gap-1.5 text-[11px] text-muted-foreground [&_svg]:size-3.5">
         {icon}
         {label}
       </p>
@@ -530,7 +575,7 @@ function Row({ icon, label, cols, children }: { icon: React.ReactNode; label: st
  * share one axis. The line above them says the averages, or the year under
  * the pointer.
  */
-function PastYears({ climate, date, locale }: { climate: Climate; date: string; locale: string }) {
+function PastYears({ climate, date, locale, flat = false }: { climate: Climate; date: string; locale: string; flat?: boolean }) {
   const [hover, setHover] = useState<number | null>(null);
   const c = copy[asLocale(locale)];
   const years = climate.byYear;
@@ -543,18 +588,18 @@ function PastYears({ climate, date, locale }: { climate: Climate; date: string; 
     : fill(c.chartAverage, { n: years.length, max: climate.tmax, min: climate.tmin, rain: avgRain });
 
   return (
-    <figure className="rounded-xl border bg-card p-4 sm:p-5">
+    <figure className={flat ? undefined : "rounded-xl border bg-card p-4 sm:p-5"}>
       <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <span className="text-sm font-semibold">{fill(c.chartTitle, { n: years.length })}</span>
         <span className="text-xs text-muted-foreground">
           {fill(c.chartWeek, { from: shortDay(date, -3, locale), to: shortDay(date, 3, locale) })}
         </span>
       </figcaption>
-      <p className="mt-2 min-h-5 text-sm tabular-nums" aria-live="polite">
+      <p className={flat ? "mt-3 min-h-10 text-sm text-muted-foreground tabular-nums" : "mt-2 min-h-5 text-sm tabular-nums"} aria-live="polite">
         {readout}
       </p>
-      <div className="mt-3 flex flex-col gap-5" onMouseLeave={() => setHover(null)}>
-        <MiniChart title={c.chartTemp} years={years} ticks={tTicks} zero hover={hover} onHover={setHover}>
+      <div className={flat ? "mt-4 flex flex-col gap-7" : "mt-3 flex flex-col gap-5"} onMouseLeave={() => setHover(null)}>
+        <MiniChart title={c.chartTemp} years={years} ticks={tTicks} zero hover={hover} onHover={setHover} height={flat ? 156 : CHART_H} large={flat}>
           {(y, x, w, scale) => {
             const bw = Math.min(w * 0.36, 16);
             return (
@@ -569,7 +614,7 @@ function PastYears({ climate, date, locale }: { climate: Climate; date: string; 
             );
           }}
         </MiniChart>
-        <MiniChart title={c.chartRain} years={years} ticks={rTicks} hover={hover} onHover={setHover}>
+        <MiniChart title={c.chartRain} years={years} ticks={rTicks} hover={hover} onHover={setHover} height={flat ? 136 : CHART_H} large={flat}>
           {(y, x, w, scale) => {
             const bw = Math.min(w * 0.5, 22);
             // A dry week still gets a stub on the baseline: an empty column reads as missing data.
@@ -587,7 +632,7 @@ function PastYears({ climate, date, locale }: { climate: Climate; date: string; 
           }}
         </MiniChart>
       </div>
-      <p className="mt-3 text-xs text-muted-foreground">
+      <p className={flat ? "mt-4 text-xs text-muted-foreground" : "mt-3 text-xs text-muted-foreground"}>
         <span className="max-sm:hidden">{c.chartHint} </span>Open-Meteo
       </p>
       <table className="sr-only">
@@ -613,9 +658,15 @@ function MiniChart({
   zero = false,
   hover,
   onHover,
+  height = CHART_H,
+  large = false,
   children,
 }: {
   title: string;
+  /** Drawn this tall, in pixels; the width is whatever the card gives it. */
+  height?: number;
+  /** The race card's tab: a larger title over the chart. */
+  large?: boolean;
   years: ClimateYear[];
   ticks: number[];
   /** Mark 0 more strongly than the other grid lines: frost is what a rider reads first. */
@@ -624,16 +675,33 @@ function MiniChart({
   onHover: (i: number) => void;
   children: (y: ClimateYear, x: number, w: number, scale: (v: number) => number) => React.ReactNode;
 }) {
+  // Drawn at the width it is shown at, so a label of 12px is 12px: drawn at a
+  // fixed width and scaled down into the race card, the labels shrank to 8.
+  const box = useRef<HTMLDivElement>(null);
+  const [CW, setCW] = useState(CHART_W);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const measure = () => {
+      const width = Math.round(el.getBoundingClientRect().width);
+      if (width > 0) setCW(width);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  const CH = height;
   const lo = ticks[0]!;
   const hi = ticks[ticks.length - 1]!;
-  const plotW = CHART_W - PAD.left - PAD.right;
-  const plotH = CHART_H - PAD.top - PAD.bottom;
+  const plotW = CW - PAD.left - PAD.right;
+  const plotH = CH - PAD.top - PAD.bottom;
   const w = plotW / years.length;
   const scale = (v: number) => PAD.top + plotH - ((v - lo) / (hi - lo || 1)) * plotH;
   return (
-    <div aria-hidden>
-      <p className="mb-1.5 text-xs font-medium text-muted-foreground">{title}</p>
-      <svg viewBox={`0 0 ${CHART_W} ${CHART_H}`} className="w-full overflow-visible text-muted-foreground">
+    <div aria-hidden ref={box}>
+      <p className={large ? "mb-2 text-sm font-medium text-muted-foreground" : "mb-1.5 text-xs font-medium text-muted-foreground"}>{title}</p>
+      <svg viewBox={`0 0 ${CW} ${CH}`} width={CW} height={CH} className="block w-full overflow-visible text-muted-foreground">
         {years.map((y, i) =>
           hover === i ? (
             <rect key={y.year} x={PAD.left + i * w + 2} width={w - 4} y={PAD.top - 6} height={plotH + 12} rx={6} className="fill-muted" />
@@ -643,14 +711,14 @@ function MiniChart({
           <g key={t}>
             <line
               x1={PAD.left}
-              x2={CHART_W - PAD.right}
+              x2={CW - PAD.right}
               y1={scale(t)}
               y2={scale(t)}
               className={zero && t === 0 ? "stroke-muted-foreground/60" : "stroke-border"}
               strokeWidth={1}
               strokeDasharray={zero && t === 0 ? "3 3" : undefined}
             />
-            <text x={PAD.left - 6} y={scale(t)} dy="0.32em" textAnchor="end" className="fill-current text-[11px] tabular-nums max-sm:text-[15px]">
+            <text x={PAD.left - 6} y={scale(t)} dy="0.32em" textAnchor="end" className="fill-current text-xs tabular-nums">
               {zero ? `${t}°` : t}
             </text>
           </g>
@@ -661,14 +729,15 @@ function MiniChart({
             <g key={y.year} onMouseEnter={() => onHover(i)} onTouchStart={() => onHover(i)}>
               {children(y, x, w, scale)}
               {/* The whole column answers the pointer, not just the thin mark. */}
-              <rect x={x} width={w} y={0} height={CHART_H} fill="transparent" />
+              <rect x={x} width={w} y={0} height={CH} fill="transparent" />
               <text
                 x={x + w / 2}
-                y={CHART_H - 5}
+                y={CH - 4}
                 textAnchor="middle"
-                className={`text-[11px] tabular-nums max-sm:text-[15px] ${hover === i ? "fill-foreground font-medium" : "fill-current"}`}
+                className={`text-xs tabular-nums ${hover === i ? "fill-foreground font-medium" : "fill-current"}`}
               >
-                {y.year}
+                {/* Four digits a column crowd each other under 46px: "’16" (the line above names the full year). */}
+                {w < 46 ? `’${String(y.year).slice(2)}` : y.year}
               </text>
             </g>
           );

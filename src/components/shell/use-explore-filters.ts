@@ -4,7 +4,7 @@ import { track } from "@/lib/analytics";
 import { filterSnapshot } from "@/lib/analytics-product";
 import { useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
-import { thisWeekendRange, todayIso } from "@/lib/date-presets";
+import { todayIso } from "@/lib/date-presets";
 import { countryChange, toggleIn } from "@/lib/explore-filters";
 import { filterSearchParams } from "@/lib/explore-params";
 import { useUserOrigin } from "@/hooks/use-user-origin";
@@ -74,7 +74,6 @@ export function useExploreFilters() {
 
   function reset() {
     track("filter_apply", { filter_type: "reset" });
-    const w = thisWeekendRange();
     setResetKey((n) => n + 1);
     storeRadius(null);
     void setFilters({
@@ -84,8 +83,8 @@ export function useExploreFilters() {
       levels: [],
       series: null,
       country: [],
-      dateFrom: w.from,
-      dateTo: w.to,
+      dateFrom: todayIso(),
+      dateTo: "",
     });
   }
 

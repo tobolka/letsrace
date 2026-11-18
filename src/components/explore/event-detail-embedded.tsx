@@ -6,12 +6,13 @@ import type { DetailLink } from "@/components/explore/event-detail-model";
 import { ExplainedBadge } from "@/components/explore/explained-badge";
 import { MetaRow } from "@/components/explore/meta-row";
 import { CardSection, RaceMoreDetails, type CardLink } from "@/components/explore/race-more-details";
-import { RaceWeather, windyLabel, windyUrl } from "@/components/race/race-weather";
+import { RaceWeather, RaceWeatherTab, windyLabel, windyUrl } from "@/components/race/race-weather";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RaceActions } from "@/components/race/race-actions";
 import { Button } from "@/components/ui/button";
 import type { EventListItem } from "@/lib/events";
 import { dateFnsLocale } from "@/lib/i18n/dates";
-import { messagesFor } from "@/lib/i18n/messages";
+import { asLocale, messagesFor, type Locale } from "@/lib/i18n/messages";
 import { localePath } from "@/lib/localized-paths";
 import { daysUntilLabel } from "@/lib/race-countdown";
 import { cn } from "@/lib/utils";
@@ -97,6 +98,17 @@ export function EmbeddedBody({
     (event.endDate ?? event.startDate) >= new Date().toISOString().slice(0, 10)
       ? { lat: event.location.lat, lng: event.location.lng }
       : null;
+  // The race page's weather — the race day hour by hour and the same week in
+  // past years — on a tab of its own, on the phone as well as the desktop: on
+  // the card it has the room it never had among the facts.
+  const weatherTabAt =
+    event.location?.lat != null &&
+    event.location.lng != null &&
+    event.status !== "cancelled" &&
+    (event.endDate ?? event.startDate) >= new Date().toISOString().slice(0, 10)
+      ? { lat: event.location.lat, lng: event.location.lng }
+      : null;
+  const tabs = TAB_LABELS[asLocale(locale)];
   // Every way off the card, one list, one look: the organiser's pages, the
   // series' page, the forecast.
   const links: CardLink[] = [
@@ -108,65 +120,8 @@ export function EmbeddedBody({
       : []),
     ...(weatherAt ? [{ href: windyUrl(weatherAt.lat, weatherAt.lng), label: windyLabel(locale), kind: "weather", external: true }] : []),
   ];
-  return (
-    <div className="flex flex-col">
-      {/* When and where, then what you can do with it. */}
-      <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
-      <div className="flex flex-col gap-1.5">
-        <p className="flex items-center gap-2 text-sm font-semibold">
-          <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <span className="min-w-0">
-            <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
-              {dateLabel}
-            </time>
-            {countdown ? (
-              <span className="font-normal text-brand" suppressHydrationWarning>
-                <span aria-hidden> · </span>
-                {countdown}
-              </span>
-            ) : null}
-          </span>
-        </p>
-        <p className="flex items-start gap-2 text-sm">
-          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-          <span className="min-w-0 flex-1 break-words">
-            {placeUrl ? (
-              <a
-                href={placeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline-offset-4 hover:underline"
-                onClick={() => trackEnter("place")}
-              >
-                {placeLabel}
-              </a>
-            ) : (
-              <span>{placeLabel || "—"}</span>
-            )}
-            {discChips.length > 0 ? (
-              <span className="text-muted-foreground">
-                <span aria-hidden> · </span>
-                <span className="sr-only">{t.formatLabel}: </span>
-                {discChips.join(", ")}
-              </span>
-            ) : null}
-          </span>
-        </p>
-      </div>
-
-      <RaceActions
-        event={event}
-        locale={locale}
-        layout="tiles"
-        location="race_panel"
-        show={["directions", "plan", "share", "map", "detail"]}
-        primary={primary}
-        directionsUrl={directionsUrl}
-        mapHref={onMap ? mapHref : ""}
-        carryFilters
-      />
-      </div>
-
+  const raceBody = (
+    <>
       {/* Who it is for and what kind of race it is. */}
       <CardSection className="flex flex-col gap-2.5 py-5">
         <MetaRow icon={<UserRound />} label={t.audience}>
@@ -237,6 +192,93 @@ export function EmbeddedBody({
         </p>
         </CardSection>
       ) : null}
+    </>
+  );
+  return (
+    <div className="flex flex-col">
+      {/* When and where, then what you can do with it. */}
+      <div className="-mx-4 -mt-3 flex flex-col gap-4 px-4 pt-4 pb-5">
+      <div className="flex flex-col gap-1.5">
+        <p className="flex items-center gap-2 text-sm font-semibold">
+          <Calendar className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="min-w-0">
+            <time className="tabular-nums first-letter:uppercase" dateTime={event.startDate}>
+              {dateLabel}
+            </time>
+            {countdown ? (
+              <span className="font-normal text-brand" suppressHydrationWarning>
+                <span aria-hidden> · </span>
+                {countdown}
+              </span>
+            ) : null}
+          </span>
+        </p>
+        <p className="flex items-start gap-2 text-sm">
+          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="min-w-0 flex-1 break-words">
+            {placeUrl ? (
+              <a
+                href={placeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline-offset-4 hover:underline"
+                onClick={() => trackEnter("place")}
+              >
+                {placeLabel}
+              </a>
+            ) : (
+              <span>{placeLabel || "—"}</span>
+            )}
+            {discChips.length > 0 ? (
+              <span className="text-muted-foreground">
+                <span aria-hidden> · </span>
+                <span className="sr-only">{t.formatLabel}: </span>
+                {discChips.join(", ")}
+              </span>
+            ) : null}
+          </span>
+        </p>
+      </div>
+
+      <RaceActions
+        event={event}
+        locale={locale}
+        layout="tiles"
+        location="race_panel"
+        show={["directions", "plan", "share", "map", "detail"]}
+        primary={primary}
+        directionsUrl={directionsUrl}
+        mapHref={onMap ? mapHref : ""}
+        carryFilters
+      />
+      </div>
+
+      {weatherTabAt ? (
+        <Tabs key={event.id} defaultValue="race" className="gap-0">
+          <CardSection className="py-3">
+            <TabsList className="w-full">
+              <TabsTrigger value="race">{tabs.race}</TabsTrigger>
+              <TabsTrigger value="weather">{tabs.weather}</TabsTrigger>
+            </TabsList>
+          </CardSection>
+          <TabsContent value="race">{raceBody}</TabsContent>
+          <TabsContent value="weather">
+            <CardSection className="py-5">
+              <RaceWeatherTab lat={weatherTabAt.lat} lng={weatherTabAt.lng} date={event.startDate} locale={locale} />
+            </CardSection>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        raceBody
+      )}
     </div>
   );
 }
+
+const TAB_LABELS: Record<Locale, { race: string; weather: string }> = {
+  cs: { race: "Závod", weather: "Počasí" },
+  sk: { race: "Pretek", weather: "Počasie" },
+  pl: { race: "Wyścig", weather: "Pogoda" },
+  de: { race: "Rennen", weather: "Wetter" },
+  en: { race: "Race", weather: "Weather" },
+};

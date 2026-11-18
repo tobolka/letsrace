@@ -79,3 +79,14 @@ export function datePresetRanges(
   ];
   return ranges.map((r) => ({ ...r, active: r.from === dateFrom && r.to === dateTo }));
 }
+
+/**
+ * Whether the date filter narrows the season to a window — a weekend, a month,
+ * a picked range — rather than showing everything from today on (or any date).
+ * A narrow window is worth saying beside the count: "2 races" on a weekend
+ * reads as a thin calendar unless it says it is only the weekend.
+ */
+export function isNarrowDateWindow(dateFrom: string, dateTo: string, now = new Date()): boolean {
+  if (dateTo) return true;
+  return Boolean(dateFrom) && dateFrom > todayIso(now);
+}

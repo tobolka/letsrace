@@ -3,7 +3,7 @@
 import { filterSnapshot } from "@/lib/analytics-product";
 import { track } from "@/lib/analytics";
 import type { ExploreFilters } from "@/components/explore/use-map-feed";
-import { thisWeekendRange } from "@/lib/date-presets";
+import { todayIso } from "@/lib/date-presets";
 import type { EventListItem } from "@/lib/events";
 import { countryChange, toggleIn, type SeriesOption } from "@/lib/explore-filters";
 
@@ -77,7 +77,7 @@ export function useMapFilterActions({
   function resetExploreFilters(opts?: { clearSearch?: boolean }) {
     track("filter_apply", { filter_type: "reset" });
     clearRadius();
-    const w = thisWeekendRange();
+    const w = { from: todayIso(), to: "" };
     const clearSearch = opts?.clearSearch ?? false;
     resetBar();
     void setFilters({

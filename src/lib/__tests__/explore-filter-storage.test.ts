@@ -50,11 +50,17 @@ describe("explore filter storage", () => {
     const parsed = parseStoredExploreFilters(raw);
     expect(parsed).toEqual(stored);
 
-    const patch = storedExploreFiltersToPatch(parsed!);
+    const patch = storedExploreFiltersToPatch(parsed!, new Date("2025-12-01T12:00:00"));
     expect(patch.disciplines).toEqual(["mtb"]);
     expect(patch.country).toEqual(["CZ", "SK"]);
     expect(patch.sort).toBe("distance");
     expect(patch.dateFrom).toBe("2026-01-01");
+  });
+
+  it("opens a saved range that has ended from today instead", () => {
+    const now = new Date("2026-11-18T12:00:00");
+    expect(resolveExploreDatePreset("custom", "2026-11-01", "2026-11-02", now)).toEqual({ from: "2026-11-18", to: "" });
+    expect(resolveExploreDatePreset("custom", "2026-11-22", "2026-11-23", now)).toEqual({ from: "2026-11-22", to: "2026-11-23" });
   });
 
   it("reads a single country saved before the filter took several", () => {
@@ -68,5 +74,16 @@ describe("explore filter storage", () => {
     expect(parseStoredExploreFilters(null)).toBeNull();
     expect(parseStoredExploreFilters("{")).toBeNull();
     expect(parseStoredExploreFilters(JSON.stringify({ v: 2 }))).toBeNull();
+  });
+});
+
+describe("narrow date window", () => {
+  it("is a window with an end or one that starts later, not everything from today", async () => {
+    const { isNarrowDateWindow } = await import("@/lib/date-presets");
+    const now = new Date("2026-11-18T12:00:00");
+    expect(isNarrowDateWindow("2026-11-21", "2026-11-22", now)).toBe(true);
+    expect(isNarrowDateWindow("2026-11-18", "", now)).toBe(false);
+    expect(isNarrowDateWindow("", "", now)).toBe(false);
+    expect(isNarrowDateWindow("2026-12-01", "", now)).toBe(true);
   });
 });

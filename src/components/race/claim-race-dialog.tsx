@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented, SegmentedItem } from "@/components/ui/segmented";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { asLocale } from "@/lib/i18n/messages";
 import { organizerCopy } from "@/lib/i18n/organizer-copy";
@@ -234,20 +234,14 @@ export function ClaimRaceDialog({ locale, slug, name, kind = "race" }: { locale:
                 {access?.pending ? (
                   <p className="text-sm text-muted-foreground">{c.pendingNote}</p>
                 ) : (
-                  <ToggleGroup
-                    type="single"
-                    variant="outline"
+                  <Segmented
                     className="w-full"
                     value={mode}
-                    onValueChange={(v) => v && setMode(v as "suggest" | "organizer")}
+                    onValueChange={(v) => setMode(v as "suggest" | "organizer")}
                   >
-                    <ToggleGroupItem value="suggest" className="flex-1">
-                      {c.optionSuggest}
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="organizer" className="flex-1">
-                      {c.optionOrganizer}
-                    </ToggleGroupItem>
-                  </ToggleGroup>
+                    <SegmentedItem value="suggest">{c.optionSuggest}</SegmentedItem>
+                    <SegmentedItem value="organizer">{c.optionOrganizer}</SegmentedItem>
+                  </Segmented>
                 )}
                 {claiming ? (
                   <>

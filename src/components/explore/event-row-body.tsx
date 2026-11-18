@@ -5,7 +5,7 @@ import { messagesFor } from "@/lib/i18n/messages";
 import { disciplineLabel } from "@/lib/i18n/taxonomy";
 import { UCI_CLASS_LABELS, type UciClass } from "@/lib/taxonomy";
 import { formatDistanceKm } from "@/lib/geo/distance";
-import { compactRaceDates } from "@/lib/i18n/dates";
+import { compactRaceDates, raceIsPast } from "@/lib/i18n/dates";
 import { disciplineColor } from "@/lib/map-visuals";
 import { ExplainedHint } from "@/components/explore/explained-badge";
 import { cn } from "@/lib/utils";
@@ -63,6 +63,9 @@ export function EventRowBody({
   const discLabel = event.disciplines.map((d) => disciplineLabel(d, locale)).filter(Boolean).join(", ");
   const distanceLabel = km != null ? formatDistanceKm(km, locale) : "";
   const dateLabel = compactRaceDates(event, locale);
+  // In an any-date list a race already ridden sits among the coming ones;
+  // greyed and said, it cannot be mistaken for one to plan.
+  const past = raceIsPast(event);
   const placeLabel = [event.location?.municipality || event.location?.name, event.location?.countryCode].filter(Boolean).join(" · ");
   // The UCI class is what a licensed rider looks for first: "C1", "1.2".
   const uciLabel = event.uciClass ? `UCI ${UCI_CLASS_LABELS[event.uciClass as UciClass] ?? event.uciClass.toUpperCase()}` : null;
@@ -73,10 +76,11 @@ export function EventRowBody({
     return (
       <>
         <span aria-hidden className="race-row-edge" style={{ background: disciplineColor(event.disciplines) }} />
-        <span className="race-row-body">
+        <span className={cn("race-row-body", past && "opacity-60")}>
           <span className="race-row-name" data-series-race={seriesRound ? event.slug : undefined}>{event.name}</span>
           <span className="race-row-meta" data-series-race={seriesRound ? event.slug : undefined}>
             <time dateTime={event.startDate} className="race-row-date">{dateLabel}</time>
+            {past ? <span className="race-row-place">{t.racePast}</span> : null}
             {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
             {tags}
             <span className="race-row-place" title={metadataLabel}>{metadataLabel}</span>
@@ -110,7 +114,7 @@ export function EventRowBody({
       />
       {/* Without this a flex child refuses to shrink below its content, and
           \`truncate\` on the rows inside does nothing but overflow. */}
-      <ItemContent className="min-w-0 gap-0.5 max-md:gap-0">
+      <ItemContent className={cn("min-w-0 gap-0.5 max-md:gap-0", past && "opacity-60")}>
         {/*
           One line, cut with an ellipsis. The list is rebuilt when the map
           settles on its real bounds, and cards that change height as their
@@ -126,6 +130,7 @@ export function EventRowBody({
         </ItemTitle>
         <span className="flex min-w-0 items-center gap-2 whitespace-nowrap text-xs leading-relaxed max-md:leading-snug">
           <time dateTime={event.startDate} className="shrink-0 font-medium tabular-nums">{dateLabel}</time>
+          {past ? <span className="shrink-0 text-muted-foreground">{t.racePast}</span> : null}
           {event.ageMatch === "possible" ? <UnconfirmedAges locale={locale} /> : null}
           <span className="truncate text-muted-foreground" title={metadataLabel}>{metadataLabel}</span>
           {distanceLabel ? (
