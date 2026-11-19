@@ -41,6 +41,12 @@ describe("Swiss Cycling calendar rows", () => {
     expect(parseSwissCycling(url, row("Strasse Test", "Strasse", "F E"))[0].ageCategories).toEqual(["elite"]);
   });
 
+  it("drops the canton code from the place so GE, BE, LU, FR and GR are not read as countries", () => {
+    const tr = (place: string) => '<table><tbody><tr id="id-9629"><td>27.08.2027</td><td><a href="?race=9629&y=2027">Tour Test</a></td><td>' + place + '</td><td>Strasse</td><td>National</td><td>U19 M</td></tr></tbody></table>';
+    expect(parseSwissCycling(url, tr("Carouge (GE) GE"))[0]).toMatchObject({ placeText: "Carouge, Switzerland", countryHint: "CH" });
+    expect(parseSwissCycling(url, tr("Bern BE"))[0].placeText).toBe("Bern, Switzerland");
+  });
+
   it("keeps running events out of cycling", () => {
     expect(parseSwissCycling(url, row("10. Laufenburger Stadtlauf", "Strasse"))).toEqual([]);
   });

@@ -24,10 +24,33 @@ async function main() {
   const { catalogueWindow } = await import("../src/lib/catalog/overview-quality");
   const { createServerSupabase } = await import("../src/lib/supabase/server");
   const db = createServerSupabase();
+  async function publish(event: import("../src/lib/domain").ParsedEvent, competition: import("../src/lib/catalog/uci-directory").UciDirectoryCompetition, why: string, reason = "Registered on the UCI calendar (UCI Competition Directory)") {
+    try {
+      const body = JSON.stringify(competition);
+      const saved = await saveCandidate(db, event, { sourceUrl: event.sourceUrl, documentHash: hash(body), textHash: hash(body), reason, country: event.countryHint });
+      if (saved.rejected) throw Error("already rejected");
+      const { data: candidate, error: candidateError } = await db.from("pipeline_candidates").select("*").eq("candidate_key", saved.candidate_key).eq("evidence_hash", saved.evidence_hash).single();
+      if (candidateError) throw candidateError;
+      const review = { id: candidate.id, evidenceHash: candidate.evidence_hash, action: "publish" as const, reason: why, expectedEventId: null, authority: "official" as const, checked: { identity: true, date: true, place: true, discipline: true, authority: true } };
+      await validateReviewSource(candidate, review, catalogueWindow().from);
+      const { data: claim, error: claimError } = await db.rpc("pipeline_claim_candidate", { p_id: candidate.id, p_hash: candidate.evidence_hash, p_updated: candidate.updated_at, p_decision: review as never, p_retry_resolved: false });
+      if (claimError) throw claimError;
+      const receipt = claim as { status?: string; token?: string } | null;
+      if (!receipt?.token || receipt.status !== "publishing") throw Error("not claimed");
+      await ingestReviewedCandidate(candidate, review, { id: candidate.id, evidenceHash: candidate.evidence_hash, token: receipt.token });
+      console.log("  published");
+    } catch (failure) { console.log(`  failed: ${(failure instanceof Error ? failure.message : String(failure)).slice(0, 200)}`); }
+  }
   for (const item of places) {
     const competition = await ucd.readUciDirectoryCompetition(item.uci);
     const event = ucd.uciDirectoryEvent(competition);
     if (!event) { console.log(`${item.uci}: not a race the catalogue carries`); continue; }
+    if (!item.place) {
+      // The directory's own venue is a town: publish it as it is.
+      console.log(`${event.startDate} ${event.name} | ${competition.venue}${apply ? "" : " dry"}`);
+      if (apply) await publish(event, competition, "The UCI registers this competition: its class, dates and venue.");
+      continue;
+    }
     const page = await fetchPage(item.sourceUrl, { fresh: true });
     const $ = load(page.html); $("script,style,noscript,template,[hidden],[aria-hidden=true]").remove();
     const visible = $.text().normalize("NFC").toLowerCase().replace(/\s+/g, " ");

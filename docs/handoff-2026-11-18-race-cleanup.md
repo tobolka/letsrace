@@ -192,3 +192,11 @@ Hotovo od předchozího stavu. Typy a všech 2039 testů prochází. Nic z toho 
 - Nezměněno: Märwil 8. 5., Gippingen 12. 6., Tamaro/Rivera 20.–21. 3., Gränichen 18.–19. 9., Tour de Suisse (muži a ženy), Tour du Léman, 3 jours de Genève, Bienne Crit, Serravalle, Mauren FL, Due Giorni del Mare, NoLimited Šamorín. Potřebují ověření na webech pořadatelů, ne odhad. Duplicity v katalogu u NoLimited Šamorín (dva záznamy téhož 7. kola) opravit slučovačem.
 - Osm nových UCI závodů: propozice na jejich webech a 219 „nečitelných" zdrojů zůstávají jak v původním předání.
 - Mac runtime: zkopírovat změněné soubory čteček, jinak se denní cyklus nezmění.
+
+### Doplnění 19. 11. 2026
+
+- Švýcarská čtečka odřezává kód kantonu z místa (`Carouge (GE) GE` je teď `Carouge, Switzerland`). Kódy GE, BE, LU, FR a GR se dřív četly jako stát a ingest závod odmítl jako mimoevropský. Díky tomu se zveřejnily 3 jours de Genève a Tour du Léman Juniors. Test je v `swiss-cycling-next-season.test.ts`.
+- Tour de Suisse mužů je zveřejněný z UCI (`tour-de-suisse-2027`), agregátorový záznam `tour-de-suisse-stage-1-2027` je do něj sloučený.
+- `harvest-uci-directory.ts`: skrytý dvojník neblokuje shodu s veřejným závodem, ženské a mužské závody se nespojují, UCI třída rozhoduje při shodě. `publish-uci-placed.ts` umí publikovat i bez doloženého místa.
+- Zbývá: Bienne Crit (federace uvádí Bern), Tamaro/Rivera, Gränichen, Märwil, Gippingen, Serravalle, Mauren FL, Prostějov, Due Giorni del Mare, UCI případy bez skutečného města a propozice u nových závodů. Mac runtime stále potřebuje nové soubory čteček.
+

@@ -129,7 +129,7 @@ async function main() {
           const whole = ours.length >= 6 && (theirName === ours || theirName.includes(ours) || ours.includes(theirName) && theirName.length >= 6) ? 3 : 0;
           // A shared name word counts; the place alone only on the very day.
           return { r, score: named || whole ? named * 2 + whole + placed + (exact ? 1 : 0) : placed && exact ? 1 : 0 };
-        }).filter((m) => m.score > 0).sort((a, b) => b.score - a.score);
+        }).filter((m) => isWomen(m.r.name) === isWomen(event.name)).map((m) => ({ ...m, score: m.score + (m.r.uci_class && event.uciClass && m.r.uci_class === event.uciClass ? 1 : 0) })).filter((m) => m.score > 0).sort((a, b) => b.score - a.score);
     const sameDay = rows.filter((r) => !r.merged_into_id && (r.location?.country_code ?? cc) === cc && r.start_date === start && eventDisciplineFamily(r.disciplines ?? []) === family
       && [...words(`${r.name} ${r.location?.municipality ?? ""}`)].some((w) => place.has(w)));
     reads.push({ competition, event, matches: scored, sameDay });
@@ -141,10 +141,14 @@ async function main() {
   for (const read of reads) {
     const { competition, event, matches, sameDay } = read;
     const cc = event.countryHint!, start = event.startDate;
-    const live = matches.filter((m) => !m.r.merged_into_id);
+    // A hidden twin of a public race is no rival: the public one is the race the UCI entry is about.
+    const unmerged = matches.filter((m) => !m.r.merged_into_id);
+    const live = unmerged.some((m) => m.r.visibility === "public") ? unmerged.filter((m) => m.r.visibility === "public") : unmerged;
     const best = live[0];
     const line = { uci: competition.id, name: event.name, date: start, class: competition.classCode, country: cc };
-    const rivals = best ? (claims.get(best.r.id) ?? []).filter((c) => c.read !== read) : [];
+    // Several UCI entries of one weekend (the men's, the women's, the juniors') may share one catalogue race: only a weak
+    // name match makes another entry a rival for it.
+    const rivals = best && best.score < 3 ? (claims.get(best.r.id) ?? []).filter((c) => c.read !== read) : [];
     const contested = best && best.score < 100 && (live.some((m) => m.score === best.score && m.r.id !== best.r.id) || rivals.some((c) => c.score >= best.score));
     if (contested) {
       stats.ambiguous++; report.push({ ...line, outcome: "ambiguous", candidates: [...new Set([...live.slice(0, 3).map((m) => m.r.slug), ...rivals.map((c) => c.read.event.name)])] });
@@ -166,6 +170,7 @@ async function main() {
     // The same name in the same discipline within a few days ("Czech Tour", whose words are all generic) is this race.
     const family = eventDisciplineFamily(event.discipline);
     const named = rows.filter((r) => !r.merged_into_id && eventDisciplineFamily(r.disciplines ?? []) === family && Math.abs(Date.parse(r.start_date) - Date.parse(start)) <= 3 * 86400000
+      && isWomen(r.name) === isWomen(event.name)
       && (normalized(r.name) === normalized(event.name) || (normalized(event.name).length >= 8 && normalized(r.name).includes(normalized(event.name)))));
     if (named.length) {
       stats.ambiguous++; report.push({ ...line, outcome: "possible-duplicate", candidates: named.map((r) => r.slug) });
@@ -290,6 +295,9 @@ function placeLike(raw: string, cc: string, towns: Map<string, Set<string>>): bo
   // Known towns pass; the checks above run first, because the places table holds a few "TBC"s itself.
   return towns.get(cc)?.has(text) || text.length >= 3;
 }
+
+/** The women's and the men's race of one town share a name but are two competitions. */
+const isWomen = (name: string) => /\b(women|woman|donne|donna|femmes?|frauen|feminin\w*|féminin\w*|damen|ladies|kobiety|ženy)\b/i.test(name);
 
 function canonicalSite(url: string) {
   return url.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "");

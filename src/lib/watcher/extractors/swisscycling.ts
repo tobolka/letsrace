@@ -99,7 +99,9 @@ export function parseSwissCycling(url: string, html: string): ParsedEvent[] {
     if (!dates) return;
     const name = $(cells[1]).text().replace(/\s+/g, " ").trim();
     if (!name || /achtung:|stadtlauf|crosslauf|laufrennen/i.test(name) || /talentsichtung|training|d[eé]tection|selezione dei talenti/i.test(name)) return;
-    const place = $(cells[2]).text().replace(/\s+/g, " ").trim() || "Switzerland";
+    // The federation ends the place with its canton: "Carouge (GE) GE", "Bern BE". Several cantons are also country codes
+    // (GE Georgia, BE Belgium, LU Luxembourg, FR France, GR Greece), and the reader took them for the country of the race.
+    const place = ($(cells[2]).text().replace(/\s+/g, " ").trim().replace(/\s*\([A-Z]{2}\)/g, "").replace(/\s+[A-Z]{2}$/, "").trim() || "Switzerland") + ", Switzerland";
     const discRaw = $(cells[3]).text() + " " + ($(cells[4]).text() || "");
 
     const href = $(cells[1]).find("a").attr("href");
