@@ -37,7 +37,8 @@
     "LLM_BUDGET_USD": "0",
     "LLM_CALENDAR_BUDGET_USD": "0",
     "LLM_CALENDARS": "0",
-    "RESEND_FROM": "Let's Race <zavody@letsrace.cz>"
+    "RESEND_FROM": "Let's Race <zavody@letsrace.cz>",
+    "NEXT_PUBLIC_DEPLOY_ENV": "production"
   },
   "triggers": {
     "crons": [
