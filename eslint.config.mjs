@@ -21,6 +21,8 @@ const eslintConfig = defineConfig([
     "scripts/.tmp/**",
     // Untracked scratch space for one-off investigations.
     "tmp/**",
+    // One-off analysis scripts kept with the reports they produced.
+    "reports/**",
   ]),
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx}"],
