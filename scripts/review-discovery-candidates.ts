@@ -4,7 +4,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { parse } from "dotenv";
 import { createServerSupabase } from "../src/lib/supabase/server";
 import { validateReview, type ReviewDecision } from "../src/lib/discovery/review";
-import { validateReviewSource } from "../src/lib/discovery/review-source";
+import { ReviewSourceChangedError, validateReviewSource } from "../src/lib/discovery/review-source";
 import { ingestReviewedCandidate } from "../src/lib/watcher/run";
 import { catalogueWindow } from "../src/lib/catalog/overview-quality";
 import type { Json } from "../src/lib/supabase/database.types";
@@ -79,6 +79,24 @@ async function main() {
     try {
       result = await ingestReviewedCandidate(reviewRow, decision, { id: row.id, evidenceHash: row.evidence_hash, token: receipt.token });
     } catch (error) {
+      if (error instanceof ReviewSourceChangedError) {
+        const now = new Date().toISOString();
+        const { data: requeued, error: requeueError } = await db.from("pipeline_candidates").update({
+          status: "waiting", publish_token: null, publish_lease_until: null, publish_error: error.message,
+          decision: {
+            previousPublication: decision,
+            followUp: { version: 1, attempts: 0, failures: 0, needsReview: true, nextCheckAt: now, documents: [] },
+          } as unknown as Json,
+          updated_at: now,
+        }).eq("id", row.id).eq("status", "publishing").eq("publish_token", receipt.token)
+          .eq("evidence_hash", row.evidence_hash).gt("publish_lease_until", now).select("id");
+        if (requeueError || requeued.length !== 1) {
+          throw Error(requeueError?.message ?? "Candidate changed during evidence requeue", { cause: error });
+        }
+        outcomes.push({ id: row.id, status: "review_required", error: error.message });
+        process.exitCode = 2;
+        continue;
+      }
       const retry = await db.rpc("pipeline_retry_candidate", { p_id: row.id, p_token: receipt.token, p_error: error instanceof Error ? error.message : "Publication interrupted" });
       if (retry.error) throw Error(`Recording publication retry: ${retry.error.message}`, { cause: error });
       // A lost response may follow a successful commit. Never clear that receipt.
@@ -86,7 +104,7 @@ async function main() {
     }
     outcomes.push({ id: row.id, status: "published", eventId: result.id, created: result.created });
     } catch (error) {
-      if (!resume) throw error;
+      if (!apply && !resume) throw error;
       outcomes.push({ id: decision.id, status: "deferred", error: error instanceof Error ? error.message : "Publication interrupted" });
       process.exitCode = 2;
     }

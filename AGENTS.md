@@ -32,6 +32,12 @@ A race is not done when it has a name, a date and a place. Whenever an agent add
 - If nothing is published yet, say so and leave the race to the daily readers; do not fill gaps with assumptions.
 - Details read from documents follow `docs/race-completion-system.md`.
 
+## Finish race discovery in the same run
+
+When the owner asks to find and publish races, check the full catalogue for duplicates, then publish each verified race in the same run. A credible source that explicitly gives the edition, date and venue can establish a calendar entry. Record the source and any uncertainty. Look for this edition's regulations and add the verified details immediately. If regulations or registration are still missing, link the organiser and put the source into the existing follow-up queue.
+
+Save unresolved discoveries in the shared review queue before ending a run. Include the race, source, missing fact and a next check through the existing follow-up. When recovering work from another chat, compare its findings with the current catalogue. Close the work with public links or a precise publication or verification blocker.
+
 ## Release notes: explain every change in human words
 
 Every change that goes live gets judged for the riders and parents who use Let's Race, and written up in `src/lib/release-notes.ts`, which the About page shows under "What's new". Newest day first, one entry per day.
@@ -58,8 +64,9 @@ The hosting plan allows 4 hours of function CPU a month, and every production de
 
 An AI agent looks for missing regulations and judges possible duplicates the readers could not settle. Its definition for Codex is `.codex/agents/race-finder.toml`; the design is in `docs/pipeline-v2.md`, part 7.
 
-- The agent works only through `scripts/agent-desk.cjs` (`status`, `next`, `answer`). It never writes to the catalogue, the database or project files.
+- The agent works only through `scripts/agent-desk.cjs` (`status`, `next`, `answer`, `discovery`). It never writes to the catalogue, the database or project files.
 - The desk allows 20 answers a day and checks each answer's shape. The Mac's cycle then fetches each quoted page again (`scripts/agent-verify.ts`); only an answer whose quote is found there goes on, as a proposal to the gate (`scripts/agent-apply.ts`, `pipeline_apply_proposal`).
+- The daily discovery batch accepts up to five public source URLs. The Mac reads them through the independent discovery queue, which hands verified source evidence to review.
 - A page with a robot check or a sign-in is never read, by any means.
 - A second agent, `.codex/agents/reader-repair.toml`, repairs one reader a run in a branch `agent/reader-<site>`. Nobody reviews it by hand: `scripts/reader-accept.cjs` merges the branch only if it touches readers, their tests and saved pages alone, deletes no test, and types and the whole suite pass on the merged result. Otherwise the branch stays unmerged with the reason.
 - The agent does not run in the Mac's cycle on the Claude subscription unless the owner sets `AGENT_IN_CYCLE=1`; the owner chose Codex for it on 2026-11-11.

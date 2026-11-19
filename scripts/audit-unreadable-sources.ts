@@ -11,7 +11,8 @@ import { hostnameOf, mapPool } from "../src/lib/watcher/pool";
 
 const out = process.argv.find(arg => arg.startsWith("--out="))?.slice(6);
 if (!out) throw Error("Use --out=FILE");
-const HELPER_PAGE = /vysledky|výsledky|ergebnis|result|kontakt|contact|galerie|galeri|foto|impressum|gdpr|cookies|sponzor|partner|galavec|vyhlaseni|\.pdf$/i;
+// Examine path segments: dsergebnis.de itself is a calendar, and a PDF may be regulations.
+const HELPER_PAGE = /(?:^|\/)(?:vysledky|výsledky|ergebnisse?|results?|kontakt|contact|galerie|galeria|fotogalerie|impressum|gdpr|cookies|datenschutz|obchodni-podminky|zpracovani-osobnich-udaju)(?:[-/]|$)/i;
 const FULL_DATE = /(?<!\d)\d{1,2}\.\s*\d{1,2}\.\s*(?:20)?2[67](?!\d)|(?<!\d)202[67]-\d{2}-\d{2}(?!\d)|(?<!\d)\d{1,2}\.?\s+[a-zà-ž]{3,12}\.?\s+202[67](?!\d)/giu;
 const SHORT_DATE = /(?<!\d)\d{1,2}\.\s*\d{1,2}\.(?!\s*\d)/g;
 
@@ -33,7 +34,7 @@ async function main() {
       if (page.status >= 400) return { ...base, verdict: `http_${page.status}` };
       const text = pageAsText(page.html, source.url).text;
       const full = text.match(FULL_DATE)?.length ?? 0, short = text.match(SHORT_DATE)?.length ?? 0;
-      const verdict = HELPER_PAGE.test(source.url) ? "helper_page" : text.length < 300 ? "needs_browser_or_empty" : full >= 3 ? "lists_dates" : short >= 4 ? "lists_dates_without_year" : full >= 1 ? "one_or_two_dates" : "no_dates";
+      const verdict = HELPER_PAGE.test(new URL(source.url).pathname) ? "helper_page" : text.length < 300 ? "needs_browser_or_empty" : full >= 3 ? "lists_dates" : short >= 4 ? "lists_dates_without_year" : full >= 1 ? "one_or_two_dates" : "no_dates";
       return { ...base, verdict, full, short, length: text.length };
     } catch (failure) { return { ...base, verdict: "failed", detail: failure instanceof Error ? failure.message.slice(0, 60) : "" }; }
   });

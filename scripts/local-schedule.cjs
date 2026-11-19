@@ -3,6 +3,27 @@
  * the pace: work left means carry on straight away, and otherwise wait for the next thing
  * that falls due. A cycle that achieved nothing must not spin, and a broken one backs off.
  */
+const fs = require('node:fs');
+const path = require('node:path');
+
+function fileTime(file) {
+  try { return fs.statSync(file).mtimeMs; } catch (error) {
+    if (error.code === 'ENOENT') return 0;
+    throw error;
+  }
+}
+
+function latestAgentAnswer(data) {
+  const directory = path.join(data, 'agent', 'answers');
+  let files;
+  try { files = fs.readdirSync(directory); } catch (error) {
+    if (error.code === 'ENOENT') return 0;
+    throw error;
+  }
+  return Math.max(0, ...files.filter(name => /^[a-z]+-[0-9a-f]{8}\.json$/.test(name))
+    .map(name => fileTime(path.join(directory, name))));
+}
+
 const MINUTE = 60_000, HOUR = 60 * MINUTE;
 const CARRY_ON_MS = 30_000;
 const SHORTEST_WAIT_MS = MINUTE;
@@ -35,4 +56,4 @@ function moreWorkLeft({ readAttempts = 0, dueAfter = 0, organiserRead = 0, organ
     || (organiserDeferred && (organiserRead > 0 || organiserPublished > 0));
 }
 
-module.exports = { nextRunAt, moreWorkLeft, cycleFailed, failureDelay, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS };
+module.exports = { fileTime, latestAgentAnswer, nextRunAt, moreWorkLeft, cycleFailed, failureDelay, CARRY_ON_MS, SHORTEST_WAIT_MS, LONGEST_WAIT_MS };

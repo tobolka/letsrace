@@ -8,7 +8,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { join } from "node:path";
 import { assessDuplicate, datesCompatible, type DedupEvent } from "../src/lib/dedup";
 import { isNonRaceEventName } from "../src/lib/event-visibility";
@@ -49,15 +49,18 @@ function main() {
   // A case that already has an answer is not asked again; --skip names the folder of answers.
   const skip = arg("skip"); const answered = (name: string) => Boolean(skip) && existsSync(join(skip!, `${name}.json`));
   // Pairs already judged, under either case name and in either order.
+  const earlier = skip ? join(skip, "earlier") : null;
+  const previouslyAsked = new Set(earlier && existsSync(earlier) ? readdirSync(earlier)
+    .flatMap(name => name.match(/(nextdate-[0-9a-f]{8})\.json$/)?.[1] ?? []) : []);
   const answeredPairs = new Set<string>(skip && existsSync(skip) ? readdirSync(skip).filter(name => /^(?:duplicate|pair)-[0-9a-f]{8}\.json$/.test(name)).flatMap(name => {
     try { const { a, b } = JSON.parse(readFileSync(join(skip, name), "utf8")).answer ?? {}; return a && b ? [pairKey(a, b)] : []; } catch { return []; }
   }) : []);
   const answeredAs = (name: string, verdict: string) => { try { return answered(name) && JSON.parse(readFileSync(join(skip!, `${name}.json`), "utf8")).answer?.verdict === verdict; } catch { return false; } };
 
-  // Regulations: the nearest races first, Czech and Slovak ones ahead of the rest.
+  // Regulations: nearest race first, Czech and Slovak races first on the same day.
   const wantRegulations = Number(arg("regulations") ?? 20);
   const missing = rows(`e.visibility='public' and e.merged_into_id is null and e.start_date between current_date+2 and current_date+60 and e.regulations_url is null and coalesce(e.status,'') not in ('cancelled','completed')
-    order by (l.country_code in ('CZ','SK')) desc, e.start_date, e.id limit ${wantRegulations * 6}`).filter(race => !answered(`regulations-${race.id.slice(0, 8)}`));
+    order by e.start_date, (l.country_code in ('CZ','SK')) desc, e.id limit ${wantRegulations * 6}`).filter(race => !answered(`regulations-${race.id.slice(0, 8)}`));
   // An entry that is, or reads like, a ride without a result is first asked "ride or race?"; regulations are looked for only for races.
   const rideLike = missing.filter(race => race.event_type === "ride" || looksLikeRide(race.name));
   // Two records of one race are one search: the answer is filed for every record in same_race_ids.
@@ -98,6 +101,48 @@ function main() {
   const short = (value: string) => createHash("md5").update(value).digest("hex").slice(0, 8);
   const plan = arg("plan") ? JSON.parse(readFileSync(arg("plan")!, "utf8")) as { newRaces: { held: { name: string; date: string; because: string[] }[] } } : null;
 
+  // Details are a separate lane and rotate with the other desk cases.
+  if (process.env.AGENT_DETAILS_FALLBACK === "1") {
+    const practical = sql<(Pick<Row, "id" | "name" | "start_date" | "end_date" | "municipality" | "regulations_url" | "website_url"> & { practical_details: Record<string, { value: unknown; sourceUrl: string }> })[]>(`
+      select coalesce(json_agg(t),'[]') from (
+        select e.id,e.name,e.start_date,e.end_date,l.municipality,e.regulations_url,e.website_url,e.practical_details
+        from public.events e left join public.locations l on l.id=e.location_id
+        where e.visibility='public' and e.merged_into_id is null and e.start_date between current_date and current_date+120
+          and coalesce(e.status,'') not in ('cancelled','completed') and e.event_type is distinct from 'ride'
+          and (e.regulations_url is not null or e.practical_details <> '{}')
+        order by e.start_date,e.id limit 800
+      ) t`);
+    const fields = ["venue","organizer","parking","schedule","fees","routes","categories"];
+    const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex").slice(0,16);
+    const gateFile = join(out,"..","..","details-gate.json");
+    const gate: Record<string,{at:string;fields:Record<string,{value:string;at?:string}>}> = existsSync(gateFile) ? JSON.parse(readFileSync(gateFile,"utf8")) : {};
+    let extracts = 0, checks = 0;
+    for (const row of practical) {
+      const race = { id:row.id,name:row.name,date:row.start_date,end_date:row.end_date,place:row.municipality };
+      const stored = row.practical_details ?? {};
+      if (extracts < 8 && row.regulations_url && fields.some(field=>!stored[field])) {
+        const urls = [...new Set([row.regulations_url,row.website_url].filter((url): url is string=>Boolean(url)))];
+        const name = `details-${short(JSON.stringify([race,urls]))}`;
+        if (!answered(name)) { cases.push({case:name,kind:"extract_details",race,urls}); extracts++; }
+      }
+      for (const field of fields) {
+        const fact = stored[field];
+        if (checks >= 8 || !fact?.sourceUrl) continue;
+        const storedHash = hash(fact.value ?? null);
+        const storedFactHash = hash(fact);
+        const previous = gate[row.id];
+        if (previous?.fields[field]?.value === storedHash && Date.now()-Date.parse(previous.fields[field]?.at ?? previous.at)<14*86400000) continue;
+        const name = `detailcheck-${short(JSON.stringify([race,field,storedFactHash, today.slice(0,7)]))}`;
+        if (!answered(name)) {
+          cases.push({case:name,kind:"verify_details",race,field,storedHash,storedFactHash,stored_value:fact.value,urls:[fact.sourceUrl]});
+          checks++;
+          break;
+        }
+      }
+      if (extracts >= 8 && checks >= 8) break;
+    }
+  }
+
   // Ride or race: new races the cycle held only because their source lists them as rides.
   let rides = 0; const wantRides = Number(arg("rides") ?? 10);
   for (const item of plan?.newRaces.held.filter(held => held.because.length === 1 && held.because[0] === "listed_as_a_ride") ?? []) {
@@ -113,15 +158,36 @@ function main() {
     const status = JSON.parse(readFileSync(join(archive, "edition-status.json"), "utf8")) as { summary: { season: number }; rows: { race: string; state: string }[] };
     const review = new Map((JSON.parse(readFileSync(join(archive, "race-review.json"), "utf8")) as { id: string; name: string; start_date: string; website_url: string | null; location?: { country_code?: string; municipality?: string }; checkedUrls?: string[] }[]).map(race => [race.id, race]));
     const reviewed = existsSync(join(archive, "reviewed-answers.json")) ? JSON.parse(readFileSync(join(archive, "reviewed-answers.json"), "utf8")) as Record<string, unknown> : {};
-    const waiting = status.rows.filter(row => ["waiting", "year_only"].includes(row.state) && !reviewed[row.race]).map(row => review.get(row.race)).filter((race): race is NonNullable<typeof race> => Boolean(race))
+    const waiting = status.rows.filter(row => (["waiting", "year_only"].includes(row.state) ||
+      row.state === "not_announced" && previouslyAsked.has("nextdate-" + row.race.slice(0, 8))) && !reviewed[row.race]).map(row => review.get(row.race)).filter((race): race is NonNullable<typeof race> => Boolean(race))
       .sort((a, b) => Number(["CZ", "SK"].includes(b.location?.country_code ?? "")) - Number(["CZ", "SK"].includes(a.location?.country_code ?? "")) || a.start_date.slice(5).localeCompare(b.start_date.slice(5)));
     // "ČP MTB XCM - Malevil cup" and "ČP MTB XCM — Malevil Cup" on one day are one search, not two.
     const searches = groupSameRace(waiting.filter(race => !isNonRaceEventName(race.name) && !looksLikeRide(race.name)).map(race => ({ case: `nextdate-${race.id.slice(0, 8)}`, kind: "find_next_date", wanted_year: status.summary.season,
       race: { id: race.id, name: race.name, last_date: race.start_date, place: race.location?.municipality ?? null, country: race.location?.country_code ?? null, website: race.website_url, pages_we_read: (race.checkedUrls ?? []).slice(0, 5) } as { id: string; name: string; last_date: string; pages_we_read: string[]; same_race_ids?: string[] } & Record<string, unknown> })));
+    // A shared series site gets one reading context, but each round keeps its own evidence and answer.
+    const byWebsite = new Map<string, typeof searches>();
     for (const search of searches) {
+      let website: URL;
+      try { website = new URL(String(search.race.website)); } catch { continue; }
+      if (!/^https?:$/.test(website.protocol)) continue;
+      website.hash = "";
+      const key = website.href.replace(/\/$/, "");
+      const group = byWebsite.get(key) ?? [];
+      group.push(search);
+      byWebsite.set(key, group);
+    }
+    const peers = new Map(searches.map(search => [search.case, [search]]));
+    for (const group of byWebsite.values()) for (const search of group) peers.set(search.case, group);
+    const queued = new Set<string>();
+    for (const search of searches.flatMap(item => peers.get(item.case) ?? [item])) {
       if (editions >= wantEditions) break;
+      if (queued.has(search.case)) continue;
+      queued.add(search.case);
       if ([search.race.id, ...(search.race.same_race_ids ?? [])].some(id => answered(`nextdate-${id.slice(0, 8)}`))) continue;
-      cases.push(search); editions++;
+      const relatedRaces = (peers.get(search.case) ?? []).filter(peer => peer !== search)
+        .slice(0, 12).map(peer => ({ name: peer.race.name, last_date: peer.race.last_date, place: peer.race.place }));
+      cases.push({ ...search, ...(relatedRaces.length ? { relatedRaces } : {}) });
+      editions++;
     }
   }
 
@@ -160,14 +226,25 @@ function main() {
     }
   }
 
-  for (const item of cases as { case: string }[]) writeFileSync(join(out, `${item.case}.json`), JSON.stringify(item, null, 1));
+  const previousIndex = existsSync(join(out, "index.json"))
+    ? new Set((JSON.parse(readFileSync(join(out, "index.json"), "utf8")) as { case: string }[]).map(row => row.case))
+    : new Set<string>();
+  for (const item of cases as { case: string }[]) {
+    const file = join(out, `${item.case}.json`);
+    const previous = previousIndex.has(item.case) && existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null;
+    const queuedAt = previous?.queuedAt ?? new Date().toISOString();
+    writeFileSync(file + ".tmp", JSON.stringify({ ...item, queuedAt }, null, 1));
+    renameSync(file + ".tmp", file);
+  }
   // Two regulations to one pair, so neither kind waits behind the whole of the other.
   // Round the kinds in turn, so none waits behind the whole of another.
   const all = cases as { case: string; kind: string }[], order: typeof all = [];
-  const lanes = ["regulations", "nextdate", "duplicate", "ride", "regulations", "nextdate", "pair", "calendar"].map(prefix => ({ prefix }));
+  const lanes = ["regulations", "nextdate", "duplicate", "ride", "regulations", "nextdate", "pair", "calendar", "details", "detailcheck"].map(prefix => ({ prefix }));
   const byPrefix = new Map<string, typeof all>(); for (const item of all) { const prefix = item.case.split("-")[0]!; byPrefix.set(prefix, [...(byPrefix.get(prefix) ?? []), item]); }
+  for (const prefix of byPrefix.keys()) if (!lanes.some(lane => lane.prefix === prefix)) lanes.push({ prefix });
   while ([...byPrefix.values()].some(list => list.length)) for (const lane of lanes) { const next = byPrefix.get(lane.prefix)?.shift(); if (next) order.push(next); }
-  writeFileSync(join(out, "index.json"), JSON.stringify(order.map(item => ({ case: item.case, kind: item.kind })), null, 1));
+  writeFileSync(join(out, "index.json.tmp"), JSON.stringify(order.map(item => ({ case: item.case, kind: item.kind })), null, 1));
+  renameSync(join(out, "index.json.tmp"), join(out, "index.json"));
   const count: Record<string, number> = {}; for (const item of order) count[item.kind] = (count[item.kind] ?? 0) + 1;
   console.log(JSON.stringify({ out, cases: order.length, ...count }));
 }

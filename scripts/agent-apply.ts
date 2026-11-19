@@ -12,7 +12,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, renameSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parse } from "dotenv";
 import { distinctiveWords, documentIsAboutRace } from "../src/lib/catalog/race-completeness";
@@ -27,16 +27,23 @@ const samePage = (a: string | null, b: string | null) => { try { const norm = (u
 async function main() {
   const answers = arg("answers"); if (!answers) throw Error("--answers=<dir> is needed");
   const apply = process.argv.includes("--apply");
-  const verified = JSON.parse(readFileSync(join(answers, "verified.json"), "utf8")) as { case: string; kind: string; verdict: string; verified: boolean | null; verifiedRaces?: number[]; checks?: { url: string; quoteFound: boolean }[] }[];
+  const verified = JSON.parse(readFileSync(join(answers, "verified.json"), "utf8")) as { case: string; kind: string; verdict: string; verified: boolean | null; answerAt?: string; verifiedRaces?: number[]; checks?: { url: string; quoteFound: boolean }[] }[];
   const doneFile = join(answers, "applied.json");
   const done: Record<string, { at: string; outcome: string; reason?: string | null; key?: string }> = existsSync(doneFile) ? JSON.parse(readFileSync(doneFile, "utf8")) : {};
-  const todo = verified.filter(row => row.kind === "find_regulations" && row.verdict === "found" && row.verified === true && !done[row.case]);
+  const needsHandoff = (row: typeof verified[number]) => {
+    if (done[row.case] && (!row.answerAt || done[row.case]!.at >= row.answerAt)) return false;
+    const file = join(answers, row.case + ".json");
+    if (!existsSync(file)) return false;
+    return !row.answerAt || JSON.parse(readFileSync(file, "utf8")).at === row.answerAt;
+  };
+  const todo = verified.filter(row => row.kind === "find_regulations" && row.verdict === "found" && row.verified === true && needsHandoff(row));
   // Doubles inside the catalogue, and races a calendar lists that we do not hold.
-  const pairs = verified.filter(row => row.case.startsWith("pair-") && row.verified === true && ["same", "different"].includes(row.verdict) && !done[row.case]);
-  const calendars = verified.filter(row => row.kind === "find_races" && row.verified === true && !done[row.case]);
+  const pairs = verified.filter(row => row.case.startsWith("pair-") && row.verified === true && ["same", "different"].includes(row.verdict) && needsHandoff(row));
+  const calendars = verified.filter(row => row.kind === "find_races" && row.verified === true && needsHandoff(row));
   const totals: Record<string, number> = {};
   const note = (name: string, outcome: string, reason?: string | null, key?: string) => { totals[outcome] = (totals[outcome] ?? 0) + 1; if (apply) done[name] = { at: new Date().toISOString(), outcome, reason, key }; console.log(`${outcome}${reason ? ` (${reason})` : ""}: ${name}`); };
   if (todo.length) {
+    const priorities: Record<string, number> = { applied: 4, held: 3, rejected: 2, skipped: 1 };
     for (const [key, value] of Object.entries(parse(readFileSync(resolve(__dirname, "..", ".env.local"), "utf8")))) process.env[key] ??= value;
     const { createServerSupabase } = await import("../src/lib/supabase/server");
     const db = createServerSupabase();
@@ -45,13 +52,17 @@ async function main() {
     for (const row of todo) {
       const answer = JSON.parse(readFileSync(join(answers, `${row.case}.json`), "utf8")).answer as { race: string; same_race_ids?: string[]; url: string; quote: string };
       // One search for several records of one race (agent-cases groups them): each record gets the same proposal.
+      let best: { outcome: string; reason?: string | null; key?: string } | undefined;
+      const consider = (outcome: string, reason?: string | null, key?: string) => {
+        if (!best || (priorities[outcome] ?? 2) > (priorities[best.outcome] ?? 2)) best = { outcome, reason, key };
+      };
       for (const raceId of [answer.race, ...(answer.same_race_ids ?? [])]) {
       const { data: race, error } = await db.from("events").select("id,name,start_date,website_url,regulations_url,location:locations(municipality)").eq("id", raceId).maybeSingle();
       if (error) throw Error(error.message);
       // A race the Mac knows and the server does not is not ours to fill yet.
-      if (!race) { note(row.case, "skipped", "race_not_on_server"); continue; }
-      if (race.regulations_url) { note(row.case, "skipped", "field_filled"); continue; }
-      if (samePage(answer.url, race.website_url)) { note(row.case, "skipped", "same_as_website"); continue; }
+      if (!race) { consider("skipped", "race_not_on_server"); continue; }
+      if (race.regulations_url) { consider("skipped", "field_filled"); continue; }
+      if (samePage(answer.url, race.website_url)) { consider("skipped", "same_as_website"); continue; }
       const text = (await readDocument(answer.url, { maxBytes: 8 * 1024 * 1024 }).catch(() => null))?.text ?? "";
       const location = race.location as { municipality?: string | null } | { municipality?: string | null }[] | null;
       const municipality = (Array.isArray(location) ? location[0]?.municipality : location?.municipality) ?? null;
@@ -64,15 +75,16 @@ async function main() {
       const [year, month, day] = race.start_date.split("-").map(Number);
       const inList = new RegExp(`(?<![\\d.])0?${day}\\.\\s*0?${month}\\.(?!\\d)`).test(answer.quote) && answer.quote.includes(String(year));
       const byQuote = (quoteStatesDate(answer.quote, race.start_date) || inList) && text.includes(race.start_date.slice(0, 4)) && named.some(word => page.includes(word));
-      if (!documentIsAboutRace(text, { name: race.name, start_date: race.start_date, municipality }) && !byQuote) { note(row.case, "held", "not_clearly_this_race"); continue; }
-      if (!apply) { note(row.case, "would_propose"); continue; }
+      if (!documentIsAboutRace(text, { name: race.name, start_date: race.start_date, municipality }) && !byQuote) { consider("held", "not_clearly_this_race"); continue; }
+      if (!apply) { consider("would_propose"); continue; }
       const submitted = await call("pipeline_submit_proposal", { p_event: race.id, p_field: "regulations_url", p_value: answer.url, p_source: answer.url, p_quote: answer.quote, p_reader: AGENT_READER, p_version: AGENT_VERSION, p_task: `agent:${row.case}` });
       if (submitted.error) throw Error(submitted.error.message);
       const decided = await call("pipeline_apply_proposal", { p_key: submitted.data as string });
       if (decided.error) throw Error(decided.error.message);
       const decision = decided.data as { status: string; reason: string | null };
-      note(row.case, decision.status, decision.reason, submitted.data as string);
+      consider(decision.status, decision.reason, submitted.data as string);
       }
+      if (best) note(row.case, best.outcome, best.reason, best.key);
     }
   }
   if (pairs.length || calendars.length) {
@@ -149,7 +161,11 @@ async function main() {
     }
     for (const row of calendars) { const { saved, published } = tally.get(row.case)!; note(row.case, apply ? "candidates_saved" : "would_save_candidates", `${saved} saved, ${published} published`); }
   }
-  if (apply) writeFileSync(doneFile, JSON.stringify(done, null, 1));
+  if (apply) {
+    const temporary = doneFile + "." + process.pid + ".tmp";
+    writeFileSync(temporary, JSON.stringify(done, null, 1));
+    renameSync(temporary, doneFile);
+  }
   console.log("agent_apply " + JSON.stringify({ apply, considered: todo.length + pairs.length + calendars.length, ...totals }));
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

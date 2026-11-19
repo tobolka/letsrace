@@ -67,3 +67,13 @@ child.once('exit',code=>{clearTimeout(timer);assert.equal(code,0);assert.ok(outp
  assert.deepEqual(again.steps,['radNetNew','radNet']);assert.equal(again.since,shut.since);
  console.log('PASS: failures back off 1 h to 7 days and stop after five; waiting, sleep and a shut website do not count');
 }
+
+{
+ const {aiBudgetWait}=require('./local-cycle.cjs');
+ const now=new Date('2026-11-17T21:10:00Z');
+ assert.deepEqual(aiBudgetWait({months:{'2026-11':4.99}},now,{}),
+  {period:'month',at:Date.parse('2026-11-30T23:00:00Z')});
+ assert.deepEqual(aiBudgetWait({days:{'2026-11-17':0.49}},now,{}),
+  {period:'day',at:Date.parse('2026-11-17T23:00:00Z')});
+ assert.equal(aiBudgetWait({},now,{}),null);
+}

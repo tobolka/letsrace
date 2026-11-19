@@ -2,8 +2,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
+const { submissionPath } = require('./agent-discovery.cjs');
 const { spawn, execFileSync } = require('node:child_process');
-const { nextRunAt, cycleFailed } = require('./local-schedule.cjs');
+const { nextRunAt, cycleFailed, fileTime, latestAgentAnswer } = require('./local-schedule.cjs');
 
 function atomic(file, value) { const temp = `${file}.${process.pid}.tmp`; fs.writeFileSync(temp, JSON.stringify(value, null, 2), { mode: 0o600 }); fs.renameSync(temp, file); }
 function json(file, fallback = {}) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; } }
@@ -19,7 +20,7 @@ function health({ active, paused, lastOutputAt, now, lastExitCode, deferredOnly=
  return lastExitCode != null && lastExitCode !== 0 && !(lastExitCode === 2 && deferredOnly) ? 'attention' : 'waiting';
 }
 function rememberResult(state, result) {
- state.history=[...(state.history||[]),result].filter(r=>r.at>Date.now()-24*60*60_000).slice(-100);
+ state.history=[...(state.history||[]),result].filter(r=>r.at>Date.now()-24*60*60_000);
  if(result.reads||result.created||result.updated||result.queued||result.failed||result.deferred)state.lastActivityResult=result;
  state.lastResult=result;
 }
@@ -105,7 +106,7 @@ function main() {
  if(previous.childPid && previous.activeTask==='federation')previous.pendingTasks=[...new Set([...(previous.pendingTasks||[]),'federation'])];
  let state={...previous,childPid:null,stage:null,serverRequestRunning:false,interrupted:previous.childPid!=null};
  let child=null, logStream=null, buffer='', stopping=false, system=systemSample(), lastSystem=Date.now(), server=json(path.join(data,'server-status.json'),null), serverChecking=false, serverChecked=0;
- let reportedPause;
+ let reportedPause, serverRetryAt=0;
  // A managed cycle says when it has work again; only a custom test command keeps a fixed pace.
  const interval=Number(process.env.LETSRACE_INTERVAL_MS || 60*60_000);
  const scheduleAfter=(code,cycle)=>{
@@ -126,6 +127,7 @@ function main() {
  async function checkServer() {
   if(process.env.LETSRACE_NO_SERVER_CHECK === "1" || serverChecking)return;
   const paused=json(controlFile).paused===true, now=Date.now();
+  if(now<serverRetryAt)return;
   // Keep the paused heartbeat within the panel's 15-minute freshness window.
   if(paused===reportedPause && now-serverChecked<(paused?10:5)*60_000)return;
   serverChecking=true;serverChecked=now;reportedPause=paused;
@@ -137,6 +139,11 @@ function main() {
     const lastResult=last?Object.fromEntries(['at','reads','created','updated','failed','deferred','unreadable'].filter(key=>typeof last[key]==='number').map(key=>[key,last[key]])):null;
     const response=await fetch('https://letsrace.cz/api/ops/pipeline-status',{method:'POST',headers:{Authorization:`Bearer ${env.CRON_SECRET}`,'Content-Type':'application/json'},
      body:JSON.stringify({status:health({active:!!child,paused,lastOutputAt:state.lastOutputAt||now,now,lastExitCode:state.lastExitCode,deferredOnly:state.deferredOnly}),paused,nextRunAt:state.nextRunAt||null,lastResult}),signal:AbortSignal.timeout(15000)});
+    if(response.status===429){
+     const retryAfter=response.headers.get('retry-after');
+     const delay=retryAfter&&/^\d+$/.test(retryAfter)?Number(retryAfter)*1000:Date.parse(retryAfter??'')-now;
+     serverRetryAt=now+Math.max(15*60_000,Number.isFinite(delay)?delay:0);
+    }
     if(!response.ok)throw Error(`Stav serveru není dostupný (HTTP ${response.status})`);
     if(!response.headers.get('content-type')?.includes('application/json'))throw Error('Přehled serveru zatím není dostupný');
     server={...(await response.json()),checkedAt:new Date().toISOString(),error:null};
@@ -173,7 +180,7 @@ function main() {
    lastFinishedAt:state.lastFinishedAt||null,lastExitCode:state.lastExitCode??null,nextRunAt:state.nextRunAt,
    pipelineMode:"local-new-races",editionCoverage:json(path.join(data,'edition-coverage.json'),null),cycleResult:state.cycleResult||null,server,serverRequestRunning:state.serverRequestRunning===true,serverRequestError:state.serverRequestError||null,estimates:state.durations||{},catalogueAt:overview?.at||null,lastResult:normalizeResult(state.lastResult)||null,lastActivityResult:normalizeResult(state.lastActivityResult)||null,recent:recentResults(state.history),logPath:state.logPath||null,lastError:state.lastError||null,counters:state.counters||{},browser,totals,
    ai:{lastRunAt:state.lastAiFinishedAt||null,month,spentUsd:ledger.months?.[month]??0,monthCapUsd:5,dayCapUsd:0.5,schedule:'Mac · úterý a pátek'},
-   system,countries:['CZ','SK','DE','AT','CH','IT','PL'],interrupted:state.interrupted===true});
+   paidDetailsEnabled:process.env.LETSRACE_PAID_DETAILS==='1',system,countries:['CZ','SK','DE','AT','CH','IT','PL'],interrupted:state.interrupted===true});
  }
  function start(task="refresh") {
   if(child||stopping)return;
@@ -227,6 +234,22 @@ function main() {
   if(!child&&control.paused!==true){
    if(state.pendingTasks?.length){const task=state.pendingTasks.shift();save();start(task);}
    else if(Date.now()>=state.nextRunAt)start();
+   else if(!process.env.LETSRACE_RUN_COMMAND){
+    const cycleState=json(path.join(data,'local-cycle-state.json'));
+    const retry=Date.parse(cycleState.stepHolds?.agent?.nextTryAt??'');
+    const answer=latestAgentAnswer(data);
+    const day=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const discovery=cycleState.discoveryAgentDay===day?0:fileTime(submissionPath(data,day));
+    const discoveryRetry=Date.parse(cycleState.stepHolds?.discovery?.nextTryAt??'');
+    const newAnswer=!(retry>Date.now())&&answer>Math.max(cycleState.agentAnswerSeenMs??0,state.agentWakeMs??0);
+    const newWebsites=!(discoveryRetry>Date.now())&&discovery>(state.discoveryWakeMs??0);
+    // Wake once per new inbox input. Time-based retries still govern failed cycles.
+    if(newAnswer||newWebsites){
+     if(newAnswer)state.agentWakeMs=answer;
+     if(newWebsites)state.discoveryWakeMs=discovery;
+     start();
+    }
+   }
   }
   snapshot();void checkServer();
  }

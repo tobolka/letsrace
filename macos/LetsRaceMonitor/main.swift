@@ -3,8 +3,24 @@ import AppKit
 import Foundation
 import os
 
+struct CollectionHealth: Decodable {
+    struct Sources: Decodable { let active: Int; let due: Int; let late24h: Int; let neverRead: Int; let unreadable: Int }
+    struct Nearby: Decodable { let total: Int; let missingRegulations: Int; let pausedSourcesOnly: Int }
+    let at: String; let sources: Sources; let nearby: Nearby
+}
+
+struct RaceFinderHealth: Decodable {
+    struct Discovery: Decodable { let waiting: Int; let blocked: Int; let published: Int }
+    struct DiscoverySources: Decodable { let submitted: Int; let read: Int }
+    let at: String
+    let due: Int; let ready: Int?; let planned: Int; let late: Int
+    let waiting: Int; let inCatalogue: Int; let blocked: Int
+    let localDetails: Int; let confirmedDetails: Int
+    let reasons: [String: Int]; let discovery: Discovery?; let discoverySources: DiscoverySources?
+}
+
 struct MonitorSnapshot: Decodable {
-    struct Cycle: Decodable { let state: String; let heldRaces: Int; let sourceFailures: Int; let unreadableSources: Int?; let seconds: Int?; let aiCostUsd: Double? }
+    struct Cycle: Decodable { let state: String; let heldRaces: Int; let sourceFailures: Int; let unreadableSources: Int?; let seconds: Int?; let aiCostUsd: Double?; let collectionHealth: CollectionHealth? }
     struct AI: Decodable { let lastRunAt: Double?; let month: String; let spentUsd: Double; let monthCapUsd: Double; let dayCapUsd: Double; let schedule: String }
     struct Counters: Decodable { let reads: Int?; let created: Int?; let updated: Int?; let failed: Int?; let leads: Int?; let queued: Int? }
     struct Problem: Decodable { let url: String?; let error: String? }
@@ -26,7 +42,8 @@ struct MonitorSnapshot: Decodable {
         let cpuPercent: Int?; let memoryFreePercent: Int?; let processes: [RunningProcess]
     }
     let at: String; let pid: Int; let root: String; let data: String
-    struct EditionCoverage: Decodable { let season: Int?; let races: Int; let withEdition: Int }
+    struct EditionCoverage: Decodable { let at: String?; let season: Int?; let races: Int; let withEdition: Int }
+    let paidDetailsEnabled: Bool?
     let pipelineMode: String?; let cycleResult: Cycle?; let editionCoverage: EditionCoverage?
     let status: String; let paused: Bool; let childPid: Int?
     let stage: String?; let startedAt: Double?; let lastOutputAt: Double?
@@ -96,7 +113,7 @@ struct MonitorOverview: Codable {
             state = State(title: "Sběr na Macu je pozastavený", detail: snapshot.childPid != nil ? "Probíhající kontrola se dokončí. Pauza platí pouze pro Mac." : "Pauza platí pouze pro Mac. Serverové kontroly tím nejsou pozastavené.", tone: "muted")
         } else if snapshot.status == "quiet" {
             state = State(title: "Sběr se dlouho neozval", detail: "Probíhající kontrola dlouho neposlala nový výsledek. Poslední dostupný průběh je v podrobnostech.", tone: "warning")
-        } else if !serverFresh {
+        } else if !serverFresh && snapshot.pipelineMode != "local-new-races" {
             state = State(title: "Stav serveru nelze ověřit", detail: "Mac se hlásí. Dostupnost serverové části teď není potvrzená.", tone: "warning")
         } else if snapshot.pipelineMode == "local-new-races" {
             if snapshot.status == "attention" {
@@ -108,7 +125,7 @@ struct MonitorOverview: Codable {
             } else if (snapshot.cycleResult?.sourceFailures ?? 0) > 0 || (snapshot.cycleResult?.unreadableSources ?? 0) > 0 {
                 state = State(title: "Průchod doběhl s omezením", detail: "Některé zdroje se nepodařilo přečíst. Nové závody a čekající nálezy jsou uvedené zvlášť.", tone: "warning")
             } else {
-                state = State(title: "Další kontrola je naplánovaná", detail: "Na Macu pracuji průběžně: je-li co dělat, navazuji hned, jinak čekám na další splatnou práci. Mac musí být zapnutý a přihlášený; po návratu navážu.", tone: "good")
+                state = State(title: "Čekám na další kontrolu", detail: "Mac sbírá závody průběžně, když je vzhůru a jsi přihlášený.", tone: "good")
             }
         } else if server?.brokenSources == nil || server?.unreadableSources == nil || server?.reviewCandidates == nil {
             state = State(title: "Přehled sběru není úplný", detail: "Server odpovídá, ale část stavu není potvrzená. Chybějící počty se nepovažují za nulu.", tone: "warning")
@@ -150,6 +167,8 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var contentStack: NSStackView?
     private enum Panel { case overview, workstreams, technical }
     private var panel: Panel = .overview
+    private var collectionHealth: CollectionHealth?
+    private var raceFinderHealth: RaceFinderHealth?
     private let previewSnapshotURL: URL?
     init(snapshotURL: URL? = nil) { previewSnapshotURL = snapshotURL; super.init() }
     private var overview: MonitorOverview { MonitorOverview(snapshot: snapshot) }
@@ -196,6 +215,15 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             snapshot = try JSONDecoder().decode(MonitorSnapshot.self, from: Data(contentsOf: previewSnapshotURL ?? dataURL.appendingPathComponent("monitor.json")))
             snapshotError = nil
         } catch { snapshot = nil; snapshotError = "Stav zatím není dostupný." }
+        collectionHealth = snapshot?.cycleResult?.collectionHealth
+        if collectionHealth == nil, previewSnapshotURL == nil,
+           let data = try? Data(contentsOf: dataURL.appendingPathComponent("collection-health.json")) {
+            collectionHealth = try? JSONDecoder().decode(CollectionHealth.self, from: data)
+        }
+        let agentHealthURL = (previewSnapshotURL?.deletingLastPathComponent() ?? dataURL)
+            .appendingPathComponent("agent-health.json")
+        raceFinderHealth = (try? Data(contentsOf: agentHealthURL))
+            .flatMap { try? JSONDecoder().decode(RaceFinderHealth.self, from: $0) }
         if let button = item?.button {
             let image = NSImage(systemSymbolName: "bicycle", accessibilityDescription: headline)
             image?.isTemplate = true
@@ -302,61 +330,181 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func openOverviewPanel() { panel = .overview; renderPanel() }
     private func renderOverviewPanel() {
         guard let view = popover.contentViewController?.view else { return }
+        let oldScroll = view.subviews.first as? NSScrollView
+        let fromTop = oldScroll.map { max(0, ($0.documentView?.frame.height ?? 0) - $0.documentVisibleRect.maxY) } ?? 0
         view.subviews.forEach { $0.removeFromSuperview() }
-        view.wantsLayer = true; view.layer?.backgroundColor = NSColor.white.cgColor
-        let scroll = NSScrollView(); scroll.translatesAutoresizingMaskIntoConstraints = false
-        scroll.drawsBackground = false; scroll.hasVerticalScroller = true; scroll.autohidesScrollers = true
+        view.wantsLayer = true
+        view.layer?.backgroundColor = NSColor(srgbRed: 0.97, green: 0.97, blue: 0.95, alpha: 1).cgColor
+
+        let width: CGFloat = 400
+        let scroll = NSScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.drawsBackground = false
+        scroll.hasVerticalScroller = true
+        scroll.autohidesScrollers = true
         view.addSubview(scroll)
-        NSLayoutConstraint.activate([scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor), scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor), scroll.topAnchor.constraint(equalTo: view.topAnchor), scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
-        let document = NSView(frame: NSRect(x: 0, y: 0, width: 378, height: 500)); scroll.documentView = document
-        let stack = NSStackView(); stack.orientation = .vertical; stack.alignment = .leading; stack.spacing = 22
-        stack.translatesAutoresizingMaskIntoConstraints = false; document.addSubview(stack)
-        NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 22), stack.widthAnchor.constraint(equalToConstant: 334), stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 22)])
+        NSLayoutConstraint.activate([
+            scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: view.topAnchor),
+            scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        let document = NSView(frame: NSRect(x: 0, y: 0, width: width, height: 600))
+        scroll.documentView = document
+        let stack = NSStackView()
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 13
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        document.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 20),
+            stack.widthAnchor.constraint(equalToConstant: width - 40),
+            stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 17)
+        ])
+
         func add(_ text: String, size: CGFloat, bold: Bool = false, color: NSColor = .labelColor, to parent: NSStackView) {
-            let field = label(text, size: size, bold: bold, color: color); field.maximumNumberOfLines = 0
-            parent.addArrangedSubview(field); field.widthAnchor.constraint(equalTo: parent.widthAnchor).isActive = true
+            let field = label(text, size: size, bold: bold, color: color)
+            field.maximumNumberOfLines = 0
+            parent.addArrangedSubview(field)
+            field.widthAnchor.constraint(equalTo: parent.widthAnchor).isActive = true
         }
         func section() -> NSStackView {
-            let result = NSStackView(); result.orientation = .vertical; result.alignment = .leading; result.spacing = 7
-            stack.addArrangedSubview(result); result.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
-            return result
+            let inset: CGFloat = 13
+            let background = NSView()
+            background.wantsLayer = true
+            background.layer?.cornerRadius = 12
+            background.layer?.backgroundColor = NSColor.white.cgColor
+            background.layer?.borderWidth = 1
+            background.layer?.borderColor = NSColor.black.withAlphaComponent(0.08).cgColor
+            stack.addArrangedSubview(background)
+            let content = NSStackView()
+            content.orientation = .vertical
+            content.alignment = .leading
+            content.spacing = 6
+            content.translatesAutoresizingMaskIntoConstraints = false
+            background.addSubview(content)
+            NSLayoutConstraint.activate([
+                background.widthAnchor.constraint(equalTo: stack.widthAnchor),
+                content.leadingAnchor.constraint(equalTo: background.leadingAnchor, constant: inset),
+                content.trailingAnchor.constraint(equalTo: background.trailingAnchor, constant: -inset),
+                content.topAnchor.constraint(equalTo: background.topAnchor, constant: 10),
+                content.bottomAnchor.constraint(equalTo: background.bottomAnchor, constant: -10)
+            ])
+            return content
         }
-        add("LetsRace", size: 16, bold: true, to: stack)
+        func metric(_ value: Int?, _ title: String, color: NSColor = .labelColor) -> NSStackView {
+            let number = label(value.map(String.init) ?? "—", size: 24, bold: true, color: color)
+            number.font = .monospacedDigitSystemFont(ofSize: 24, weight: .semibold)
+            let caption = label(title, size: 11, color: .secondaryLabelColor)
+            let column = NSStackView(views: [number, caption])
+            column.orientation = .vertical
+            column.alignment = .leading
+            column.spacing = 1
+            return column
+        }
+        func row(_ metrics: [NSView], in parent: NSStackView) {
+            let line = NSStackView(views: metrics)
+            line.distribution = .fillEqually
+            line.spacing = 7
+            parent.addArrangedSubview(line)
+            line.widthAnchor.constraint(equalTo: parent.widthAnchor).isActive = true
+        }
         let summary = overview
+        let green = NSColor(srgbRed: 0.14, green: 0.37, blue: 0.25, alpha: 1)
+        let secondary = NSColor.secondaryLabelColor
+        add("LetsRace  /  Sběr závodů", size: 12, bold: true, color: secondary, to: stack)
         let status = section()
-        add(summary.state.title, size: 21, bold: true, color: stateColor, to: status)
-        add(summary.state.detail, size: 12, color: .secondaryLabelColor, to: status)
-        let result = section()
-        add("Poslední dokončená kontrola", size: 11, color: .secondaryLabelColor, to: result)
-        if let last = summary.lastRun {
-            add(time(last.at), size: 12, bold: true, to: result)
-            add("Nové položky v katalogu: \(last.created)\nUložené změny: \(last.updated)", size: 13, to: result)
-            if let seconds = snapshot?.cycleResult?.seconds {
-                add("Doba průchodu: \(seconds / 60) min \(seconds % 60) s", size: 12, color: .secondaryLabelColor, to: result)
-            }
-            if let coverage = snapshot?.editionCoverage, coverage.races > 0 {
-                let percent = Int((100 * Double(coverage.withEdition) / Double(coverage.races)).rounded())
-                add("Ročník \(coverage.season.map(String.init) ?? "příští"): \(coverage.withEdition) z \(coverage.races) loňských závodů (\(percent) %)", size: 12, color: .secondaryLabelColor, to: result)
-            }
-        } else {
-            add("Zatím bez výsledku", size: 13, to: result)
+        add(summary.state.title, size: 19, bold: true, color: summary.state.tone == "good" ? green : stateColor, to: status)
+        if summary.state.tone != "good" || snapshot?.childPid != nil {
+            add(summary.state.detail, size: 12, color: secondary, to: status)
         }
+        if let current = snapshot, !stale, current.childPid == nil, !current.paused, current.nextRunAt > 0 {
+            add("Další pokus od \(time(current.nextRunAt))", size: 12, color: secondary, to: status)
+        }
+
+        let sources = section()
+        add("1. Mac čte weby", size: 13, bold: true, to: sources)
+        row([
+            metric(collectionHealth?.sources.due, "Čeká na přečtení"),
+            metric(collectionHealth?.sources.unreadable, "Nešlo přečíst")
+        ], in: sources)
+        if let health = collectionHealth {
+            add("\(health.sources.active) sledovaných webů · stav v \(shortDate(health.at))", size: 10, color: secondary, to: sources)
+        }
+
         let review = section()
-        add(summary.reviewTitle, size: 13, bold: true, to: review)
-        add(summary.reviewDetail, size: 12, color: .secondaryLabelColor, to: review)
-        let actions = NSStackView(views: [smallButton("Otevřít LetsRace", #selector(openSite)), smallButton("Co systém dělá", #selector(openWorkstreamsPanel))]); actions.spacing = 12
+        add("2. Codex řeší složité případy", size: 13, bold: true, to: review)
+        row([
+            metric(raceFinderHealth?.ready, "Pro Codex"),
+            metric(raceFinderHealth?.waiting, "Čeká na ověření"),
+            metric(raceFinderHealth?.blocked, "Chybí jistota")
+        ], in: review)
+        if let agent = raceFinderHealth {
+            add("Stav v \(shortDate(agent.at))", size: 10, color: secondary, to: review)
+        }
+
+        let result = section()
+        add("3. LetsRace zapisuje ověřené závody", size: 13, bold: true, to: result)
+        let recent = stale ? nil : snapshot?.recent
+        row([
+            metric(recent?.created, "Přidané závody", color: green),
+            metric(recent?.updated, "Doplněné závody", color: green)
+        ], in: result)
+        add("Uloženo za posledních 24 hodin", size: 10, color: secondary, to: result)
+
+        if let coverage = snapshot?.editionCoverage, let season = coverage.season, coverage.races > 0 {
+            let percent = Int((100 * Double(coverage.withEdition) / Double(coverage.races)).rounded())
+            let editions = section()
+            add("Závody s ročníkem \(season)", size: 13, bold: true, to: editions)
+            let track = NSView()
+            track.wantsLayer = true
+            track.layer?.cornerRadius = 3
+            track.layer?.backgroundColor = green.withAlphaComponent(0.12).cgColor
+            editions.addArrangedSubview(track)
+            NSLayoutConstraint.activate([
+                track.widthAnchor.constraint(equalTo: editions.widthAnchor),
+                track.heightAnchor.constraint(equalToConstant: 6)
+            ])
+            let fill = NSView()
+            fill.translatesAutoresizingMaskIntoConstraints = false
+            fill.wantsLayer = true
+            fill.layer?.cornerRadius = 3
+            fill.layer?.backgroundColor = green.cgColor
+            track.addSubview(fill)
+            let ratio = min(1, max(0, Double(coverage.withEdition) / Double(coverage.races)))
+            NSLayoutConstraint.activate([
+                fill.leadingAnchor.constraint(equalTo: track.leadingAnchor),
+                fill.topAnchor.constraint(equalTo: track.topAnchor),
+                fill.bottomAnchor.constraint(equalTo: track.bottomAnchor),
+                fill.widthAnchor.constraint(equalTo: track.widthAnchor, multiplier: ratio)
+            ])
+            track.setAccessibilityElement(false)
+            add("\(coverage.withEdition.formatted(.number.locale(Locale(identifier: "cs_CZ")))) z \(coverage.races.formatted(.number.locale(Locale(identifier: "cs_CZ")))) závodů předchozího roku · \(percent) %", size: 11, color: secondary, to: editions)
+        }
+
+        let actions = NSStackView(views: [
+            smallButton(snapshot?.paused == true ? "Obnovit sběr" : "Pozastavit sběr", #selector(togglePause), enabled: !stale),
+            smallButton("Podrobnosti", #selector(openTechnicalPanel)),
+            smallButton("Otevřít kalendář", #selector(openSite))
+        ])
+        actions.spacing = 7
         stack.addArrangedSubview(actions)
-        let footer = section()
-        footer.addArrangedSubview(smallButton(snapshot?.paused == true ? "Obnovit sběr na Macu" : "Pozastavit sběr na Macu", #selector(togglePause), enabled: snapshot != nil && !stale))
-        if snapshot?.pipelineMode == "local-new-races", let next = snapshot?.nextRunAt { add("Další kontrola: \(time(next))", size: 11, color: .secondaryLabelColor, to: footer) }
-        add("Poslední hlášení: \(shortDate(snapshot?.at))", size: 10, color: .secondaryLabelColor, to: footer)
+        if let current = snapshot {
+            let spent = "Za AI na Macu tento měsíc \(money(current.ai.spentUsd)) USD"
+            let expense = current.paidDetailsEnabled == false ? "Placené čtení vypnuto" : spent
+            add("\(expense) · Mac se hlásil v \(shortDate(current.at))", size: 10, color: secondary, to: stack)
+            if current.server?.error != nil {
+                add("Hlášení ze serveru je dočasně nedostupné.", size: 10, color: secondary, to: stack)
+            }
+        }
         document.layoutSubtreeIfNeeded()
-        let height = stack.fittingSize.height + 44
-        document.setFrameSize(NSSize(width: 378, height: height))
+        let height = stack.fittingSize.height + 34
+        document.setFrameSize(NSSize(width: width, height: height))
         let screenHeight = item?.button?.window?.screen?.visibleFrame.height ?? 900
         let panelHeight = min(height, screenHeight - 70)
-        popover.contentSize = NSSize(width: 378, height: panelHeight)
-        scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight)))
+        popover.contentSize = NSSize(width: width, height: panelHeight)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, height - panelHeight - fromTop)))
     }
     private func renderWorkstreamsPanel() {
         guard let view = popover.contentViewController?.view else { return }
@@ -385,24 +533,9 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         stack.addArrangedSubview(smallButton("Zpět na přehled", #selector(openOverviewPanel)))
         text("Co systém dělá", size: 22, bold: true, to: stack)
-        text("Čtyři činnosti, jeden katalog. Tady je jejich nastavený režim; aktuální stav sběru je v přehledu.", color: .secondaryLabelColor, to: stack)
-        if snapshot?.pipelineMode == "local-new-races" {
-            section("1. Nové weby", "Zatím pozastavené", "Automatické rozšiřování seznamu zdrojů teď neběží. Nalezený web sám o sobě není nový závod.")
-            section("2. Nové závody ze známých webů", "Na Macu průběžně", "Čte splatné zdroje a weby pořadatelů. Nálezy porovná s čerstvým katalogem včetně skrytých a sloučených záznamů. Prověřené nové závody odešle; nejisté nechá k posouzení.")
-            section("3. Změny existujících závodů", "Prázdné údaje se doplňují, ostatní změny zůstávají na Macu", "Tento první automatický režim změny existujících závodů neodesílá. Počasí, samostatné geokódování a zveřejnění dál zajišťuje server.")
-            section("4. Sporné nálezy", "Samostatné posouzení ještě zbývá", "Nálezy nezmizí po ukončení ani restartu. Zadržený nález není zamítnutý závod a automaticky neznamená otázku pro tebe. Placená AI v tomto režimu neběží.")
-        } else {
-        section("1. Hledání nových webů", "Hledání automaticky · přijetí zdrojů čeká", "Hledá dosud neznámé pořadatele a kalendáře. Nalezený web je návrh zdroje, ještě ne nový závod. Jeho přijetí není plně automatické.")
-        section("2. Nové závody ze známých webů", "Pravidelný automatický sběr", "Prochází sledované kalendáře a weby. Nález porovná s katalogem: nový závod přidá, známý aktualizuje a nejasnou shodu odloží k ověření.")
-        section("3. Doplňování existujících závodů", "Část automaticky · AI v omezeném režimu", "Dohledává například web pořadatele a přihlášky. Podrobné doplňování neběží v každém cyklu; AI se spouští jen ve vybrané dny a v rozpočtu. Staré údaje nejsou novým potvrzením.")
-        let waiting: String
-        if let server = snapshot?.server, server.error == nil, let checked = server.checkedAt, let at = parsedDate(checked), (-60..<900).contains(Date().timeIntervalSince(at)), let count = server.reviewCandidates {
-            waiting = count == 1 ? "1 podklad čeká na ověření" : (2...4).contains(count) ? "\(count) podklady čekají na ověření" : "\(count) podkladů čeká na ověření"
-        } else { waiting = "Aktuální počet čekajících podkladů není potvrzený" }
-        section("4. Ověřování sporných nálezů", waiting, "Mac opakovaně kontroluje zdroje a ukládá další termín pokusu. Samostatné posouzení a zveřejnění zatím chybí. Změna stránky sama nepotvrzuje závod.")
-        }
-        section("Co potřebuje tebe?", "Nemusíš vybírat ani spouštět sběrače", "Čekající podklady jsou práce k ověření, ne automaticky otázky pro tebe. Běžná technická chyba se nemá měnit v tvůj úkol.")
-        stack.addArrangedSubview(smallButton("Zobrazit průběh a nástroje", #selector(openTechnicalPanel)))
+        section("1. Najde a přečte weby", "Pracuje Mac", "Mac se vrací na weby pořadatelů podle plánu. Nové weby hledá také Codex. Mac je pak přečte a hledá na nich potvrzené závody.")
+        section("2. Prověří složité případy", "Pomáhá Codex", "Když chybí datum nebo není jasné, který závod je na stránce, Codex hledá důkaz. Mac jeho odpověď znovu porovná se zdrojem.")
+        section("3. Zapíše ověřené údaje", "Výsledek je v kalendáři", "Do kalendáře se zapíšou závody, které prošly kontrolou. U existujících závodů se doplňují ověřené údaje. Při rozporu případ počká.")
         document.layoutSubtreeIfNeeded()
         let height = stack.fittingSize.height + 44
         document.setFrameSize(NSSize(width: 410, height: height))
@@ -427,6 +560,16 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSLayoutConstraint.activate([stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 17), stack.widthAnchor.constraint(equalToConstant: 376), stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 16)])
         stack.addArrangedSubview(smallButton("Zpět na přehled", #selector(openOverviewPanel)))
         stack.addArrangedSubview(label("Podrobnosti sběru", size: 18, bold: true))
+        if let health = collectionHealth {
+            let near = health.nearby
+            stack.addArrangedSubview(label("Propozice chybí u \(near.missingRegulations) ze \(near.total) závodů v příštích 30 dnech.", size: 12))
+        }
+        if let agent = raceFinderHealth {
+            stack.addArrangedSubview(label("Případy ke kontrole teď \(agent.due) · později \(agent.planned)", size: 12))
+            if let discovery = agent.discoverySources {
+                stack.addArrangedSubview(label("Nové weby od Codexu · přečteno \(discovery.read) z \(discovery.submitted)", size: 12))
+            }
+        }
         let totals = snapshot?.totals ?? []
         let coverage = totals.map { t in
             let n = t.essentials ?? 0, percent = t.total > 0 ? Int((100 * Double(n) / Double(t.total)).rounded()) : 0
@@ -452,7 +595,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let e = snapshot?.serverRequestError { serverLines += "\n\(e)" }
         let serverColor: NSColor = !freshServer || job == nil || job?.status == "error" || job?.status == "attention" ? .systemOrange : .systemGreen
         if snapshot?.pipelineMode == "local-new-races" {
-            card("Server · veřejný web a další služby", detail: "Starý sběr je vypnutý. Počasí, geokódování a zveřejnění zůstávají na serveru.", color: freshServer ? .systemGreen : .systemOrange, buttons: [smallButton("Obnovit stav", #selector(refreshServer))], in: stack)
+            card("Server · veřejný kalendář", detail: server?.error ?? "Poslední ověření \(shortDate(server?.checkedAt))", color: freshServer ? .systemGreen : .systemOrange, buttons: [smallButton("Obnovit stav", #selector(refreshServer))], in: stack)
         } else {
             card("Server zdarma", detail: serverLines, color: serverColor, buttons: [smallButton(serverRunning ? "Běží…" : "Spustit sběr", #selector(runServer), enabled: !serverRunning), smallButton("Obnovit stav", #selector(refreshServer)), smallButton("Stav a problémy", #selector(showServerProblems))], in: stack)
         }
@@ -463,7 +606,6 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let r { localLines += "\n\(r.reads ?? 0) zdrojů · \(r.created ?? 0) nových · \(r.updated ?? 0) změněných · \(r.failed ?? 0) selhalo" }
         if (r?.unreadable ?? 0) > 0 { localLines += " · \(r?.unreadable ?? 0) potřebuje jinou čtečku" }
         if (r?.deferred ?? 0) > 0 { localLines += " · \(r?.deferred ?? 0) odloženo" }
-        if r?.reads == 0 { localLines += "\nŽádný zdroj nebyl splatný; tento běh nic nepřidal." }
         if let cycle = snapshot?.cycleResult { localLines += "\n\(cycle.heldRaces) nálezů zůstává jen na Macu; u existujících závodů se doplňují jen prázdné údaje." }
         if let recent = snapshot?.recent { localLines += "\nZa 24 h: \(recent.created ?? 0) nových závodů · \(recent.updated ?? 0) upravených údajů · \(recent.failed ?? 0) chyb · \(recent.unreadable ?? 0) čtení potřebuje jinou čtečku" }
         if localRunning { localLines += "\n\(translatedStage(snapshot?.stage)) · \(eta(snapshot?.activeTask ?? "refresh", started: snapshot?.startedAt))" }
@@ -497,7 +639,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         } else if let attention = server?.attentionSources { health += "\n\(attention) zdrojů má problém · \(server?.reviewCandidates ?? 0) podkladů čeká na ověření" }
         let healthLabel = label(health, size: 10, color: .secondaryLabelColor); healthLabel.maximumNumberOfLines = 4
         stack.addArrangedSubview(healthLabel)
-        let footer = NSStackView(views: [smallButton("Jak to funguje", #selector(showHelp)), smallButton("Nástroje…", #selector(showDetails))]); footer.spacing = 8; stack.addArrangedSubview(footer)
+        let footer = NSStackView(views: [smallButton("Jak to funguje", #selector(openWorkstreamsPanel)), smallButton("Nástroje…", #selector(showDetails))]); footer.spacing = 8; stack.addArrangedSubview(footer)
         document.layoutSubtreeIfNeeded()
         let height = stack.fittingSize.height + 32
         document.setFrameSize(NSSize(width: 410, height: height))
@@ -561,7 +703,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         explanation("Federace ČSC · výsledek a řešení", text)
     }
     @objc private func showAiBudget() {
-        explanation("AI kontrola na Macu", "Zaznamenáno tento měsíc: \(money(snapshot?.ai.spentUsd ?? 0)) USD. Nový limit je 5 USD měsíčně a 0,50 USD denně. Dřívější útrata se nemaže.\n\nPři vyčerpaném limitu další volání neproběhne. Rozpočet se počítá znovu od prvního dne dalšího měsíce; automatické pokusy jsou v úterý a pátek při místním cyklu. Bezplatný sběr i federace pokračují.\n\nAI není procentuální sken celého internetu. Počet závodů předem neznáme; proto nelze slíbit čas do úplného katalogu.")
+        explanation("AI kontrola na Macu", "Zaznamenáno tento měsíc: \(money(snapshot?.ai.spentUsd ?? 0)) USD. Nový limit je 5 USD měsíčně a 0,50 USD denně. Dřívější útrata se nemaže.\n\nPři vyčerpaném limitu další volání neproběhne. Rozpočet se počítá znovu od prvního dne dalšího měsíce; použije se až při dalším povoleném čtení. Mac může číst propozice podle pravidel a složité případy předá Codexu.\n\nAI není procentuální sken celého internetu. Počet závodů předem neznáme; proto nelze slíbit čas do úplného katalogu.")
     }
     private func translatedStage(_ value: String?) -> String {
         switch value {
@@ -597,7 +739,7 @@ final class MonitorController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return seconds < 60 ? "\(seconds) s" : seconds < 3600 ? "\(seconds / 60) min" : "\(seconds / 3600) h \((seconds % 3600) / 60) min"
     }
     private func time(_ ms: Double) -> String {
-        let f = DateFormatter(); f.locale = Locale(identifier: "cs_CZ"); f.dateFormat = "d. M. H:mm"; return f.string(from: Date(timeIntervalSince1970: ms / 1000))
+        let f = DateFormatter(); f.locale = Locale(identifier: "cs_CZ"); f.timeZone = TimeZone(identifier: "Europe/Prague"); f.dateFormat = "d. M. H:mm"; return f.string(from: Date(timeIntervalSince1970: ms / 1000))
     }
     private func money(_ n: Double) -> String { String(format: "%.2f", locale: Locale(identifier: "cs_CZ"), n) }
     private func control(_ changes: [String: Any]) {

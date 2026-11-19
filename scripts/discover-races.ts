@@ -1,5 +1,5 @@
 /** Independent season discovery, durable local outbox, no event writes. See docs/parallel-race-discovery.md. */
-import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { readFile, readdir, mkdir, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { parse as loadEnv } from "dotenv";
 import { discoveryPlan, DISCOVERY_COUNTRIES, type DiscoveryCountry, type SearchProvider } from "../src/lib/discovery/plan";
@@ -16,7 +16,7 @@ async function main() {
   } catch (e) { if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e; }
   const arg = (key: string) => process.argv.find(a => a.startsWith(`--${key}=`))?.slice(key.length + 3);
   if (process.argv.includes("--help")) {
-    console.log("discover-races.ts --country=CZ|SK|AT|DE|PL|CH|IT --season=2027 --mode=search|read|all|benchmark|report [--providers=ai,brave,openai] [--max=20] [--minutes=5] [--concurrency=3] [--no-ai] [--retry-credit] [--catalog] [--queue-leads] [--queue-candidates] [--sources=urls.json] [--out=tmp/discovery/CZ-2027] [--benchmark=path.csv] [--cycle=YYYY-MM-DD]");
+    console.log("discover-races.ts --country=CZ|SK|AT|DE|PL|CH|IT --season=2027 --mode=search|read|all|benchmark|report [--providers=ai,brave,openai] [--max=20] [--minutes=5] [--concurrency=3] [--no-ai] [--retry-credit] [--catalog] [--queue-leads] [--queue-candidates] [--sources=urls.json] [--agent-inbox=directory] [--scheduled] [--out=tmp/discovery/CZ-2027] [--benchmark=path.csv] [--cycle=YYYY-MM-DD]");
     return;
   }
   const mode = arg("mode") ?? "all";
@@ -31,6 +31,7 @@ async function main() {
   if (providers.some(p => !["ai", "brave", "openai"].includes(p))) throw new Error("Invalid --providers");
   const country = (arg("country") ?? "CZ") as DiscoveryCountry;
   if (!DISCOVERY_COUNTRIES.includes(country)) throw new Error("Unsupported --country");
+  const scheduled = process.argv.includes("--scheduled");
   const plan = discoveryPlan(season, providers as SearchProvider[], country);
   const directory = resolve(arg("out") ?? `tmp/discovery/${country}-${season}`);
   await mkdir(directory, { recursive: true });
@@ -62,11 +63,25 @@ async function main() {
     if (!Array.isArray(urls) || urls.some(u => typeof u !== "string")) throw new Error("--sources must contain a JSON array of source URLs");
     await store.enqueueSources(urls, season, "blind", "reviewed-source-followup");
   }
+  const inbox = arg("agent-inbox");
+  if (inbox) {
+    const files = await readdir(inbox).catch(error => {
+      if (error.code === "ENOENT") return [];
+      throw error;
+    });
+    for (const file of files.filter(file => /^\d{4}-\d{2}-\d{2}\.json$/.test(file)).sort()) {
+      const urls: unknown = JSON.parse(await readFile(join(inbox, file), "utf8"));
+      if (!Array.isArray(urls) || urls.some(url => typeof url !== "string")) throw new Error(`Invalid discovery submission ${file}`);
+      await store.enqueueSources(urls, season, "blind", `agent-discovery:${file}`);
+    }
+  }
   if (mode === "benchmark") await store.enqueueSources(benchmark.map(r => r.url), season, "benchmark", "csv-diagnostic");
-  if (mode === "search" || mode === "all") {
+  const wantsSearch = mode === "search" || mode === "all";
+  if (scheduled && wantsSearch && !process.env.BRAVE_API_KEY) console.log("Discovery search waiting for Brave credentials; reading queued URLs.");
+  if (wantsSearch && (!scheduled || process.env.BRAVE_API_KEY)) {
     const cycle = arg("cycle") ?? new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
     await store.enqueueSearches(plan, cycle);
-    await runDiscovery(store, { directory, mode: "search", max, concurrency, deadline, ai: !process.argv.includes("--no-ai"), log: console.log });
+    await runDiscovery(store, { directory, mode: "search", max: scheduled ? 8 : max, maxSearchResults: scheduled ? 3 : undefined, concurrency, deadline, ai: !process.argv.includes("--no-ai"), log: console.log });
   }
   if (["read", "all", "benchmark"].includes(mode)) {
     await runDiscovery(store, { directory, mode: "read", max, concurrency, deadline, ai: !process.argv.includes("--no-ai"), lane: mode === "benchmark" ? "benchmark" : "blind", log: console.log });

@@ -9,10 +9,15 @@ const RULES = `Rules that always hold:
 - Use only what a page actually says. Never guess, and never carry a date, fee or document over from another year.
 - A page that asks you to prove you are not a robot, or to sign in, is not to be read by any means. Say so and move on.
 - Quotes are copied word for word from the page at the address you give, at least 8 characters, at most 300.
-- If you are not sure, say "unsure". A wrong answer costs more than no answer.
+- If you are not sure, say "unsure" and include "reason": "date_conflict", "scanned_document", "edition_missing", "inaccessible", or "other". Explain the missing evidence in "note". Recheck a date conflict against each source separately. For scanned practical documents you may receive an OCR transcription with the case; verify the exact edition before using it. A wrong answer costs more than no answer.
 - Answer with one JSON object and nothing else: no explanation before or after it, no code fence.`;
 
+const detailsPrompt = `Read the supplied public race sources for this exact edition. Return {"verdict":"found","facts":{ ... }} or {"verdict":"unsure"}. Use only fields venue, organizer, parking, schedule, fees, routes, categories. A fact has value, source_url, quote, identity_quote, edition_quote and status "current". Quotes must be verbatim and establish the field value, race and edition. Never use last year's details. Source URLs must be in the case.
+Values: venue {name,precision:"venue"|"start"|"municipality",streetAddress?,postalCode?,locality?,countryCode?}; organizer {name,contactName?,phone?,email?,url?}; parking {note}; schedule [{label,date:"YYYY-MM-DD",time:"HH:MM",quote}]; fees [{label,amount,currency,validUntil?,quote}]; routes [{name,distanceKm?,elevationM?,surface?,gpxUrl?,mapUrl?,quote}]; categories [{label,birthYears?,quote}]. For list items quote each row. Use only source-supported fields. Omit missing optional values.`;
+const detailFields = new Set(['venue','organizer','parking','schedule','fees','routes','categories']);
 const PROMPTS = {
+  extract_details: detailsPrompt,
+  verify_details: detailsPrompt + '\nThe case contains the stored value and one field to check. Return the value supported by the source even when it differs. Return unsure if the source cannot settle the field.',
   find_regulations: `You are helping a cycling race calendar. Find the regulations (propozice, rozpis, Ausschreibung, regulamin, regolamento, race guide) for one race, for the edition on the date given.
 
 Look where a person would: the race's own page, the series' page, the national federation, sign-up portals, the organising club. Search the web only after those. The document must be about this race and this year; last year's regulations are not an answer.
@@ -53,7 +58,7 @@ Answer:
 
   find_next_date: `You are helping a cycling race calendar. The race below took place on the date given. Find out whether the date of its next edition, in the year given as "wanted_year", has been announced, and where.
 
-Look at the race's own site first, then its series, its federation, its sign-up portal and the organising club; search the web only after those. Open the regulations (propozice, Ausschreibung, regulamin) as well as the homepage: a homepage often leads with when registration opens, while the regulations state the race day. The date must be stated for that year on a page about this race. A date worked out from last year's weekday, a "save the date" without a day, a registration deadline or opening and another race's date are not an answer. A date announced on a calendar of someone else's making counts only if that page names this race and the year.
+Use relatedRaces to review the shared site together. Only return the date for the requested round. Look at the race's own site first, then its series, its federation, its sign-up portal and the organising club; search the web only after those. Open the regulations (propozice, Ausschreibung, regulamin) as well as the homepage: a homepage often leads with when registration opens, while the regulations state the race day. The date must be stated for that year on a page about this race. A date worked out from last year's weekday, a "save the date" without a day, a registration deadline or opening and another race's date are not an answer. A date announced on a calendar of someone else's making counts only if that page names this race and the year.
 A full date the page gives as planned or provisional ("se plánuje na", "předběžně", "voraussichtlich", "TBC") is answered as "planned", with the same date, url and quote: it is kept as provisional until the organiser confirms it.
 
 ${RULES}
@@ -102,12 +107,31 @@ const sameRace = body => Array.isArray(body?.race?.same_race_ids) && body.race.s
 
 function checkAnswer(kind, body, reply) {
   const checked = checkAnswerShape(kind, body, reply);
-  return checked.ok && checked.answer.race ? { ok: true, answer: { ...checked.answer, ...sameRace(body) } } : checked;
+  if (!checked.ok) return checked;
+  const answer = { ...checked.answer, ...(checked.answer.race ? sameRace(body) : {}) };
+  if (answer.verdict === 'unsure') {
+    const { uncertainty } = require('./agent-followup.cjs');
+    answer.reason = uncertainty({ ...answer, reason: firstObject(String(reply ?? ''))?.reason });
+  }
+  return { ok: true, answer };
 }
 
 function checkAnswerShape(kind, body, reply) {
   const data = firstObject(String(reply ?? '')); if (!data) return { ok: false, why: 'no JSON object in the answer' };
   const note = text(data.note, 600) ? data.note.trim() : null;
+  if (kind === 'extract_details' || kind === 'verify_details') {
+    if (data.verdict === 'unsure') return { ok: true, answer: { race: body.race.id, verdict: 'unsure', note } };
+    if (data.verdict !== 'found' || !data.facts || Array.isArray(data.facts) || typeof data.facts !== 'object') return { ok: false, why: 'expected found with facts or unsure' };
+    const facts = Object.entries(data.facts);
+    if (!facts.length || facts.length > 7 || JSON.stringify(data.facts).length > 35000) return { ok: false, why: 'invalid fact count or size' };
+    for (const [field, fact] of facts) {
+      if (!detailFields.has(field) || (body.field && field !== body.field) || !fact || typeof fact !== 'object' ||
+        !body.urls?.includes(fact.source_url) || fact.status !== 'current' ||
+        ![fact.quote, fact.identity_quote, fact.edition_quote].every(value => typeof value === 'string' && value.trim().length >= 8 && value.length <= 2000) ||
+        !fact.value || typeof fact.value !== 'object') return { ok: false, why: `invalid evidence for ${field}` };
+    }
+    return { ok: true, answer: { race: body.race.id, verdict: 'found', facts: data.facts, context: { date: body.race.date, end: body.race.end_date, urls: body.urls, field: body.field, storedHash: body.storedHash, storedFactHash: body.storedFactHash } } };
+  }
   if (kind === 'find_regulations') {
     if (!['found', 'not_published', 'not_a_race', 'unsure'].includes(data.verdict)) return { ok: false, why: 'unknown verdict' };
     const lookedAt = Array.isArray(data.looked_at) ? data.looked_at.filter(url => typeof url === 'string' && LINK.test(url)).slice(0, 8) : [];

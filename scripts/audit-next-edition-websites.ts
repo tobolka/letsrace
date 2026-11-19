@@ -12,6 +12,7 @@ import { extractJsonLdEvents } from "../src/lib/watcher/extractors/jsonld";
 import { hostnameOf, sleep } from "../src/lib/watcher/pool";
 import { renderPagesHtml } from "../src/lib/watcher/extractors/csc-render";
 import { editionKey } from "../src/lib/catalog/previous-edition";
+import { editionRereadAt } from "../src/lib/catalog/edition-reread";
 import { defaultEditionSeason } from "../src/lib/catalog/edition-season";
 import { isDumpListingUrl } from "../src/lib/watcher/public-url";
 import { isRegistrationPlatformUrl } from "../src/lib/watcher/registration-url";
@@ -90,24 +91,11 @@ for (const page of pages.values()) if (page.asksVerification && !page.rendered &
   page.asksVerification = asksForVerification(flat);
   page.needsBrowser = page.asksVerification || wantsScript(flat);
 }
-const HOUR = 3600_000, DAY = 24 * HOUR;
-/** How long a page read without trouble rests before it is read again. */
-const REREAD_DAYS = 5;
-/** When this page is worth reading again: a site that keeps failing is asked ever more rarely. */
-function rereadAt(page: Page): number {
-  const at = Date.parse(page.at);
-  if (page.requestAttempted === false) return at + 7 * DAY; // The site itself asked us to stop.
-  // A robot check is never passed, so asking again soon only repeats the refusal.
-  if (page.asksVerification && !page.error) return at + 7 * DAY;
-  // Seen through a browser, or not yet: the browser has a per-pass allowance, so a page left over waits a little, not a whole cycle each time.
-  if (page.needsBrowser && !page.error) return page.rendered ? at + 14 * DAY : at + 6 * HOUR;
-  if (isFailure(page)) return at + Math.min(14 * DAY, 6 * HOUR * 2 ** Math.max(0, (failures.get(page.url) ?? 1) - 1));
-  // An organiser's page that said nothing about next year is the one most likely to say it soon.
-  return at + REREAD_DAYS * DAY;
-}
+const rereadAt = (page: Page) => editionRereadAt(page, failures.get(page.url) ?? 0, !browserOff);
+const refreshing = new Set<string>();
 for (const page of pages.values()) {
   const stale = option("out") && Date.now() >= rereadAt(page);
-  if (stale || retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500) || retryShort && page.needsBrowser && page.rendered && !page.error) pages.delete(page.url);
+  if (!replay && (stale || retryErrors && (page.error || page.status === 429 || (page.status ?? 0) >= 500) || retryShort && page.needsBrowser && page.rendered && !page.error)) refreshing.add(page.url);
   else attempted.add(page.url);
 }
 function enqueue(raw: string, via: string, purpose: string) {
@@ -209,13 +197,17 @@ function save() {
   const candidates = all.filter(hasDate).map(p => ({ ...p, via: jobs.get(p.url)?.via ?? p.via, textFile: reportTextPath(p.textFile) }));
   const unresolved = all.filter(unreadable).map(p => ({ ...p, textFile: reportTextPath(p.textFile) }));
   // The saved reading says when it next has work, so a cycle need not start it to find out.
-  const unread = [...jobs.values()].filter(job => !pages.has(job.url)).length;
-  const nextDueAt = !replay && !unread && all.length ? new Date(Math.min(...all.map(rereadAt))).toISOString() : null;
-  const coverage = { at: new Date().toISOString(), startedAt, year, target, unreadPages: unread, nextDueAt, mode: replay ? "offline replay of archived results; no database or website requests" : "read-only; literal signals are leads, not confirmed event dates", totalRaces: old.length, racesWithWebsite: old.filter(r => r.website_url).length, racesWithValidWebsite: linked.length,
+  const planned = [...jobs.keys()];
+  const unread = planned.filter(url => !pages.has(url)).length;
+  const refreshDuePages = planned.filter(url => refreshing.has(url)).length;
+  const duePages = unread + refreshDuePages;
+  const nextDueAt = !replay && !duePages && planned.length
+    ? new Date(Math.min(...planned.map(url => rereadAt(pages.get(url)!)))).toISOString() : null;
+  const coverage = { at: new Date().toISOString(), startedAt, year, target, unreadPages: unread, refreshDuePages, duePages, requestsThisPass, nextDueAt, mode: replay ? "offline replay of archived results; no database or website requests" : "read-only; literal signals are leads, not confirmed event dates", totalRaces: old.length, racesWithWebsite: old.filter(r => r.website_url).length, racesWithValidWebsite: linked.length,
     originalWebsites: new Set(linked.map(r => canonical(r.website_url!))).size,
     originalWebsitesAttempted: [...new Set(linked.map(r => canonical(r.website_url!)))].filter(u => u && pages.has(u) && pages.get(u)?.requestAttempted !== false).length,
     queuedPages: jobs.size, processedPages: all.length, archivedOutsidePlan: all.filter(p => !jobs.has(p.url)).length, attemptedPages: all.filter(p => p.requestAttempted !== false).length, deferredPages: all.filter(p => p.requestAttempted === false).length, successfulPages: all.filter(p => !unreadable(p)).length,
-    candidatePages: candidates.length, unresolvedPages: unresolved.length, complete: [...jobs.keys()].every(url => pages.has(url)), allRequestsAttempted: [...jobs.keys()].every(url => pages.has(url) && pages.get(url)?.requestAttempted !== false),
+    candidatePages: candidates.length, unresolvedPages: unresolved.length, complete: duePages === 0, allRequestsAttempted: [...jobs.keys()].every(url => pages.has(url) && pages.get(url)?.requestAttempted !== false),
     limitations: [`Source websites come from public, unmerged ${year} catalogue races.`, "HTML/PDF text and JSON-LD are checked; image-only and browser-only dates need manual review.", "At most three explicit next-year links per original URL plus a year-neutral homepage are followed; this is not an exhaustive site crawl.", "No full date detected does not prove that no announcement exists.", "No AI calls or catalogue writes."] };
   writeFileSync(join(directory, "coverage.json"), JSON.stringify(coverage, null, 2));
   writeFileSync(join(directory, "candidates.json"), JSON.stringify(candidates, null, 2));
@@ -295,15 +287,30 @@ async function main() {
           return !attempted.has(j.url) && (activeHosts.get(host) ?? 0) < 1 && (pausedHosts.has(host) || now - (hostStarts.get(host) ?? 0) >= interval);
         });
         if (!job) { if ([...jobs.keys()].every(url => attempted.has(url))) return; await sleep(100); continue; }
-        attempted.add(job.url); requestsThisPass++; const host = hostnameOf(job.url);
+        attempted.add(job.url);
+        const previous = pages.get(job.url);
+        const waitingForBrowser = previous?.needsBrowser && !previous.rendered && !previous.asksVerification && !previous.error;
+        // A previous HTTP response already showed that another plain fetch is insufficient.
+        // Keep this job due for the next pass if this pass has no rendering slot left.
+        if (waitingForBrowser && !browserOff && browserReads >= BROWSER_READS_PER_PASS) continue;
+        requestsThisPass++;
+        const host = hostnameOf(job.url);
         activeHosts.set(host, (activeHosts.get(host) ?? 0) + 1); hostStarts.set(host, Date.now());
         try {
           appendFileSync(ledger, JSON.stringify({ ...job, at: new Date().toISOString(), error: READING }) + "\n");
           // The request has its own limit, but parsing and redirects do not. One page must not hold the pass.
           let watchdog: NodeJS.Timeout | undefined;
-          const page = await Promise.race([inspect(job).then(first => first.needsBrowser && !first.error && !browserOff && !first.asksVerification && browserReads++ < BROWSER_READS_PER_PASS ? inspect(job, true) : first), new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 90 s" }), 90_000); })]);
+          const canRender = () => {
+            if (browserOff || browserReads >= BROWSER_READS_PER_PASS) return false;
+            browserReads++;
+            return true;
+          };
+          const read = waitingForBrowser && canRender()
+            ? inspect(job, true)
+            : inspect(job).then(first => first.needsBrowser && !first.error && !first.asksVerification && canRender() ? inspect(job, true) : first);
+          const page = await Promise.race([read, new Promise<Page>(resolve => { watchdog = setTimeout(() => resolve({ ...job, at: new Date().toISOString(), error: "read_timeout: the page did not finish within 90 s" }), 90_000); })]);
           clearTimeout(watchdog);
-          pages.set(job.url, page); appendFileSync(ledger, JSON.stringify(page) + "\n");
+          pages.set(job.url, page); refreshing.delete(job.url); appendFileSync(ledger, JSON.stringify(page) + "\n");
           if (isFailure(page)) failures.set(job.url, (failures.get(job.url) ?? 0) + 1); else failures.delete(job.url);
           if (page.status === 429) {
             const streak = (rateLimitStreaks.get(host) ?? 0) + 1; rateLimitStreaks.set(host, streak);

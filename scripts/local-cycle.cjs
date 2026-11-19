@@ -8,12 +8,16 @@ const cp=require('node:child_process');
 const {plan,assertReviewed}=require('./local-sync.cjs');
 const {COPY,serverEnvironment}=require('./local-pull.cjs');
 const {fillPlan}=require('./local-fills.cjs');
-const {moreWorkLeft}=require('./local-schedule.cjs');
+const {moreWorkLeft,fileTime,latestAgentAnswer}=require('./local-schedule.cjs');
 const BIN=process.env.LOCAL_PG_BIN||'/opt/homebrew/opt/postgresql@17/bin';
 const data=process.env.LETSRACE_DATA_DIR||path.join(os.homedir(),'Library/Application Support/LetsRace/data');
 const root=path.resolve(__dirname,'..');const env={...process.env,LC_ALL:'en_US.UTF-8',PGTZ:'UTC'};
 const COUNTRIES='CZ,SK,DE,AT,PL,CH,IT';
+const {collectionHealthQuery}=require('./local-collection-health.cjs');
+const { discoveryTarget, submissionPath } = require('./agent-discovery.cjs');
 const HOUR=3_600_000;
+const AGENT_EVERY_MS=6*HOUR;
+const PAID_DETAILS=process.env.LETSRACE_PAID_DETAILS==='1';
 /** How stale the target copy may get while nothing here needs it: held races and operator locks. */
 const TARGET_MAX_AGE_MS=12*HOUR;
 /** New work may want the target sooner, but never a copy more than this often. */
@@ -27,23 +31,41 @@ const SOURCE_HEALTH_EVERY_MS=7*24*HOUR;
 /** Searching for sites of races that have none. A search is spaced about ten seconds apart. */
 const WEBSITE_SEARCH_EVERY_MS=4*HOUR;
 const ORGANISER_GAP_MS=HOUR/2;
-const RESUME_PUBLISHING_EVERY_MS=6*HOUR;
+const RESUME_PUBLISHING_EVERY_MS=HOUR;
 /** Every filled race queues a public page check, of which the server does 60 a day. */
 const FILLED_RACES_PER_CYCLE=30,FILLED_RACES_PER_DAY=150;
 /** An operator's pause reaches the reader without a whole catalogue dump. */
 const PAUSE_SYNC_MS=HOUR/2;
 const ASSESS_AT_LEAST_EVERY_MS=24*HOUR;
+const EDITION_ASSESSMENT_VERSION=2;
 /** How long a finished step's last lines may take to arrive. */
 const OUTPUT_DRAIN_MS=2000;
 /** Below this much of the day's or month's AI allowance, a step that needs AI is not started. */
 const AI_STEP_NEEDS_USD=0.02;
 const pragueDay=(now=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 /** What is left of the shared AI allowance, by the same ledger and limits the readers use. */
-function aiAllowanceLeft(ledger,now=new Date(),limits=process.env){
+function aiAllowances(ledger,now=new Date(),limits=process.env){
  const daily=Number(limits.LLM_DAILY_BUDGET_USD??0.5),monthly=Number(limits.LLM_MONTHLY_BUDGET_USD??5);
  const day=pragueDay(now),month=day.slice(0,7);const holds=Object.values(ledger?.holds??{});
  const held=key=>holds.filter(h=>h[key]===(key==='day'?day:month)).reduce((sum,h)=>sum+h.amount,0);
- return Math.min(daily-(ledger?.days?.[day]??0)-held('day'),monthly-(ledger?.months?.[month]??0)-held('month'));
+ return {day:daily-(ledger?.days?.[day]??0)-held('day'),month:monthly-(ledger?.months?.[month]??0)-held('month')};
+}
+function aiAllowanceLeft(ledger,now=new Date(),limits=process.env){
+ const left=aiAllowances(ledger,now,limits);
+ return Math.min(left.day,left.month);
+}
+function aiBudgetWait(ledger,now=new Date(),limits=process.env){
+ const left=aiAllowances(ledger,now,limits);
+ const period=left.month<AI_STEP_NEEDS_USD?'month':left.day<AI_STEP_NEEDS_USD?'day':null;
+ if(!period)return null;
+ const boundary=period==='month'?at=>pragueDay(new Date(at)).slice(0,7):at=>pragueDay(new Date(at));
+ const before=boundary(+now);
+ let low=+now,high=low+32*24*HOUR;
+ while(high-low>1){
+  const middle=Math.floor((high+low)/2);
+  if(boundary(middle)===before)low=middle;else high=middle;
+ }
+ return {period,at:high};
 }
 /** The first moment of the next day in Prague, when the daily allowance is whole again. */
 function nextPragueDay(now=Date.now()){
@@ -122,7 +144,7 @@ function editionSeason(now=new Date()){
 }
 /** Does the organiser reading have anything to do, by what it saved last time? */
 function organiserDue(coverage,now=Date.now(),lastPass=null){
- if(!coverage||coverage.unreadPages==null||coverage.unreadPages>0)return true;
+ if(!coverage||(coverage.duePages??coverage.unreadPages)==null||(coverage.duePages??coverage.unreadPages)>0)return true;
  // Pages fall due one at a time: wait and read them together, not a whole cycle for each.
  if(lastPass&&now-Date.parse(lastPass)<ORGANISER_GAP_MS)return false;
  return Boolean(coverage.nextDueAt)&&Date.parse(coverage.nextDueAt)<=now;
@@ -227,18 +249,20 @@ async function main(){
     await local(bounded,{allowedCodes:[0,2],timeout:11*60_000});
    }catch(e){if(interrupted)throw e;note(e);}
   }
-  const sizeNow=ledgerSize();const coverage=json(path.join(archive,'coverage.json'));organiser.read=sizeNow>sizeBefore?Math.max(1,(coverage?.attemptedPages??0)-(coverageBefore?.attemptedPages??0)):0;organiser.unread=coverage?.unreadPages??null;organiser.nextDueAt=coverage?.nextDueAt??null;
+  const sizeNow=ledgerSize();const coverage=json(path.join(archive,'coverage.json'));organiser.read=sizeNow>sizeBefore?Math.max(1,coverage?.requestsThisPass??((coverage?.attemptedPages??0)-(coverageBefore?.attemptedPages??0))):0;organiser.unread=coverage?.duePages??coverage?.unreadPages??null;organiser.nextDueAt=coverage?.nextDueAt??null;
   // Judged from the saved text. What passes goes to the local copy as a new reviewed race;
   // only the step below may send it anywhere.
-  if(sizeNow>0&&(sizeNow!==state.assessedLedgerSize||state.assessmentDeferred||!state.assessedAt||Date.now()-Date.parse(state.assessedAt)>=ASSESS_AT_LEAST_EVERY_MS)){
+  const reviewed=path.join(archive,'reviewed-answers.json');
+  const reviewedAt=fileTime(reviewed);
+  if(sizeNow>0&&(state.editionAssessmentVersion!==EDITION_ASSESSMENT_VERSION||sizeNow!==state.assessedLedgerSize||reviewedAt>(state.assessedAnswersMs??0)||state.assessmentDeferred||dueEvery(state.assessedAt,ASSESS_AT_LEAST_EVERY_MS))){
    stage('Posuzuji termíny z webů pořadatelů');
    try{
     await node('./node_modules/tsx/dist/cli.mjs',['scripts/audit-next-edition-websites.ts',`--replay=${archive}`],{timeout:5*60_000});
-    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=30','--seconds=240',...(fs.existsSync(path.join(archive,'reviewed-answers.json'))?[`--answers=${path.join(archive,'reviewed-answers.json')}`]:[])],{allowedCodes:[0,2],timeout:8*60_000});
+    const assessed=await local(['scripts/with-node.cjs','./node_modules/tsx/dist/cli.mjs','scripts/check-next-editions.ts',`--season=${season}`,`--archive=${archive}`,`--countries=${COUNTRIES}`,'--literal','--apply','--max-apply=30','--seconds=240',...(reviewedAt?[`--answers=${reviewed}`]:[])],{allowedCodes:[0,2],timeout:8*60_000});
     const line=assessed.output.split('\n').find(text=>text.startsWith('organiser_assessment '));
     const summary=line?JSON.parse(line.slice(21)):null;
     if(summary){organiser.assessment=summary;organiser.published=summary.counts?.published??0;organiser.deferred=summary.status==='deferred';organiser.attempted=organiser.published+(summary.waiting?.publish_failed??0);organiser.proposed=summary.waiting?.pass_limit??0;}
-    state.assessedLedgerSize=sizeNow;state.assessedAt=new Date().toISOString();state.assessmentDeferred=organiser.deferred;saveState();
+    state.editionAssessmentVersion=EDITION_ASSESSMENT_VERSION;state.assessedLedgerSize=sizeNow;state.assessedAnswersMs=reviewedAt;state.assessedAt=new Date().toISOString();state.assessmentDeferred=organiser.deferred;saveState();
    }catch(e){if(interrupted)throw e;note(e);}
   }
   try{report.coverage=writeCoverage(archive,data);}catch(e){console.warn(`Pokrytí nespočítáno: ${e.message}`);}
@@ -246,10 +270,19 @@ async function main(){
 
   // Part 3: the rest of the upkeep that only needs other people's websites and the copy here.
   const tsx='./node_modules/tsx/dist/cli.mjs';
-  const ledgerFile=path.join(data,'llm-budget.json');let aiWaiting=false;
+  const ledgerFile=path.join(data,'llm-budget.json');let aiWaiting=null;
   // Steps reading one website share one hold: when the site is shut, neither of them asks again.
   const GROUPS={radNet:'rad-net.de',radNetNew:'rad-net.de'};
   // `server` steps hold the database access and start their own keyless readers; they run outside the local copy's wrapper.
+  const waitForAi=(name,extraEnv)=>{
+   if(extraEnv.LOCAL_ALLOW_AI!=='1')return false;
+   const wait=aiBudgetWait(json(ledgerFile,{}));
+   if(!wait)return false;
+   aiWaiting=wait;
+   (report.upkeep??={})[name]=`waiting: AI ${wait.period} allowance spent`;
+   (report.steps??={})[name]={outcome:'waiting',reason:`ai_budget_${wait.period}`};
+   return true;
+  };
   const upkeep=async(name,key,every,text,args,seconds,extraEnv={},server=false)=>{
    const launch=server?(list,options)=>run(process.execPath,list,options):local;
    const group=GROUPS[name]??name;
@@ -263,7 +296,7 @@ async function main(){
     if(hold)state.stepHolds[group]=hold;else delete state.stepHolds[group];saveState();
     return {...ended,...(slept?{slept:true}:{}),...(hold&&hold.outcome===ended.outcome?{failures:hold.failures,nextTryAt:hold.nextTryAt,...(hold.stopped?{stopped:true}:{})}:{})};
    };
-   if(extraEnv.LOCAL_ALLOW_AI==='1'&&aiAllowanceLeft(json(ledgerFile,{}))<AI_STEP_NEEDS_USD){aiWaiting=true;(report.upkeep??={})[name]='waiting: AI allowance spent';(report.steps??={})[name]={outcome:'waiting',reason:'ai_budget'};return;}
+   if(waitForAi(name,extraEnv))return;
    stage(text);
    try{
     const done=await launch(['scripts/bounded-pipeline-step.cjs',String(seconds),process.execPath,'scripts/with-node.cjs',tsx,...args],{allowedCodes:[0,2],timeout:(seconds+60)*1000,extraEnv});
@@ -273,7 +306,7 @@ async function main(){
    }catch(e){
     if(interrupted)throw e;
     // The allowance can run out in the middle of a step. What it saved stays; the rest waits.
-    if(extraEnv.LOCAL_ALLOW_AI==='1'&&aiAllowanceLeft(json(ledgerFile,{}))<AI_STEP_NEEDS_USD){aiWaiting=true;(report.upkeep??={})[name]='waiting: AI allowance spent';(report.steps??={})[name]={outcome:'waiting',reason:'ai_budget'};return;}
+    if(waitForAi(name,extraEnv))return;
     const ended=remember(stepOutcome(e),sleptThrough(Date.now()-began,(seconds+60)*1000));(report.steps??={})[name]=ended;
     // Kept out by the other side: nothing here failed, and asking again every cycle changes nothing.
     // The step, and any other reading the same website, waits its usual interval.
@@ -288,6 +321,30 @@ async function main(){
   await upkeep('completePast','completePastAt',12*HOUR,'Uzavírám proběhlé závody v kopii',['scripts/complete-past.ts'],300);
   // Publications stopped halfway, already approved. Without this a race stays half-published for good.
   await upkeep('resumePublishing','resumePublishingAt',RESUME_PUBLISHING_EVERY_MS,'Dokončuji přerušená zveřejnění',['scripts/review-discovery-candidates.ts','--resume','--apply'],120);
+  await upkeep('resumeServerPublishing','resumeServerPublishingAt',RESUME_PUBLISHING_EVERY_MS,'Dokončuji ověřená zveřejnění',['scripts/review-discovery-candidates.ts','--resume','--apply'],120,{},true);
+  await upkeep('candidateFollowup','candidateFollowupAt',6*HOUR,'Znovu ověřuji čekající závody',['scripts/recheck-discovery-candidates.ts','--max=10','--apply'],150,{},true);
+  const discoveryDay=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  const target=discoveryTarget(discoveryDay);
+  const discoveryName=`${target.country}-${target.season}`;
+  const discoveryArgs=['scripts/discover-races.ts',`--country=${target.country}`,`--season=${target.season}`,`--out=${path.join(data,'discovery',discoveryName)}`];
+  const agentBatch=fs.existsSync(submissionPath(data,discoveryDay,target));
+  const discoveryDue=state.discoveryDay!==discoveryDay||(agentBatch&&state.discoveryAgentDay!==discoveryDay);
+  if(discoveryDue){
+   await upkeep('discovery','discoveryAt',0,`Hledám nové weby pořadatelů (${discoveryName})`,[...discoveryArgs,'--mode=all','--providers=brave','--no-ai','--scheduled','--max=30','--minutes=4',`--cycle=${discoveryDay}`,`--agent-inbox=${path.join(data,'agent','discovery',discoveryName)}`],300,{BRAVE_SEARCH_LIMIT:'16'});
+   if(['done','partial'].includes(report.steps?.discovery?.outcome)){
+    state.discoveryDay=discoveryDay;
+    if(agentBatch)state.discoveryAgentDay=discoveryDay;
+    delete state.discoveryHandoffDay;
+    saveState();
+   }
+  }
+  if(state.discoveryDay===discoveryDay&&state.discoveryHandoffDay!==discoveryDay){
+   await upkeep('discoveryHandoff','discoveryHandoffAt',0,'Předávám nové zdroje a kandidáty ke kontrole',[...discoveryArgs,'--mode=report','--queue-leads','--queue-candidates'],120,{},true);
+   if(report.steps?.discoveryHandoff?.outcome==='done'){
+    state.discoveryHandoffDay=discoveryDay;
+    saveState();
+   }
+  }
   await upkeep('siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS,'Doplňuji údaje z webů závodů',['scripts/local-catalog-fills.ts'],480);
   // Finding comes before reading: neither needs search or AI, and what they find the next step reads.
   await upkeep('calendarDocuments','calendarDocumentsAt',7*24*HOUR,'Hledám propozice v kalendářích',['scripts/harvest-calendar-documents.ts','--apply','--seconds=480'],540);
@@ -319,7 +376,15 @@ async function main(){
   // The agent: looks for regulations and judges possible duplicates the readers could not settle.
   // Its answers stay in the data folder; nothing of them is sent. One run a day, kept by the step itself.
   // Every six hours: prepare cases for the desk and check answers that arrived through it. The agent itself (Codex) works in its own session.
-  await upkeep('agent','agentAt',6*HOUR,'Připravuji případy pro agenta a ověřuji jeho odpovědi',['scripts/agent-daily.cjs','--max=20'],2700,{AGENT_CASE_SECONDS:'120'});
+  const detailsFallback=!PAID_DETAILS||Boolean(aiBudgetWait(json(ledgerFile,{})));
+  const newestAnswer=latestAgentAnswer(data);
+  const prepareCases=detailsFallback!==state.agentDetailsFallback||dueEvery(state.agentCasesAt??state.agentAt,AGENT_EVERY_MS);
+  const agentInterval=prepareCases||newestAnswer>(state.agentAnswerSeenMs??0)?0:AGENT_EVERY_MS;
+  await upkeep('agent','agentAt',agentInterval,'Připravuji případy pro agenta a ověřuji jeho odpovědi',['scripts/agent-daily.cjs','--max=20',...(!prepareCases?['--keep-cases']:[])],2700,{AGENT_CASE_SECONDS:'120',AGENT_DETAILS_FALLBACK:detailsFallback?'1':'0'});
+  if(report.steps?.agent?.outcome==='done'){
+   if(prepareCases)state.agentCasesAt=new Date().toISOString();
+   state.agentDetailsFallback=detailsFallback;state.agentAnswerSeenMs=newestAnswer;saveState();
+  }
   // What the agent found and the code verified goes to the gate as proposals; nothing else of the agent reaches the server.
   const agentAnswers=path.join(data,'agent','answers'),verifiedFile=path.join(agentAnswers,'verified.json');
   const verifiedAt=()=>{try{return fs.statSync(verifiedFile).mtimeMs;}catch{return 0;}};
@@ -405,6 +470,37 @@ async function main(){
 
   // What the runner needs to decide when to come back.
   const dueAfter=Number(sql('letsrace',dueNow).trim());report.dueSourcesAfter=dueAfter;
+  try{
+   const health=JSON.parse(sql('letsrace',collectionHealthQuery(COUNTRIES)));
+   atomic(path.join(data,'collection-health.json'),health);
+   report.collectionHealth=health;
+  }catch(error){console.warn(`Přehled pokrytí se nepodařilo aktualizovat: ${error.message}`);}
+  try {
+   const {agentHealth,discoveryKeys,discoverySources,discoveryCountsQuery,practicalCountsQuery}=require('./agent-health.cjs');
+   const health=agentHealth(data,archive);
+   if(health){
+    const agent=health.report;
+    agent.discoverySources=discoverySources(data);
+    const keys=discoveryKeys(data);
+    if(!keys.length&&agent.discoverySources.submitted===0)agent.discovery={waiting:0,blocked:0,published:0};
+    else if(keys.length)try {
+     agent.discovery=JSON.parse(cp.execFileSync(BIN+'/psql',['-qAt','-v','ON_ERROR_STOP=1','-c',discoveryCountsQuery(keys)],{
+      encoding:'utf8',timeout:30_000,env:{...serverEnvironment(),NODE_OPTIONS:''}
+     }));
+    }catch(error){console.warn('Výsledek hledání nových webů se nepodařilo načíst: '+error.message.split('\n')[0]);}
+    if(health.practicalWrites.length)try {
+     const practical=JSON.parse(cp.execFileSync(BIN+'/psql',['-qAt','-v','ON_ERROR_STOP=1','-c',practicalCountsQuery(health.practicalWrites)],{
+      encoding:'utf8',timeout:30_000,env:{...serverEnvironment(),NODE_OPTIONS:''}
+     }));
+     agent.inCatalogue+=practical.published;
+     agent.localDetails+=practical.local;
+    }catch(error){
+     agent.localDetails+=health.practicalWrites.length;
+     console.warn('Zápis praktických údajů na server se nepodařilo ověřit: '+error.message.split('\n')[0]);
+    }
+    atomic(path.join(data,'agent-health.json'),agent);
+   }
+  }catch(error){console.warn('Přehled Race Finderu se nepodařilo aktualizovat: '+error.message);}
   // A race refused again is not progress: organiser.attempted counts those too.
   report.progressed=report.readAttempts>0||organiser.read>0||organiser.published>0||report.publishedNewRaces>0||report.updatedRaces>0;
   report.moreWork=moreWorkLeft({readAttempts:report.readAttempts,dueAfter,organiserRead:organiser.read,organiserPublished:organiser.published,organiserUnread:organiser.unread,organiserDeferred:organiser.deferred});
@@ -412,9 +508,21 @@ async function main(){
   const moments=[Date.parse(nextPoll.replace(' ','T').replace(/([+-]\d\d)$/,'$1:00'))];
   if(organiser.nextDueAt)moments.push(Math.max(Date.parse(organiser.nextDueAt),state.organiserPassAt?Date.parse(state.organiserPassAt)+ORGANISER_GAP_MS:0));
   if(state.targetCheckedAt)moments.push(Date.parse(state.targetCheckedAt)+(targetWanted(state,eventsNow,Date.parse(state.targetCheckedAt))?TARGET_MIN_GAP_MS:TARGET_MAX_AGE_MS));
-  if(state.siteDetailsAt)moments.push(Date.parse(state.siteDetailsAt)+SITE_DETAILS_EVERY_MS);
-  if(aiWaiting){report.aiWaitingUntil=new Date(nextPragueDay()).toISOString();moments.push(nextPragueDay());}
-  else if(state.regulationsAt)moments.push(Date.parse(state.regulationsAt)+REGULATIONS_EVERY_MS);
+  for(const [name,key,every] of [
+   ['siteDetails','siteDetailsAt',SITE_DETAILS_EVERY_MS],
+   ['agent','agentAt',AGENT_EVERY_MS],
+   ['structuredDetails','structuredDetailsAt',REGULATIONS_EVERY_MS],
+   ['discovery','discoveryAt',0],
+  ]){
+   if(name==='structuredDetails'&&PAID_DETAILS&&!aiWaiting)continue;
+   if(name==='discovery'&&(!discoveryDue||(state.discoveryDay===discoveryDay&&(!agentBatch||state.discoveryAgentDay===discoveryDay))))continue;
+   const retry=state.stepHolds?.[name]?.nextTryAt;
+   const previous=name==='agent'?(state.agentCasesAt??state.agentAt):state[key];
+   moments.push(retry?Date.parse(retry):previous?Date.parse(previous)+every:Date.now());
+  }
+  if(sizeNow>0&&fileTime(reviewed)>reviewedAt)moments.push(Date.now()+60_000);
+  if(aiWaiting){report.aiWaitingUntil=new Date(aiWaiting.at).toISOString();report.aiBudgetPeriod=aiWaiting.period;moments.push(aiWaiting.at);}
+  else if(PAID_DETAILS&&state.regulationsAt)moments.push(state.stepHolds?.regulations?.nextTryAt?Date.parse(state.stepHolds.regulations.nextTryAt):Date.parse(state.regulationsAt)+REGULATIONS_EVERY_MS);
   report.nextWorkAt=new Date(Math.min(...moments.filter(Number.isFinite),Date.now()+6*HOUR)).toISOString();
   if(failed)throw Error(failed);
   // The raw report stays available; a checked public race is distinct from an extracted row.
@@ -436,4 +544,4 @@ async function main(){
   console.log(`=== done ${report.finishedAt}\n=== failed steps: ${report.state==='attention'?1:0}\n=== deferred steps: 0`);
  }
 }
-module.exports={holdAfter,heldNow,sleptThrough,FAILURE_DELAYS_MS,stepOutcome,STEP_OUTCOMES,acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason,coverageFrom,aiAllowanceLeft,nextPragueDay};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
+module.exports={holdAfter,heldNow,sleptThrough,FAILURE_DELAYS_MS,stepOutcome,STEP_OUTCOMES,acquireLock,run,organiserDue,targetNeeded,targetWanted,editionSeason,coverageFrom,aiAllowanceLeft,aiBudgetWait,nextPragueDay};if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
